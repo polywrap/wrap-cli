@@ -38,8 +38,6 @@ describe("e2e tests for build command", () => {
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
 
-  const defaultSanityTestDir = path.join(getTestCaseDir(0), "assemblyscript");
-
   const testCliOutput = (
     testCaseDir: string,
     exitCode: number,
@@ -110,7 +108,7 @@ describe("e2e tests for build command", () => {
   it("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "--help"],
-      cwd: defaultSanityTestDir,
+      cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
 
@@ -122,7 +120,7 @@ describe("e2e tests for build command", () => {
   it("Should throw error for unknown option --invalid", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "--invalid"],
-      cwd: defaultSanityTestDir,
+      cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
 
@@ -142,7 +140,7 @@ describe("e2e tests for build command", () => {
       it(`Should throw error if params not specified for ${option} option`, async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
           args: ["build", option],
-          cwd: defaultSanityTestDir,
+          cwd: getTestCaseDir(0),
           cli: polywrapCli,
         });
 
@@ -158,7 +156,7 @@ describe("e2e tests for build command", () => {
   it("Should throw error if params not specified for --client-config option", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "--client-config"],
-      cwd: defaultSanityTestDir,
+      cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
 
@@ -173,7 +171,7 @@ describe("e2e tests for build command", () => {
     const outputDir = fs.mkdtempSync(
       path.join(os.tmpdir(), `polywrap-cli-tests`)
     );
-    const testCaseDir = defaultSanityTestDir;
+    const testCaseDir = getTestCaseDir(0);
     const { exitCode: code, stdout: output } = await runCLI({
       args: ["build", "-v", "--output-dir", outputDir],
       cwd: testCaseDir,
@@ -190,7 +188,7 @@ describe("e2e tests for build command", () => {
   });
 
   it("Should add uuid-v4 suffix to build image if no build manifest specified", async () => {
-    const projectRoot = defaultSanityTestDir;
+    const projectRoot = getTestCaseDir(0);
     const project = new PolywrapProject({
       rootDir: projectRoot,
       polywrapManifestPath: path.join(projectRoot, "polywrap.yaml"),
@@ -218,7 +216,7 @@ describe("e2e tests for build command", () => {
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
         args: ["build", "-v"],
-        cwd: path.join(getTestCaseDir(0), "assemblyscript"),
+        cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
   
@@ -232,7 +230,7 @@ describe("e2e tests for build command", () => {
     it("Builds for rust", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
         args: ["build", "-v"],
-        cwd: path.join(getTestCaseDir(0), "rust"),
+        cwd: getTestCaseDir(1),
         cli: polywrapCli,
       });
   
@@ -248,7 +246,7 @@ describe("e2e tests for build command", () => {
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
         args: ["build", "-v", "-s", "local"],
-        cwd: path.join(getTestCaseDir(0), "assemblyscript"),
+        cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
   
@@ -260,16 +258,13 @@ describe("e2e tests for build command", () => {
     });
 
     it("Builds for rust", async () => {
-      const { exitCode: code, stdout: output, stderr } = await runCLI({
+      const { exitCode: code, stdout: output } = await runCLI({
         args: ["build", "-v", "-s", "local"],
-        cwd: path.join(getTestCaseDir(0), "rust"),
+        cwd: getTestCaseDir(1),
         cli: polywrapCli,
       });
   
       const buildDir = `./build`;
-      
-      console.log(output);
-      console.log(stderr);
   
       expect(code).toEqual(0);
       expect(output).toContain(`Artifacts written to ${buildDir}`);
@@ -278,7 +273,7 @@ describe("e2e tests for build command", () => {
   })
 
   describe("test-cases", () => {
-    for (let i = 1; i < testCases.length; ++i) {
+    for (let i = 0; i < testCases.length; ++i) {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 
