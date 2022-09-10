@@ -1,13 +1,9 @@
-import { step } from "../../helpers";
-import { intlMsg } from "../../intl";
-import { AnyProjectManifest, Project } from "../../project";
-import {
-  isTypescriptFile,
-  importTypescriptModule,
-  resetDir,
-} from "../../system";
-import { CodegenStrategy } from "../CodegenStrategy";
-import { SchemaComposer } from "../../SchemaComposer";
+import { step } from "../helpers";
+import { intlMsg } from "../intl";
+import { AnyProjectManifest, Project } from "../project";
+import { isTypescriptFile, importTypescriptModule, resetDir } from "../system";
+import { SchemaComposer } from "../SchemaComposer";
+import { CodeGenerator } from "./CodeGenerator";
 
 import { writeDirectorySync } from "@polywrap/os-js";
 import { BindLanguage, GenerateBindingFn } from "@polywrap/schema-bind";
@@ -17,7 +13,7 @@ import Mustache from "mustache";
 import { Ora } from "ora";
 import path from "path";
 
-export class ScriptCodegenStrategy extends CodegenStrategy {
+export class ScriptCodegenerator extends CodeGenerator {
   private _abi: Abi;
   private _script: string;
   private _mustacheView: Record<string, unknown> | undefined;
@@ -34,7 +30,11 @@ export class ScriptCodegenStrategy extends CodegenStrategy {
     omitHeader: boolean;
     schema?: string;
   }) {
-    super(config);
+    super({
+      project: config.project,
+      schemaComposer: config.schemaComposer,
+      codegenDirAbs: config.codegenDirAbs,
+    });
 
     this._script = config.script;
     this._mustacheView = config.mustacheView;
@@ -46,12 +46,10 @@ export class ScriptCodegenStrategy extends CodegenStrategy {
     }
   }
 
-  public async generate(
+  protected async runCodegen(
     bindLanguage: BindLanguage,
     spinner?: Ora
   ): Promise<string[]> {
-    // Check the generation file if it has the proper run() method
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
     const generator = isTypescriptFile(this._script)
       ? await importTypescriptModule(this._script)
       : // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -69,7 +67,7 @@ export class ScriptCodegenStrategy extends CodegenStrategy {
     }
 
     const binding = await generateBinding({
-      projectName: await this.project.getName(),
+      projectName: await this._config.project.getName(),
       abi: this._abi,
       outputDirAbs: this._codegenDirAbs,
       bindLanguage,
@@ -89,7 +87,7 @@ export class ScriptCodegenStrategy extends CodegenStrategy {
     config: unknown,
     spinner?: Ora
   ): string {
-    if (!this.project.quiet && spinner) {
+    if (!this._config.project.quiet && spinner) {
       const stepMessage = intlMsg.lib_codeGenerator_genTemplateStep({
         path: `${templatePath}`,
       });

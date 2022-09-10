@@ -18,8 +18,7 @@ import { Command, Program } from "./types";
 import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
 import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
-import { CodeGenerator } from "../lib/codegen/CodeGenerator";
-import { ScriptCodegenStrategy } from "../lib/codegen/strategies/ScriptCodegenStrategy";
+import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
 import path from "path";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -155,7 +154,7 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     client,
   });
 
-  const codegenStrategy = new ScriptCodegenStrategy({
+  const codeGenerator = new ScriptCodegenerator({
     project,
     schemaComposer,
     script: customScript,
@@ -163,7 +162,6 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     omitHeader: true,
     mustacheView: { imports },
   });
-  const codeGenerator = new CodeGenerator({ strategy: codegenStrategy });
 
   if (await codeGenerator.generate()) {
     console.log(`🔥 ${intlMsg.commands_docgen_success()} 🔥`);

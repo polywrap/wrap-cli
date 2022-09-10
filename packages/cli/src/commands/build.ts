@@ -11,7 +11,6 @@ import {
   parseDirOption,
   parseClientConfigOption,
   parseManifestFileOption,
-  DefaultCodegenStrategy,
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen/CodeGenerator";
 import { LocalBuildStrategy } from "../lib/build-strategies/strategies/LocalStrategy";
@@ -138,12 +137,7 @@ async function run(options: BuildCommandOptions) {
   });
 
   const execute = async (): Promise<boolean> => {
-    const codegenStrategy = new DefaultCodegenStrategy({
-      project,
-      schemaComposer,
-    });
-
-    const codeGenerator = new CodeGenerator({ strategy: codegenStrategy });
+    const codeGenerator = new CodeGenerator({ project, schemaComposer });
 
     const compiler = new Compiler({
       project,
