@@ -1,8 +1,11 @@
-import { Command, Program } from "./types";
+import { Command, Program, Argument } from "./types";
 import fs from "fs";
 import path from "path";
 import {
   latestAppManifestFormat,
+  latestBuildManifestFormat,
+  latestDeployManifestFormat,
+  latestMetaManifestFormat,
   latestPluginManifestFormat,
   latestPolywrapManifestFormat,
 } from "@polywrap/polywrap-manifest-types-js";
@@ -36,6 +39,34 @@ const defaultProjectManifestStr = defaultProjectManifestFiles.join(" | ");
 const defaultBuildManifestStr = defaultBuildManifest.join(" | ");
 const defaultDeployManifestStr = defaultDeployManifest.join(" | ");
 const defaultMetaManifestStr = defaultMetaManifest.join(" | ");
+
+const manifestFileTypes = [
+  "project",
+  "build",
+  "deploy",
+  // "infra",
+  "meta",
+  // "test",
+];
+
+type ManifestTypeCommands = {
+  parseManifestFile: (
+    manifestFile: string | undefined,
+    defaults: string[]
+  ) => string;
+  migrate: (manifest: string) => string;
+};
+
+const manifestCommandFnsPerType: Record<string, ManifestTypeCommands> = {
+  project: {
+    migrate: migrateProjectManifest,
+    parseManifestFile: parseManifestFileOption
+  },
+  build: {
+    migrate: migrateBuildExtensionManifest,
+    parseManifestFile: parseManifestFileOption
+  },
+};
 
 type ManifestSchemaCommandOptions = {
   raw: boolean;
@@ -80,82 +111,24 @@ export const manifest: Command = {
       .description(
         "Migrates the polywrap project manifest to the latest version."
       )
+      .addArgument(
+        new Argument("type", "Manifest file type.")
+          .argOptional()
+          .choices(manifestFileTypes)
+          .default(manifestFileTypes[0])
+      )
       .option(
         `-m, --manifest-file <${pathStr}>`,
         `${intlMsg.commands_manifest_options_m({
           default: defaultProjectManifestStr,
         })}`
       )
-      .action(async (options) => {
-        await runMigrateCommand({
+      .action(async (type, options) => {
+        await runMigrateCommand(type, {
           ...options,
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultProjectManifestFiles
-          ),
-        });
-      });
-
-    migrateCommand
-      .command("build")
-      .alias("b")
-      .description(
-        "Migrates the polywrap build manifest to the latest version."
-      )
-      .option(
-        `-m, --manifest-file <${pathStr}>`,
-        `${intlMsg.commands_manifest_options_m({
-          default: defaultBuildManifestStr,
-        })}`
-      )
-      .action(async (options) => {
-        await runMigrateBuildCommand({
-          ...options,
-          manifestFile: parseManifestFileOption(
-            options.manifestFile,
-            defaultBuildManifest
-          ),
-        });
-      });
-
-    migrateCommand
-      .command("deploy")
-      .alias("d")
-      .description(
-        "Migrates the polywrap deploy manifest to the latest version."
-      )
-      .option(
-        `-m, --manifest-file <${pathStr}>`,
-        `${intlMsg.commands_manifest_options_m({
-          default: defaultDeployManifestStr,
-        })}`
-      )
-      .action(async (options) => {
-        await runMigrateDeployCommand({
-          ...options,
-          manifestFile: parseManifestFileOption(
-            options.manifestFile,
-            defaultDeployManifest
-          ),
-        });
-      });
-
-    migrateCommand
-      .command("meta")
-      .alias("m")
-      .description("Migrates the polywrap meta manifest to the latest version.")
-      .option(
-        `-m, --manifest-file <${pathStr}>`,
-        `${intlMsg.commands_manifest_options_m({
-          default: defaultMetaManifestStr,
-        })}`
-      )
-      .action(async (options) => {
-        await runMigrateMetaCommand({
-          ...options,
-          manifestFile: parseManifestFileOption(
-            options.manifestFile,
-            defaultMetaManifest
           ),
         });
       });
@@ -207,111 +180,105 @@ export const runSchemaCommand = async (
   }
 };
 
-const runMigrateCommand = async (options: ManifestMigrateCommandOptions) => {
+const runMigrateCommand = async (
+  type: string,
+  options: ManifestMigrateCommandOptions
+) => {
   const manifestString = fs.readFileSync(options.manifestFile, {
     encoding: "utf-8",
   });
 
+  let outputManifestString: string = "";
+
+  if (type === "project") {
+    const language = getProjectManifestLanguage(manifestString);
+
+    if (!language) {
+      console.log("Unsupported project type!");
+      return;
+    }
+
+    if (isPolywrapManifestLanguage(language)) {
+      console.log(
+        `Migrating wasm/interface project manifest file to version ${latestPolywrapManifestFormat}`
+      );
+      outputManifestString = migratePolywrapProjectManifest(manifestString);
+    } else if (isAppManifestLanguage(language)) {
+      console.log(
+        `Migrating app project manifest file to version ${latestAppManifestFormat}`
+      );
+      outputManifestString = migrateAppProjectManifest(manifestString);
+    } else if (isPluginManifestLanguage(language)) {
+      console.log(
+        `Migrating plugin project manifest file to version ${latestPluginManifestFormat}`
+      );
+      outputManifestString = migratePluginProjectManifest(manifestString);
+    }
+  } else if (type === "build") {
+    console.log(
+      `Migrating build manifest file to version ${latestBuildManifestFormat}`
+    );
+    outputManifestString = migrateBuildExtensionManifest(manifestString);
+  } else if (type === "meta") {
+    console.log(
+      `Migrating meta manifest file to version ${latestMetaManifestFormat}`
+    );
+    outputManifestString = migrateBuildExtensionManifest(manifestString);
+  } else if (type === "deploy") {
+    console.log(
+      `Migrating deploy manifest file to version ${latestDeployManifestFormat}`
+    );
+    outputManifestString = migrateBuildExtensionManifest(manifestString);
+  }
+
+  const oldManifestPath = preserveOldManifest(options.manifestFile);
+
+  console.log(`Saved previous version of manifest to ${oldManifestPath}`);
+
+  fs.writeFileSync(options.manifestFile, outputManifestString, {
+    encoding: "utf-8",
+  });
+};
+
+function migrateProjectManifest(manifestString: string) : string {
   const language = getProjectManifestLanguage(manifestString);
 
   if (!language) {
-    console.log("Unsupported project type!");
-    return;
+    throw new Error("Unsupported project type!");
   }
-
-  let outputManifestString: string = "";
 
   if (isPolywrapManifestLanguage(language)) {
     console.log(
       `Migrating wasm/interface project manifest file to version ${latestPolywrapManifestFormat}`
     );
-    outputManifestString = migratePolywrapProjectManifest(manifestString);
+    return migratePolywrapProjectManifest(manifestString);
   } else if (isAppManifestLanguage(language)) {
     console.log(
       `Migrating app project manifest file to version ${latestAppManifestFormat}`
     );
-    outputManifestString = migrateAppProjectManifest(manifestString);
+    return migrateAppProjectManifest(manifestString);
   } else if (isPluginManifestLanguage(language)) {
     console.log(
       `Migrating plugin project manifest file to version ${latestPluginManifestFormat}`
     );
-    outputManifestString = migratePluginProjectManifest(manifestString);
+    return migratePluginProjectManifest(manifestString);
+  } else {
+    throw new Error("Unsupported project type!");
   }
-
-  const oldManifestPath = preserveOldManifest(options.manifestFile);
-
-  console.log(`Saved previous version of manifest to ${oldManifestPath}`);
-
-  fs.writeFileSync(options.manifestFile, outputManifestString, {
-    encoding: "utf-8",
-  });
-};
-
-const runMigrateBuildCommand = async (
-  options: ManifestMigrateCommandOptions
-) => {
-  const manifestString = fs.readFileSync(options.manifestFile, {
-    encoding: "utf-8",
-  });
-
-  const outputManifestString = migrateBuildExtensionManifest(manifestString);
-
-  const oldManifestPath = preserveOldManifest(options.manifestFile);
-
-  console.log(`Saved previous version of manifest to ${oldManifestPath}`);
-
-  fs.writeFileSync(options.manifestFile, outputManifestString, {
-    encoding: "utf-8",
-  });
-};
-
-const runMigrateDeployCommand = async (
-  options: ManifestMigrateCommandOptions
-) => {
-  const manifestString = fs.readFileSync(options.manifestFile, {
-    encoding: "utf-8",
-  });
-
-  const outputManifestString = migrateDeployExtensionManifest(manifestString);
-
-  const oldManifestPath = preserveOldManifest(options.manifestFile);
-
-  console.log(`Saved previous version of manifest to ${oldManifestPath}`);
-
-  fs.writeFileSync(options.manifestFile, outputManifestString, {
-    encoding: "utf-8",
-  });
-};
-
-const runMigrateMetaCommand = async (
-  options: ManifestMigrateCommandOptions
-) => {
-  const manifestString = fs.readFileSync(options.manifestFile, {
-    encoding: "utf-8",
-  });
-
-  const outputManifestString = migrateMetaExtensionManifest(manifestString);
-
-  const oldManifestPath = preserveOldManifest(options.manifestFile);
-
-  console.log(`Saved previous version of manifest to ${oldManifestPath}`);
-
-  fs.writeFileSync(options.manifestFile, outputManifestString, {
-    encoding: "utf-8",
-  });
-};
+}
 
 /* DEV TODO:
   - Determine project manifest type (wasm/interface, app, plugin) based on input file (with default input file)
   - Add support for extension manifests
     - build
     - deploy
+    - infra
     - meta
+    - test
   - pretty-print everything
   - add intlmsgs
   - remove `temp` test file
   - create tests
-  - save old manifest to ./.polywrap/manifest/{manifestFile}.old
 
   build
   deploy
