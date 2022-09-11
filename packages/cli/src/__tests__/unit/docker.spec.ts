@@ -19,10 +19,10 @@ describe("e2e tests for docker", () => {
       promises.push(
         runCLI({
           args: ["build", "-v"],
-          cwd: path.join(GetPathToCliTestFiles(), "wasm/build-cmd/001-sanity"),
+          cwd: path.join(GetPathToCliTestFiles(), "wasm/build-cmd/001-sanity-assemblyscript"),
           cli: polywrapCli
         }).then((result: { exitCode: number; stdout: string; stderr: string }) => {
-          const { exitCode, stderr } = result;
+          const { exitCode, stderr, stdout } = result;
           expect(stderr.indexOf("Conflict. The container name \"/root-build-image\" is already in use")).toBeLessThan(0);
           expect(exitCode).toEqual(0);
         })

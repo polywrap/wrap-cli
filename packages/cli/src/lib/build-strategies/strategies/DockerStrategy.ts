@@ -120,6 +120,7 @@ export class DockerBuildStrategy extends BuildStrategy<BuildImageId> {
         useBuildx
       );
 
+      await this._dockerLock.release();
       return dockerImageId;
     } catch (e) {
       await this._dockerLock.release();
