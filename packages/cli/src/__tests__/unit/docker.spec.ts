@@ -22,7 +22,7 @@ describe("e2e tests for docker", () => {
           cwd: path.join(GetPathToCliTestFiles(), "wasm/build-cmd/001-sanity-assemblyscript"),
           cli: polywrapCli
         }).then((result: { exitCode: number; stdout: string; stderr: string }) => {
-          const { exitCode, stderr, stdout } = result;
+          const { exitCode, stderr } = result;
           expect(stderr.indexOf("Conflict. The container name \"/root-build-image\" is already in use")).toBeLessThan(0);
           expect(exitCode).toEqual(0);
         })
