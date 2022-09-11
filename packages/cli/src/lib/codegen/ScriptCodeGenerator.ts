@@ -7,14 +7,12 @@ import { CodeGenerator } from "./CodeGenerator";
 
 import { writeDirectorySync } from "@polywrap/os-js";
 import { BindLanguage, GenerateBindingFn } from "@polywrap/schema-bind";
-import { Abi } from "@polywrap/wrap-manifest-types-js";
 import { readFileSync } from "fs-extra";
 import Mustache from "mustache";
 import { Ora } from "ora";
 import path from "path";
 
 export class ScriptCodegenerator extends CodeGenerator {
-  private _abi: Abi;
   private _script: string;
   private _mustacheView: Record<string, unknown> | undefined;
   private _codegenDirAbs: string;
@@ -68,7 +66,7 @@ export class ScriptCodegenerator extends CodeGenerator {
 
     const binding = await generateBinding({
       projectName: await this._config.project.getName(),
-      abi: this._abi,
+      abi: await this._config.schemaComposer.getComposedAbis(),
       outputDirAbs: this._codegenDirAbs,
       bindLanguage,
       config: this._mustacheView,
