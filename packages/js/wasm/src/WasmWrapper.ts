@@ -45,6 +45,8 @@ export interface State {
   env: Uint8Array;
 }
 
+const EMPTY_ENCODED_OBJECT = msgpackEncode({});
+
 export class WasmWrapper implements Wrapper {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
 
@@ -117,8 +119,12 @@ export class WasmWrapper implements Wrapper {
         },
         invokeResult: {} as InvokeResult,
         method,
-        args: isBuffer(args) ? args : msgpackEncode(args),
-        env: msgpackEncode(options.env || {}),
+        args: args
+          ? isBuffer(args)
+            ? args
+            : msgpackEncode(args)
+          : EMPTY_ENCODED_OBJECT,
+        env: options.env ? msgpackEncode(options.env) : EMPTY_ENCODED_OBJECT,
       };
 
       const abort = (message: string) => {
