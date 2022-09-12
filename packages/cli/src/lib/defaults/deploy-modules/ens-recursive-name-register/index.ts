@@ -6,12 +6,12 @@ import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
-import path from "path";
 import {
   ethereumPlugin,
   Connections,
   Connection,
 } from "@polywrap/ethereum-plugin-js";
+import { embeddedWrappers } from "@polywrap/test-env-js";
 
 class ENSRecursiveNameRegisterPublisher implements Deployer {
   async execute(
@@ -45,13 +45,19 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
       : undefined;
 
     const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
-    const ensWrapperUri = `fs/${path.join(
-      path.dirname(require.resolve("@polywrap/test-env-js")),
-      "wrappers",
-      "ens"
-    )}`;
+    const ensWrapperUri = embeddedWrappers.ens;
 
     const client = new PolywrapClient({
+      redirects: [
+        {
+          from: "wrap://ens/uts46.polywrap.eth",
+          to: embeddedWrappers.uts46,
+        },
+        {
+          from: "wrap://ens/sha3.polywrap.eth",
+          to: embeddedWrappers.sha3,
+        },
+      ],
       plugins: [
         {
           uri: ethereumPluginUri,
