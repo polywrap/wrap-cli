@@ -17,7 +17,19 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
       const scriptPath = `${__dirname}/../../defaults/build-scripts/${bindLanguage}.sh`;
       const command = `chmod +x ${scriptPath} && ${scriptPath} ${manifestDir} ${this.outputDir} ${abortPath}`;
 
-      await runCommand(command, this.project.quiet, undefined, process.cwd());
+      await withSpinner(
+        intlMsg.lib_helpers_buildText(),
+        intlMsg.lib_helpers_buildError(),
+        intlMsg.lib_helpers_buildWarning(),
+        async (_spinner) => {
+          return await runCommand(
+            command,
+            this.project.quiet,
+            undefined,
+            process.cwd()
+          );
+        }
+      );
     };
 
     if (this.project.quiet) {
