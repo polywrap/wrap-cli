@@ -75,7 +75,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
       uri: ethereumPluginUri,
       args: {
         connection: {
-          networkNameOrChainId: "testnet",
+          networkNameOrChainId: network,
         },
       },
     });
@@ -96,7 +96,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
           registrarAddress: config.ensRegistrarAddress,
           registryAddress: config.ensRegistryAddress,
           connection: {
-            networkNameOrChainId: "testnet",
+            networkNameOrChainId: network,
           },
         },
       }
@@ -117,7 +117,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
         confirmations: 1,
         timeout: 15000,
         connection: {
-          networkNameOrChainId: "testnet",
+          networkNameOrChainId: network,
         },
       },
     });
