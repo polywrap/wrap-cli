@@ -8,7 +8,7 @@ import { PolywrapClient } from "@polywrap/client-js";
 
 jest.setTimeout(200000);
 
-describe("workflow", () => {
+describe.skip("workflow", () => {
 
   let client: PolywrapClient;
 

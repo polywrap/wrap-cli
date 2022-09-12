@@ -104,7 +104,7 @@ const setup = async (domainNames: string[]) => {
   }
 }
 
-describe("e2e tests for deploy command", () => {
+describe.skip("e2e tests for deploy command", () => {
   beforeAll(async () => {
     await setup(["test1.eth", "test2.eth", "test3.eth"])
 
