@@ -242,7 +242,7 @@ describe("e2e tests for build command", () => {
     });
   })
 
-  describe("Local strategy", () => {
+  describe.only("Local strategy", () => {
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
         args: ["build", "-v", "-s", "local"],
@@ -257,12 +257,15 @@ describe("e2e tests for build command", () => {
       expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
     });
 
-    it("Builds for rust", async () => {
-      const { exitCode: code, stdout: output } = await runCLI({
+    it.only("Builds for rust", async () => {
+      const { exitCode: code, stdout: output, stderr } = await runCLI({
         args: ["build", "-v", "-s", "local"],
         cwd: getTestCaseDir(1),
         cli: polywrapCli,
       });
+
+      console.log(output);
+      console.log(stderr);
   
       const buildDir = `./build`;
   
