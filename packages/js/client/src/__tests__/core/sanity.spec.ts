@@ -74,8 +74,14 @@ describe("sanity", () => {
     expect(client.getPlugins().length === 0).toBeTruthy();
     expect(client.getUriResolver()).toBeTruthy();
 
-    expect(new PolywrapClient({}, { noDefaults: true }))
-      .toThrowError("No URI resolver provided");
+    let message = "";
+    try {
+      client = new PolywrapClient({}, { noDefaults: true });
+    } catch (e) {
+      message = e.message;
+    }
+
+    expect(message).toBe("No URI resolver provided");
   });
 
   test("redirect registration", () => {
