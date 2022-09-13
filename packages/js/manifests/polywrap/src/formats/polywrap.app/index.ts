@@ -24,6 +24,11 @@ export enum AppManifestFormats {
   "v0.2.0" = "0.2.0",
 }
 
+export const AppManifestSchemaFiles: Record<string, string> = {
+  "0.1.0": "formats/polywrap.app/0.1.0.json",
+  "0.2.0": "formats/polywrap.app/0.2.0.json",
+}
+
 export type AnyAppManifest =
   | AppManifest_0_1_0
   | AppManifest_0_2_0

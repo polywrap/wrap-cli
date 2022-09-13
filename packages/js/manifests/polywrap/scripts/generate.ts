@@ -63,6 +63,7 @@ async function generateFormatTypes() {
         formatModules.push({
           interface: formatSchema.id,
           version: formatVersion,
+          schemaFilePath: path.relative(schemasPackageDir, formatSchemaPath)
         });
       } catch (error) {
         console.error(
@@ -99,6 +100,7 @@ async function generateFormatTypes() {
         isWorkflow: module.interface == "PolywrapWorkflow",
         version: module.version,
         tsVersion: versionToTs(module.version),
+        schemaFilePath: module.schemaFilePath,
       };
     });
     const latest = lastItem(formats);

@@ -19,6 +19,10 @@ export enum DeployManifestFormats {
   "v0.1.0" = "0.1.0",
 }
 
+export const DeployManifestSchemaFiles: Record<string, string> = {
+  "0.1.0": "formats/polywrap.deploy/0.1.0.json",
+}
+
 export type AnyDeployManifest =
   | DeployManifest_0_1_0
 

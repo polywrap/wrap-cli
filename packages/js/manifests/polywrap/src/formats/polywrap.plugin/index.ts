@@ -24,6 +24,11 @@ export enum PluginManifestFormats {
   "v0.2.0" = "0.2.0",
 }
 
+export const PluginManifestSchemaFiles: Record<string, string> = {
+  "0.1.0": "formats/polywrap.plugin/0.1.0.json",
+  "0.2.0": "formats/polywrap.plugin/0.2.0.json",
+}
+
 export type AnyPluginManifest =
   | PluginManifest_0_1_0
   | PluginManifest_0_2_0

@@ -68,6 +68,12 @@ export const manifest: Command = {
       .command("schema")
       .alias("s")
       .description("Prints out the schema for the current manifest format.")
+      .addArgument(
+        new Argument("type", "Manifest file type.")
+          .argOptional()
+          .choices(manifestFileTypes)
+          .default(manifestFileTypes[0])
+      )
       .option(`-r, --raw`, `Output raw JSON Schema`, false)
       .option(
         `-m, --manifest-file <${pathStr}>`,
@@ -75,13 +81,10 @@ export const manifest: Command = {
           default: defaultProjectManifestStr,
         })}`
       )
-      .action(async (options) => {
+      .action(async (type, options) => {
         await runSchemaCommand({
-          ...options,
-          manifestFile: parseManifestFileOption(
-            options.manifestFile,
-            defaultProjectManifestFiles
-          ),
+          type,
+          options,
         });
       });
 
@@ -104,16 +107,19 @@ export const manifest: Command = {
         })}`
       )
       .action(async (type, options) => {
-        await runMigrateCommand(type, {
-          ...options,
-        });
+        await runMigrateCommand(type, options);
       });
   },
 };
 
 export const runSchemaCommand = async (
+  type: string,
   options: ManifestSchemaCommandOptions
 ) => {
+  // get format version
+  // if project do project type detection
+  // if can get, render for version. Otherwise render latest
+
   // const manifestString = fs.readFileSync(options.manifestFile, {
   //   encoding: "utf-8",
   // });
@@ -259,3 +265,7 @@ function runManifestFileMigration(
   - remove `temp` test file
   - create tests
 */
+
+function getManifestFormatVersion(manifest: string): string {
+
+}
