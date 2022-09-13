@@ -8,6 +8,7 @@ import {
   IUriResolutionContext,
   UriResolutionResult,
   UriPackageOrWrapper,
+  getEnvFromUriHistory,
 } from "@polywrap/core-js";
 import { Result, ResultOk, ResultErr } from "@polywrap/result";
 import { WasmPackage } from "@polywrap/wasm-js";
@@ -43,12 +44,11 @@ export class UriResolverWrapper extends ResolverWithHistory<unknown> {
       return UriResolutionResult.ok(new Uri(uriOrManifest.uri));
     } else if (uriOrManifest?.manifest) {
       const wrapPackage = WasmPackage.from(
-        uri,
         uriOrManifest.manifest,
         new UriResolverExtensionFileReader(this.implementationUri, uri, client)
       );
 
-      return UriResolutionResult.ok(wrapPackage);
+      return UriResolutionResult.ok(uri, wrapPackage);
     }
 
     return UriResolutionResult.ok(uri);
@@ -77,6 +77,7 @@ const tryResolveUriWithImplementation = async (
 
   const extensionWrapper = result.value;
 
+  const env = getEnvFromUriHistory(subContext.getResolutionPath(), client);
   const invokeResult = await client.invokeWrapper<UriResolverInterface.MaybeUriOrManifest>(
     {
       wrapper: extensionWrapper,
@@ -86,6 +87,7 @@ const tryResolveUriWithImplementation = async (
         authority: uri.authority,
         path: uri.path,
       },
+      env: env?.env,
     }
   );
 

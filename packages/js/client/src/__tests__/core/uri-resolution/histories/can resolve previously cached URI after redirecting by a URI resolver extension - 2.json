@@ -26,5 +26,5 @@
       ]
     ]
   ],
-  "wrap://simple/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://file/$root-wrapper-dir/simple/build)"
+  "wrap://simple/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://simple/$root-wrapper-dir/simple/build)"
 ]

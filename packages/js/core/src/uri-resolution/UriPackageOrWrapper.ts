@@ -1,18 +1,17 @@
-import { Uri, IWrapPackage, Wrapper } from "..";
+import { Uri } from "..";
+import { IUriPackage, IUriWrapper } from "../types";
 
 export type UriValue = {
   type: "uri";
   uri: Uri;
 };
 
-export type PackageValue = {
+export type UriPackageValue = IUriPackage & {
   type: "package";
-  package: IWrapPackage;
 };
 
-export type WrapperValue = {
+export type UriWrapperValue = IUriWrapper & {
   type: "wrapper";
-  wrapper: Wrapper;
 };
 
-export type UriPackageOrWrapper = UriValue | PackageValue | WrapperValue;
+export type UriPackageOrWrapper = UriValue | UriPackageValue | UriWrapperValue;

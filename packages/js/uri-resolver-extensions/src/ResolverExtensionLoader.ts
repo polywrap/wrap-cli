@@ -41,11 +41,7 @@ export const loadResolverExtension = async (
     wrapperOrPackage = uriPackageOrWrapper.wrapper;
   }
 
-  const resolutionPath: Uri[] = !resolutionContext
-    ? [resolverExtensionUri]
-    : resolutionContext.getResolutionPath();
-
-  const wrapper = await initWrapper(wrapperOrPackage, client, resolutionPath);
+  const wrapper = await initWrapper(wrapperOrPackage);
 
   return ResultOk(wrapper);
 };

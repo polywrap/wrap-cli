@@ -9,7 +9,6 @@ import {
   GetFileOptions,
   GetManifestOptions,
   isBuffer,
-  getEnvFromUriHistory,
 } from "../.";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -19,14 +18,9 @@ import { Tracer, TracingLevel } from "@polywrap/tracing-js";
 export class PluginWrapper implements Wrapper {
   private _instance: PluginModule<unknown> | undefined;
 
-  constructor(
-    public readonly uri: Uri,
-    private resolutionPath: Uri[],
-    private _plugin: PluginPackage<unknown>
-  ) {
+  constructor(private _plugin: PluginPackage<unknown>) {
     Tracer.startSpan("PluginWrapper: constructor");
     Tracer.setAttribute("args", {
-      uri: this.uri,
       plugin: this._plugin,
     });
     Tracer.endSpan();
@@ -71,7 +65,7 @@ export class PluginWrapper implements Wrapper {
       }
 
       // Set the module's environment
-      await module.setEnv(this._getClientEnv(client) || {});
+      await module.setEnv(options.env || {});
 
       let jsArgs: Record<string, unknown>;
 
@@ -111,7 +105,7 @@ export class PluginWrapper implements Wrapper {
       } catch (e) {
         throw Error(
           `PluginWrapper: invocation exception encountered.\n` +
-            `uri: ${this.uri.uri}\nmodule: ${module}\n` +
+            `uri: ${options.uri}\nmodule: ${module}\n` +
             `method: ${method}\n` +
             `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
             `exception: ${e.message}`
@@ -127,16 +121,5 @@ export class PluginWrapper implements Wrapper {
   private _getInstance(): PluginModule<unknown> {
     this._instance ||= this._plugin.factory();
     return this._instance;
-  }
-
-  @Tracer.traceMethod("PluginWrapper: _getClientEnv")
-  private _getClientEnv(client: Client): Record<string, unknown> {
-    const env = getEnvFromUriHistory(this.resolutionPath, client);
-
-    if (!env) {
-      return {};
-    }
-
-    return env.env;
   }
 }

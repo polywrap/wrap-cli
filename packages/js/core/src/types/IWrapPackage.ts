@@ -1,4 +1,4 @@
-import { Client, Wrapper, Uri, GetManifestOptions } from ".";
+import { Wrapper, GetManifestOptions } from ".";
 
 import {
   DeserializeManifestOptions,
@@ -6,11 +6,6 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 
 export interface IWrapPackage {
-  uri: Uri;
   getManifest(options?: GetManifestOptions): Promise<WrapManifest>;
-  createWrapper(
-    client: Client,
-    resolutionPath: Uri[],
-    options?: DeserializeManifestOptions
-  ): Promise<Wrapper>;
+  createWrapper(options?: DeserializeManifestOptions): Promise<Wrapper>;
 }

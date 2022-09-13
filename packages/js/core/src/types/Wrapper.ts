@@ -18,7 +18,6 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
  * worker threads, or indexing into resolvers to find the requested method.
  */
 export interface Wrapper extends Invocable {
-  uri: Uri;
   /**
    * Invoke the Wrapper based on the provided [[InvokeOptions]]
    *

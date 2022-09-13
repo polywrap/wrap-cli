@@ -1,4 +1,4 @@
-import { Client, IWrapPackage, PluginPackage, Uri, Wrapper } from "../types";
+import { IWrapPackage, PluginPackage, Uri, Wrapper } from "../types";
 import { PluginWrapper } from "./PluginWrapper";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -14,7 +14,7 @@ export class PluginWrapPackage implements IWrapPackage {
     return this.pluginPackage.manifest;
   }
 
-  async createWrapper(client: Client, resolutionPath: Uri[]): Promise<Wrapper> {
-    return new PluginWrapper(this.uri, resolutionPath, this.pluginPackage);
+  async createWrapper(): Promise<Wrapper> {
+    return new PluginWrapper(this.pluginPackage);
   }
 }
