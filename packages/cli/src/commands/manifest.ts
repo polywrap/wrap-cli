@@ -2,12 +2,12 @@ import { Command, Program, Argument } from "./types";
 import fs from "fs";
 import path from "path";
 import {
-  latestAppManifestFormat,
   latestBuildManifestFormat,
   latestDeployManifestFormat,
+  latestInfraManifestFormat,
   latestMetaManifestFormat,
-  latestPluginManifestFormat,
   latestPolywrapManifestFormat,
+  latestPolywrapWorkflowFormat,
 } from "@polywrap/polywrap-manifest-types-js";
 import {
   defaultBuildManifest,
@@ -32,21 +32,20 @@ import {
   migrateMetaExtensionManifest,
   preserveOldManifest,
 } from "../lib/manifest";
+import { migrateInfraExtensionManifest } from "../lib/manifest/migrateInfraExtensionManifest";
+import { migrateWorkflow } from "../lib/manifest/migrateTestExtensionManifest";
 
 const pathStr = intlMsg.commands_manifest_options_m_path();
 
 const defaultProjectManifestStr = defaultProjectManifestFiles.join(" | ");
-// const defaultBuildManifestStr = defaultBuildManifest.join(" | ");
-// const defaultDeployManifestStr = defaultDeployManifest.join(" | ");
-// const defaultMetaManifestStr = defaultMetaManifest.join(" | ");
 
 const manifestFileTypes = [
   "project",
   "build",
   "deploy",
-  // "infra",
+  "infra",
   "meta",
-  // "test",
+  "workflow",
 ];
 
 type ManifestSchemaCommandOptions = {
@@ -86,9 +85,9 @@ export const manifest: Command = {
         });
       });
 
-    const migrateCommand = manifestCommand.command("migrate").alias("m");
-
-    migrateCommand
+    manifestCommand
+      .command("migrate")
+      .alias("m")
       .description(
         "Migrates the polywrap project manifest to the latest version."
       )
@@ -162,44 +161,82 @@ const runMigrateCommand = async (
   options: ManifestMigrateCommandOptions
 ) => {
   if (type === "project") {
-    runMigration(
-      parseManifestFileOption(
-        options.manifestFile,
-        defaultProjectManifestFiles
-      ),
-      migrateProjectManifest
+    const manifestfile = parseManifestFileOption(
+      options.manifestFile,
+      defaultProjectManifestFiles
     );
+
+    const manifestString = fs.readFileSync(manifestfile, {
+      encoding: "utf-8",
+    });
+
+    const language = getProjectManifestLanguage(manifestString);
+
+    if (!language) {
+      throw new Error("Unsupported project type!");
+    }
+
+    if (isPolywrapManifestLanguage(language)) {
+      return runManifestFileMigration(
+        manifestfile,
+        migratePolywrapProjectManifest,
+        latestPolywrapManifestFormat
+      );
+    } else if (isAppManifestLanguage(language)) {
+      return runManifestFileMigration(
+        manifestfile,
+        migrateAppProjectManifest,
+        latestPolywrapManifestFormat
+      );
+    } else if (isPluginManifestLanguage(language)) {
+      return runManifestFileMigration(
+        manifestfile,
+        migratePluginProjectManifest,
+        latestPolywrapManifestFormat
+      );
+    } else {
+      throw new Error("Unsupported project type!");
+    }
   } else if (type === "build") {
-    console.log(
-      `Migrating build manifest file to version ${latestBuildManifestFormat}`
-    );
-    runMigration(
+    runManifestFileMigration(
       parseManifestFileOption(options.manifestFile, defaultBuildManifest),
-      migrateBuildExtensionManifest
+      migrateBuildExtensionManifest,
+      latestBuildManifestFormat
     );
   } else if (type === "meta") {
-    console.log(
-      `Migrating meta manifest file to version ${latestMetaManifestFormat}`
-    );
-    runMigration(
+    runManifestFileMigration(
       parseManifestFileOption(options.manifestFile, defaultMetaManifest),
-      migrateMetaExtensionManifest
+      migrateMetaExtensionManifest,
+      latestMetaManifestFormat
     );
   } else if (type === "deploy") {
-    console.log(
-      `Migrating deploy manifest file to version ${latestDeployManifestFormat}`
-    );
-    runMigration(
+    runManifestFileMigration(
       parseManifestFileOption(options.manifestFile, defaultDeployManifest),
-      migrateDeployExtensionManifest
+      migrateDeployExtensionManifest,
+      latestDeployManifestFormat
+    );
+  } else if (type === "infra") {
+    runManifestFileMigration(
+      options.manifestFile,
+      migrateInfraExtensionManifest,
+      latestInfraManifestFormat
+    );
+  } else if (type === "workflow") {
+    runManifestFileMigration(
+      options.manifestFile,
+      migrateWorkflow,
+      latestPolywrapWorkflowFormat
     );
   }
 };
 
-function runMigration(
+function runManifestFileMigration(
   manifestFile: string,
-  migrationFn: (input: string) => string
+  migrationFn: (input: string) => string,
+  version: string
 ): void {
+  console.log(`Migrating ${path.basename(manifestFile)} to version ${version}`);
+
   const manifestString = fs.readFileSync(manifestFile, {
     encoding: "utf-8",
   });
@@ -215,49 +252,10 @@ function runMigration(
   });
 }
 
-function migrateProjectManifest(manifestString: string): string {
-  const language = getProjectManifestLanguage(manifestString);
-
-  if (!language) {
-    throw new Error("Unsupported project type!");
-  }
-
-  if (isPolywrapManifestLanguage(language)) {
-    console.log(
-      `Migrating wasm/interface project manifest file to version ${latestPolywrapManifestFormat}`
-    );
-    return migratePolywrapProjectManifest(manifestString);
-  } else if (isAppManifestLanguage(language)) {
-    console.log(
-      `Migrating app project manifest file to version ${latestAppManifestFormat}`
-    );
-    return migrateAppProjectManifest(manifestString);
-  } else if (isPluginManifestLanguage(language)) {
-    console.log(
-      `Migrating plugin project manifest file to version ${latestPluginManifestFormat}`
-    );
-    return migratePluginProjectManifest(manifestString);
-  } else {
-    throw new Error("Unsupported project type!");
-  }
-}
-
 /* DEV TODO:
-  - Determine project manifest type (wasm/interface, app, plugin) based on input file (with default input file)
-  - Add support for extension manifests
-    - build
-    - deploy
-    - infra
-    - meta
-    - test
+  - polywrap.test.yaml is on version 0.1 instad of 0.1.0 by default
   - pretty-print everything
   - add intlmsgs
   - remove `temp` test file
   - create tests
-
-  build
-  deploy
-  infra
-  meta
-  test
 */
