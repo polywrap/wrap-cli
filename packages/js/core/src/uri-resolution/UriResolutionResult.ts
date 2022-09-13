@@ -16,9 +16,6 @@ export class UriResolutionResult<TError = undefined> {
     uri: Uri,
     wrapper: Wrapper
   ): Result<UriPackageOrWrapper, TError>;
-  // static ok<TError = undefined>(
-  //   uriPackageOrWrapper: UriPackageOrWrapper
-  // ): Result<UriPackageOrWrapper, TError>;
   static ok<TError = undefined>(
     uri: Uri,
     packageOrWrapper?: IWrapPackage | Wrapper
