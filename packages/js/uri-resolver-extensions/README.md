@@ -1,5 +1,5 @@
-# @polywrap/uri-resolvers
+# @polywrap/uri-resolvers-extensions-js
 
 ## Description 
 
-URI resolvers to customize URI resolution inside of the Polywrap Client.
+Polywrap URI resolver extensions to customize resolution inside of the Polywrap Client.

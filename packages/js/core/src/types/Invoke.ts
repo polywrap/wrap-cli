@@ -23,6 +23,11 @@ export interface InvokeOptions<
    */
   config?: Partial<TClientConfig>;
 
+  /**
+   * Env variables for the wrapper invocation.
+   */
+  env?: Record<string, unknown>;
+
   resolutionContext?: IUriResolutionContext;
 
   /**

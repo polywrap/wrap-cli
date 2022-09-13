@@ -9,54 +9,40 @@ export class UriResolutionResult<TError = undefined> {
 
   static ok<TError = undefined>(uri: Uri): Result<UriPackageOrWrapper, TError>;
   static ok<TError = undefined>(
+    uri: Uri,
     wrapPackage: IWrapPackage
   ): Result<UriPackageOrWrapper, TError>;
   static ok<TError = undefined>(
+    uri: Uri,
     wrapper: Wrapper
   ): Result<UriPackageOrWrapper, TError>;
   static ok<TError = undefined>(
-    uriPackageOrWrapper: UriPackageOrWrapper
-  ): Result<UriPackageOrWrapper, TError>;
-  static ok<TError = undefined>(
-    uriPackageOrWrapper: Uri | IWrapPackage | Wrapper | UriPackageOrWrapper
+    uri: Uri,
+    packageOrWrapper?: IWrapPackage | Wrapper
   ): Result<UriPackageOrWrapper, TError> {
-    const uriPackageOrWrapperUnion = uriPackageOrWrapper as UriPackageOrWrapper;
-
-    if (
-      uriPackageOrWrapperUnion.type &&
-      (uriPackageOrWrapperUnion.type === "uri" ||
-        uriPackageOrWrapperUnion.type === "package" ||
-        uriPackageOrWrapperUnion.type === "wrapper")
-    ) {
-      return ResultOk(uriPackageOrWrapperUnion);
-    }
-
-    const uriPackageOrWrapperType = uriPackageOrWrapper as
-      | Uri
-      | IWrapPackage
-      | Wrapper;
-
-    if ((uriPackageOrWrapperType as Uri).path) {
+    if (!packageOrWrapper) {
       return ResultOk({
         type: "uri",
-        uri: uriPackageOrWrapperType as Uri,
+        uri,
       } as UriPackageOrWrapper);
     }
 
-    const wrapPackage = uriPackageOrWrapperType as Partial<IWrapPackage>;
+    const wrapPackage = packageOrWrapper as Partial<IWrapPackage>;
 
     if (wrapPackage.createWrapper) {
       return ResultOk({
         type: "package",
+        uri,
         package: wrapPackage as IWrapPackage,
       } as UriPackageOrWrapper);
     }
 
-    const wrapper = uriPackageOrWrapperType as Partial<Wrapper>;
+    const wrapper = packageOrWrapper as Partial<Wrapper>;
 
     if (wrapper.invoke) {
       return ResultOk({
         type: "wrapper",
+        uri,
         wrapper: wrapper as Wrapper,
       } as UriPackageOrWrapper);
     }
