@@ -1,0 +1,4 @@
+convert_only=True
+first_line=False
+indent=4
+init2class=True
