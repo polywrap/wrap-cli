@@ -36,9 +36,9 @@ import {
 const pathStr = intlMsg.commands_manifest_options_m_path();
 
 const defaultProjectManifestStr = defaultProjectManifestFiles.join(" | ");
-const defaultBuildManifestStr = defaultBuildManifest.join(" | ");
-const defaultDeployManifestStr = defaultDeployManifest.join(" | ");
-const defaultMetaManifestStr = defaultMetaManifest.join(" | ");
+// const defaultBuildManifestStr = defaultBuildManifest.join(" | ");
+// const defaultDeployManifestStr = defaultDeployManifest.join(" | ");
+// const defaultMetaManifestStr = defaultMetaManifest.join(" | ");
 
 const manifestFileTypes = [
   "project",
@@ -48,25 +48,6 @@ const manifestFileTypes = [
   "meta",
   // "test",
 ];
-
-type ManifestTypeCommands = {
-  parseManifestFile: (
-    manifestFile: string | undefined,
-    defaults: string[]
-  ) => string;
-  migrate: (manifest: string) => string;
-};
-
-const manifestCommandFnsPerType: Record<string, ManifestTypeCommands> = {
-  project: {
-    migrate: migrateProjectManifest,
-    parseManifestFile: parseManifestFileOption
-  },
-  build: {
-    migrate: migrateBuildExtensionManifest,
-    parseManifestFile: parseManifestFileOption
-  },
-};
 
 type ManifestSchemaCommandOptions = {
   raw: boolean;
@@ -126,10 +107,6 @@ export const manifest: Command = {
       .action(async (type, options) => {
         await runMigrateCommand(type, {
           ...options,
-          manifestFile: parseManifestFileOption(
-            options.manifestFile,
-            defaultProjectManifestFiles
-          ),
         });
       });
   },
@@ -184,63 +161,61 @@ const runMigrateCommand = async (
   type: string,
   options: ManifestMigrateCommandOptions
 ) => {
-  const manifestString = fs.readFileSync(options.manifestFile, {
-    encoding: "utf-8",
-  });
-
-  let outputManifestString: string = "";
-
   if (type === "project") {
-    const language = getProjectManifestLanguage(manifestString);
-
-    if (!language) {
-      console.log("Unsupported project type!");
-      return;
-    }
-
-    if (isPolywrapManifestLanguage(language)) {
-      console.log(
-        `Migrating wasm/interface project manifest file to version ${latestPolywrapManifestFormat}`
-      );
-      outputManifestString = migratePolywrapProjectManifest(manifestString);
-    } else if (isAppManifestLanguage(language)) {
-      console.log(
-        `Migrating app project manifest file to version ${latestAppManifestFormat}`
-      );
-      outputManifestString = migrateAppProjectManifest(manifestString);
-    } else if (isPluginManifestLanguage(language)) {
-      console.log(
-        `Migrating plugin project manifest file to version ${latestPluginManifestFormat}`
-      );
-      outputManifestString = migratePluginProjectManifest(manifestString);
-    }
+    runMigration(
+      parseManifestFileOption(
+        options.manifestFile,
+        defaultProjectManifestFiles
+      ),
+      migrateProjectManifest
+    );
   } else if (type === "build") {
     console.log(
       `Migrating build manifest file to version ${latestBuildManifestFormat}`
     );
-    outputManifestString = migrateBuildExtensionManifest(manifestString);
+    runMigration(
+      parseManifestFileOption(options.manifestFile, defaultBuildManifest),
+      migrateBuildExtensionManifest
+    );
   } else if (type === "meta") {
     console.log(
       `Migrating meta manifest file to version ${latestMetaManifestFormat}`
     );
-    outputManifestString = migrateBuildExtensionManifest(manifestString);
+    runMigration(
+      parseManifestFileOption(options.manifestFile, defaultMetaManifest),
+      migrateMetaExtensionManifest
+    );
   } else if (type === "deploy") {
     console.log(
       `Migrating deploy manifest file to version ${latestDeployManifestFormat}`
     );
-    outputManifestString = migrateBuildExtensionManifest(manifestString);
+    runMigration(
+      parseManifestFileOption(options.manifestFile, defaultDeployManifest),
+      migrateDeployExtensionManifest
+    );
   }
+};
 
-  const oldManifestPath = preserveOldManifest(options.manifestFile);
+function runMigration(
+  manifestFile: string,
+  migrationFn: (input: string) => string
+): void {
+  const manifestString = fs.readFileSync(manifestFile, {
+    encoding: "utf-8",
+  });
+
+  const outputManifestString = migrationFn(manifestString);
+
+  const oldManifestPath = preserveOldManifest(manifestFile);
 
   console.log(`Saved previous version of manifest to ${oldManifestPath}`);
 
-  fs.writeFileSync(options.manifestFile, outputManifestString, {
+  fs.writeFileSync(manifestFile, outputManifestString, {
     encoding: "utf-8",
   });
-};
+}
 
-function migrateProjectManifest(manifestString: string) : string {
+function migrateProjectManifest(manifestString: string): string {
   const language = getProjectManifestLanguage(manifestString);
 
   if (!language) {
