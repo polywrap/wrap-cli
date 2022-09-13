@@ -67,37 +67,6 @@ const expectHistory = async (
   );
 };
 
-const expectPackageWithHistory = async (
-  receivedResult: Result<UriPackageOrWrapper, unknown>,
-  expectedUri: Uri,
-  uriHistory: IUriResolutionStep<unknown>[],
-  historyFileName: string
-): Promise<void> => {
-  if (historyFileName && uriHistory) {
-    await expectHistory(uriHistory, historyFileName);
-  }
-
-  if (!receivedResult.ok) {
-    fail("Uri resolution failed " + receivedResult.error);
-  }
-
-  const uriPackageOrWrapper = receivedResult.value;
-
-  if (uriPackageOrWrapper.type !== "package") {
-    if (uriPackageOrWrapper.type === "wrapper") {
-      fail(
-        `Uri resolution did not return a package, it returned a wrapper (${uriPackageOrWrapper.wrapper.uri.uri})`
-      );
-    } else {
-      fail(
-        `Uri resolution did not return a package, it returned a uri (${uriPackageOrWrapper.uri.uri})`
-      );
-    }
-  }
-
-  expect(uriPackageOrWrapper.package.uri).toEqual(expectedUri);
-};
-
 const expectWrapperWithHistory = async (
   receivedResult: Result<UriPackageOrWrapper, unknown>,
   expectedUri: Uri,
