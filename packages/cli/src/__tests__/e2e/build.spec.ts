@@ -29,7 +29,7 @@ Options:
 jest.setTimeout(500000);
 
 describe("e2e tests for build command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/build-cmd");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/build-cmd/assemblyscript");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
@@ -226,46 +226,15 @@ describe("e2e tests for build command", () => {
       expect(output).toContain(`Artifacts written to ${buildDir}`);
       expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
     });
-
-    it("Builds for rust", async () => {
-      const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v"],
-        cwd: getTestCaseDir(1),
-        cli: polywrapCli,
-      });
-  
-      const buildDir = `./build`;
-  
-      expect(code).toEqual(0);
-      expect(output).toContain(`Artifacts written to ${buildDir}`);
-      expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
-    });
   })
 
-  describe.only("Local strategy", () => {
+  describe("Local strategy", () => {
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
         args: ["build", "-v", "-s", "local"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
-  
-      const buildDir = `./build`;
-  
-      expect(code).toEqual(0);
-      expect(output).toContain(`Artifacts written to ${buildDir}`);
-      expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
-    });
-
-    it.only("Builds for rust", async () => {
-      const { exitCode: code, stdout: output, stderr } = await runCLI({
-        args: ["build", "-v", "-s", "local"],
-        cwd: getTestCaseDir(1),
-        cli: polywrapCli,
-      });
-
-      console.log(output);
-      console.log(stderr);
   
       const buildDir = `./build`;
   

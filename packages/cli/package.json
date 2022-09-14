@@ -29,6 +29,7 @@
     "build:intl": "ts-node ./scripts/generateIntlTypes.ts",
     "lint": "eslint --color -c ../../.eslintrc.js .",
     "test": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
+    "test:rust": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose --config ./jest.rs.config.js",
     "test:ci": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:watch": "cross-env TEST=true jest --watch --passWithNoTests --verbose"
   },

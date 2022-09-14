@@ -30,7 +30,7 @@ Options:
   -h, --help                            display help for command
 `;
 
-describe.skip("sanity tests for workflow command", () => {
+describe("sanity tests for workflow command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/run");
 
   it("Should show help text", async () => {
