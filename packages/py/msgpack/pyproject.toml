@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "msgpack-wrap"
+version = "0.1.0"
+description = "WRAP msgpack encoding"
+authors = ["Cesar <cesar@polywrap.io>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+msgpack = "^1.0.4"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
