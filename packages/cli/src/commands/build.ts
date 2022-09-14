@@ -10,7 +10,7 @@ import {
   defaultPolywrapManifest,
   isDockerInstalled,
   FileLock,
-  parseWasmManifestFileOption,
+  parseManifestFileOption,
   parseDirOption,
   parseClientConfigOption,
 } from "../lib";
@@ -28,6 +28,7 @@ type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
   clientConfig: Partial<PolywrapClientConfig>;
+  codegen: boolean; // defaults to true
   watch?: boolean;
   verbose?: boolean;
 };
@@ -54,12 +55,13 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_n()}`)
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option(`-v, --verbose`, `${intlMsg.commands_build_options_v()}`)
       .action(async (options) => {
         await run({
           ...options,
-          manifestFile: parseWasmManifestFileOption(options.manifestFile),
+          manifestFile: parseManifestFileOption(options.manifestFile),
           clientConfig: await parseClientConfigOption(options.clientConfig),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
         });
@@ -68,7 +70,14 @@ export const build: Command = {
 };
 
 async function run(options: BuildCommandOptions) {
-  const { watch, verbose, manifestFile, outputDir, clientConfig } = options;
+  const {
+    watch,
+    verbose,
+    manifestFile,
+    outputDir,
+    clientConfig,
+    codegen,
+  } = options;
 
   // Get Client
   const client = new PolywrapClient(clientConfig);
@@ -100,6 +109,7 @@ async function run(options: BuildCommandOptions) {
     project,
     outputDir,
     schemaComposer,
+    codegen,
   });
 
   const execute = async (): Promise<boolean> => {

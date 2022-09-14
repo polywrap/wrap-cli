@@ -12,12 +12,10 @@ import {
   PluginProject,
   parseClientConfigOption,
   defaultPluginManifest,
-} from "../lib";
-import { Command, Program } from "./types";
-import {
   parseDirOption,
   parseDocgenManifestFileOption,
-} from "../lib/option-parsers";
+} from "../lib";
+import { Command, Program } from "./types";
 import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
 import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
@@ -35,9 +33,11 @@ const commandToPathMap: Record<string, string> = {
 
 export type DocType = keyof typeof commandToPathMap;
 
+// A list of UNIQUE possible default filenames for the polywrap manifest
 const defaultManifest = defaultPolywrapManifest
   .concat(defaultAppManifest)
-  .concat(defaultPluginManifest);
+  .concat(defaultPluginManifest)
+  .filter((value, index, self) => self.indexOf(value) === index);
 const defaultDocgenDir = "./docs";
 const pathStr = intlMsg.commands_codegen_options_o_path();
 
@@ -45,6 +45,7 @@ type DocgenCommandOptions = {
   manifestFile: string;
   docgenDir: string;
   clientConfig: Partial<PolywrapClientConfig>;
+  imports: boolean;
 };
 
 enum Actions {
@@ -54,9 +55,7 @@ enum Actions {
 }
 
 const argumentsDescription = `
-  ${chalk.bold(
-    Actions.SCHEMA
-  )}        ${intlMsg.commands_docgen_options_schema()}
+  ${chalk.bold(Actions.SCHEMA)}      ${intlMsg.commands_docgen_options_schema()}
   ${chalk.bold(
     Actions.DOCUSAURUS
   )}    ${intlMsg.commands_docgen_options_markdown({
@@ -99,6 +98,7 @@ export const docgen: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(`-i, --imports`, `${intlMsg.commands_docgen_options_i()}`)
       .action(async (action, options) => {
         await run(action, {
           ...options,
@@ -111,7 +111,7 @@ export const docgen: Command = {
 };
 
 async function run(command: DocType, options: DocgenCommandOptions) {
-  const { manifestFile, docgenDir, clientConfig } = options;
+  const { manifestFile, docgenDir, clientConfig, imports } = options;
 
   const isAppManifest: boolean =
     (<string>manifestFile).toLowerCase().endsWith("polywrap.app.yaml") ||
@@ -132,7 +132,6 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     project = new AppProject({
       rootDir: path.dirname(manifestFile),
       appManifestPath: manifestFile,
-      client,
       quiet: true,
     });
   } else if (isPluginManifest) {
@@ -161,6 +160,7 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     customScript,
     codegenDirAbs: docgenDir,
     omitHeader: true,
+    mustacheView: { imports },
   });
 
   if (await codeGenerator.generate()) {

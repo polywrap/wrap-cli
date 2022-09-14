@@ -20,6 +20,7 @@ use crate::{
     sanitize_custom_enum_value
 };
 use crate::AnotherType;
+use crate::Else;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ArgsModuleMethod {
@@ -31,6 +32,7 @@ pub struct ArgsModuleMethod {
     pub opt_enum_array: Option<Vec<Option<CustomEnum>>>,
     pub map: Map<String, i32>,
     pub map_of_arr: Map<String, Vec<i32>>,
+    pub map_of_map: Map<String, Map<String, i32>>,
     pub map_of_obj: Map<String, AnotherType>,
     pub map_of_arr_of_obj: Map<String, Vec<AnotherType>>,
 }
@@ -55,6 +57,8 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
     let mut _map_set = false;
     let mut _map_of_arr: Map<String, Vec<i32>> = Map::<String, Vec<i32>>::new();
     let mut _map_of_arr_set = false;
+    let mut _map_of_map: Map<String, Map<String, i32>> = Map::<String, Map<String, i32>>::new();
+    let mut _map_of_map_set = false;
     let mut _map_of_obj: Map<String, AnotherType> = Map::<String, AnotherType>::new();
     let mut _map_of_obj_set = false;
     let mut _map_of_arr_of_obj: Map<String, Vec<AnotherType>> = Map::<String, Vec<AnotherType>>::new();
@@ -160,6 +164,20 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
                 _map_of_arr_set = true;
                 reader.context().pop();
             }
+            "mapOfMap" => {
+                reader.context().push(&field, "Map<String, Map<String, i32>>", "type found, reading argument");
+                _map_of_map = reader.read_ext_generic_map(|reader| {
+                    reader.read_string()
+                }, |reader| {
+                    reader.read_ext_generic_map(|reader| {
+                        reader.read_string()
+                    }, |reader| {
+                        reader.read_i32()
+                    })
+                })?;
+                _map_of_map_set = true;
+                reader.context().pop();
+            }
             "mapOfObj" => {
                 reader.context().push(&field, "Map<String, AnotherType>", "type found, reading argument");
                 _map_of_obj = reader.read_ext_generic_map(|reader| {
@@ -202,6 +220,9 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
     if !_map_of_arr_set {
         return Err(DecodeError::MissingField("mapOfArr: Map<String, [Int]>.".to_string()));
     }
+    if !_map_of_map_set {
+        return Err(DecodeError::MissingField("mapOfMap: Map<String, Map<String, Int>>.".to_string()));
+    }
     if !_map_of_obj_set {
         return Err(DecodeError::MissingField("mapOfObj: Map<String, AnotherType>.".to_string()));
     }
@@ -218,6 +239,7 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
         opt_enum_array: _opt_enum_array,
         map: _map,
         map_of_arr: _map_of_arr,
+        map_of_map: _map_of_map,
         map_of_obj: _map_of_obj,
         map_of_arr_of_obj: _map_of_arr_of_obj,
     })
@@ -442,6 +464,60 @@ pub fn write_optional_env_method_result<W: Write>(result: &Option<AnotherType>, 
     } else {
         writer.write_nil()?;
     }
+    writer.context().pop();
+    Ok(())
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct ArgsIf {
+    pub _if: Else,
+}
+
+pub fn deserialize_if_args(args: &[u8]) -> Result<ArgsIf, DecodeError> {
+    let mut context = Context::new();
+    context.description = "Deserializing module-type: if".to_string();
+
+    let mut reader = ReadDecoder::new(args, context);
+    let mut num_of_fields = reader.read_map_length()?;
+
+    let mut _if: Else = Else::new();
+    let mut _if_set = false;
+
+    while num_of_fields > 0 {
+        num_of_fields -= 1;
+        let field = reader.read_string()?;
+
+        match field.as_str() {
+            "if" => {
+                reader.context().push(&field, "Else", "type found, reading argument");
+                let object = Else::read(&mut reader)?;
+                _if = object;
+                _if_set = true;
+                reader.context().pop();
+            }
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
+        }
+    }
+    if !_if_set {
+        return Err(DecodeError::MissingField("if: else.".to_string()));
+    }
+
+    Ok(ArgsIf {
+        _if: _if,
+    })
+}
+
+pub fn serialize_if_result(result: &Else) -> Result<Vec<u8>, EncodeError> {
+    let mut encoder_context = Context::new();
+    encoder_context.description = "Serializing (encoding) module-type: if".to_string();
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_if_result(result, &mut encoder)?;
+    Ok(encoder.get_buffer())
+}
+
+pub fn write_if_result<W: Write>(result: &Else, writer: &mut W) -> Result<(), EncodeError> {
+    writer.context().push("if", "Else", "writing result");
+    Else::write(&result, writer)?;
     writer.context().pop();
     Ok(())
 }

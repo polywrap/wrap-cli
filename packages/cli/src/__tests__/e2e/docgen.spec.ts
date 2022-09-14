@@ -14,7 +14,7 @@ Generate wrapper documentation
 
 Arguments:
   action                             
-    schema        Generate GraphQL schema
+    schema      Generate GraphQL schema
     docusaurus    Generate Docusaurus markdown
     jsdoc         Generate JSDoc markdown
    (choices: "schema", "docusaurus", "jsdoc")
@@ -29,6 +29,7 @@ Options:
                                      (default: ./docs)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
+  -i, --imports                      Also generate docs for dependencies
   -h, --help                         display help for command
 `;
 

@@ -9,7 +9,7 @@ import {
   MetaManifestFormats
 } from ".";
 
-import MetaManifestSchema_0_1 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.meta/0.1.json";
+import MetaManifestSchema_0_1_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.meta/0.1.0.json";
 
 import {
   Schema,
@@ -24,8 +24,8 @@ type MetaManifestSchemas = {
 
 const schemas: MetaManifestSchemas = {
   // NOTE: Patch fix for backwards compatability
-  "0.1.0": MetaManifestSchema_0_1,
-  "0.1": MetaManifestSchema_0_1,
+  "0.1": MetaManifestSchema_0_1_0,
+  "0.1.0": MetaManifestSchema_0_1_0,
 };
 
 const validator = new Validator();

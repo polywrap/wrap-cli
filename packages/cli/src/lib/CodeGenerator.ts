@@ -81,15 +81,8 @@ export class CodeGenerator {
         );
       }
 
-      // Get the fully composed schema
-      const composed = await schemaComposer.getComposedSchemas();
-
-      if (!composed) {
-        throw Error(intlMsg.lib_codeGenerator_noComposedSchema());
-      }
-
-      const abi = composed.abi;
-      this._schema = composed.schema;
+      // Get the fully composed abi
+      const abi = await schemaComposer.getComposedAbis();
 
       if (!abi) {
         throw Error(intlMsg.lib_codeGenerator_abiMissing());
@@ -119,9 +112,9 @@ export class CodeGenerator {
         const binding = await generateBinding({
           projectName: await project.getName(),
           abi,
-          schema: this._schema || "",
           outputDirAbs: codegenDirAbs,
           bindLanguage,
+          config: this._config.mustacheView,
         });
 
         resetDir(codegenDirAbs);
@@ -133,7 +126,7 @@ export class CodeGenerator {
         );
       } else {
         const binding = await project.generateSchemaBindings(
-          composed,
+          abi,
           path.relative(project.getManifestDir(), codegenDirAbs)
         );
 

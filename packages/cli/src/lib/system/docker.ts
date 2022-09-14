@@ -14,6 +14,14 @@ export function isDockerInstalled(): boolean {
   return !!system.which("docker");
 }
 
+export async function ensureDockerDaemonRunning(): Promise<void> {
+  try {
+    await system.run("docker stats --no-stream");
+  } catch (e) {
+    throw new Error(intlMsg.lib_helpers_docker_couldNotConnect());
+  }
+}
+
 export function getDockerFileLock(): FileLock {
   return new FileLock(__dirname + "/DOCKER_LOCK", print.error);
 }
@@ -179,8 +187,7 @@ export async function createBuildImage(
   };
 
   if (quiet) {
-    return await run();
-  } else {
+    // Show spinner with helpful messages
     const args = {
       image: imageName,
       dockerfile: displayPath(dockerfile),
@@ -194,6 +201,9 @@ export async function createBuildImage(
         return await run();
       }
     )) as string;
+  } else {
+    // Verbose output will be emitted within run()
+    return await run();
   }
 }
 

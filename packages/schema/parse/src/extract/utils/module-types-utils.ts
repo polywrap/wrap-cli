@@ -1,13 +1,4 @@
-import {
-  PropertyDefinition,
-  ImportedModuleDefinition,
-  MethodDefinition,
-  createPropertyDefinition,
-  ModuleDefinition,
-  createArrayDefinition,
-  InterfaceDefinition,
-  MapDefinition,
-} from "../../abi";
+import { createPropertyDefinition, createArrayDefinition } from "../..";
 import { setPropertyType } from "./property-utils";
 import { extractAnnotateDirective } from "./object-types-utils";
 
@@ -17,6 +8,14 @@ import {
   InputValueDefinitionNode,
   NamedTypeNode,
 } from "graphql";
+import {
+  ImportedModuleDefinition,
+  InterfaceDefinition,
+  MapDefinition,
+  MethodDefinition,
+  ModuleDefinition,
+  PropertyDefinition,
+} from "@polywrap/wrap-manifest-types-js";
 
 export interface EnvDirDefinition {
   required: boolean;
@@ -54,7 +53,7 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
       required: state.nonNullType,
     });
 
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   } else if (method) {
     // Return value
     if (!state.currentReturn) {
@@ -72,12 +71,14 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
       );
     }
 
-    setPropertyType(state.currentReturn, method.name, {
-      type: node.name.value,
-      required: state.nonNullType,
-    });
+    if (state.currentReturn) {
+      setPropertyType(state.currentReturn, method.name, {
+        type: node.name.value,
+        required: state.nonNullType,
+      });
+    }
 
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   }
 }
 
@@ -93,7 +94,7 @@ export function extractListType(state: State): void {
       required: state.nonNullType,
     });
     state.currentArgument = argument.array;
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   } else if (method) {
     // Return value
     if (!method.return) {
@@ -112,7 +113,7 @@ export function extractListType(state: State): void {
       required: state.nonNullType,
     });
     state.currentReturn = state.currentReturn.array;
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   }
 }
 
@@ -134,9 +135,12 @@ export function extractInputValueDefinition(
     name: name,
     map: def ? (def as MapDefinition) : undefined,
     comment: node.description?.value,
-    required: def && def.required ? true : false,
+    required: def && def.required ? true : undefined,
   });
 
+  if (!method.arguments) {
+    method.arguments = [];
+  }
   method.arguments.push(argument);
   state.currentArgument = argument;
 }

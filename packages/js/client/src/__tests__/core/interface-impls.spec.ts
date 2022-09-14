@@ -1,11 +1,6 @@
-import {
-  coreInterfaceUris,
-  getDefaultClientConfig,
-  Uri,
-  PluginModule,
-  PolywrapClient,
-} from "../..";
-import { getClient } from "../utils/getClient";
+import { coreInterfaceUris, Uri, PluginModule, PolywrapClient } from "../..";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { getClient, getDefaultClientConfig } from "../utils/getClient";
 
 jest.setTimeout(200000);
 
@@ -28,17 +23,16 @@ describe("interface-impls", () => {
 
     const defaultClientConfig = getDefaultClientConfig();
 
-    expect(interfaces).toEqual(
-      [
-        {
-          interface: new Uri(interfaceUri),
-          implementations: [
-            new Uri(implementation1Uri),
-            new Uri(implementation2Uri),
-          ],
-        },
-      ].concat(defaultClientConfig.interfaces ?? [])
-    );
+    expect(interfaces).toEqual([
+      ...(defaultClientConfig.interfaces ?? []),
+      {
+        interface: new Uri(interfaceUri),
+        implementations: [
+          new Uri(implementation1Uri),
+          new Uri(implementation2Uri),
+        ],
+      },
+    ]);
 
     const implementations = client.getImplementations(interfaceUri);
 
@@ -75,10 +69,7 @@ describe("interface-impls", () => {
           uri: implementation4Uri,
           plugin: {
             factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              schema: "",
-              implements: [],
-            },
+            manifest: {} as WrapManifest
           },
         },
       ],
@@ -137,20 +128,14 @@ describe("interface-impls", () => {
             uri: interface1Uri,
             plugin: {
               factory: () => ({} as PluginModule<{}>),
-              manifest: {
-                schema: "",
-                implements: [],
-              },
+              manifest: {} as WrapManifest
             },
           },
           {
             uri: interface2Uri,
             plugin: {
               factory: () => ({} as PluginModule<{}>),
-              manifest: {
-                schema: "",
-                implements: [],
-              },
+              manifest: {} as WrapManifest,
             },
           },
         ],
@@ -189,10 +174,7 @@ describe("interface-impls", () => {
             uri: interfaceUri,
             plugin: {
               factory: () => ({} as PluginModule<{}>),
-              manifest: {
-                schema: "",
-                implements: [],
-              },
+              manifest: {} as WrapManifest,
             },
           },
         ],
@@ -267,11 +249,11 @@ describe("interface-impls", () => {
     const implementationUris = interfaces[0].implementations;
 
     expect(implementationUris).toEqual([
-      new Uri(implementationUri1),
-      new Uri(implementationUri2),
       ...getDefaultClientConfig().interfaces.find(
         (x) => x.interface.uri === interfaceUri
       )!.implementations,
+      new Uri(implementationUri1),
+      new Uri(implementationUri2),
     ]);
   });
 
@@ -287,10 +269,7 @@ describe("interface-impls", () => {
           uri: implementation1Uri,
           plugin: {
             factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              schema: "",
-              implements: [new Uri(interfaceUri)],
-            },
+            manifest: {} as WrapManifest,
           },
         },
       ],
@@ -322,10 +301,7 @@ describe("interface-impls", () => {
           uri: implementation1Uri,
           plugin: {
             factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              schema: "",
-              implements: [],
-            },
+            manifest: {} as WrapManifest,
           },
         },
       ],

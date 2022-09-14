@@ -23,13 +23,18 @@ export function migrateMetaManifest(
   manifest: AnyMetaManifest,
   to: MetaManifestFormats
 ): MetaManifest {
-  const from = manifest.format as MetaManifestFormats;
+  let from = manifest.format as MetaManifestFormats;
+
+  // HACK: Patch fix for backwards compatability
+  if(from === "0.1" && ("0.1.0" in migrators)) {
+    from = "0.1.0" as MetaManifestFormats;
+  }
 
   if (from === latestMetaManifestFormat) {
     return manifest as MetaManifest;
   }
 
-  if (!(from in MetaManifestFormats)) {
+  if (!(Object.values(MetaManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized MetaManifestFormat "${manifest.format}"`);
   }
 

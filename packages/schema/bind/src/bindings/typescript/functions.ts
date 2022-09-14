@@ -1,4 +1,17 @@
 import { MustacheFn } from "../types";
+import { isKeyword } from "./types";
+
+// check if any of the keywords match the property name;
+// if there's a match, insert `_` at the beginning of the property name.
+export const detectKeyword: MustacheFn = () => {
+  return (value: string, render: (template: string) => string): string => {
+    const type = render(value);
+    if (isKeyword(type)) {
+      return "_" + type;
+    }
+    return type;
+  };
+};
 
 const firstUpper = (str: string) =>
   str ? str[0].toUpperCase() + str.slice(1) : "";
@@ -70,10 +83,10 @@ const _toTypescript = (
       break;
     default:
       if (type.includes("Enum_")) {
-        type = `Types.${type.replace("Enum_", "")}`;
-      } else {
-        type = `Types.${type}`;
+        type = type.replace("Enum_", "");
       }
+      type = detectKeyword()(type, (str) => str);
+      type = `Types.${type}`;
   }
 
   return undefinable
@@ -96,13 +109,17 @@ const toTypescriptMap = (type: string, optional: boolean): string => {
   const openAngleBracketIdx = type.indexOf("<");
   const closeAngleBracketIdx = type.lastIndexOf(">");
 
-  const [keyType, valtype] = type
-    .substring(openAngleBracketIdx + 1, closeAngleBracketIdx)
-    .split(",")
-    .map((x) => x.trim());
+  const keyValTypes = type.substring(
+    openAngleBracketIdx + 1,
+    closeAngleBracketIdx
+  );
+
+  const firstCommaIdx = keyValTypes.indexOf(",");
+  const keyType = keyValTypes.substring(0, firstCommaIdx).trim();
+  const valType = keyValTypes.substring(firstCommaIdx + 1).trim();
 
   const tsKeyType = _toTypescript(keyType, (str) => str);
-  const tsValType = _toTypescript(valtype, (str) => str, true);
+  const tsValType = _toTypescript(valType, (str) => str, true);
 
   return applyOptional(`Map<${tsKeyType}, ${tsValType}>`, optional);
 };

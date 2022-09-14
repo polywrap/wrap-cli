@@ -1,6 +1,7 @@
 ---
-id: objects
-title: Object Types
+id: Ethereum_objects
+title: Ethereum Object Types
+sidebar_position: 2
 ---
 
 

@@ -9,7 +9,7 @@ import path from "path";
 
 const HELP = `Usage: polywrap build|b [options]
 
-Builds a wrapper
+Build Polywrap Projects (type: interface, wasm)
 
 Options:
   -m, --manifest-file <path>         Path to the Polywrap Build manifest file
@@ -18,6 +18,7 @@ Options:
                                      (default: ./build)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
+  -n, --no-codegen                   Skip code generation
   -w, --watch                        Automatically rebuild when changes are
                                      made (default: false)
   -v, --verbose                      Verbose output (default: false)

@@ -1,5 +1,0 @@
-format: 0.1.0
-language: plugin/typescript
-name: GraphNode
-module: ./src/index.ts
-schema: ./src/schema.graphql

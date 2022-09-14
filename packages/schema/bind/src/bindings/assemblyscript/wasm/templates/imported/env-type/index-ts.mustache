@@ -14,27 +14,27 @@ import {
 import * as Types from "../..";
 
 @serializable
-export class {{type}} {
+export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
 
   public static uri: string = "{{uri}}";
 
   {{#properties}}
-  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{#detectKeyword}}{{name}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/properties}}
 
-  static toBuffer(type: {{type}}): ArrayBuffer {
+  static toBuffer(type: {{#detectKeyword}}{{type}}{{/detectKeyword}}): ArrayBuffer {
     return serialize{{type}}(type);
   }
 
-  static fromBuffer(buffer: ArrayBuffer): {{type}} {
+  static fromBuffer(buffer: ArrayBuffer): {{#detectKeyword}}{{type}}{{/detectKeyword}} {
     return deserialize{{type}}(buffer);
   }
 
-  static write(writer: Write, type: {{type}}): void {
+  static write(writer: Write, type: {{#detectKeyword}}{{type}}{{/detectKeyword}}): void {
     write{{type}}(writer, type);
   }
 
-  static read(reader: Read): {{type}} {
+  static read(reader: Read): {{#detectKeyword}}{{type}}{{/detectKeyword}} {
     return read{{type}}(reader);
   }
   {{> json_methods}}

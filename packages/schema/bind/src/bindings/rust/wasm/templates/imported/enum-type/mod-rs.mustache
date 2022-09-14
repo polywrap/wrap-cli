@@ -3,53 +3,53 @@ use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
-pub enum {{#toUpper}}{{type}}{{/toUpper}} {
+pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     {{#constants}}
-    {{.}},
+    {{#detectKeyword}}{{.}}{{/detectKeyword}},
     {{/constants}}
     _MAX_
 }
 
 pub fn sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value: i32) -> Result<(), EnumTypeError> {
-    if value < 0 && value >= {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ as i32 {
-        return Err(EnumTypeError::EnumProcessingError(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", value.to_string())));
+    if value < 0 && value >= {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::_MAX_ as i32 {
+        return Err(EnumTypeError::EnumProcessingError(format!("Invalid value for enum '{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}': {}", value.to_string())));
     }
     Ok(())
 }
 
-pub fn get_{{#toLower}}{{type}}{{/toLower}}_value(key: &str) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, EnumTypeError> {
+pub fn get_{{#toLower}}{{type}}{{/toLower}}_value(key: &str) -> Result<{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, EnumTypeError> {
     match key {
         {{#constants}}
-        "{{.}}" => Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}}),
+        "{{#detectKeyword}}{{.}}{{/detectKeyword}}" => Ok({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::{{#detectKeyword}}{{.}}{{/detectKeyword}}),
         {{/constants}}
-        "_MAX_" => Ok({{#toUpper}}{{type}}{{/toUpper}}::_MAX_),
-        err => Err(EnumTypeError::EnumProcessingError(format!("Invalid key for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", err)))
+        "_MAX_" => Ok({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::_MAX_),
+        err => Err(EnumTypeError::EnumProcessingError(format!("Invalid key for enum '{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}': {}", err)))
     }
 }
 
-pub fn get_{{#toLower}}{{type}}{{/toLower}}_key(value: {{#toUpper}}{{type}}{{/toUpper}}) -> Result<String, EnumTypeError> {
+pub fn get_{{#toLower}}{{type}}{{/toLower}}_key(value: {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}) -> Result<String, EnumTypeError> {
     if sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value as i32).is_ok() {
         match value {
             {{#constants}}
-            {{#toUpper}}{{type}}{{/toUpper}}::{{.}} => Ok("{{.}}".to_string()),
+            {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::{{#detectKeyword}}{{.}}{{/detectKeyword}} => Ok("{{#detectKeyword}}{{.}}{{/detectKeyword}}".to_string()),
             {{/constants}}
-            {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ => Ok("_MAX_".to_string()),
+            {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::_MAX_ => Ok("_MAX_".to_string()),
         }
     } else {
-        Err(EnumTypeError::EnumProcessingError(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", (value  as i32).to_string())))
+        Err(EnumTypeError::EnumProcessingError(format!("Invalid value for enum '{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}': {}", (value  as i32).to_string())))
     }
 }
 
-impl TryFrom<i32> for {{#toUpper}}{{type}}{{/toUpper}} {
+impl TryFrom<i32> for {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     type Error = EnumTypeError;
 
-    fn try_from(v: i32) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, Self::Error> {
+    fn try_from(v: i32) -> Result<{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, Self::Error> {
         match v {
             {{#constants}}
-            x if x == {{#toUpper}}{{type}}{{/toUpper}}::{{.}} as i32 => Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}}),
+            x if x == {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::{{#detectKeyword}}{{.}}{{/detectKeyword}} as i32 => Ok({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::{{#detectKeyword}}{{.}}{{/detectKeyword}}),
             {{/constants}}
-            x if x == {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ as i32 => Ok({{#toUpper}}{{type}}{{/toUpper}}::_MAX_),
-            _ => Err(EnumTypeError::ParseEnumError(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", (v  as i32).to_string()))),
+            x if x == {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::_MAX_ as i32 => Ok({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::_MAX_),
+            _ => Err(EnumTypeError::ParseEnumError(format!("Invalid value for enum '{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}': {}", (v  as i32).to_string()))),
         }
     }
 }

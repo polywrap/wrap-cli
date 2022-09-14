@@ -1,9 +1,5 @@
 import { isKeyword } from "./types";
-
-type MustacheFunction = () => (
-  value: string,
-  render: (template: string) => string
-) => string;
+import { MustacheFn } from "../types";
 
 function replaceAt(str: string, index: number, replacement: string): string {
   return (
@@ -19,7 +15,7 @@ function removeAt(str: string, index: number): string {
   return str.substr(0, index) + str.substr(index + 1);
 }
 
-export const toLower: MustacheFunction = () => {
+export const toLower: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
 
@@ -42,7 +38,7 @@ export const toLower: MustacheFunction = () => {
   };
 };
 
-export const toUpper: MustacheFunction = () => {
+export const toUpper: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
 
@@ -67,7 +63,7 @@ export const toUpper: MustacheFunction = () => {
   };
 };
 
-export const noBox: MustacheFunction = () => {
+export const noBox: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     const type = render(value);
     const extract = /(.*)Box<([a-zA-Z0-9]*)>(.*)/gm;
@@ -82,7 +78,7 @@ export const noBox: MustacheFunction = () => {
   };
 };
 
-export const toMsgPack: MustacheFunction = () => {
+export const toMsgPack: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
 
@@ -138,7 +134,7 @@ export const toMsgPack: MustacheFunction = () => {
   };
 };
 
-export const toWasmInit: MustacheFunction = () => {
+export const toWasmInit: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
     let optional = false;
@@ -158,13 +154,30 @@ export const toWasmInit: MustacheFunction = () => {
     }
 
     if (type.startsWith("Map<")) {
-      const openBracketIdx = type.indexOf("<");
-      const closeBracketIdx = type.lastIndexOf(">");
-      const [key, value] = type
-        .substring(openBracketIdx + 1, closeBracketIdx)
-        .split(",")
-        .map((x) => toWasm()(x.trim(), render));
-      return `Map::<${key}, ${value}>::new()`;
+      const firstOpenBracketIdx = type.indexOf("<");
+      const lastCloseBracketIdx = type.lastIndexOf(">");
+
+      if (firstOpenBracketIdx === -1 || lastCloseBracketIdx === -1) {
+        throw new Error(`Invalid Map: ${type}`);
+      }
+
+      const keyValTypes = type.substring(
+        firstOpenBracketIdx + 1,
+        lastCloseBracketIdx
+      );
+
+      const firstCommaIdx = keyValTypes.indexOf(",");
+      if (firstCommaIdx === -1) {
+        throw new Error(`Invalid Map: ${type}`);
+      }
+
+      const keyType = keyValTypes.substring(0, firstCommaIdx).trim();
+      const valType = keyValTypes.substring(firstCommaIdx + 1).trim();
+
+      const wasmKeyType = toWasm()(keyType, (str) => str);
+      const wasmValType = toWasm()(valType, (str) => str);
+
+      return optionalModifier(`Map::<${wasmKeyType}, ${wasmValType}>::new()`);
     }
 
     switch (type) {
@@ -201,10 +214,9 @@ export const toWasmInit: MustacheFunction = () => {
   };
 };
 
-export const toWasm: MustacheFunction = () => {
+export const toWasm: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
-    let objectType = false;
 
     let optional = false;
     if (type[type.length - 1] === "!") {
@@ -270,26 +282,23 @@ export const toWasm: MustacheFunction = () => {
         break;
       default:
         if (type.includes("Enum_")) {
-          type = toUpper()(type.replace("Enum_", ""), (str) => str);
-        } else {
-          objectType = true;
-          type = toUpper()(type, (str) => str);
+          type = type.replace("Enum_", "");
         }
+        type = toUpper()(type, (str) => str);
+        type = detectKeyword()(type, (str) => str);
     }
 
-    return objectType
-      ? applyOptional(type, optional)
-      : applyOptional(type, optional);
+    return applyOptional(type, optional);
   };
 };
 
-export const detectKeyword: MustacheFunction = () => {
-  return (value: string, render: (template: string) => string) => {
-    let type = render(value);
-    // check if any of the keywords match the property name;
-    // if there's a match, insert `m_` at the beginning of the property name.
+// check if any of the keywords match the property name;
+// if there's a match, insert `_` at the beginning of the property name.
+export const detectKeyword: MustacheFn = () => {
+  return (value: string, render: (template: string) => string): string => {
+    const type = render(value);
     if (isKeyword(type)) {
-      type = "m_" + type;
+      return "_" + type;
     }
     return type;
   };
@@ -310,23 +319,27 @@ const toWasmMap = (type: string, optional: boolean): string => {
   const firstOpenBracketIdx = type.indexOf("<");
   const lastCloseBracketIdx = type.lastIndexOf(">");
 
-  if (!(firstOpenBracketIdx !== -1 && lastCloseBracketIdx !== -1)) {
+  if (firstOpenBracketIdx === -1 || lastCloseBracketIdx === -1) {
     throw new Error(`Invalid Map: ${type}`);
   }
 
-  const keyValTypes = type
-    .substring(firstOpenBracketIdx + 1, lastCloseBracketIdx)
-    .split(",")
-    .map((x) => x.trim());
+  const keyValTypes = type.substring(
+    firstOpenBracketIdx + 1,
+    lastCloseBracketIdx
+  );
 
-  if (keyValTypes.length !== 2 || !keyValTypes[0] || !keyValTypes[1]) {
+  const firstCommaIdx = keyValTypes.indexOf(",");
+  if (firstCommaIdx === -1) {
     throw new Error(`Invalid Map: ${type}`);
   }
 
-  const keyType = toWasm()(keyValTypes[0], (str) => str);
-  const valType = toWasm()(keyValTypes[1], (str) => str);
+  const keyType = keyValTypes.substring(0, firstCommaIdx).trim();
+  const valType = keyValTypes.substring(firstCommaIdx + 1).trim();
 
-  return applyOptional(`Map<${keyType}, ${valType}>`, optional);
+  const wasmKeyType = toWasm()(keyType, (str) => str);
+  const wasmValType = toWasm()(valType, (str) => str);
+
+  return applyOptional(`Map<${wasmKeyType}, ${wasmValType}>`, optional);
 };
 
 const applyOptional = (type: string, optional: boolean): string => {

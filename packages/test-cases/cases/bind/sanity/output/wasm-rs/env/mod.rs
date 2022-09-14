@@ -29,7 +29,7 @@ impl Env {
         Env {
             prop: String::new(),
             opt_prop: None,
-            opt_map: Map::<String, Option<i32>>::new(),
+            opt_map: None,
         }
     }
 
