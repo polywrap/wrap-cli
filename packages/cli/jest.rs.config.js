@@ -1,5 +1,5 @@
 module.exports = {
   ...require("./jest.config"),
-  testMatch: ["**/*-rs.spec.ts"],
+  testMatch: ["**/build-rs.spec.ts"],
   modulePathIgnorePatterns: [],
 };
