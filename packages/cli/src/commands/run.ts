@@ -84,7 +84,7 @@ const _run = async (options: WorkflowCommandOptions) => {
   const client = new PolywrapClient(clientConfig);
 
   const manifestPath = path.resolve(manifest);
-  const workflow = loadWorkflowManifest(manifestPath);
+  const workflow = await loadWorkflowManifest(manifestPath, quiet);
   const validationScript = workflow.validation
     ? loadValidationScript(manifestPath, workflow.validation)
     : undefined;

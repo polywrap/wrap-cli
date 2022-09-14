@@ -32,16 +32,17 @@ export function validateOutput(
 
   fs.writeFileSync(jsonOutput, JSON.stringify(result, null, 2));
 
-  try {
-    runCommandSync(
-      `cue vet -d ${selector} ${validateScriptPath} ${jsonOutput}`,
-      true
-    );
+  const { stderr } = runCommandSync(
+    `cue vet -d ${selector} ${validateScriptPath} ${jsonOutput}`,
+    true
+  );
+  if (!stderr) {
     if (!quiet) {
       console.log("Validation: SUCCEED");
     }
-  } catch (e) {
-    const msgLines = e.stderr.split(/\r?\n/);
+  } else {
+    // TODO: the error returned by runCommandSync is NOT the cue validation error output
+    const msgLines = stderr.message.split(/\r?\n/);
     msgLines[1] = `${validateScriptPath}:${msgLines[1]
       .split(":")
       .slice(1)
