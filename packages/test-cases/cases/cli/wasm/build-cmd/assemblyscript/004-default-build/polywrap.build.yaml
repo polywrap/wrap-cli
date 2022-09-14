@@ -6,5 +6,5 @@ config:
     - ./package.json
 linked_packages:
   - name: "@polywrap/wasm-as"
-    path: ../../../../../../wasm/as
+    path: ../../../../../../../wasm/as
     filter: /\.(test|spec)\.(js|ts)$/gm

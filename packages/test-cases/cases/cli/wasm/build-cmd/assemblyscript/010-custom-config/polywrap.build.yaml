@@ -3,4 +3,4 @@ config:
   node_version: "16.13.0"
 linked_packages:
   - name: "@polywrap/wasm-as"
-    path: ../../../../../../wasm/as
+    path: ../../../../../../../wasm/as
