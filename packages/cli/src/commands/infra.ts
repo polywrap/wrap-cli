@@ -1,4 +1,4 @@
-import { intlMsg, Infra, loadInfraManifest } from "../lib";
+import { intlMsg, Infra, loadInfraManifest, defaultInfraManifest } from "../lib";
 import { Command, Program } from "./types";
 
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -62,7 +62,7 @@ export const infra: Command = {
       .option(
         `--manifest  <${manifestNameStr}>`,
         intlMsg.commands_infra_manifestPathDescription(),
-        "polywrap.infra.yaml"
+        defaultInfraManifest[0]
       )
       .option(
         `-m, --modules <${moduleNameStr},${moduleNameStr}>`,

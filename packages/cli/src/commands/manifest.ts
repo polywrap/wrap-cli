@@ -1,7 +1,6 @@
 import { Command, Program, Argument } from "./types";
 import fs from "fs";
 import path from "path";
-import YAML from "js-yaml";
 import {
   AppManifestSchemaFiles,
   BuildManifestSchemaFiles,
@@ -30,6 +29,8 @@ import {
   isPluginManifestLanguage,
   isPolywrapManifestLanguage,
   parseManifestFileOption,
+  defaultInfraManifest,
+  maybeGetManifestFormatVersion,
 } from "../lib";
 import { defaultProjectManifestFiles } from "../lib/option-defaults";
 import { dereference } from "json-schema-ref-parser";
@@ -58,11 +59,12 @@ const manifestFileTypes = [
   "infra",
   "meta",
   "workflow",
-];
+] as const;
+type ManifestType = typeof manifestFileTypes[number];
 
 type ManifestSchemaCommandOptions = {
   raw: boolean;
-  manifestFile: string;
+  manifestFile: ManifestType;
 };
 
 type ManifestMigrateCommandOptions = {
@@ -122,188 +124,242 @@ export const manifest: Command = {
 };
 
 export const runSchemaCommand = async (
-  type: string,
+  type: ManifestType,
   options: ManifestSchemaCommandOptions
 ) => {
   let manifestfile = "";
 
-  if (type === "project") {
-    manifestfile = parseManifestFileOption(
-      options.manifestFile,
-      defaultProjectManifestFiles
-    );
-  } else if (type === "build") {
-    manifestfile = parseManifestFileOption(
-      options.manifestFile,
-      defaultBuildManifest
-    );
-  } else if (type === "meta") {
-    manifestfile = parseManifestFileOption(
-      options.manifestFile,
-      defaultMetaManifest
-    );
-  } else if (type === "deploy") {
-    manifestfile = parseManifestFileOption(
-      options.manifestFile,
-      defaultDeployManifest
-    );
-  } else if (type === "infra") {
-    manifestfile = parseManifestFileOption(options.manifestFile, []);
-  } else if (type === "workflow") {
-    manifestfile = parseManifestFileOption(
-      options.manifestFile,
-      defaultWorkflowManifest
-    );
+  switch (type) {
+    case "project":
+      manifestfile = parseManifestFileOption(
+        options.manifestFile,
+        defaultProjectManifestFiles
+      );
+      break;
+
+    case "build":
+      manifestfile = parseManifestFileOption(
+        options.manifestFile,
+        defaultBuildManifest
+      );
+      break;
+
+    case "meta":
+      manifestfile = parseManifestFileOption(
+        options.manifestFile,
+        defaultMetaManifest
+      );
+      break;
+
+    case "deploy":
+      manifestfile = parseManifestFileOption(
+        options.manifestFile,
+        defaultDeployManifest
+      );
+      break;
+
+    case "infra":
+      manifestfile = parseManifestFileOption(
+        options.manifestFile,
+        defaultInfraManifest
+      );
+      break;
+
+    case "workflow":
+      manifestfile = parseManifestFileOption(
+        options.manifestFile,
+        defaultWorkflowManifest
+      );
+      break;
   }
 
   const manifestString = fs.readFileSync(manifestfile, {
     encoding: "utf-8",
   });
 
-  const manifestVersion = getManifestFormatVersion(manifestString);
-  
+  const manifestVersion = maybeGetManifestFormatVersion(manifestString);
+
+  if (!manifestVersion) {
+    throw new Error(
+      `Could not detect manifest format! Please make sure your manifest has a "format" field.`
+    );
+  }
+
   const schemasPackageDir = path.dirname(
     require.resolve("@polywrap/polywrap-manifest-schemas")
   );
 
-  if (type === "project") {
-    const language = getProjectManifestLanguage(manifestString);
+  let manifestSchemaFile = "";
 
-    if (!language) {
-      throw new Error("Unsupported project type!");
-    }
+  switch (type) {
+    case "project":
+      const language = getProjectManifestLanguage(manifestString);
 
-    if (isPolywrapManifestLanguage(language)) {
-      const manifestSchemaFile = path.join(
+      if (!language) {
+        throw new Error("Unsupported project type!");
+      }
+
+      if (isPolywrapManifestLanguage(language)) {
+        manifestSchemaFile = path.join(
+          schemasPackageDir,
+          PolywrapManifestSchemaFiles[
+            manifestVersion ?? latestPolywrapManifestFormat
+          ]
+        );
+      } else if (isAppManifestLanguage(language)) {
+        manifestSchemaFile = path.join(
+          schemasPackageDir,
+          AppManifestSchemaFiles[manifestVersion ?? latestAppManifestFormat]
+        );
+      } else if (isPluginManifestLanguage(language)) {
+        manifestSchemaFile = path.join(
+          schemasPackageDir,
+          PluginManifestSchemaFiles[
+            manifestVersion ?? latestPluginManifestFormat
+          ]
+        );
+      } else {
+        throw new Error("Unsupported project type!");
+      }
+      break;
+
+    case "build":
+      manifestSchemaFile = path.join(
         schemasPackageDir,
-        PolywrapManifestSchemaFiles[
-          manifestVersion ?? latestPolywrapManifestFormat
+        BuildManifestSchemaFiles[manifestVersion ?? latestBuildManifestFormat]
+      );
+      break;
+
+    case "meta":
+      manifestSchemaFile = path.join(
+        schemasPackageDir,
+        MetaManifestSchemaFiles[manifestVersion ?? latestMetaManifestFormat]
+      );
+      break;
+
+    case "deploy":
+      manifestSchemaFile = path.join(
+        schemasPackageDir,
+        DeployManifestSchemaFiles[manifestVersion ?? latestDeployManifestFormat]
+      );
+      break;
+
+    case "infra":
+      manifestSchemaFile = path.join(
+        schemasPackageDir,
+        InfraManifestSchemaFiles[manifestVersion ?? latestInfraManifestFormat]
+      );
+      break;
+
+    case "workflow":
+      manifestSchemaFile = path.join(
+        schemasPackageDir,
+        PolywrapWorkflowSchemaFiles[
+          manifestVersion ?? latestPolywrapWorkflowFormat
         ]
       );
-      console.log(await getSchemaAsString(manifestSchemaFile, options.raw));
-    } else if (isAppManifestLanguage(language)) {
-      const manifestSchemaFile = path.join(
-        schemasPackageDir,
-        AppManifestSchemaFiles[manifestVersion ?? latestAppManifestFormat]
-      );
-      console.log(await getSchemaAsString(manifestSchemaFile, options.raw));
-    } else if (isPluginManifestLanguage(language)) {
-      const manifestSchemaFile = path.join(
-        schemasPackageDir,
-        PluginManifestSchemaFiles[manifestVersion ?? latestPluginManifestFormat]
-      );
-      console.log(await getSchemaAsString(manifestSchemaFile, options.raw));
-    }
-  } else if (type === "build") {
-    const manifestSchemaFile = path.join(
-      schemasPackageDir,
-      BuildManifestSchemaFiles[manifestVersion ?? latestBuildManifestFormat]
-    );
-    console.log(await getSchemaAsString(manifestSchemaFile, options.raw));
-  } else if (type === "meta") {
-    const manifestSchemaFile = path.join(
-      schemasPackageDir,
-      MetaManifestSchemaFiles[manifestVersion ?? latestMetaManifestFormat]
-    );
-    console.log(await getSchemaAsString(manifestSchemaFile, options.raw));
-  } else if (type === "deploy") {
-    const manifestSchemaFile = path.join(
-      schemasPackageDir,
-      DeployManifestSchemaFiles[manifestVersion ?? latestDeployManifestFormat]
-    );
-    console.log(await getSchemaAsString(manifestSchemaFile, options.raw));
-  } else if (type === "infra") {
-    const manifestSchemaFile = path.join(
-      schemasPackageDir,
-      InfraManifestSchemaFiles[manifestVersion ?? latestInfraManifestFormat]
-    );
-    console.log(await getSchemaAsString(manifestSchemaFile, options.raw));
-  } else if (type === "workflow") {
-    const manifestSchemaFile = path.join(
-      schemasPackageDir,
-      PolywrapWorkflowSchemaFiles[
-        manifestVersion ?? latestPolywrapWorkflowFormat
-      ]
-    );
-    console.log(await getSchemaAsString(manifestSchemaFile, options.raw));
+      break;
+  }
+
+  const schemaString = fs.readFileSync(manifestSchemaFile, {
+    encoding: "utf-8",
+  });
+
+  if (options.raw) {
+    console.log(schemaString);
+  } else {
+    const schema = await dereference(JSON.parse(schemaString));
+
+    console.log(getYamlishSchemaForManifestJsonSchemaObject(schema.properties));
   }
 };
 
 const runMigrateCommand = async (
-  type: string,
+  type: ManifestType,
   options: ManifestMigrateCommandOptions
 ) => {
-  if (type === "project") {
-    const manifestfile = parseManifestFileOption(
-      options.manifestFile,
-      defaultProjectManifestFiles
-    );
-
-    const manifestString = fs.readFileSync(manifestfile, {
-      encoding: "utf-8",
-    });
-
-    const language = getProjectManifestLanguage(manifestString);
-
-    if (!language) {
-      throw new Error("Unsupported project type!");
-    }
-
-    if (isPolywrapManifestLanguage(language)) {
-      return runManifestFileMigration(
-        manifestfile,
-        migratePolywrapProjectManifest,
-        latestPolywrapManifestFormat
+  switch (type) {
+    case "project":
+      const manifestfile = parseManifestFileOption(
+        options.manifestFile,
+        defaultProjectManifestFiles
       );
-    } else if (isAppManifestLanguage(language)) {
-      return runManifestFileMigration(
-        manifestfile,
-        migrateAppProjectManifest,
-        latestPolywrapManifestFormat
+
+      const manifestString = fs.readFileSync(manifestfile, {
+        encoding: "utf-8",
+      });
+
+      const language = getProjectManifestLanguage(manifestString);
+
+      if (!language) {
+        throw new Error("Unsupported project type!");
+      }
+
+      if (isPolywrapManifestLanguage(language)) {
+        return migrateManifestFile(
+          manifestfile,
+          migratePolywrapProjectManifest,
+          latestPolywrapManifestFormat
+        );
+      } else if (isAppManifestLanguage(language)) {
+        return migrateManifestFile(
+          manifestfile,
+          migrateAppProjectManifest,
+          latestPolywrapManifestFormat
+        );
+      } else if (isPluginManifestLanguage(language)) {
+        return migrateManifestFile(
+          manifestfile,
+          migratePluginProjectManifest,
+          latestPolywrapManifestFormat
+        );
+      } else {
+        throw new Error("Unsupported project type!");
+      }
+
+    case "build":
+      migrateManifestFile(
+        parseManifestFileOption(options.manifestFile, defaultBuildManifest),
+        migrateBuildExtensionManifest,
+        latestBuildManifestFormat
       );
-    } else if (isPluginManifestLanguage(language)) {
-      return runManifestFileMigration(
-        manifestfile,
-        migratePluginProjectManifest,
-        latestPolywrapManifestFormat
+      break;
+
+    case "meta":
+      migrateManifestFile(
+        parseManifestFileOption(options.manifestFile, defaultMetaManifest),
+        migrateMetaExtensionManifest,
+        latestMetaManifestFormat
       );
-    } else {
-      throw new Error("Unsupported project type!");
-    }
-  } else if (type === "build") {
-    runManifestFileMigration(
-      parseManifestFileOption(options.manifestFile, defaultBuildManifest),
-      migrateBuildExtensionManifest,
-      latestBuildManifestFormat
-    );
-  } else if (type === "meta") {
-    runManifestFileMigration(
-      parseManifestFileOption(options.manifestFile, defaultMetaManifest),
-      migrateMetaExtensionManifest,
-      latestMetaManifestFormat
-    );
-  } else if (type === "deploy") {
-    runManifestFileMigration(
-      parseManifestFileOption(options.manifestFile, defaultDeployManifest),
-      migrateDeployExtensionManifest,
-      latestDeployManifestFormat
-    );
-  } else if (type === "infra") {
-    runManifestFileMigration(
-      options.manifestFile,
-      migrateInfraExtensionManifest,
-      latestInfraManifestFormat
-    );
-  } else if (type === "workflow") {
-    runManifestFileMigration(
-      options.manifestFile,
-      migrateWorkflow,
-      latestPolywrapWorkflowFormat
-    );
+      break;
+
+    case "deploy":
+      migrateManifestFile(
+        parseManifestFileOption(options.manifestFile, defaultDeployManifest),
+        migrateDeployExtensionManifest,
+        latestDeployManifestFormat
+      );
+      break;
+
+    case "infra":
+      migrateManifestFile(
+        parseManifestFileOption(options.manifestFile, defaultInfraManifest),
+        migrateInfraExtensionManifest,
+        latestInfraManifestFormat
+      );
+      break;
+
+    case "workflow":
+      migrateManifestFile(
+        parseManifestFileOption(options.manifestFile, defaultWorkflowManifest),
+        migrateWorkflow,
+        latestPolywrapWorkflowFormat
+      );
+      break;
   }
 };
 
-function runManifestFileMigration(
+function migrateManifestFile(
   manifestFile: string,
   migrationFn: (input: string) => string,
   version: string
@@ -323,44 +379,4 @@ function runManifestFileMigration(
   fs.writeFileSync(manifestFile, outputManifestString, {
     encoding: "utf-8",
   });
-}
-
-/* DEV TODO:
-  - polywrap.test.yaml is on version 0.1 instad of 0.1.0 by default
-  - pretty-print everything
-  - add intlmsgs
-  - remove `temp` test file
-  - create tests
-*/
-
-function getManifestFormatVersion(manifestStr: string): string | undefined {
-  type ManifestFormatProps = {
-    format: string;
-  };
-
-  let manifest: ManifestFormatProps | undefined;
-
-  try {
-    manifest = JSON.parse(manifestStr) as ManifestFormatProps;
-  } catch (e) {
-    manifest = YAML.safeLoad(manifestStr) as ManifestFormatProps | undefined;
-  }
-
-  return manifest?.format;
-}
-
-async function getSchemaAsString(
-  manifestSchemaFile: string,
-  raw: boolean
-): Promise<string> {
-  const schemaString = fs.readFileSync(manifestSchemaFile, {
-    encoding: "utf-8",
-  });
-  if (raw) {
-    return schemaString;
-  } else {
-    const schema = await dereference(JSON.parse(schemaString));
-
-    return getYamlishSchemaForManifestJsonSchemaObject(schema.properties);
-  }
 }

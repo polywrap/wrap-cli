@@ -11,10 +11,10 @@ import { AppProject } from "../AppProject";
 import { PluginProject } from "../PluginProject";
 
 import { filesystem } from "gluegun";
-import YAML from "js-yaml";
 import path from "path";
+import { getProjectManifestLanguage } from "./getProjectManifestLanguage";
 
-type ManifestProjectTypeProps = {
+export type ManifestProjectTypeProps = {
   // >= 0.2
   project?: {
     type: AnyProjectManifestLanguage;
@@ -58,18 +58,3 @@ export async function getProjectFromManifest(
   return project;
 }
 
-export function getProjectManifestLanguage(
-  manifestStr: string
-): AnyProjectManifestLanguage | undefined {
-  let manifest: ManifestProjectTypeProps | undefined;
-
-  try {
-    manifest = JSON.parse(manifestStr) as ManifestProjectTypeProps;
-  } catch (e) {
-    manifest = YAML.safeLoad(manifestStr) as
-      | ManifestProjectTypeProps
-      | undefined;
-  }
-
-  return manifest?.project?.type ?? manifest?.language;
-}
