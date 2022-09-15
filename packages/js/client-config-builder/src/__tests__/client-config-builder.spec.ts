@@ -11,6 +11,7 @@ import {
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
+import { toUri } from "../utils/toUri";
 import { getDefaultClientConfig } from "../bundles";
 import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
 
@@ -113,26 +114,26 @@ describe("Client config builder", () => {
     expect(clientConfig).toBeTruthy();
     expect(clientConfig.envs).toStrictEqual(
       testEnvs.map((x) => ({
-        uri: Uri.from(x.uri),
+        uri: toUri(x.uri),
         env: x.env,
       }))
     );
     expect(clientConfig.interfaces).toStrictEqual(
       testInterfaces.map((x) => ({
-        interface: Uri.from(x.interface),
-        implementations: x.implementations.map(Uri.from),
+        interface: toUri(x.interface),
+        implementations: x.implementations.map(toUri),
       }))
     );
     expect(clientConfig.plugins).toStrictEqual(
       testPlugins.map((x) => ({
-        uri: Uri.from(x.uri),
+        uri: toUri(x.uri),
         plugin: x.plugin,
       }))
     );
     expect(clientConfig.redirects).toStrictEqual(
       testUriRedirects.map((x) => ({
-        from: Uri.from(x.from),
-        to: Uri.from(x.to),
+        from: toUri(x.from),
+        to: toUri(x.to),
       }))
     );
     expect(clientConfig.resolver).toStrictEqual(testUriResolver);
@@ -158,26 +159,26 @@ describe("Client config builder", () => {
     expect(clientConfig).toBeTruthy();
     expect(clientConfig.envs).toStrictEqual(
       testEnvs.map((x) => ({
-        uri: Uri.from(x.uri),
+        uri: toUri(x.uri),
         env: x.env,
       }))
     );
     expect(clientConfig.interfaces).toStrictEqual(
       testInterfaces.map((x) => ({
-        interface: Uri.from(x.interface),
-        implementations: x.implementations.map(Uri.from),
+        interface: toUri(x.interface),
+        implementations: x.implementations.map(toUri),
       }))
     );
     expect(clientConfig.plugins).toStrictEqual(
       testPlugins.map((x) => ({
-        uri: Uri.from(x.uri),
+        uri: toUri(x.uri),
         plugin: x.plugin,
       }))
     );
     expect(clientConfig.redirects).toStrictEqual(
       testUriRedirects.map((x) => ({
-        from: Uri.from(x.from),
-        to: Uri.from(x.to),
+        from: toUri(x.from),
+        to: toUri(x.to),
       }))
     );
     expect(clientConfig.resolver).toStrictEqual(testUriResolver);
@@ -216,7 +217,7 @@ describe("Client config builder", () => {
       fail("Expected 1 plugin");
     }
 
-    expect(config.plugins[0].uri).toStrictEqual(Uri.from(pluginUri));
+    expect(config.plugins[0].uri).toStrictEqual(toUri(pluginUri));
     expect(config.plugins[0].plugin).toStrictEqual(pluginPackage);
   });
 
@@ -231,11 +232,11 @@ describe("Client config builder", () => {
     }
 
     expect(config.plugins).toContainEqual({
-      uri: Uri.from(testPlugins[0].uri),
+      uri: toUri(testPlugins[0].uri),
       plugin: testPlugins[0].plugin,
     });
     expect(config.plugins).toContainEqual({
-      uri: Uri.from(testPlugins[1].uri),
+      uri: toUri(testPlugins[1].uri),
       plugin: testPlugins[1].plugin,
     });
   });
@@ -254,7 +255,7 @@ describe("Client config builder", () => {
       fail("Expected 1 plugin");
     }
 
-    expect(config.plugins[0].uri).toStrictEqual(Uri.from(pluginUri));
+    expect(config.plugins[0].uri).toStrictEqual(toUri(pluginUri));
     expect(config.plugins[0].plugin).not.toStrictEqual(pluginPackage1);
     expect(config.plugins[0].plugin).toStrictEqual(pluginPackage2);
   });
@@ -272,7 +273,7 @@ describe("Client config builder", () => {
 
     const remainingPlugin = config.plugins[0];
 
-    expect(remainingPlugin.uri).toStrictEqual(Uri.from(testPlugins[1].uri));
+    expect(remainingPlugin.uri).toStrictEqual(toUri(testPlugins[1].uri));
     expect(remainingPlugin.plugin).toStrictEqual(testPlugins[1].plugin);
   });
 
@@ -291,7 +292,7 @@ describe("Client config builder", () => {
       fail("Expected 1 env");
     }
 
-    expect(config.envs[0].uri).toStrictEqual(Uri.from(envUri));
+    expect(config.envs[0].uri).toStrictEqual(toUri(envUri));
     expect(config.envs[0].env).toStrictEqual(env);
   });
 
@@ -317,7 +318,7 @@ describe("Client config builder", () => {
       fail("Expected 1 env");
     }
 
-    expect(config.envs[0].uri).toStrictEqual(Uri.from(envUri));
+    expect(config.envs[0].uri).toStrictEqual(toUri(envUri));
     expect(config.envs[0].env).toStrictEqual(expectedEnv);
   });
 
@@ -332,11 +333,11 @@ describe("Client config builder", () => {
     }
 
     expect(config.envs).toContainEqual({
-      uri: Uri.from(testEnvs[0].uri),
+      uri: toUri(testEnvs[0].uri),
       env: testEnvs[0].env,
     });
     expect(config.envs).toContainEqual({
-      uri: Uri.from(testEnvs[1].uri),
+      uri: toUri(testEnvs[1].uri),
       env: testEnvs[1].env,
     });
   });
@@ -353,7 +354,7 @@ describe("Client config builder", () => {
     }
 
     expect(config.envs).toContainEqual({
-      uri: Uri.from(testEnvs[1].uri),
+      uri: toUri(testEnvs[1].uri),
       env: testEnvs[1].env,
     });
   });
@@ -372,7 +373,7 @@ describe("Client config builder", () => {
     }
 
     expect(config.envs[0]).toEqual({
-      uri: Uri.from(envUri),
+      uri: toUri(envUri),
       env: env,
     });
   });
@@ -397,7 +398,7 @@ describe("Client config builder", () => {
     }
 
     expect(config.envs[0]).toEqual({
-      uri: Uri.from(envUri),
+      uri: toUri(envUri),
       env: env2,
     });
   });
@@ -415,8 +416,8 @@ describe("Client config builder", () => {
     }
 
     expect(config.interfaces[0]).toStrictEqual({
-      interface: Uri.from(interfaceUri),
-      implementations: [Uri.from(implUri)],
+      interface: toUri(interfaceUri),
+      implementations: [toUri(implUri)],
     });
   });
 
@@ -434,14 +435,12 @@ describe("Client config builder", () => {
       fail("Expected 1 interface");
     }
 
-    expect(config.interfaces[0].interface).toStrictEqual(
-      Uri.from(interfaceUri)
+    expect(config.interfaces[0].interface).toStrictEqual(toUri(interfaceUri));
+    expect(config.interfaces[0].implementations).toContainEqual(
+      toUri(implUri1)
     );
     expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri1)
-    );
-    expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri2)
+      toUri(implUri2)
     );
   });
 
@@ -473,13 +472,13 @@ describe("Client config builder", () => {
 
     expect(interface1).toBeDefined();
     expect(interface1?.implementations).toHaveLength(2);
-    expect(interface1?.implementations).toContainEqual(Uri.from(implUri1));
-    expect(interface1?.implementations).toContainEqual(Uri.from(implUri3));
+    expect(interface1?.implementations).toContainEqual(toUri(implUri1));
+    expect(interface1?.implementations).toContainEqual(toUri(implUri3));
 
     expect(interface2).toBeDefined();
     expect(interface2?.implementations).toHaveLength(2);
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri2));
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri4));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri2));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri4));
   });
 
   it("should add multiple implementations for a non-existent interface", () => {
@@ -495,15 +494,13 @@ describe("Client config builder", () => {
       fail("Expected 1 interface");
     }
 
-    expect(config.interfaces[0].interface).toStrictEqual(
-      Uri.from(interfaceUri)
-    );
+    expect(config.interfaces[0].interface).toStrictEqual(toUri(interfaceUri));
     expect(config.interfaces[0].implementations).toHaveLength(2);
     expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri1)
+      toUri(implUri1)
     );
     expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri2)
+      toUri(implUri2)
     );
   });
 
@@ -522,18 +519,16 @@ describe("Client config builder", () => {
       fail("Expected 1 interface");
     }
 
-    expect(config.interfaces[0].interface).toStrictEqual(
-      Uri.from(interfaceUri)
-    );
+    expect(config.interfaces[0].interface).toStrictEqual(toUri(interfaceUri));
     expect(config.interfaces[0].implementations).toHaveLength(3);
     expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri1)
+      toUri(implUri1)
     );
     expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri2)
+      toUri(implUri2)
     );
     expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri3)
+      toUri(implUri3)
     );
   });
 
@@ -567,15 +562,15 @@ describe("Client config builder", () => {
 
     expect(interface1).toBeDefined();
     expect(interface1?.implementations).toHaveLength(3);
-    expect(interface1?.implementations).toContainEqual(Uri.from(implUri1));
-    expect(interface1?.implementations).toContainEqual(Uri.from(implUri3));
-    expect(interface1?.implementations).toContainEqual(Uri.from(implUri5));
+    expect(interface1?.implementations).toContainEqual(toUri(implUri1));
+    expect(interface1?.implementations).toContainEqual(toUri(implUri3));
+    expect(interface1?.implementations).toContainEqual(toUri(implUri5));
 
     expect(interface2).toBeDefined();
     expect(interface2?.implementations).toHaveLength(3);
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri2));
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri4));
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri6));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri2));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri4));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri6));
   });
 
   it("should remove an interface implementation", () => {
@@ -603,12 +598,12 @@ describe("Client config builder", () => {
 
     expect(interface1).toBeDefined();
     expect(interface1?.implementations).toHaveLength(1);
-    expect(interface1?.implementations).toContainEqual(Uri.from(implUri1));
+    expect(interface1?.implementations).toContainEqual(toUri(implUri1));
 
     expect(interface2).toBeDefined();
     expect(interface2?.implementations).toHaveLength(2);
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri1));
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri2));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri1));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri2));
   });
 
   it("should completely remove an interface if there are no implementations left", () => {
@@ -639,8 +634,8 @@ describe("Client config builder", () => {
 
     expect(interface2).toBeDefined();
     expect(interface2?.implementations).toHaveLength(2);
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri1));
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri2));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri1));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri2));
   });
 
   it("should add an uri redirect", () => {
@@ -653,8 +648,8 @@ describe("Client config builder", () => {
 
     expect(config.redirects).toHaveLength(1);
     expect(config.redirects).toContainEqual({
-      from: Uri.from(from),
-      to: Uri.from(to),
+      from: toUri(from),
+      to: toUri(to),
     });
   });
 
@@ -672,12 +667,12 @@ describe("Client config builder", () => {
 
     expect(config.redirects).toHaveLength(2);
     expect(config.redirects).toContainEqual({
-      from: Uri.from(from1),
-      to: Uri.from(to1),
+      from: toUri(from1),
+      to: toUri(to1),
     });
     expect(config.redirects).toContainEqual({
-      from: Uri.from(from2),
-      to: Uri.from(to2),
+      from: toUri(from2),
+      to: toUri(to2),
     });
   });
 
@@ -695,12 +690,12 @@ describe("Client config builder", () => {
 
     expect(config.redirects).toHaveLength(2);
     expect(config.redirects).toContainEqual({
-      from: Uri.from(from1),
-      to: Uri.from(to2),
+      from: toUri(from1),
+      to: toUri(to2),
     });
     expect(config.redirects).toContainEqual({
-      from: Uri.from(from2),
-      to: Uri.from(to1),
+      from: toUri(from2),
+      to: toUri(to1),
     });
   });
 
@@ -719,8 +714,8 @@ describe("Client config builder", () => {
 
     expect(config.redirects).toHaveLength(1);
     expect(config.redirects).toContainEqual({
-      from: Uri.from(from2),
-      to: Uri.from(to2),
+      from: toUri(from2),
+      to: toUri(to2),
     });
   });
 

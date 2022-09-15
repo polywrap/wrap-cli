@@ -181,9 +181,9 @@ describe("URI resolution", () => {
     const result = await client.tryResolveUri({ uri: pluginUri, resolutionContext });
 
     await expectWrapperWithHistory(
-      result,
-      pluginUri,
-      getUriResolutionPath(resolutionContext.getHistory()),
+      result, 
+      pluginUri, 
+      getUriResolutionPath(resolutionContext.getHistory()), 
       "can resolve plugin"
     );
 

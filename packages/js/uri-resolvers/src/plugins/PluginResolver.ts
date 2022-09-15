@@ -3,6 +3,7 @@ import { ResolverWithHistory } from "../helpers";
 import {
   Uri,
   PluginRegistration,
+  toUri,
   PluginWrapPackage,
   UriResolutionResult,
   UriPackageOrWrapper,
@@ -16,7 +17,7 @@ export class PluginResolver extends ResolverWithHistory {
     private readonly pluginRegistration: PluginRegistration<string | Uri>
   ) {
     super();
-    this.pluginUri = Uri.from(pluginRegistration.uri);
+    this.pluginUri = toUri(pluginRegistration.uri);
   }
 
   protected getStepDescription = (): string => `Plugin (${this.pluginUri.uri})`;

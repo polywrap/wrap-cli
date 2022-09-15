@@ -1,4 +1,5 @@
 import { getDefaultClientConfig } from "./bundles";
+import { toUri } from "./utils/toUri";
 
 import {
   ClientConfig,
@@ -69,7 +70,7 @@ export class ClientConfigBuilder {
     uri: Uri | string,
     plugin: PluginPackage<TPluginConfig>
   ): ClientConfigBuilder {
-    const pluginUri = Uri.from(uri);
+    const pluginUri = toUri(uri);
 
     const existingRegistration = this._config.plugins.find((x) =>
       Uri.equals(x.uri, pluginUri)
@@ -88,7 +89,7 @@ export class ClientConfigBuilder {
   }
 
   removePlugin(uri: Uri | string): ClientConfigBuilder {
-    const pluginUri = Uri.from(uri);
+    const pluginUri = toUri(uri);
 
     const idx = this._config.plugins.findIndex((x) =>
       Uri.equals(x.uri, pluginUri)
@@ -102,7 +103,7 @@ export class ClientConfigBuilder {
   }
 
   addEnv(uri: Uri | string, env: Record<string, unknown>): ClientConfigBuilder {
-    const envUri = Uri.from(uri);
+    const envUri = toUri(uri);
 
     const idx = this._config.envs.findIndex((x) => Uri.equals(x.uri, envUri));
 
@@ -122,7 +123,7 @@ export class ClientConfigBuilder {
   }
 
   removeEnv(uri: Uri | string): ClientConfigBuilder {
-    const envUri = Uri.from(uri);
+    const envUri = toUri(uri);
 
     const idx = this._config.envs.findIndex((x) => Uri.equals(x.uri, envUri));
 
@@ -134,7 +135,7 @@ export class ClientConfigBuilder {
   }
 
   setEnv(uri: Uri | string, env: Record<string, unknown>): ClientConfigBuilder {
-    const envUri = Uri.from(uri);
+    const envUri = toUri(uri);
 
     const idx = this._config.envs.findIndex((x) => Uri.equals(x.uri, envUri));
 
@@ -154,8 +155,8 @@ export class ClientConfigBuilder {
     interfaceUri: Uri | string,
     implementationUri: Uri | string
   ): ClientConfigBuilder {
-    const interfaceUriSanitized = Uri.from(interfaceUri);
-    const implementationUriSanitized = Uri.from(implementationUri);
+    const interfaceUriSanitized = toUri(interfaceUri);
+    const implementationUriSanitized = toUri(implementationUri);
 
     const existingInterface = this._config.interfaces.find((x) =>
       Uri.equals(x.interface, interfaceUriSanitized)
@@ -183,8 +184,8 @@ export class ClientConfigBuilder {
     interfaceUri: Uri | string,
     implementationUris: Array<Uri | string>
   ): ClientConfigBuilder {
-    const interfaceUriSanitized = Uri.from(interfaceUri);
-    const implementationUrisSanitized = implementationUris.map(Uri.from);
+    const interfaceUriSanitized = toUri(interfaceUri);
+    const implementationUrisSanitized = implementationUris.map(toUri);
 
     const existingInterface = this._config.interfaces.find((x) =>
       Uri.equals(x.interface, interfaceUriSanitized)
@@ -212,8 +213,8 @@ export class ClientConfigBuilder {
     interfaceUri: Uri | string,
     implementationUri: Uri | string
   ): ClientConfigBuilder {
-    const interfaceUriSanitized = Uri.from(interfaceUri);
-    const implementationUriSanitized = Uri.from(implementationUri);
+    const interfaceUriSanitized = toUri(interfaceUri);
+    const implementationUriSanitized = toUri(implementationUri);
 
     const existingInterface = this._config.interfaces.find((x) =>
       Uri.equals(x.interface, interfaceUriSanitized)
@@ -240,8 +241,8 @@ export class ClientConfigBuilder {
   }
 
   addUriRedirect(from: Uri | string, to: Uri | string): ClientConfigBuilder {
-    const fromSanitized = Uri.from(from);
-    const toSanitized = Uri.from(to);
+    const fromSanitized = toUri(from);
+    const toSanitized = toUri(to);
 
     const existingRedirect = this._config.redirects.find((x) =>
       Uri.equals(x.from, fromSanitized)
@@ -260,7 +261,7 @@ export class ClientConfigBuilder {
   }
 
   removeUriRedirect(from: Uri | string): ClientConfigBuilder {
-    const fromSanitized = Uri.from(from);
+    const fromSanitized = toUri(from);
 
     const idx = this._config.redirects.findIndex((x) =>
       Uri.equals(x.from, fromSanitized)

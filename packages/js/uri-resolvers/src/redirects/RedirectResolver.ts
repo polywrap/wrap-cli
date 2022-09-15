@@ -2,6 +2,7 @@ import { ResolverWithHistory } from "../helpers";
 
 import {
   Uri,
+  toUri,
   UriResolutionResult,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
@@ -15,8 +16,8 @@ export class RedirectResolver<
 
   constructor(from: TUri, to: TUri) {
     super();
-    this.from = Uri.from(from);
-    this.to = Uri.from(to);
+    this.from = toUri(from);
+    this.to = toUri(to);
   }
 
   protected getStepDescription = (): string =>

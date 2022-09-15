@@ -1,4 +1,5 @@
 import { PluginPackage, Uri } from ".";
+import { toUri } from "../utils";
 
 import { Tracer } from "@polywrap/tracing-js";
 
@@ -12,7 +13,7 @@ export const sanitizePluginRegistrations = Tracer.traceFunc(
   (input: PluginRegistration<Uri | string>[]): PluginRegistration<Uri>[] => {
     const output: PluginRegistration<Uri>[] = [];
     for (const definition of input) {
-      const uri = Uri.from(definition.uri);
+      const uri = toUri(definition.uri);
 
       output.push({
         uri,
