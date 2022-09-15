@@ -15,10 +15,6 @@ import {
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
-export type ResolutionCallback<TError> = (
-  response: Result<UriPackageOrWrapper, TError>
-) => void;
-
 export class PackageToWrapperCacheResolver<TError = undefined>
   implements IUriResolver<TError> {
   name: string;

@@ -14,9 +14,7 @@ import { Result, ResultOk } from "@polywrap/result";
 import { UriResolverAggregatorBase } from "@polywrap/uri-resolvers-js";
 
 export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
-  loadingExtensionsMap: Map<number, Map<string, boolean>> = new Map();
-
-  private resolverName: string;
+  private readonly resolverName: string;
 
   constructor(resolverName?: string) {
     super();
