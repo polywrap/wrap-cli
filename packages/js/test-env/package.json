@@ -21,6 +21,7 @@
     "@polywrap/core-js": "0.7.0",
     "@polywrap/ethereum-plugin-js": "0.7.0",
     "@polywrap/polywrap-manifest-types-js": "0.7.0",
+    "@polywrap/uri-resolvers-js": "0.7.0",
     "axios": "0.21.2",
     "js-yaml": "4.1.0",
     "spawn-command": "0.0.2-1"

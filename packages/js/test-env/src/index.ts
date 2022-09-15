@@ -8,6 +8,7 @@ import fs from "fs";
 import yaml from "js-yaml";
 import { Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
+import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import {
   ethereumPlugin,
   Connections,
@@ -270,14 +271,14 @@ export async function buildAndDeployWrapper({
 
   const connections = new Connections(testnetConnection);
   const client = new PolywrapClient({
-    plugins: [
+    resolver: buildUriResolver([
       {
         uri: ethereumPluginUri,
-        plugin: ethereumPlugin({
+        package: ethereumPlugin({
           connections,
         }),
       },
-    ],
+    ]),
   });
 
   const { data: signerAddress } = await client.invoke<string>({
