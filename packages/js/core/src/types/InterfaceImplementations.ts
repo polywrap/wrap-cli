@@ -1,5 +1,4 @@
 import { Uri } from ".";
-import { toUri } from "../utils";
 
 import { Tracer } from "@polywrap/tracing-js";
 
@@ -15,9 +14,9 @@ export const sanitizeInterfaceImplementations = Tracer.traceFunc(
   ): InterfaceImplementations<Uri>[] => {
     const output: InterfaceImplementations<Uri>[] = [];
     for (const definition of input) {
-      const interfaceUri = toUri(definition.interface);
+      const interfaceUri = Uri.from(definition.interface);
 
-      const implementations = definition.implementations.map(toUri);
+      const implementations = definition.implementations.map(Uri.from);
 
       output.push({
         interface: interfaceUri,

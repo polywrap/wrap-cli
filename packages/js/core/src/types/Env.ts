@@ -1,5 +1,4 @@
 import { Uri } from ".";
-import { toUri } from "../utils";
 
 import { Tracer } from "@polywrap/tracing-js";
 
@@ -19,7 +18,7 @@ export const sanitizeEnvs = Tracer.traceFunc(
     for (const env of environments) {
       output.push({
         ...env,
-        uri: toUri(env.uri),
+        uri: Uri.from(env.uri),
       });
     }
 
