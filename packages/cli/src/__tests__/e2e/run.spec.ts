@@ -251,7 +251,7 @@ describe("e2e tests for run command", () => {
     expect(output[0].status).toBe("SUCCEED");
     expect(output[0].validation).toBe("FAILED");
     expect(output[0].error).toBeTruthy();
-    console.log(stderr);
+
     expect(stderr).toBeDefined();
     expect(stderr).not.toBe("");
     expect(stderr.indexOf("conflicting values")).toBeGreaterThan(-1);

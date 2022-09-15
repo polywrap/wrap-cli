@@ -41,8 +41,7 @@ export function validateOutput(
       console.log("Validation: SUCCEED");
     }
   } else {
-    // TODO: the error returned by runCommandSync is NOT the cue validation error output
-    const msgLines = stderr.message.split(/\r?\n/);
+    const msgLines = stderr.stderr.split(/\r?\n/);
     msgLines[1] = `${validateScriptPath}:${msgLines[1]
       .split(":")
       .slice(1)
