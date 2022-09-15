@@ -13,7 +13,7 @@ import {
   PackageToWrapperCacheResolver,
   RecursiveResolver,
   UriResolverLike,
-  UriResolver,
+  buildUriResolver,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
@@ -124,7 +124,7 @@ export const getDefaultClientConfig = (
     resolver: new RecursiveResolver(
       new PackageToWrapperCacheResolver(
         wrapperCache ?? new WrapperCache(),
-        UriResolver.from(innerResolvers)
+        buildUriResolver(innerResolvers)
       )
     ),
   };
