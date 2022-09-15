@@ -87,32 +87,6 @@ describe("e2e tests for run command", () => {
     }
   });
 
-  // describe("test-cases", () => {
-  //   for (let i = 0; i < testCases.length; ++i) {
-  //     const testCaseName = testCases[i];
-  //     const testCaseDir = getTestCaseDir(i);
-  //     const cmdArgs = getCmdArgs(testCaseDir);
-  //
-  //     test(testCaseName, async () => {
-  //       let { exitCode, stdout, stderr } = await runCLI({
-  //         args: ["run", ...cmdArgs],
-  //         cwd: testCaseDir,
-  //         cli: polywrapCli,
-  //       });
-  //
-  //       expect(stderr).toBe("");
-  //
-  //       const output = parseOutput(stdout);
-  //       output.forEach((item) => {
-  //         expect(item.error).toBeUndefined();
-  //         expect(item.data).toBeDefined();
-  //       });
-  //       expect(output).toHaveLength(3);
-  //       expect(exitCode).toEqual(0);
-  //     });
-  //   }
-  // });
-
   it("Should successfully return response: using yaml workflow", async () => {
     const testCaseDir = getTestCaseDir(0);
     const args = getCmdArgs(testCaseDir);
