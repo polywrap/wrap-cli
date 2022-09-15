@@ -25,8 +25,6 @@ export interface Contextualized {
 
 export type GetRedirectsOptions = Contextualized;
 
-export type GetPluginsOptions = Contextualized;
-
 export type GetInterfacesOptions = Contextualized;
 
 export type GetEnvsOptions = Contextualized;

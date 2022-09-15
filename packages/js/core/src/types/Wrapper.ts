@@ -32,7 +32,6 @@ export interface Wrapper extends Invocable {
 
   /**
    * Get a file from the Wrapper package.
-   * Not implemented for plugin wrappers.
    *
    * @param options Configuration options for file retrieval
    * @param client The client instance requesting the file.
@@ -44,7 +43,6 @@ export interface Wrapper extends Invocable {
 
   /**
    * Get a manifest from the Wrapper package.
-   * Not implemented for plugin wrappers.
    *
    * @param client The client instance requesting the manifest.
    */
