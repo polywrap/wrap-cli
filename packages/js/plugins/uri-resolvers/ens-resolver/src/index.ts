@@ -12,7 +12,7 @@ import {
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
 import { getAddress } from "@ethersproject/address";
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 export type Address = string;
 
@@ -201,11 +201,6 @@ export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
 
 export const ensResolverPlugin: PluginFactory<EnsResolverPluginConfig> = (
   config: EnsResolverPluginConfig
-) => {
-  return {
-    factory: () => new EnsResolverPlugin(config),
-    manifest,
-  };
-};
+) => new PluginPackage(manifest, new EnsResolverPlugin(config));
 
 export const plugin = ensResolverPlugin;

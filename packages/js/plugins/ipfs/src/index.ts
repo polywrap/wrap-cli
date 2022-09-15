@@ -11,7 +11,8 @@ import {
 import { IpfsClient } from "./utils/IpfsClient";
 import { execSimple, execFallbacks } from "./utils/exec";
 
-import { Client, PluginFactory } from "@polywrap/core-js";
+import { Client } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
@@ -139,11 +140,6 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
 
 export const ipfsPlugin: PluginFactory<IpfsPluginConfig> = (
   config: IpfsPluginConfig
-) => {
-  return {
-    factory: () => new IpfsPlugin(config),
-    manifest,
-  };
-};
+) => new PluginPackage(manifest, new IpfsPlugin(config));
 
 export const plugin = ipfsPlugin;

@@ -9,7 +9,7 @@ import {
   manifest,
 } from "./wrap";
 
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 import path from "path";
 
 type NoConfig = Record<string, never>;
@@ -65,9 +65,5 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
   }
 }
 
-export const fileSystemResolverPlugin: PluginFactory<NoConfig> = () => {
-  return {
-    factory: () => new FileSystemResolverPlugin({}),
-    manifest,
-  };
-};
+export const fileSystemResolverPlugin: PluginFactory<NoConfig> = () =>
+  new PluginPackage(manifest, new FileSystemResolverPlugin({}));

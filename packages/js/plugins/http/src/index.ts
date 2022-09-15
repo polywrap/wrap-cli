@@ -9,7 +9,7 @@ import {
 import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
 
 import axios from "axios";
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 type NoConfig = Record<string, never>;
 
@@ -35,11 +35,7 @@ export class HttpPlugin extends Module<NoConfig> {
   }
 }
 
-export const httpPlugin: PluginFactory<NoConfig> = () => {
-  return {
-    factory: () => new HttpPlugin({}),
-    manifest,
-  };
-};
+export const httpPlugin: PluginFactory<NoConfig> = () =>
+  new PluginPackage(manifest, new HttpPlugin({}));
 
 export const plugin = httpPlugin;

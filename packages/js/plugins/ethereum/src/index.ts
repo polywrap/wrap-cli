@@ -45,7 +45,7 @@ import { Connections } from "./Connections";
 
 import { ethers } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 export * from "./Connection";
 export * from "./Connections";
@@ -415,11 +415,6 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
 export const ethereumPlugin: PluginFactory<EthereumPluginConfig> = (
   config: EthereumPluginConfig
-) => {
-  return {
-    factory: () => new EthereumPlugin(config),
-    manifest,
-  };
-};
+) => new PluginPackage(manifest, new EthereumPlugin(config));
 
 export const plugin = ethereumPlugin;

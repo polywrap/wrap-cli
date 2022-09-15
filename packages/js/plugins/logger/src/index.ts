@@ -6,7 +6,7 @@ import {
   manifest,
 } from "./wrap";
 
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 export type LogFunc = (level: Logger_LogLevel, message: string) => boolean;
 
@@ -47,11 +47,6 @@ export class LoggerPlugin extends Module<LoggerPluginConfig> {
 
 export const loggerPlugin: PluginFactory<LoggerPluginConfig> = (
   config: LoggerPluginConfig
-) => {
-  return {
-    factory: () => new LoggerPlugin(config),
-    manifest,
-  };
-};
+) => new PluginPackage(manifest, new LoggerPlugin(config));
 
 export const plugin = loggerPlugin;

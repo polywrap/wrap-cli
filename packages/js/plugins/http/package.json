@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@polywrap/core-js": "0.7.0",
+    "@polywrap/plugin-js": "0.7.0",
     "axios": "0.21.4"
   },
   "devDependencies": {

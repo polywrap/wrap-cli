@@ -14,7 +14,7 @@ import {
   manifest,
 } from "./wrap";
 
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 type NoConfig = Record<string, never>;
 
@@ -153,11 +153,7 @@ export class WsPlugin extends Module<NoConfig> {
   }
 }
 
-export const wsPlugin: PluginFactory<NoConfig> = () => {
-  return {
-    factory: () => new WsPlugin({}),
-    manifest,
-  };
-};
+export const wsPlugin: PluginFactory<NoConfig> = () =>
+  new PluginPackage(manifest, new WsPlugin({}));
 
 export const plugin = wsPlugin;

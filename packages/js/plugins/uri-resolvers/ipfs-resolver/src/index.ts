@@ -9,7 +9,7 @@ import {
   UriResolver_MaybeUriOrManifest,
 } from "./wrap";
 
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const isIPFS = require("is-ipfs");
@@ -103,11 +103,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
   }
 }
 
-export const ipfsResolverPlugin: PluginFactory<NoConfig> = () => {
-  return {
-    factory: () => new IpfsResolverPlugin({}),
-    manifest,
-  };
-};
+export const ipfsResolverPlugin: PluginFactory<NoConfig> = () =>
+  new PluginPackage(manifest, new IpfsResolverPlugin({}));
 
 export const plugin = ipfsResolverPlugin;

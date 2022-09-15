@@ -23,6 +23,7 @@
     "@ethersproject/address": "5.0.7",
     "@ethersproject/providers": "5.0.7",
     "@polywrap/core-js": "0.7.0",
+    "@polywrap/plugin-js": "0.7.0",
     "ethers": "5.0.7"
   },
   "devDependencies": {

@@ -13,7 +13,7 @@ import {
 import fileSystemEncodingToBufferEncoding from "./utils/fileSystemEncodingToBufferEncoding";
 
 import fs from "fs";
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 type NoConfig = Record<string, never>;
 
@@ -69,11 +69,7 @@ export class FileSystemPlugin extends Module<NoConfig> {
     return true;
   }
 }
-export const fileSystemPlugin: PluginFactory<NoConfig> = () => {
-  return {
-    factory: () => new FileSystemPlugin({}),
-    manifest,
-  };
-};
+export const fileSystemPlugin: PluginFactory<NoConfig> = () =>
+  new PluginPackage(manifest, new FileSystemPlugin({}));
 
 export const plugin = fileSystemPlugin;
