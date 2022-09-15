@@ -8,13 +8,11 @@ import {
   GetFileOptions,
   GetImplementationsOptions,
   GetInterfacesOptions,
-  GetPluginsOptions,
   GetRedirectsOptions,
   InterfaceImplementations,
   InvokeOptions,
   InvokeResult,
   InvokerOptions,
-  PluginRegistration,
   QueryOptions,
   QueryResult,
   SubscribeOptions,
@@ -55,7 +53,6 @@ export interface PolywrapClientConfig<TUri extends Uri | string = string>
 export class PolywrapClient implements Client {
   private _config: PolywrapClientConfig<Uri> = ({
     redirects: [],
-    plugins: [],
     interfaces: [],
     envs: [],
     tracerConfig: {},
@@ -76,7 +73,7 @@ export class PolywrapClient implements Client {
       const builder = new ClientConfigBuilder();
 
       if (!options?.noDefaults) {
-        builder.addDefaults(config?.wrapperCache);
+        builder.addDefaults(config?.wrapperCache, config?.resolver);
       }
 
       if (config) {
@@ -95,8 +92,6 @@ export class PolywrapClient implements Client {
           tracingLevel: config?.tracerConfig?.tracingLevel,
         },
       };
-
-      this._validateConfig();
 
       Tracer.setAttribute("config", this._config);
     } catch (error) {
@@ -121,13 +116,6 @@ export class PolywrapClient implements Client {
     options: GetRedirectsOptions = {}
   ): readonly UriRedirect<Uri>[] {
     return this._getConfig(options.contextId).redirects;
-  }
-
-  @Tracer.traceMethod("PolywrapClient: getPlugins")
-  public getPlugins(
-    options: GetPluginsOptions = {}
-  ): readonly PluginRegistration<Uri>[] {
-    return this._getConfig(options.contextId).plugins;
   }
 
   @Tracer.traceMethod("PolywrapClient: getInterfaces")
@@ -543,23 +531,6 @@ export class PolywrapClient implements Client {
     }
   }
 
-  @Tracer.traceMethod("PolywrapClient: validateConfig")
-  private _validateConfig(): void {
-    // Require plugins to use non-interface URIs
-    const pluginUris = this.getPlugins().map((x) => x.uri.uri);
-    const interfaceUris = this.getInterfaces().map((x) => x.interface.uri);
-
-    const pluginsWithInterfaceUris = pluginUris.filter((plugin) =>
-      interfaceUris.includes(plugin)
-    );
-
-    if (pluginsWithInterfaceUris.length) {
-      throw Error(
-        `Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`
-      );
-    }
-  }
-
   @Tracer.traceMethod("PolywrapClient: toUri")
   private _toUri(uri: Uri | string): Uri {
     if (typeof uri === "string") {
@@ -601,7 +572,6 @@ export class PolywrapClient implements Client {
       .add({
         envs: context.envs ?? parentConfig.envs,
         interfaces: context.interfaces ?? parentConfig.interfaces,
-        plugins: context.plugins ?? parentConfig.plugins,
         redirects: context.redirects ?? parentConfig.redirects,
         resolver: context.resolver ?? parentConfig.resolver,
       })
@@ -715,9 +685,6 @@ const contextualizeClient = (
         },
         getRedirects: (options: GetRedirectsOptions = {}) => {
           return client.getRedirects({ ...options, contextId });
-        },
-        getPlugins: (options: GetPluginsOptions = {}) => {
-          return client.getPlugins({ ...options, contextId });
         },
         getInterfaces: (options: GetInterfacesOptions = {}) => {
           return client.getInterfaces({ ...options, contextId });
