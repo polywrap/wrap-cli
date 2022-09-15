@@ -33,21 +33,24 @@ export function createPolywrapProvider(
     ClientContext: React.createContext({} as PolywrapClient)
   };
 
-  return ({ envs, redirects, plugins, interfaces, tracerConfig, children }) => {
-
+  return ({ envs, redirects, interfaces, tracerConfig, children }) => {
     const [clientCreated, setClientCreated] = React.useState(false);
 
     React.useEffect(() => {
-
       // If the client has already been set for this provider
       if (PROVIDERS[name].client) {
-        throw Error( 
+        throw Error(
           `Duplicate PolywrapProvider detected. Please use "createPolywrapProvider("provider-name")".`
         );
       }
 
       // Instantiate the client
-      PROVIDERS[name].client = new PolywrapClient({ redirects, plugins, interfaces, envs, tracerConfig });
+      PROVIDERS[name].client = new PolywrapClient({
+        redirects,
+        interfaces,
+        envs,
+        tracerConfig,
+      });
 
       setClientCreated(true);
 
@@ -55,7 +58,7 @@ export function createPolywrapProvider(
       // this provider is unmounted
       return function cleanup() {
         PROVIDERS[name].client = undefined;
-      }
+      };
     });
 
     // Get the provider's context
