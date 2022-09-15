@@ -45,7 +45,7 @@
             ]
           ]
         ],
-        "wrap://ens/uri.eth => ResovlerExtension (wrap://ens/ipfs-resolver.polywrap.eth)",
+        "wrap://ens/uri.eth => ResolverExtension (wrap://ens/ipfs-resolver.polywrap.eth)",
         "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
         [
           "wrap://ens/ens-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/ens-resolver.polywrap.eth)",
@@ -63,7 +63,7 @@
             ]
           ]
         ],
-        "wrap://ens/uri.eth => ResovlerExtension (wrap://ens/ens-resolver.polywrap.eth)",
+        "wrap://ens/uri.eth => ResolverExtension (wrap://ens/ens-resolver.polywrap.eth)",
         "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
         [
           "wrap://ens/fs-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/fs-resolver.polywrap.eth)",
@@ -86,7 +86,7 @@
             ]
           ]
         ],
-        "wrap://ens/uri.eth => ResovlerExtension (wrap://ens/fs-resolver.polywrap.eth)"
+        "wrap://ens/uri.eth => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth)"
       ]
     ]
   ]
