@@ -2,17 +2,17 @@ from dataclasses import dataclass
 
 from msgpack_wrap import msgpack_encode, msgpack_decode
 
+expected_array_like = [
+    130, 168, 102, 105, 114, 115, 116, 75,
+    101, 121, 170, 102, 105, 114, 115, 116,
+    86, 97, 108, 117, 101, 169, 115, 101,
+    99, 111, 110, 100, 75, 101, 121, 171,
+    115, 101, 99, 111, 110, 100, 86, 97,
+    108, 117, 101
+]
+
 
 def test_encode_and_decode_object():
-    expected_array_like = [
-        130, 168, 102, 105, 114, 115, 116, 75,
-        101, 121, 170, 102, 105, 114, 115, 116,
-        86, 97, 108, 117, 101, 169, 115, 101,
-        99, 111, 110, 100, 75, 101, 121, 171,
-        115, 101, 99, 111, 110, 100, 86, 97,
-        108, 117, 101
-    ]
-
     custom_object = {
         "firstKey": "firstValue",
         "secondKey": "secondValue"
@@ -24,38 +24,39 @@ def test_encode_and_decode_object():
     decoded = msgpack_decode(encoded)
     assert decoded == custom_object
 
-# TODO: Make sure that dataclasses are also supported, thinking
-# in a pythonic way
 
-@dataclass
-class Test:
-    first_key: str
-    second_key: str
+def test_encode_and_decode_instance():
+    @dataclass
+    class Test:
+        firstKey: str
+        secondKey: str
 
+        def method(self):
+            pass
 
-test = Test("yes", "no")
+    custom_object = Test("firstValue", "secondValue")
+    encoded = msgpack_encode(custom_object)
 
-def test_encode_and_decode_map():
-    # custom_map = {
-    #     "firstKey": {
-    #         "one": "1"
-    #     },
-    #     "secondKey": {
-    #         "two": "2"
-    #     }
-    # }
-    #
-    # encoded = msgpack_encode(custom_map)
-    # decoded = msgpack_decode(encoded)
-    # assert decoded == custom_map
-    #
-    # custom_map["firstKey"] = bytes([1, 2, 3])
-    # custom_map["secondKey"] = bytes([3, 2, 1])
-    #
-    # encoded = msgpack_encode(custom_map)
-    # decoded = msgpack_decode(encoded)
-    # assert decoded == custom_map
+    assert encoded == bytes(expected_array_like)
 
-    encoded = msgpack_encode(test)
-    assert encoded == bytes(test)
+    complex_custom_object_with_class = {
+        "foo": custom_object,
+        "bar": {
+            "foo": "bar"
+        }
+    }
 
+    complex_custom_object_with_dict = {
+        "foo": {
+            "firstKey": "firstValue",
+            "secondKey": "secondValue"
+        },
+        "bar": {
+            "foo": "bar"
+        }
+    }
+
+    encoded_with_dict = msgpack_encode(complex_custom_object_with_dict)
+    encoded_with_class = msgpack_encode(complex_custom_object_with_class)
+
+    assert encoded_with_dict == encoded_with_class
