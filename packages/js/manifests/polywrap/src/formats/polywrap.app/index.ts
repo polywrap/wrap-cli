@@ -25,6 +25,8 @@ export enum AppManifestFormats {
 }
 
 export const AppManifestSchemaFiles: Record<string, string> = {
+  // NOTE: Patch fix for backwards compatability
+  "0.1": "formats/polywrap.app/0.1.0.json",
   "0.1.0": "formats/polywrap.app/0.1.0.json",
   "0.2.0": "formats/polywrap.app/0.2.0.json",
 }

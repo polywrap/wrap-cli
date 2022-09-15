@@ -22,6 +22,8 @@ export enum PolywrapWorkflowFormats {
 }
 
 export const PolywrapWorkflowSchemaFiles: Record<string, string> = {
+  // NOTE: Patch fix for backwards compatability
+  "0.1": "formats/polywrap.test/0.1.0.json",
   "0.1.0": "formats/polywrap.test/0.1.0.json",
 }
 

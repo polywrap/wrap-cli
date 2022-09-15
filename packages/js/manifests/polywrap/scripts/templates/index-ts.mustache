@@ -32,6 +32,8 @@ export enum {{#latest}}{{type}}{{/latest}}Formats {
 }
 
 export const {{#latest}}{{type}}{{/latest}}SchemaFiles: Record<string, string> = {
+  // NOTE: Patch fix for backwards compatability
+  "0.1": "formats/{{#latest}}{{formatTypeName}}{{/latest}}/0.1.0.json",
   {{#formats}}
   "{{version}}": "{{{schemaFilePath}}}",
   {{/formats}}
