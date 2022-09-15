@@ -7,7 +7,6 @@ import {
   Connections,
 } from "@polywrap/ethereum-plugin-js";
 import {
-  LegacyPluginsResolver,
   LegacyRedirectsResolver,
   IWrapperCache,
   WrapperCache,
@@ -47,58 +46,6 @@ export const getDefaultClientConfig = (
         to: new Uri(defaultWrappers.graphNode),
       },
     ],
-    plugins: [
-      // IPFS is required for downloading Polywrap packages
-      {
-        uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
-        plugin: ipfsPlugin({
-          provider: defaultIpfsProviders[0],
-          fallbackProviders: defaultIpfsProviders.slice(1),
-        }),
-      },
-      // ENS is required for resolving domain to IPFS hashes
-      {
-        uri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-        plugin: ensResolverPlugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/ethereum.polywrap.eth"),
-        plugin: ethereumPlugin({
-          connections: new Connections({
-            networks: {
-              mainnet: new Connection({
-                provider:
-                  "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-              }),
-              goerli: new Connection({
-                provider:
-                  "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-              }),
-            },
-          }),
-        }),
-      },
-      {
-        uri: new Uri("wrap://ens/http.polywrap.eth"),
-        plugin: httpPlugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/js-logger.polywrap.eth"),
-        plugin: loggerPlugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/fs.polywrap.eth"),
-        plugin: fileSystemPlugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-        plugin: fileSystemResolverPlugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-        plugin: ipfsResolverPlugin({}),
-      },
-    ],
     interfaces: [
       {
         interface: new Uri("wrap://ens/uri-resolver.core.polywrap.eth"),
@@ -116,7 +63,58 @@ export const getDefaultClientConfig = (
     resolver: new RecursiveResolver(
       new PackageToWrapperCacheResolver(wrapperCache ?? new WrapperCache(), [
         new LegacyRedirectsResolver(),
-        new LegacyPluginsResolver(),
+        [
+          // IPFS is required for downloading Polywrap packages
+          {
+            uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+            package: ipfsPlugin({
+              provider: defaultIpfsProviders[0],
+              fallbackProviders: defaultIpfsProviders.slice(1),
+            }),
+          },
+          // ENS is required for resolving domain to IPFS hashes
+          {
+            uri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
+            package: ensResolverPlugin({}),
+          },
+          {
+            uri: new Uri("wrap://ens/ethereum.polywrap.eth"),
+            package: ethereumPlugin({
+              connections: new Connections({
+                networks: {
+                  mainnet: new Connection({
+                    provider:
+                      "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+                  }),
+                  goerli: new Connection({
+                    provider:
+                      "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+                  }),
+                },
+              }),
+            }),
+          },
+          {
+            uri: new Uri("wrap://ens/http.polywrap.eth"),
+            package: httpPlugin({}),
+          },
+          {
+            uri: new Uri("wrap://ens/js-logger.polywrap.eth"),
+            package: loggerPlugin({}),
+          },
+          {
+            uri: new Uri("wrap://ens/fs.polywrap.eth"),
+            package: fileSystemPlugin({}),
+          },
+          {
+            uri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+            package: fileSystemResolverPlugin({}),
+          },
+          {
+            uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
+            package: ipfsResolverPlugin({}),
+          },
+        ],
         new ExtendableUriResolver(),
       ])
     ),

@@ -3,8 +3,6 @@ import {
   Client,
   Env,
   InterfaceImplementations,
-  PluginModule,
-  PluginRegistration,
   Uri,
   UriRedirect,
   IUriResolver,
@@ -13,7 +11,11 @@ import {
 import { Result } from "@polywrap/result";
 import { toUri } from "../utils/toUri";
 import { getDefaultClientConfig } from "../bundles";
-import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
+import {
+  RecursiveResolver,
+  PackageRegistration,
+} from "@polywrap/uri-resolvers-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 class NamedUriResolver implements IUriResolver {
   private _name: string;
@@ -49,33 +51,6 @@ describe("Client config builder", () => {
     },
   ];
 
-  const testPlugins: PluginRegistration[] = [
-    {
-      uri: "wrap://ens/test1.polywrap.eth",
-      plugin: {
-        factory: () => ({} as PluginModule<{}>),
-        manifest: {
-          name: "test",
-          abi: {},
-          type: "plugin",
-          version: "0.1",
-        },
-      },
-    },
-    {
-      uri: "wrap://ens/test2.polywrap.eth",
-      plugin: {
-        factory: () => ({} as PluginModule<{}>),
-        manifest: {
-          name: "test",
-          abi: {},
-          type: "plugin",
-          version: "0.1",
-        },
-      },
-    },
-  ];
-
   const testUriRedirects: UriRedirect[] = [
     {
       from: "wrap://ens/test-one.polywrap.eth",
@@ -105,7 +80,6 @@ describe("Client config builder", () => {
       .add({
         envs: testEnvs,
         interfaces: testInterfaces,
-        plugins: testPlugins,
         redirects: testUriRedirects,
         resolver: testUriResolver,
       })
@@ -124,12 +98,6 @@ describe("Client config builder", () => {
         implementations: x.implementations.map(toUri),
       }))
     );
-    expect(clientConfig.plugins).toStrictEqual(
-      testPlugins.map((x) => ({
-        uri: toUri(x.uri),
-        plugin: x.plugin,
-      }))
-    );
     expect(clientConfig.redirects).toStrictEqual(
       testUriRedirects.map((x) => ({
         from: toUri(x.from),
@@ -144,14 +112,12 @@ describe("Client config builder", () => {
       .add({
         envs: [testEnvs[0]],
         interfaces: [testInterfaces[0]],
-        plugins: [testPlugins[0]],
         redirects: [testUriRedirects[0]],
         resolver: testUriResolver,
       })
       .add({
         envs: [testEnvs[1]],
         interfaces: [testInterfaces[1]],
-        plugins: [testPlugins[1]],
         redirects: [testUriRedirects[1]],
       })
       .build();
@@ -167,12 +133,6 @@ describe("Client config builder", () => {
       testInterfaces.map((x) => ({
         interface: toUri(x.interface),
         implementations: x.implementations.map(toUri),
-      }))
-    );
-    expect(clientConfig.plugins).toStrictEqual(
-      testPlugins.map((x) => ({
-        uri: toUri(x.uri),
-        plugin: x.plugin,
       }))
     );
     expect(clientConfig.redirects).toStrictEqual(
@@ -192,89 +152,8 @@ describe("Client config builder", () => {
     expect(clientConfig).toBeTruthy();
     expect(clientConfig.envs).toStrictEqual(expectedConfig.envs);
     expect(clientConfig.interfaces).toStrictEqual(expectedConfig.interfaces);
-    expect(clientConfig.plugins).toHaveLength(expectedConfig.plugins.length);
-    for (let i = 0; i < clientConfig.plugins.length; i++) {
-      expect(clientConfig.plugins[i].uri).toEqual(
-        expectedConfig.plugins[i].uri
-      );
-      expect(clientConfig.plugins[i].plugin.manifest).toEqual(
-        expectedConfig.plugins[i].plugin.manifest
-      );
-    }
     expect(clientConfig.redirects).toStrictEqual(expectedConfig.redirects);
     expect(clientConfig.resolver instanceof RecursiveResolver).toBe(true);
-  });
-
-  it("should successfully add a plugin", () => {
-    const pluginUri = "wrap://ens/some-plugin.polywrap.eth";
-    const pluginPackage = testPlugins[0].plugin;
-
-    const config = new ClientConfigBuilder()
-      .addPlugin(pluginUri, pluginPackage)
-      .buildPartial();
-
-    if (!config.plugins || config.plugins.length !== 1) {
-      fail("Expected 1 plugin");
-    }
-
-    expect(config.plugins[0].uri).toStrictEqual(toUri(pluginUri));
-    expect(config.plugins[0].plugin).toStrictEqual(pluginPackage);
-  });
-
-  it("should successfully add multiple plugins", () => {
-    const config = new ClientConfigBuilder()
-      .addPlugin(testPlugins[0].uri, testPlugins[0].plugin)
-      .addPlugin(testPlugins[1].uri, testPlugins[1].plugin)
-      .buildPartial();
-
-    if (!config.plugins || config.plugins.length !== 2) {
-      fail("Expected 2 plugins");
-    }
-
-    expect(config.plugins).toContainEqual({
-      uri: toUri(testPlugins[0].uri),
-      plugin: testPlugins[0].plugin,
-    });
-    expect(config.plugins).toContainEqual({
-      uri: toUri(testPlugins[1].uri),
-      plugin: testPlugins[1].plugin,
-    });
-  });
-
-  it("should succesfully overwrite a plugin", () => {
-    const pluginUri = "wrap://ens/some-plugin.polywrap.eth";
-    const pluginPackage1 = testPlugins[0].plugin;
-    const pluginPackage2 = testPlugins[1].plugin;
-
-    const config = new ClientConfigBuilder()
-      .addPlugin(pluginUri, pluginPackage1)
-      .addPlugin(pluginUri, pluginPackage2)
-      .buildPartial();
-
-    if (!config.plugins || config.plugins.length !== 1) {
-      fail("Expected 1 plugin");
-    }
-
-    expect(config.plugins[0].uri).toStrictEqual(toUri(pluginUri));
-    expect(config.plugins[0].plugin).not.toStrictEqual(pluginPackage1);
-    expect(config.plugins[0].plugin).toStrictEqual(pluginPackage2);
-  });
-
-  it("should remove a plugin", () => {
-    const config = new ClientConfigBuilder()
-      .addPlugin(testPlugins[0].uri, testPlugins[0].plugin)
-      .addPlugin(testPlugins[1].uri, testPlugins[1].plugin)
-      .removePlugin(testPlugins[0].uri)
-      .buildPartial();
-
-    if (!config.plugins || config.plugins.length !== 1) {
-      fail("Expected 1 plugin");
-    }
-
-    const remainingPlugin = config.plugins[0];
-
-    expect(remainingPlugin.uri).toStrictEqual(toUri(testPlugins[1].uri));
-    expect(remainingPlugin.plugin).toStrictEqual(testPlugins[1].plugin);
   });
 
   it("should successfully add an env", () => {

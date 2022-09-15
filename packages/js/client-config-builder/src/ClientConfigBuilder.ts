@@ -4,11 +4,9 @@ import { toUri } from "./utils/toUri";
 import {
   ClientConfig,
   Uri,
-  PluginPackage,
   IUriResolver,
   Env,
   InterfaceImplementations,
-  PluginRegistration,
   UriRedirect,
 } from "@polywrap/core-js";
 import { IWrapperCache } from "@polywrap/uri-resolvers-js";
@@ -16,13 +14,11 @@ import { IWrapperCache } from "@polywrap/uri-resolvers-js";
 export class ClientConfigBuilder {
   private _config: {
     redirects: UriRedirect<Uri>[];
-    plugins: PluginRegistration<Uri>[];
     interfaces: InterfaceImplementations<Uri>[];
     envs: Env<Uri>[];
     resolver?: IUriResolver<unknown>;
   } = {
     redirects: [],
-    plugins: [],
     interfaces: [],
     envs: [],
   };
@@ -43,12 +39,6 @@ export class ClientConfigBuilder {
       }
     }
 
-    if (config.plugins) {
-      for (const plugin of config.plugins) {
-        this.addPlugin(plugin.uri, plugin.plugin);
-      }
-    }
-
     if (config.redirects) {
       for (const redirect of config.redirects) {
         this.addUriRedirect(redirect.from, redirect.to);
@@ -64,42 +54,6 @@ export class ClientConfigBuilder {
 
   addDefaults(wrapperCache?: IWrapperCache): ClientConfigBuilder {
     return this.add(getDefaultClientConfig(wrapperCache));
-  }
-
-  addPlugin<TPluginConfig>(
-    uri: Uri | string,
-    plugin: PluginPackage<TPluginConfig>
-  ): ClientConfigBuilder {
-    const pluginUri = toUri(uri);
-
-    const existingRegistration = this._config.plugins.find((x) =>
-      Uri.equals(x.uri, pluginUri)
-    );
-
-    if (existingRegistration) {
-      existingRegistration.plugin = plugin;
-    } else {
-      this._config.plugins.push({
-        uri: pluginUri,
-        plugin: plugin,
-      });
-    }
-
-    return this;
-  }
-
-  removePlugin(uri: Uri | string): ClientConfigBuilder {
-    const pluginUri = toUri(uri);
-
-    const idx = this._config.plugins.findIndex((x) =>
-      Uri.equals(x.uri, pluginUri)
-    );
-
-    if (idx > -1) {
-      this._config.plugins.splice(idx, 1);
-    }
-
-    return this;
   }
 
   addEnv(uri: Uri | string, env: Record<string, unknown>): ClientConfigBuilder {
