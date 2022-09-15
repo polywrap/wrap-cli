@@ -4,7 +4,6 @@ import {
   SubscriptionHandler,
   UriRedirect,
   Uri,
-  PluginRegistration,
   InterfaceImplementations,
   Env,
 } from "./";
@@ -15,7 +14,6 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
-  plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
   resolver: IUriResolver<unknown>;
@@ -54,8 +52,6 @@ export interface Client
     SubscriptionHandler,
     UriResolverHandler<unknown> {
   getRedirects(options?: GetRedirectsOptions): readonly UriRedirect<Uri>[];
-
-  getPlugins(options?: GetPluginsOptions): readonly PluginRegistration<Uri>[];
 
   getInterfaces(
     options?: GetInterfacesOptions
