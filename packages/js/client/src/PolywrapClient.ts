@@ -29,12 +29,14 @@ import {
   GetUriResolverOptions,
   Contextualized,
   GetManifestOptions,
+  GetPluginOptions,
   initWrapper,
   IWrapPackage,
   IUriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionContext,
   getEnvFromUriHistory,
+  PluginPackage,
 } from "@polywrap/core-js";
 import {
   buildCleanUriHistory,
@@ -128,6 +130,16 @@ export class PolywrapClient implements Client {
     options: GetPluginsOptions = {}
   ): readonly PluginRegistration<Uri>[] {
     return this._getConfig(options.contextId).plugins;
+  }
+
+  @Tracer.traceMethod("PolywrapClient: getPlugin")
+  public getPluginByUri<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetPluginOptions = {}
+  ): PluginPackage<unknown> | undefined {
+    return this.getPlugins(options).find((x) =>
+      Uri.equals(x.uri, Uri.from(uri))
+    )?.plugin;
   }
 
   @Tracer.traceMethod("PolywrapClient: getInterfaces")
@@ -699,6 +711,12 @@ const contextualizeClient = (
         },
         getPlugins: (options: GetPluginsOptions = {}) => {
           return client.getPlugins({ ...options, contextId });
+        },
+        getPluginByUri: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetPluginOptions = {}
+        ) => {
+          return client.getPluginByUri(uri, { ...options, contextId });
         },
         getInterfaces: (options: GetInterfacesOptions = {}) => {
           return client.getInterfaces({ ...options, contextId });
