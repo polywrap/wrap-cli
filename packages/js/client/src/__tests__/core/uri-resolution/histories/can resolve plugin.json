@@ -1,0 +1,12 @@
+[
+  "wrap://ens/plugin.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/plugin.eth)",
+  [
+    "wrap://ens/plugin.eth => UriResolverAggregator => package (wrap://ens/plugin.eth)",
+    [
+      "wrap://ens/plugin.eth => LegacyPluginsResolver => package (wrap://ens/plugin.eth)",
+      [
+        "wrap://ens/plugin.eth => Plugin (wrap://ens/plugin.eth) => package (wrap://ens/plugin.eth)"
+      ]
+    ]
+  ]
+]

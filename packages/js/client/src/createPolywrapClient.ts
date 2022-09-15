@@ -77,7 +77,7 @@ export const createPolywrapClient = Tracer.traceFunc(
         builder.addPlugin(plugin.uri, plugin.plugin);
       }
 
-      const sanitizedConfig = builder.build();
+      const sanitizedConfig = builder.buildPartial();
 
       return new PolywrapClient(sanitizedConfig);
     } else {
