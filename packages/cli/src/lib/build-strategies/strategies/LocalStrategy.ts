@@ -2,34 +2,33 @@ import { BuildStrategy } from "../BuildStrategy";
 import { displayPath, runCommand } from "../../system";
 import { withSpinner } from "../../helpers";
 import { intlMsg } from "../../intl";
-
-import path from "path";
+import { BuildManifestConfig } from "../../project";
 
 export class LocalBuildStrategy extends BuildStrategy<void> {
   public async build(): Promise<void> {
     const run = async () => {
-      const manifestDir = await this.project.getManifestDir();
       const bindLanguage = await this.project.getManifestLanguage();
-      const abortPath = path.relative(
-        process.cwd(),
-        path.join(manifestDir, "src/wrap/entry/wrapAbort")
-      );
-      const scriptPath = `${__dirname}/../../defaults/build-scripts/${bindLanguage}.sh`;
-      const command = `chmod +x ${scriptPath} && ${scriptPath} ${manifestDir} ${this.outputDir} ${abortPath}`;
+      const buildManifest = await this.project.getBuildManifest();
+      const buildManifestConfig = buildManifest.config as BuildManifestConfig;
 
-      await withSpinner(
-        intlMsg.lib_helpers_buildText(),
-        intlMsg.lib_helpers_buildError(),
-        intlMsg.lib_helpers_buildWarning(),
-        async (_spinner) => {
-          return await runCommand(
-            command,
-            this.project.quiet,
-            undefined,
-            process.cwd()
-          );
-        }
-      );
+      if (buildManifestConfig.polywrap_module) {
+        const scriptPath = `${__dirname}/../../defaults/build-scripts/${bindLanguage}.sh`;
+        const command = `chmod +x ${scriptPath} && ${scriptPath} ${buildManifestConfig.polywrap_module.dir} ${this.outputDir}`;
+
+        await withSpinner(
+          intlMsg.lib_helpers_buildText(),
+          intlMsg.lib_helpers_buildError(),
+          intlMsg.lib_helpers_buildWarning(),
+          async (_spinner) => {
+            return await runCommand(
+              command,
+              this.project.quiet,
+              undefined,
+              process.cwd()
+            );
+          }
+        );
+      }
     };
 
     if (this.project.quiet) {

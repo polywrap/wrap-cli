@@ -1,8 +1,9 @@
 #!/bin/sh
-asc "$1"/src/wrap/entry.ts \
+yarn
+asc "$1"/wrap/entry.ts \
   --path ./node_modules \
   --outFile "$2"/wrap.wasm \
-  --use abort="$3" \
+  --use abort="$1"/wrap/entry/wrapAbort \
   --optimize --importMemory \
   --runtime stub \
   --runPasses asyncify

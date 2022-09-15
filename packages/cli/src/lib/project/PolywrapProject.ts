@@ -41,6 +41,23 @@ export interface PolywrapProjectConfig extends ProjectConfig {
   metaManifestPath?: string;
 }
 
+export interface BuildManifestConfig {
+  [k: string]: unknown;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  polywrap_module?: {
+    name: string;
+    dir: string;
+  };
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  polywrap_linked_packages?: {
+    dir: string;
+    name: string;
+  }[];
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  polywrap_manifests: string[];
+  include?: string[];
+}
+
 export class PolywrapProject extends Project<PolywrapManifest> {
   public static cacheLayout = {
     root: "wasm/",
