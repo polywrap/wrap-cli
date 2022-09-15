@@ -61,6 +61,8 @@ export interface Client
 
   getPlugins(options?: GetPluginsOptions): readonly PluginRegistration<Uri>[];
 
+  getPlugin(options?: GetPluginOptions): PluginRegistration<Uri>;
+
   getInterfaces(
     options?: GetInterfacesOptions
   ): readonly InterfaceImplementations<Uri>[];
