@@ -169,7 +169,7 @@ describe("plugin-wrapper", () => {
     expect(registeredPlugin?.plugin).toEqual(pluginPackage2);
   });
 
-  test("get plugin config", async () => {
+  test("get plugin package by uri", async () => {
     interface SamplePluginConfig {
       bar: string;
     }
@@ -189,8 +189,7 @@ describe("plugin-wrapper", () => {
             plugin: pluginPackage,
           },
         ],
-      },
-      { noDefaults: true }
+      }
     );
 
     const plugin = await client.getPluginByUri(
