@@ -8,7 +8,6 @@ import {
   Uri,
   GetFileOptions,
   GetManifestOptions,
-  Env,
   isBuffer,
 } from "../.";
 
@@ -16,21 +15,13 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Tracer, TracingLevel } from "@polywrap/tracing-js";
 
-export class PluginWrapper extends Wrapper {
+export class PluginWrapper implements Wrapper {
   private _instance: PluginModule<unknown> | undefined;
 
-  constructor(
-    private _uri: Uri,
-    private _plugin: PluginPackage<unknown>,
-    private _clientEnv?: Env<Uri>
-  ) {
-    super();
-
+  constructor(private _plugin: PluginPackage<unknown>) {
     Tracer.startSpan("PluginWrapper: constructor");
     Tracer.setAttribute("args", {
-      uri: this._uri,
       plugin: this._plugin,
-      clientEnv: this._clientEnv,
     });
     Tracer.endSpan();
   }
@@ -74,7 +65,7 @@ export class PluginWrapper extends Wrapper {
       }
 
       // Set the module's environment
-      await module.setEnv(this._getClientEnv() || {});
+      await module.setEnv(options.env || {});
 
       let jsArgs: Record<string, unknown>;
 
@@ -114,7 +105,7 @@ export class PluginWrapper extends Wrapper {
       } catch (e) {
         throw Error(
           `PluginWrapper: invocation exception encountered.\n` +
-            `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+            `uri: ${options.uri}\nmodule: ${module}\n` +
             `method: ${method}\n` +
             `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
             `exception: ${e.message}`
@@ -130,13 +121,5 @@ export class PluginWrapper extends Wrapper {
   private _getInstance(): PluginModule<unknown> {
     this._instance ||= this._plugin.factory();
     return this._instance;
-  }
-
-  @Tracer.traceMethod("PluginWrapper: _getClientEnv")
-  private _getClientEnv(): Record<string, unknown> {
-    if (!this._clientEnv?.env) {
-      return {};
-    }
-    return this._clientEnv.env;
   }
 }

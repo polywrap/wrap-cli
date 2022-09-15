@@ -470,6 +470,7 @@ pub fn write_optional_env_method_result<W: Write>(result: &Option<AnotherType>, 
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ArgsIf {
+    #[serde(rename = "if")]
     pub _if: Else,
 }
 

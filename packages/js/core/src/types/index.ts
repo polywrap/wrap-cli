@@ -11,4 +11,6 @@ export * from "./Env";
 export * from "./InterfaceImplementations";
 export * from "./PluginRegistration";
 export * from "./UriResolver";
-export * from "./WrapperCache";
+export * from "./IWrapPackage";
+export * from "./IUriWrapper";
+export * from "./IUriPackage";
