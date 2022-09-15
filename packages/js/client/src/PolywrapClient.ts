@@ -74,10 +74,17 @@ export class PolywrapClient implements Client {
 
       if (!options?.noDefaults) {
         builder.addDefaults(config?.wrapperCache, config?.resolver);
-      }
-
-      if (config) {
-        builder.add(config);
+        if (config) {
+          // Add everything except for the resolver because we already added it above
+          builder.add({
+            ...config,
+            resolver: undefined,
+          });
+        }
+      } else {
+        if (config) {
+          builder.add(config);
+        }
       }
 
       const sanitizedConfig = builder.build();

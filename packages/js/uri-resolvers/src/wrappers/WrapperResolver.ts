@@ -1,20 +1,22 @@
 import {
   Uri,
-  IUriResolver,
   UriPackageOrWrapper,
   UriResolutionResult,
   Wrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
+import { ResolverWithHistory } from "../helpers";
 
-export class WrapperResolver implements IUriResolver {
-  constructor(private uri: Uri, private wrapper: Wrapper) {}
-
-  public get name(): string {
-    return `Wrapper (${this.uri.uri})`;
+export class WrapperResolver extends ResolverWithHistory {
+  constructor(private uri: Uri, private wrapper: Wrapper) {
+    super();
   }
 
-  async tryResolveUri(uri: Uri): Promise<Result<UriPackageOrWrapper>> {
+  protected getStepDescription = (): string => `Package (${this.uri.uri})`;
+
+  protected async _tryResolveUri(
+    uri: Uri
+  ): Promise<Result<UriPackageOrWrapper>> {
     if (uri.uri !== this.uri.uri) {
       return UriResolutionResult.ok(uri);
     }
