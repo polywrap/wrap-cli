@@ -52,8 +52,11 @@ export class ClientConfigBuilder {
     return this;
   }
 
-  addDefaults(wrapperCache?: IWrapperCache): ClientConfigBuilder {
-    return this.add(getDefaultClientConfig(wrapperCache));
+  addDefaults(
+    wrapperCache?: IWrapperCache,
+    resolver?: IUriResolver<unknown>
+  ): ClientConfigBuilder {
+    return this.add(getDefaultClientConfig(wrapperCache, resolver));
   }
 
   addEnv(uri: Uri | string, env: Record<string, unknown>): ClientConfigBuilder {

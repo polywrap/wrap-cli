@@ -11,11 +11,7 @@ import {
 import { Result } from "@polywrap/result";
 import { toUri } from "../utils/toUri";
 import { getDefaultClientConfig } from "../bundles";
-import {
-  RecursiveResolver,
-  PackageRegistration,
-} from "@polywrap/uri-resolvers-js";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
 
 class NamedUriResolver implements IUriResolver {
   private _name: string;
@@ -70,7 +66,6 @@ describe("Client config builder", () => {
     expect(clientConfig).toStrictEqual({
       envs: [],
       interfaces: [],
-      plugins: [],
       redirects: [],
     });
   });
