@@ -213,7 +213,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.plugins || config.plugins.length !== 1) {
-      fail("Expected 1 plugin");
+      fail(["Expected 1 plugin, received:", config.plugins]);
     }
 
     expect(config.plugins[0].uri).toStrictEqual(Uri.from(pluginUri));
@@ -227,7 +227,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.plugins || config.plugins.length !== 2) {
-      fail("Expected 2 plugins");
+      fail(["Expected 2 plugins, received:", config.plugins]);
     }
 
     expect(config.plugins).toContainEqual({
@@ -251,7 +251,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.plugins || config.plugins.length !== 1) {
-      fail("Expected 1 plugin");
+      fail(["Expected 1 plugin, received:", config.plugins]);
     }
 
     expect(config.plugins[0].uri).toStrictEqual(Uri.from(pluginUri));
@@ -267,7 +267,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.plugins || config.plugins.length !== 1) {
-      fail("Expected 1 plugin");
+      fail(["Expected 1 plugin, received:", config.plugins]);
     }
 
     const remainingPlugin = config.plugins[0];
@@ -288,7 +288,7 @@ describe("Client config builder", () => {
     const config = new ClientConfigBuilder().addEnv(envUri, env).buildPartial();
 
     if (!config.envs || config.envs.length !== 1) {
-      fail("Expected 1 env");
+      fail(["Expected 1 env, received:", config.envs]);
     }
 
     expect(config.envs[0].uri).toStrictEqual(Uri.from(envUri));
@@ -314,7 +314,7 @@ describe("Client config builder", () => {
     const expectedEnv = { ...env1, ...env2 };
 
     if (!config.envs || config.envs.length !== 1) {
-      fail("Expected 1 env");
+      fail(["Expected 1 env, received:", config.envs]);
     }
 
     expect(config.envs[0].uri).toStrictEqual(Uri.from(envUri));
@@ -328,7 +328,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.envs || config.envs.length !== 2) {
-      fail("Expected 2 envs");
+      fail(["Expected 2 envs, received:", config.envs]);
     }
 
     expect(config.envs).toContainEqual({
@@ -349,7 +349,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.envs || config.envs.length !== 1) {
-      fail("Expected 1 env");
+      fail(["Expected 1 env, received:", config.envs]);
     }
 
     expect(config.envs).toContainEqual({
@@ -368,7 +368,7 @@ describe("Client config builder", () => {
     const config = new ClientConfigBuilder().setEnv(envUri, env).buildPartial();
 
     if (!config.envs || config.envs.length !== 1) {
-      fail("Expected 1 env");
+      fail(["Expected 1 env, received:", config.envs]);
     }
 
     expect(config.envs[0]).toEqual({
@@ -393,7 +393,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.envs || config.envs.length !== 1) {
-      fail("Expected 1 env");
+      fail(["Expected 1 env, received:", config.envs]);
     }
 
     expect(config.envs[0]).toEqual({
@@ -411,7 +411,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.interfaces || config.interfaces.length !== 1) {
-      fail("Expected 1 interface");
+      fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
     expect(config.interfaces[0]).toStrictEqual({
@@ -431,7 +431,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.interfaces || config.interfaces.length !== 1) {
-      fail("Expected 1 interface");
+      fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
     expect(config.interfaces[0].interface).toStrictEqual(
@@ -461,7 +461,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.interfaces || config.interfaces.length !== 2) {
-      fail("Expected 2 interfaces");
+      fail(["Expected 2 interfaces, received:", config.interfaces]);
     }
 
     const interface1 = config.interfaces.find(
@@ -492,7 +492,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.interfaces || config.interfaces.length !== 1) {
-      fail("Expected 1 interface");
+      fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
     expect(config.interfaces[0].interface).toStrictEqual(
@@ -519,7 +519,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.interfaces || config.interfaces.length !== 1) {
-      fail("Expected 1 interface");
+      fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
     expect(config.interfaces[0].interface).toStrictEqual(
@@ -555,7 +555,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.interfaces || config.interfaces.length !== 2) {
-      fail("Expected 2 interfaces");
+      fail(["Expected 2 interfaces, received:", config.interfaces]);
     }
 
     const interface1 = config.interfaces.find(
@@ -591,7 +591,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.interfaces || config.interfaces.length !== 2) {
-      fail("Expected 2 interfaces");
+      fail(["Expected 2 interfaces, received:", config.interfaces]);
     }
 
     const interface1 = config.interfaces.find(
@@ -625,7 +625,7 @@ describe("Client config builder", () => {
       .buildPartial();
 
     if (!config.interfaces || config.interfaces.length !== 1) {
-      fail("Expected 1 interface");
+      fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
     const interface1 = config.interfaces.find(
