@@ -160,7 +160,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runJsonTypeTest(await getClient(), wrapperUri);
+    await TestCases.runJsonTypeTest(await getClient(), wrapperUri, true);
   });
 
   it("large-types", async () => {
