@@ -63,6 +63,15 @@ describe("Ethereum Plugin", () => {
     });
 
     client = new PolywrapClient({
+      envs: [
+        {
+          uri: "wrap://ens/ipfs.polywrap.eth",
+          env: {
+            provider: providers.ipfs,
+            fallbackProviders: defaultIpfsProviders,
+          },
+        },
+      ],
       plugins: [
         {
           uri: "wrap://ens/ethereum.polywrap.eth",
@@ -70,10 +79,7 @@ describe("Ethereum Plugin", () => {
         },
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({
-            provider: providers.ipfs,
-            fallbackProviders: defaultIpfsProviders,
-          }),
+          plugin: ipfsPlugin({}),
         },
         {
           uri: "wrap://ens/ens-resolver.polywrap.eth",

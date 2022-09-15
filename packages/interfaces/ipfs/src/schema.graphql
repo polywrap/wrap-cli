@@ -24,6 +24,11 @@ type Options {
   provider: String
 
   """
+  Fallback IPFS providers
+  """
+  fallbackProviders: [String!]
+
+  """
   Disable querying providers in parallel when resolving URIs
   """
   disableParallelRequests: Boolean

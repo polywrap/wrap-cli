@@ -32,6 +32,13 @@ export const getDefaultClientConfig = (
           provider: "https://api.thegraph.com",
         },
       },
+      {
+        uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+        env: {
+          provider: defaultIpfsProviders[0],
+          fallbackProviders: defaultIpfsProviders.slice(1),
+        },
+      },
     ],
     redirects: [
       {
@@ -51,10 +58,7 @@ export const getDefaultClientConfig = (
       // IPFS is required for downloading Polywrap packages
       {
         uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
-        plugin: ipfsPlugin({
-          provider: defaultIpfsProviders[0],
-          fallbackProviders: defaultIpfsProviders.slice(1),
-        }),
+        plugin: ipfsPlugin({}),
       },
       // ENS is required for resolving domain to IPFS hashes
       {
