@@ -29,12 +29,14 @@ import {
   GetUriResolverOptions,
   Contextualized,
   GetManifestOptions,
+  GetPluginOptions,
   initWrapper,
   IWrapPackage,
   IUriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionContext,
   getEnvFromUriHistory,
+  PluginPackage,
 } from "@polywrap/core-js";
 import {
   buildCleanUriHistory,
@@ -130,6 +132,16 @@ export class PolywrapClient implements Client {
     return this._getConfig(options.contextId).plugins;
   }
 
+  @Tracer.traceMethod("PolywrapClient: getPlugin")
+  public getPluginByUri<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetPluginOptions = {}
+  ): PluginPackage<unknown> | undefined {
+    return this.getPlugins(options).find((x) =>
+      Uri.equals(x.uri, Uri.from(uri))
+    )?.plugin;
+  }
+
   @Tracer.traceMethod("PolywrapClient: getInterfaces")
   public getInterfaces(
     options: GetInterfacesOptions = {}
@@ -159,16 +171,6 @@ export class PolywrapClient implements Client {
     return this.getEnvs(options).find((environment) =>
       Uri.equals(environment.uri, uriUri)
     );
-  }
-
-  @Tracer.traceMethod("PolywrapClient: getPlugin")
-  public async getPlugin<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetPluginOptions = {}
-  ): Promise<PluginPackage<unknown> | undefined> {
-    return this.getPlugins(options).find((x) =>
-      Uri.equals(x.uri, this._toUri(uri))
-    )?.plugin;
   }
 
   @Tracer.traceMethod("PolywrapClient: getManifest")
@@ -709,6 +711,12 @@ const contextualizeClient = (
         },
         getPlugins: (options: GetPluginsOptions = {}) => {
           return client.getPlugins({ ...options, contextId });
+        },
+        getPluginByUri: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetPluginOptions = {}
+        ) => {
+          return client.getPluginByUri(uri, { ...options, contextId });
         },
         getInterfaces: (options: GetInterfacesOptions = {}) => {
           return client.getInterfaces({ ...options, contextId });

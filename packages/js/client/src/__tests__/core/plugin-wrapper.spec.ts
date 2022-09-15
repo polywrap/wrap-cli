@@ -193,7 +193,7 @@ describe("plugin-wrapper", () => {
       { noDefaults: true }
     );
 
-    const plugin = await client.getPlugin(
+    const plugin = await client.getPluginByUri(
       "wrap://ens/some.plugin.eth"
     );
 

@@ -7,6 +7,7 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
+  PluginPackage
 } from "./";
 import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
@@ -59,7 +60,10 @@ export interface Client
 
   getPlugins(options?: GetPluginsOptions): readonly PluginRegistration<Uri>[];
 
-  getPlugin(options?: GetPluginOptions): PluginRegistration<Uri>;
+  getPluginByUri<TUri extends Uri | string>(
+    uri: TUri,
+    options?: GetPluginOptions
+  ): PluginPackage<unknown> | undefined;
 
   getInterfaces(
     options?: GetInterfacesOptions
