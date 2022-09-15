@@ -11,6 +11,7 @@ import {
   Connections,
   Connection,
 } from "@polywrap/ethereum-plugin-js";
+import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 
 const contentHash = require("content-hash");
 
@@ -35,21 +36,19 @@ class LocalDevENSPublisher implements Deployer {
     const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
 
     const client = new PolywrapClient({
-      plugins: [
-        {
-          uri: ethereumPluginUri,
-          plugin: ethereumPlugin({
-            connections: new Connections({
-              networks: {
-                testnet: new Connection({
-                  provider: `http://localhost:${config.ports.ethereum}`,
-                }),
-              },
-              defaultNetwork: "testnet",
-            }),
+      resolver: buildUriResolver({
+        uri: ethereumPluginUri,
+        package: ethereumPlugin({
+          connections: new Connections({
+            networks: {
+              testnet: new Connection({
+                provider: `http://localhost:${config.ports.ethereum}`,
+              }),
+            },
+            defaultNetwork: "testnet",
           }),
-        },
-      ],
+        }),
+      }),
     });
 
     const { data: signer } = await client.invoke<string>({

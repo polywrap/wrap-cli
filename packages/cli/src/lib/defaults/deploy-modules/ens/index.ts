@@ -6,6 +6,7 @@ import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
+import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import path from "path";
 import {
   ethereumPlugin,
@@ -62,14 +63,14 @@ class ENSPublisher implements Deployer {
       defaultNetwork: network,
     });
     const client = new PolywrapClient({
-      plugins: [
+      resolver: buildUriResolver([
         {
           uri: ethereumPluginUri,
-          plugin: ethereumPlugin({
+          package: ethereumPlugin({
             connections,
           }),
         },
-      ],
+      ]),
     });
 
     const { data: resolver } = await client.invoke<string>({

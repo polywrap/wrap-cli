@@ -1,6 +1,6 @@
 import { getTestEnvProviders } from "./providers";
 
-import { PluginRegistration, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClientConfig } from "@polywrap/client-js";
 import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
@@ -10,6 +10,10 @@ import {
 } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensAddresses } from "@polywrap/test-env-js";
+import {
+  PackageRegistration,
+  buildUriResolver,
+} from "@polywrap/uri-resolvers-js";
 
 export async function getTestEnvClientConfig(): Promise<
   Partial<PolywrapClientConfig>
@@ -26,10 +30,10 @@ export async function getTestEnvClientConfig(): Promise<
 
   // TODO: move this into its own package, since it's being used everywhere?
   // maybe have it exported from test-env.
-  const plugins: PluginRegistration[] = [
+  const packages: PackageRegistration[] = [
     {
       uri: "wrap://ens/ethereum.polywrap.eth",
-      plugin: ethereumPlugin({
+      package: ethereumPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({
@@ -41,14 +45,14 @@ export async function getTestEnvClientConfig(): Promise<
     },
     {
       uri: "wrap://ens/ipfs.polywrap.eth",
-      plugin: ipfsPlugin({
+      package: ipfsPlugin({
         provider: ipfsProvider,
         fallbackProviders: defaultIpfsProviders,
       }),
     },
     {
       uri: "wrap://ens/ens-resolver.polywrap.eth",
-      plugin: ensResolverPlugin({
+      package: ensResolverPlugin({
         addresses: {
           testnet: ensAddress,
         },
@@ -57,6 +61,6 @@ export async function getTestEnvClientConfig(): Promise<
   ];
 
   return {
-    plugins,
+    resolver: buildUriResolver(packages),
   };
 }
