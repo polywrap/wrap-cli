@@ -61,8 +61,11 @@ export const run: Command = {
   },
 };
 
-function loadValidationScript(cueFilepath: string): string {
-  cueFilepath = path.resolve(cueFilepath);
+function loadValidationScript(
+  manifestPath: string,
+  cueFilepath: string
+): string {
+  cueFilepath = path.join(path.dirname(manifestPath), cueFilepath);
 
   if (!fs.existsSync(cueFilepath)) {
     console.error(
@@ -83,7 +86,7 @@ const _run = async (options: WorkflowCommandOptions) => {
   const manifestPath = path.resolve(manifest);
   const workflow = loadWorkflowManifest(manifestPath);
   const validationScript = workflow.validation
-    ? loadValidationScript(workflow.validation)
+    ? loadValidationScript(manifestPath, workflow.validation)
     : undefined;
 
   const workflowOutput: (JobResult & { id: string })[] = [];

@@ -35,7 +35,7 @@
             ]
           ]
         ],
-        "wrap://file/$root-wrapper-dir/simple/build => ResovlerExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple/build)"
+        "wrap://file/$root-wrapper-dir/simple/build => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple/build)"
       ]
     ]
   ]

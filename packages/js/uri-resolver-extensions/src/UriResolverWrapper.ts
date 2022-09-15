@@ -20,7 +20,7 @@ export class UriResolverWrapper extends ResolverWithHistory<unknown> {
   }
 
   protected getStepDescription = (): string =>
-    `ResovlerExtension (${this.implementationUri.uri})`;
+    `ResolverExtension (${this.implementationUri.uri})`;
 
   protected async _tryResolveUri(
     uri: Uri,
