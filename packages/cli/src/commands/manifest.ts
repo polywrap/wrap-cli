@@ -81,14 +81,21 @@ export const manifest: Command = {
     manifestCommand
       .command("schema")
       .alias("s")
-      .description("Prints out the schema for the current manifest format.")
+      .description(intlMsg.commands_manifest_command_s())
       .addArgument(
-        new Argument("type", "Manifest file type.")
+        new Argument(
+          "type",
+          intlMsg.commands_manifest_options_t({ default: manifestFileTypes[0] })
+        )
           .argOptional()
           .choices(manifestFileTypes)
           .default(manifestFileTypes[0])
       )
-      .option(`-r, --raw`, `Output raw JSON Schema`, false)
+      .option(
+        `-r, --raw`,
+        intlMsg.commands_manifest_command_s_option_r(),
+        false
+      )
       .option(
         `-m, --manifest-file <${pathStr}>`,
         `${intlMsg.commands_manifest_options_m({
@@ -102,11 +109,12 @@ export const manifest: Command = {
     manifestCommand
       .command("migrate")
       .alias("m")
-      .description(
-        "Migrates the polywrap project manifest to the latest version."
-      )
+      .description(intlMsg.commands_manifest_command_m())
       .addArgument(
-        new Argument("type", "Manifest file type.")
+        new Argument(
+          "type",
+          intlMsg.commands_manifest_options_t({ default: manifestFileTypes[0] })
+        )
           .argOptional()
           .choices(manifestFileTypes)
           .default(manifestFileTypes[0])
@@ -180,9 +188,8 @@ export const runSchemaCommand = async (
   const manifestVersion = maybeGetManifestFormatVersion(manifestString);
 
   if (!manifestVersion) {
-    throw new Error(
-      `Could not detect manifest format! Please make sure your manifest has a "format" field.`
-    );
+    console.log(intlMsg.commands_manifest_formatError());
+    process.exit(1);
   }
 
   const schemasPackageDir = path.dirname(
@@ -292,7 +299,8 @@ const runMigrateCommand = async (
       const language = getProjectManifestLanguage(manifestString);
 
       if (!language) {
-        throw new Error("Unsupported project type!");
+        console.log(intlMsg.commands_manifest_projectTypeError());
+        process.exit(1);
       }
 
       if (isPolywrapManifestLanguage(language)) {
@@ -314,7 +322,8 @@ const runMigrateCommand = async (
           latestPolywrapManifestFormat
         );
       } else {
-        throw new Error("Unsupported project type!");
+        console.log(intlMsg.commands_manifest_projectTypeError());
+        process.exit(1);
       }
 
     case "build":
@@ -364,7 +373,12 @@ function migrateManifestFile(
   migrationFn: (input: string) => string,
   version: string
 ): void {
-  console.log(`Migrating ${path.basename(manifestFile)} to version ${version}`);
+  console.log(
+    intlMsg.commands_manifest_command_m_migrateManifestMessage({
+      manifestFile: path.basename(manifestFile),
+      version: version,
+    })
+  );
 
   const manifestString = fs.readFileSync(manifestFile, {
     encoding: "utf-8",
@@ -374,7 +388,11 @@ function migrateManifestFile(
 
   const oldManifestPath = preserveOldManifest(manifestFile);
 
-  console.log(`Saved previous version of manifest to ${oldManifestPath}`);
+  console.log(
+    intlMsg.commands_manifest_command_m_preserveManifestMessage({
+      preservedFilePath: oldManifestPath,
+    })
+  );
 
   fs.writeFileSync(manifestFile, outputManifestString, {
     encoding: "utf-8",
