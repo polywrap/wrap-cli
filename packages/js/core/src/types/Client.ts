@@ -7,7 +7,7 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
-  PluginPackage
+  PluginPackage,
 } from "./";
 import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
