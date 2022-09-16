@@ -3,6 +3,7 @@ import multer from "multer";
 import fse from "fs-extra";
 import { Zip } from "../utils/zip";
 import path from "path";
+import { sanitizeUserPath } from "../utils/sanitization";
 
 const upload = multer({ dest: "uploads/" });
 const router = Router();
@@ -14,9 +15,35 @@ router.post(
     try {
       const user = req.params.user as string;
       const name = req.params.name as string;
-      const basePath = `${__dirname}/../../wrappers/${user}/${name}`;
 
-      if (fse.existsSync(basePath)) {
+      if (!sanitizeUserPath(user)) {
+        res.status(422).send({
+          ok: false,
+          err: "'user' path contains illegal characters",
+        });
+        return;
+      }
+
+      if (!sanitizeUserPath(name)) {
+        res.status(422).send({
+          ok: false,
+          err: "'name' path contains illegal characters"
+        });
+        return;
+      }
+
+      const basePath = `${__dirname}/../../wrappers`;
+      const wrapperPath = `${basePath}/${user}/${name}`;
+
+      if (wrapperPath.indexOf(basePath) !== 0) {
+        res.status(422).send({
+          ok: false,
+          err: "Directory traversal detected",
+        });
+        return;
+      }
+
+      if (fse.existsSync(wrapperPath)) {
         throw new Error(`Wrapper '${name}' already exists for user '${user}'`);
       }
 
@@ -30,13 +57,13 @@ router.post(
         }
 
         req.files.forEach((file) => {
-          fse.moveSync(file.path, `${basePath}/${file.originalname}`, {
+          fse.moveSync(file.path, `${wrapperPath}/${file.originalname}`, {
             overwrite: true,
           });
         });
 
         const zip = new Zip();
-        await zip.createZip(basePath, `${basePath}/wrapper.zip`);
+        await zip.createZip(wrapperPath, `${wrapperPath}/wrapper.zip`);
 
         res.status(200).send({
           ok: true
