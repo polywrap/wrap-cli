@@ -3,7 +3,6 @@ import multer from "multer";
 import fse from "fs-extra";
 import { Zip } from "../utils/zip";
 import path from "path";
-import { v4 as uuid } from "uuid"; 
 
 const upload = multer({ dest: "uploads/" });
 const router = Router();
@@ -16,6 +15,10 @@ router.post(
       const user = req.params.user as string;
       const name = req.params.name as string;
       const basePath = `${__dirname}/../../wrappers/${user}/${name}`;
+
+      if (fse.existsSync(basePath)) {
+        throw new Error(`Wrapper '${name}' already exists for user '${user}'`);
+      }
 
       if (Array.isArray(req.files)) {
         const wrapInfo = req.files.find(
@@ -32,6 +35,9 @@ router.post(
           });
         });
 
+        const zip = new Zip();
+        await zip.createZip(basePath, `${basePath}/wrapper.zip`);
+
         res.status(200).send({
           ok: true
         });
@@ -39,7 +45,10 @@ router.post(
         throw new Error("Files not sent as array");
       }
     } catch (err) {
-      res.status(500).send(err);
+      res.status(500).send({
+        ok: false,
+        err: err.message
+      });
     }
   }
 );
@@ -49,20 +58,13 @@ router.get("/wrappers/:user/:name", async (req, res) => {
     const user = req.params.user as string;
     const name = req.params.name as string;
     const basePath = `${__dirname}/../../wrappers/${user}/${name}`;
-    const zipPath = `${basePath}/${uuid()}.zip`;
 
-    const zip = new Zip();
-    await zip.createZip(basePath, zipPath);
-
-    console.log(`Zipped ${basePath} to ${zipPath}`);
-    res.status(200).download(path.resolve(zipPath), "wrappers.zip", (err) => {
-      if (err) {
-        console.log(err);
-      }
-      fse.unlinkSync(zipPath);
-    });
+    res.status(200).download(path.resolve(`${basePath}/wrapper.zip`), "wrapper.zip");
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send({
+      ok: false,
+      err: err.message
+    });
   }
 });
 
@@ -76,7 +78,10 @@ router.delete("/wrappers/:user/:name", async (req, res) => {
       ok: true
     });
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send({
+      ok: false,
+      err: err.message
+    });
   }
 });
 
