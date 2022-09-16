@@ -7,6 +7,7 @@ import {
 import { BuildStrategyArgs, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
 import { PolywrapProject } from "../../project";
+import { ScriptHelper } from "../AssemblyscriptHelper";
 
 import fse from "fs-extra";
 import path from "path";
@@ -42,8 +43,9 @@ interface BuildManifestConfig {
 
 export class DockerVMBuildStrategy extends BuildStrategy<BuildImageId> {
   private _dockerLock: FileLock;
+  private _scriptHelper: ScriptHelper;
 
-  constructor(args: BuildStrategyArgs) {
+  constructor(args: BuildStrategyArgs & { scriptHelper: ScriptHelper }) {
     super(args);
 
     if (!isDockerInstalled()) {
@@ -56,6 +58,8 @@ export class DockerVMBuildStrategy extends BuildStrategy<BuildImageId> {
         throw new Error(msg);
       }
     );
+
+    this._scriptHelper = args.scriptHelper;
   }
 
   public async build(): Promise<string> {
@@ -81,33 +85,21 @@ export class DockerVMBuildStrategy extends BuildStrategy<BuildImageId> {
         );
       });
 
-      // Link Packages
-      let packageJson = fse.readJsonSync(
-        path.join(manifestDir, "package.json")
-      );
+      await this._scriptHelper.copySourceManifest({
+        manifestDir,
+        projectVolumeDir: volumePaths.project,
+      });
 
+      // Link Packages
       if (buildManifestConfig.polywrap_linked_packages) {
         await this.project.cacheBuildManifestLinkedPackages();
 
-        packageJson = {
-          ...packageJson,
-          dependencies: {
-            ...packageJson.dependencies,
-            ...buildManifestConfig.polywrap_linked_packages.reduce(
-              (acc, pkg) => {
-                acc[pkg.name] = `../linked-packages/${pkg.name}`;
-                return acc;
-              },
-              {} as Record<string, string>
-            ),
-          },
-        };
+        await this._scriptHelper.linkPackages({
+          pkgs: buildManifestConfig.polywrap_linked_packages,
+          manifestDir,
+          projectVolumeDir: volumePaths.project,
+        });
       }
-
-      fse.writeJsonSync(
-        path.join(volumePaths.project, "package.json"),
-        packageJson
-      );
 
       // Copy includes
       if (buildManifestConfig.include) {
@@ -129,13 +121,9 @@ export class DockerVMBuildStrategy extends BuildStrategy<BuildImageId> {
           )
         );
 
-        const buildCommand = `./node_modules/.bin/asc ${buildManifestConfig.polywrap_module.dir}/wrap/entry.ts \
-        --path ./node_modules \
-        --outFile ./build/wrap.wasm \
-        --use abort=${buildManifestConfig.polywrap_module.dir}/wrap/entry/wrapAbort \
-        --optimize --importMemory \
-        --runtime stub \
-        --runPasses asyncify`;
+        const buildCommand = await this._scriptHelper.getBuildCommand(
+          buildManifestConfig.polywrap_module.dir
+        );
 
         await runCommand(
           `docker run -v ${path.resolve(
