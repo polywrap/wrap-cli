@@ -1,11 +1,4 @@
 #import { Module } into Http from "ens/http.polywrap.eth"
 
-type Env {
-  """
-  Disable querying providers in parallel when resolving URIs
-  """
-  disableParallelRequests: Boolean
-}
-
 type Module implements Http_Module {
 }
