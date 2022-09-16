@@ -24,6 +24,7 @@
     "@polywrap/asyncify-js": "0.7.0",
     "@polywrap/client-config-builder-js": "0.7.0",
     "@polywrap/core-js": "0.7.0",
+    "@polywrap/uri-resolvers-js": "0.7.0",
     "@polywrap/ens-resolver-plugin-js": "0.7.0",
     "@polywrap/ethereum-plugin-js": "0.7.0",
     "@polywrap/fs-plugin-js": "0.7.0",
@@ -37,6 +38,7 @@
     "@polywrap/schema-parse": "0.7.0",
     "@polywrap/tracing-js": "0.7.0",
     "@polywrap/wrap-manifest-types-js": "0.7.0",
+    "@polywrap/result": "0.7.0",
     "graphql": "15.5.0",
     "js-yaml": "3.14.0",
     "uuid": "8.3.2"

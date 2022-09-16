@@ -10,6 +10,7 @@ import {
 } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensAddresses } from "@polywrap/test-env-js";
+import { Env } from "@polywrap/core-js";
 
 export async function getTestEnvClientConfig(): Promise<
   Partial<PolywrapClientConfig>
@@ -41,10 +42,7 @@ export async function getTestEnvClientConfig(): Promise<
     },
     {
       uri: "wrap://ens/ipfs.polywrap.eth",
-      plugin: ipfsPlugin({
-        provider: ipfsProvider,
-        fallbackProviders: defaultIpfsProviders,
-      }),
+      plugin: ipfsPlugin({}),
     },
     {
       uri: "wrap://ens/ens-resolver.polywrap.eth",
@@ -56,7 +54,18 @@ export async function getTestEnvClientConfig(): Promise<
     },
   ];
 
+  const envs: Env[] = [
+    {
+      uri: "wrap://ens/ipfs.polywrap.eth",
+      env: {
+        provider: ipfsProvider,
+        fallbackProviders: defaultIpfsProviders,
+      },
+    },
+  ];
+
   return {
     plugins,
+    envs,
   };
 }
