@@ -20,6 +20,9 @@
   },
   "dependencies": {
     "@polywrap/core-js": "0.7.0",
+    "@polywrap/wasm-js": "0.7.0",
+    "@polywrap/uri-resolvers-js": "0.7.0",
+    "@polywrap/uri-resolver-extensions-js": "0.7.0",
     "@polywrap/ens-resolver-plugin-js": "0.7.0",
     "@polywrap/ethereum-plugin-js": "0.7.0",
     "@polywrap/fs-plugin-js": "0.7.0",
