@@ -3,7 +3,7 @@ import multer from "multer";
 import fse from "fs-extra";
 import { Zip } from "../utils/zip";
 import path from "path";
-import { uuidV4 } from "../utils/uuid";
+import { v4 as uuid } from "uuid"; 
 
 const upload = multer({ dest: "uploads/" });
 const router = Router();
@@ -49,7 +49,7 @@ router.get("/wrappers/:user/:name", async (req, res) => {
     const user = req.params.user as string;
     const name = req.params.name as string;
     const basePath = `${__dirname}/../../wrappers/${user}/${name}`;
-    const zipPath = `${basePath}/${uuidV4()}.zip`;
+    const zipPath = `${basePath}/${uuid()}.zip`;
 
     const zip = new Zip();
     await zip.createZip(basePath, zipPath);
