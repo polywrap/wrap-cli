@@ -20,6 +20,7 @@ pub use serialization::{
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Else {
+    #[serde(rename = "else")]
     pub _else: String,
 }
 

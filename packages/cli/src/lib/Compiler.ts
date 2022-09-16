@@ -19,7 +19,7 @@ import {
 } from "./";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { WasmWrapper, WrapImports } from "@polywrap/client-js";
+import { WasmWrapper, WrapImports } from "@polywrap/wasm-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath, writeDirectorySync } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
@@ -41,6 +41,7 @@ export interface CompilerConfig {
   outputDir: string;
   project: PolywrapProject;
   schemaComposer: SchemaComposer;
+  codegen: boolean;
 }
 
 export class Compiler {
@@ -99,9 +100,10 @@ export class Compiler {
       await this._outputWrapManifest(state);
 
       if (!(await this._isInterface())) {
-        // Generate the bindings
-        await this._generateCode(state);
-
+        if (this._config.codegen) {
+          // Generate the bindings
+          await this._generateCode(state);
+        }
         // Compile the Wrapper
         await this._buildModules();
       }

@@ -16,7 +16,7 @@ export const getClientWithEnsAndIpfs = async (
   return createPolywrapClient(
     {
       ethereum: { connections },
-      ipfs: { provider: providers.ipfs },
+      ipfs: {},
       ens: {
         addresses: {
           testnet: ensAddresses.ensAddress,
