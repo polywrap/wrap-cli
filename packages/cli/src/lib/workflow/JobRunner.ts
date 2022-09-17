@@ -1,31 +1,37 @@
-import { JobResult, JobRunOptions, JobStatus } from "./types";
+import { JobResult, JobStatus, Step } from "./types";
 
 import {
   Client,
   executeMaybeAsyncFunction,
   MaybeAsync,
-  Uri,
 } from "@polywrap/core-js";
+import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
 
 type DataOrError = "data" | "error";
 
-export class JobRunner<
-  TData extends unknown = unknown,
-  TUri extends Uri | string = string
-> {
-  private jobOutput: Map<string, JobResult<TData>>;
+export interface JobRunOptions {
+  relativeId?: string;
+  parentId?: string;
+  jobs: WorkflowJobs;
+}
+
+export class JobRunner {
+  private jobOutput: Map<string, JobResult>;
 
   constructor(
     private client: Client,
-    private onExecution?: (
-      id: string,
-      JobResult: JobResult<TData>
-    ) => MaybeAsync<void>
+    private onExecution?: (id: string, JobResult: JobResult) => MaybeAsync<void>
   ) {
     this.jobOutput = new Map();
   }
 
-  async run(opts: JobRunOptions): Promise<void> {
+  async run(jobs: WorkflowJobs, ids?: string[]): Promise<void> {
+    ids = ids ? ids : Object.keys(jobs);
+    const running = ids.map((relativeId) => this._run({ relativeId, jobs }));
+    await Promise.all(running);
+  }
+
+  private async _run(opts: JobRunOptions): Promise<void> {
     const { relativeId, parentId, jobs } = opts;
 
     if (relativeId) {
@@ -35,56 +41,14 @@ export class JobRunner<
       const jobId = relativeId.substring(0, index);
       if (jobId === "") return;
 
-      const steps = jobs[jobId].steps;
+      const steps: Step[] | undefined = jobs[jobId].steps as Step[];
       if (steps) {
-        for (let i = 0; i < steps.length; i++) {
-          let result: JobResult<TData> | undefined;
-          let args: Record<string, unknown> | undefined;
-
-          const step = steps[i];
-          const absoluteId = parentId
-            ? `${parentId}.${jobId}.${i}`
-            : `${jobId}.${i}`;
-          try {
-            args = this.resolveArgs(absoluteId, step.args);
-          } catch (e) {
-            result = {
-              error: e,
-              status: JobStatus.SKIPPED,
-            };
-          }
-
-          if (args) {
-            const invokeResult = await this.client.invoke<TData, TUri>({
-              uri: step.uri,
-              method: step.method,
-              config: step.config,
-              args: args,
-            });
-
-            if (invokeResult.error) {
-              result = { ...invokeResult, status: JobStatus.FAILED };
-            } else {
-              result = { ...invokeResult, status: JobStatus.SUCCEED };
-            }
-          }
-
-          if (result) {
-            this.jobOutput.set(absoluteId, result);
-
-            if (this.onExecution && typeof this.onExecution === "function") {
-              await executeMaybeAsyncFunction(
-                this.onExecution,
-                absoluteId,
-                result
-              );
-            }
-          }
-        }
+        await this.executeSteps(jobId, steps, parentId);
       }
-      const subJobs = jobs[jobId].jobs;
+
+      const subJobs: WorkflowJobs | undefined = jobs[jobId].jobs;
       if (subJobs) {
-        await this.run({
+        await this._run({
           relativeId: relativeId.substring(index + 1),
           parentId: parentId ? `${parentId}.${jobId}` : jobId,
           jobs: subJobs,
@@ -94,18 +58,12 @@ export class JobRunner<
       const jobIds = Object.keys(jobs);
       // Run all the sibling jobs in parallel
       await Promise.all(
-        jobIds.map((jobId) =>
-          this.run({
-            relativeId: jobId,
-            parentId,
-            jobs: jobs,
-          })
-        )
+        jobIds.map((relativeId) => this._run({ relativeId, parentId, jobs }))
       );
     }
   }
 
-  resolveArgs(
+  private resolveArgs(
     absCurStepId: string,
     args: Record<string, unknown> | undefined
   ): Record<string, unknown> {
@@ -170,5 +128,45 @@ export class JobRunner<
     return args
       ? (resolveValue(args) as Record<string, unknown>)
       : ({} as Record<string, unknown>);
+  }
+
+  private async execStep(absId: string, step: Step): Promise<JobResult> {
+    let args: Record<string, unknown> | undefined;
+    try {
+      args = this.resolveArgs(absId, step.args);
+    } catch (e) {
+      return {
+        error: e,
+        status: JobStatus.SKIPPED,
+      };
+    }
+
+    const invokeResult = await this.client.invoke({
+      uri: step.uri,
+      method: step.method,
+      config: step.config,
+      args: args,
+    });
+
+    if (invokeResult.error) {
+      return { ...invokeResult, status: JobStatus.FAILED };
+    } else {
+      return { ...invokeResult, status: JobStatus.SUCCEED };
+    }
+  }
+
+  private async executeSteps(jobId: string, steps: Step[], parentId?: string) {
+    for (let i = 0; i < steps.length; i++) {
+      const step = steps[i];
+      const absId = parentId ? `${parentId}.${jobId}.${i}` : `${jobId}.${i}`;
+
+      const result: JobResult = await this.execStep(absId, step);
+
+      this.jobOutput.set(absId, result);
+
+      if (this.onExecution && typeof this.onExecution === "function") {
+        await executeMaybeAsyncFunction(this.onExecution, absId, result);
+      }
+    }
   }
 }

@@ -1,5 +1,13 @@
-import { InvokeResult } from "@polywrap/core-js";
-import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
+import { ClientConfig, InvokeResult, Uri } from "@polywrap/core-js";
+
+export interface Step {
+  uri: string | Uri;
+  method: string;
+  args?: {
+    [k: string]: unknown;
+  };
+  config?: ClientConfig;
+}
 
 export enum JobStatus {
   SUCCEED = "SUCCEED",
@@ -18,10 +26,4 @@ export interface WorkflowOutput<TData = unknown> extends JobResult<TData> {
 export interface ValidationResult {
   status: JobStatus;
   stderr?: string;
-}
-
-export interface JobRunOptions {
-  relativeId: string;
-  parentId: string;
-  jobs: WorkflowJobs;
 }

@@ -14,7 +14,6 @@ import {
   WorkflowOutput,
 } from "../lib";
 
-import { Uri } from "@polywrap/core-js";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import yaml from "js-yaml";
@@ -97,18 +96,8 @@ const _run = async (options: WorkflowCommandOptions) => {
     }
   };
 
-  const jobRunner = new JobRunner<Record<string, unknown>, Uri | string>(
-    client,
-    onExecution
-  );
-
-  const ids = jobs ? jobs : Object.keys(workflow.jobs);
-
-  await Promise.all(
-    ids.map((id) =>
-      jobRunner.run({ relativeId: id, parentId: "", jobs: workflow.jobs })
-    )
-  );
+  const jobRunner = new JobRunner(client, onExecution);
+  await jobRunner.run(workflow.jobs, jobs);
 
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);
