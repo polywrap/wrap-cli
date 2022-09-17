@@ -8,9 +8,14 @@ type Sequence = NewManifest["sequences"][number];
 
 export function migrate(old: OldManifest): NewManifest {
   const steps: Record<string, Step> = {};
-  const sequences: Record<string, Sequence> = {};
+  const sequences: Record<
+    string,
+    Omit<Sequence, "steps"> & { steps: Record<string, Step> }
+  > = {};
 
-  Object.entries(old.stages).forEach(([stageName, stageValue]) => {
+  const stageEntries = Object.entries(old.stages);
+
+  stageEntries.forEach(([stageName, stageValue]) => {
     steps[stageName] = {
       name: stageName,
       package: stageValue.package,
@@ -22,44 +27,45 @@ export function migrate(old: OldManifest): NewManifest {
     }
   });
 
-  Object.entries(old.stages).forEach(([stageName, stageValue]) => {
+  stageEntries.forEach(([stageName, stageValue]) => {
     if (!stageValue.depends_on) {
       sequences[stageName] = {
         name: stageName,
-        steps: [steps[stageName]],
+        steps: {
+          [stageName]: steps[stageName],
+        },
       };
 
       delete steps[stageName];
     }
   });
 
-  // HACK: Triple loop to handle dependencies
-
   while (Object.keys(steps).length > 0) {
-    Object.entries(old.stages).forEach(([stageName, stageValue]) => {
-      if (stageValue.depends_on) {
-        if (sequences[stageValue.depends_on]) {
-          sequences[stageValue.depends_on].steps.push(steps[stageName]);
+    const sequenceValues = Object.values(sequences);
+    stageEntries
+      .filter(([_, stageValue]) => !!stageValue.depends_on)
+      .forEach(([stageName, stageValue]) => {
+        if (sequences[stageValue.depends_on as string]) {
+          sequences[stageValue.depends_on as string].steps[stageName] =
+            steps[stageName];
           delete steps[stageName];
         } else {
-          Object.values(sequences).forEach((sequenceValue) => {
-            if (
-              sequenceValue.steps.some(
-                (step) => step.name === stageValue.depends_on
-              )
-            ) {
-              sequenceValue.steps.push(steps[stageName]);
+          sequenceValues.forEach((sequenceValue) => {
+            if (sequenceValue.steps[stageValue.depends_on as string]) {
+              sequenceValue.steps[stageName] = steps[stageName];
               delete steps[stageName];
             }
           });
         }
-      }
-    });
+      });
   }
 
   return {
     __type: "DeployManifest",
     format: "0.2.0",
-    sequences: Object.values(sequences),
+    sequences: Object.values(sequences).map((sequence) => ({
+      ...sequence,
+      steps: Object.values(sequence.steps),
+    })),
   };
 }
