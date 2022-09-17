@@ -33,6 +33,8 @@ export function migrate(old: OldManifest): NewManifest {
     }
   });
 
+  // HACK: Triple loop to handle dependencies
+
   while (Object.keys(steps).length > 0) {
     Object.entries(old.stages).forEach(([stageName, stageValue]) => {
       if (stageValue.depends_on) {
