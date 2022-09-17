@@ -104,7 +104,7 @@ describe("e2e tests for run command", () => {
       expect(item.error).toBeUndefined();
       expect(item.data).toBeDefined();
     });
-    expect(output).toHaveLength(3);
+    expect(output).toHaveLength(4);
   });
 
   it("Should successfully return response: using json workflow", async () => {
@@ -124,7 +124,7 @@ describe("e2e tests for run command", () => {
       expect(item.error).toBeUndefined();
       expect(item.data).toBeDefined();
     });
-    expect(output).toHaveLength(3);
+    expect(output).toHaveLength(4);
   });
 
   it("Should successfully create json output file if specified", async () => {
@@ -281,5 +281,25 @@ describe("e2e tests for run command", () => {
     const output = parseOutput(stdout);
     expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
     expect(output.filter((o => o.validation === "SUCCEED"))).toHaveLength(output.length);
+  });
+
+  it("Should run and validate a subset of ids", async () => {
+    const testCaseDir = getTestCaseDir(9);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(stderr).toBe("");
+    expect(exitCode).toEqual(0);
+    expect(stdout).toBeTruthy();
+
+    const output = parseOutput(stdout);
+    expect(output[0].id).toBe("cases.case1");
+    expect(output[0].status).toBe("SUCCEED");
+    expect(output[0].validation).toBe("SUCCEED");
+    expect(output[0].error).toBeFalsy();
   });
 });
