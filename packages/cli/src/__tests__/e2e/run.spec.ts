@@ -264,4 +264,22 @@ describe("e2e tests for run command", () => {
     expect(output[0].validation).toBe("SUCCEED");
     expect(output[0].error).toBeFalsy();
   });
+
+  it("Should access nested properties of referenced result objects", async () => {
+    const testCaseDir = getTestCaseDir(8);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(stderr).toBe("");
+    expect(exitCode).toEqual(0);
+    expect(stdout).toBeTruthy();
+
+    const output = parseOutput(stdout);
+    expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
+    expect(output.filter((o => o.validation === "SUCCEED"))).toHaveLength(output.length);
+  });
 });
