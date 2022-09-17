@@ -1,13 +1,17 @@
 import { Command, Program } from "./types";
 import {
   intlMsg,
-  parseClientConfigOption,
-  parseWorkflowOutputFilePathOption,
-  validateOutput,
+  JobResult,
   JobRunner,
   JobStatus,
-  JobResult,
+  loadValidationScript,
   loadWorkflowManifest,
+  parseClientConfigOption,
+  parseWorkflowOutputFilePathOption,
+  printJobOutput,
+  validateOutput,
+  ValidationResult,
+  WorkflowOutput,
 } from "../lib";
 
 import { Uri } from "@polywrap/core-js";
@@ -61,24 +65,6 @@ export const run: Command = {
   },
 };
 
-function loadValidationScript(
-  manifestPath: string,
-  cueFilepath: string
-): string {
-  cueFilepath = path.join(path.dirname(manifestPath), cueFilepath);
-
-  if (!fs.existsSync(cueFilepath)) {
-    console.error(
-      intlMsg.commands_run_error_validatorNotFound({
-        path: cueFilepath,
-      })
-    );
-    process.exit(1);
-  }
-
-  return cueFilepath;
-}
-
 const _run = async (options: WorkflowCommandOptions) => {
   const { manifest, clientConfig, outputFile, quiet, jobs } = options;
   const client = new PolywrapClient(clientConfig);
@@ -89,35 +75,26 @@ const _run = async (options: WorkflowCommandOptions) => {
     ? loadValidationScript(manifestPath, workflow.validation)
     : undefined;
 
-  const workflowOutput: (JobResult & { id: string })[] = [];
+  const workflowOutput: WorkflowOutput[] = [];
 
   const onExecution = (id: string, jobResult: JobResult) => {
     const { data, error, status } = jobResult;
 
-    if (!quiet) {
-      console.log("-----------------------------------");
-      console.log(`ID: ${id}`);
-      console.log(`Status: ${status}`);
-    }
-
-    if (!quiet && data !== undefined) {
-      console.log(`Data: ${JSON.stringify(data, null, 2)}`);
-    }
-
-    if (!quiet && error !== undefined) {
-      console.log(`Error: ${error.message}`);
+    if (error !== undefined) {
       process.exitCode = 1;
     }
 
-    if (status !== JobStatus.SKIPPED && validationScript) {
-      validateOutput(id, { data, error }, validationScript, quiet);
+    const output: WorkflowOutput = { id, status, data, error };
+    workflowOutput.push(output);
+
+    let validation: ValidationResult | undefined = undefined;
+    if (status === JobStatus.SUCCEED && validationScript) {
+      validation = validateOutput(output, validationScript);
     }
 
     if (!quiet) {
-      console.log("-----------------------------------");
+      printJobOutput(output, validation);
     }
-
-    workflowOutput.push({ id, status, data, error });
   };
 
   const jobRunner = new JobRunner<Record<string, unknown>, Uri | string>(
