@@ -15,7 +15,8 @@ import {
 import { CodeGenerator } from "../lib/codegen/CodeGenerator";
 import { LocalBuildStrategy } from "../lib/build-strategies/strategies/LocalStrategy";
 import { DockerBuildStrategy } from "../lib/build-strategies/strategies/DockerStrategy";
-import { SUPPORTED_STRATEGIES } from "../lib/build-strategies";
+import { BuildStrategy, SUPPORTED_STRATEGIES } from "../lib/build-strategies";
+import { DockerVMBuildStrategy } from "../lib/build-strategies/strategies/DockerVMStrategy";
 
 import path from "path";
 import readline from "readline";
@@ -97,6 +98,23 @@ async function validateManifestModules(polywrapManifest: PolywrapManifest) {
   }
 }
 
+function createBuildStrategy(
+  strategy: BuildCommandOptions["strategy"],
+  outputDir: string,
+  project: PolywrapProject
+): BuildStrategy {
+  switch (strategy) {
+    case "local":
+      return new LocalBuildStrategy({ outputDir, project });
+    case "docker":
+      return new DockerBuildStrategy({ outputDir, project });
+    case "vm":
+      return new DockerVMBuildStrategy({ outputDir, project });
+    default:
+      throw Error(`Unknown strategy: ${strategy}`);
+  }
+}
+
 async function run(options: BuildCommandOptions) {
   const {
     watch,
@@ -120,16 +138,7 @@ async function run(options: BuildCommandOptions) {
   const polywrapManifest = await project.getManifest();
   await validateManifestModules(polywrapManifest);
 
-  const buildStrategy =
-    strategy === "docker"
-      ? new DockerBuildStrategy({
-          project,
-          outputDir,
-        })
-      : new LocalBuildStrategy({
-          project,
-          outputDir,
-        });
+  const buildStrategy = createBuildStrategy(strategy, outputDir, project);
 
   const schemaComposer = new SchemaComposer({
     project,
