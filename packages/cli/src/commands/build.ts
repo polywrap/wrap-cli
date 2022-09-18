@@ -124,15 +124,8 @@ async function run(options: BuildCommandOptions) {
     manifestFile,
     outputDir,
     clientConfig,
-    codegen,
-  } = options;
-  const {
-    watch,
-    verbose,
-    manifestFile,
-    outputDir,
-    clientConfig,
     strategy,
+    codegen,
   } = options;
 
   // Get Client
@@ -155,14 +148,10 @@ async function run(options: BuildCommandOptions) {
     client,
   });
 
-  const compiler = new Compiler({
-    project,
-    outputDir,
-    schemaComposer,
-    codegen,
-  });
   const execute = async (): Promise<boolean> => {
-    const codeGenerator = new CodeGenerator({ project, schemaComposer });
+    const codeGenerator = codegen
+      ? new CodeGenerator({ project, schemaComposer })
+      : undefined;
 
     const compiler = new Compiler({
       project,
