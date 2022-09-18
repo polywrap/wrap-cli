@@ -33,6 +33,7 @@ type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
   clientConfig: Partial<PolywrapClientConfig>;
+  codegen: boolean; // defaults to true
   watch?: boolean;
   verbose?: boolean;
   strategy: typeof SUPPORTED_STRATEGIES[number];
@@ -60,6 +61,7 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_n()}`)
       .option(
         `-s, --strategy <${strategyStr}>`,
         `${intlMsg.commands_build_options_s({
@@ -122,6 +124,14 @@ async function run(options: BuildCommandOptions) {
     manifestFile,
     outputDir,
     clientConfig,
+    codegen,
+  } = options;
+  const {
+    watch,
+    verbose,
+    manifestFile,
+    outputDir,
+    clientConfig,
     strategy,
   } = options;
 
@@ -145,6 +155,12 @@ async function run(options: BuildCommandOptions) {
     client,
   });
 
+  const compiler = new Compiler({
+    project,
+    outputDir,
+    schemaComposer,
+    codegen,
+  });
   const execute = async (): Promise<boolean> => {
     const codeGenerator = new CodeGenerator({ project, schemaComposer });
 

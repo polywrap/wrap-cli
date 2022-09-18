@@ -23,6 +23,7 @@ use crate::CustomType;
 pub struct AnotherType {
     pub prop: Option<String>,
     pub circular: Option<CustomType>,
+    #[serde(rename = "const")]
     pub _const: Option<String>,
 }
 

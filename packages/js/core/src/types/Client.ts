@@ -7,10 +7,10 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
+  PluginPackage,
 } from "./";
-import { UriResolver } from "../uri-resolution/core";
+import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
-import { WrapperCache } from "./WrapperCache";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
@@ -19,8 +19,7 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
-  uriResolvers: UriResolver[];
-  wrapperCache?: WrapperCache;
+  resolver: IUriResolver<unknown>;
 }
 
 export interface Contextualized {
@@ -35,11 +34,13 @@ export type GetInterfacesOptions = Contextualized;
 
 export type GetEnvsOptions = Contextualized;
 
-export type GetUriResolversOptions = Contextualized;
+export type GetUriResolverOptions = Contextualized;
 
 export interface GetManifestOptions extends Contextualized {
   noValidate?: boolean;
 }
+
+export type GetPluginOptions = Contextualized;
 
 export interface GetFileOptions extends Contextualized {
   path: string;
@@ -54,10 +55,15 @@ export interface Client
   extends Invoker,
     QueryHandler,
     SubscriptionHandler,
-    UriResolverHandler {
+    UriResolverHandler<unknown> {
   getRedirects(options?: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 
   getPlugins(options?: GetPluginsOptions): readonly PluginRegistration<Uri>[];
+
+  getPluginByUri<TUri extends Uri | string>(
+    uri: TUri,
+    options?: GetPluginOptions
+  ): PluginPackage<unknown> | undefined;
 
   getInterfaces(
     options?: GetInterfacesOptions
@@ -70,7 +76,7 @@ export interface Client
     options?: GetEnvsOptions
   ): Env<Uri> | undefined;
 
-  getUriResolvers(options: GetUriResolversOptions): readonly UriResolver[];
+  getUriResolver(options: GetUriResolverOptions): IUriResolver<unknown>;
 
   getManifest<TUri extends Uri | string>(
     uri: TUri,

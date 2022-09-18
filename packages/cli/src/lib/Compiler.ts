@@ -16,6 +16,7 @@ import { BuildStrategy } from "./build-strategies/BuildStrategy";
 import { CodeGenerator } from "./codegen/CodeGenerator";
 
 import { WasmWrapper, WrapImports } from "@polywrap/client-js";
+import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
@@ -28,6 +29,7 @@ export interface CompilerConfig {
   codeGenerator: CodeGenerator;
   buildStrategy: BuildStrategy;
   schemaComposer: SchemaComposer;
+  codegen: boolean;
 }
 
 export class Compiler {

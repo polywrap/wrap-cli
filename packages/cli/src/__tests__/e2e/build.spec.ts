@@ -18,6 +18,7 @@ Options:
                                      (default: ./build)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
+  -n, --no-codegen                   Skip code generation
   -s, --strategy <strategy>          Strategy to use for building the wrapper
                                      (default: docker)
   -w, --watch                        Automatically rebuild when changes are

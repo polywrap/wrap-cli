@@ -1,10 +1,10 @@
-import { exec, ExecException, execSync } from "child_process";
+import { exec, ExecException, execSync, SpawnSyncReturns } from "child_process";
 
 export function runCommandSync(
   command: string,
   quiet = false,
   env: Record<string, string> | undefined = undefined
-): { stdout?: string; stderr?: Error } {
+): { stdout?: string; stderr?: SpawnSyncReturns<string> & Error } {
   if (!quiet) {
     console.log(`> ${command}`);
   }

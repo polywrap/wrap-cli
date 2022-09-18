@@ -1,7 +1,6 @@
 import {
   Bytes,
   Client,
-  FileSystem_EncodingEnum,
   FileSystem_Module,
   Args_getFile,
   Args_tryResolveUri,
@@ -37,7 +36,7 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
     if (manifestExistsResult.data) {
       try {
         const manifestResult = await FileSystem_Module.readFile(
-          { path: manifestPath, encoding: FileSystem_EncodingEnum.BINARY },
+          { path: manifestPath },
           _client
         );
         if (manifestResult.error) {
@@ -59,11 +58,7 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
         _client
       );
 
-      if (fileResult.data) {
-        return new Uint8Array(fileResult.data);
-      }
-
-      return null;
+      return fileResult.data ?? null;
     } catch (e) {
       return null;
     }

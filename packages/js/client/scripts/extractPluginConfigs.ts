@@ -23,11 +23,11 @@ const plugins: PluginConfigSource[] = [
     name: "Ipfs",
     module: "@polywrap/ipfs-plugin-js",
     uri: "wrap://ens/ipfs.polywrap.eth",
-    config: "IpfsPluginConfig",
+    config: "NoConfig",
     files: [
       {
         name: "build/index.d.ts",
-        interfaces: ["IpfsPluginConfig"],
+        types: ["NoConfig"]
       },
     ],
   },

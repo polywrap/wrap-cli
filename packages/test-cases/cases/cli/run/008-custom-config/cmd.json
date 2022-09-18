@@ -1,0 +1,3 @@
+{
+  "args": ["--client-config", "./config.ts"]
+}

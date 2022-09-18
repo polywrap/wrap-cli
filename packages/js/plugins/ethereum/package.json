@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/ethereum-plugin-js",
   "description": "Polywrap Ethereum Javascript Plugin",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
-    "codegen": "node ../../../../dependencies/node_modules/polywrap/bin/polywrap plugin codegen",
+    "codegen": "node ../../../../dependencies/node_modules/polywrap/bin/polywrap codegen",
     "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --detectOpenHandles --verbose",
@@ -22,14 +22,14 @@
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/providers": "5.0.7",
-    "@polywrap/core-js": "0.6.0",
+    "@polywrap/core-js": "0.7.0",
     "ethers": "5.0.7"
   },
   "devDependencies": {
-    "@polywrap/client-js": "0.6.0",
-    "@polywrap/ens-resolver-plugin-js": "0.6.0",
-    "@polywrap/ipfs-plugin-js": "0.6.0",
-    "@polywrap/test-env-js": "0.6.0",
+    "@polywrap/client-js": "0.7.0",
+    "@polywrap/ens-resolver-plugin-js": "0.7.0",
+    "@polywrap/ipfs-plugin-js": "0.7.0",
+    "@polywrap/test-env-js": "0.7.0",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "eth-ens-namehash": "2.0.8",

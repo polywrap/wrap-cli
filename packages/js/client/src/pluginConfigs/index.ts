@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prettier/prettier */
 
-import { IpfsPluginConfig } from "./Ipfs";
+import { NoConfig } from "./Ipfs";
 import { EthereumPluginConfig } from "./Ethereum";
 import { EnsResolverPluginConfig } from "./Ens";
 
 interface PluginConfigs {
-  ipfs?: IpfsPluginConfig;
+  ipfs?: NoConfig;
   ethereum?: EthereumPluginConfig;
   ens?: EnsResolverPluginConfig;
 }

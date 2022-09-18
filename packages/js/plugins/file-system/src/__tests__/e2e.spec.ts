@@ -50,7 +50,7 @@ describe("FileSystem plugin", () => {
     );
 
     expect(result.error).toBeFalsy();
-    expect(result.data).toEqual(expectedContents);
+    expect(result.data).toEqual(new Uint8Array(expectedContents));
   });
 
   it("should fail reading a nonexistent file", async () => {
