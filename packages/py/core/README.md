@@ -3,11 +3,7 @@
 
 [Polywrap](https://polywrap.io/#/) is a developer tool that enables easy integration of Web3 protocols into any application. It makes it possible for applications on any platform, written in any language, to read and write data to Web3 protocols.
 
-## Contributing
-
-Contributions are always welcome!
-
-## Setup
+## Setup for building and testing
 - Requirement: Python ^3.10
 - If you are using a linux system or WSL, which comes with Python3.8, then you will need to upgrade Python3.8 to Python3.10 and also fix the pip and distutil as upgrading to Python3.10 will break them. You may follow [this guide](https://cloudbytes.dev/snippets/upgrade-python-to-latest-version-on-ubuntu-linux) to upgrade: 
 - Clone the repo. 
