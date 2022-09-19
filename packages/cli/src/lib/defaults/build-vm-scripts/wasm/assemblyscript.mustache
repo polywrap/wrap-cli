@@ -1,9 +1,3 @@
-
-
-{{#polywrap_linked_packages}}
-json -I -f package.json -e "this.dependencies['{{name}}']='../linked-packages/{{name}}'"
-{{/polywrap_linked_packages}}
-
 {{#polywrap_module}}
 asc {{dir}}/wrap/entry.ts \
     --path ./node_modules \
@@ -12,4 +6,6 @@ asc {{dir}}/wrap/entry.ts \
     --optimize --importMemory \
     --runtime stub \
     --runPasses asyncify
+
+chmod 777 -R ./build
 {{/polywrap_module}}
