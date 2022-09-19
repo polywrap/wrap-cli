@@ -283,8 +283,26 @@ describe("e2e tests for run command", () => {
     expect(output.filter((o => o.validation === "SUCCEED"))).toHaveLength(output.length);
   });
 
-  it("Should run and validate a subset of ids", async () => {
+  it("Should print error on stderr if job is named 'data' or 'error'", async () => {
     const testCaseDir = getTestCaseDir(9);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stderr, stdout } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    console.log(stderr);
+    console.log(stdout);
+
+    expect(stderr).toBeDefined();
+    const err = "Validation errors encountered while sanitizing PolywrapWorkflow";
+    expect(stderr.indexOf(err)).toBeGreaterThan(-1);
+    expect(exitCode).toEqual(1);
+  });
+
+  it("Should run and validate a subset of ids", async () => {
+    const testCaseDir = getTestCaseDir(10);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["run", ...args],
