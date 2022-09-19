@@ -61,50 +61,26 @@ export class JobRunner {
     }
   }
 
-  // private resolveReference(
-  //   absCurJobId: string,
-  //   curStepId: number,
-  //   value: string
-  // ): unknown {
-  //   const absStepIdArr = value.slice(1).split(".");
-  //   const absJobId = absStepIdArr.slice(0, absStepIdArr.length - 2).join(".");
-  //   const dataOrErr: DataOrError = absStepIdArr[
-  //     absStepIdArr.length - 1
-  //   ] as DataOrError;
-  //   const absStepId = `${absJobId}.${absStepIdArr[absStepIdArr.length - 2]}`;
-  //
-  //   if (absCurJobId.includes(absJobId)) {
-  //     if (absJobId === absCurJobId) {
-  //       if (+absStepIdArr[absStepIdArr.length - 2] < curStepId) {
-  //         const output = this.jobOutput.get(absStepId);
-  //         if (output && output[dataOrErr]) {
-  //           return output[dataOrErr];
-  //         }
-  //       }
-  //     }
-  //     const output = this.jobOutput.get(absStepId);
-  //     if (
-  //       output &&
-  //       dataOrErr === "data" &&
-  //       output.status === JobStatus.SUCCEED &&
-  //       output.data
-  //     ) {
-  //       return output.data;
-  //     }
-  //     if (
-  //       output &&
-  //       dataOrErr === "error" &&
-  //       output.status === JobStatus.FAILED &&
-  //       output.error
-  //     ) {
-  //       return output.error;
-  //     }
-  //   }
-  //
-  //   throw new Error(
-  //     `Could not resolve arguments for step with stepId: ${absCurJobId}.${curStepId}`
-  //   );
-  // }
+  private followAccessors(
+    jobResult: JobResult,
+    accessors: string[],
+    referenceId: string,
+    absJobId: string,
+    stepId: number
+  ): unknown {
+    let val = jobResult as unknown;
+    for (const [i, accessor] of accessors.entries()) {
+      const indexable = val as Record<string, unknown>;
+      if (!(accessor in indexable)) {
+        const currentRef = referenceId + accessors.slice(0, i).join(".");
+        throw new Error(
+          `Could not resolve arguments: Property ${accessor} not found in ${currentRef} for step ${absJobId}.${stepId}`
+        );
+      }
+      val = indexable[accessor];
+    }
+    return val;
+  }
 
   private resolveReference(
     absJobId: string,
@@ -123,13 +99,13 @@ export class JobRunner {
     }
 
     // get reference job output
-    const absReferenceId: string = reference.substring(1, dataOrErrorIdx);
-    if (!this.jobOutput.has(absReferenceId)) {
+    const referenceId: string = reference.substring(1, dataOrErrorIdx);
+    if (!this.jobOutput.has(referenceId)) {
       throw new Error(
-        `Could not resolve reference id ${absReferenceId} for step ${absJobId}.${stepId}`
+        `Could not resolve reference id ${referenceId} for step ${absJobId}.${stepId}`
       );
     }
-    const refJobResult = this.jobOutput.get(absReferenceId) as JobResult;
+    const refJobResult = this.jobOutput.get(referenceId) as JobResult;
 
     // parse and validate accessors
     const accessors: string[] = reference
@@ -137,38 +113,32 @@ export class JobRunner {
       .split(".");
     if (refJobResult.status === JobStatus.SKIPPED) {
       throw new Error(
-        `Tried to resolve reference to skipped job ${absReferenceId} for step ${absJobId}.${stepId}`
+        `Tried to resolve reference to skipped job ${referenceId} for step ${absJobId}.${stepId}`
       );
     } else if (
       accessors[0] === "data" &&
       refJobResult.status === JobStatus.FAILED
     ) {
       throw new Error(
-        `Tried to resolve data of failed job ${absReferenceId} for step ${absJobId}.${stepId}`
+        `Tried to resolve data of failed job ${referenceId} for step ${absJobId}.${stepId}`
       );
     } else if (
       accessors[0] === "error" &&
       refJobResult.status === JobStatus.SUCCEED
     ) {
       throw new Error(
-        `Tried to resolve error message of successful job ${absReferenceId} for step ${absJobId}.${stepId}`
+        `Tried to resolve error message of successful job ${referenceId} for step ${absJobId}.${stepId}`
       );
     }
 
-    // follow accessors to get requested data
-    let val = refJobResult as unknown;
-    for (const [i, accessor] of accessors.entries()) {
-      const indexable = val as Record<string, unknown>;
-      if (!(accessor in indexable)) {
-        const currentRef = absReferenceId + accessors.slice(0, i).join(".");
-        throw new Error(
-          `Could not resolve arguments: Property ${accessor} not found in ${currentRef} for step ${absJobId}.${stepId}`
-        );
-      }
-      val = indexable[accessor];
-    }
-
-    return val;
+    // follow accessors through reference output to get requested data
+    return this.followAccessors(
+      refJobResult,
+      accessors,
+      referenceId,
+      absJobId,
+      stepId
+    );
   }
 
   private resolveRecord(
