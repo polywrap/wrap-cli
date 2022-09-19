@@ -7,8 +7,6 @@ import {
 } from "@polywrap/core-js";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
 
-type DataOrError = "data" | "error";
-
 export interface JobRunOptions {
   relativeId?: string;
   parentId?: string;
@@ -63,82 +61,167 @@ export class JobRunner {
     }
   }
 
-  private resolveArgs(
-    absCurStepId: string,
-    args: Record<string, unknown> | undefined
-  ): Record<string, unknown> {
-    const index = absCurStepId.lastIndexOf(".");
-    const curStepId = +absCurStepId.substring(index + 1);
-    const absCurJobId = absCurStepId.substring(0, index);
-    const outputs = this.jobOutput;
+  // private resolveReference(
+  //   absCurJobId: string,
+  //   curStepId: number,
+  //   value: string
+  // ): unknown {
+  //   const absStepIdArr = value.slice(1).split(".");
+  //   const absJobId = absStepIdArr.slice(0, absStepIdArr.length - 2).join(".");
+  //   const dataOrErr: DataOrError = absStepIdArr[
+  //     absStepIdArr.length - 1
+  //   ] as DataOrError;
+  //   const absStepId = `${absJobId}.${absStepIdArr[absStepIdArr.length - 2]}`;
+  //
+  //   if (absCurJobId.includes(absJobId)) {
+  //     if (absJobId === absCurJobId) {
+  //       if (+absStepIdArr[absStepIdArr.length - 2] < curStepId) {
+  //         const output = this.jobOutput.get(absStepId);
+  //         if (output && output[dataOrErr]) {
+  //           return output[dataOrErr];
+  //         }
+  //       }
+  //     }
+  //     const output = this.jobOutput.get(absStepId);
+  //     if (
+  //       output &&
+  //       dataOrErr === "data" &&
+  //       output.status === JobStatus.SUCCEED &&
+  //       output.data
+  //     ) {
+  //       return output.data;
+  //     }
+  //     if (
+  //       output &&
+  //       dataOrErr === "error" &&
+  //       output.status === JobStatus.FAILED &&
+  //       output.error
+  //     ) {
+  //       return output.error;
+  //     }
+  //   }
+  //
+  //   throw new Error(
+  //     `Could not resolve arguments for step with stepId: ${absCurJobId}.${curStepId}`
+  //   );
+  // }
 
-    function resolveValue(value: unknown): unknown {
-      if (typeof value === "string" && value.startsWith("$")) {
-        const absStepIdArr = value.slice(1).split(".");
-        const absJobId = absStepIdArr
-          .slice(0, absStepIdArr.length - 2)
-          .join(".");
-        const dataOrErr: DataOrError = absStepIdArr[
-          absStepIdArr.length - 1
-        ] as DataOrError;
-        const absStepId = `${absJobId}.${
-          absStepIdArr[absStepIdArr.length - 2]
-        }`;
-
-        if (absCurJobId.includes(absJobId)) {
-          if (absJobId === absCurJobId) {
-            if (+absStepIdArr[absStepIdArr.length - 2] < curStepId) {
-              const output = outputs.get(absStepId);
-              if (output && output[dataOrErr]) {
-                return output[dataOrErr];
-              }
-            }
-          }
-          const output = outputs.get(absStepId);
-          if (
-            output &&
-            dataOrErr === "data" &&
-            output.status === JobStatus.SUCCEED &&
-            output.data
-          ) {
-            return output.data;
-          }
-          if (
-            output &&
-            dataOrErr === "error" &&
-            output.status === JobStatus.FAILED &&
-            output.error
-          ) {
-            return output.error;
-          }
-        }
-
+  private resolveReference(
+    absJobId: string,
+    stepId: number,
+    reference: string
+  ): unknown {
+    // get numerical index of property accessors
+    let dataOrErrorIdx = reference.indexOf(".data");
+    if (dataOrErrorIdx < 0) {
+      dataOrErrorIdx = reference.indexOf(".error");
+      if (dataOrErrorIdx < 0) {
         throw new Error(
-          `Could not resolve arguments for step with stepId: ${absCurJobId}.${curStepId}`
+          `Could not find 'data' or 'error' properties in reference ${reference} for step ${absJobId}.${stepId}`
         );
-      } else if (Array.isArray(value)) return value.map(resolveValue);
-      else if (typeof value === "object" && value !== null) {
-        return Object.entries(value as Record<string, unknown>).reduce(
-          (obj, [k, v]) => ((obj[k] = resolveValue(v)), obj),
-          {} as Record<string, unknown>
-        );
-      } else return value;
+      }
     }
 
-    return args
-      ? (resolveValue(args) as Record<string, unknown>)
-      : ({} as Record<string, unknown>);
+    // get reference job output
+    const absReferenceId: string = reference.substring(1, dataOrErrorIdx);
+    if (!this.jobOutput.has(absReferenceId)) {
+      throw new Error(
+        `Could not resolve reference id ${absReferenceId} for step ${absJobId}.${stepId}`
+      );
+    }
+    const refJobResult = this.jobOutput.get(absReferenceId) as JobResult;
+
+    // parse and validate accessors
+    const accessors: string[] = reference
+      .substring(dataOrErrorIdx + 1)
+      .split(".");
+    if (refJobResult.status === JobStatus.SKIPPED) {
+      throw new Error(
+        `Tried to resolve reference to skipped job ${absReferenceId} for step ${absJobId}.${stepId}`
+      );
+    } else if (
+      accessors[0] === "data" &&
+      refJobResult.status === JobStatus.FAILED
+    ) {
+      throw new Error(
+        `Tried to resolve data of failed job ${absReferenceId} for step ${absJobId}.${stepId}`
+      );
+    } else if (
+      accessors[0] === "error" &&
+      refJobResult.status === JobStatus.SUCCEED
+    ) {
+      throw new Error(
+        `Tried to resolve error message of successful job ${absReferenceId} for step ${absJobId}.${stepId}`
+      );
+    }
+
+    // follow accessors to get requested data
+    let val = refJobResult as unknown;
+    for (const [i, accessor] of accessors.entries()) {
+      const indexable = val as Record<string, unknown>;
+      if (!(accessor in indexable)) {
+        const currentRef = absReferenceId + accessors.slice(0, i).join(".");
+        throw new Error(
+          `Could not resolve arguments: Property ${accessor} not found in ${currentRef} for step ${absJobId}.${stepId}`
+        );
+      }
+      val = indexable[accessor];
+    }
+
+    return val;
   }
 
-  private async execStep(absId: string, step: Step): Promise<JobResult> {
+  private resolveRecord(
+    absJobId: string,
+    stepId: number,
+    record: Record<string, unknown>
+  ): Record<string, unknown> {
+    const resolved: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(record)) {
+      resolved[key] = this.resolveValue(absJobId, stepId, value);
+    }
+    return resolved;
+  }
+
+  private resolveArray(
+    absJobId: string,
+    stepId: number,
+    array: Array<unknown>
+  ): Array<unknown> {
+    return array.map((v) => this.resolveValue(absJobId, stepId, v));
+  }
+
+  private resolveValue(
+    absJobId: string,
+    stepId: number,
+    value: unknown
+  ): unknown {
+    if (this.isReference(value)) {
+      return this.resolveReference(absJobId, stepId, value);
+    } else if (Array.isArray(value)) {
+      return this.resolveArray(absJobId, stepId, value);
+    } else if (this.isRecord(value)) {
+      return this.resolveRecord(absJobId, stepId, value);
+    } else {
+      return value;
+    }
+  }
+
+  private async execStep(
+    absJobId: string,
+    stepId: number,
+    step: Step
+  ): Promise<JobResult> {
     let args: Record<string, unknown> | undefined;
-    try {
-      args = this.resolveArgs(absId, step.args);
-    } catch (e) {
-      return {
-        error: e,
-        status: JobStatus.SKIPPED,
-      };
+    if (step.args) {
+      try {
+        args = this.resolveRecord(absJobId, stepId, step.args);
+      } catch (e) {
+        return {
+          error: e,
+          status: JobStatus.SKIPPED,
+        };
+      }
     }
 
     const invokeResult = await this.client.invoke({
@@ -158,15 +241,24 @@ export class JobRunner {
   private async executeSteps(jobId: string, steps: Step[], parentId?: string) {
     for (let i = 0; i < steps.length; i++) {
       const step = steps[i];
-      const absId = parentId ? `${parentId}.${jobId}.${i}` : `${jobId}.${i}`;
+      const absJobId = parentId ? `${parentId}.${jobId}` : `${jobId}`;
+      const absId = `${absJobId}.${i}`;
 
-      const result: JobResult = await this.execStep(absId, step);
+      const result: JobResult = await this.execStep(absJobId, i, step);
 
       this.jobOutput.set(absId, result);
 
-      if (this.onExecution && typeof this.onExecution === "function") {
+      if (this.onExecution) {
         await executeMaybeAsyncFunction(this.onExecution, absId, result);
       }
     }
+  }
+
+  private isReference(value: unknown): value is string {
+    return typeof value === "string" && value.startsWith("$");
+  }
+
+  private isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null;
   }
 }
