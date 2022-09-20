@@ -1,6 +1,6 @@
 from typing import Any
 
-from core import (
+from polywrap_core import (
     Client,
     PluginModule,
     PluginPackageManifest,

@@ -1,6 +1,6 @@
 import pytest
 
-from core import Uri, UriConfig
+from polywrap_core import Uri, UriConfig
 
 
 def test_inserts_wrap_scheme_if_not_present():
