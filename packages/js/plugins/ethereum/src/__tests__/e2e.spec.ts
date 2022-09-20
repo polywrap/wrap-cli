@@ -12,13 +12,17 @@ import {
   ensAddresses,
   providers,
 } from "@polywrap/test-env-js";
-import { Wallet } from "ethers";
+import {
+  deployStorage,
+  addPrimitiveToArrayStorage,
+  addStructToStorage,
+  setPrimitiveToStorage
+} from './utils/storage';
 
-import { ethers } from "ethers";
+import { ethers, Wallet } from "ethers";
 import { keccak256 } from "js-sha3";
 import { Connections } from "../Connections";
 import { Connection } from "../Connection";
-import { addPrimitiveToArrayStorage, addStructToStorage, deployStorage, setPrimitiveToStorage } from '../utils/storage';
 
 const { hash: namehash } = require("eth-ens-namehash");
 const contracts = {
