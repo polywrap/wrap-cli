@@ -2,7 +2,7 @@ name: run-test-wrapper
 format: 0.1.0
 validation: "./validator.cue"
 jobs:
-  cases:
+  case1:
     steps:
     - uri: fs/../run-test-wrapper/build
       method: add
@@ -10,25 +10,17 @@ jobs:
         x: 1
         y: 1
     jobs:
-      case1:
+      case11:
         steps:
         - uri: fs/../run-test-wrapper/build
           method: add
           args:
             x: "$cases.0.data"
             y: 1
-        jobs:
-          case12:
-            steps:
-              - uri: fs/../run-test-wrapper/build
-                method: add
-                args:
-                  x: "$cases.case1.0.data"
-                  y: 1
-      case2:
-        steps:
-          - uri: fs/../run-test-wrapper/build
-            method: add
-            args:
-              x: "$cases.0.data"
-              y: "$cases.0.data"
+  case2:
+    steps:
+      - uri: fs/../run-test-wrapper/build
+        method: add
+        args:
+          x: 2
+          y: 2
