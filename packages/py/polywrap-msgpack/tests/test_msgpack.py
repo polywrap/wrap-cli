@@ -64,3 +64,10 @@ def test_encode_and_decode_instance():
     decoded_with_dict = msgpack_decode(encoded_with_dict)
 
     assert complex_custom_object_with_dict == decoded_with_dict
+
+
+def test_generic_map_decode():
+    encoded = b'\xc7+\x01\x82\xa8firstKey\xaafirstValue\xa9secondKey\xabsecondValue'
+    decoded = msgpack_decode(encoded)
+
+    assert decoded == {'firstKey': 'firstValue', 'secondKey': 'secondValue'}

@@ -1,5 +1,7 @@
 from typing import Any, Dict, List
 import msgpack
+from msgpack.exceptions import UnpackValueError
+from msgpack.ext import ExtType
 from enum import Enum
 
 
@@ -19,6 +21,9 @@ def sanitize(value: Any) -> Any:
     elif type(value) is list:
         array: List[Any] = value
         return [sanitize(a) for a in array]
+    elif type(value) is tuple:
+        array: List[Any] = list(*value)
+        return [sanitize(a) for a in array]
     elif hasattr(value, "__slots__"):
         return {s: sanitize(getattr(value, s)) for s in getattr(value, "__slots__") if hasattr(value, s)}
     elif hasattr(value, "__dict__"):
@@ -33,4 +38,9 @@ def msgpack_encode(obj: object) -> bytes:
 
 
 def msgpack_decode(val: bytes):
-    return msgpack.unpackb(val)
+    def ext_hook(code: int, data: bytes) -> bytes:
+        if code == ExtensionTypes.GENERIC_MAP.value:
+            return msgpack_decode(data)
+        raise UnpackValueError("Invalid Extention type")
+
+    return msgpack.unpackb(val, ext_hook=ext_hook)
