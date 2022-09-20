@@ -24,7 +24,7 @@ const VM_SCRIPTS_DIR = path.join(
 );
 const ADDITIONAL_INCLUDES: Record<BuildableLanguage, string[]> = {
   "wasm/assemblyscript": ["package.json", "node_modules"],
-  "wasm/rust": ["Cargo.toml", "Cargo.lock", "target"],
+  "wasm/rust": ["Cargo.toml", "Cargo.lock"],
 };
 
 const BASE_IMAGES: Record<BuildableLanguage, string> = {
@@ -76,10 +76,6 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
   private async _buildSources(): Promise<void> {
     const run = async () => {
-      if (fse.existsSync(this._volumePaths.project)) {
-        fse.removeSync(this._volumePaths.project);
-      }
-
       const manifestDir = this.project.getManifestDir();
       const buildManifest = await this.project.getBuildManifest();
       const buildManifestConfig = buildManifest.config as BuildManifestConfig;
@@ -94,18 +90,24 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
       const language = (await this.project.getManifestLanguage()) as BuildableLanguage;
 
+      if (buildManifestConfig.polywrap_linked_packages) {
+        if (fse.existsSync(this._volumePaths.linkedPackages)) {
+          fse.removeSync(this._volumePaths.linkedPackages);
+        }
+
+        await this.project.cacheBuildManifestLinkedPackages();
+      }
+
       // Copy additional includes
 
       ADDITIONAL_INCLUDES[language].forEach((include) => {
-        if (fse.existsSync(path.join(manifestDir, include))) {
-          fse.copySync(
-            path.join(manifestDir, include),
-            path.join(this._volumePaths.project, include),
-            {
-              overwrite: false,
-            }
-          );
+        if (fse.existsSync(path.join(this._volumePaths.project, include))) {
+          fse.removeSync(path.join(this._volumePaths.project, include));
         }
+        fse.copySync(
+          path.join(manifestDir, include),
+          path.join(this._volumePaths.project, include)
+        );
       });
 
       // Copy includes
@@ -123,13 +125,25 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
       // Copy sources and build
       if (buildManifestConfig.polywrap_module) {
-        fse.copySync(
-          path.join(manifestDir, buildManifestConfig.polywrap_module.dir),
-          path.join(
-            this._volumePaths.project,
-            buildManifestConfig.polywrap_module.dir
-          )
+        console.log(
+          path.join(manifestDir, buildManifestConfig.polywrap_module.dir)
         );
+
+        // HACK: moduleDir is path to Cargo.toml in Rust
+        if (language === "wasm/rust") {
+          fse.copySync(
+            path.join(manifestDir, "src"),
+            path.join(this._volumePaths.project, "src")
+          );
+        } else {
+          fse.copySync(
+            path.join(manifestDir, buildManifestConfig.polywrap_module.dir),
+            path.join(
+              this._volumePaths.project,
+              buildManifestConfig.polywrap_module.dir
+            )
+          );
+        }
 
         const scriptTemplate = fse.readFileSync(
           path.join(VM_SCRIPTS_DIR, `${language}.mustache`),
