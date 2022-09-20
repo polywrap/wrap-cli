@@ -60,3 +60,7 @@ def test_encode_and_decode_instance():
     encoded_with_class = msgpack_encode(complex_custom_object_with_class)
 
     assert encoded_with_dict == encoded_with_class
+
+    decoded_with_dict = msgpack_decode(encoded_with_dict)
+
+    assert complex_custom_object_with_dict == decoded_with_dict
