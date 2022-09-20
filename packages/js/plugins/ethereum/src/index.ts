@@ -67,42 +67,11 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
-    let method, isRawAbiMethod;
-    try {
-      method = JSON.parse(args.method);
-      isRawAbiMethod = true;
-    } catch (e) {
-      method = [args.method];
-      isRawAbiMethod = false;
-    }
-    const contract = connection.getContract(args.address, method, false);
+    const abi = this._constructAbi(args.method);
+    const contract = connection.getContract(args.address, abi, false);
     const funcs = Object.keys(contract.interface.functions);
-    const res = await contract[funcs[0]](...parseArgs(args.args));
-    if (!isRawAbiMethod) {
-      // if not raw ABI, return value
-      return res.toString();
-    }
-    if (!(res instanceof Array)) {
-      // if not array, return single value
-      return res.toString();
-    }
-    const objects: Record<string, unknown>[] = [];
-    for (const element of res) {
-      const object: Record<string, unknown> = {};
-      // if it comes here, `outputs` has at least one entry
-      const output = method[0].outputs[0];
-      if ("components" in output) {
-        // element is struct
-        for (const component of output.components) {
-          object[component.name] = element[component.name].toString();
-        }
-      } else {
-        // element is primitive
-        object.value = element.toString();
-      }
-      objects.push(object);
-    }
-    return JSON.stringify(objects);
+    const result = await contract[funcs[0]](...parseArgs(args.args));
+    return this._parseResult(abi, result);
   }
 
   async callContractStatic(
@@ -442,6 +411,58 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     connection?: SchemaConnection | null
   ): Promise<Connection> {
     return this._connections.getConnection(connection || this.env.connection);
+  }
+
+  private _constructAbi(method: string) {
+    let abi;
+    try {
+      abi = JSON.parse(method);
+      if (!(abi instanceof Array)) {
+        abi = [abi];
+      }
+    } catch (e) {
+      abi = [method];
+    }
+    return abi;
+  }
+
+  private _parseResult(abi: any[], result: any): string {
+    if (!(result instanceof Array)) {
+      // if not array, return single value
+      return result.toString();
+    }
+    const isRawAbi = abi[0] instanceof Object;
+    if (!isRawAbi) {
+      return this._stringifySimpleArray(result);
+    }
+    const outputs = abi[0].outputs;
+    const returnIsStruct = outputs.length > 0 && "components" in outputs[0];
+    if (returnIsStruct) {
+      return this._stringifyStruct(abi, result);
+    } else {
+      return this._stringifySimpleArray(result);
+    }
+  }
+
+  private _stringifyStruct(abi: any[], result: any): string {
+    const objects: Record<string, string>[] = [];
+    for (const element of result) {
+      const object: Record<string, string> = {};
+      const output = abi[0].outputs[0];
+      for (const component of output.components) {
+        object[component.name] = element[component.name].toString();
+      }
+      objects.push(object);
+    }
+    return JSON.stringify(objects);
+  }
+
+  private _stringifySimpleArray(result: any): string {
+    const objects: string[] = [];
+    for (const element of result) {
+      objects.push(element.toString());
+    }
+    return JSON.stringify(objects);
   }
 }
 

@@ -166,7 +166,32 @@ describe("Ethereum Plugin", () => {
       expect(num.eq("100")).toBeTruthy();
     });
 
-    it("callContractView (primitives array)", async () => {
+    it("callContractView (primitives array - string ABI)", async () => {
+      const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
+      await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "100");
+      await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "90");
+
+      const response = await client.invoke<string>({
+        uri,
+        method: "callContractView",
+        args: {
+          address: storageAddress,
+          method: 'function getSimple() public view returns (uint256[] memory)',
+          args: [],
+        },
+      });
+
+      if (!response.data) {
+        throw new Error('Empty data on view call, expecting JSON');
+      }
+      const result = JSON.parse(response.data);
+
+      expect(result.length).toEqual(2);
+      expect(result[0]).toEqual("100");
+      expect(result[1]).toEqual("90");
+    });
+
+    it("callContractView (primitives array - JSON ABI)", async () => {
       const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
       await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "100");
       await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "90");
@@ -187,8 +212,33 @@ describe("Ethereum Plugin", () => {
       const result = JSON.parse(response.data);
 
       expect(result.length).toEqual(2);
-      expect(result[0].value).toEqual("100");
-      expect(result[1].value).toEqual("90");
+      expect(result[0]).toEqual("100");
+      expect(result[1]).toEqual("90");
+    });
+
+    it("callContractView (primitives array - non-array JSON ABI)", async () => {
+      const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
+      await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "100");
+      await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "90");
+
+      const response = await client.invoke<string>({
+        uri,
+        method: "callContractView",
+        args: {
+          address: storageAddress,
+          method: '{"inputs":[],"name":"getSimple","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"}',
+          args: [],
+        },
+      });
+
+      if (!response.data) {
+        throw new Error('Empty data on view call, expecting JSON');
+      }
+      const result = JSON.parse(response.data);
+
+      expect(result.length).toEqual(2);
+      expect(result[0]).toEqual("100");
+      expect(result[1]).toEqual("90");
     });
 
     it("callContractView (struct array empty)", async () => {
