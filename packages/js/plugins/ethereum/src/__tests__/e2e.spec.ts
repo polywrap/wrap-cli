@@ -79,7 +79,7 @@ describe("Ethereum Plugin", () => {
         },
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({}),
+          plugin: ipfsPlugin({ provider: providers.ipfs }),
         },
         {
           uri: "wrap://ens/ens-resolver.polywrap.eth",
