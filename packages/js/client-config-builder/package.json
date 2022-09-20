@@ -31,6 +31,7 @@
     "@polywrap/ipfs-plugin-js": "0.7.0",
     "@polywrap/ipfs-resolver-plugin-js": "0.7.0",
     "@polywrap/logger-plugin-js": "0.7.0",
+    "@polywrap/random-plugin-js": "0.7.0",
     "@polywrap/tracing-js": "0.7.0",
     "@polywrap/wrap-manifest-types-js": "0.7.0"
   },

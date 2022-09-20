@@ -19,6 +19,7 @@ import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
+import { randomPlugin } from "@polywrap/random-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 
 export const getDefaultClientConfig = (
@@ -93,6 +94,10 @@ export const getDefaultClientConfig = (
       {
         uri: new Uri("wrap://ens/fs.polywrap.eth"),
         plugin: fileSystemPlugin({}),
+      },
+      {
+        uri: new Uri("wrap://ens/random.polywrap.eth"),
+        plugin: randomPlugin({}),
       },
       {
         uri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
