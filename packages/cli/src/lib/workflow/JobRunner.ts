@@ -23,42 +23,30 @@ export class JobRunner {
     this.jobOutput = new Map();
   }
 
-  async run(jobs: WorkflowJobs, ids?: string[]): Promise<void> {
-    ids = ids ? ids : Object.keys(jobs);
-    const running = ids.map((relativeId) => this._run({ relativeId, jobs }));
-    await Promise.all(running);
-  }
-
-  private async _run(opts: JobRunOptions): Promise<void> {
-    const { relativeId, parentId, jobs } = opts;
-
-    if (relativeId) {
-      let index = relativeId.indexOf(".");
-      index = index === -1 ? relativeId.length : index;
-
-      const jobId = relativeId.substring(0, index);
-      if (jobId === "") return;
+  async run(jobs: WorkflowJobs, ids: string[]): Promise<void> {
+    const running = ids.map(async (absJobId) => {
+      const jobId = this.getJobId(absJobId);
 
       const steps: Step[] | undefined = jobs[jobId].steps as Step[];
       if (steps) {
-        await this.executeSteps(jobId, steps, parentId);
+        await this.executeSteps(absJobId, steps);
       }
 
       const subJobs: WorkflowJobs | undefined = jobs[jobId].jobs;
       if (subJobs) {
-        await this._run({
-          relativeId: relativeId.substring(index + 1),
-          parentId: parentId ? `${parentId}.${jobId}` : jobId,
-          jobs: subJobs,
-        });
+        const subIds = Object.keys(subJobs).map((sub) => `${absJobId}.${sub}`);
+        await this.run(subJobs, subIds);
       }
-    } else {
-      const jobIds = Object.keys(jobs);
-      // Run all the sibling jobs in parallel
-      await Promise.all(
-        jobIds.map((relativeId) => this._run({ relativeId, parentId, jobs }))
-      );
+    });
+    await Promise.all(running);
+  }
+
+  private getJobId(absJobId: string): string {
+    const dotIdx = absJobId.lastIndexOf(".");
+    if (dotIdx > -1) {
+      return absJobId.substring(dotIdx + 1);
     }
+    return absJobId;
   }
 
   private followAccessors(
@@ -208,10 +196,9 @@ export class JobRunner {
     }
   }
 
-  private async executeSteps(jobId: string, steps: Step[], parentId?: string) {
+  private async executeSteps(absJobId: string, steps: Step[]) {
     for (let i = 0; i < steps.length; i++) {
       const step = steps[i];
-      const absJobId = parentId ? `${parentId}.${jobId}` : `${jobId}`;
       const absId = `${absJobId}.${i}`;
 
       const result: JobResult = await this.execStep(absJobId, i, step);
