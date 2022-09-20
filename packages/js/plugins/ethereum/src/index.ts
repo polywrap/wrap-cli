@@ -79,23 +79,27 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     _client: Client
   ): Promise<StaticTxResult> {
     const connection = await this._getConnection(args.connection);
-    const contract = connection.getContract(args.address, [args.method]);
+    const abi = this._constructAbi(args.method);
+    const contract = connection.getContract(args.address, abi);
     const funcs = Object.keys(contract.interface.functions);
 
     try {
-      const res = await contract.callStatic[funcs[0]](...parseArgs(args.args), {
-        gasPrice: args.txOverrides?.gasPrice
-          ? ethers.BigNumber.from(args.txOverrides.gasPrice)
-          : undefined,
-        gasLimit: args.txOverrides?.gasLimit
-          ? ethers.BigNumber.from(args.txOverrides.gasLimit)
-          : undefined,
-        value: args.txOverrides?.value
-          ? ethers.BigNumber.from(args.txOverrides.value)
-          : undefined,
-      });
+      const result = await contract.callStatic[funcs[0]](
+        ...parseArgs(args.args),
+        {
+          gasPrice: args.txOverrides?.gasPrice
+            ? ethers.BigNumber.from(args.txOverrides.gasPrice)
+            : undefined,
+          gasLimit: args.txOverrides?.gasLimit
+            ? ethers.BigNumber.from(args.txOverrides.gasLimit)
+            : undefined,
+          value: args.txOverrides?.value
+            ? ethers.BigNumber.from(args.txOverrides.value)
+            : undefined,
+        }
+      );
       return {
-        result: res.toString(),
+        result: result.length ? this._parseResult(abi, result) : "",
         error: false,
       };
     } catch (e) {
