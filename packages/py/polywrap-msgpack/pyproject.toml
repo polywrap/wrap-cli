@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "msgpack-wrap"
+name = "polywrap-msgpack"
 version = "0.1.0"
 description = "WRAP msgpack encoding"
 authors = ["Cesar <cesar@polywrap.io>"]
