@@ -1,18 +1,19 @@
 import {
+  displayPath,
   ensureDockerDaemonRunning,
-  FileLock,
   isDockerInstalled,
   runCommand,
 } from "../../system";
 import { BuildStrategyArgs, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
 import { PolywrapManifestLanguage, PolywrapProject } from "../../project";
+import { withSpinner } from "../../helpers";
 
 import fse from "fs-extra";
 import path from "path";
 import Mustache from "mustache";
 
-type BuildImageId = string;
+type BuildableLanguage = Exclude<PolywrapManifestLanguage, "interface">;
 const VOLUME_DIR_CACHE_SUBPATH = "build/volume";
 const VM_SCRIPTS_DIR = path.join(
   __dirname,
@@ -21,10 +22,14 @@ const VM_SCRIPTS_DIR = path.join(
   "defaults",
   "build-vm-scripts"
 );
-const ADDITIONAL_INCLUDES: Record<PolywrapManifestLanguage, string[]> = {
+const ADDITIONAL_INCLUDES: Record<BuildableLanguage, string[]> = {
   "wasm/assemblyscript": ["package.json", "node_modules"],
   "wasm/rust": ["Cargo.toml", "Cargo.lock", "target"],
-  interface: ["package.json"],
+};
+
+const BASE_IMAGES: Record<BuildableLanguage, string> = {
+  "wasm/assemblyscript": "namesty/base-assemblyscript",
+  "wasm/rust": "namesty/base-rust",
 };
 
 interface BuildManifestConfig {
@@ -44,9 +49,8 @@ interface BuildManifestConfig {
   include?: string[];
 }
 
-export class DockerVMBuildStrategy extends BuildStrategy<BuildImageId> {
-  private _dockerLock: FileLock;
-
+export class DockerVMBuildStrategy extends BuildStrategy<void> {
+  private _volumePaths: { project: string; linkedPackages: string };
   constructor(args: BuildStrategyArgs) {
     super(args);
 
@@ -54,27 +58,26 @@ export class DockerVMBuildStrategy extends BuildStrategy<BuildImageId> {
       throw new Error(intlMsg.lib_docker_noInstall());
     }
 
-    this._dockerLock = new FileLock(
-      this.project.getCachePath("build/DOCKER_LOCK"),
-      (msg) => {
-        throw new Error(msg);
-      }
-    );
+    this._volumePaths = {
+      project: this.project.getCachePath(VOLUME_DIR_CACHE_SUBPATH),
+      linkedPackages: this.project.getCachePath(
+        PolywrapProject.cacheLayout.buildLinkedPackagesDir
+      ),
+    };
   }
 
-  public async build(): Promise<string> {
-    await this._dockerLock.request();
-    try {
-      await ensureDockerDaemonRunning();
-      const volumePaths = {
-        project: this.project.getCachePath(VOLUME_DIR_CACHE_SUBPATH),
-        linkedPackages: this.project.getCachePath(
-          PolywrapProject.cacheLayout.buildLinkedPackagesDir
-        ),
-      };
+  public async build(): Promise<void> {
+    await ensureDockerDaemonRunning();
 
-      if (fse.existsSync(volumePaths.project)) {
-        fse.removeSync(volumePaths.project);
+    await this._buildSources();
+
+    await this._copyBuildOutput();
+  }
+
+  private async _buildSources(): Promise<void> {
+    const run = async () => {
+      if (fse.existsSync(this._volumePaths.project)) {
+        fse.removeSync(this._volumePaths.project);
       }
 
       const manifestDir = this.project.getManifestDir();
@@ -85,11 +88,11 @@ export class DockerVMBuildStrategy extends BuildStrategy<BuildImageId> {
       buildManifestConfig.polywrap_manifests.forEach((manifestPath) => {
         fse.copySync(
           path.join(manifestDir, manifestPath),
-          path.join(volumePaths.project, manifestPath)
+          path.join(this._volumePaths.project, manifestPath)
         );
       });
 
-      const language = await this.project.getManifestLanguage();
+      const language = (await this.project.getManifestLanguage()) as BuildableLanguage;
 
       // Copy additional includes
 
@@ -97,7 +100,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<BuildImageId> {
         if (fse.existsSync(path.join(manifestDir, include))) {
           fse.copySync(
             path.join(manifestDir, include),
-            path.join(volumePaths.project, include),
+            path.join(this._volumePaths.project, include),
             {
               overwrite: false,
             }
@@ -110,7 +113,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<BuildImageId> {
         buildManifestConfig.include.forEach((includePath) => {
           fse.copySync(
             path.join(manifestDir, includePath),
-            path.join(volumePaths.project, includePath),
+            path.join(this._volumePaths.project, includePath),
             {
               overwrite: false,
             }
@@ -123,7 +126,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<BuildImageId> {
         fse.copySync(
           path.join(manifestDir, buildManifestConfig.polywrap_module.dir),
           path.join(
-            volumePaths.project,
+            this._volumePaths.project,
             buildManifestConfig.polywrap_module.dir
           )
         );
@@ -138,29 +141,58 @@ export class DockerVMBuildStrategy extends BuildStrategy<BuildImageId> {
           buildManifestConfig
         );
         const buildScriptPath = path.join(
-          volumePaths.project,
+          this._volumePaths.project,
           "polywrap-build.sh"
         );
         fse.writeFileSync(buildScriptPath, scriptContent);
 
         await runCommand(
           `docker run --rm -v ${path.resolve(
-            volumePaths.project
+            this._volumePaths.project
           )}:/project -v ${path.resolve(
-            volumePaths.linkedPackages
-          )}:/linked-packages namesty/base-assemblyscript:latest /bin/bash -c "${scriptContent}"`
+            this._volumePaths.linkedPackages
+          )}:/linked-packages ${
+            BASE_IMAGES[language]
+          }:latest /bin/bash -c "${scriptContent}"`
         );
-
-        // Copy build output
-        fse.copySync(path.join(volumePaths.project, "build"), this.outputDir);
       }
+    };
 
-      await this._dockerLock.release();
+    if (this.project.quiet) {
+      return run();
+    } else {
+      return await withSpinner(
+        intlMsg.lib_helpers_docker_buildVMText(),
+        intlMsg.lib_helpers_docker_buildVMError(),
+        intlMsg.lib_helpers_docker_buildVMWarning(),
+        run
+      );
+    }
+  }
 
-      return "";
-    } catch (e) {
-      await this._dockerLock.release();
-      throw e;
+  private async _copyBuildOutput() {
+    const run = () => {
+      fse.copySync(
+        path.join(this._volumePaths.project, "build"),
+        this.outputDir
+      );
+    };
+
+    if (this.project.quiet) {
+      return run();
+    } else {
+      const args = {
+        path: displayPath(this.outputDir),
+      };
+
+      return (await withSpinner(
+        intlMsg.lib_helpers_copyText(args),
+        intlMsg.lib_helpers_copyError(args),
+        intlMsg.lib_helpers_copyWarning(args),
+        async () => {
+          run();
+        }
+      )) as void;
     }
   }
 }
