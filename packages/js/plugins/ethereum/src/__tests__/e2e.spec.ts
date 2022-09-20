@@ -126,7 +126,27 @@ describe("Ethereum Plugin", () => {
       expect(response.data).toBe("0x0000000000000000000000000000000000000000");
     });
 
-    it("callContractView (primitive value)", async () => {
+    it("callContractView (primitive value - string ABI)", async () => {
+      const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
+      await setPrimitiveToStorage(contracts.SimpleStorage.abi, storageAddress, "100");
+
+      const response = await client.invoke<string>({
+        uri,
+        method: "callContractView",
+        args: {
+          address: storageAddress,
+          method: 'function get() public view returns (uint256)',
+          args: [],
+        },
+      });
+
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
+      const num = ethers.BigNumber.from(response.data);
+      expect(num.eq("100")).toBeTruthy();
+    });
+
+    it("callContractView (primitive value - JSON ABI)", async () => {
       const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
       await setPrimitiveToStorage(contracts.SimpleStorage.abi, storageAddress, "100");
 
