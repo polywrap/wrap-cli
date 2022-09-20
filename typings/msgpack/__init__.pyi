@@ -8,7 +8,7 @@ import sys
 from typing import Any, Dict
 from .exceptions import *
 from .ext import ExtType, Timestamp
-from .fallback import Packer, Unpacker, unpackb
+from .fallback import Packer, Unpacker
 
 version = ...
 __version__ = ...
@@ -37,6 +37,20 @@ def unpack(stream: IOBase, **kwargs: Dict[Any, Any]) -> Any:
     Unpack an object from `stream`.
 
     Raises `ExtraData` when `stream` contains extra bytes.
+    See :class:`Unpacker` for options.
+    """
+    ...
+
+def unpackb(packed: bytes, **kwargs: Dict[Any, Any]) -> Any:
+    """
+    Unpack an object from `packed`.
+
+    Raises ``ExtraData`` when *packed* contains extra bytes.
+    Raises ``ValueError`` when *packed* is incomplete.
+    Raises ``FormatError`` when *packed* is not valid msgpack.
+    Raises ``StackError`` when *packed* contains too nested.
+    Other exceptions can be raised during unpacking.
+
     See :class:`Unpacker` for options.
     """
     ...

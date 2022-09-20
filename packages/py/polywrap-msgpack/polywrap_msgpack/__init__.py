@@ -7,7 +7,7 @@ class ExtensionTypes(Enum):
     GENERIC_MAP = 1
 
 
-def sanitize(value: Any) -> Union[Dict[Any, Any], List[Any]]:
+def sanitize(value: Any) -> Any:
     if type(value) is dict:
         dictionary: Dict[Any, Any] = value
         for key, val in dictionary.items():
@@ -21,8 +21,10 @@ def sanitize(value: Any) -> Union[Dict[Any, Any], List[Any]]:
         return [sanitize(a) for a in array]
     elif hasattr(value, "__slots__"):
         return {s: sanitize(getattr(value, s)) for s in getattr(value, "__slots__") if hasattr(value, s)}
-    else:
+    elif hasattr(value, "__dict__"):
         return {k: sanitize(v) for k, v in vars(value).items()}
+    else:
+        return value
 
 
 def msgpack_encode(obj: object) -> bytes:
@@ -31,4 +33,4 @@ def msgpack_encode(obj: object) -> bytes:
 
 
 def msgpack_decode(val: bytes):
-    return msgpack.fallback.unpackb(val)
+    return msgpack.unpackb(val)

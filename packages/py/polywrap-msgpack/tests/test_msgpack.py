@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from msgpack_wrap import msgpack_encode, msgpack_decode
+from polywrap_msgpack import msgpack_encode, msgpack_decode
 
 expected_array_like = [
     130, 168, 102, 105, 114, 115, 116, 75,

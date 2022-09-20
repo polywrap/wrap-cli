@@ -52,19 +52,6 @@ TYPE_RAW = ...
 TYPE_BIN = ...
 TYPE_EXT = ...
 DEFAULT_RECURSE_LIMIT = ...
-def unpackb(packed: bytes, **kwargs: Dict[Any, Any]) -> Any:
-    """
-    Unpack an object from `packed`.
-
-    Raises ``ExtraData`` when *packed* contains extra bytes.
-    Raises ``ValueError`` when *packed* is incomplete.
-    Raises ``FormatError`` when *packed* is not valid msgpack.
-    Raises ``StackError`` when *packed* contains too nested.
-    Other exceptions can be raised during unpacking.
-
-    See :class:`Unpacker` for options.
-    """
-    ...
 
 if sys.version_info < (2, 7, 6):
     ...
