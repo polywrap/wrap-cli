@@ -24,6 +24,7 @@ describe("msgpack", () => {
     const customMap = new Map()
     customMap.set("firstKey", "firstValue")
     customMap.set("secondKey", "secondValue")
+
     const encoded = msgpackEncode(customMap)
     const decoded = msgpackDecode(encoded)
     expect(decoded).toEqual(customMap);
