@@ -1,8 +1,4 @@
-import {
-  Module,
-  Args_getRandom,
-  manifest
-} from "./wrap";
+import { Module, Args_getRandom, manifest } from "./wrap";
 
 import randomBytes from "randombytes";
 import { PluginFactory } from "@polywrap/core-js";
@@ -18,7 +14,7 @@ export class RandomPlugin extends Module<NoConfig> {
 export const randomPlugin: PluginFactory<NoConfig> = () => {
   return {
     factory: () => new RandomPlugin({}),
-    manifest: manifest
+    manifest: manifest,
   };
 };
 
