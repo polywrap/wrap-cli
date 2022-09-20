@@ -3,6 +3,22 @@ import { JobStatus, ValidationResult, WorkflowOutput } from "./types";
 
 import path from "path";
 import fs from "fs";
+import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
+
+export const validateJobNames = (
+  jobs: WorkflowJobs | undefined,
+  idStack = ""
+): void => {
+  if (!jobs) return;
+  for (const jobId of Object.keys(jobs)) {
+    if (jobId === "data" || jobId === "error") {
+      throw Error(
+        `Reserved job name 'data' or 'error' found in job ${idStack}.${jobId}`
+      );
+    }
+    validateJobNames(jobs[jobId].jobs, `${idStack}.${jobId}`);
+  }
+};
 
 export function loadValidationScript(
   manifestPath: string,

@@ -9,6 +9,7 @@ import {
   parseClientConfigOption,
   parseWorkflowOutputFilePathOption,
   printJobOutput,
+  validateJobNames,
   validateOutput,
   ValidationResult,
   WorkflowOutput,
@@ -70,6 +71,7 @@ const _run = async (options: WorkflowCommandOptions) => {
 
   const manifestPath = path.resolve(manifest);
   const workflow = await loadWorkflowManifest(manifestPath, quiet);
+  validateJobNames(workflow.jobs);
   const validationScript = workflow.validation
     ? loadValidationScript(manifestPath, workflow.validation)
     : undefined;
@@ -97,7 +99,7 @@ const _run = async (options: WorkflowCommandOptions) => {
   };
 
   const jobRunner = new JobRunner(client, onExecution);
-  await jobRunner.run(workflow.jobs, jobs);
+  await jobRunner.run(workflow.jobs, jobs ?? Object.keys(workflow.jobs));
 
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);

@@ -286,17 +286,14 @@ describe("e2e tests for run command", () => {
   it("Should print error on stderr if job is named 'data' or 'error'", async () => {
     const testCaseDir = getTestCaseDir(9);
     const args = getCmdArgs(testCaseDir);
-    const { exitCode, stderr, stdout } = await runCLI({
+    const { exitCode, stderr } = await runCLI({
       args: ["run", ...args],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
 
-    console.log(stderr);
-    console.log(stdout);
-
     expect(stderr).toBeDefined();
-    const err = "Validation errors encountered while sanitizing PolywrapWorkflow";
+    const err = "Reserved job name 'data' or 'error' found in job";
     expect(stderr.indexOf(err)).toBeGreaterThan(-1);
     expect(exitCode).toEqual(1);
   });
@@ -315,7 +312,7 @@ describe("e2e tests for run command", () => {
     expect(stdout).toBeTruthy();
 
     const output = parseOutput(stdout);
-    expect(output[0].id).toBe("cases.case1");
+    expect(output[0].id).toBe("case2.0");
     expect(output[0].status).toBe("SUCCEED");
     expect(output[0].validation).toBe("SUCCEED");
     expect(output[0].error).toBeFalsy();
