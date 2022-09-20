@@ -1,4 +1,4 @@
-from core import get_implementations, Uri, UriRedirect, InterfaceImplementations
+from polywrap_core import get_implementations, Uri, UriRedirect, InterfaceImplementations
 
 
 def test_works_complex_redirects():

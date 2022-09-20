@@ -1,5 +1,5 @@
 import pytest
-from core import Uri, UriRedirect, apply_redirects
+from polywrap_core import Uri, UriRedirect, apply_redirects
 
 
 def test_typical_use_case():

@@ -1,7 +1,7 @@
 import pytest
 
 from graphql import DefinitionNode, SelectionSetNode
-from core import create_query_document, parse_query, InvokeOptions, Uri
+from polywrap_core import create_query_document, parse_query, InvokeOptions, Uri
 
 
 def test_typical_case_works():

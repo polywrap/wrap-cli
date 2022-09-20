@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional, Union
 
-from core import (
+from polywrap_core import (
     AnyWrapManifest,
     Client,
     Env,
