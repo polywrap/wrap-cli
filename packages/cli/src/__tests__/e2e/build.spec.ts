@@ -245,6 +245,22 @@ describe("e2e tests for build command", () => {
     });
   })
 
+  describe("VM strategy", () => {
+    it("Builds for assemblyscript", async () => {
+      const { exitCode: code, stdout: output } = await runCLI({
+        args: ["build", "-v", "-s", "vm"],
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+      });
+  
+      const buildDir = `./build`;
+
+      expect(code).toEqual(0);
+      expect(output).toContain(`Artifacts written to ${buildDir}`);
+      expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
+    })
+  })
+
   describe("test-cases", () => {
     for (let i = 0; i < testCases.length; ++i) {
       const testCaseName = testCases[i];
