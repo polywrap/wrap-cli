@@ -67,10 +67,42 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
-    const contract = connection.getContract(args.address, [args.method], false);
+    let method, isRawAbiMethod;
+    try {
+      method = JSON.parse(args.method);
+      isRawAbiMethod = true;
+    } catch (e) {
+      method = [args.method];
+      isRawAbiMethod = false;
+    }
+    const contract = connection.getContract(args.address, method, false);
     const funcs = Object.keys(contract.interface.functions);
     const res = await contract[funcs[0]](...parseArgs(args.args));
-    return res.toString();
+    if (!isRawAbiMethod) {
+      // if not raw ABI, return value
+      return res.toString();
+    }
+    if (!(res instanceof Array)) {
+      // if not array, return single value
+      return res.toString();
+    }
+    const objects: Record<string, unknown>[] = [];
+    for (const element of res) {
+      const object: Record<string, unknown> = {};
+      // if it comes here, `outputs` has at least one entry
+      const output = method[0].outputs[0];
+      if ("components" in output) {
+        // element is struct
+        for (const component of output.components) {
+          object[component.name] = element[component.name].toString();
+        }
+      } else {
+        // element is primitive
+        object.value = element.toString();
+      }
+      objects.push(object);
+    }
+    return JSON.stringify(objects);
   }
 
   async callContractStatic(
