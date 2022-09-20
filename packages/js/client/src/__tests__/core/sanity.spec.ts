@@ -24,19 +24,6 @@ describe("sanity", () => {
       },
     ]);
 
-    const expectedPlugins = [
-      new Uri("wrap://ens/ipfs.polywrap.eth"),
-      new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-      new Uri("wrap://ens/ethereum.polywrap.eth"),
-      new Uri("wrap://ens/http.polywrap.eth"),
-      new Uri("wrap://ens/js-logger.polywrap.eth"),
-      new Uri("wrap://ens/fs.polywrap.eth"),
-      new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-      new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-    ];
-    const actualPlugins = client.getPlugins().map(x => x.uri);
-    expect(expectedPlugins).toStrictEqual(actualPlugins);
-
     expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
@@ -55,15 +42,12 @@ describe("sanity", () => {
 
   test("client noDefaults flag works as expected", async () => {
     let client = new PolywrapClient();
-    expect(client.getPlugins().length !== 0).toBeTruthy();
     expect(client.getUriResolver()).toBeTruthy();
 
     client = new PolywrapClient({}, {});
-    expect(client.getPlugins().length !== 0).toBeTruthy();
     expect(client.getUriResolver()).toBeTruthy();
 
     client = new PolywrapClient({}, { noDefaults: false });
-    expect(client.getPlugins().length !== 0).toBeTruthy();
     expect(client.getUriResolver()).toBeTruthy();
 
     client = new PolywrapClient(
@@ -71,7 +55,6 @@ describe("sanity", () => {
       { noDefaults: true }
     );
 
-    expect(client.getPlugins().length === 0).toBeTruthy();
     expect(client.getUriResolver()).toBeTruthy();
 
     let message = "";

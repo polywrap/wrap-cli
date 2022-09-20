@@ -1,6 +1,7 @@
-import { PluginModule } from "@polywrap/core-js";
+import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
+import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
-import { getClient } from "../utils/getClient";
+import { PolywrapClient } from "../../PolywrapClient";
 
 jest.setTimeout(200000);
 
@@ -16,23 +17,20 @@ describe("env", () => {
       }
     }
 
-    return {
-      factory: () => new MockEnvPlugin({}),
-      manifest: {} as WrapManifest,
-    };
+    return new PluginPackage({} as WrapManifest, new MockEnvPlugin({}));
   };
 
   describe("env client types", () => {
     test("plugin env types", async () => {
       const implementationUri = "wrap://ens/some-implementation.eth";
       const envPlugin = mockEnvPlugin();
-      const client = await getClient({
-        plugins: [
+      const client = new PolywrapClient({
+        resolver: buildUriResolver([
           {
             uri: implementationUri,
-            plugin: envPlugin,
+            package: envPlugin,
           },
-        ],
+        ]),
         envs: [
           {
             uri: implementationUri,
