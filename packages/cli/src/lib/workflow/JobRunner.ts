@@ -7,12 +7,6 @@ import {
 } from "@polywrap/core-js";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
 
-export interface JobRunOptions {
-  relativeId?: string;
-  parentId?: string;
-  jobs: WorkflowJobs;
-}
-
 export class JobRunner {
   private jobOutput: Map<string, JobResult>;
 
