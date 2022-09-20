@@ -1,9 +1,19 @@
-### Sample Plugin
+# @polywrap/random-plugin-js
 
-This is a sample plugin with sample query/mutation.
-You can add new functionalities to it by following steps.
+Polywrap plugin in JavaScript for generating a random numbers. In Node.JS it uses the `crypto` library, and in the browser it uses the `.crypto/msCrypto` library.
 
-1. Add types & module methods to the `schema.graphql` file
-2. Run `yarn codegen`
-3. Implement the module's methods within the Plugin class in the `index.ts` file.
-4. Run `yarn build`
+## Methods
+### `getRandom(len: UInt32!): Bytes!`
+Returns an array of random bytes. For example:
+```typescript
+const result = await client.invoke({
+  uri: "ens/random.polywrap.eth",
+  method: "getRandom",
+  args: {
+    len: 5
+  }
+});
+
+// [123, 5, 75, 34, 253]
+console.log(result.data);
+```
