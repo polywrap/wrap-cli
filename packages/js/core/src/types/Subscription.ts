@@ -1,6 +1,8 @@
 import { Uri } from "./Uri";
 import { ClientConfig } from "./Client";
-import { InvokeOptions, InvokeResult } from "./Invoke";
+import { InvokeOptions } from "./Invoke";
+
+import { Result } from "@polywrap/result";
 
 /** Defines the frequency of Wrapper invocations for an Wrapper subscription */
 export interface SubscriptionFrequency {
@@ -44,7 +46,7 @@ export interface Subscription<TData = unknown> {
    * Implementation of AsyncIterator protocol makes the Subscription an
    * AsyncIterable, allowing use in for await...of loops.
    */
-  [Symbol.asyncIterator](): AsyncGenerator<InvokeResult<TData>>;
+  [Symbol.asyncIterator](): AsyncGenerator<Result<TData, Error>>;
 }
 
 export interface SubscriptionHandler {
