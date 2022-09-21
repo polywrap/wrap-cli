@@ -1,0 +1,23 @@
+type Module {
+  add(
+    x: Int32!
+    y: Int32!
+  ): Int32!
+
+  addInBox(
+    x: Int32!
+    y: Int32!
+  ): Num!
+
+  addFromEnv(
+    x: Int32!
+  ): Int32! @env(required: true)
+}
+
+type Num {
+  value: Int32!
+}
+
+type Env {
+  value: Int32!
+}

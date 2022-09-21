@@ -3,8 +3,7 @@ project:
   name: test-project
   type: wasm/assemblyscript
 source:
-  schema: ./schema.graphql
+  schema: ./src/schema.graphql
   module: ./src/index.ts
 extensions:
   build: ./polywrap.build.yaml
-  deploy: ./polywrap.deploy.yaml
