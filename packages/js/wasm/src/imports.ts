@@ -33,20 +33,20 @@ export const createImports = (config: {
         const method = readString(memory.buffer, methodPtr, methodLen);
         const args = readBytes(memory.buffer, argsPtr, argsLen);
 
-        const { data, error } = await client.invoke<Uint8Array>({
+        const result = await client.invoke<Uint8Array>({
           uri: uri,
           method: method,
           args: new Uint8Array(args),
           encodeResult: true,
         });
 
-        if (!error) {
-          state.subinvoke.result = data;
+        if (result.ok) {
+          state.subinvoke.result = result.value;
         } else {
-          state.subinvoke.error = `${error.name}: ${error.message}`;
+          state.subinvoke.error = `${result.error?.name}: ${result.error?.message}`;
         }
 
-        return !error;
+        return result.ok;
       },
       // Give WASM the size of the result
       __wrap_subinvoke_result_len: (): u32 => {
@@ -99,20 +99,20 @@ export const createImports = (config: {
 
         state.subinvokeImplementation.args = [implUri, method, args];
 
-        const { data, error } = await client.invoke<Uint8Array>({
+        const result = await client.invoke<Uint8Array>({
           uri: implUri,
           method: method,
           args: new Uint8Array(args),
           encodeResult: true,
         });
 
-        if (!error) {
-          state.subinvokeImplementation.result = data;
+        if (result.ok) {
+          state.subinvokeImplementation.result = result.value;
         } else {
-          state.subinvokeImplementation.error = `${error.name}: ${error.message}`;
+          state.subinvokeImplementation.error = `${result.error?.name}: ${result.error?.message}`;
         }
 
-        return !error;
+        return result.ok;
       },
       __wrap_subinvokeImplementation_result_len: (): u32 => {
         if (!state.subinvokeImplementation.result) {
