@@ -13,25 +13,24 @@ import {
 } from "@polywrap/ethereum-plugin-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
 
-const contentHash = require("content-hash");
-
-class ENSPublisher implements Deployer {
+class ENSRecursiveNameRegisterPublisher implements Deployer {
   async execute(
     uri: Uri,
     config: {
-      domainName: string;
       provider: string;
       privateKey?: string;
       ensRegistryAddress: string;
+      ensRegistrarAddress: string;
+      ensResolverAddress: string;
     }
   ): Promise<Uri> {
-    if (uri.authority !== "ipfs") {
+    if (uri.authority !== "ens") {
       throw new Error(
-        `ENS Deployer: resolved URI from ${uri} does not represent an IPFS contentHash`
+        `ENS Recursive Name Register Deployer: argument URI needs to be an ENS URI. Example: wrap://ens/foo.bar.eth`
       );
     }
 
-    const cid = uri.path;
+    const ensDomain = uri.path;
 
     const connectionProvider = new JsonRpcProvider(config.provider);
     const {
@@ -77,50 +76,50 @@ class ENSPublisher implements Deployer {
       ],
     });
 
-    const { data: resolver } = await client.invoke<string>({
-      method: "getResolver",
-      uri: ensWrapperUri,
+    const { data: signerAddress } = await client.invoke<string>({
+      method: "getSignerAddress",
+      uri: ethereumPluginUri,
       args: {
-        registryAddress: config.ensRegistryAddress,
-        domain: config.domainName,
         connection: {
           networkNameOrChainId: network,
         },
       },
     });
 
-    if (!resolver) {
-      throw new Error(`Could not get resolver for '${config.domainName}'`);
+    if (!signerAddress) {
+      throw new Error("Could not get signer");
     }
 
-    if (resolver === "0x0000000000000000000000000000000000000000") {
-      throw new Error(`Resolver not set for '${config.domainName}'`);
-    }
-
-    const hash = "0x" + contentHash.fromIpfs(cid);
-
-    const { data: setContenthashData } = await client.invoke<{ hash: string }>({
-      method: "setContentHash",
-      uri: ensWrapperUri,
-      args: {
-        domain: config.domainName,
-        cid: hash,
-        resolverAddress: resolver,
-        connection: {
-          networkNameOrChainId: network,
+    const { data: registerData, error } = await client.invoke<{ hash: string }>(
+      {
+        method: "registerDomainAndSubdomainsRecursively",
+        uri: ensWrapperUri,
+        args: {
+          domain: ensDomain,
+          owner: signerAddress,
+          resolverAddress: config.ensResolverAddress,
+          ttl: "0",
+          registrarAddress: config.ensRegistrarAddress,
+          registryAddress: config.ensRegistryAddress,
+          connection: {
+            networkNameOrChainId: network,
+          },
         },
-      },
-    });
+      }
+    );
 
-    if (!setContenthashData) {
-      throw new Error(`Could not set contentHash for '${config.domainName}'`);
+    if (!registerData) {
+      throw new Error(
+        `Could not register domain '${ensDomain}'` +
+          (error ? `\nError: ${error.message}` : "")
+      );
     }
 
     await client.invoke({
       method: "awaitTransaction",
       uri: ethereumPluginUri,
       args: {
-        txHash: setContenthashData.hash,
+        txHash: registerData.hash,
         confirmations: 1,
         timeout: 15000,
         connection: {
@@ -129,8 +128,8 @@ class ENSPublisher implements Deployer {
       },
     });
 
-    return new Uri(`ens/${network}/${config.domainName}`);
+    return new Uri(`ens/${network}/${ensDomain}`);
   }
 }
 
-export default new ENSPublisher();
+export default new ENSRecursiveNameRegisterPublisher();

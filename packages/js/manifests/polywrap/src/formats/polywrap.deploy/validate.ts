@@ -10,6 +10,7 @@ import {
 } from ".";
 
 import DeployManifestSchema_0_1_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.deploy/0.1.0.json";
+import DeployManifestSchema_0_2_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.deploy/0.2.0.json";
 
 import {
   Schema,
@@ -26,6 +27,7 @@ const schemas: DeployManifestSchemas = {
   // NOTE: Patch fix for backwards compatability
   "0.1": DeployManifestSchema_0_1_0,
   "0.1.0": DeployManifestSchema_0_1_0,
+  "0.2.0": DeployManifestSchema_0_2_0,
 };
 
 const validator = new Validator();
