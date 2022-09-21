@@ -7,12 +7,6 @@ import axios from "axios";
 import fs from "fs";
 import yaml from "js-yaml";
 import { Uri } from "@polywrap/core-js";
-import { PolywrapClient } from "@polywrap/client-js";
-import {
-  ethereumPlugin,
-  Connections,
-  Connection,
-} from "@polywrap/ethereum-plugin-js";
 import {
   DeployManifest,
   deserializePolywrapManifest,
@@ -29,6 +23,12 @@ export const providers = {
   ipfs: "http://localhost:5001",
   ethereum: "http://localhost:8545",
   http: "http://localhost:3500",
+};
+
+export const embeddedWrappers = {
+  ens: `wrap://fs/${path.join(__dirname, "wrappers", "ens")}`,
+  uts46: `wrap://fs/${path.join(__dirname, "wrappers", "uts46")}`,
+  sha3: `wrap://fs/${path.join(__dirname, "wrappers", "sha3")}`,
 };
 
 const monorepoCli = `${__dirname}/../../../cli/bin/polywrap`;
@@ -258,82 +258,6 @@ export async function buildAndDeployWrapper({
 
   await buildWrapper(wrapperAbsPath);
 
-  // register ENS domain
-  const ensWrapperUri = `fs/${__dirname}/wrappers/ens`;
-
-  const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
-
-  const testnetConnection = {
-    networks: {
-      testnet: new Connection({
-        provider: ethereumProvider,
-      }),
-    },
-    defaultNetwork: "testnet",
-  };
-
-  const connections = new Connections(testnetConnection);
-  const client = new PolywrapClient({
-    plugins: [
-      {
-        uri: ethereumPluginUri,
-        plugin: ethereumPlugin({
-          connections,
-        }),
-      },
-    ],
-  });
-
-  const { data: signerAddress } = await client.invoke<string>({
-    method: "getSignerAddress",
-    uri: ethereumPluginUri,
-    args: {
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
-  });
-
-  if (!signerAddress) {
-    throw new Error("Could not get signer");
-  }
-
-  const { data: registerData, error } = await client.invoke<{ hash: string }>({
-    method: "registerDomainAndSubdomainsRecursively",
-    uri: ensWrapperUri,
-    args: {
-      domain: wrapperEns,
-      owner: signerAddress,
-      resolverAddress: ensAddresses.resolverAddress,
-      ttl: "0",
-      registrarAddress: ensAddresses.registrarAddress,
-      registryAddress: ensAddresses.ensAddress,
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
-  });
-
-  if (!registerData) {
-    throw new Error(
-      `Could not register domain '${wrapperEns}'` +
-        (error ? `\nError: ${error.message}` : "")
-    );
-  }
-
-  await client.invoke({
-    method: "awaitTransaction",
-    uri: ethereumPluginUri,
-    args: {
-      txHash: registerData.hash,
-      confirmations: 1,
-      timeout: 15000,
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
-  });
-
   // manually configure manifests
   const { __type, ...polywrapManifest } = deserializePolywrapManifest(
     fs.readFileSync(manifestPath, "utf-8")
@@ -351,26 +275,41 @@ export async function buildAndDeployWrapper({
   );
 
   const deployManifest: Omit<DeployManifest, "__type"> = {
-    format: "0.1.0",
-    stages: {
-      ipfsDeploy: {
-        package: "ipfs",
-        uri: `fs/${wrapperAbsPath}/build`,
+    format: "0.2.0",
+    sequences: [
+      {
+        name: "buildAndDeployWrapper",
         config: {
-          gatewayUri: ipfsProvider,
-        },
-      },
-      ensPublish: {
-        package: "ens",
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        depends_on: "ipfsDeploy",
-        config: {
-          domainName: wrapperEns,
           provider: ethereumProvider,
           ensRegistryAddress: ensAddresses.ensAddress,
+          ensRegistrarAddress: ensAddresses.registrarAddress,
+          ensResolverAddress: ensAddresses.resolverAddress,
         },
+        steps: [
+          {
+            name: "registerName",
+            package: "ens-recursive-name-register",
+            uri: `wrap://ens/${wrapperEns}`,
+          },
+          {
+            name: "ipfsDeploy",
+            package: "ipfs",
+            uri: `fs/${wrapperAbsPath}/build`,
+            config: {
+              gatewayUri: ipfsProvider,
+            },
+          },
+          {
+            name: "ensPublish",
+            package: "ens",
+            uri: "$$ipfsDeploy",
+            config: {
+              domainName: wrapperEns,
+            },
+          },
+        ],
       },
-    },
+    ],
   };
   fs.writeFileSync(tempDeployManifestPath, yaml.dump(deployManifest));
 
