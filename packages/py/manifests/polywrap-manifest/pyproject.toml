@@ -10,14 +10,15 @@ chevron = "^0.14.0"
 python = "^3.10"
 statham = "^0.12"
 json-ref-dict = "^0.7.1"
-statham-schema = "^0.13.5"
+datamodel-code-generator = "^0.13.1"
+pydantic = "^1.10.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
 pytest-cov = "^3.0.0"
 
 [tool.poetry.scripts]
-generate = "polywrap_manifest.scripts.generate_manifest_types:generate"
+generate = "polywrap_manifest.scripts.generate_manifest_types:generate_types"
 
 [build-system]
 requires = ["poetry-core"]

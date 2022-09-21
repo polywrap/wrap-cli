@@ -1,18 +1,10 @@
 import os
-import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, Final
-
-from json_ref_dict import materialize, RefDict
+from typing import Final
+from datamodel_code_generator import InputFileType, generate
+from json_ref_dict import RefDict
 # from packaging import version
-# from statham.schema.elements import String
-from statham.schema.parser import parse
-
-# from statham.serializers import serialize_pyth
-# from statham.serializers.orderer import get_children
-from statham.titles import title_labeller
-
 # import chevron
 
 AUTO_GENERATION_WARNING = """\
@@ -20,15 +12,12 @@ AUTO_GENERATION_WARNING = """\
 # the `generate_manifest_types.py` script to regenerate this file.
 """
 INPUT_PATH: Final[Path] = Path('../../../manifests/polywrap/formats/')
-OUTPUT_PATH: Final[Path] = Path('../../src/core/manifest/formats/')
+OUTPUT_PATH: Final[Path] = Path('./polywrap_manifest/formats')
 
 
-def generate():
-    print(INPUT_PATH)
-    print(INPUT_PATH)
+def generate_types():
     os.walk(INPUT_PATH)
     for directory_path, _, file_names in os.walk(INPUT_PATH):
-        print(directory_path)
         schema_type = Path(directory_path).parts[-1]
         if schema_type == 'formats':
             continue
@@ -38,33 +27,40 @@ def generate():
         for file in file_names:
             schema_version = file.split('.json')[0]
             try:
-                print("generating version {}", schema_version)
-                schema = materialize(
-                    RefDict.from_uri(Path(directory_path).joinpath(file).absolute().as_uri()),
-                    context_labeller=title_labeller(),
+                ref = str(RefDict.from_uri(Path(directory_path).joinpath(file).absolute().as_uri()))
+                print("generating version ", schema_version)
+                print("generating ref ", ref)
+
+                out = OUTPUT_PATH.joinpath(schema_type)
+                os.makedirs(out, exist_ok=True)
+
+                generate(
+                    ref,
+                    input_file_type=InputFileType.JsonSchema,
+                    input_filename=file,
+                    output=out.joinpath(f'{schema_version}.py')
                 )
-                schema['properties']['__type'] = {'type': 'string', 'const': schema['id']}
-                schema['required'].append('__type')
-                schema['title'] = schema['id']
 
-                print(schema)
-                schemata[f'{schema_type}@{schema_version}'] = parse(schema)
-
-
-            #
-            #         out = OUTPUT_PATH.joinpath(schemaType)
-            #         os.makedirs(out, exist_ok=True)
-            #         with open(out.joinpath(f'{schemaVersion}.py'), 'w') as out:
-            #             out.write(AUTO_GENERATION_WARNING)
-            #             out.write(serialize_python(*schemata[f'{schemaType}@{schemaVersion}']))
-            #             out.flush()
+                # schema = materialize(
+                #     RefDict.from_uri(Path(directory_path).joinpath(file).absolute().as_uri()),
+                #     context_labeller=title_labeller(),
+                # )
+                # schema['properties']['__type'] = {'type': 'string', 'const': schema['id']}
+                # schema['required'].append('__type')
+                # schema['title'] = schema['id']
+                #
+                # schemata[f'{schema_type}@{schema_version}'] = model_factory(schema)
+                # print(schemata[f'{schema_type}@{schema_version}'].__init__)
+                # with open(out.joinpath(f'{schema_version}.py'), 'w') as out:
+                #     out.write(AUTO_GENERATION_WARNING)
+                #     out.write(schemata[f'{schema_type}@{schema_version}'])
+                #     out.flush()
             #
             #         formatModules.append({'interface': schema['id'], 'version': schemaVersion})
             except Exception as e:
                 print(f'error generating the manifest file {file}: ', e, file=sys.stderr)
                 raise e
 
-        print(schemata)
         # def render_template(name: str, ctx: Dict[str, Any]):
         #     with open(f'./{name}.py.mustache', 'r') as template, open(
         #         OUTPUT_PATH.joinpath(schemaType, f'{name}.py'), 'w'
