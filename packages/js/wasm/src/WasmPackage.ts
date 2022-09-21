@@ -9,7 +9,7 @@ import {
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
 import { GetManifestOptions, Wrapper } from "@polywrap/core-js";
-import { Result, ResultErr, ResultOk } from "@polywrap/result";
+import { Result, ResultErr } from "@polywrap/result";
 
 export class WasmPackage implements IWasmPackage {
   protected constructor(private readonly fileReader: IFileReader) {}
@@ -66,23 +66,24 @@ export class WasmPackage implements IWasmPackage {
 
   // TODO: return Result
   async getManifest(options?: GetManifestOptions): Promise<WrapManifest> {
-    const wrapManifest = await this.fileReader.readFile(WRAP_MANIFEST_PATH);
+    const result = await this.fileReader.readFile(WRAP_MANIFEST_PATH);
 
-    if (!wrapManifest) {
+    if (!result.ok) {
       throw Error(`WRAP manifest not found`);
     }
 
+    const wrapManifest = result.value;
     return deserializeWrapManifest(wrapManifest, options);
   }
 
   async getWasmModule(): Promise<Result<Uint8Array, Error>> {
-    const wasmModule = await this.fileReader.readFile(WRAP_MODULE_PATH);
+    const result = await this.fileReader.readFile(WRAP_MODULE_PATH);
 
-    if (!wasmModule) {
+    if (!result.ok) {
       return ResultErr(Error(`Wrapper does not contain a wasm module`));
     }
 
-    return ResultOk(wasmModule);
+    return result;
   }
 
   // TODO: return Result

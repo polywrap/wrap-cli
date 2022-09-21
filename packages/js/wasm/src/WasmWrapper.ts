@@ -66,14 +66,16 @@ export class WasmWrapper implements Wrapper {
   ): Promise<Result<Uint8Array | string, Error>> {
     const { path, encoding } = options;
 
-    const data = await this._fileReader.readFile(path);
+    const dataResult = await this._fileReader.readFile(path);
 
     // If nothing is returned, the file was not found
-    if (!data) {
+    if (!dataResult.ok) {
       return ResultErr(
         Error(`WasmWrapper: File was not found.\nSubpath: ${path}`)
       );
     }
+
+    const data = dataResult.value;
 
     if (encoding) {
       const decoder = new TextDecoder(encoding);
@@ -205,11 +207,13 @@ export class WasmWrapper implements Wrapper {
   @Tracer.traceMethod("WasmWrapper: getWasmModule")
   private async _getWasmModule(): Promise<Result<Uint8Array, Error>> {
     if (this._wasmModule === undefined) {
-      this._wasmModule = await this._fileReader.readFile(WRAP_MODULE_PATH);
+      const result = await this._fileReader.readFile(WRAP_MODULE_PATH);
 
-      if (!this._wasmModule) {
+      if (!result.ok) {
         return ResultErr(Error(`Wrapper does not contain a wasm module`));
       }
+
+      this._wasmModule = result.value;
     }
 
     return ResultOk(this._wasmModule);
