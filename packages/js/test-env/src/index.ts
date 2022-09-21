@@ -389,16 +389,22 @@ export async function buildAndDeployWrapperToHttp({
   fs.writeFileSync(tempManifestPath, yaml.dump({ ...polywrapManifest }));
 
   const deployManifest: Omit<DeployManifest, "__type"> = {
-    format: "0.1.0",
-    stages: {
-      httpDeploy: {
-        package: "http",
-        uri: `fs/${wrapperAbsPath}/build`,
-        config: {
-          postUrl,
-        },
+    format: "0.2.0",
+    sequences: [
+      {
+        name: "buildAndDeployWrapperToHttp",
+        steps: [
+          {
+            name: "httpDeploy",
+            package: "http",
+            uri: `fs/${wrapperAbsPath}/build`,
+            config: {
+              postUrl,
+            },
+          },
+        ],
       },
-    },
+    ],
   };
   fs.writeFileSync(tempDeployManifestPath, yaml.dump(deployManifest));
 
