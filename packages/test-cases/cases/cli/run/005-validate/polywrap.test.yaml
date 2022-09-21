@@ -17,6 +17,14 @@ jobs:
           args:
             x: "$cases.0.data"
             y: 1
+        jobs:
+          case12:
+            steps:
+              - uri: fs/../run-test-wrapper/build
+                method: add
+                args:
+                  x: "$cases.case1.0.data"
+                  y: 1
       case2:
         steps:
           - uri: fs/../run-test-wrapper/build
