@@ -7,7 +7,10 @@ import axios from "axios";
 import fs from "fs";
 import yaml from "js-yaml";
 import { Uri } from "@polywrap/core-js";
-import { deserializePolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
+import {
+  DeployManifest,
+  deserializePolywrapManifest,
+} from "@polywrap/polywrap-manifest-types-js";
 
 export const ensAddresses = {
   ensAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
@@ -19,6 +22,7 @@ export const ensAddresses = {
 export const providers = {
   ipfs: "http://localhost:5001",
   ethereum: "http://localhost:8545",
+  http: "http://localhost:3500",
 };
 
 export const embeddedWrappers = {
@@ -270,46 +274,44 @@ export async function buildAndDeployWrapper({
     })
   );
 
-  fs.writeFileSync(
-    tempDeployManifestPath,
-    yaml.dump({
-      format: "0.2.0",
-      sequences: [
-        {
-          name: "buildAndDeployWrapper",
-          config: {
-            provider: ethereumProvider,
-            ensRegistryAddress: ensAddresses.ensAddress,
-            ensRegistrarAddress: ensAddresses.registrarAddress,
-            ensResolverAddress: ensAddresses.resolverAddress,
-          },
-          steps: [
-            {
-              name: "registerName",
-              package: "ens-recursive-name-register",
-              uri: `wrap://ens/${wrapperEns}`,
-            },
-            {
-              name: "ipfsDeploy",
-              package: "ipfs",
-              uri: `fs/${wrapperAbsPath}/build`,
-              config: {
-                gatewayUri: ipfsProvider,
-              },
-            },
-            {
-              name: "ensPublish",
-              package: "ens",
-              uri: "$$ipfsDeploy",
-              config: {
-                domainName: wrapperEns,
-              },
-            },
-          ],
+  const deployManifest: Omit<DeployManifest, "__type"> = {
+    format: "0.2.0",
+    sequences: [
+      {
+        name: "buildAndDeployWrapper",
+        config: {
+          provider: ethereumProvider,
+          ensRegistryAddress: ensAddresses.ensAddress,
+          ensRegistrarAddress: ensAddresses.registrarAddress,
+          ensResolverAddress: ensAddresses.resolverAddress,
         },
-      ],
-    })
-  );
+        steps: [
+          {
+            name: "registerName",
+            package: "ens-recursive-name-register",
+            uri: `wrap://ens/${wrapperEns}`,
+          },
+          {
+            name: "ipfsDeploy",
+            package: "ipfs",
+            uri: `fs/${wrapperAbsPath}/build`,
+            config: {
+              gatewayUri: ipfsProvider,
+            },
+          },
+          {
+            name: "ensPublish",
+            package: "ens",
+            uri: "$$ipfsDeploy",
+            config: {
+              domainName: wrapperEns,
+            },
+          },
+        ],
+      },
+    ],
+  };
+  fs.writeFileSync(tempDeployManifestPath, yaml.dump(deployManifest));
 
   // deploy Wrapper
 
@@ -348,5 +350,87 @@ export async function buildAndDeployWrapper({
   return {
     ensDomain: wrapperEns,
     ipfsCid: wrapperCid,
+  };
+}
+
+export async function buildAndDeployWrapperToHttp({
+  wrapperAbsPath,
+  httpProvider,
+  name,
+}: {
+  wrapperAbsPath: string;
+  httpProvider: string;
+  name?: string;
+}): Promise<{ uri: string }> {
+  const manifestPath = `${wrapperAbsPath}/polywrap.yaml`;
+  const tempManifestFilename = `polywrap-temp.yaml`;
+  const tempDeployManifestFilename = `polywrap.deploy-temp.yaml`;
+  const tempManifestPath = path.join(wrapperAbsPath, tempManifestFilename);
+  const tempDeployManifestPath = path.join(
+    wrapperAbsPath,
+    tempDeployManifestFilename
+  );
+
+  const wrapperName = name ?? generateName();
+  const postUrl = `${httpProvider}/wrappers/local/${wrapperName}`;
+
+  await buildWrapper(wrapperAbsPath);
+
+  // manually configure manifests
+
+  const { __type, ...polywrapManifest } = deserializePolywrapManifest(
+    fs.readFileSync(manifestPath, "utf-8")
+  );
+
+  polywrapManifest.extensions = {
+    ...polywrapManifest.extensions,
+    deploy: `./${tempDeployManifestFilename}`,
+  };
+  fs.writeFileSync(tempManifestPath, yaml.dump({ ...polywrapManifest }));
+
+  const deployManifest: Omit<DeployManifest, "__type"> = {
+    format: "0.2.0",
+    sequences: [
+      {
+        name: "buildAndDeployWrapperToHttp",
+        steps: [
+          {
+            name: "httpDeploy",
+            package: "http",
+            uri: `fs/${wrapperAbsPath}/build`,
+            config: {
+              postUrl,
+            },
+          },
+        ],
+      },
+    ],
+  };
+  fs.writeFileSync(tempDeployManifestPath, yaml.dump(deployManifest));
+
+  // deploy Wrapper
+
+  const {
+    exitCode: deployExitCode,
+    stdout: deployStdout,
+    stderr: deployStderr,
+  } = await runCLI({
+    args: ["deploy", "--manifest-file", tempManifestPath],
+  });
+
+  if (deployExitCode !== 0) {
+    console.error(`polywrap exited with code: ${deployExitCode}`);
+    console.log(`stderr:\n${deployStderr}`);
+    console.log(`stdout:\n${deployStdout}`);
+    throw Error("polywrap CLI failed");
+  }
+
+  // remove manually configured manifests
+
+  fs.unlinkSync(tempManifestPath);
+  fs.unlinkSync(tempDeployManifestPath);
+
+  return {
+    uri: postUrl,
   };
 }

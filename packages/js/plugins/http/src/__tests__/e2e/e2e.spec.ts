@@ -1,5 +1,5 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../wrap";
+import { Http_Response } from "../../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
 import nock from "nock";
@@ -32,7 +32,7 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(200, '{data: "test-response"}');
 
-      const response = await polywrapClient.invoke<Response>({
+      const response = await polywrapClient.invoke<Http_Response>({
         uri: "wrap://ens/http.polywrap.eth",
         method: "get",
         args: {
@@ -56,7 +56,7 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(200, '{data: "test-response"}');
 
-      const response = await polywrapClient.invoke<Response>({
+      const response = await polywrapClient.invoke<Http_Response>({
         uri: "wrap://ens/http.polywrap.eth",
         method: "get",
         args: {
@@ -87,7 +87,7 @@ describe("e2e tests for HttpPlugin", () => {
           "X-Response-Header": "resp-foo",
         });
 
-      const response = await polywrapClient.invoke<Response>({
+      const response = await polywrapClient.invoke<Http_Response>({
         uri: "wrap://ens/http.polywrap.eth",
         method: "get",
         args: {
@@ -119,7 +119,7 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(404);
 
-      const response = await polywrapClient.invoke<Response>({
+      const response = await polywrapClient.invoke<Http_Response>({
         uri: "wrap://ens/http.polywrap.eth",
         method: "get",
         args: {
@@ -152,7 +152,7 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api", reqPayloadStringified)
         .reply(200, resPayloadStringfified);
 
-      const response = await polywrapClient.invoke<Response>({
+      const response = await polywrapClient.invoke<Http_Response>({
         uri: "wrap://ens/http.polywrap.eth",
         method: "post",
         args: {
@@ -178,7 +178,7 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api", "{data: 'test-request'}")
         .reply(200, '{data: "test-response"}');
 
-      const response = await polywrapClient.invoke<Response>({
+      const response = await polywrapClient.invoke<Http_Response>({
         uri: "wrap://ens/http.polywrap.eth",
         method: "post",
         args: {
@@ -203,7 +203,7 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api", "{data: 'test-request'}")
         .reply(200, '{data: "test-response"}');
 
-      const response = await polywrapClient.invoke<Response>({
+      const response = await polywrapClient.invoke<Http_Response>({
         uri: "wrap://ens/http.polywrap.eth",
         method: "post",
         args: {
@@ -235,7 +235,7 @@ describe("e2e tests for HttpPlugin", () => {
           "X-Response-Header": "resp-foo",
         });
 
-      const response = await polywrapClient.invoke<Response>({
+      const response = await polywrapClient.invoke<Http_Response>({
         uri: "wrap://ens/http.polywrap.eth",
         method: "post",
         args: {
@@ -268,7 +268,7 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api")
         .reply(404);
 
-      const response = await polywrapClient.invoke<Response>({
+      const response = await polywrapClient.invoke<Http_Response>({
         uri: "wrap://ens/http.polywrap.eth",
         method: "post",
         args: {

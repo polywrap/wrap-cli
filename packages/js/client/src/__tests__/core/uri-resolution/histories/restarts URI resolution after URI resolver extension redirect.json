@@ -35,6 +35,16 @@
             ]
           ]
         ],
+        "wrap://ens/http-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/http-resolver.polywrap.eth)",
+        [
+          "wrap://ens/http-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/http-resolver.polywrap.eth)",
+          [
+            "wrap://ens/http-resolver.polywrap.eth => LegacyPluginsResolver => package (wrap://ens/http-resolver.polywrap.eth)",
+            [
+              "wrap://ens/http-resolver.polywrap.eth => Plugin (wrap://ens/http-resolver.polywrap.eth) => package (wrap://ens/http-resolver.polywrap.eth)"
+            ]
+          ]
+        ],
         "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
         [
           "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
