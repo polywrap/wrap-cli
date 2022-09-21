@@ -1,7 +1,6 @@
 from typing import Any, Dict, List
 import msgpack
 from msgpack.exceptions import UnpackValueError
-from msgpack.ext import ExtType
 from enum import Enum
 
 
