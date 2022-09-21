@@ -9,18 +9,12 @@ export interface UriRedirect<TUri = string> {
 
 export const sanitizeUriRedirects = Tracer.traceFunc(
   "core: sanitizeUriRedirects",
-  (input: UriRedirect<string>[]): UriRedirect<Uri>[] => {
+  (input: UriRedirect<Uri | string>[]): UriRedirect<Uri>[] => {
     const output: UriRedirect<Uri>[] = [];
     for (const definition of input) {
-      const from = new Uri(definition.from);
-      const to =
-        typeof definition.to === "string"
-          ? new Uri(definition.to)
-          : definition.to;
-
       output.push({
-        from: from,
-        to: to,
+        from: Uri.from(definition.from),
+        to: Uri.from(definition.to),
       });
     }
 

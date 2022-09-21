@@ -4,9 +4,9 @@ import {
   createPolywrapProvider,
 } from "..";
 import { UsePolywrapInvokeProps } from "../invoke";
-import { createPlugins } from "./plugins";
+import { createPlugins, createEnvs } from "./config";
 
-import { PluginRegistration } from "@polywrap/core-js";
+import { Env, PluginRegistration } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -28,6 +28,7 @@ jest.setTimeout(360000);
 describe("usePolywrapInvoke hook", () => {
   let uri: string;
   let envUri: string;
+  let envs: Env[];
   let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
@@ -48,10 +49,12 @@ describe("usePolywrapInvoke hook", () => {
 
     uri = `ens/testnet/${ensDomain}`;
     envUri = `ens/testnet/${envEnsDomain}`;
-    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum, providers.ipfs);
+    envs = createEnvs(providers.ipfs);
+    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum);
     WrapperProvider = {
       wrapper: PolywrapProvider,
       initialProps: {
+        envs,
         plugins,
       },
     };
