@@ -1,0 +1,27 @@
+{
+  "id": "DeployManifest_ENSRecursiveNameRegister_WasmAsExt",
+  "type": "object",
+  "required": [
+    "provider",
+    "ensRegistryAddress",
+    "ensRegistrarAddress",
+    "ensResolverAddress"
+  ],
+  "properties": {
+    "provider": {
+      "type": "string"
+    },
+    "privateKey": {
+      "type": "string"
+    },
+    "ensRegistryAddress": {
+      "type": "string"
+    },
+    "ensRegistrarAddress": {
+      "type": "string"
+    },
+    "ensResolverAddress": {
+      "type": "string"
+    }
+  }
+}
