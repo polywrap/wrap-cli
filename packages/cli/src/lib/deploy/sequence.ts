@@ -89,7 +89,7 @@ export class DeployJob {
     }
 
     this._printer.info(
-      `\n\nSuccessfully executed '${this.name}' deployment DeployJob\n\n`
+      `\n\nSuccessfully executed '${this.name}' deployment job\n\n`
     );
 
     return {
