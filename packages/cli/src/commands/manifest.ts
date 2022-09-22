@@ -472,7 +472,7 @@ function maybeFailOnUnsupportedManifestFormat(
   }
 
   if (!formats.includes(format)) {
-    console.log(
+    console.error(
       intlMsg.commands_manifest_formatError({
         fileName: path.relative(".", manifestFile),
         values: Object.values(PolywrapManifestFormats).join(", "),

@@ -1,0 +1,4 @@
+format: invalid
+project:
+  name: test
+  type: wasm/assemblyscript

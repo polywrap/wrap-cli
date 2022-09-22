@@ -89,12 +89,12 @@ describe("e2e tests for manifest command", () => {
           cwd: testCaseRoot,
           cli: polywrapCli,
         });
-  
+
         expect(error).toBe("error: unknown option '--invalid'\n");
         expect(output).toEqual(``);
         expect(code).toEqual(1);
       });
-      
+
       it("Should throw error if params not specified for --manifest-file option", async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
           args: ["manifest", "migrate", "-m"],
@@ -124,7 +124,7 @@ describe("e2e tests for manifest command", () => {
         expect(output).toEqual(``);
         expect(code).toEqual(1);
       });
-    })
+    });
   });
 
   describe("schema command", () => {
@@ -147,7 +147,7 @@ describe("e2e tests for manifest command", () => {
           cwd: testCaseRoot,
           cli: polywrapCli,
         });
-  
+
         expect(error).toBe("error: unknown option '--invalid'\n");
         expect(output).toEqual(``);
         expect(code).toEqual(1);
@@ -182,6 +182,19 @@ describe("e2e tests for manifest command", () => {
         expect(output).toEqual(``);
         expect(code).toEqual(1);
       });
-    })
+    });
+
+    test("Should throw on invalid format within file", async () => {
+      const manifestFile = path.join(testCaseRoot, "samples", "invalid-format.yaml");
+      const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+        args: ["manifest", "schema", "-m", manifestFile],
+        cwd: testCaseRoot,
+        cli: polywrapCli,
+      });
+
+      expect(error).toContain("Unsupported manifest format. Please make sure that you have the 'format' field present in samples/invalid-format.yaml with one of the following values:");
+      expect(output).toBe("");
+      expect(code).toEqual(1);
+    });
   });
 });
