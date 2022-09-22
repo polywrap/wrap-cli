@@ -208,7 +208,8 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
-    const contract = connection.getContract(args.address, [args.method]);
+    const abi = constructAbi(args.method);
+    const contract = connection.getContract(args.address, abi);
     const funcs = Object.keys(contract.interface.functions);
 
     const gasPrice: string | null | undefined = args.txOverrides?.gasPrice;
@@ -262,7 +263,8 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     _client: Client
   ): Promise<EventNotification> {
     const connection = await this._getConnection(args.connection);
-    const contract = connection.getContract(args.address, [args.event]);
+    const abi = constructAbi(args.event);
+    const contract = connection.getContract(args.address, abi);
     const events = Object.keys(contract.interface.events);
     const filter = contract.filters[events[0]](...parseArgs(args.args));
 
@@ -397,7 +399,8 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     args: Args_callContractMethod
   ): Promise<ethers.providers.TransactionResponse> {
     const connection = await this._getConnection(args.connection);
-    const contract = connection.getContract(args.address, [args.method]);
+    const abi = constructAbi(args.method);
+    const contract = connection.getContract(args.address, abi);
     const funcs = Object.keys(contract.interface.functions);
 
     const gasPrice: string | null | undefined = args.txOverrides?.gasPrice;
