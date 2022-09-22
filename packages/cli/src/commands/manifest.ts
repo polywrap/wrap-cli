@@ -1,28 +1,3 @@
-import {
-  AppManifestFormats,
-  AppManifestSchemaFiles,
-  BuildManifestFormats,
-  BuildManifestSchemaFiles,
-  DeployManifestFormats,
-  DeployManifestSchemaFiles,
-  InfraManifestFormats,
-  InfraManifestSchemaFiles,
-  MetaManifestFormats,
-  MetaManifestSchemaFiles,
-  PluginManifestFormats,
-  PluginManifestSchemaFiles,
-  PolywrapManifestFormats,
-  PolywrapWorkflowFormats,
-  PolywrapWorkflowSchemaFiles,
-  latestAppManifestFormat,
-  latestBuildManifestFormat,
-  latestDeployManifestFormat,
-  latestInfraManifestFormat,
-  latestMetaManifestFormat,
-  latestPluginManifestFormat,
-  latestPolywrapManifestFormat,
-  latestPolywrapWorkflowFormat,
-} from "@polywrap/polywrap-manifest-types-js";
 import { Argument, Command, Program } from "./types";
 import {
   defaultBuildManifest,
@@ -50,9 +25,35 @@ import {
   migrateWorkflow,
   preserveOldManifest,
 } from "../lib/manifest";
-
-import { PolywrapManifestSchemaFiles } from "@polywrap/polywrap-manifest-types-js";
 import { defaultProjectManifestFiles } from "../lib/option-defaults";
+
+import { JSONSchema4 } from "json-schema";
+import { PolywrapManifestSchemaFiles } from "@polywrap/polywrap-manifest-types-js";
+import {
+  AppManifestFormats,
+  AppManifestSchemaFiles,
+  BuildManifestFormats,
+  BuildManifestSchemaFiles,
+  DeployManifestFormats,
+  DeployManifestSchemaFiles,
+  InfraManifestFormats,
+  InfraManifestSchemaFiles,
+  MetaManifestFormats,
+  MetaManifestSchemaFiles,
+  PluginManifestFormats,
+  PluginManifestSchemaFiles,
+  PolywrapManifestFormats,
+  PolywrapWorkflowFormats,
+  PolywrapWorkflowSchemaFiles,
+  latestAppManifestFormat,
+  latestBuildManifestFormat,
+  latestDeployManifestFormat,
+  latestInfraManifestFormat,
+  latestMetaManifestFormat,
+  latestPluginManifestFormat,
+  latestPolywrapManifestFormat,
+  latestPolywrapWorkflowFormat,
+} from "@polywrap/polywrap-manifest-types-js";
 import { dereference } from "json-schema-ref-parser";
 import fs from "fs";
 import path from "path";
@@ -143,7 +144,7 @@ export const manifest: Command = {
 export const runSchemaCommand = async (
   type: ManifestType,
   options: ManifestSchemaCommandOptions
-) => {
+): Promise<void> => {
   let manifestfile = "";
 
   switch (type) {
@@ -330,7 +331,11 @@ export const runSchemaCommand = async (
   } else {
     const schema = await dereference(JSON.parse(schemaString));
 
-    console.log(getYamlishSchemaForManifestJsonSchemaObject(schema.properties));
+    console.log(
+      getYamlishSchemaForManifestJsonSchemaObject(
+        schema.properties as JSONSchema4
+      )
+    );
   }
 };
 
@@ -339,6 +344,8 @@ const runMigrateCommand = async (
   options: ManifestMigrateCommandOptions
 ) => {
   let manifestFile = "";
+  let manifestString: string;
+  let language: string | undefined;
 
   switch (type) {
     case "project":
@@ -347,11 +354,11 @@ const runMigrateCommand = async (
         defaultProjectManifestFiles
       );
 
-      const manifestString = fs.readFileSync(manifestFile, {
+      manifestString = fs.readFileSync(manifestFile, {
         encoding: "utf-8",
       });
 
-      const language = getProjectManifestLanguage(manifestString);
+      language = getProjectManifestLanguage(manifestString);
 
       if (!language) {
         console.log(intlMsg.commands_manifest_projectTypeError());
@@ -376,10 +383,11 @@ const runMigrateCommand = async (
           migratePluginProjectManifest,
           latestPolywrapManifestFormat
         );
-      } else {
-        console.log(intlMsg.commands_manifest_projectTypeError());
-        process.exit(1);
       }
+
+      console.log(intlMsg.commands_manifest_projectTypeError());
+      process.exit(1);
+      break;
 
     case "build":
       migrateManifestFile(

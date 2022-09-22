@@ -1,5 +1,6 @@
 import { AnyProjectManifestLanguage } from "../manifests";
 import { ManifestProjectTypeProps } from "./getProjectFromManifest";
+
 import YAML from "js-yaml";
 
 export function getProjectManifestLanguage(

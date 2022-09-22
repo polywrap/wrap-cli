@@ -3,7 +3,6 @@ import {
   latestPolywrapManifestFormat,
   migratePolywrapManifest,
 } from "@polywrap/polywrap-manifest-types-js";
-
 import YAML from "js-yaml";
 
 export function migratePolywrapProjectManifest(manifestString: string): string {

@@ -1,5 +1,7 @@
+import { JSONSchema4 } from "json-schema";
+
 export function getYamlishSchemaForManifestJsonSchemaObject(
-  schema: Record<string, any>,
+  schema: JSONSchema4,
   name = "",
   description = "",
   indent = 0
@@ -11,16 +13,18 @@ export function getYamlishSchemaForManifestJsonSchemaObject(
   }
 
   for (const prop in schema) {
-    if (schema[prop].type === "object") {
+    const schemaProperty = schema[prop];
+
+    if (schemaProperty.type === "object") {
       output += getYamlishSchemaForManifestJsonSchemaObject(
-        schema[prop].properties,
+        schemaProperty.properties,
         prop,
-        schema[prop].description,
+        schemaProperty.description,
         indent + 1
       );
     } else {
       output +=
-        getYamlishJsonSchemaPropertyString(schema[prop], prop, indent) + "\n";
+        getYamlishJsonSchemaPropertyString(schemaProperty, prop, indent) + "\n";
     }
   }
 
@@ -28,7 +32,7 @@ export function getYamlishSchemaForManifestJsonSchemaObject(
 }
 
 function getYamlishJsonSchemaPropertyString(
-  property: Record<string, any>,
+  property: JSONSchema4,
   propName: string,
   indent = 0
 ) {
@@ -40,11 +44,13 @@ function getYamlishJsonSchemaPropertyString(
 
   output += `${propName}:  # ${property.description}`;
 
-  if (property.enum) {
+  const propEnum = property.enum;
+
+  if (propEnum) {
     output += " Values: ";
-    for (let j = 0; j < property.enum.length; j++) {
-      output += `${property.enum[j]}`;
-      if (j !== property.enum.length - 1) {
+    for (let j = 0; j < propEnum.length; j++) {
+      output += `${propEnum[j]}`;
+      if (j !== propEnum.length - 1) {
         output += ", ";
       }
     }
