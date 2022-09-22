@@ -3,7 +3,7 @@ import { Step, StepName, StepResult, UriOrPrevStepResult } from "./step";
 import { Uri } from "@polywrap/core-js";
 import { GluegunPrint } from "gluegun";
 
-export interface SequenceResult {
+export interface DeployJobResult {
   name: string;
   steps: {
     id: string;
@@ -13,14 +13,14 @@ export interface SequenceResult {
   }[];
 }
 
-interface SequenceArgs {
+interface DeployJobArgs {
   name: string;
   steps: Step[];
   config: Record<string, unknown>;
   printer: GluegunPrint;
 }
 
-export class Sequence {
+export class DeployJob {
   public name: string;
   public steps: Step[];
   public config: Record<string, unknown>;
@@ -28,7 +28,7 @@ export class Sequence {
   private _printer: GluegunPrint;
   private _resultMap: Map<StepName, StepResult> = new Map();
 
-  constructor(config: SequenceArgs) {
+  constructor(config: DeployJobArgs) {
     this.name = config.name;
     this.steps = config.steps;
     this.config = config.config;
@@ -45,16 +45,16 @@ export class Sequence {
 
         if (!previousStepsNames.includes(dependencyStepName)) {
           throw new Error(
-            `Step '${step.name}' depends on '${dependencyStepName}'s result, but '${dependencyStepName}' is not listed before '${step.name}' in sequence '${this.name}'`
+            `Step '${step.name}' depends on '${dependencyStepName}'s result, but '${dependencyStepName}' is not listed before '${step.name}' in DeployJob '${this.name}'`
           );
         }
       }
     });
   }
 
-  public async run(): Promise<SequenceResult> {
+  public async run(): Promise<DeployJobResult> {
     this._printer.info(
-      `\n\nExecuting '${this.name}' deployment sequence: \n${this.steps
+      `\n\nExecuting '${this.name}' deployment DeployJob: \n${this.steps
         .map((s) => `\n- ${s.name}`)
         .join("")}\n\n`
     );
@@ -68,7 +68,7 @@ export class Sequence {
 
       try {
         const result = await step.run(uri, {
-          // Step level config will override Sequence level config
+          // Step level config will override DeployJob level config
           ...this.config,
           ...step.config,
         });
@@ -89,7 +89,7 @@ export class Sequence {
     }
 
     this._printer.info(
-      `\n\nSuccessfully executed '${this.name}' deployment sequence\n\n`
+      `\n\nSuccessfully executed '${this.name}' deployment DeployJob\n\n`
     );
 
     return {

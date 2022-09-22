@@ -1,6 +1,6 @@
 format: "0.2.0"
-sequences:
-  - name: ipfs_deploy
+jobs:
+  ipfs_deploy:
     steps:
       - name: ipfs_deploy
         package: ipfs
@@ -19,7 +19,7 @@ sequences:
           domainName: test2.eth
           provider: 'http://localhost:8545'
           ensRegistryAddress: $ENS_REG_ADDR
-  - name: from_uri
+  from_uri:
     steps:
       - name: from_uri
         package: ens

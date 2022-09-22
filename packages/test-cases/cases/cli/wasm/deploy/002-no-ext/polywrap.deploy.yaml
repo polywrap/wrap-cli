@@ -1,6 +1,6 @@
 format: "0.2.0"
-sequences:
-  - name: test
+jobs:
+  test:
     steps:
       - name: ipfs_test
         package: ipfs-test
