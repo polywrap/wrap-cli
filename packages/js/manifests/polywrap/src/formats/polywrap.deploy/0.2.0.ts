@@ -15,41 +15,43 @@ export interface DeployManifest {
    * Sequences of deployment steps
    */
   jobs: {
-    /**
-     * This interface was referenced by `undefined`'s JSON-Schema definition
-     * via the `patternProperty` "^.*$".
-     */
-    [k: string]: {
-      /**
-       * Deployment steps
-       */
-      steps: {
-        /**
-         * Name of the step
-         */
-        name: string;
-        /**
-         * Name of the deployer package.
-         */
-        package: string;
-        /**
-         * Step-level custom configuration.
-         */
-        config?: {
-          [k: string]: unknown;
-        };
-        /**
-         * URI to pass into the deploy step.
-         */
-        uri: string | string;
-      }[];
-      /**
-       * Sequence-level custom configuration.
-       */
-      config?: {
-        [k: string]: unknown;
-      };
-    };
+    [k: string]: Job;
   };
   __type: "DeployManifest";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^.*$".
+ */
+export interface Job {
+  /**
+   * Deployment steps
+   */
+  steps: Step[];
+  /**
+   * Sequence-level custom configuration.
+   */
+  config?: {
+    [k: string]: unknown;
+  };
+}
+export interface Step {
+  /**
+   * Name of the step
+   */
+  name: string;
+  /**
+   * Name of the deployer package.
+   */
+  package: string;
+  /**
+   * Step-level custom configuration.
+   */
+  config?: {
+    [k: string]: unknown;
+  };
+  /**
+   * URI to pass into the deploy step.
+   */
+  uri: string | string;
 }
