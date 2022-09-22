@@ -1,4 +1,4 @@
-import { Step, StepName, StepResult, UriOrPrevStepResult } from "./step";
+import { DeployStep, StepName, StepResult, UriOrPrevStepResult } from "./step";
 
 import { Uri } from "@polywrap/core-js";
 import { GluegunPrint } from "gluegun";
@@ -15,14 +15,14 @@ export interface DeployJobResult {
 
 interface DeployJobArgs {
   name: string;
-  steps: Step[];
+  steps: DeployStep[];
   config: Record<string, unknown>;
   printer: GluegunPrint;
 }
 
 export class DeployJob {
   public name: string;
-  public steps: Step[];
+  public steps: DeployStep[];
   public config: Record<string, unknown>;
 
   private _printer: GluegunPrint;

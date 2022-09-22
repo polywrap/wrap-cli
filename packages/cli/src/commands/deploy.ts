@@ -7,7 +7,7 @@ import {
   parseManifestFileOption,
   PolywrapProject,
   DeployJob,
-  Step,
+  DeployStep,
 } from "../lib";
 
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -112,8 +112,8 @@ async function run(options: DeployCommandOptions): Promise<void> {
   validateManifestWithExts(deployManifest, stepToPackageMap);
 
   const jobs = Object.entries(deployManifest.jobs).map(([jobName, job]) => {
-    const steps: Step[] = job.steps.map((step) => {
-      return new Step({
+    const steps: DeployStep[] = job.steps.map((step) => {
+      return new DeployStep({
         name: step.name,
         uriOrStepResult: step.uri,
         deployer: stepToPackageMap[step.name].deployer,
@@ -181,7 +181,7 @@ function validateManifestWithExts(
         ([jobName]) => jobName === step.jobName
       ) as [string, ManifestJob];
 
-      const [_, job] = jobEntry;
+      const job = jobEntry[1];
 
       const stepToValidate = job.steps.find(
         (s) => s.name === stepName
