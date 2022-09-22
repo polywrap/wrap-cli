@@ -40,7 +40,7 @@ import {
 } from "./wrap";
 import { Connection } from "./Connection";
 import * as Mapping from "./utils/mapping";
-import { parseArgs } from "./utils/parsing";
+import { constructAbi, parseArgs, parseResult } from "./utils/parsing";
 import { Connections } from "./Connections";
 
 import { ethers } from "ethers";
@@ -67,11 +67,11 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
-    const abi = this._constructAbi(args.method);
+    const abi = constructAbi(args.method);
     const contract = connection.getContract(args.address, abi, false);
     const funcs = Object.keys(contract.interface.functions);
     const result = await contract[funcs[0]](...parseArgs(args.args));
-    return this._parseResult(abi, result);
+    return parseResult(abi, result);
   }
 
   async callContractStatic(
@@ -79,7 +79,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     _client: Client
   ): Promise<StaticTxResult> {
     const connection = await this._getConnection(args.connection);
-    const abi = this._constructAbi(args.method);
+    const abi = constructAbi(args.method);
     const contract = connection.getContract(args.address, abi);
     const funcs = Object.keys(contract.interface.functions);
 
@@ -99,7 +99,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
         }
       );
       return {
-        result: result.length ? this._parseResult(abi, result) : "",
+        result: result.length ? parseResult(abi, result) : "",
         error: false,
       };
     } catch (e) {
@@ -415,58 +415,6 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     connection?: SchemaConnection | null
   ): Promise<Connection> {
     return this._connections.getConnection(connection || this.env.connection);
-  }
-
-  private _constructAbi(method: string) {
-    let abi;
-    try {
-      abi = JSON.parse(method);
-      if (!(abi instanceof Array)) {
-        abi = [abi];
-      }
-    } catch (e) {
-      abi = [method];
-    }
-    return abi;
-  }
-
-  private _parseResult(abi: any[], result: any): string {
-    if (!(result instanceof Array)) {
-      // if not array, return single value
-      return result.toString();
-    }
-    const isRawAbi = abi[0] instanceof Object;
-    if (!isRawAbi) {
-      return this._stringifySimpleArray(result);
-    }
-    const outputs = abi[0].outputs;
-    const returnIsStruct = outputs.length > 0 && "components" in outputs[0];
-    if (returnIsStruct) {
-      return this._stringifyStruct(abi, result);
-    } else {
-      return this._stringifySimpleArray(result);
-    }
-  }
-
-  private _stringifyStruct(abi: any[], result: any): string {
-    const objects: Record<string, string>[] = [];
-    for (const element of result) {
-      const object: Record<string, string> = {};
-      const output = abi[0].outputs[0];
-      for (const component of output.components) {
-        object[component.name] = element[component.name].toString();
-      }
-      objects.push(object);
-    }
-    return JSON.stringify(objects);
-  }
-
-  private _stringifySimpleArray(result: any): string {
-    const objects: string[] = [];
-    for (const element of result) {
-      objects.push(element.toString());
-    }
-    return JSON.stringify(objects);
   }
 }
 
