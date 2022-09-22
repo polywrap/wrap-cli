@@ -7,6 +7,7 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
+  PluginPackage,
 } from "./";
 import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
@@ -39,6 +40,8 @@ export interface GetManifestOptions extends Contextualized {
   noValidate?: boolean;
 }
 
+export type GetPluginOptions = Contextualized;
+
 export interface GetFileOptions extends Contextualized {
   path: string;
   encoding?: "utf-8" | string;
@@ -56,6 +59,11 @@ export interface Client
   getRedirects(options?: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 
   getPlugins(options?: GetPluginsOptions): readonly PluginRegistration<Uri>[];
+
+  getPluginByUri<TUri extends Uri | string>(
+    uri: TUri,
+    options?: GetPluginOptions
+  ): PluginPackage<unknown> | undefined;
 
   getInterfaces(
     options?: GetInterfacesOptions

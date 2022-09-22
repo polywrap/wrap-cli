@@ -17,6 +17,7 @@ import {
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
+import { httpResolverPlugin } from "@polywrap/http-resolver-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
@@ -30,6 +31,13 @@ export const getDefaultClientConfig = (
         uri: new Uri(defaultWrappers.graphNode),
         env: {
           provider: "https://api.thegraph.com",
+        },
+      },
+      {
+        uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+        env: {
+          provider: defaultIpfsProviders[0],
+          fallbackProviders: defaultIpfsProviders.slice(1),
         },
       },
     ],
@@ -51,10 +59,7 @@ export const getDefaultClientConfig = (
       // IPFS is required for downloading Polywrap packages
       {
         uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
-        plugin: ipfsPlugin({
-          provider: defaultIpfsProviders[0],
-          fallbackProviders: defaultIpfsProviders.slice(1),
-        }),
+        plugin: ipfsPlugin({}),
       },
       // ENS is required for resolving domain to IPFS hashes
       {
@@ -83,6 +88,10 @@ export const getDefaultClientConfig = (
         plugin: httpPlugin({}),
       },
       {
+        uri: new Uri("wrap://ens/http-resolver.polywrap.eth"),
+        plugin: httpResolverPlugin({}),
+      },
+      {
         uri: new Uri("wrap://ens/js-logger.polywrap.eth"),
         plugin: loggerPlugin({}),
       },
@@ -106,6 +115,7 @@ export const getDefaultClientConfig = (
           new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
           new Uri("wrap://ens/ens-resolver.polywrap.eth"),
           new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+          new Uri("wrap://ens/http-resolver.polywrap.eth"),
         ],
       },
       {

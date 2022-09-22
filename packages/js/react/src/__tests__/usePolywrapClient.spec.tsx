@@ -4,9 +4,9 @@ import {
   createPolywrapProvider,
   usePolywrapClient
 } from "..";
-import { createPlugins } from "./plugins";
+import { createPlugins, createEnvs } from "./config";
 
-import { PluginRegistration } from "@polywrap/core-js";
+import { Env, PluginRegistration } from "@polywrap/core-js";
 import {
   ensAddresses,
   providers,
@@ -23,17 +23,21 @@ import {
 jest.setTimeout(360000);
 
 describe("usePolywrapClient hook", () => {
+  let envs: Env[];
   let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
     await initTestEnvironment();
 
-    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum, providers.ipfs);
+    envs = createEnvs(providers.ipfs);
+
+    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum);
 
     WrapperProvider = {
       wrapper: PolywrapProvider,
       initialProps: {
+        envs,
         plugins,
       },
     };

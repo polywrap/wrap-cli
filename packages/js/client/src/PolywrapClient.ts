@@ -29,12 +29,14 @@ import {
   GetUriResolverOptions,
   Contextualized,
   GetManifestOptions,
+  GetPluginOptions,
   initWrapper,
   IWrapPackage,
   IUriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionContext,
   getEnvFromUriHistory,
+  PluginPackage,
 } from "@polywrap/core-js";
 import {
   buildCleanUriHistory,
@@ -130,6 +132,16 @@ export class PolywrapClient implements Client {
     return this._getConfig(options.contextId).plugins;
   }
 
+  @Tracer.traceMethod("PolywrapClient: getPlugin")
+  public getPluginByUri<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetPluginOptions = {}
+  ): PluginPackage<unknown> | undefined {
+    return this.getPlugins(options).find((x) =>
+      Uri.equals(x.uri, Uri.from(uri))
+    )?.plugin;
+  }
+
   @Tracer.traceMethod("PolywrapClient: getInterfaces")
   public getInterfaces(
     options: GetInterfacesOptions = {}
@@ -154,7 +166,7 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetEnvsOptions
   ): Env<Uri> | undefined {
-    const uriUri = this._toUri(uri);
+    const uriUri = Uri.from(uri);
 
     return this.getEnvs(options).find((environment) =>
       Uri.equals(environment.uri, uriUri)
@@ -166,11 +178,7 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetManifestOptions = {}
   ): Promise<WrapManifest> {
-    const wrapper = await this._loadWrapper(
-      this._toUri(uri),
-      undefined,
-      options
-    );
+    const wrapper = await this._loadWrapper(Uri.from(uri), undefined, options);
     const client = contextualizeClient(this, options.contextId);
     return await wrapper.getManifest(options, client);
   }
@@ -180,11 +188,7 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetFileOptions
   ): Promise<string | Uint8Array> {
-    const wrapper = await this._loadWrapper(
-      this._toUri(uri),
-      undefined,
-      options
-    );
+    const wrapper = await this._loadWrapper(Uri.from(uri), undefined, options);
     const client = contextualizeClient(this, options.contextId);
     return await wrapper.getFile(options, client);
   }
@@ -199,12 +203,12 @@ export class PolywrapClient implements Client {
 
     return isUriTypeString
       ? (getImplementations(
-          this._toUri(uri),
+          Uri.from(uri),
           this.getInterfaces(options),
           applyRedirects ? this.getRedirects(options) : undefined
         ).map((x: Uri) => x.uri) as TUri[])
       : (getImplementations(
-          this._toUri(uri),
+          Uri.from(uri),
           this.getInterfaces(options),
           applyRedirects ? this.getRedirects(options) : undefined
         ) as TUri[]);
@@ -228,7 +232,7 @@ export class PolywrapClient implements Client {
     try {
       const typedOptions: QueryOptions<TVariables, Uri> = {
         ...options,
-        uri: this._toUri(options.uri),
+        uri: Uri.from(options.uri),
       };
 
       const { uri, query, variables } = typedOptions;
@@ -311,7 +315,7 @@ export class PolywrapClient implements Client {
       const typedOptions: InvokeOptions<Uri> = {
         ...options,
         contextId: contextId,
-        uri: this._toUri(options.uri),
+        uri: Uri.from(options.uri),
       };
 
       const wrapper = options.wrapper;
@@ -363,7 +367,7 @@ export class PolywrapClient implements Client {
       const typedOptions: InvokeOptions<Uri> = {
         ...options,
         contextId: contextId,
-        uri: this._toUri(options.uri),
+        uri: Uri.from(options.uri),
       };
 
       const resolutionContext =
@@ -412,7 +416,7 @@ export class PolywrapClient implements Client {
 
     const typedOptions: SubscribeOptions<Uri> = {
       ...options,
-      uri: this._toUri(options.uri),
+      uri: Uri.from(options.uri),
     };
     const { uri, method, args, config, frequency: freq } = typedOptions;
 
@@ -494,7 +498,7 @@ export class PolywrapClient implements Client {
   public async tryResolveUri<TUri extends Uri | string>(
     options: TryResolveUriOptions<TUri>
   ): Promise<Result<UriPackageOrWrapper, unknown>> {
-    const uri = this._toUri(options.uri);
+    const uri = Uri.from(options.uri);
 
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
@@ -557,17 +561,6 @@ export class PolywrapClient implements Client {
       throw Error(
         `Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`
       );
-    }
-  }
-
-  @Tracer.traceMethod("PolywrapClient: toUri")
-  private _toUri(uri: Uri | string): Uri {
-    if (typeof uri === "string") {
-      return new Uri(uri);
-    } else if (Uri.isUri(uri)) {
-      return uri;
-    } else {
-      throw Error(`Unknown uri type, cannot convert. ${JSON.stringify(uri)}`);
     }
   }
 
@@ -718,6 +711,12 @@ const contextualizeClient = (
         },
         getPlugins: (options: GetPluginsOptions = {}) => {
           return client.getPlugins({ ...options, contextId });
+        },
+        getPluginByUri: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetPluginOptions = {}
+        ) => {
+          return client.getPluginByUri(uri, { ...options, contextId });
         },
         getInterfaces: (options: GetInterfacesOptions = {}) => {
           return client.getInterfaces({ ...options, contextId });

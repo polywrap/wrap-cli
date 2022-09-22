@@ -4,11 +4,7 @@ import yaml from "js-yaml";
 
 import { clearStyle, parseOutput, polywrapCli } from "./utils";
 
-import {
-  buildAndDeployWrapper,
-  initTestEnvironment,
-  runCLI,
-} from "@polywrap/test-env-js";
+import { buildWrapper, runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 
 jest.setTimeout(200000);
@@ -30,13 +26,36 @@ Options:
   -h, --help                            display help for command
 `;
 
-describe("sanity tests for workflow command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/run");
+describe("e2e tests for run command", () => {
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "run");
+  const testCases = fs
+    .readdirSync(testCaseRoot, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory() && !isNaN(parseInt(dirent.name)))
+    .map((dirent) => dirent.name);
+  const getTestCaseDir = (index: number): string =>
+    path.join(testCaseRoot, testCases[index]);
+
+  const getCmdArgs = (testCaseDir: string): string[] => {
+    const cmdArgs: string[] = [];
+    const cmdFile = path.join(testCaseDir, "cmd.json");
+    if (fs.existsSync(cmdFile)) {
+      const cmdConfig = JSON.parse(fs.readFileSync(cmdFile, "utf-8"));
+      if (cmdConfig.args) {
+        cmdArgs.push(...cmdConfig.args);
+      }
+    }
+    return cmdArgs;
+  }
+
+  beforeAll(async () => {
+    const wrapperPath = path.join(testCaseRoot, "run-test-wrapper");
+    await buildWrapper(wrapperPath);
+  });
 
   it("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["run", "--help"],
-      cwd: testCaseRoot,
+      cwd: getTestCaseDir(0),
     });
 
     expect(code).toEqual(0);
@@ -55,7 +74,7 @@ describe("sanity tests for workflow command", () => {
       it(`Should throw error if params not specified for ${option} option`, async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
           args: ["run", option],
-          cwd: testCaseRoot,
+          cwd: getTestCaseDir(0),
           cli: polywrapCli,
         });
 
@@ -67,114 +86,89 @@ describe("sanity tests for workflow command", () => {
       });
     }
   });
-});
 
-describe("e2e tests for run command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/run");
-
-  beforeAll(async () => {
-    await initTestEnvironment();
-
-    await buildAndDeployWrapper({
-      wrapperAbsPath: testCaseRoot,
-      ipfsProvider: "http://localhost:5001",
-      ethereumProvider: "http://localhost:8545",
-      ensName: "simple-storage.eth",
-    });
-  });
-
-  afterAll(async () => {
-    await runCLI({
-      args: ["test-env", "down"],
-      cwd: testCaseRoot,
+  it("Should successfully return response: using yaml workflow", async () => {
+    const testCaseDir = getTestCaseDir(0);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
       cli: polywrapCli,
     });
+
+    expect(stderr).toBe("");
+    expect(exitCode).toEqual(0);
+
+    const output = parseOutput(stdout);
+    output.forEach((item) => {
+      expect(item.error).toBeUndefined();
+      expect(item.data).toBeDefined();
+    });
+    expect(output).toHaveLength(4);
   });
 
   it("Should successfully return response: using json workflow", async () => {
-    const { exitCode: code, stdout, stderr } = await runCLI({
-      args: ["run", "-c", "./client-config.ts", "-m", "./polywrap.test.json"],
-      cwd: testCaseRoot,
+    const testCaseDir = getTestCaseDir(1);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
       cli: polywrapCli,
     });
 
     expect(stderr).toBe("");
+    expect(exitCode).toEqual(0);
 
     const output = parseOutput(stdout);
     output.forEach((item) => {
       expect(item.error).toBeUndefined();
       expect(item.data).toBeDefined();
     });
-    expect(output).toHaveLength(3);
-    expect(code).toEqual(0);
-  }, 480000);
-
-  it("Should successfully return response: using yaml workflow", async () => {
-    const { exitCode: code, stdout, stderr } = await runCLI({
-      args: ["run", "-c", "./client-config.ts"],
-      cwd: testCaseRoot,
-      cli: polywrapCli,
-    });
-
-    expect(code).toEqual(0);
-    expect(stderr).toBe("");
-
-    const output = parseOutput(stdout);
-    output.forEach((item) => {
-      expect(item.error).toBeUndefined();
-      expect(item.data).toBeDefined();
-    });
-    expect(output).toHaveLength(3);
-  }, 480000);
+    expect(output).toHaveLength(4);
+  });
 
   it("Should successfully create json output file if specified", async () => {
-    const { exitCode: code, stdout, stderr } = await runCLI({
-      args: [
-        "run",
-        "-c",
-        "./client-config.ts",
-        "--output-file",
-        "./output.json",
-      ],
-      cwd: testCaseRoot,
+    const testCaseDir = getTestCaseDir(2);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
       cli: polywrapCli,
     });
 
-    expect(code).toEqual(0);
     expect(stderr).toBe("");
+    expect(exitCode).toEqual(0);
+
     expect(parseOutput(stdout)).toMatchObject(
       JSON.parse(
         fs.readFileSync(
-          path.join(testCaseRoot, "output.json"),
+          path.join(testCaseDir, "output.json"),
           "utf8"
         )
       )
     );
 
-    fs.unlinkSync(`${testCaseRoot}/output.json`);
-  }, 48000);
+    fs.unlinkSync(`${testCaseDir}/output.json`);
+  });
 
   it("Should successfully create yaml output file if specified", async () => {
-    const { exitCode: code, stdout, stderr } = await runCLI({
-      args: [
-        "run",
-        "-c",
-        "./client-config.ts",
-        "--output-file",
-        "./output.yaml",
-      ],
-      cwd: testCaseRoot,
+    const testCaseDir = getTestCaseDir(3);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
       cli: polywrapCli,
     });
 
-    expect(code).toEqual(0);
     expect(stderr).toBe("");
+    expect(exitCode).toEqual(0);
+
     expect(parseOutput(stdout)).toMatchObject(
       JSON.parse(
         JSON.stringify(
           (yaml.load(
             fs.readFileSync(
-              path.join(testCaseRoot, "output.yaml"),
+              path.join(testCaseDir, "output.yaml"),
               "utf8"
             )
           ) as unknown) as Array<unknown>
@@ -182,65 +176,145 @@ describe("e2e tests for run command", () => {
       )
     );
 
-    fs.unlinkSync(`${testCaseRoot}/output.yaml`);
-  }, 48000);
+    fs.unlinkSync(`${testCaseDir}/output.yaml`);
+  });
 
-  it("Should suppress the ouput if --quiet option is specified", async () => {
-    const { exitCode: code, stdout, stderr } = await runCLI({
-      args: [
-        "run",
-        "-c",
-        "./client-config.ts",
-        "--quiet",
-      ],
-      cwd: testCaseRoot,
+  it("Should suppress the output if --quiet option is specified", async () => {
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", "--quiet" ],
+      cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
 
-    expect(code).toEqual(0);
     expect(stderr).toBe("");
+    expect(exitCode).toEqual(0);
     expect(stdout).toBeFalsy();
-  }, 48000);
+  });
 
   it("Should validate output", async () => {
-    const { exitCode: code, stdout, stderr } = await runCLI({
-      args: [
-        "run",
-        "-m",
-        "./polywrap.test.validate.yaml",
-        "-c",
-        "./client-config.ts",
-      ],
-      cwd: testCaseRoot,
+    const testCaseDir = getTestCaseDir(4);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
       cli: polywrapCli,
     });
 
-    const output = parseOutput(stdout);
-
-    expect(stdout).toBeTruthy();
-    expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
     expect(stderr).toBe("");
-    expect(code).toEqual(0);
+    expect(exitCode).toEqual(0);
+    expect(stdout).toBeTruthy();
 
-  }, 48000);
+    const output = parseOutput(stdout);
+    expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
+    expect(output.filter((o => o.validation === "SUCCEED"))).toHaveLength(output.length);
+  });
 
   it("Should print error on stderr if validation fails", async () => {
-    const { exitCode: code, stdout } = await runCLI({
-      args: [
-        "run",
-        "-m",
-        "polywrap.test.invalid.json",
-      ],
-      cwd: testCaseRoot,
+    const testCaseDir = getTestCaseDir(5);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
       cli: polywrapCli,
     });
 
+    expect(exitCode).toEqual(1);
+
     const output = parseOutput(stdout);
 
-    expect(code).toEqual(1);
-    expect(output[0].status).toBe("FAILED");
+    expect(output[0].status).toBe("SUCCEED");
+    expect(output[0].validation).toBe("FAILED");
     expect(output[0].error).toBeTruthy();
-    expect(output[1].status).toBe("SKIPPED");
-    expect(output[2].status).toBe("SKIPPED");
-  }, 48000);
+
+    expect(stderr).toBeDefined();
+    expect(stderr).not.toBe("");
+    expect(stderr.indexOf("conflicting values")).toBeGreaterThan(-1);
+  });
+
+  it("Should print error on stderr if manifest is invalid", async () => {
+    const testCaseDir = getTestCaseDir(6);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(stderr).toBeDefined();
+    const err = "Validation errors encountered while sanitizing PolywrapWorkflow";
+    expect(stderr.indexOf(err)).toBeGreaterThan(-1);
+    expect(exitCode).toEqual(1);
+  });
+
+  it("Should accept custom client configuration", async () => {
+    const testCaseDir = getTestCaseDir(7);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(stderr).toBe("");
+    expect(exitCode).toEqual(0);
+    expect(stdout).toBeTruthy();
+
+    const output = parseOutput(stdout);
+    expect(output[0].status).toBe("SUCCEED");
+    expect(output[0].validation).toBe("SUCCEED");
+    expect(output[0].error).toBeFalsy();
+  });
+
+  it("Should access nested properties of referenced result objects", async () => {
+    const testCaseDir = getTestCaseDir(8);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(stderr).toBe("");
+    expect(exitCode).toEqual(0);
+    expect(stdout).toBeTruthy();
+
+    const output = parseOutput(stdout);
+    expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
+    expect(output.filter((o => o.validation === "SUCCEED"))).toHaveLength(output.length);
+  });
+
+  it("Should print error on stderr if job is named 'data' or 'error'", async () => {
+    const testCaseDir = getTestCaseDir(9);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(stderr).toBeDefined();
+    const err = "Reserved job name 'data' or 'error' found in job";
+    expect(stderr.indexOf(err)).toBeGreaterThan(-1);
+    expect(exitCode).toEqual(1);
+  });
+
+  it("Should run and validate a subset of ids", async () => {
+    const testCaseDir = getTestCaseDir(10);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(stderr).toBe("");
+    expect(exitCode).toEqual(0);
+    expect(stdout).toBeTruthy();
+
+    const output = parseOutput(stdout);
+    expect(output[0].id).toBe("case2.0");
+    expect(output[0].status).toBe("SUCCEED");
+    expect(output[0].validation).toBe("SUCCEED");
+    expect(output[0].error).toBeFalsy();
+  });
 });

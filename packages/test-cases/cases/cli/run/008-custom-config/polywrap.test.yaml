@@ -1,0 +1,10 @@
+name: run-test-wrapper
+format: 0.1.0
+validation: "./validator.cue"
+jobs:
+  cases:
+    steps:
+    - uri: wrap://ens/test.eth
+      method: addFromEnv
+      args:
+        x: 1

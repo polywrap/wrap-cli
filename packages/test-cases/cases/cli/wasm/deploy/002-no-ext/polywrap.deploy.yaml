@@ -1,7 +1,9 @@
-format: 0.1.0
-stages:
-  ipfs_test:
-    package: ipfs-test
-    uri: fs/./build
-    config:
-      foo: bar
+format: "0.2.0"
+sequences:
+  - name: test
+    steps:
+      - name: ipfs_test
+        package: ipfs-test
+        uri: wrap://fs/./build
+        config:
+          foo: bar
