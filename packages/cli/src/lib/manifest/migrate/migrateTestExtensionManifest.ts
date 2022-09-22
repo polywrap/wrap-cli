@@ -23,6 +23,7 @@ export function migrateWorkflow(manifestString: string): string {
   );
 
   const cleanedManifest = JSON.parse(JSON.stringify(newManifest));
+  delete cleanedManifest.__type;
 
   return YAML.dump(cleanedManifest);
 }

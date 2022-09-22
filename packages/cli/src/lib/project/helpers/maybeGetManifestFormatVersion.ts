@@ -1,7 +1,8 @@
 import YAML from "js-yaml";
 
 export function maybeGetManifestFormatVersion(
-  manifestStr: string): string | undefined {
+  manifestStr: string
+): string | undefined {
   type ManifestFormatProps = {
     format: string;
   };

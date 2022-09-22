@@ -1,3 +1,1 @@
-export const defaultWorkflowManifest = [
-  "polywrap.test.yaml"
-];
+export const defaultWorkflowManifest = ["polywrap.test.yaml"];

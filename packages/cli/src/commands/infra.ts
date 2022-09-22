@@ -1,4 +1,9 @@
-import { intlMsg, Infra, loadInfraManifest, defaultInfraManifest } from "../lib";
+import {
+  intlMsg,
+  Infra,
+  loadInfraManifest,
+  defaultInfraManifest,
+} from "../lib";
 import { Command, Program } from "./types";
 
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";

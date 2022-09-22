@@ -1,11 +1,19 @@
-import { Command, Program, Argument } from "./types";
-import fs from "fs";
-import path from "path";
 import {
+  AppManifestFormats,
   AppManifestSchemaFiles,
+  BuildManifestFormats,
   BuildManifestSchemaFiles,
+  DeployManifestFormats,
   DeployManifestSchemaFiles,
+  InfraManifestFormats,
   InfraManifestSchemaFiles,
+  MetaManifestFormats,
+  MetaManifestSchemaFiles,
+  PluginManifestFormats,
+  PluginManifestSchemaFiles,
+  PolywrapManifestFormats,
+  PolywrapWorkflowFormats,
+  PolywrapWorkflowSchemaFiles,
   latestAppManifestFormat,
   latestBuildManifestFormat,
   latestDeployManifestFormat,
@@ -14,45 +22,46 @@ import {
   latestPluginManifestFormat,
   latestPolywrapManifestFormat,
   latestPolywrapWorkflowFormat,
-  MetaManifestSchemaFiles,
-  PluginManifestSchemaFiles,
-  PolywrapWorkflowSchemaFiles,
 } from "@polywrap/polywrap-manifest-types-js";
+import { Argument, Command, Program } from "./types";
 import {
   defaultBuildManifest,
   defaultDeployManifest,
+  defaultInfraManifest,
   defaultMetaManifest,
-  getProjectManifestLanguage,
   defaultWorkflowManifest,
+  getProjectManifestLanguage,
   intlMsg,
   isAppManifestLanguage,
   isPluginManifestLanguage,
   isPolywrapManifestLanguage,
-  parseManifestFileOption,
-  defaultInfraManifest,
   maybeGetManifestFormatVersion,
+  parseManifestFileOption,
 } from "../lib";
-import { defaultProjectManifestFiles } from "../lib/option-defaults";
-import { dereference } from "json-schema-ref-parser";
 import {
   getYamlishSchemaForManifestJsonSchemaObject,
-  migratePolywrapProjectManifest,
   migrateAppProjectManifest,
-  migratePluginProjectManifest,
   migrateBuildExtensionManifest,
   migrateDeployExtensionManifest,
-  migrateMetaExtensionManifest,
-  preserveOldManifest,
   migrateInfraExtensionManifest,
+  migrateMetaExtensionManifest,
+  migratePluginProjectManifest,
+  migratePolywrapProjectManifest,
   migrateWorkflow,
+  preserveOldManifest,
 } from "../lib/manifest";
+
 import { PolywrapManifestSchemaFiles } from "@polywrap/polywrap-manifest-types-js";
+import { defaultProjectManifestFiles } from "../lib/option-defaults";
+import { dereference } from "json-schema-ref-parser";
+import fs from "fs";
+import path from "path";
 
 const pathStr = intlMsg.commands_manifest_options_m_path();
 
 const defaultProjectManifestStr = defaultProjectManifestFiles.join(" | ");
 
-const manifestFileTypes = [
+const manifestTypes = [
   "project",
   "build",
   "deploy",
@@ -60,7 +69,7 @@ const manifestFileTypes = [
   "meta",
   "workflow",
 ] as const;
-type ManifestType = typeof manifestFileTypes[number];
+type ManifestType = typeof manifestTypes[number];
 
 type ManifestSchemaCommandOptions = {
   raw: boolean;
@@ -85,11 +94,11 @@ export const manifest: Command = {
       .addArgument(
         new Argument(
           "type",
-          intlMsg.commands_manifest_options_t({ default: manifestFileTypes[0] })
+          intlMsg.commands_manifest_options_t({ default: manifestTypes[0] })
         )
           .argOptional()
-          .choices(manifestFileTypes)
-          .default(manifestFileTypes[0])
+          .choices(manifestTypes)
+          .default(manifestTypes[0])
       )
       .option(
         `-r, --raw`,
@@ -113,11 +122,11 @@ export const manifest: Command = {
       .addArgument(
         new Argument(
           "type",
-          intlMsg.commands_manifest_options_t({ default: manifestFileTypes[0] })
+          intlMsg.commands_manifest_options_t({ default: manifestTypes[0] })
         )
           .argOptional()
-          .choices(manifestFileTypes)
-          .default(manifestFileTypes[0])
+          .choices(manifestTypes)
+          .default(manifestTypes[0])
       )
       .option(
         `-m, --manifest-file <${pathStr}>`,
@@ -187,26 +196,28 @@ export const runSchemaCommand = async (
 
   const manifestVersion = maybeGetManifestFormatVersion(manifestString);
 
-  if (!manifestVersion) {
-    console.log(intlMsg.commands_manifest_formatError());
-    process.exit(1);
-  }
-
   const schemasPackageDir = path.dirname(
     require.resolve("@polywrap/polywrap-manifest-schemas")
   );
 
   let manifestSchemaFile = "";
+  let language: string | undefined;
 
   switch (type) {
     case "project":
-      const language = getProjectManifestLanguage(manifestString);
+      language = getProjectManifestLanguage(manifestString);
 
       if (!language) {
         throw new Error("Unsupported project type!");
       }
 
       if (isPolywrapManifestLanguage(language)) {
+        maybeFailOnUnsupportedManifestFormat(
+          manifestVersion,
+          Object.values(PolywrapManifestFormats),
+          manifestfile
+        );
+
         manifestSchemaFile = path.join(
           schemasPackageDir,
           PolywrapManifestSchemaFiles[
@@ -214,11 +225,23 @@ export const runSchemaCommand = async (
           ]
         );
       } else if (isAppManifestLanguage(language)) {
+        maybeFailOnUnsupportedManifestFormat(
+          manifestVersion,
+          Object.values(AppManifestFormats),
+          manifestfile
+        );
+
         manifestSchemaFile = path.join(
           schemasPackageDir,
           AppManifestSchemaFiles[manifestVersion ?? latestAppManifestFormat]
         );
       } else if (isPluginManifestLanguage(language)) {
+        maybeFailOnUnsupportedManifestFormat(
+          manifestVersion,
+          Object.values(PluginManifestFormats),
+          manifestfile
+        );
+
         manifestSchemaFile = path.join(
           schemasPackageDir,
           PluginManifestSchemaFiles[
@@ -231,6 +254,12 @@ export const runSchemaCommand = async (
       break;
 
     case "build":
+      maybeFailOnUnsupportedManifestFormat(
+        manifestVersion,
+        Object.values(BuildManifestFormats),
+        manifestfile
+      );
+
       manifestSchemaFile = path.join(
         schemasPackageDir,
         BuildManifestSchemaFiles[manifestVersion ?? latestBuildManifestFormat]
@@ -238,6 +267,12 @@ export const runSchemaCommand = async (
       break;
 
     case "meta":
+      maybeFailOnUnsupportedManifestFormat(
+        manifestVersion,
+        Object.values(MetaManifestFormats),
+        manifestfile
+      );
+
       manifestSchemaFile = path.join(
         schemasPackageDir,
         MetaManifestSchemaFiles[manifestVersion ?? latestMetaManifestFormat]
@@ -245,6 +280,12 @@ export const runSchemaCommand = async (
       break;
 
     case "deploy":
+      maybeFailOnUnsupportedManifestFormat(
+        manifestVersion,
+        Object.values(DeployManifestFormats),
+        manifestfile
+      );
+
       manifestSchemaFile = path.join(
         schemasPackageDir,
         DeployManifestSchemaFiles[manifestVersion ?? latestDeployManifestFormat]
@@ -252,6 +293,12 @@ export const runSchemaCommand = async (
       break;
 
     case "infra":
+      maybeFailOnUnsupportedManifestFormat(
+        manifestVersion,
+        Object.values(InfraManifestFormats),
+        manifestfile
+      );
+
       manifestSchemaFile = path.join(
         schemasPackageDir,
         InfraManifestSchemaFiles[manifestVersion ?? latestInfraManifestFormat]
@@ -259,6 +306,12 @@ export const runSchemaCommand = async (
       break;
 
     case "workflow":
+      maybeFailOnUnsupportedManifestFormat(
+        manifestVersion,
+        Object.values(PolywrapWorkflowFormats),
+        manifestfile
+      );
+
       manifestSchemaFile = path.join(
         schemasPackageDir,
         PolywrapWorkflowSchemaFiles[
@@ -285,14 +338,16 @@ const runMigrateCommand = async (
   type: ManifestType,
   options: ManifestMigrateCommandOptions
 ) => {
+  let manifestFile = "";
+
   switch (type) {
     case "project":
-      const manifestfile = parseManifestFileOption(
+      manifestFile = parseManifestFileOption(
         options.manifestFile,
         defaultProjectManifestFiles
       );
 
-      const manifestString = fs.readFileSync(manifestfile, {
+      const manifestString = fs.readFileSync(manifestFile, {
         encoding: "utf-8",
       });
 
@@ -305,19 +360,19 @@ const runMigrateCommand = async (
 
       if (isPolywrapManifestLanguage(language)) {
         return migrateManifestFile(
-          manifestfile,
+          manifestFile,
           migratePolywrapProjectManifest,
           latestPolywrapManifestFormat
         );
       } else if (isAppManifestLanguage(language)) {
         return migrateManifestFile(
-          manifestfile,
+          manifestFile,
           migrateAppProjectManifest,
           latestPolywrapManifestFormat
         );
       } else if (isPluginManifestLanguage(language)) {
         return migrateManifestFile(
-          manifestfile,
+          manifestFile,
           migratePluginProjectManifest,
           latestPolywrapManifestFormat
         );
@@ -397,4 +452,24 @@ function migrateManifestFile(
   fs.writeFileSync(manifestFile, outputManifestString, {
     encoding: "utf-8",
   });
+}
+
+function maybeFailOnUnsupportedManifestFormat(
+  format: string | undefined,
+  formats: string[],
+  manifestFile: string
+) {
+  if (!format) {
+    return;
+  }
+
+  if (!formats.includes(format)) {
+    console.log(
+      intlMsg.commands_manifest_formatError({
+        fileName: path.relative(".", manifestFile),
+        values: Object.values(PolywrapManifestFormats).join(", "),
+      })
+    );
+    process.exit(1);
+  }
 }

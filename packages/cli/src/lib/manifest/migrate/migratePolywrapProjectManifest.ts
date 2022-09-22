@@ -3,6 +3,7 @@ import {
   latestPolywrapManifestFormat,
   migratePolywrapManifest,
 } from "@polywrap/polywrap-manifest-types-js";
+
 import YAML from "js-yaml";
 
 export function migratePolywrapProjectManifest(manifestString: string): string {
@@ -10,9 +11,7 @@ export function migratePolywrapProjectManifest(manifestString: string): string {
   try {
     manifest = JSON.parse(manifestString) as AnyPolywrapManifest;
   } catch (e) {
-    manifest = YAML.safeLoad(manifestString) as
-      | AnyPolywrapManifest
-      | undefined;
+    manifest = YAML.safeLoad(manifestString) as AnyPolywrapManifest | undefined;
   }
 
   if (!manifest) {
@@ -25,6 +24,7 @@ export function migratePolywrapProjectManifest(manifestString: string): string {
   );
 
   const cleanedManifest = JSON.parse(JSON.stringify(newManifest));
-  
+  delete cleanedManifest.__type;
+
   return YAML.dump(cleanedManifest);
 }

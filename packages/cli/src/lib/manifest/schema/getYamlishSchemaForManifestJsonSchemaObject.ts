@@ -1,8 +1,8 @@
 export function getYamlishSchemaForManifestJsonSchemaObject(
-  schema: any,
-  name: string = "",
-  description: string = "",
-  indent: number = 0
+  schema: Record<string, any>,
+  name = "",
+  description = "",
+  indent = 0
 ): string {
   let output = "";
 
@@ -28,9 +28,9 @@ export function getYamlishSchemaForManifestJsonSchemaObject(
 }
 
 function getYamlishJsonSchemaPropertyString(
-  property: any,
+  property: Record<string, any>,
   propName: string,
-  indent: number = 0
+  indent = 0
 ) {
   let output = "";
 

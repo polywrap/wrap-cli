@@ -5,14 +5,14 @@ import {
   isPluginManifestLanguage,
   isPolywrapManifestLanguage,
 } from "../manifests";
-import { Project } from "../Project";
-import { PolywrapProject } from "../PolywrapProject";
+
 import { AppProject } from "../AppProject";
 import { PluginProject } from "../PluginProject";
-
+import { PolywrapProject } from "../PolywrapProject";
+import { Project } from "../Project";
 import { filesystem } from "gluegun";
-import path from "path";
 import { getProjectManifestLanguage } from "./getProjectManifestLanguage";
+import path from "path";
 
 export type ManifestProjectTypeProps = {
   // >= 0.2
@@ -57,4 +57,3 @@ export async function getProjectFromManifest(
 
   return project;
 }
-

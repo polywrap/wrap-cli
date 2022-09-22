@@ -3,6 +3,7 @@ import {
   latestDeployManifestFormat,
   migrateDeployManifest,
 } from "@polywrap/polywrap-manifest-types-js";
+
 import YAML from "js-yaml";
 
 export function migrateDeployExtensionManifest(manifestString: string): string {
@@ -10,9 +11,7 @@ export function migrateDeployExtensionManifest(manifestString: string): string {
   try {
     manifest = JSON.parse(manifestString) as AnyDeployManifest;
   } catch (e) {
-    manifest = YAML.safeLoad(manifestString) as
-      | AnyDeployManifest
-      | undefined;
+    manifest = YAML.safeLoad(manifestString) as AnyDeployManifest | undefined;
   }
 
   if (!manifest) {
@@ -25,6 +24,7 @@ export function migrateDeployExtensionManifest(manifestString: string): string {
   );
 
   const cleanedManifest = JSON.parse(JSON.stringify(newManifest));
-  
+  delete cleanedManifest.__type;
+
   return YAML.dump(cleanedManifest);
 }

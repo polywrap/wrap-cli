@@ -20,6 +20,7 @@ export function migrateInfraExtensionManifest(manifestString: string): string {
   const newManifest = migrateInfraManifest(manifest, latestInfraManifestFormat);
 
   const cleanedManifest = JSON.parse(JSON.stringify(newManifest));
+  delete cleanedManifest.__type;
 
   return YAML.dump(cleanedManifest);
 }

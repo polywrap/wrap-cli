@@ -5,9 +5,7 @@ export function parseManifestFileOption(
   manifestFile: string | undefined,
   defaults: string[]
 ): string {
-  const manifestPaths = manifestFile
-    ? [manifestFile as string]
-    : defaults;
+  const manifestPaths = manifestFile ? [manifestFile as string] : defaults;
 
   manifestFile = resolvePathIfExists(manifestPaths);
 

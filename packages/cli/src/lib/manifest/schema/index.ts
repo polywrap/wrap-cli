@@ -1,1 +1,1 @@
-export * from './getYamlishSchemaForManifestJsonSchemaObject';
+export * from "./getYamlishSchemaForManifestJsonSchemaObject";

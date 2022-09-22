@@ -47,7 +47,10 @@ export const deploy: Command = {
       .action(async (options) => {
         await run({
           ...options,
-          manifestFile: parseManifestFileOption(options.manifestFile, defaultPolywrapManifest),
+          manifestFile: parseManifestFileOption(
+            options.manifestFile,
+            defaultPolywrapManifest
+          ),
         });
       });
   },

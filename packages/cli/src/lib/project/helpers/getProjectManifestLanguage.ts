@@ -1,7 +1,6 @@
 import { AnyProjectManifestLanguage } from "../manifests";
-import YAML from "js-yaml";
 import { ManifestProjectTypeProps } from "./getProjectFromManifest";
-
+import YAML from "js-yaml";
 
 export function getProjectManifestLanguage(
   manifestStr: string
@@ -11,8 +10,9 @@ export function getProjectManifestLanguage(
   try {
     manifest = JSON.parse(manifestStr) as ManifestProjectTypeProps;
   } catch (e) {
-    manifest = YAML.safeLoad(manifestStr) as ManifestProjectTypeProps |
-      undefined;
+    manifest = YAML.safeLoad(manifestStr) as
+      | ManifestProjectTypeProps
+      | undefined;
   }
 
   return manifest?.project?.type ?? manifest?.language;
