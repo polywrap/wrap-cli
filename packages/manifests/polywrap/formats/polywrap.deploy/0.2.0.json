@@ -2,69 +2,68 @@
   "id": "DeployManifest",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "sequences"],
+  "required": ["format", "jobs"],
   "properties": {
     "format": {
       "description": "Polywrap deployment manifest format version.",
       "type": "string",
       "const":  "0.2.0"
     },
-    "sequences": {
+    "jobs": {
       "description": "Sequences of deployment steps",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["steps", "name"],
-        "properties": {
-          "name": {
-            "description": "Name of the sequence",
-            "type": "string"
-          },
-          "steps": {
-            "description": "Deployment steps",
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["name", "package", "uri"],
-              "properties": {
-                "name": {
-                  "description": "Name of the step",
-                  "type": "string"
-                },
-                "package": {
-                  "description": "Name of the deployer package.",
-                  "type": "string"
-                },
-                "config": {
-                  "description": "Step-level custom configuration.",
-                  "type": "object"
-                },
-                "uri": {
-                  "description": "URI to pass into the deploy step.",
-                  "oneOf": [
-                    {
-                      "type": "string",
-                      "description": "Valid WRAP URI",
-                      "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
-                    },
-                    {
-                      "type": "string",
-                      "description": "Name of another step, prefixed with '$'",
-                      "pattern": "^\\$.*"
-                    }
-                  ]
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["steps"],
+          "properties": {
+            "steps": {
+              "description": "Deployment steps",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name", "package", "uri"],
+                "properties": {
+                  "name": {
+                    "description": "Name of the step",
+                    "type": "string"
+                  },
+                  "package": {
+                    "description": "Name of the deployer package.",
+                    "type": "string"
+                  },
+                  "config": {
+                    "description": "Step-level custom configuration.",
+                    "type": "object"
+                  },
+                  "uri": {
+                    "description": "URI to pass into the deploy step.",
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "description": "Valid WRAP URI",
+                        "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
+                      },
+                      {
+                        "type": "string",
+                        "description": "Name of another step, prefixed with '$'",
+                        "pattern": "^\\$.*"
+                      }
+                    ]
+                  }
                 }
               }
+            },
+            "config": {
+              "description": "Sequence-level custom configuration.",
+              "type": "object"
             }
-          },
-          "config": {
-            "description": "Sequence-level custom configuration.",
-            "type": "object"
           }
         }
       }
     }
   }
 }
+
