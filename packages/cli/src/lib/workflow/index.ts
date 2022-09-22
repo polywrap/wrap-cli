@@ -1,3 +1,8 @@
 export * from "./JobRunner";
-export * from "./types";
+export {
+  JobStatus,
+  JobResult,
+  ValidationResult,
+  WorkflowOutput,
+} from "./types";
 export * from "./util";
