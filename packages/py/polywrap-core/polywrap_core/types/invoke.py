@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 from .uri import Uri
-
-if TYPE_CHECKING:
-    from .client import ClientConfig
+from ..uri_resolution.abc import IUriResolutionContext
 
 
 @dataclass(slots=True, kw_only=True)
@@ -26,8 +23,8 @@ class InvokeOptions:
     uri: Uri
     method: str
     args: Optional[Union[Dict[str, Any], bytes]] = field(default_factory=dict)
-    config: Optional["ClientConfig"] = None
-    context_id: Optional[str] = None
+    env: Optional[Dict[str, Any]] = None
+    resolution_context: Optional[IUriResolutionContext] = None
 
 
 @dataclass(slots=True, kw_only=True)
@@ -49,18 +46,6 @@ class InvokerOptions(InvokeOptions):
     encode_result: Optional[bool] = False
 
 
-class Invoker(ABC):
-    @abstractmethod
-    async def invoke(self, options: InvokeOptions) -> InvokeResult:
-        pass
-
-
 @dataclass(slots=True, kw_only=True)
 class InvocableResult(InvokeResult):
     encoded: Optional[bool] = False
-
-
-class Invocable(ABC):
-    @abstractmethod
-    async def invoke(self, options: InvokeOptions, invoker: Invoker) -> InvocableResult:
-        pass

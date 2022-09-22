@@ -1,18 +1,13 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, List, Optional
+from typing import Optional
 
 from .uri import Uri
-
-if TYPE_CHECKING:
-    from .client import ClientConfig
-    from ..uri_resolution import ResolveUriResult
-
+from ..uri_resolution.abc import IUriResolutionContext
 
 @dataclass(slots=True, kw_only=True)
-class ResolveUriOptions:
+class TryResolveUriOptions:
     """
     Args:
         no_cache_read: If set to true, the resolveUri function will not use the cache to resolve the uri.
@@ -20,24 +15,5 @@ class ResolveUriOptions:
         config: Override the client's config for all resolutions.
         context_id: Id used to track context data set internally.
     """
-
-    no_cache_read: Optional[bool] = False
-    no_cache_write: Optional[bool] = False
-    config: Optional["ClientConfig"] = None
-    context_id: Optional[str] = None
-
-
-@dataclass(slots=True, kw_only=True)
-class LoadUriResolversResult:
-    success: bool
-    failed_uri_resolvers: List[str]
-
-
-class UriResolverHandler(ABC):
-    @abstractmethod
-    async def resolve_uri(self, uri: Uri, options: Optional[ResolveUriOptions] = None) -> "ResolveUriResult":
-        pass
-
-    @abstractmethod
-    def load_uri_resolvers(self) -> LoadUriResolversResult:
-        pass
+    uri: Uri
+    resolution_context: Optional[IUriResolutionContext] = None

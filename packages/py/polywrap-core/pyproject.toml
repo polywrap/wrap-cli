@@ -12,6 +12,7 @@ authors = ["Niraj Kamdar <niraj@polywrap.io>"]
 python = "^3.10"
 gql = "3.4.0"
 graphql-core = "^3.2.1"
+result = "^0.8.0"
 
 [tool.poetry.dev-dependencies]
 bandit = "1.7.4"

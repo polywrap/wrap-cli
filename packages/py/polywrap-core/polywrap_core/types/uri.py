@@ -36,8 +36,11 @@ class Uri:
     def __str__(self) -> str:
         return self._config.uri
 
-    def __eq__(self, b: Uri) -> bool:
-        return self.uri == b.uri
+    def __hash__(self) -> int:
+        return hash(self._config.uri)
+
+    def __eq__(self, b: object) -> bool:
+        return self.uri == b.uri if isinstance(b, Uri) else False
 
     def __lt__(self, b: Uri) -> bool:
         return self.uri < b.uri
@@ -74,15 +77,13 @@ class Uri:
     def parse_uri(uri: str) -> UriConfig:
         if not uri:
             raise ValueError("The provided URI is empty")
-
         processed = uri
-
         # Trim preceding '/' characters
         processed = processed.lstrip('/')
         # Check for the w3:// scheme, add if it isn't there
         wrap_scheme_idx = processed.find("wrap://")
         if wrap_scheme_idx == -1:
-            processed = "wrap://" + processed
+            processed = f"wrap://{processed}"
 
         # If the w3:// is not in the beginning, throw an error
         if wrap_scheme_idx > -1 and wrap_scheme_idx != 0:
@@ -93,7 +94,7 @@ class Uri:
 
         # Remove all empty strings
         if result:
-            result = list(filter(lambda x: x != " " and x != "", result[0]))
+            result = list(filter(lambda x: x not in [" ", ""], result[0]))
 
         if not result or len(result) != 3:
             raise ValueError(
