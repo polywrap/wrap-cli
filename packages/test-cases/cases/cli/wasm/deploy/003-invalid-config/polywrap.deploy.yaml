@@ -1,6 +1,6 @@
 format: "0.2.0"
-sequences:
-  - name: test
+jobs:
+  test:
     config:
       gatewayUri: $IPFS_GATEWAY_URI
     steps:

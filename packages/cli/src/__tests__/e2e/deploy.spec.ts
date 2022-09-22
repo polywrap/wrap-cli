@@ -109,13 +109,13 @@ describe("e2e tests for deploy command", () => {
       "Successfully executed step 'from_deploy2'"
     );
     expect(sanitizedOutput).toContain(
-      "Successfully executed 'fs_to_ens' deployment sequence"
+      "Successfully executed 'fs_to_ens' deployment job"
     );
     expect(sanitizedOutput).toContain(
       "Successfully executed step 'from_uri'"
     );
     expect(sanitizedOutput).toContain(
-      "Successfully executed 'ipfs_to_ens' deployment sequence"
+      "Successfully executed 'ipfs_to_ens' deployment job"
     );
   });
 
