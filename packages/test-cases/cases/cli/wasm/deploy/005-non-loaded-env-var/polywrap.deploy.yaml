@@ -1,12 +1,16 @@
-format: 0.1.0
-stages:
-  ipfs_deploy:
-    package: ipfs
-    uri: fs/./build
-  from_deploy:
-    package: ens
-    depends_on: ipfs_deploy
+format: "0.2.0"
+sequences:
+  - name: test
     config:
-      domainName: $NON_LOADED_VAR
-      provider: 'http://localhost:8545'
-      ensRegistryAddress: '0x9b1f7F645351AF3631a656421eD2e40f2802E6c0'
+      gatewayUri: $IPFS_GATEWAY_URI
+    steps:
+      - name: ipfs_deploy
+        package: ipfs
+        uri: fs/./build
+      - name: from_deploy
+        package: ens
+        uri: $$ipfs_deploy
+        config:
+          domainName: $NON_LOADED_VAR
+          provider: 'http://localhost:8545'
+          ensRegistryAddress: '0x9b1f7F645351AF3631a656421eD2e40f2802E6c0'
