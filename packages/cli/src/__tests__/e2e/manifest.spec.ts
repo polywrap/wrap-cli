@@ -1,7 +1,10 @@
 import { clearStyle, polywrapCli } from "./utils";
 
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
+import fs from "fs";
+import fse from "fs-extra";
 import path from "path";
+import rimraf from "rimraf";
 import { runCLI } from "@polywrap/test-env-js";
 
 const HELP = `Usage: polywrap manifest|m [options] [command]
@@ -53,6 +56,20 @@ Options:
                               polywrap.plugin.yml)
   -h, --help                  display help for command
 `;
+
+const validSampleProjectManifestFiles: Record<string, string> = {
+  wasm: "polywrap.yaml",
+  app: "polywrap.app.yaml",
+  plugin: "polywrap.plugin.yaml",
+};
+
+const validSampleExtensionManifestFiles: Record<string, string> = {
+  build: "polywrap.build.yaml",
+  deploy: "polywrap.deploy.yaml",
+  infra: "polywrap.infra.yaml",
+  meta: "polywrap.meta.yaml",
+  workflow: "polywrap.test.yaml",
+};
 
 describe("e2e tests for manifest command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "manifest");
@@ -125,9 +142,95 @@ describe("e2e tests for manifest command", () => {
         expect(code).toEqual(1);
       });
     });
+
+    describe("actions", () => {
+      const tempDir = path.join(testCaseRoot, "temp");
+
+      beforeAll(async () => {
+        const samplesDir = path.join(testCaseRoot, "samples");
+
+        if (fs.existsSync(tempDir)) {
+          rimraf.sync(tempDir);
+        }
+
+        await fse.copy(samplesDir, tempDir);
+      });
+
+      afterAll(async () => {
+        if (fs.existsSync(tempDir)) {
+          rimraf.sync(tempDir);
+        }
+      });
+
+      for (const projectType in validSampleProjectManifestFiles) {
+        const manifestFile = validSampleProjectManifestFiles[projectType];
+
+        test(`Should migrate ${projectType} project manifest`, async () => {
+          const {
+            exitCode: code,
+            stdout: output,
+            stderr: error,
+          } = await runCLI({
+            args: ["manifest", "migrate", "-m", manifestFile],
+            cwd: tempDir,
+            cli: polywrapCli,
+          });
+
+          expect(output).toContain(`Migrating ${manifestFile} to version`);
+          expect(output).toContain(
+            `Saved previous version of manifest to .polywrap/manifest/${manifestFile}`
+          );
+          expect(error).toBe("");
+          expect(code).toBe(0);
+
+          const oldFile = path.join(
+            tempDir,
+            ".polywrap",
+            "manifest",
+            manifestFile
+          );
+          const oldFileExists = fs.existsSync(oldFile);
+
+          expect(oldFileExists).toBeTruthy();
+        });
+      }
+
+      for (const extensionType in validSampleExtensionManifestFiles) {
+        const manifestFile = validSampleExtensionManifestFiles[extensionType];
+
+        test(`Should migrate ${extensionType} extension manifest`, async () => {
+          const {
+            exitCode: code,
+            stdout: output,
+            stderr: error,
+          } = await runCLI({
+            args: ["manifest", "migrate", extensionType, "-m", manifestFile],
+            cwd: tempDir,
+            cli: polywrapCli,
+          });
+
+          expect(output).toContain(`Migrating ${manifestFile} to version`);
+          expect(output).toContain(
+            `Saved previous version of manifest to .polywrap/manifest/${manifestFile}`
+          );
+          expect(error).toBe("");
+          expect(code).toBe(0);
+
+          const oldFile = path.join(
+            tempDir,
+            ".polywrap",
+            "manifest",
+            manifestFile
+          );
+          const oldFileExists = fs.existsSync(oldFile);
+
+          expect(oldFileExists).toBeTruthy();
+        });
+      }
+    });
   });
 
-  describe("schema command", () => {
+  describe("Schema command", () => {
     test("Should show help text", async () => {
       const { exitCode: code, stdout: output, stderr: error } = await runCLI({
         args: ["manifest", "schema", "--help"],
@@ -185,16 +288,62 @@ describe("e2e tests for manifest command", () => {
     });
 
     test("Should throw on invalid format within file", async () => {
-      const manifestFile = path.join(testCaseRoot, "samples", "invalid-format.yaml");
+      const manifestFile = path.join(
+        testCaseRoot,
+        "samples",
+        "invalid-format.yaml"
+      );
       const { exitCode: code, stdout: output, stderr: error } = await runCLI({
         args: ["manifest", "schema", "-m", manifestFile],
         cwd: testCaseRoot,
         cli: polywrapCli,
       });
 
-      expect(error).toContain("Unsupported manifest format. Please make sure that you have the 'format' field present in samples/invalid-format.yaml with one of the following values:");
+      expect(error).toContain(
+        "Unsupported manifest format. Please make sure that you have the 'format' field present in samples/invalid-format.yaml with one of the following values:"
+      );
       expect(output).toBe("");
       expect(code).toEqual(1);
+    });
+
+    test("Should output a YAML-ish schema", async () => {
+      const manifestFile = path.join(testCaseRoot, "samples", "polywrap.yaml");
+      const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+        args: ["manifest", "schema", "-m", manifestFile],
+        cwd: testCaseRoot,
+        cli: polywrapCli,
+      });
+
+      expect(output).toContain("format:  #");
+      expect(error).toBe("");
+      expect(code).toEqual(0);
+    });
+
+    test("Should output a raw schema", async () => {
+      const manifestFile = path.join(testCaseRoot, "samples", "polywrap.yaml");
+      const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+        args: ["manifest", "schema", "-m", manifestFile, "--raw"],
+        cwd: testCaseRoot,
+        cli: polywrapCli,
+      });
+
+      const schemasPackageDir = path.dirname(
+        require.resolve("@polywrap/polywrap-manifest-schemas")
+      );
+
+      const originalSchemaFile = path.join(
+        schemasPackageDir,
+        "formats",
+        "polywrap",
+        "0.1.0.json"
+      );
+      const originalSchema = fs.readFileSync(originalSchemaFile, {
+        encoding: "utf-8",
+      });
+
+      expect(output).toContain(originalSchema);
+      expect(error).toBe("");
+      expect(code).toEqual(0);
     });
   });
 });
