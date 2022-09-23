@@ -57,27 +57,13 @@ Options:
   -h, --help                  display help for command
 `;
 
-const validSampleProjectManifestFiles: Record<string, string> = {
-  wasm: "polywrap.yaml",
-  app: "polywrap.app.yaml",
-  plugin: "polywrap.plugin.yaml",
-};
-
-const validSampleExtensionManifestFiles: Record<string, string> = {
-  build: "polywrap.build.yaml",
-  deploy: "polywrap.deploy.yaml",
-  infra: "polywrap.infra.yaml",
-  meta: "polywrap.meta.yaml",
-  workflow: "polywrap.test.yaml",
-};
-
 describe("e2e tests for manifest command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "manifest");
+  const testsRoot = path.join(GetPathToCliTestFiles(), "manifest");
 
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["manifest", "--help"],
-      cwd: testCaseRoot,
+      cwd: testsRoot,
       cli: polywrapCli,
     });
 
@@ -90,7 +76,7 @@ describe("e2e tests for manifest command", () => {
     test("Should show help text", async () => {
       const { exitCode: code, stdout: output, stderr: error } = await runCLI({
         args: ["manifest", "migrate", "--help"],
-        cwd: testCaseRoot,
+        cwd: testsRoot,
         cli: polywrapCli,
       });
 
@@ -103,7 +89,7 @@ describe("e2e tests for manifest command", () => {
       it("Should throw error for unknown option --invalid", async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
           args: ["manifest", "migrate", "--invalid"],
-          cwd: testCaseRoot,
+          cwd: testsRoot,
           cli: polywrapCli,
         });
 
@@ -115,7 +101,7 @@ describe("e2e tests for manifest command", () => {
       it("Should throw error if params not specified for --manifest-file option", async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
           args: ["manifest", "migrate", "-m"],
-          cwd: testCaseRoot,
+          cwd: testsRoot,
           cli: polywrapCli,
         });
 
@@ -131,7 +117,7 @@ describe("e2e tests for manifest command", () => {
       it("Should throw error if 'type' argument is invalid", async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
           args: ["manifest", "migrate", "invalid-arg"],
-          cwd: testCaseRoot,
+          cwd: testsRoot,
           cli: polywrapCli,
         });
 
@@ -144,10 +130,24 @@ describe("e2e tests for manifest command", () => {
     });
 
     describe("actions", () => {
-      const tempDir = path.join(testCaseRoot, "temp");
+      const validSampleProjectManifestFiles: Record<string, string> = {
+        wasm: "polywrap.yaml",
+        app: "polywrap.app.yaml",
+        plugin: "polywrap.plugin.yaml",
+      };
+      
+      const validSampleExtensionManifestFiles: Record<string, string> = {
+        build: "polywrap.build.yaml",
+        deploy: "polywrap.deploy.yaml",
+        infra: "polywrap.infra.yaml",
+        meta: "polywrap.meta.yaml",
+        workflow: "polywrap.test.yaml",
+      };
+      
+      const tempDir = path.join(testsRoot, "temp");
 
       beforeAll(async () => {
-        const samplesDir = path.join(testCaseRoot, "samples");
+        const samplesDir = path.join(testsRoot, "samples");
 
         if (fs.existsSync(tempDir)) {
           rimraf.sync(tempDir);
@@ -234,7 +234,7 @@ describe("e2e tests for manifest command", () => {
     test("Should show help text", async () => {
       const { exitCode: code, stdout: output, stderr: error } = await runCLI({
         args: ["manifest", "schema", "--help"],
-        cwd: testCaseRoot,
+        cwd: testsRoot,
         cli: polywrapCli,
       });
 
@@ -247,7 +247,7 @@ describe("e2e tests for manifest command", () => {
       it("Should throw error for unknown option --invalid", async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
           args: ["manifest", "migrate", "--invalid"],
-          cwd: testCaseRoot,
+          cwd: testsRoot,
           cli: polywrapCli,
         });
 
@@ -259,7 +259,7 @@ describe("e2e tests for manifest command", () => {
       it("Should throw error if params not specified for --manifest-file option", async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
           args: ["manifest", "migrate", "-m"],
-          cwd: testCaseRoot,
+          cwd: testsRoot,
           cli: polywrapCli,
         });
 
@@ -275,7 +275,7 @@ describe("e2e tests for manifest command", () => {
       it("Should throw error if 'type' argument is invalid", async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
           args: ["manifest", "migrate", "invalid-arg"],
-          cwd: testCaseRoot,
+          cwd: testsRoot,
           cli: polywrapCli,
         });
 
@@ -289,13 +289,13 @@ describe("e2e tests for manifest command", () => {
 
     test("Should throw on invalid format within file", async () => {
       const manifestFile = path.join(
-        testCaseRoot,
+        testsRoot,
         "samples",
         "invalid-format.yaml"
       );
       const { exitCode: code, stdout: output, stderr: error } = await runCLI({
         args: ["manifest", "schema", "-m", manifestFile],
-        cwd: testCaseRoot,
+        cwd: testsRoot,
         cli: polywrapCli,
       });
 
@@ -307,10 +307,10 @@ describe("e2e tests for manifest command", () => {
     });
 
     test("Should output a YAML-ish schema", async () => {
-      const manifestFile = path.join(testCaseRoot, "samples", "polywrap.yaml");
+      const manifestFile = path.join(testsRoot, "samples", "polywrap.yaml");
       const { exitCode: code, stdout: output, stderr: error } = await runCLI({
         args: ["manifest", "schema", "-m", manifestFile],
-        cwd: testCaseRoot,
+        cwd: testsRoot,
         cli: polywrapCli,
       });
 
@@ -320,10 +320,10 @@ describe("e2e tests for manifest command", () => {
     });
 
     test("Should output a raw schema", async () => {
-      const manifestFile = path.join(testCaseRoot, "samples", "polywrap.yaml");
+      const manifestFile = path.join(testsRoot, "samples", "polywrap.yaml");
       const { exitCode: code, stdout: output, stderr: error } = await runCLI({
         args: ["manifest", "schema", "-m", manifestFile, "--raw"],
-        cwd: testCaseRoot,
+        cwd: testsRoot,
         cli: polywrapCli,
       });
 
