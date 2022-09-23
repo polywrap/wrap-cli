@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 
+from polywrap_msgpack import sanitize
+
 from polywrap_msgpack import msgpack_encode, msgpack_decode
+
+import pytest
 
 expected_array_like = [
     130, 168, 102, 105, 114, 115, 116, 75,
@@ -71,3 +75,32 @@ def test_generic_map_decode():
     decoded = msgpack_decode(encoded)
 
     assert decoded == {'firstKey': 'firstValue', 'secondKey': 'secondValue'}
+
+# Passing Tests
+def test_sanitize_str_returns_str():
+    assert sanitize("string input") == "string input"
+
+def test_sanitize_list_returns_list():
+    assert expected_array_like == sanitize(expected_array_like)
+
+def test_sanitize_complex_list_returns_list():
+    complex_list = [1, 'foo', 'bar', 0.123, True, None]
+    assert complex_list == sanitize(complex_list)
+
+def test_sanitize_nested_list_returns_list():
+    nested_list = [23, [123,'dog', 'cat'], 'boat', ['moon', True]]
+    assert nested_list == sanitize(nested_list)
+
+# Tests that are not passibn
+
+def test_sanitize_tuple_returns_list():
+    assert [5,8] == sanitize((5,8))
+
+# WIP Tests
+
+# def test_sanitize_dict_returns_xxx():
+#     dictionary = {'key1': 'value1'}
+#     pass 
+#     # assert sanitize(dictionary) == 
+    
+
