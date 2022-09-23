@@ -81,27 +81,34 @@ def test_generic_map_decode():
 def test_sanitize_str_returns_same_str():
     assert sanitize("string input") == "string input"
 
-def test_sanitize_list_returns_list():
-    assert expected_array_like == sanitize(expected_array_like)
+def test_sanitize_simple_list_returns_simple_list():
+    assert [1] == sanitize([1])
+
+def test_sanitize_long_list_returns_long_list():
+    assert [2,55,1234,6345] == sanitize([2,55,1234,6345])
 
 def test_sanitize_complex_list_returns_list():
     complex_list = [1, 'foo', 'bar', 0.123, True, None]
     assert complex_list == sanitize(complex_list)
 
-def test_sanitize_nested_list_returns_list():
-    nested_list = [23, [[123,'dog'], 'cat'], 'boat', ['moon', True]]
+def test_sanitize_nested_list_returns_nested_list():
+    nested_list = [23, [[0.123,'dog'], 'cat'], 'boat', ['moon', True]]
     assert nested_list == sanitize(nested_list)
 
 # Tests that are not passing
+def test_sanitize_single_tuple_returns_list():
+    assert sanitize((8)) == [8] 
 
-def test_sanitize_tuple_returns_list():
-    assert sanitize((5,8)) == [5,8] 
+def test_sanitize_long_tuple_returns_list():
+    assert sanitize((2,3,6)) == [2,3,6] 
 
+def test_sanitize_nested_tuples_returns_nested_list():
+    nested_tuple = (23, ((0.123,'dog'), 'cat'), 'boat', ('moon', True))
+    assert nested_tuple == sanitize(nested_tuple)
 # WIP Tests
 
 # def test_sanitize_dict_returns_xxx():
 #     dictionary = {'key1': 'value1'}
-#     pass 
-#     # assert sanitize(dictionary) == 
+#     assert sanitize(dictionary) == 
     
 
