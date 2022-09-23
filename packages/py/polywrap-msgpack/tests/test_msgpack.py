@@ -77,7 +77,8 @@ def test_generic_map_decode():
     assert decoded == {'firstKey': 'firstValue', 'secondKey': 'secondValue'}
 
 # Passing Tests
-def test_sanitize_str_returns_str():
+
+def test_sanitize_str_returns_same_str():
     assert sanitize("string input") == "string input"
 
 def test_sanitize_list_returns_list():
@@ -88,13 +89,13 @@ def test_sanitize_complex_list_returns_list():
     assert complex_list == sanitize(complex_list)
 
 def test_sanitize_nested_list_returns_list():
-    nested_list = [23, [123,'dog', 'cat'], 'boat', ['moon', True]]
+    nested_list = [23, [[123,'dog'], 'cat'], 'boat', ['moon', True]]
     assert nested_list == sanitize(nested_list)
 
-# Tests that are not passibn
+# Tests that are not passing
 
 def test_sanitize_tuple_returns_list():
-    assert [5,8] == sanitize((5,8))
+    assert sanitize((5,8)) == [5,8] 
 
 # WIP Tests
 
