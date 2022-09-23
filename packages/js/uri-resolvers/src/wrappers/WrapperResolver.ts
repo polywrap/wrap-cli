@@ -12,7 +12,7 @@ export class WrapperResolver extends ResolverWithHistory {
     super();
   }
 
-  protected getStepDescription = (): string => `Package (${this.uri.uri})`;
+  protected getStepDescription = (): string => `Wrapper (${this.uri.uri})`;
 
   protected async _tryResolveUri(
     uri: Uri
