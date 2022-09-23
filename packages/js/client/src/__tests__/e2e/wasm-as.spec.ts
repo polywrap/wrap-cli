@@ -9,6 +9,7 @@ import {
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { PolywrapClient } from "../../PolywrapClient";
 import { buildUriResolver } from "@polywrap/uri-resolvers-js";
+import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
 
 jest.setTimeout(200000);
 
