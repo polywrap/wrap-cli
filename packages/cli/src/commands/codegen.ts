@@ -11,7 +11,7 @@ import {
   getProjectFromManifest,
   isPluginManifestLanguage,
   generateWrapFile,
-  defaultProjectManifestFiles
+  defaultProjectManifestFiles,
 } from "../lib";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
