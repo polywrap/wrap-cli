@@ -276,9 +276,8 @@ export async function buildAndDeployWrapper({
 
   const deployManifest: Omit<DeployManifest, "__type"> = {
     format: "0.2.0",
-    sequences: [
-      {
-        name: "buildAndDeployWrapper",
+    jobs: {
+      buildAndDeployWrapper: {
         config: {
           provider: ethereumProvider,
           ensRegistryAddress: ensAddresses.ensAddress,
@@ -309,7 +308,7 @@ export async function buildAndDeployWrapper({
           },
         ],
       },
-    ],
+    },
   };
   fs.writeFileSync(tempDeployManifestPath, yaml.dump(deployManifest));
 
@@ -390,9 +389,8 @@ export async function buildAndDeployWrapperToHttp({
 
   const deployManifest: Omit<DeployManifest, "__type"> = {
     format: "0.2.0",
-    sequences: [
-      {
-        name: "buildAndDeployWrapperToHttp",
+    jobs: {
+      buildAndDeployWrapperToHttp: {
         steps: [
           {
             name: "httpDeploy",
@@ -404,7 +402,7 @@ export async function buildAndDeployWrapperToHttp({
           },
         ],
       },
-    ],
+    },
   };
   fs.writeFileSync(tempDeployManifestPath, yaml.dump(deployManifest));
 

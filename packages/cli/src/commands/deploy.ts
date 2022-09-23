@@ -6,8 +6,8 @@ import {
   intlMsg,
   parseManifestFileOption,
   PolywrapProject,
-  Sequence,
-  Step,
+  DeployJob,
+  DeployStep,
 } from "../lib";
 
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -26,8 +26,8 @@ type DeployCommandOptions = {
   verbose?: boolean;
 };
 
-type ManifestSequence = DeployManifest["sequences"][number];
-type ManifestStep = ManifestSequence["steps"][number];
+type ManifestJob = DeployManifest["jobs"][number];
+type ManifestStep = ManifestJob["steps"][number];
 
 export const deploy: Command = {
   setup: (program: Program) => {
@@ -74,17 +74,17 @@ async function run(options: DeployCommandOptions): Promise<void> {
     throw new Error("No deploy manifest found.");
   }
 
-  const allStepsFromAllSequences = deployManifest.sequences.flatMap(
-    (sequence) => {
-      return sequence.steps.map((step) => ({
-        sequenceName: sequence.name,
+  const allStepsFromAllJobs = Object.entries(deployManifest.jobs).flatMap(
+    ([jobName, job]) => {
+      return job.steps.map((step) => ({
+        jobName,
         ...step,
       }));
     }
   );
 
   const packageNames = [
-    ...new Set(allStepsFromAllSequences.map((step) => step.package)),
+    ...new Set(allStepsFromAllJobs.map((step) => step.package)),
   ];
 
   sanitizePackages(packageNames);
@@ -102,21 +102,21 @@ async function run(options: DeployCommandOptions): Promise<void> {
 
   const stepToPackageMap: Record<
     string,
-    DeployPackage & { sequenceName: string }
+    DeployPackage & { jobName: string }
   > = {};
 
-  for (const step of allStepsFromAllSequences) {
+  for (const step of allStepsFromAllJobs) {
     stepToPackageMap[step.name] = {
       ...packageMap[step.package],
-      sequenceName: step.sequenceName,
+      jobName: step.jobName,
     };
   }
 
   validateManifestWithExts(deployManifest, stepToPackageMap);
 
-  const sequences = deployManifest.sequences.map((sequence) => {
-    const steps = sequence.steps.map((step) => {
-      return new Step({
+  const jobs = Object.entries(deployManifest.jobs).map(([jobName, job]) => {
+    const steps: DeployStep[] = job.steps.map((step) => {
+      return new DeployStep({
         name: step.name,
         uriOrStepResult: step.uri,
         deployer: stepToPackageMap[step.name].deployer,
@@ -124,17 +124,15 @@ async function run(options: DeployCommandOptions): Promise<void> {
       });
     });
 
-    return new Sequence({
-      name: sequence.name,
+    return new DeployJob({
+      name: jobName,
       steps,
-      config: sequence.config ?? {},
+      config: job.config ?? {},
       printer: print,
     });
   });
 
-  const sequenceResults = await Promise.all(
-    sequences.map((sequence) => sequence.run())
-  );
+  const jobResults = await Promise.all(jobs.map((job) => job.run()));
 
   if (outputFile) {
     const outputFileExt = nodePath.extname(outputFile).substring(1);
@@ -142,10 +140,10 @@ async function run(options: DeployCommandOptions): Promise<void> {
     switch (outputFileExt) {
       case "yaml":
       case "yml":
-        fs.writeFileSync(outputFile, yaml.dump(sequenceResults));
+        fs.writeFileSync(outputFile, yaml.dump(jobResults));
         break;
       case "json":
-        fs.writeFileSync(outputFile, JSON.stringify(sequenceResults, null, 2));
+        fs.writeFileSync(outputFile, JSON.stringify(jobResults, null, 2));
         break;
       default:
         throw new Error(
@@ -178,22 +176,24 @@ function sanitizePackages(packages: string[]) {
 
 function validateManifestWithExts(
   deployManifest: DeployManifest,
-  stepToPackageMap: Record<string, DeployPackage & { sequenceName: string }>
+  stepToPackageMap: Record<string, DeployPackage & { jobName: string }>
 ) {
   const errors = Object.entries(stepToPackageMap).flatMap(
     ([stepName, step]) => {
-      const sequence = deployManifest.sequences.find(
-        (seq) => seq.name === step.sequenceName
-      ) as ManifestSequence;
+      const jobEntry = Object.entries(deployManifest.jobs).find(
+        ([jobName]) => jobName === step.jobName
+      ) as [string, ManifestJob];
 
-      const stepToValidate = sequence.steps.find(
+      const job = jobEntry[1];
+
+      const stepToValidate = job.steps.find(
         (s) => s.name === stepName
       ) as ManifestStep;
 
       return step.manifestExt
         ? validate(
             {
-              ...sequence.config,
+              ...job.config,
               ...stepToValidate.config,
             },
             step.manifestExt
