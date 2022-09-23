@@ -4,7 +4,6 @@ import {
   CodeGenerator,
   SchemaComposer,
   intlMsg,
-  defaultPolywrapManifest,
   parseDirOption,
   parseCodegenScriptOption,
   parseManifestFileOption,
@@ -12,6 +11,7 @@ import {
   getProjectFromManifest,
   isPluginManifestLanguage,
   generateWrapFile,
+  defaultProjectManifestFiles
 } from "../lib";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -22,7 +22,7 @@ const defaultCodegenDir = "./src/wrap";
 const defaultPublishDir = "./build";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
-const defaultManifestStr = defaultPolywrapManifest.join(" | ");
+const defaultManifestStr = defaultProjectManifestFiles.join(" | ");
 
 type CodegenCommandOptions = {
   manifestFile: string;
@@ -72,7 +72,7 @@ export const codegen: Command = {
           script: parseCodegenScriptOption(options.script),
           manifestFile: parseManifestFileOption(
             options.manifestFile,
-            defaultPolywrapManifest
+            defaultProjectManifestFiles
           ),
           publishDir: parseDirOption(options.publishDir, defaultPublishDir),
         });
