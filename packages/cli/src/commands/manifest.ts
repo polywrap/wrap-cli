@@ -28,7 +28,6 @@ import {
 import { defaultProjectManifestFiles } from "../lib/option-defaults";
 
 import { JSONSchema4 } from "json-schema";
-import { PolywrapManifestSchemaFiles } from "@polywrap/polywrap-manifest-types-js";
 import {
   AppManifestFormats,
   AppManifestSchemaFiles,
@@ -43,6 +42,7 @@ import {
   PluginManifestFormats,
   PluginManifestSchemaFiles,
   PolywrapManifestFormats,
+  PolywrapManifestSchemaFiles,
   PolywrapWorkflowFormats,
   PolywrapWorkflowSchemaFiles,
   latestAppManifestFormat,
