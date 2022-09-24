@@ -1,4 +1,4 @@
-import { InvokeResult } from "@polywrap/core-js";
+import { Result } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import {
   initTestEnvironment,
@@ -98,8 +98,8 @@ describe("IPFS Plugin", () => {
   it("Should timeout within a specified amount of time - env and options", async () => {
     const createRacePromise = (
       timeout: number
-    ): Promise<InvokeResult<Uint8Array>> => {
-      return new Promise<InvokeResult<Uint8Array>>((resolve) =>
+    ): Promise<Result<Uint8Array, Error>> => {
+      return new Promise<Result<Uint8Array, Error>>((resolve) =>
         setTimeout(() => {
           resolve({
             data: Uint8Array.from([1, 2, 3, 4]),

@@ -11,7 +11,7 @@ import { ipfsResolverPlugin } from "..";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { IpfsClient } from "./helpers/IpfsClient";
 import { createIpfsClient } from "./helpers/createIpfsClient";
-import { InvokeResult } from "@polywrap/core-js";
+import { Result } from "@polywrap/core-js";
 
 jest.setTimeout(300000);
 
@@ -89,8 +89,8 @@ describe("IPFS Plugin", () => {
 
   const createRacePromise = (
     timeout: number
-  ): Promise<InvokeResult<Uint8Array>> => {
-    return new Promise<InvokeResult<Uint8Array>>((resolve) =>
+  ): Promise<Result<Uint8Array, Error>> => {
+    return new Promise<Result<Uint8Array, Error>>((resolve) =>
       setTimeout(() => {
         resolve({
           data: Uint8Array.from([1, 2, 3, 4]),

@@ -183,10 +183,10 @@ export class JobRunner {
       args: args,
     });
 
-    if (invokeResult.error) {
-      return { ...invokeResult, status: JobStatus.FAILED };
+    if (!invokeResult.ok) {
+      return { error: invokeResult.error, status: JobStatus.FAILED };
     } else {
-      return { ...invokeResult, status: JobStatus.SUCCEED };
+      return { data: invokeResult.value, status: JobStatus.SUCCEED };
     }
   }
 
