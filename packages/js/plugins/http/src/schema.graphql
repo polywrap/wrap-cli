@@ -1,23 +1,4 @@
-type Response {
-  status: Int!
-  statusText: String!
-  headers: Map @annotate(type: "Map<String!, String!>")
-  body: String
-}
+#import { Module } into Http from "ens/http.polywrap.eth"
 
-type Request {
-  headers: Map @annotate(type: "Map<String!, String!>")
-  urlParams: Map @annotate(type: "Map<String!, String!>")
-  responseType: ResponseType!
-  body: String
-}
-
-enum ResponseType {
-  TEXT
-  BINARY
-}
-
-type Module {
-  get(url: String!, request: Request): Response
-  post(url: String!, request: Request): Response
+type Module implements Http_Module {
 }

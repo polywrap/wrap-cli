@@ -1,6 +1,6 @@
-# @polywrap/ens-plugin-js
+# @polywrap/ens-resolver-plugin-js
 
-ENS Plugin allows the Polywrap JS Client to resolve URIs from the [Ethereum Name Service](https://ens.domains/).
+ENS Resolver Plugin allows the Polywrap JS Client to resolve URIs from the [Ethereum Name Service](https://ens.domains/).
 
 ## Usage
 
@@ -72,7 +72,7 @@ export async function foo({
   const wrapperUriENS = `ens/testnet/${wrapperEnsDomain}`;
 
   // query the wrapper
-  const schemaENS = await client.getSchema(wrapperUriENS)
+  const schemaENS = await client.getManifest(wrapperUriENS)
 
   // we can also resolve an ENS URI in two steps
   // get IPFS URI
@@ -80,7 +80,7 @@ export async function foo({
   const wrapperUriIpfs = resolveUriResult.uri
 
   // query the wrapper
-  const schemaIPFS = await resolveUriResult.wrapperIPFS?.getSchema(client);
+  const schemaIPFS = await resolveUriResult.wrapperIPFS?.getManifest(client);
 
   await stopTestEnvironment();
 });
@@ -90,4 +90,4 @@ For more usage examples see `src/__tests__`.
 
 ## API
 
-ENS Plugin conforms to a generic UriResolver interface that provides a tryResolveUri method to the Polywrap client and adds ENS resolution capability to every client method, e.g. getSchema, getManifest, resolveUri.
+ENS Resolver Plugin conforms to a generic UriResolver interface that provides a tryResolveUri method to the Polywrap client and adds ENS resolution capability to every client method, e.g. getSchema, getManifest, resolveUri.

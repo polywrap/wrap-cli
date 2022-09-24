@@ -35,6 +35,16 @@
             ]
           ]
         ],
+        "wrap://ens/http-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/http-resolver.polywrap.eth)",
+        [
+          "wrap://ens/http-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/http-resolver.polywrap.eth)",
+          [
+            "wrap://ens/http-resolver.polywrap.eth => LegacyPluginsResolver => package (wrap://ens/http-resolver.polywrap.eth)",
+            [
+              "wrap://ens/http-resolver.polywrap.eth => Plugin (wrap://ens/http-resolver.polywrap.eth) => package (wrap://ens/http-resolver.polywrap.eth)"
+            ]
+          ]
+        ],
         "wrap://ens/test.eth => ResolverExtension (wrap://ens/undefined-resolver.eth) => error While resolving wrap://ens/test.eth with URI resolver extension wrap://ens/undefined-resolver.eth, the extension could not be fully resolved. Last tried URI is wrap://ens/undefined-resolver.eth"
       ]
     ]

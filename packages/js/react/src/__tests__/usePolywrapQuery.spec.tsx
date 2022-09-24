@@ -12,9 +12,8 @@ import { Env, PluginRegistration } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployWrapper,
   ensAddresses,
-  providers
+  providers, buildWrapper,
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 
@@ -37,20 +36,14 @@ describe("usePolywrapQuery hook", () => {
   beforeAll(async () => {
     await initTestEnvironment();
 
-    const { ensDomain } = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
-      ipfsProvider: providers.ipfs,
-      ethereumProvider: providers.ethereum,
-    });
+    const simpleStoragePath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
+    await buildWrapper(simpleStoragePath);
+    uri = `fs/${simpleStoragePath}/build`
 
-    const { ensDomain: envEnsDomain } = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-env-types`,
-      ipfsProvider: providers.ipfs,
-      ethereumProvider: providers.ethereum,
-    });
+    const simpleEnvPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`;
+    await buildWrapper(simpleEnvPath);
+    envUri = `fs/${simpleEnvPath}/build`
 
-    uri = `ens/testnet/${ensDomain}`;
-    envUri = `ens/testnet/${envEnsDomain}`;
     envs = createEnvs(providers.ipfs);
     plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum);
     WrapperProvider = {

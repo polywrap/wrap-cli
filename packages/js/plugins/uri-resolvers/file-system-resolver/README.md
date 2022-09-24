@@ -61,7 +61,7 @@ export async function foo({
   });
 
   // query the wrapper
-  const schemaFS = await client.getSchema(wrapperUriFS)
+  const schemaFS = await client.getManifest(wrapperUriFS)
 
   await stopTestEnvironment();
 });
