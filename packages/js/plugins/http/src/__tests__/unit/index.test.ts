@@ -1,5 +1,5 @@
 import { HttpPlugin } from "../..";
-import { ResponseTypeEnum, Client } from "../../wrap";
+import { Http_ResponseTypeEnum, Client } from "../../wrap";
 
 import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 
@@ -39,7 +39,7 @@ describe("test http plugin", () => {
               ["X-Test-Header", "test-header-value"],
             ]),
             urlParams: new Map([["q", "test-param"]]),
-            responseType: ResponseTypeEnum.TEXT,
+            responseType: Http_ResponseTypeEnum.TEXT,
           },
         },
         {} as Client

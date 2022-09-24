@@ -123,7 +123,7 @@ export function parseLocalImports(
   for (const importStatement of imports) {
     if (importStatement.length !== 3) {
       throw Error(
-        `Invalid external import statement found:\n${importStatement[0]}\n` +
+        `Invalid local import statement found:\n${importStatement[0]}\n` +
           `Please use the following syntax...\n${SYNTAX_REFERENCE}`
       );
     }

@@ -1,4 +1,5 @@
 import { coreInterfaceUris } from "@polywrap/core-js";
+import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import { Uri, PolywrapClient } from "../..";
 import { defaultWrappers } from "@polywrap/client-config-builder-js";
 
@@ -28,6 +29,7 @@ describe("sanity", () => {
       new Uri("wrap://ens/ens-resolver.polywrap.eth"),
       new Uri("wrap://ens/ethereum.polywrap.eth"),
       new Uri("wrap://ens/http.polywrap.eth"),
+      new Uri("wrap://ens/http-resolver.polywrap.eth"),
       new Uri("wrap://ens/js-logger.polywrap.eth"),
       new Uri("wrap://ens/fs.polywrap.eth"),
       new Uri("wrap://ens/fs-resolver.polywrap.eth"),
@@ -43,6 +45,7 @@ describe("sanity", () => {
           new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
           new Uri("wrap://ens/ens-resolver.polywrap.eth"),
           new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+          new Uri("wrap://ens/http-resolver.polywrap.eth"),
         ],
       },
       {
@@ -55,15 +58,32 @@ describe("sanity", () => {
   test("client noDefaults flag works as expected", async () => {
     let client = new PolywrapClient();
     expect(client.getPlugins().length !== 0).toBeTruthy();
+    expect(client.getUriResolver()).toBeTruthy();
 
     client = new PolywrapClient({}, {});
     expect(client.getPlugins().length !== 0).toBeTruthy();
+    expect(client.getUriResolver()).toBeTruthy();
 
     client = new PolywrapClient({}, { noDefaults: false });
     expect(client.getPlugins().length !== 0).toBeTruthy();
+    expect(client.getUriResolver()).toBeTruthy();
 
-    client = new PolywrapClient({}, { noDefaults: true });
+    client = new PolywrapClient(
+      { resolver: buildUriResolver([]) },
+      { noDefaults: true }
+    );
+
     expect(client.getPlugins().length === 0).toBeTruthy();
+    expect(client.getUriResolver()).toBeTruthy();
+
+    let message = "";
+    try {
+      client = new PolywrapClient({}, { noDefaults: true });
+    } catch (e) {
+      message = e.message;
+    }
+
+    expect(message).toBe("No URI resolver provided");
   });
 
   test("redirect registration", () => {

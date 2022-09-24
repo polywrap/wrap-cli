@@ -4,15 +4,14 @@ import {
   createPolywrapProvider,
 } from "..";
 import { UsePolywrapInvokeProps } from "../invoke";
-import { createPlugins } from "./plugins";
+import { createPlugins, createEnvs } from "./config";
 
-import { PluginRegistration } from "@polywrap/core-js";
+import { Env, PluginRegistration } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployWrapper,
   ensAddresses,
-  providers
+  providers, buildWrapper,
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 
@@ -28,30 +27,27 @@ jest.setTimeout(360000);
 describe("usePolywrapInvoke hook", () => {
   let uri: string;
   let envUri: string;
+  let envs: Env[];
   let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
     await initTestEnvironment();
 
-    const { ensDomain } = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
-      ipfsProvider: providers.ipfs,
-      ethereumProvider: providers.ethereum,
-    });
+    const simpleStoragePath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
+    await buildWrapper(simpleStoragePath);
+    uri = `fs/${simpleStoragePath}/build`
 
-    const { ensDomain: envEnsDomain } = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-env-types`,
-      ipfsProvider: providers.ipfs,
-      ethereumProvider: providers.ethereum,
-    });
+    const simpleEnvPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`;
+    await buildWrapper(simpleEnvPath);
+    envUri = `fs/${simpleEnvPath}/build`
 
-    uri = `ens/testnet/${ensDomain}`;
-    envUri = `ens/testnet/${envEnsDomain}`;
-    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum, providers.ipfs);
+    envs = createEnvs(providers.ipfs);
+    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum);
     WrapperProvider = {
       wrapper: PolywrapProvider,
       initialProps: {
+        envs,
         plugins,
       },
     };
