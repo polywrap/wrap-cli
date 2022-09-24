@@ -4,4 +4,4 @@ export * from "./legacy";
 export * from "./redirects";
 export * from "./packages";
 export * from "./helpers";
-export * from "./utils";
+export * from "./static";
