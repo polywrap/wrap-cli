@@ -7,6 +7,6 @@ source:
   module: ./src/index.ts
   import_abis:
     - uri: "wrap://ens/http.polywrap.eth"
-      abi: ../../../../build/wrap.info
+      abi: ../../../../../../../interfaces/http/build/wrap.info
 extensions:
   build: ./polywrap.build.yaml

@@ -1,0 +1,19 @@
+name: run-test-wrapper
+format: 0.1.0
+validation: "./validator.cue"
+jobs:
+  cases:
+    steps:
+    - uri: fs/../run-test-wrapper/build
+      method: addInBox
+      args:
+        x: 1
+        y: 1
+    jobs:
+      case1:
+        steps:
+        - uri: fs/../run-test-wrapper/build
+          method: add
+          args:
+            x: "$cases.0.data.value"
+            y: "$cases.0.data.value"

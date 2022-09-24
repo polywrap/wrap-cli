@@ -8,9 +8,6 @@ import {
   providers
 } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
-import { PolywrapClient } from "@polywrap/client-js";
-import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
-import { Wallet } from "@ethersproject/wallet";
 import path from "path";
 import fs from "fs";
 import yaml from "js-yaml";
@@ -35,78 +32,27 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/deploy");
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
 
-const setup = async (domainNames: string[]) => {
+const setup = async () => {
   await stopTestEnvironment();
   await initTestEnvironment();
 
   // Wait a little longer just in case
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  const ensAddress = ensAddresses.ensAddress
-  const resolverAddress = ensAddresses.resolverAddress
-  const registrarAddress = ensAddresses.registrarAddress
-  const signer = new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d");
-
   // Setup environment variables
   process.env = {
     ...process.env,
+    IPFS_GATEWAY_URI: providers.ipfs,
     DOMAIN_NAME: "test1.eth",
-    ENS_REG_ADDR: ensAddress
+    ENS_REG_ADDR: ensAddresses.ensAddress,
+    ENS_REGISTRAR_ADDR: ensAddresses.registrarAddress,
+    ENS_RESOLVER_ADDR: ensAddresses.resolverAddress,
   };
-
-  const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth"
-  const client = new PolywrapClient({
-    plugins: [
-      {
-        uri: ethereumPluginUri,
-        plugin: ethereumPlugin({
-          connections: new Connections({
-            networks: {
-              testnet: new Connection({
-                provider: providers.ethereum,
-                signer,
-              }),
-            },
-            defaultNetwork: "testnet",
-          }),
-        }),
-      }
-    ],
-  });
-
-  const ensWrapperUri = `fs/${path.join(
-    path.dirname(require.resolve("@polywrap/test-env-js")),
-    "wrappers", "ens"
-  )}`;
-
-  for await (const domainName of domainNames) {
-    const result = await client.invoke({
-      uri: ensWrapperUri,
-      method: "registerDomainAndSubdomainsRecursively",
-      args: {
-        domain: domainName,
-        owner: signer.address,
-        registrarAddress,
-        registryAddress: ensAddress,
-        resolverAddress,
-        ttl: "0",
-        connection: {
-          networkNameOrChainId: "testnet",
-        },
-      },
-    });
-
-    if (result.error) {
-      throw Error(
-        `Failed to register ${domainName}: ${result.error.message}`
-      );
-    }
-  }
 }
 
 describe("e2e tests for deploy command", () => {
   beforeAll(async () => {
-    await setup(["test1.eth", "test2.eth", "test3.eth"])
+    await setup()
 
     for (let i = 0; i < testCases.length; ++i) {
       await runCLI(
@@ -154,10 +100,22 @@ describe("e2e tests for deploy command", () => {
     expect(error).toBeFalsy();
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain(
-      "Successfully executed stage 'ipfs_deploy'"
+      "Successfully executed step 'ipfs_deploy'"
     );
     expect(sanitizedOutput).toContain(
-      "Successfully executed stage 'from_deploy'"
+      "Successfully executed step 'from_deploy'"
+    );
+    expect(sanitizedOutput).toContain(
+      "Successfully executed step 'from_deploy2'"
+    );
+    expect(sanitizedOutput).toContain(
+      "Successfully executed 'fs_to_ens' deployment job"
+    );
+    expect(sanitizedOutput).toContain(
+      "Successfully executed step 'from_uri'"
+    );
+    expect(sanitizedOutput).toContain(
+      "Successfully executed 'ipfs_to_ens' deployment job"
     );
   });
 
@@ -204,51 +162,140 @@ describe("e2e tests for deploy command", () => {
     expect(yamlOutputFileContents).toMatchObject(jsonOutputFileContents);
     expect(jsonOutputFileContents).toMatchObject([
       {
-        id: "ipfs_deploy",
-        name: "ipfs_deploy",
-        input: {
-          uri: "wrap://fs/./build"
-        },
-        result: "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG"
+        "name": "fs_to_ens",
+        "steps": [
+          {
+            "name": "ens_register",
+            "id": "fs_to_ens.ens_register",
+            "input": {
+              "_config": {
+                "uri": "wrap://ens/test1.eth",
+                "authority": "ens",
+                "path": "test1.eth"
+              }
+            },
+            "result": {
+              "_config": {
+                "uri": "wrap://ens/testnet/test1.eth",
+                "authority": "ens",
+                "path": "testnet/test1.eth"
+              }
+            }
+          },
+          {
+            "name": "ens_register2",
+            "id": "fs_to_ens.ens_register2",
+            "input": {
+              "_config": {
+                "uri": "wrap://ens/test2.eth",
+                "authority": "ens",
+                "path": "test2.eth"
+              }
+            },
+            "result": {
+              "_config": {
+                "uri": "wrap://ens/testnet/test2.eth",
+                "authority": "ens",
+                "path": "testnet/test2.eth"
+              }
+            }
+          },
+          {
+            "name": "ipfs_deploy",
+            "id": "fs_to_ens.ipfs_deploy",
+            "input": {
+              "_config": {
+                "uri": "wrap://fs/./build",
+                "authority": "fs",
+                "path": "./build"
+              }
+            },
+            "result": {
+              "_config": {
+                "uri": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
+                "authority": "ipfs",
+                "path": "QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG"
+              }
+            }
+          },
+          {
+            "name": "from_deploy",
+            "id": "fs_to_ens.from_deploy",
+            "input": {
+              "_config": {
+                "uri": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
+                "authority": "ipfs",
+                "path": "QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG"
+              }
+            },
+            "result": {
+              "_config": {
+                "uri": "wrap://ens/testnet/test1.eth",
+                "authority": "ens",
+                "path": "testnet/test1.eth"
+              }
+            }
+          },
+          {
+            "name": "from_deploy2",
+            "id": "fs_to_ens.from_deploy2",
+            "input": {
+              "_config": {
+                "uri": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
+                "authority": "ipfs",
+                "path": "QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG"
+              }
+            },
+            "result": {
+              "_config": {
+                "uri": "wrap://ens/testnet/test2.eth",
+                "authority": "ens",
+                "path": "testnet/test2.eth"
+              }
+            }
+          }
+        ]
       },
       {
-        id: "ipfs_deploy.from_deploy",
-        name: "from_deploy",
-        input: {
-          uri: "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
-          config: {
-            domainName: "test1.eth",
-            provider: "http://localhost:8545",
-            ensRegistryAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
+        "name": "ipfs_to_ens",
+        "steps": [
+          {
+            "name": "ens_register",
+            "id": "ipfs_to_ens.ens_register",
+            "input": {
+              "_config": {
+                "uri": "wrap://ens/test3.eth",
+                "authority": "ens",
+                "path": "test3.eth"
+              }
+            },
+            "result": {
+              "_config": {
+                "uri": "wrap://ens/testnet/test3.eth",
+                "authority": "ens",
+                "path": "testnet/test3.eth"
+              }
+            }
+          },
+          {
+            "name": "from_uri",
+            "id": "ipfs_to_ens.from_uri",
+            "input": {
+              "_config": {
+                "uri": "wrap://ipfs/QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF",
+                "authority": "ipfs",
+                "path": "QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF"
+              }
+            },
+            "result": {
+              "_config": {
+                "uri": "wrap://ens/testnet/test3.eth",
+                "authority": "ens",
+                "path": "testnet/test3.eth"
+              }
+            }
           }
-        },
-        result: "wrap://ens/test1.eth"
-      },
-      {
-        id: "ipfs_deploy.from_deploy2",
-        name: "from_deploy2",
-        input: {
-          uri: "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
-          config: {
-            domainName: "test2.eth",
-            provider: "http://localhost:8545",
-            ensRegistryAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
-          }
-        },
-        result: "wrap://ens/test2.eth"
-      },
-      {
-        id: "from_uri",
-        name: "from_uri",
-        input: {
-          uri: "wrap://ipfs/QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF",
-          config: {
-            domainName: "test3.eth",
-            provider: "http://localhost:8545",
-            ensRegistryAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
-          }
-        },
-        result: "wrap://ens/test3.eth"
+        ]
       }
     ])
   });
@@ -259,6 +306,7 @@ describe("e2e tests for deploy command", () => {
         args: ["deploy"],
         cwd: getTestCaseDir(1),
         cli: polywrapCli,
+        env: process.env as Record<string, string>
       },
     );
 
@@ -269,7 +317,7 @@ describe("e2e tests for deploy command", () => {
       "No manifest extension found in"
     );
     expect(sanitizedOutput).toContain(
-      "Successfully executed stage 'ipfs_test'"
+      "Successfully executed step 'ipfs_test'"
     );
   });
 
@@ -279,6 +327,7 @@ describe("e2e tests for deploy command", () => {
         args: ["deploy"],
         cwd: getTestCaseDir(2),
         cli: polywrapCli,
+        env: process.env as Record<string, string>
       },
     );
 
@@ -294,6 +343,7 @@ describe("e2e tests for deploy command", () => {
         args: ["deploy"],
         cwd: getTestCaseDir(3),
         cli: polywrapCli,
+        env: process.env as Record<string, string>
       },
     );
 
@@ -302,14 +352,14 @@ describe("e2e tests for deploy command", () => {
 
     expect(code).toEqual(1);
     expect(sanitizedOutput).toContain(
-      "Successfully executed stage 'ipfs_deploy'"
+      "Successfully executed step 'ipfs_deploy'"
     );
     expect(sanitizedOutput).not.toContain(
-      "Successfully executed stage 'from_deploy2'"
+      "Successfully executed step 'from_deploy2'"
     );
 
     expect(sanitizedErr).toContain(
-      "Failed to execute stage 'from_deploy'"
+      "Failed to execute step 'from_deploy'"
     );
   });
 
@@ -319,6 +369,7 @@ describe("e2e tests for deploy command", () => {
         args: ["deploy"],
         cwd: getTestCaseDir(4),
         cli: polywrapCli,
+        env: process.env as Record<string, string>
       },
     );
 

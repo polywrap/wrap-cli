@@ -4,7 +4,19 @@ type Env {
   """
   Disable querying providers in parallel when resolving URIs
   """
-  disableParallelRequests: Boolean
+  disableParallelRequests: Boolean,
+  """
+  Global timeout for IPFS actions
+  """
+  timeout: UInt32,
+  """
+  Default provider
+  """
+  provider: String!,
+  """
+  Fallback providers
+  """
+  fallbackProviders: [String!]
 }
 
 type Module implements Ipfs_Module {

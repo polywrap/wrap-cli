@@ -1,25 +1,30 @@
 import { getDefaultClientConfig } from "./bundles";
-import { toUri } from "./utils/toUri";
 
 import {
   ClientConfig,
   Uri,
   PluginPackage,
-  UriResolver,
+  IUriResolver,
+  Env,
+  InterfaceImplementations,
+  PluginRegistration,
+  UriRedirect,
 } from "@polywrap/core-js";
+import { IWrapperCache } from "@polywrap/uri-resolvers-js";
 
 export class ClientConfigBuilder {
-  private _config: ClientConfig<Uri>;
-
-  constructor() {
-    this._config = {
-      envs: [],
-      interfaces: [],
-      plugins: [],
-      redirects: [],
-      uriResolvers: [],
-    };
-  }
+  private _config: {
+    redirects: UriRedirect<Uri>[];
+    plugins: PluginRegistration<Uri>[];
+    interfaces: InterfaceImplementations<Uri>[];
+    envs: Env<Uri>[];
+    resolver?: IUriResolver<unknown>;
+  } = {
+    redirects: [],
+    plugins: [],
+    interfaces: [],
+    envs: [],
+  };
 
   add(config: Partial<ClientConfig<Uri | string>>): ClientConfigBuilder {
     if (config.envs) {
@@ -49,24 +54,22 @@ export class ClientConfigBuilder {
       }
     }
 
-    if (config.uriResolvers) {
-      for (const resolver of config.uriResolvers) {
-        this.addUriResolver(resolver);
-      }
+    if (config.resolver) {
+      this.setResolver(config.resolver);
     }
 
     return this;
   }
 
-  addDefaults(): ClientConfigBuilder {
-    return this.add(getDefaultClientConfig());
+  addDefaults(wrapperCache?: IWrapperCache): ClientConfigBuilder {
+    return this.add(getDefaultClientConfig(wrapperCache));
   }
 
   addPlugin<TPluginConfig>(
     uri: Uri | string,
     plugin: PluginPackage<TPluginConfig>
   ): ClientConfigBuilder {
-    const pluginUri = toUri(uri);
+    const pluginUri = Uri.from(uri);
 
     const existingRegistration = this._config.plugins.find((x) =>
       Uri.equals(x.uri, pluginUri)
@@ -85,7 +88,7 @@ export class ClientConfigBuilder {
   }
 
   removePlugin(uri: Uri | string): ClientConfigBuilder {
-    const pluginUri = toUri(uri);
+    const pluginUri = Uri.from(uri);
 
     const idx = this._config.plugins.findIndex((x) =>
       Uri.equals(x.uri, pluginUri)
@@ -99,7 +102,7 @@ export class ClientConfigBuilder {
   }
 
   addEnv(uri: Uri | string, env: Record<string, unknown>): ClientConfigBuilder {
-    const envUri = toUri(uri);
+    const envUri = Uri.from(uri);
 
     const idx = this._config.envs.findIndex((x) => Uri.equals(x.uri, envUri));
 
@@ -119,7 +122,7 @@ export class ClientConfigBuilder {
   }
 
   removeEnv(uri: Uri | string): ClientConfigBuilder {
-    const envUri = toUri(uri);
+    const envUri = Uri.from(uri);
 
     const idx = this._config.envs.findIndex((x) => Uri.equals(x.uri, envUri));
 
@@ -131,7 +134,7 @@ export class ClientConfigBuilder {
   }
 
   setEnv(uri: Uri | string, env: Record<string, unknown>): ClientConfigBuilder {
-    const envUri = toUri(uri);
+    const envUri = Uri.from(uri);
 
     const idx = this._config.envs.findIndex((x) => Uri.equals(x.uri, envUri));
 
@@ -151,8 +154,8 @@ export class ClientConfigBuilder {
     interfaceUri: Uri | string,
     implementationUri: Uri | string
   ): ClientConfigBuilder {
-    const interfaceUriSanitized = toUri(interfaceUri);
-    const implementationUriSanitized = toUri(implementationUri);
+    const interfaceUriSanitized = Uri.from(interfaceUri);
+    const implementationUriSanitized = Uri.from(implementationUri);
 
     const existingInterface = this._config.interfaces.find((x) =>
       Uri.equals(x.interface, interfaceUriSanitized)
@@ -180,8 +183,8 @@ export class ClientConfigBuilder {
     interfaceUri: Uri | string,
     implementationUris: Array<Uri | string>
   ): ClientConfigBuilder {
-    const interfaceUriSanitized = toUri(interfaceUri);
-    const implementationUrisSanitized = implementationUris.map(toUri);
+    const interfaceUriSanitized = Uri.from(interfaceUri);
+    const implementationUrisSanitized = implementationUris.map(Uri.from);
 
     const existingInterface = this._config.interfaces.find((x) =>
       Uri.equals(x.interface, interfaceUriSanitized)
@@ -209,8 +212,8 @@ export class ClientConfigBuilder {
     interfaceUri: Uri | string,
     implementationUri: Uri | string
   ): ClientConfigBuilder {
-    const interfaceUriSanitized = toUri(interfaceUri);
-    const implementationUriSanitized = toUri(implementationUri);
+    const interfaceUriSanitized = Uri.from(interfaceUri);
+    const implementationUriSanitized = Uri.from(implementationUri);
 
     const existingInterface = this._config.interfaces.find((x) =>
       Uri.equals(x.interface, interfaceUriSanitized)
@@ -237,8 +240,8 @@ export class ClientConfigBuilder {
   }
 
   addUriRedirect(from: Uri | string, to: Uri | string): ClientConfigBuilder {
-    const fromSanitized = toUri(from);
-    const toSanitized = toUri(to);
+    const fromSanitized = Uri.from(from);
+    const toSanitized = Uri.from(to);
 
     const existingRedirect = this._config.redirects.find((x) =>
       Uri.equals(x.from, fromSanitized)
@@ -257,7 +260,7 @@ export class ClientConfigBuilder {
   }
 
   removeUriRedirect(from: Uri | string): ClientConfigBuilder {
-    const fromSanitized = toUri(from);
+    const fromSanitized = Uri.from(from);
 
     const idx = this._config.redirects.findIndex((x) =>
       Uri.equals(x.from, fromSanitized)
@@ -270,19 +273,21 @@ export class ClientConfigBuilder {
     return this;
   }
 
-  addUriResolver(resolver: UriResolver): ClientConfigBuilder {
-    this._config.uriResolvers.push(resolver);
-
-    return this;
-  }
-
-  setUriResolvers(resolvers: UriResolver[]): ClientConfigBuilder {
-    this._config.uriResolvers = resolvers;
+  setResolver(resolver: IUriResolver<unknown>): ClientConfigBuilder {
+    this._config.resolver = resolver;
 
     return this;
   }
 
   build(): ClientConfig<Uri> {
+    if (!this._config.resolver) {
+      throw new Error("No URI resolver provided");
+    }
+
+    return this._config as ClientConfig<Uri>;
+  }
+
+  buildPartial(): Partial<ClientConfig<Uri>> {
     return this._config;
   }
 }

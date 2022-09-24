@@ -26,3 +26,11 @@ pub fn method_j_s_o_n(args: ArgsMethodJSON) -> JSON::Value {
         "valueC": args.value_c
     })
 }
+
+pub fn stringify_reserved(args: ArgsStringifyReserved) -> String {
+    JSON::to_string(&args.reserved).unwrap()
+}
+
+pub fn parse_reserved(args: ArgsParseReserved) -> Reserved {
+    JSON::from_str::<Reserved>(&args.json).unwrap()
+}

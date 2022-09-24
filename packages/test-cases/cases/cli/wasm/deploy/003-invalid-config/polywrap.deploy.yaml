@@ -1,12 +1,16 @@
-format: 0.1.0
-stages:
-  ipfs_deploy:
-    package: ipfs
-    uri: fs/./build
-  from_deploy:
-    package: local-dev-ens
-    depends_on: ipfs_deploy
+format: "0.2.0"
+jobs:
+  test:
     config:
-      domainName: true
-      ports:
-        ethereum: 8545
+      gatewayUri: $IPFS_GATEWAY_URI
+    steps:
+      - name: ipfs_deploy
+        package: ipfs
+        uri: wrap://fs/./build
+      - name: from_deploy
+        package: ens
+        uri: $$ipfs_deploy
+        config:
+          domainName: true
+          ports:
+            ethereum: 8545

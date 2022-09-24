@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import http from "http";
 import https from "https";
 import path from "path";
@@ -58,7 +59,7 @@ async function main() {
   rimraf.sync(destDir);
   await fse.ensureDir(destDir);
   fse.copySync(sourceDir, destDir, {
-    recursive: true
+    recursive: true,
   });
 
   // Misc cleanup
@@ -82,20 +83,16 @@ async function main() {
     path.join(destDir, "./common"),
     { recursive: true }
   );
-  rawYamlDockerCompose = rawYamlDockerCompose.replace(
-    "../common", "./common"
-  );
+  rawYamlDockerCompose = rawYamlDockerCompose.replace("../common", "./common");
 
   // 3. Replace the "../dashboards" path with a local one
   rawYamlDockerCompose = rawYamlDockerCompose.replace(
-    "../dashboards", "./dashboards"
+    "../dashboards",
+    "./dashboards"
   );
 
   // Output the modified docker-compose.yaml
-  fs.writeFileSync(
-    yamlDockerComposePath,
-    rawYamlDockerCompose
-  );
+  fs.writeFileSync(yamlDockerComposePath, rawYamlDockerCompose);
 
   // Clean up the temp folder
   await rimraf.sync(tempCacheDir);
