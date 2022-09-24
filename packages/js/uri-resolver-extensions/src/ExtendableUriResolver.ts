@@ -8,10 +8,12 @@ import {
   coreInterfaceUris,
   IUriResolutionContext,
   UriPackageOrWrapper,
-  UriResolutionResult,
 } from "@polywrap/core-js";
 import { Result, ResultOk } from "@polywrap/result";
-import { UriResolverAggregatorBase } from "@polywrap/uri-resolvers-js";
+import {
+  UriResolverAggregatorBase,
+  UriResolutionResult,
+} from "@polywrap/uri-resolvers-js";
 
 export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
   private readonly resolverName: string;

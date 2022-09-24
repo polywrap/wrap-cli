@@ -6,13 +6,15 @@ import {
   Client,
   UriResolverInterface,
   IUriResolutionContext,
-  UriResolutionResult,
   UriPackageOrWrapper,
   getEnvFromUriHistory,
 } from "@polywrap/core-js";
 import { Result, ResultOk, ResultErr } from "@polywrap/result";
 import { WasmPackage } from "@polywrap/wasm-js";
-import { ResolverWithHistory } from "@polywrap/uri-resolvers-js";
+import {
+  ResolverWithHistory,
+  UriResolutionResult,
+} from "@polywrap/uri-resolvers-js";
 
 export class UriResolverWrapper extends ResolverWithHistory<unknown> {
   constructor(public readonly implementationUri: Uri) {

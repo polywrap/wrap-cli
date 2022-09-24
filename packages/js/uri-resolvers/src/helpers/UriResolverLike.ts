@@ -11,8 +11,8 @@ import { WrapperRegistration } from "./WrapperRegistration";
 export type UriResolverLike =
   | IUriResolver<unknown>
   | UriRedirect<string | Uri>
-  | UriResolverLike[]
   | IUriPackage
   | IUriWrapper
   | PackageRegistration
-  | WrapperRegistration;
+  | WrapperRegistration
+  | UriResolverLike[];

@@ -1,6 +1,9 @@
 import { IWrapperCache } from "./IWrapperCache";
-import { UriResolverLike } from "../helpers";
-import { buildUriResolver } from "../utils";
+import {
+  buildUriResolver,
+  UriResolutionResult,
+  UriResolverLike,
+} from "../helpers";
 
 import {
   IUriResolver,
@@ -10,7 +13,6 @@ import {
   Wrapper,
   IUriResolutionContext,
   UriPackageOrWrapper,
-  UriResolutionResult,
 } from "@polywrap/core-js";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";

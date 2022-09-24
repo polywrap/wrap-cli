@@ -1,6 +1,10 @@
-import { UriPackageOrWrapper, IUriResolutionStep } from ".";
-import { Uri, IWrapPackage, Wrapper } from "..";
-
+import {
+  UriPackageOrWrapper,
+  IUriResolutionStep,
+  Uri,
+  IWrapPackage,
+  Wrapper,
+} from "@polywrap/core-js";
 import { Result, ResultOk, ResultErr } from "@polywrap/result";
 
 export class UriResolutionResult<TError = undefined> {
@@ -17,15 +21,24 @@ export class UriResolutionResult<TError = undefined> {
     wrapper: Wrapper
   ): Result<UriPackageOrWrapper, TError>;
   static ok<TError = undefined>(
-    uri: Uri,
+    uriPackageOrWrapper: UriPackageOrWrapper
+  ): Result<UriPackageOrWrapper, TError>;
+  static ok<TError = undefined>(
+    uriPackageOrWrapper: Uri | UriPackageOrWrapper,
     packageOrWrapper?: IWrapPackage | Wrapper
   ): Result<UriPackageOrWrapper, TError> {
     if (!packageOrWrapper) {
-      return ResultOk({
-        type: "uri",
-        uri,
-      } as UriPackageOrWrapper);
+      if ((uriPackageOrWrapper as UriPackageOrWrapper).type) {
+        return ResultOk(uriPackageOrWrapper as UriPackageOrWrapper);
+      } else {
+        return ResultOk({
+          type: "uri",
+          uri: uriPackageOrWrapper as Uri,
+        } as UriPackageOrWrapper);
+      }
     }
+
+    const uri = uriPackageOrWrapper as Uri;
 
     const wrapPackage = packageOrWrapper as Partial<IWrapPackage>;
 

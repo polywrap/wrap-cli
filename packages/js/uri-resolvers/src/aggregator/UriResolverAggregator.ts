@@ -1,6 +1,5 @@
 import { UriResolverAggregatorBase } from "./UriResolverAggregatorBase";
-import { UriResolverLike } from "../helpers";
-import { buildUriResolver } from "../utils";
+import { buildUriResolver, UriResolverLike } from "../helpers";
 
 import { Result, ResultOk } from "@polywrap/result";
 import { IUriResolver, Uri, Client } from "@polywrap/core-js";

@@ -3,10 +3,10 @@ import {
   Uri,
   Client,
   IUriResolutionContext,
-  UriResolutionResult,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
+import { UriResolutionResult } from "../helpers";
 
 export abstract class UriResolverAggregatorBase<
   TResolutionError = undefined,

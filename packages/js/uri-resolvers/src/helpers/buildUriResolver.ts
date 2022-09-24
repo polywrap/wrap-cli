@@ -1,5 +1,4 @@
 import { UriResolverAggregator } from "../aggregator";
-import { UriResolverLike } from "../helpers";
 import { PackageResolver } from "../packages";
 import { WrapperResolver } from "../wrappers";
 
@@ -8,12 +7,15 @@ import {
   IUriResolver,
   Uri,
   Client,
-  IWrapPackage,
-  IUriPackage,
   toUri,
+  UriRedirect,
 } from "@polywrap/core-js";
-import { PackageRegistration } from "../helpers/PackageRegistration";
-import { WrapperRegistration } from "../helpers/WrapperRegistration";
+import {
+  PackageRegistration,
+  WrapperRegistration,
+  UriResolverLike,
+} from "../helpers";
+import { RedirectResolver } from "../redirects";
 
 export const buildUriResolver = <TError = undefined>(
   resolverLike: UriResolverLike,
@@ -34,14 +36,17 @@ export const buildUriResolver = <TError = undefined>(
       ) => Promise<Result<IUriResolver[], unknown>>,
       resolverName
     ) as IUriResolver<TError>;
-  } else if ((resolverLike as Partial<IWrapPackage>).createWrapper) {
-    const uriPackage = resolverLike as IUriPackage;
-    return (new PackageResolver(
-      uriPackage.uri,
-      uriPackage.package
-    ) as unknown) as IUriResolver<TError>;
   } else if ((resolverLike as IUriResolver).tryResolveUri !== undefined) {
     return resolverLike as IUriResolver<TError>;
+  } else if (
+    (resolverLike as UriRedirect<string | Uri>).from !== undefined &&
+    (resolverLike as UriRedirect<string | Uri>).to !== undefined
+  ) {
+    const uriRedirect = resolverLike as UriRedirect<string | Uri>;
+    return (new RedirectResolver(
+      uriRedirect.from,
+      uriRedirect.to
+    ) as unknown) as IUriResolver<TError>;
   } else if (
     (resolverLike as PackageRegistration).uri !== undefined &&
     (resolverLike as PackageRegistration).package !== undefined
