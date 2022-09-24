@@ -32,6 +32,7 @@ type WorkflowCommandOptions = {
 };
 
 const defaultManifestStr = defaultWorkflowManifest.join(" | ");
+const pathStr = intlMsg.commands_run_options_m_path();
 
 export const run: Command = {
   setup: (program: Program) => {
@@ -40,8 +41,8 @@ export const run: Command = {
       .alias("r")
       .description(intlMsg.commands_run_description())
       .option(
-        `-m, --manifest  <${intlMsg.commands_run_options_manifest_path()}>`,
-        intlMsg.commands_run_options_manifest({
+        `-m, --manifest-file  <${pathStr}>`,
+        intlMsg.commands_run_options_m({
           default: defaultManifestStr,
         })
       )
@@ -62,7 +63,7 @@ export const run: Command = {
         await _run({
           ...options,
           manifest: parseManifestFileOption(
-            options.manifest,
+            options.manifestFile,
             defaultWorkflowManifest
           ),
           clientConfig: await parseClientConfigOption(options.clientConfig),
