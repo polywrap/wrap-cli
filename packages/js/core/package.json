@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/core-js",
   "description": "Polywrap Javascript Core",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,11 +19,11 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/asyncify-js": "0.7.0",
-    "@polywrap/msgpack-js": "0.7.0",
-    "@polywrap/tracing-js": "0.7.0",
-    "@polywrap/result": "0.7.0",
-    "@polywrap/wrap-manifest-types-js": "0.7.0",
+    "@polywrap/asyncify-js": "0.8.0",
+    "@polywrap/msgpack-js": "0.8.0",
+    "@polywrap/result": "0.8.0",
+    "@polywrap/tracing-js": "0.8.0",
+    "@polywrap/wrap-manifest-types-js": "0.8.0",
     "graphql": "15.5.0",
     "graphql-tag": "2.10.4",
     "js-yaml": "3.14.0",
@@ -31,7 +31,7 @@
     "semver": "7.3.5"
   },
   "devDependencies": {
-    "@polywrap/os-js": "0.7.0",
+    "@polywrap/os-js": "0.8.0",
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
     "@types/prettier": "2.6.0",
