@@ -1,5 +1,4 @@
 export * from "./JobRunner";
-export * from "./defaultWorkflowManifest";
 export {
   JobStatus,
   JobResult,

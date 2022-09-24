@@ -28,6 +28,7 @@ export const DeployManifestSchemaFiles: Record<string, string> = {
   // NOTE: Patch fix for backwards compatability
   "0.1": "formats/polywrap.deploy/0.1.0.json",
   "0.1.0": "formats/polywrap.deploy/0.1.0.json",
+  "0.2.0": "formats/polywrap.deploy/0.2.0.json",
 }
 
 export type AnyDeployManifest =

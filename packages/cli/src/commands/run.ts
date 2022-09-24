@@ -13,6 +13,8 @@ import {
   validateOutput,
   ValidationResult,
   WorkflowOutput,
+  defaultWorkflowManifest,
+  parseManifestFileOption,
 } from "../lib";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -29,6 +31,8 @@ type WorkflowCommandOptions = {
   quiet?: boolean;
 };
 
+const defaultManifestStr = defaultWorkflowManifest.join(" | ");
+
 export const run: Command = {
   setup: (program: Program) => {
     program
@@ -36,9 +40,10 @@ export const run: Command = {
       .alias("r")
       .description(intlMsg.commands_run_description())
       .option(
-        `-m, --manifest  <${intlMsg.commands_run_options_manifest()}>`,
-        intlMsg.commands_run_manifestPathDescription(),
-        "polywrap.test.yaml"
+        `-m, --manifest  <${intlMsg.commands_run_options_manifest_path()}>`,
+        intlMsg.commands_run_options_manifest({
+          default: defaultManifestStr,
+        })
       )
       .option(
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
@@ -56,6 +61,10 @@ export const run: Command = {
       .action(async (options) => {
         await _run({
           ...options,
+          manifest: parseManifestFileOption(
+            options.manifest,
+            defaultWorkflowManifest
+          ),
           clientConfig: await parseClientConfigOption(options.clientConfig),
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile)

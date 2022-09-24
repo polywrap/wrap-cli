@@ -35,8 +35,9 @@ const DEFAULT_MODULES_PATH = path.join(
   "infra-modules"
 );
 
+const defaultManifestStr = defaultInfraManifest.join(" | ");
+const pathStr = intlMsg.commands_infra_options_manifest_path();
 const moduleNameStr = intlMsg.commands_infra_moduleName();
-const manifestNameStr = intlMsg.commands_infra_options_manifest();
 
 const argumentsDescription = `
   ${intlMsg.commands_infra_actions_subtitle()}
@@ -65,9 +66,10 @@ export const infra: Command = {
       )
       .showHelpAfterError(true)
       .option(
-        `--manifest  <${manifestNameStr}>`,
-        intlMsg.commands_infra_manifestPathDescription(),
-        defaultInfraManifest[0]
+        `--manifest  <${pathStr}>`,
+        intlMsg.commands_infra_options_manifest({
+          default: defaultManifestStr,
+        })
       )
       .option(
         `-m, --modules <${moduleNameStr},${moduleNameStr}>`,
