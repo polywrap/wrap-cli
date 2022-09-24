@@ -12,6 +12,7 @@ import {
   isPolywrapManifestLanguage,
   maybeGetManifestFormatVersion,
   parseManifestFileOption,
+  CacheDirectory,
 } from "../lib";
 import {
   getYamlishSchemaForManifestJsonSchemaObject,
@@ -23,7 +24,6 @@ import {
   migratePluginProjectManifest,
   migratePolywrapProjectManifest,
   migrateWorkflow,
-  preserveOldManifest,
 } from "../lib/manifest";
 import { defaultProjectManifestFiles } from "../lib/option-defaults";
 
@@ -436,9 +436,12 @@ function migrateManifestFile(
   migrationFn: (input: string) => string,
   version: string
 ): void {
+  const manifestFileName = path.basename(manifestFile);
+  const manifestFileDir = path.dirname(manifestFile);
+
   console.log(
     intlMsg.commands_manifest_command_m_migrateManifestMessage({
-      manifestFile: path.basename(manifestFile),
+      manifestFile: manifestFileName,
       version: version,
     })
   );
@@ -449,11 +452,19 @@ function migrateManifestFile(
 
   const outputManifestString = migrationFn(manifestString);
 
-  const oldManifestPath = preserveOldManifest(manifestFile);
+  // Cache the old manifest file
+  const cache = new CacheDirectory({
+    rootDir: manifestFileDir,
+    subDir: "manifest"
+  });
+  cache.writeCacheFile(
+    manifestFileName,
+    fs.readFileSync(manifestFile, "utf-8")
+  );
 
   console.log(
     intlMsg.commands_manifest_command_m_preserveManifestMessage({
-      preservedFilePath: oldManifestPath,
+      preservedFilePath: path.relative(manifestFileDir, cache.getCachePath(manifestFileName)),
     })
   );
 
