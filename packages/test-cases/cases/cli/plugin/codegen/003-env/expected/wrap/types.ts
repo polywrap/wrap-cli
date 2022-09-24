@@ -7,7 +7,7 @@ import * as Types from "./";
 // @ts-ignore
 import {
   Client,
-  InvokeResult
+  Result
 } from "@polywrap/core-js";
 
 export type UInt = number;

@@ -4,7 +4,7 @@ import * as Types from "./";
 // @ts-ignore
 import {
   Client,
-  InvokeResult
+  Result
 } from "@polywrap/core-js";
 
 export type UInt = number;
@@ -170,7 +170,7 @@ export const TestImport_Module = {
     args: TestImport_Module_Args_importedMethod,
     client: Client,
     uri: string = "testimport.uri.eth"
-  ): Promise<InvokeResult<Types.TestImport_Object | null>> => {
+  ): Promise<Result<Types.TestImport_Object | null, Error>> => {
     return client.invoke<Types.TestImport_Object | null>({
       uri,
       method: "importedMethod",
@@ -182,7 +182,7 @@ export const TestImport_Module = {
     args: TestImport_Module_Args_anotherMethod,
     client: Client,
     uri: string = "testimport.uri.eth"
-  ): Promise<InvokeResult<Types.Int32>> => {
+  ): Promise<Result<Types.Int32, Error>> => {
     return client.invoke<Types.Int32>({
       uri,
       method: "anotherMethod",
