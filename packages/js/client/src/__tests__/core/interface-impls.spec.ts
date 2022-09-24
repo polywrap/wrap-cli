@@ -1,7 +1,7 @@
 import { coreInterfaceUris, Uri, PolywrapClient } from "../..";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { buildUriResolver } from "@polywrap/uri-resolvers-js";
-import { mockPluginRegistration } from "../utils/mockPluginRegistration";
+import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
 
 jest.setTimeout(200000);
 

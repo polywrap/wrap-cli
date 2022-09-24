@@ -9,7 +9,7 @@ import {
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { PolywrapClient } from "../../PolywrapClient";
 import { buildUriResolver } from "@polywrap/uri-resolvers-js";
-import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
+import { getClientWithEnsAndIpfs } from "../helpers/getClientWithEnsAndIpfs";
 
 jest.setTimeout(200000);
 
@@ -259,10 +259,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runSimpleStorageTest(
-      await getClientWithEnsAndIpfs(),
-      wrapperUri
-    );
+    await TestCases.runSimpleStorageTest(getClientWithEnsAndIpfs(), wrapperUri);
   });
 
   it("simple env", async () => {

@@ -6,17 +6,17 @@ import {
   IUriResolutionStep,
   UriPackageOrWrapper,
   UriResolutionContext,
-  UriResolutionResult,
 } from "@polywrap/core-js";
 import {
   buildCleanUriHistory,
   buildUriResolver,
   getUriResolutionPath,
+  UriResolutionResult,
 } from "@polywrap/uri-resolvers-js";
 import fs from "fs";
 import { Result } from "@polywrap/result";
 import { PolywrapClient } from "../../../PolywrapClient";
-import { mockPluginRegistration } from "../../utils/mockPluginRegistration";
+import { mockPluginRegistration } from "../../helpers/mockPluginRegistration";
 
 jest.setTimeout(200000);
 

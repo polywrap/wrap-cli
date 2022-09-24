@@ -7,7 +7,7 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { makeMemoryStoragePlugin } from "../e2e/memory-storage";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import { buildUriResolver } from "@polywrap/uri-resolvers-js";
-import { mockPluginRegistration } from "../utils/mockPluginRegistration";
+import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
 
 jest.setTimeout(200000);
 

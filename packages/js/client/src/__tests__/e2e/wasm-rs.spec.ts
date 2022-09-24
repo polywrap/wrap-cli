@@ -6,8 +6,8 @@ import {
   stopTestEnvironment,
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { getClient } from "../utils/getClient";
-import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
+import { getClient } from "../helpers/getClient";
+import { getClientWithEnsAndIpfs } from "../helpers/getClientWithEnsAndIpfs";
 import fse from "fs-extra";
 import path from "path";
 import { execSync } from "child_process";
@@ -190,10 +190,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runSimpleStorageTest(
-      await getClientWithEnsAndIpfs(),
-      wrapperUri
-    );
+    await TestCases.runSimpleStorageTest(getClientWithEnsAndIpfs(), wrapperUri);
   });
 
   it("simple env", async () => {
