@@ -176,8 +176,13 @@ export const createImports = (config: {
       __wrap_getImplementations: (uriPtr: u32, uriLen: u32): boolean => {
         const uri = readString(memory.buffer, uriPtr, uriLen);
         const result = client.getImplementations(uri, {});
-        state.getImplementationsResult = msgpackEncode(result);
-        return result.length > 0;
+        if (!result.ok) {
+          abort(result.error?.message as string);
+          return false;
+        }
+        const implementations = result.value;
+        state.getImplementationsResult = msgpackEncode(implementations);
+        return implementations.length > 0;
       },
       __wrap_getImplementations_result_len: (): u32 => {
         if (!state.getImplementationsResult) {

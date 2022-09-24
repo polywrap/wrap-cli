@@ -280,7 +280,7 @@ export async function buildAndDeployWrapper({
     ],
   });
 
-  const { data: signerAddress } = await client.invoke<string>({
+  const signerAddress = await client.invoke<string>({
     method: "getSignerAddress",
     uri: ethereumPluginUri,
     args: {
@@ -290,16 +290,16 @@ export async function buildAndDeployWrapper({
     },
   });
 
-  if (!signerAddress) {
+  if (!signerAddress.ok) {
     throw new Error("Could not get signer");
   }
 
-  const { data: registerData, error } = await client.invoke<{ hash: string }>({
+  const registerData = await client.invoke<{ hash: string }>({
     method: "registerDomainAndSubdomainsRecursively",
     uri: ensWrapperUri,
     args: {
       domain: wrapperEns,
-      owner: signerAddress,
+      owner: signerAddress.value,
       resolverAddress: ensAddresses.resolverAddress,
       ttl: "0",
       registrarAddress: ensAddresses.registrarAddress,
@@ -310,10 +310,10 @@ export async function buildAndDeployWrapper({
     },
   });
 
-  if (!registerData) {
+  if (!registerData.ok) {
     throw new Error(
       `Could not register domain '${wrapperEns}'` +
-        (error ? `\nError: ${error.message}` : "")
+        (registerData.error ? `\nError: ${registerData.error.message}` : "")
     );
   }
 
@@ -321,7 +321,7 @@ export async function buildAndDeployWrapper({
     method: "awaitTransaction",
     uri: ethereumPluginUri,
     args: {
-      txHash: registerData.hash,
+      txHash: registerData.value.hash,
       confirmations: 1,
       timeout: 15000,
       connection: {

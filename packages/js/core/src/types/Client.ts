@@ -13,6 +13,7 @@ import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { Result } from "@polywrap/result";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
@@ -81,15 +82,15 @@ export interface Client
   getManifest<TUri extends Uri | string>(
     uri: TUri,
     options: GetManifestOptions
-  ): Promise<WrapManifest>;
+  ): Promise<Result<WrapManifest, Error>>;
 
   getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<string | Uint8Array>;
+  ): Promise<Result<string | Uint8Array, Error>>;
 
   getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions
-  ): TUri[];
+  ): Result<TUri[], Error>;
 }

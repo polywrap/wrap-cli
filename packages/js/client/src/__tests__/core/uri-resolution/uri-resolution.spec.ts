@@ -1,7 +1,7 @@
-import { Uri } from "../../../../";
 import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
+  Uri,
   coreInterfaceUris,
   IUriResolutionStep,
   PluginModule,
