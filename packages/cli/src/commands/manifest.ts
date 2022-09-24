@@ -86,7 +86,7 @@ export const manifest: Command = {
     const manifestCommand = program
       .command("manifest")
       .alias("m")
-      .description("Manifest commands");
+      .description(intlMsg.commands_manifest_description());
 
     manifestCommand
       .command("schema")

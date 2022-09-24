@@ -9,7 +9,7 @@ import { runCLI } from "@polywrap/test-env-js";
 
 const HELP = `Usage: polywrap manifest|m [options] [command]
 
-Manifest commands
+Inspect & Migrade Polywrap Manifests
 
 Options:
   -h, --help                  display help for command
