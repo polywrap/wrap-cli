@@ -1,4 +1,10 @@
-import { intlMsg, Infra, loadInfraManifest } from "../lib";
+import {
+  intlMsg,
+  Infra,
+  loadInfraManifest,
+  defaultInfraManifest,
+  resolvePathIfExists,
+} from "../lib";
 import { Command, Program } from "./types";
 
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -30,8 +36,9 @@ const DEFAULT_MODULES_PATH = path.join(
   "infra-modules"
 );
 
-const moduleNameStr = intlMsg.commands_infra_moduleName();
-const manifestNameStr = intlMsg.commands_infra_options_manifest();
+const defaultManifestStr = defaultInfraManifest.join(" | ");
+const pathStr = intlMsg.commands_infra_options_m_path();
+const moduleNameStr = intlMsg.commands_infra_options_o_module();
 
 const argumentsDescription = `
   ${intlMsg.commands_infra_actions_subtitle()}
@@ -60,24 +67,38 @@ export const infra: Command = {
       )
       .showHelpAfterError(true)
       .option(
-        `--manifest  <${manifestNameStr}>`,
-        intlMsg.commands_infra_manifestPathDescription(),
-        "polywrap.infra.yaml"
+        `-m, --manifest-file  <${pathStr}>`,
+        intlMsg.commands_infra_options_m({
+          default: defaultManifestStr,
+        })
       )
       .option(
-        `-m, --modules <${moduleNameStr},${moduleNameStr}>`,
-        intlMsg.commands_infra_options_m()
+        `-o, --modules <${moduleNameStr},${moduleNameStr}>`,
+        intlMsg.commands_infra_options_o()
       )
       .option("-v, --verbose", intlMsg.commands_infra_options_v())
       .action(async (action, options) => {
-        await run(action, options);
+        await run(action, {
+          ...options,
+          manifest: options.manifestFile
+            ? [options.manifestFile]
+            : defaultInfraManifest,
+        });
       });
   },
 };
 
+const tip = `Tip: If no infra manifest is specified, a default module should be specified using the '--modules' option.
+
+Default Modules: \n${readdirSync(DEFAULT_MODULES_PATH)
+  .map((m) => `\n- ${m}`)
+  .join("")}
+
+Example: 'polywrap infra up --modules=eth-ens-ipfs'.`;
+
 async function run(
   action: InfraActions,
-  options: InfraCommandOptions
+  options: InfraCommandOptions & { manifest: string[] }
 ): Promise<void> {
   const { modules, verbose, manifest } = options;
   // eslint-disable-next-line prefer-const
@@ -86,30 +107,26 @@ async function run(
     modulesArray = modules.split(",").map((m: string) => m.trim());
   }
 
-  const manifestPath = path.resolve(manifest);
+  const manifestPath = resolvePathIfExists(manifest);
 
   let infraManifest: InfraManifest | undefined;
 
-  try {
-    infraManifest = await loadInfraManifest(manifestPath, !verbose);
-  } catch (e) {
-    if (!modulesArray.length) {
-      throw new Error(
-        `${e.message}
-
-Tip: If no infra manifest is specified, a default module should be specified using the '--modules' option.
-
-Default Modules: \n${readdirSync(DEFAULT_MODULES_PATH)
-          .map((m) => `\n- ${m}`)
-          .join("")}
-
-Example: 'polywrap infra up --modules=eth-ens-ipfs'.`
-      );
+  if (manifestPath) {
+    try {
+      infraManifest = await loadInfraManifest(manifestPath, !verbose);
+    } catch (e) {
+      if (!modulesArray.length) {
+        throw new Error(`${e.message}\n\n${tip}`);
+      } else {
+        throw new Error(e.message);
+      }
     }
+  } else if (!modulesArray.length) {
+    throw new Error(tip);
   }
 
   const infra = new Infra({
-    rootDir: path.dirname(manifestPath),
+    rootDir: manifestPath ? path.dirname(manifestPath) : process.cwd(),
     modulesToUse: modulesArray,
     infraManifest,
     defaultInfraModulesPath: DEFAULT_MODULES_PATH,

@@ -71,6 +71,8 @@
     "ipfs-http-client": "48.1.3",
     "js-yaml": "3.14.0",
     "jsonschema": "1.4.0",
+    "json-schema-ref-parser": "9.0.9",
+    "json-schema": "0.4.0",
     "mustache": "4.0.1",
     "ora": "4.0.0",
     "os-locale": "5.0.0",
