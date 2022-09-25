@@ -3,13 +3,13 @@ import { useStateReducer } from "./state";
 
 import {
   InvokeOptions,
-  InvokeResult,
+  Result,
   isBuffer
 } from "@polywrap/core-js";
 
-export interface UsePolywrapInvokeState<
-  TData = unknown
-> extends InvokeResult<TData> {
+export interface UsePolywrapInvokeState<TData = unknown> {
+  data?: TData;
+  error?: Error
   loading: boolean;
 }
 
@@ -32,7 +32,7 @@ export interface UsePolywrapInvoke<
 > extends UsePolywrapInvokeState<TData> {
   execute: (
     args?: Record<string, unknown> | Uint8Array
-  ) => Promise<InvokeResult<TData>>;
+  ) => Promise<Result<TData, Error>>;
 }
 
 export function usePolywrapInvoke<
@@ -48,15 +48,19 @@ export function usePolywrapInvoke<
 
   const execute = async (args?: Record<string, unknown> | Uint8Array) => {
     dispatch({ loading: true });
-    const { data, error } = await client.invoke<TData>({
+    const result = await client.invoke<TData>({
       ...props,
       args: isBuffer(args) ? args : {
         ...props.args,
         ...args,
       },
     });
-    dispatch({ data, error, loading: false });
-    return { data, error };
+    if (result.ok) {
+      dispatch({ data: result.value, loading: false });
+    } else {
+      dispatch({ error: result.error, loading: false });
+    }
+    return result;
   };
 
   return {
