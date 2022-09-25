@@ -70,6 +70,6 @@ export class FileSystemPlugin extends Module<NoConfig> {
   }
 }
 export const fileSystemPlugin: PluginFactory<NoConfig> = () =>
-  new PluginPackage(manifest, new FileSystemPlugin({}));
+  new PluginPackage(new FileSystemPlugin({}), manifest);
 
 export const plugin = fileSystemPlugin;

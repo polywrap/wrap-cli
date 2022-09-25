@@ -415,6 +415,6 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
 export const ethereumPlugin: PluginFactory<EthereumPluginConfig> = (
   config: EthereumPluginConfig
-) => new PluginPackage(manifest, new EthereumPlugin(config));
+) => new PluginPackage(new EthereumPlugin(config), manifest);
 
 export const plugin = ethereumPlugin;

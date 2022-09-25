@@ -66,4 +66,4 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
 }
 
 export const fileSystemResolverPlugin: PluginFactory<NoConfig> = () =>
-  new PluginPackage(manifest, new FileSystemResolverPlugin({}));
+  new PluginPackage(new FileSystemResolverPlugin({}), manifest);

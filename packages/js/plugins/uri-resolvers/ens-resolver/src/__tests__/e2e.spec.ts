@@ -1,17 +1,13 @@
 import { PolywrapClient } from "@polywrap/client-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
   buildAndDeployWrapper,
-  ensAddresses,
   initTestEnvironment,
   providers,
-  stopTestEnvironment
+  stopTestEnvironment,
 } from "@polywrap/test-env-js";
 
-import { ensResolverPlugin } from "..";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
+import { getClient } from "./helpers/getClient";
 
 jest.setTimeout(300000);
 
@@ -28,43 +24,12 @@ describe("ENS Resolver Plugin", () => {
       wrapperAbsPath: wrapperAbsPath,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
-      ensName: "cool.wrapper.eth"
+      ensName: "cool.wrapper.eth",
     });
 
     wrapperEnsDomain = ensDomain;
 
-    client = new PolywrapClient({
-      plugins: [
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({
-            provider: providers.ipfs,
-            fallbackProviders: defaultIpfsProviders
-          })
-        },
-        {
-          uri: "wrap://ens/ethereum.polywrap.eth",
-          plugin: ethereumPlugin({
-            connections: new Connections({
-              networks: {
-                testnet: new Connection({
-                  provider: providers.ethereum
-                }),
-              },
-              defaultNetwork: "testnet"
-            })
-          })
-        },
-        {
-          uri: "wrap://ens/ens-resolver.polywrap.eth",
-          plugin: ensResolverPlugin({
-            addresses: {
-              testnet: ensAddresses.ensAddress
-            }
-          })
-        }
-      ]
-    });
+    client = getClient();
   });
 
   afterAll(async () => {

@@ -36,6 +36,6 @@ export class HttpPlugin extends Module<NoConfig> {
 }
 
 export const httpPlugin: PluginFactory<NoConfig> = () =>
-  new PluginPackage(manifest, new HttpPlugin({}));
+  new PluginPackage(new HttpPlugin({}), manifest);
 
 export const plugin = httpPlugin;

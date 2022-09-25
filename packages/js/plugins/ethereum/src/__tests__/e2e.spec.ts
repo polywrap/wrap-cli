@@ -1,10 +1,6 @@
-import { ethereumPlugin } from "..";
 import * as Schema from "../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
-import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -18,6 +14,7 @@ import { ethers } from "ethers";
 import { keccak256 } from "js-sha3";
 import { Connections } from "../Connections";
 import { Connection } from "../Connection";
+import { getClient } from "./helpers/getClient";
 
 const { hash: namehash } = require("eth-ens-namehash");
 const contracts = {
@@ -62,29 +59,7 @@ describe("Ethereum Plugin", () => {
       defaultNetwork: "testnet",
     });
 
-    client = new PolywrapClient({
-      plugins: [
-        {
-          uri: "wrap://ens/ethereum.polywrap.eth",
-          plugin: ethereumPlugin({ connections }),
-        },
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({
-            provider: providers.ipfs,
-            fallbackProviders: defaultIpfsProviders,
-          }),
-        },
-        {
-          uri: "wrap://ens/ens-resolver.polywrap.eth",
-          plugin: ensResolverPlugin({
-            addresses: {
-              testnet: ensAddress,
-            },
-          }),
-        },
-      ],
-    });
+    client = getClient(connections);
 
     await buildWrapper(wrapperPath);
   });
@@ -590,9 +565,9 @@ describe("Ethereum Plugin", () => {
         method: "getNetwork",
         args: {
           connection: {
-            networkNameOrChainId: "mainnet"
-          }
-        }
+            networkNameOrChainId: "mainnet",
+          },
+        },
       });
 
       expect(mainnetNetwork.data).toBeTruthy();
@@ -609,9 +584,9 @@ describe("Ethereum Plugin", () => {
         method: "getNetwork",
         args: {
           connection: {
-            node: "https://polygon-rpc.com"
-          }
-        }
+            node: "https://polygon-rpc.com",
+          },
+        },
       });
 
       expect(polygonNetwork.data).toBeTruthy();
@@ -676,11 +651,13 @@ describe("Ethereum Plugin", () => {
       const { error } = await client.invoke<string[]>({
         uri,
         method: "requestAccounts",
-      })
+      });
 
       // eth_requestAccounts is not supported by Ganache
       // this RPC error indicates that the method call was attempted
-      expect(error?.message.indexOf("Method eth_requestAccounts not supported")).toBeGreaterThanOrEqual(0);
+      expect(
+        error?.message.indexOf("Method eth_requestAccounts not supported")
+      ).toBeGreaterThanOrEqual(0);
 
       // expect(error).toBeFalsy();
       // expect(data).toBeTruthy();
@@ -695,16 +672,16 @@ describe("Ethereum Plugin", () => {
         uri,
         method: "callContractMethod",
         args: {
-          address: registrarAddress, 
-          method: "function register(bytes32 label, address owner)", 
-          args: [label, signer],               
+          address: registrarAddress,
+          method: "function register(bytes32 label, address owner)",
+          args: [label, signer],
           txOverrides: {
             value: null,
             nonce: null,
             gasPrice: "50",
-            gasLimit: "200000"
-          }
-        }
+            gasLimit: "200000",
+          },
+        },
       });
 
       expect(response.error).toBeUndefined();
@@ -717,16 +694,16 @@ describe("Ethereum Plugin", () => {
         uri,
         method: "callContractMethodAndWait",
         args: {
-          address: registrarAddress, 
-          method: "function register(bytes32 label, address owner)", 
+          address: registrarAddress,
+          method: "function register(bytes32 label, address owner)",
           args: [label, signer],
           txOverrides: {
             value: null,
             nonce: null,
             gasPrice: "50",
-            gasLimit: "200000"
-          }
-        }
+            gasLimit: "200000",
+          },
+        },
       });
 
       expect(response.error).toBeUndefined();
@@ -738,8 +715,8 @@ describe("Ethereum Plugin", () => {
         uri,
         method: "sendTransaction",
         args: {
-          tx: { data: contracts.SimpleStorage.bytecode }
-        }
+          tx: { data: contracts.SimpleStorage.bytecode },
+        },
       });
 
       expect(response.error).toBeUndefined();
@@ -752,15 +729,13 @@ describe("Ethereum Plugin", () => {
         uri,
         method: "sendTransactionAndWait",
         args: {
-          tx: { data: contracts.SimpleStorage.bytecode }
-        }
+          tx: { data: contracts.SimpleStorage.bytecode },
+        },
       });
 
       expect(response.error).toBeUndefined();
       expect(response.data).toBeDefined();
-      expect(
-        response.data?.transactionHash
-      ).toBeDefined();
+      expect(response.data?.transactionHash).toBeDefined();
     });
 
     it("deployContract", async () => {
@@ -769,8 +744,8 @@ describe("Ethereum Plugin", () => {
         method: "deployContract",
         args: {
           abi: JSON.stringify(contracts.SimpleStorage.abi),
-          bytecode: contracts.SimpleStorage.bytecode
-        }
+          bytecode: contracts.SimpleStorage.bytecode,
+        },
       });
 
       expect(response.error).toBeUndefined();
@@ -783,8 +758,8 @@ describe("Ethereum Plugin", () => {
         uri,
         method: "signMessage",
         args: {
-          message: "Hello World"
-        }
+          message: "Hello World",
+        },
       });
 
       expect(response.error).toBeUndefined();
@@ -798,8 +773,9 @@ describe("Ethereum Plugin", () => {
         uri,
         method: "sendRPC",
         args: {
-          method: "eth_blockNumber", params: []
-        }
+          method: "eth_blockNumber",
+          params: [],
+        },
       });
 
       expect(res.error).toBeUndefined();
@@ -814,8 +790,8 @@ describe("Ethereum Plugin", () => {
         method: "deployContract",
         args: {
           abi: JSON.stringify(contracts.StructArg.abi),
-          bytecode: contracts.StructArg.bytecode
-        }
+          bytecode: contracts.StructArg.bytecode,
+        },
       });
 
       expect(response1.error).toBeUndefined();
@@ -834,16 +810,15 @@ describe("Ethereum Plugin", () => {
         method: "callContractMethodAndWait",
         args: {
           address: address,
-          method: "function method(tuple(string str, uint256 unsigned256, uint256[] unsigned256Array) _arg) returns (string, uint256)",
-          args: [structArg]
-        }
+          method:
+            "function method(tuple(string str, uint256 unsigned256, uint256[] unsigned256Array) _arg) returns (string, uint256)",
+          args: [structArg],
+        },
       });
 
       expect(response2.error).toBeUndefined();
       expect(response2.data).toBeDefined();
-      expect(
-        response2.data?.transactionHash
-      ).toBeDefined();
+      expect(response2.data?.transactionHash).toBeDefined();
     });
   });
 });

@@ -1,9 +1,7 @@
 import { PolywrapClient } from "@polywrap/client-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { buildAndDeployWrapper, initTestEnvironment, providers, stopTestEnvironment } from "@polywrap/test-env-js";
-
-import { ipfsResolverPlugin } from "..";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
+import { getClientWithIpfs } from "./helpers/getClientWithIpfs";
 
 jest.setTimeout(300000);
 
@@ -19,25 +17,12 @@ describe("IPFS Plugin", () => {
       wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
-      ensName: "cool.wrapper.eth"
+      ensName: "cool.wrapper.eth",
     });
 
     wrapperIpfsCid = ipfsCid;
 
-    client = new PolywrapClient({
-      plugins: [
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({
-            provider: providers.ipfs
-          })
-        },
-        {
-          uri: "wrap://ens/ipfs-uri-resolver.polywrap.eth",
-          plugin: ipfsResolverPlugin({})
-        }
-      ]
-    });
+    client = getClientWithIpfs();
   });
 
   afterAll(async () => {

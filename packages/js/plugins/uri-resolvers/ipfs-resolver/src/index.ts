@@ -104,6 +104,6 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
 }
 
 export const ipfsResolverPlugin: PluginFactory<NoConfig> = () =>
-  new PluginPackage(manifest, new IpfsResolverPlugin({}));
+  new PluginPackage(new IpfsResolverPlugin({}), manifest);
 
 export const plugin = ipfsResolverPlugin;

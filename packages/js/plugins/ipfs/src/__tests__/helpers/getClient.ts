@@ -8,7 +8,7 @@ import {
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 
-export const getClientIpfs = (): PolywrapClient => {
+export const getClient = (): PolywrapClient => {
   return new PolywrapClient(
     {
       resolver: new RecursiveResolver(

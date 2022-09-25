@@ -1,5 +1,6 @@
 import { fileSystemPlugin } from "../index";
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
+import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import { FileSystem_Module, FileSystem_EncodingEnum } from "../wrap";
 import fs from "fs";
 import path from "path";
@@ -25,16 +26,14 @@ describe("FileSystem plugin", () => {
   beforeAll(async () => {
     await cleanUpTempFiles();
 
-    const config: Partial<PolywrapClientConfig> = {
-      plugins: [
+    client = new PolywrapClient({
+      resolver: buildUriResolver([
         {
           uri: "wrap://ens/fs.polywrap.eth",
-          plugin: fileSystemPlugin({ }),
+          package: fileSystemPlugin({}),
         },
-      ],
-    };
-
-    client = new PolywrapClient(config);
+      ]),
+    });
   });
 
   afterEach(async () => {

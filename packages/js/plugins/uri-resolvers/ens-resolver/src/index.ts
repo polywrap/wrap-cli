@@ -201,6 +201,6 @@ export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
 
 export const ensResolverPlugin: PluginFactory<EnsResolverPluginConfig> = (
   config: EnsResolverPluginConfig
-) => new PluginPackage(manifest, new EnsResolverPlugin(config));
+) => new PluginPackage(new EnsResolverPlugin(config), manifest);
 
 export const plugin = ensResolverPlugin;

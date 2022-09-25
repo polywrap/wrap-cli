@@ -24,6 +24,7 @@
     "@polywrap/plugin-js": "0.7.0"
   },
   "devDependencies": {
+    "@polywrap/uri-resolvers-js": "0.7.0",
     "@polywrap/client-js": "0.7.0",
     "@polywrap/test-env-js": "0.7.0",
     "@types/jest": "26.0.8",

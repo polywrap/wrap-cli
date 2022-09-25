@@ -7,7 +7,7 @@ import {
 import { IpfsClient, IpfsFileInfo } from "../utils/IpfsClient";
 import { Ipfs_Module } from "../wrap";
 import { Client } from "@polywrap/core-js";
-import { getClientIpfs } from "./utils/getClientIpfs";
+import { getClient } from "./helpers/getClient";
 
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
@@ -25,7 +25,7 @@ describe("IPFS Plugin", () => {
     await initTestEnvironment();
     ipfs = createIpfsClient(providers.ipfs);
 
-    client = getClientIpfs();
+    client = getClient();
 
     let ipfsAddResult = await ipfs.add(sampleFileBuffer);
     sampleFileIpfsInfo = ipfsAddResult[0];

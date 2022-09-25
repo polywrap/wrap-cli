@@ -154,6 +154,6 @@ export class WsPlugin extends Module<NoConfig> {
 }
 
 export const wsPlugin: PluginFactory<NoConfig> = () =>
-  new PluginPackage(manifest, new WsPlugin({}));
+  new PluginPackage(new WsPlugin({}), manifest);
 
 export const plugin = wsPlugin;
