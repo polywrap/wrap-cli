@@ -214,7 +214,7 @@ describe("wasm-wrapper", () => {
     });
 
     pluginGetFileResult = pluginGetFileResult as ErrResult;
-    expect(pluginGetFileResult.error).toContain("client.getFile(...) is not implemented for Plugins.");
+    expect(pluginGetFileResult.error?.message).toContain("client.getFile(...) is not implemented for Plugins.");
   });
 
   test("subscribe", async () => {
