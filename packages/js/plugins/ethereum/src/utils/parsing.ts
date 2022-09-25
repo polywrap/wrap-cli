@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export function parseArgs(args?: string[] | null): unknown[] {
   if (!args) {
     return [];
