@@ -455,7 +455,7 @@ function migrateManifestFile(
   // Cache the old manifest file
   const cache = new CacheDirectory({
     rootDir: manifestFileDir,
-    subDir: "manifest"
+    subDir: "manifest",
   });
   cache.writeCacheFile(
     manifestFileName,
@@ -464,7 +464,10 @@ function migrateManifestFile(
 
   console.log(
     intlMsg.commands_manifest_command_m_preserveManifestMessage({
-      preservedFilePath: path.relative(manifestFileDir, cache.getCachePath(manifestFileName)),
+      preservedFilePath: path.relative(
+        manifestFileDir,
+        cache.getCachePath(manifestFileName)
+      ),
     })
   );
 

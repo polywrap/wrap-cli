@@ -3,7 +3,7 @@ import {
   Infra,
   loadInfraManifest,
   defaultInfraManifest,
-  resolvePathIfExists
+  resolvePathIfExists,
 } from "../lib";
 import { Command, Program } from "./types";
 
@@ -80,10 +80,9 @@ export const infra: Command = {
       .action(async (action, options) => {
         await run(action, {
           ...options,
-          manifest:
-            options.manifestFile ?
-            [options.manifestFile] :
-            defaultInfraManifest
+          manifest: options.manifestFile
+            ? [options.manifestFile]
+            : defaultInfraManifest,
         });
       });
   },
@@ -92,8 +91,8 @@ export const infra: Command = {
 const tip = `Tip: If no infra manifest is specified, a default module should be specified using the '--modules' option.
 
 Default Modules: \n${readdirSync(DEFAULT_MODULES_PATH)
-          .map((m) => `\n- ${m}`)
-          .join("")}
+  .map((m) => `\n- ${m}`)
+  .join("")}
 
 Example: 'polywrap infra up --modules=eth-ens-ipfs'.`;
 
@@ -117,9 +116,7 @@ async function run(
       infraManifest = await loadInfraManifest(manifestPath, !verbose);
     } catch (e) {
       if (!modulesArray.length) {
-        throw new Error(
-          `${e.message}\n\n${tip}`
-        );
+        throw new Error(`${e.message}\n\n${tip}`);
       } else {
         throw new Error(e.message);
       }
