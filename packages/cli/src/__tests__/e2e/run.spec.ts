@@ -14,8 +14,9 @@ const HELP = `Usage: polywrap run|r [options]
 Runs Workflows
 
 Options:
-  -m, --manifest  <manifest>            Workflow Manifest path (default:
-                                        "polywrap.test.yaml")
+  -m, --manifest-file  <path>           Path to the Polywrap Workflow manifest
+                                        file (default: polywrap.test.yaml |
+                                        polywrap.test.yml)
   -c, --client-config <config-path>     Add custom configuration to the
                                         PolywrapClient
   -o, --output-file <output-file-path>  Output file path for the workflow

@@ -247,6 +247,11 @@ export async function loadMetaManifest(
   }
 }
 
+export const defaultInfraManifest = [
+  "polywrap.infra.yaml",
+  "polywrap.infra.yml",
+];
+
 export async function loadInfraManifest(
   manifestPath: string,
   quiet = false
@@ -286,6 +291,11 @@ export async function loadInfraManifest(
     )) as InfraManifest;
   }
 }
+
+export const defaultWorkflowManifest = [
+  "polywrap.test.yaml",
+  "polywrap.test.yml",
+];
 
 export async function loadWorkflowManifest(
   manifestPath: string,

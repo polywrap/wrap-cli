@@ -1,26 +1,11 @@
 import { intlMsg } from "../intl";
-import {
-  defaultPolywrapManifest,
-  defaultAppManifest,
-  defaultPluginManifest,
-} from "..";
 import { resolvePathIfExists } from "../system";
 
-const filterUniqueFn = (value: string, index: number, self: Array<string>) =>
-  self.indexOf(value) === index;
-
 export function parseManifestFileOption(
-  manifestFile: string | undefined
+  manifestFile: string | undefined,
+  defaults: string[]
 ): string {
-  const defaultManifests = [
-    ...defaultPolywrapManifest,
-    ...defaultAppManifest,
-    ...defaultPluginManifest,
-  ].filter(filterUniqueFn);
-
-  const manifestPaths = manifestFile
-    ? [manifestFile as string]
-    : defaultManifests;
+  const manifestPaths = manifestFile ? [manifestFile as string] : defaults;
 
   manifestFile = resolvePathIfExists(manifestPaths);
 

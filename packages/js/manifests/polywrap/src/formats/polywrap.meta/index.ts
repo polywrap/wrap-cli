@@ -19,6 +19,12 @@ export enum MetaManifestFormats {
   "v0.1.0" = "0.1.0",
 }
 
+export const MetaManifestSchemaFiles: Record<string, string> = {
+  // NOTE: Patch fix for backwards compatability
+  "0.1": "formats/polywrap.meta/0.1.0.json",
+  "0.1.0": "formats/polywrap.meta/0.1.0.json",
+}
+
 export type AnyMetaManifest =
   | MetaManifest_0_1_0
 
