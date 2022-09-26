@@ -358,7 +358,7 @@ export const Ethereum_Module = {
   callContractStatic: async (
     args: Ethereum_Module_Args_callContractStatic,
     client: Client
-  ): Promise<Result<Types.Ethereum_StaticTxResult, Result>> => {
+  ): Promise<Result<Types.Ethereum_StaticTxResult, Error>> => {
     return client.invoke<Types.Ethereum_StaticTxResult>({
       uri: "ens/ethereum.polywrap.eth",
       method: "callContractStatic",

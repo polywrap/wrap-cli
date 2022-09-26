@@ -7,7 +7,7 @@ import * as Types from "./";
 // @ts-ignore
 import {
   Client,
-  InvokeResult
+  Result
 } from "@polywrap/core-js";
 
 export type UInt = number;
@@ -567,7 +567,7 @@ export const Ethereum_Module = {
   requestAccounts: async (
     args: Ethereum_Module_Args_requestAccounts,
     client: Client
-  ): Promise<InvokeResult<Array<Types.String>>> => {
+  ): Promise<Result<Array<Types.String>, Error>> => {
     return client.invoke<Array<Types.String>>({
       uri: "ens/ethereum.polywrap.eth",
       method: "requestAccounts",
@@ -644,7 +644,7 @@ export const Ethereum_Module = {
   sendRPC: async (
     args: Ethereum_Module_Args_sendRPC,
     client: Client
-  ): Promise<InvokeResult<Types.String | null>> => {
+  ): Promise<Result<Types.String | null, Error>> => {
     return client.invoke<Types.String | null>({
       uri: "ens/ethereum.polywrap.eth",
       method: "sendRPC",

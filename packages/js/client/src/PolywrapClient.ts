@@ -667,6 +667,8 @@ export class PolywrapClient implements Client {
     if (!result.ok) {
       if (result.error && result.error instanceof Error) {
         return result as Result<Wrapper, Error>;
+      } else if (result.error && typeof result.error === "string") {
+        return ResultErr(Error(result.error));
       } else {
         const error = Error(
           `Error resolving URI "${uri.uri}"\nResolution Stack: ${JSON.stringify(
