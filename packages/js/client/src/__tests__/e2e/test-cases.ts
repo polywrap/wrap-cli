@@ -953,32 +953,29 @@ export const runSimpleEnvTest = async (
     requiredInt: 1,
   });
 
-  const getEnvNotSetResult = await client.invoke({
-    uri: wrapperUri,
-    method: "getEnv",
-    args: {
-      arg: "not set",
-    },
-    config: {
+  const noEnvClient = new PolywrapClient(
+    client.reconfigure({
       envs: [
         {
           uri: wrapperUri,
           env: {},
         },
       ],
-    },
+    }).build()
+  );
+  const getEnvNotSetResult = await noEnvClient.invoke({
+    uri: wrapperUri,
+    method: "getEnv",
+    args: {
+      arg: "not set",
+    }
   });
   expect(getEnvNotSetResult.data).toBeUndefined();
   expect(getEnvNotSetResult.error).toBeTruthy();
   expect(getEnvNotSetResult.error?.message).toContain("requiredInt: Int");
 
-  const envIncorrectResult = await client.invoke({
-    uri: wrapperUri,
-    method: "getEnv",
-    args: {
-      arg: "not set",
-    },
-    config: {
+  const envIncorrectClient = new PolywrapClient(
+    client.reconfigure({
       envs: [
         {
           uri: wrapperUri,
@@ -988,7 +985,14 @@ export const runSimpleEnvTest = async (
           },
         },
       ],
-    },
+    }).build()
+  );
+  const envIncorrectResult = await envIncorrectClient.invoke({
+    uri: wrapperUri,
+    method: "getEnv",
+    args: {
+      arg: "not set",
+    }
   });
 
   expect(envIncorrectResult.data).toBeUndefined();
@@ -1083,13 +1087,8 @@ export const runComplexEnvs = async (
     array: [32, 23],
   });
 
-  const mockUpdatedEnvResult = await client.invoke({
-    uri: wrapperUri,
-    method: "methodRequireEnv",
-    args: {
-      arg: "string",
-    },
-    config: {
+  const mockClient = new PolywrapClient(
+    client.reconfigure({
       envs: [
         {
           uri: wrapperUri,
@@ -1106,7 +1105,14 @@ export const runComplexEnvs = async (
           },
         },
       ],
-    },
+    }).build()
+  );
+  const mockUpdatedEnvResult = await mockClient.invoke({
+    uri: wrapperUri,
+    method: "methodRequireEnv",
+    args: {
+      arg: "string",
+    }
   });
   expect(mockUpdatedEnvResult.error).toBeFalsy();
   expect(mockUpdatedEnvResult.data).toEqual({

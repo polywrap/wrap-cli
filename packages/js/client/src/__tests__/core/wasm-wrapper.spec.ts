@@ -2,7 +2,7 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
-import { Uri, PluginModule, Subscription } from "../..";
+import { Uri, PluginModule, Subscription, PolywrapClient } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { getClient } from "../utils/getClient";
 import { makeMemoryStoragePlugin } from "../e2e/memory-storage";
@@ -129,7 +129,7 @@ describe("wasm-wrapper", () => {
     expect(result.data).toEqual("plugin response");
   });
 
-  it("should allow query time redirects", async () => {
+  it("should allow clone + reconfigure of redirects", async () => {
     const client = await getClient({
       plugins: [
         {
@@ -146,15 +146,16 @@ describe("wasm-wrapper", () => {
       },
     ];
 
-    const result = await client.invoke({
+    const newClient = new PolywrapClient(
+      client.reconfigure({ redirects }).build()
+    );
+
+    const result = await newClient.invoke({
       uri: simpleWrapperUri.uri,
       method: "simpleMethod",
       args: {
         arg: "test",
-      },
-      config: {
-        redirects,
-      },
+      }
     });
 
     expect(result.data).toBeTruthy();

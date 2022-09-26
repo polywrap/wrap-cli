@@ -1,15 +1,10 @@
-import { v4 as uuid } from "uuid";
 import {
   Wrapper,
   Client,
   ClientConfig,
   Env,
-  GetEnvsOptions,
   GetFileOptions,
   GetImplementationsOptions,
-  GetInterfacesOptions,
-  GetPluginsOptions,
-  GetRedirectsOptions,
   InterfaceImplementations,
   InvokeOptions,
   InvokeResult,
@@ -26,10 +21,7 @@ import {
   parseQuery,
   TryResolveUriOptions,
   IUriResolver,
-  GetUriResolverOptions,
-  Contextualized,
   GetManifestOptions,
-  GetPluginOptions,
   initWrapper,
   IWrapPackage,
   IUriResolutionContext,
@@ -62,9 +54,6 @@ export class PolywrapClient implements Client {
     envs: [],
     tracerConfig: {},
   } as unknown) as PolywrapClientConfig<Uri>;
-
-  // Invoke specific contexts
-  private _contexts: Map<string, PolywrapClientConfig<Uri>> = new Map();
 
   constructor(
     config?: Partial<PolywrapClientConfig<string | Uri>>,
@@ -109,6 +98,15 @@ export class PolywrapClient implements Client {
     }
   }
 
+  public reconfigure(
+    config: Partial<PolywrapClientConfig>
+  ): ClientConfigBuilder {
+    const builder = new ClientConfigBuilder();
+    builder.add(this._config);
+    builder.add(config);
+    return builder;
+  }
+
   public setTracingEnabled(tracerConfig?: Partial<TracerConfig>): void {
     if (tracerConfig?.consoleEnabled || tracerConfig?.httpEnabled) {
       Tracer.enableTracing("PolywrapClient", tracerConfig);
@@ -119,56 +117,45 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: getRedirects")
-  public getRedirects(
-    options: GetRedirectsOptions = {}
-  ): readonly UriRedirect<Uri>[] {
-    return this._getConfig(options.contextId).redirects;
+  public getRedirects(): readonly UriRedirect<Uri>[] {
+    return this._config.redirects;
   }
 
   @Tracer.traceMethod("PolywrapClient: getPlugins")
-  public getPlugins(
-    options: GetPluginsOptions = {}
-  ): readonly PluginRegistration<Uri>[] {
-    return this._getConfig(options.contextId).plugins;
+  public getPlugins(): readonly PluginRegistration<Uri>[] {
+    return this._config.plugins;
   }
 
   @Tracer.traceMethod("PolywrapClient: getPlugin")
   public getPluginByUri<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetPluginOptions = {}
+    uri: TUri
   ): PluginPackage<unknown> | undefined {
-    return this.getPlugins(options).find((x) =>
-      Uri.equals(x.uri, Uri.from(uri))
-    )?.plugin;
+    return this.getPlugins().find((x) => Uri.equals(x.uri, Uri.from(uri)))
+      ?.plugin;
   }
 
   @Tracer.traceMethod("PolywrapClient: getInterfaces")
-  public getInterfaces(
-    options: GetInterfacesOptions = {}
-  ): readonly InterfaceImplementations<Uri>[] {
-    return this._getConfig(options.contextId).interfaces;
+  public getInterfaces(): readonly InterfaceImplementations<Uri>[] {
+    return this._config.interfaces;
   }
 
   @Tracer.traceMethod("PolywrapClient: getEnvs")
-  public getEnvs(options: GetEnvsOptions = {}): readonly Env<Uri>[] {
-    return this._getConfig(options.contextId).envs;
+  public getEnvs(): readonly Env<Uri>[] {
+    return this._config.envs;
   }
 
   @Tracer.traceMethod("PolywrapClient: getUriResolver")
-  public getUriResolver(
-    options: GetUriResolverOptions = {}
-  ): IUriResolver<unknown> {
-    return this._getConfig(options.contextId).resolver;
+  public getUriResolver(): IUriResolver<unknown> {
+    return this._config.resolver;
   }
 
   @Tracer.traceMethod("PolywrapClient: getEnvByUri")
   public getEnvByUri<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetEnvsOptions
+    uri: TUri
   ): Env<Uri> | undefined {
     const uriUri = Uri.from(uri);
 
-    return this.getEnvs(options).find((environment) =>
+    return this.getEnvs().find((environment) =>
       Uri.equals(environment.uri, uriUri)
     );
   }
@@ -178,9 +165,8 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetManifestOptions = {}
   ): Promise<WrapManifest> {
-    const wrapper = await this._loadWrapper(Uri.from(uri), undefined, options);
-    const client = contextualizeClient(this, options.contextId);
-    return await wrapper.getManifest(options, client);
+    const wrapper = await this._loadWrapper(Uri.from(uri), undefined);
+    return await wrapper.getManifest(options, this);
   }
 
   @Tracer.traceMethod("PolywrapClient: getFile")
@@ -188,9 +174,8 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetFileOptions
   ): Promise<string | Uint8Array> {
-    const wrapper = await this._loadWrapper(Uri.from(uri), undefined, options);
-    const client = contextualizeClient(this, options.contextId);
-    return await wrapper.getFile(options, client);
+    const wrapper = await this._loadWrapper(Uri.from(uri), undefined);
+    return await wrapper.getFile(options, this);
   }
 
   @Tracer.traceMethod("PolywrapClient: getImplementations")
@@ -204,13 +189,13 @@ export class PolywrapClient implements Client {
     return isUriTypeString
       ? (getImplementations(
           Uri.from(uri),
-          this.getInterfaces(options),
-          applyRedirects ? this.getRedirects(options) : undefined
+          this.getInterfaces(),
+          applyRedirects ? this.getRedirects() : undefined
         ).map((x: Uri) => x.uri) as TUri[])
       : (getImplementations(
           Uri.from(uri),
-          this.getInterfaces(options),
-          applyRedirects ? this.getRedirects(options) : undefined
+          this.getInterfaces(),
+          applyRedirects ? this.getRedirects() : undefined
         ) as TUri[]);
   }
 
@@ -219,14 +204,7 @@ export class PolywrapClient implements Client {
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>,
     TUri extends Uri | string = string
-  >(
-    options: QueryOptions<TVariables, TUri, PolywrapClientConfig>
-  ): Promise<QueryResult<TData>> {
-    const { contextId, shouldClearContext } = this._setContext(
-      options.contextId,
-      options.config
-    );
-
+  >(options: QueryOptions<TVariables, TUri>): Promise<QueryResult<TData>> {
     let result: QueryResult<TData>;
 
     try {
@@ -255,7 +233,6 @@ export class PolywrapClient implements Client {
           this.invoke({
             ...queryInvocations[invocationName],
             uri: queryInvocations[invocationName].uri,
-            contextId,
           }).then((result) => ({
             name: invocationName,
             result,
@@ -291,9 +268,6 @@ export class PolywrapClient implements Client {
       }
     }
 
-    if (shouldClearContext) {
-      this._clearContext(contextId);
-    }
     return result;
   }
 
@@ -302,27 +276,18 @@ export class PolywrapClient implements Client {
     TData = unknown,
     TUri extends Uri | string = string
   >(
-    options: InvokerOptions<TUri, PolywrapClientConfig> & { wrapper: Wrapper }
+    options: InvokerOptions<TUri> & { wrapper: Wrapper }
   ): Promise<InvokeResult<TData>> {
-    const { contextId, shouldClearContext } = this._setContext(
-      options.contextId,
-      options.config
-    );
-
     let error: Error | undefined;
 
     try {
       const typedOptions: InvokeOptions<Uri> = {
         ...options,
-        contextId: contextId,
         uri: Uri.from(options.uri),
       };
 
       const wrapper = options.wrapper;
-      const invocableResult = await wrapper.invoke(
-        typedOptions,
-        contextualizeClient(this, contextId)
-      );
+      const invocableResult = await wrapper.invoke(typedOptions, this);
 
       if (invocableResult.data !== undefined) {
         if (options.encodeResult && !invocableResult.encoded) {
@@ -345,28 +310,18 @@ export class PolywrapClient implements Client {
       error = e;
     }
 
-    if (shouldClearContext) {
-      this._clearContext(contextId);
-    }
-
     return { error };
   }
 
   @Tracer.traceMethod("PolywrapClient: invoke")
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokerOptions<TUri, PolywrapClientConfig>
+    options: InvokerOptions<TUri>
   ): Promise<InvokeResult<TData>> {
-    const { contextId, shouldClearContext } = this._setContext(
-      options.contextId,
-      options.config
-    );
-
     let error: Error | undefined;
 
     try {
       const typedOptions: InvokeOptions<Uri> = {
         ...options,
-        contextId: contextId,
         uri: Uri.from(options.uri),
       };
 
@@ -375,18 +330,15 @@ export class PolywrapClient implements Client {
 
       const wrapper = await this._loadWrapper(
         typedOptions.uri,
-        resolutionContext,
-        { contextId }
+        resolutionContext
       );
-
-      const client = contextualizeClient(this, contextId);
 
       const env = getEnvFromUriHistory(
         resolutionContext.getResolutionPath(),
-        client
+        this
       );
 
-      return await client.invokeWrapper({
+      return await this.invokeWrapper({
         env: env?.env,
         ...typedOptions,
         wrapper,
@@ -395,30 +347,21 @@ export class PolywrapClient implements Client {
       error = e;
     }
 
-    if (shouldClearContext) {
-      this._clearContext(contextId);
-    }
-
     return { error };
   }
 
   @Tracer.traceMethod("PolywrapClient: subscribe")
   public subscribe<TData = unknown, TUri extends Uri | string = string>(
-    options: SubscribeOptions<TUri, PolywrapClientConfig>
+    options: SubscribeOptions<TUri>
   ): Subscription<TData> {
-    const { contextId, shouldClearContext } = this._setContext(
-      options.contextId,
-      options.config
-    );
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const thisClient: PolywrapClient = this;
-    const client = contextualizeClient(this, contextId);
 
     const typedOptions: SubscribeOptions<Uri> = {
       ...options,
       uri: Uri.from(options.uri),
     };
-    const { uri, method, args, config, frequency: freq } = typedOptions;
+    const { uri, method, args, frequency: freq } = typedOptions;
 
     // calculate interval between invokes, in milliseconds, 1 min default value
     /* eslint-disable prettier/prettier */
@@ -437,9 +380,6 @@ export class PolywrapClient implements Client {
       frequency: frequency,
       isActive: false,
       stop(): void {
-        if (shouldClearContext) {
-          thisClient._clearContext(contextId);
-        }
         subscription.isActive = false;
       },
       async *[Symbol.asyncIterator](): AsyncGenerator<InvokeResult<TData>> {
@@ -468,12 +408,10 @@ export class PolywrapClient implements Client {
                 break;
               }
 
-              const result: InvokeResult<TData> = await client.invoke({
+              const result: InvokeResult<TData> = await thisClient.invoke({
                 uri: uri,
                 method: method,
                 args: args,
-                config: config,
-                contextId,
               });
 
               yield result;
@@ -482,9 +420,6 @@ export class PolywrapClient implements Client {
         } finally {
           if (timeout) {
             clearInterval(timeout);
-          }
-          if (shouldClearContext) {
-            thisClient._clearContext(contextId);
           }
           subscription.isActive = false;
         }
@@ -500,27 +435,16 @@ export class PolywrapClient implements Client {
   ): Promise<Result<UriPackageOrWrapper, unknown>> {
     const uri = Uri.from(options.uri);
 
-    const { contextId, shouldClearContext } = this._setContext(
-      options.contextId,
-      options.config
-    );
-
-    const client = contextualizeClient(this, contextId);
-
-    const uriResolver = this.getUriResolver({ contextId: contextId });
+    const uriResolver = this.getUriResolver();
 
     const resolutionContext =
       options.resolutionContext ?? new UriResolutionContext();
 
     const response = await uriResolver.tryResolveUri(
       uri,
-      client,
+      this,
       resolutionContext
     );
-
-    if (shouldClearContext) {
-      this._clearContext(contextId);
-    }
 
     if (options.resolutionContext) {
       Tracer.setAttribute(
@@ -531,20 +455,6 @@ export class PolywrapClient implements Client {
     }
 
     return response;
-  }
-
-  @Tracer.traceMethod("PolywrapClient: getConfig")
-  private _getConfig(contextId?: string): Readonly<PolywrapClientConfig<Uri>> {
-    if (contextId) {
-      const context = this._contexts.get(contextId);
-      if (!context) {
-        throw new Error(`No invoke context found with id: ${contextId}`);
-      }
-
-      return context;
-    } else {
-      return this._config;
-    }
   }
 
   @Tracer.traceMethod("PolywrapClient: validateConfig")
@@ -564,67 +474,10 @@ export class PolywrapClient implements Client {
     }
   }
 
-  /**
-   * Sets invoke context:
-   *  1. !parentId && !context  -> do nothing
-   *  2. parentId && !context   -> do nothing, use parent context ID
-   *  3. !parentId && context   -> create context ID, default config as "base", cache context
-   *  4. parentId && context    -> create context ID, parent config as "base", cache context
-   */
-  @Tracer.traceMethod("PolywrapClient: setContext")
-  private _setContext(
-    parentId: string | undefined,
-    context: Partial<PolywrapClientConfig> | undefined
-  ): {
-    contextId: string | undefined;
-    shouldClearContext: boolean;
-  } {
-    if (!context) {
-      return {
-        contextId: parentId,
-        shouldClearContext: false,
-      };
-    }
-
-    const parentConfig = this._getConfig(parentId);
-
-    const id = uuid();
-
-    const config = new ClientConfigBuilder()
-      .add({
-        envs: context.envs ?? parentConfig.envs,
-        interfaces: context.interfaces ?? parentConfig.interfaces,
-        plugins: context.plugins ?? parentConfig.plugins,
-        redirects: context.redirects ?? parentConfig.redirects,
-        resolver: context.resolver ?? parentConfig.resolver,
-      })
-      .build();
-
-    const newContext = {
-      ...config,
-      tracerConfig: context.tracerConfig ?? parentConfig.tracerConfig,
-    };
-
-    this._contexts.set(id, newContext);
-
-    return {
-      contextId: id,
-      shouldClearContext: true,
-    };
-  }
-
-  @Tracer.traceMethod("PolywrapClient: clearContext")
-  private _clearContext(contextId: string | undefined): void {
-    if (contextId) {
-      this._contexts.delete(contextId);
-    }
-  }
-
   @Tracer.traceMethod("PolywrapClient: _loadWrapper", TracingLevel.High)
   private async _loadWrapper(
     uri: Uri,
-    resolutionContext?: IUriResolutionContext,
-    options?: Contextualized
+    resolutionContext?: IUriResolutionContext
   ): Promise<Wrapper> {
     Tracer.setAttribute("label", `Wrapper loaded: ${uri}`, TracingLevel.High);
 
@@ -635,7 +488,6 @@ export class PolywrapClient implements Client {
     const result = await this.tryResolveUri({
       uri,
       resolutionContext,
-      contextId: options?.contextId,
     });
 
     if (!result.ok) {
@@ -675,86 +527,3 @@ export class PolywrapClient implements Client {
     return wrapper;
   }
 }
-
-const contextualizeClient = (
-  client: PolywrapClient,
-  contextId: string | undefined
-): Client =>
-  contextId
-    ? {
-        query: <
-          TData extends Record<string, unknown> = Record<string, unknown>,
-          TVariables extends Record<string, unknown> = Record<string, unknown>,
-          TUri extends Uri | string = string
-        >(
-          options: QueryOptions<TVariables, TUri>
-        ): Promise<QueryResult<TData>> => {
-          return client.query({ ...options, contextId });
-        },
-        invokeWrapper: <TData = unknown, TUri extends Uri | string = string>(
-          options: InvokeOptions<TUri> & { wrapper: Wrapper }
-        ): Promise<InvokeResult<TData>> => {
-          return client.invokeWrapper({ ...options, contextId });
-        },
-        invoke: <TData = unknown, TUri extends Uri | string = string>(
-          options: InvokeOptions<TUri>
-        ): Promise<InvokeResult<TData>> => {
-          return client.invoke({ ...options, contextId });
-        },
-        subscribe: <TData = unknown, TUri extends Uri | string = string>(
-          options: SubscribeOptions<TUri>
-        ): Subscription<TData> => {
-          return client.subscribe({ ...options, contextId });
-        },
-        getRedirects: (options: GetRedirectsOptions = {}) => {
-          return client.getRedirects({ ...options, contextId });
-        },
-        getPlugins: (options: GetPluginsOptions = {}) => {
-          return client.getPlugins({ ...options, contextId });
-        },
-        getPluginByUri: <TUri extends Uri | string>(
-          uri: TUri,
-          options: GetPluginOptions = {}
-        ) => {
-          return client.getPluginByUri(uri, { ...options, contextId });
-        },
-        getInterfaces: (options: GetInterfacesOptions = {}) => {
-          return client.getInterfaces({ ...options, contextId });
-        },
-        getEnvs: (options: GetEnvsOptions = {}) => {
-          return client.getEnvs({ ...options, contextId });
-        },
-        getUriResolver: (options: GetUriResolverOptions = {}) => {
-          return client.getUriResolver({ ...options, contextId });
-        },
-        getEnvByUri: <TUri extends Uri | string>(
-          uri: TUri,
-          options: GetEnvsOptions = {}
-        ) => {
-          return client.getEnvByUri(uri, { ...options, contextId });
-        },
-        getFile: <TUri extends Uri | string>(
-          uri: TUri,
-          options: GetFileOptions
-        ) => {
-          return client.getFile(uri, { ...options, contextId });
-        },
-        getManifest: <TUri extends Uri | string>(
-          uri: TUri,
-          options: GetManifestOptions = {}
-        ) => {
-          return client.getManifest(uri, { ...options, contextId });
-        },
-        getImplementations: <TUri extends Uri | string>(
-          uri: TUri,
-          options: GetImplementationsOptions = {}
-        ) => {
-          return client.getImplementations(uri, { ...options, contextId });
-        },
-        tryResolveUri: <TUri extends Uri | string>(
-          options: TryResolveUriOptions<TUri, ClientConfig>
-        ): Promise<Result<UriPackageOrWrapper, unknown>> => {
-          return client.tryResolveUri({ ...options, contextId });
-        },
-      }
-    : client;
