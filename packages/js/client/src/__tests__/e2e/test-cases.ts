@@ -953,39 +953,28 @@ export const runSimpleEnvTest = async (
     requiredInt: 1,
   });
 
-  const noEnvClient = new PolywrapClient(
-    client
-      .reconfigure()
-      .removeEnv(wrapperUri)
-      .build()
-  );
-  const getEnvNotSetResult = await noEnvClient.invoke({
+  const getEnvNotSetResult = await client.invoke({
     uri: wrapperUri,
     method: "getEnv",
     args: {
       arg: "not set",
-    }
+    },
+    env: { }
   });
   expect(getEnvNotSetResult.data).toBeUndefined();
   expect(getEnvNotSetResult.error).toBeTruthy();
   expect(getEnvNotSetResult.error?.message).toContain("requiredInt: Int");
 
-  const envIncorrectClient = new PolywrapClient(
-    client
-      .reconfigure()
-      .setEnv(
-        wrapperUri, {
-          str: "string",
-          requiredInt: "99",
-        }
-      ).build()
-  );
-  const envIncorrectResult = await envIncorrectClient.invoke({
+  const envIncorrectResult = await client.invoke({
     uri: wrapperUri,
     method: "getEnv",
     args: {
       arg: "not set",
-    }
+    },
+    env: {
+      str: "string",
+      requiredInt: "99",
+    },
   });
 
   expect(envIncorrectResult.data).toBeUndefined();
@@ -1080,32 +1069,22 @@ export const runComplexEnvs = async (
     array: [32, 23],
   });
 
-  const mockClient = new PolywrapClient(
-    client
-      .reconfigure({
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {
-            object: {
-              prop: "object another string",
-            },
-            str: "another string",
-            optFilledStr: "optional string",
-            number: 10,
-            bool: true,
-            en: "FIRST",
-            array: [32, 23],
-          },
-        },
-      ],
-    }).build()
-  );
-  const mockUpdatedEnvResult = await mockClient.invoke({
+  const mockUpdatedEnvResult = await client.invoke({
     uri: wrapperUri,
     method: "methodRequireEnv",
     args: {
       arg: "string",
+    },
+    env: {
+      object: {
+        prop: "object another string",
+      },
+      str: "another string",
+      optFilledStr: "optional string",
+      number: 10,
+      bool: true,
+      en: "FIRST",
+      array: [32, 23],
     }
   });
   expect(mockUpdatedEnvResult.error).toBeFalsy();

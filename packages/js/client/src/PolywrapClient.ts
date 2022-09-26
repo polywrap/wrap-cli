@@ -98,15 +98,8 @@ export class PolywrapClient implements Client {
     }
   }
 
-  public reconfigure(
-    config?: Partial<PolywrapClientConfig>
-  ): ClientConfigBuilder {
-    const builder = new ClientConfigBuilder();
-    builder.add(this._config);
-    if (config) {
-      builder.add(config);
-    }
-    return builder;
+  public getConfig(): PolywrapClientConfig<Uri> {
+    return this._config;
   }
 
   public setTracingEnabled(tracerConfig?: Partial<TracerConfig>): void {

@@ -6,6 +6,7 @@ import { Uri, PluginModule, Subscription, PolywrapClient } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { getClient } from "../utils/getClient";
 import { makeMemoryStoragePlugin } from "../e2e/memory-storage";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 
@@ -146,8 +147,13 @@ describe("wasm-wrapper", () => {
       },
     ];
 
+    const newConfig = new ClientConfigBuilder()
+      .add(client.getConfig())
+      .add({ redirects })
+      .build();
+
     const newClient = new PolywrapClient(
-      client.reconfigure({ redirects }).build()
+      newConfig
     );
 
     const result = await newClient.invoke({
