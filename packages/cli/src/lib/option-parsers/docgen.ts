@@ -4,7 +4,7 @@ import {
   defaultAppManifest,
   defaultPluginManifest,
   defaultPolywrapManifest,
-} from "../project";
+} from "../manifest";
 
 export function parseDocgenManifestFileOption(
   manifestFile: string | undefined

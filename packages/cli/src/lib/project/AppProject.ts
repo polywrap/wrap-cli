@@ -3,9 +3,9 @@ import {
   AppManifestLanguage,
   appManifestLanguages,
   isAppManifestLanguage,
-  loadAppManifest,
   appManifestLanguageToBindLanguage,
 } from "./manifests";
+import { loadAppManifest } from "../manifest";
 
 import { AppManifest } from "@polywrap/polywrap-manifest-types-js";
 import { bindSchema, BindOutput } from "@polywrap/schema-bind";

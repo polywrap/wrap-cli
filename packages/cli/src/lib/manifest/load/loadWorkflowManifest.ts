@@ -1,22 +1,21 @@
-import { displayPath, withSpinner, intlMsg } from "../../../";
+import { displayPath, withSpinner, intlMsg } from "../../";
 
-import {
-  PluginManifest,
-  deserializePluginManifest,
-} from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
+import {
+  PolywrapWorkflow,
+  deserializePolywrapWorkflow,
+} from "@polywrap/polywrap-manifest-types-js";
 
-export const defaultPluginManifest = [
-  "polywrap.yaml",
-  "polywrap.plugin.yaml",
-  "polywrap.plugin.yml",
+export const defaultWorkflowManifest = [
+  "polywrap.test.yaml",
+  "polywrap.test.yml",
 ];
 
-export async function loadPluginManifest(
+export async function loadWorkflowManifest(
   manifestPath: string,
   quiet = false
-): Promise<PluginManifest> {
-  const run = (): Promise<PluginManifest> => {
+): Promise<PolywrapWorkflow> {
+  const run = (): Promise<PolywrapWorkflow> => {
     const manifest = fs.readFileSync(manifestPath, "utf-8");
 
     if (!manifest) {
@@ -27,7 +26,7 @@ export async function loadPluginManifest(
     }
 
     try {
-      const result = deserializePluginManifest(manifest);
+      const result = deserializePolywrapWorkflow(manifest);
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
@@ -42,9 +41,9 @@ export async function loadPluginManifest(
       intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
       intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
       intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
-      async (_spinner) => {
+      async () => {
         return await run();
       }
-    )) as PluginManifest;
+    )) as PolywrapWorkflow;
   }
 }

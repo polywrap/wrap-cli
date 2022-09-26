@@ -4,11 +4,6 @@
 import { Project, ProjectConfig } from ".";
 import {
   isPolywrapManifestLanguage,
-  loadBuildManifest,
-  loadDeployManifest,
-  loadDeployManifestExt,
-  loadMetaManifest,
-  loadPolywrapManifest,
   outputManifest,
   PolywrapManifestLanguage,
   polywrapManifestLanguages,
@@ -18,6 +13,13 @@ import { Deployer } from "../deploy";
 import { generateDockerImageName, resetDir } from "../system";
 import { createUUID } from "../helpers";
 import { intlMsg } from "../intl";
+import {
+  loadBuildManifest,
+  loadDeployManifest,
+  loadDeployManifestExt,
+  loadPolywrapManifest,
+  loadMetaManifest,
+} from "../manifest";
 
 import {
   BuildManifest,

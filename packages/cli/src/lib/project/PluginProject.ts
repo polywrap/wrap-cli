@@ -1,12 +1,12 @@
 import { ProjectConfig, Project } from ".";
 import {
-  loadPluginManifest,
   PluginManifestLanguage,
   pluginManifestLanguages,
   isPluginManifestLanguage,
   pluginManifestLanguageToBindLanguage,
 } from "./manifests";
 import { resetDir } from "../system";
+import { loadPluginManifest } from "../manifest";
 
 import { PluginManifest } from "@polywrap/polywrap-manifest-types-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
