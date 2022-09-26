@@ -38,6 +38,13 @@ export interface InvokeOptions<
   contextId?: string;
 }
 
+/**
+ * Result of an Wrapper invocation.
+ *
+ * @template TData Type of the invoke result data.
+ */
+export type InvokeResult<TData = unknown> = Result<TData, Error>;
+
 export interface InvokerOptions<
   TUri extends Uri | string = string,
   TClientConfig extends ClientConfig = ClientConfig
@@ -48,16 +55,15 @@ export interface InvokerOptions<
 export interface Invoker {
   invokeWrapper<TData = unknown, TUri extends Uri | string = string>(
     options: InvokerOptions<TUri> & { wrapper: Wrapper }
-  ): Promise<Result<TData, Error>>;
+  ): Promise<InvokeResult<TData>>;
   invoke<TData = unknown, TUri extends Uri | string = string>(
     options: InvokerOptions<TUri>
-  ): Promise<Result<TData, Error>>;
+  ): Promise<InvokeResult<TData>>;
 }
 
-export interface InvocableResult<TData = unknown> {
-  data: Result<TData, Error>;
+export type InvocableResult<TData = unknown> = InvokeResult<TData> & {
   encoded?: boolean;
-}
+};
 
 export interface Invocable {
   invoke(
