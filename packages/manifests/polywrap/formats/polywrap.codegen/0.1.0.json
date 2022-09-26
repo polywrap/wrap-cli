@@ -1,0 +1,32 @@
+{
+  "id": "CodegenManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format"],
+  "properties": {
+    "format": {
+      "description": "Polywrap codegen manifest format version.",
+      "type": "string",
+      "enum": ["0.1.0", "0.1"]
+    },
+    "codegenDir": {
+      "description": "Output directory for the generated code (default: ./src/wrap)",
+      "type": "string",
+      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+"
+    },
+    "publishDir": {
+      "description": "Output path for the built schema and manifest (default: ./build)",
+      "type": "string",
+      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+"
+    },
+    "clientConfig": {
+      "description": "Path to custom configuration for the PolywrapClient",
+      "type": "string",
+      "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(ts|js)$"
+    },
+    "config": {
+      "description": "Custom configuration for binding target.",
+      "type": "object"
+    }
+  }
+}
