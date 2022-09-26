@@ -6,6 +6,7 @@ from polywrap_msgpack import sanitize
 from polywrap_msgpack import msgpack_encode, msgpack_decode
 
 import pytest
+from typing import Any
 
 expected_array_like = [
     130, 168, 102, 105, 114, 115, 116, 75,
@@ -83,13 +84,13 @@ def test_sanitize_str_returns_same_str():
     assert sanitize("string input") == "string input"
 
 def test_sanitize_simple_list_returns_simple_list():
-    assert [1] == sanitize([1])
+    assert  sanitize([1]) == [1]
 
 def test_sanitize_empty_list_returns_empty_list():
     assert sanitize([]) == []
 
 def test_sanitize_long_list_returns_long_list():
-    assert [2,55,1234,6345] == sanitize([2,55,1234,6345])
+    assert sanitize([2,55,1234,6345]) == [2,55,1234,6345] 
 
 def test_sanitize_complex_list_returns_list():
     complex_list = [1, 'foo', 'bar', 0.123, True, None]
@@ -108,6 +109,16 @@ def test_sanitize_complex_number_returns_complex_number():
 def test_sanitize_simple_dict_returns_sanitized_values():
     simple_dict = {'name': 'John'}
     assert sanitize(simple_dict) == simple_dict
+
+
+def test_sanitize_object_with_slots_attributes_returns_dict_instead():
+    class Example():
+        __slots__ = ("slot_0", "slot_1")
+        def __init__(self):
+            self.slot_0 = "zero"
+            self.slot_1 = "one"
+    s = Example()
+    assert sanitize(s) == {'slot_0':'zero','slot_1':'one'}
 
 # Tests that are not passing
 
@@ -132,6 +143,7 @@ def test_sanitize_complex_dict_returns_sanitized_values():
         'friends': {'bob','alice','megan','john'} }
     assert sanitize(complex_dict) == complex_dict
 
+
 # WIP Tests
 
 
@@ -140,5 +152,3 @@ def test_sanitize_complex_dict_returns_sanitized_values():
 #     assert sanitize(dictionary) == 
     
 
-#def test_sanitize_has_slot_attributes():
-#  assert
