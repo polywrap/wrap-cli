@@ -99,11 +99,13 @@ export class PolywrapClient implements Client {
   }
 
   public reconfigure(
-    config: Partial<PolywrapClientConfig>
+    config?: Partial<PolywrapClientConfig>
   ): ClientConfigBuilder {
     const builder = new ClientConfigBuilder();
     builder.add(this._config);
-    builder.add(config);
+    if (config) {
+      builder.add(config);
+    }
     return builder;
   }
 

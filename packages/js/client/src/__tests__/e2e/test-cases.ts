@@ -954,14 +954,10 @@ export const runSimpleEnvTest = async (
   });
 
   const noEnvClient = new PolywrapClient(
-    client.reconfigure({
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {},
-        },
-      ],
-    }).build()
+    client
+      .reconfigure()
+      .removeEnv(wrapperUri)
+      .build()
   );
   const getEnvNotSetResult = await noEnvClient.invoke({
     uri: wrapperUri,
@@ -975,17 +971,14 @@ export const runSimpleEnvTest = async (
   expect(getEnvNotSetResult.error?.message).toContain("requiredInt: Int");
 
   const envIncorrectClient = new PolywrapClient(
-    client.reconfigure({
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {
-            str: "string",
-            requiredInt: "99",
-          },
-        },
-      ],
-    }).build()
+    client
+      .reconfigure()
+      .setEnv(
+        wrapperUri, {
+          str: "string",
+          requiredInt: "99",
+        }
+      ).build()
   );
   const envIncorrectResult = await envIncorrectClient.invoke({
     uri: wrapperUri,
@@ -1088,7 +1081,8 @@ export const runComplexEnvs = async (
   });
 
   const mockClient = new PolywrapClient(
-    client.reconfigure({
+    client
+      .reconfigure({
       envs: [
         {
           uri: wrapperUri,
