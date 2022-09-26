@@ -2,7 +2,7 @@ import { ethereumPlugin } from "..";
 import * as Schema from "../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
+import { ClientConfigBuilder, defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import {
@@ -835,10 +835,9 @@ describe("Ethereum Plugin", () => {
     });
 
     it("getNetwork - mainnet with env", async () => {
-      const mainnetNetwork = await client.invoke<Schema.Network>({
-        uri,
-        method: "getNetwork",
-        config: {
+      const config = new ClientConfigBuilder()
+        .add(client.getConfig())
+        .add({
           envs: [
             {
               uri: "wrap://ens/ethereum.polywrap.eth",
@@ -849,7 +848,14 @@ describe("Ethereum Plugin", () => {
               },
             },
           ],
-        },
+        })
+        .build();
+      const mainnetClient = new PolywrapClient(
+        config
+      );
+      const mainnetNetwork = await mainnetClient.invoke<Schema.Network>({
+        uri,
+        method: "getNetwork",
       });
 
       if (!mainnetNetwork.ok) fail(mainnetNetwork.error);
@@ -862,10 +868,9 @@ describe("Ethereum Plugin", () => {
     });
 
     it("getNetwork - polygon with env", async () => {
-      const polygonNetwork = await client.invoke<Schema.Network>({
-        uri,
-        method: "getNetwork",
-        config: {
+      const config = new ClientConfigBuilder()
+        .add(client.getConfig())
+        .add({
           envs: [
             {
               uri: "wrap://ens/ethereum.polywrap.eth",
@@ -876,7 +881,14 @@ describe("Ethereum Plugin", () => {
               },
             },
           ],
-        },
+        })
+        .build();
+      const polygonClient = new PolywrapClient(
+        config
+      );
+      const polygonNetwork = await polygonClient.invoke<Schema.Network>({
+        uri,
+        method: "getNetwork",
       });
 
       if (!polygonNetwork.ok) fail(polygonNetwork.error);

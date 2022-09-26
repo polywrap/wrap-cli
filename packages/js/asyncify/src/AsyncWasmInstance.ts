@@ -40,7 +40,7 @@ export class AsyncWasmInstance {
   private _instance: WasmInstance;
   private _wrappedImports: WasmImports;
   private _wrappedExports: AsyncifyExports;
-  private _returnValue: Promise<unknown> | unknown;
+  private _importFnResult: Promise<unknown> | unknown;
 
   private constructor() {}
 
@@ -190,19 +190,19 @@ export class AsyncWasmInstance {
     );
   }
 
-  private _wrapImportFn(fn: Function) {
+  private _wrapImportFn(importFn: Function) {
     return (...args: unknown[]) => {
       if (this._getAsyncifyState() === AsyncifyState.Rewinding) {
         this._wrappedExports.asyncify_stop_rewind();
-        return this._returnValue;
+        return this._importFnResult;
       }
       this._assertNoneState();
-      const value = fn(...args);
+      const value = importFn(...args);
       if (!isPromise(value)) {
         return value;
       }
       this._wrappedExports.asyncify_start_unwind(AsyncWasmInstance._dataAddr);
-      this._returnValue = value;
+      this._importFnResult = value;
     };
   }
 
@@ -223,18 +223,18 @@ export class AsyncWasmInstance {
     return newExports;
   }
 
-  private _wrapExportFn(fn: Function) {
+  private _wrapExportFn(exportFn: Function) {
     return async (...args: unknown[]) => {
       this._assertNoneState();
 
-      let result = fn(...args);
+      let result = exportFn(...args);
 
       while (this._getAsyncifyState() === AsyncifyState.Unwinding) {
         this._wrappedExports.asyncify_stop_unwind();
-        this._returnValue = await this._returnValue;
+        this._importFnResult = await this._importFnResult;
         this._assertNoneState();
         this._wrappedExports.asyncify_start_rewind(AsyncWasmInstance._dataAddr);
-        result = fn();
+        result = exportFn();
       }
 
       this._assertNoneState();
