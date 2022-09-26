@@ -1,4 +1,4 @@
-import { Uri, InvokeOptions, ClientConfig } from "./";
+import { Uri, InvokeOptions } from "./";
 
 import { Tracer } from "@polywrap/tracing-js";
 import { DocumentNode } from "graphql";
@@ -18,8 +18,7 @@ export const createQueryDocument = Tracer.traceFunc(
 /** Options required for an Wrapper query. */
 export interface QueryOptions<
   TVariables extends Record<string, unknown> = Record<string, unknown>,
-  TUri extends Uri | string = string,
-  TClientConfig extends ClientConfig = ClientConfig
+  TUri extends Uri | string = string
 > {
   /** The Wrapper's URI */
   uri: TUri;
@@ -34,16 +33,6 @@ export interface QueryOptions<
    * Variables referenced within the query string via GraphQL's '$variable' syntax.
    */
   variables?: TVariables;
-
-  /**
-   * Override the client's config for all invokes within this query.
-   */
-  config?: Partial<TClientConfig>;
-
-  /**
-   * Query id used to track query context data set internally.
-   */
-  contextId?: string;
 }
 
 /**

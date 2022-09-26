@@ -28,8 +28,8 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
   ): Promise<Result<IUriResolver<unknown>[]>> {
     const uriResolverImpls = getImplementations(
       coreInterfaceUris.uriResolver,
-      client.getInterfaces({}),
-      client.getRedirects({})
+      client.getInterfaces(),
+      client.getRedirects()
     );
 
     const resolvers: UriResolverWrapper[] = uriResolverImpls

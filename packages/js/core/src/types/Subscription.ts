@@ -1,5 +1,4 @@
 import { Uri } from "./Uri";
-import { ClientConfig } from "./Client";
 import { InvokeOptions, InvokeResult } from "./Invoke";
 
 /** Defines the frequency of Wrapper invocations for an Wrapper subscription */
@@ -11,10 +10,8 @@ export interface SubscriptionFrequency {
 }
 
 /** Options required for an Wrapper subscription. */
-export interface SubscribeOptions<
-  TUri extends Uri | string = string,
-  TClientConfig extends ClientConfig = ClientConfig
-> extends InvokeOptions<TUri, TClientConfig> {
+export interface SubscribeOptions<TUri extends Uri | string = string>
+  extends InvokeOptions<TUri> {
   /**
    * The frequency of Wrapper invocations. Defaults to one query per minute.
    */
