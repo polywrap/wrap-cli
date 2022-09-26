@@ -91,35 +91,6 @@ describe("usePolywrapQuery hook", () => {
     return result;
   }
 
-  it("Should support passing env to client", async () => {
-    const deployQuery: UsePolywrapQueryProps = {
-      uri: envUri,
-      query: `query {
-        getEnv(arg: "Alice")
-      }`,
-      config: {
-        envs: [{
-          uri: envUri,
-          env: {
-            str: "Hello World!",
-            requiredInt: 2,
-          }
-        }]
-      }
-    };
-
-    const { data, errors } = await sendQuery<{
-      getEnv: {
-        str: string;
-        requiredInt: number;
-      }
-    }>(deployQuery);
-
-    expect(errors).toBeFalsy();
-    expect(data?.getEnv.str).toBe("Hello World!");
-    expect(data?.getEnv.requiredInt).toBe(2);
-  });
-
   it("Should update storage data to five with hard coded value", async () => {
     const deployQuery: UsePolywrapQueryProps = {
       uri,

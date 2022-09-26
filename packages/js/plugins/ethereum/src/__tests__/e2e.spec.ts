@@ -818,10 +818,8 @@ describe("Ethereum Plugin", () => {
     });
 
     it("getNetwork - mainnet with env", async () => {
-      const mainnetNetwork = await client.invoke<Schema.Network>({
-        uri,
-        method: "getNetwork",
-        config: {
+      const mainnetClient = new PolywrapClient(
+        client.reconfigure({
           envs: [
             {
               uri: "wrap://ens/ethereum.polywrap.eth",
@@ -832,7 +830,11 @@ describe("Ethereum Plugin", () => {
               },
             },
           ],
-        },
+        }).build()
+      );
+      const mainnetNetwork = await mainnetClient.invoke<Schema.Network>({
+        uri,
+        method: "getNetwork",
       });
 
       expect(mainnetNetwork.data).toBeTruthy();
@@ -845,10 +847,8 @@ describe("Ethereum Plugin", () => {
     });
 
     it("getNetwork - polygon with env", async () => {
-      const polygonNetwork = await client.invoke<Schema.Network>({
-        uri,
-        method: "getNetwork",
-        config: {
+      const polygonClient = new PolywrapClient(
+        client.reconfigure({
           envs: [
             {
               uri: "wrap://ens/ethereum.polywrap.eth",
@@ -859,7 +859,11 @@ describe("Ethereum Plugin", () => {
               },
             },
           ],
-        },
+        }).build()
+      );
+      const polygonNetwork = await polygonClient.invoke<Schema.Network>({
+        uri,
+        method: "getNetwork",
       });
 
       expect(polygonNetwork.data).toBeTruthy();
