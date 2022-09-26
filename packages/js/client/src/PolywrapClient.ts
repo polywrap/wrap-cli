@@ -28,7 +28,7 @@ import {
   getEnvFromUriHistory,
   PluginPackage,
   QueryResult,
-  InvokeResult
+  InvokeResult,
 } from "@polywrap/core-js";
 import {
   buildCleanUriHistory,
