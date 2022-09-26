@@ -36,6 +36,7 @@ import {
   getEnvFromUriHistory,
   PluginPackage,
   QueryResult,
+  InvokeResult
 } from "@polywrap/core-js";
 import {
   buildCleanUriHistory,
@@ -264,7 +265,7 @@ export class PolywrapClient implements Client {
       // Execute all invocations in parallel
       const parallelInvocations: Promise<{
         name: string;
-        result: Result<unknown, Error>;
+        result: InvokeResult<unknown>;
       }>[] = [];
 
       for (const invocationName of Object.keys(queryInvocations)) {
@@ -321,7 +322,7 @@ export class PolywrapClient implements Client {
     TUri extends Uri | string = string
   >(
     options: InvokerOptions<TUri, PolywrapClientConfig> & { wrapper: Wrapper }
-  ): Promise<Result<TData, Error>> {
+  ): Promise<InvokeResult<TData>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
@@ -342,12 +343,12 @@ export class PolywrapClient implements Client {
         contextualizeClient(this, contextId)
       );
 
-      if (!invocableResult.data.ok) {
-        error = invocableResult.data.error as Error;
+      if (!invocableResult.ok) {
+        error = invocableResult.error as Error;
         break invokeError;
       }
 
-      const value = invocableResult.data.value;
+      const value = invocableResult.value;
 
       if (options.encodeResult && !invocableResult.encoded) {
         const encoded = msgpackEncode(value);
@@ -372,7 +373,7 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: invoke")
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
     options: InvokerOptions<TUri, PolywrapClientConfig>
-  ): Promise<Result<TData, Error>> {
+  ): Promise<InvokeResult<TData>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
@@ -468,7 +469,7 @@ export class PolywrapClient implements Client {
         }
         subscription.isActive = false;
       },
-      async *[Symbol.asyncIterator](): AsyncGenerator<Result<TData, Error>> {
+      async *[Symbol.asyncIterator](): AsyncGenerator<InvokeResult<TData>> {
         let timeout: NodeJS.Timeout | undefined = undefined;
         subscription.isActive = true;
 
@@ -723,12 +724,12 @@ const contextualizeClient = (
         },
         invokeWrapper: <TData = unknown, TUri extends Uri | string = string>(
           options: InvokeOptions<TUri> & { wrapper: Wrapper }
-        ): Promise<Result<TData, Error>> => {
+        ): Promise<InvokeResult<TData>> => {
           return client.invokeWrapper({ ...options, contextId });
         },
         invoke: <TData = unknown, TUri extends Uri | string = string>(
           options: InvokeOptions<TUri>
-        ): Promise<Result<TData, Error>> => {
+        ): Promise<InvokeResult<TData>> => {
           return client.invoke({ ...options, contextId });
         },
         subscribe: <TData = unknown, TUri extends Uri | string = string>(
