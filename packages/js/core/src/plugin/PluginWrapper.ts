@@ -56,15 +56,11 @@ export class PluginWrapper implements Wrapper {
     const module = this._getInstance();
 
     if (!module) {
-      return {
-        data: ResultErr(Error(`PluginWrapper: module "${module}" not found.`)),
-      };
+      return ResultErr(Error(`PluginWrapper: module "${module}" not found.`));
     }
 
     if (!module.getMethod(method)) {
-      return {
-        data: ResultErr(Error(`PluginWrapper: method "${method}" not found.`)),
-      };
+      return ResultErr(Error(`PluginWrapper: method "${method}" not found.`));
     }
 
     // Set the module's environment
@@ -82,7 +78,7 @@ export class PluginWrapper implements Wrapper {
         const msgPackException = Error(
           `PluginWrapper: decoded MsgPack args did not result in an object.\nResult: ${result}`
         );
-        return { data: ResultErr(msgPackException) };
+        return ResultErr(msgPackException);
       }
 
       jsArgs = result as Record<string, unknown>;
@@ -99,7 +95,7 @@ export class PluginWrapper implements Wrapper {
       Tracer.addEvent("Result", data);
 
       return {
-        data: ResultOk(data),
+        ...ResultOk(data),
         encoded: false,
       };
     } else {
@@ -110,7 +106,7 @@ export class PluginWrapper implements Wrapper {
           `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
           `exception: ${result.error?.message}`
       );
-      return { data: ResultErr(invocationException) };
+      return ResultErr(invocationException);
     }
   }
 

@@ -112,7 +112,7 @@ export class WasmWrapper implements Wrapper {
       const args = options.args || {};
       const wasmResult = await this._getWasmModule();
       if (!wasmResult.ok) {
-        return { data: wasmResult };
+        return wasmResult;
       }
       const wasm = wasmResult.value;
 
@@ -165,7 +165,7 @@ export class WasmWrapper implements Wrapper {
 
       if (invokeResult.ok) {
         return {
-          data: invokeResult,
+          ...invokeResult,
           encoded: true,
         };
       } else {
@@ -176,10 +176,10 @@ export class WasmWrapper implements Wrapper {
             `args: ${JSON.stringify(args, null, 2)}\n` +
             `exception: ${invokeResult.error?.message}`
         );
-        return { data: ResultErr(error) };
+        return ResultErr(error);
       }
     } catch (error) {
-      return { data: ResultErr(error) };
+      return ResultErr(error);
     }
   }
 
