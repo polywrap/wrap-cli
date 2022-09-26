@@ -49,20 +49,20 @@ export class AsyncWasmInstance {
     // throw an error if the imported page size differs:
     // https://chromium.googlesource.com/v8/v8/+/644556e6ed0e6e4fac2dfabb441439820ec59813/src/wasm/module-instantiate.cc#924
     const envMemoryImportSignature = Uint8Array.from([
-      // env ; import module name
-      0x65,
-      0x6e,
-      0x76,
+      // env ; import module name (hex for "env" in ascii)
+      0x65, // e
+      0x6e, // n
+      0x76, // v
       // string length
       0x06,
-      // memory ; import field name
-      0x6d,
-      0x65,
-      0x6d,
-      0x6f,
-      0x72,
-      0x79,
-      // import kind
+      // memory ; import field name (hex for "memory" in ascii)
+      0x6d, // m
+      0x65, // e
+      0x6d, // m
+      0x6f, // o
+      0x72, // r
+      0x79, // y
+      // import kind ; https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md#external-kinds
       0x02,
       // limits ; https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md#resizable-limits
       // limits ; flags
