@@ -1,0 +1,90 @@
+### Polywrap Header START ###
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Bytes
+scalar BigInt
+scalar BigNumber
+scalar JSON
+scalar Map
+
+directive @imported(
+  uri: String!
+  namespace: String!
+  nativeType: String!
+) on OBJECT | ENUM
+
+directive @imports(
+  types: [String!]!
+) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
+### Polywrap Header END ###
+
+type Module @imports(
+  types: [
+    "Namespace_ExternalType",
+    "Namespace_Env",
+    "Namespace_Module"
+  ]
+) {
+  method: Namespace_ExternalType
+}
+
+### Imported Modules START ###
+
+type Namespace_Module @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "Module"
+) {
+  envMethod(
+    arg: String!
+  ): String! @env(required: true)
+
+  optEnvMethod(
+    arg: String!
+  ): String! @env(required: false)
+}
+
+### Imported Modules END ###
+
+### Imported Objects START ###
+
+type Namespace_ExternalType @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "ExternalType"
+) {
+  str: String
+}
+
+### Imported Objects END ###
+
+### Imported Envs START ###
+
+type Namespace_Env @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "Env"
+) {
+  externalProp: Namespace_ExternalType
+}
+
+### Imported Envs END ###

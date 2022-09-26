@@ -959,14 +959,7 @@ export const runSimpleEnvTest = async (
     args: {
       arg: "not set",
     },
-    config: {
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {},
-        },
-      ],
-    },
+    env: { }
   });
   expect(getEnvNotSetResult.data).toBeUndefined();
   expect(getEnvNotSetResult.error).toBeTruthy();
@@ -978,16 +971,9 @@ export const runSimpleEnvTest = async (
     args: {
       arg: "not set",
     },
-    config: {
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {
-            str: "string",
-            requiredInt: "99",
-          },
-        },
-      ],
+    env: {
+      str: "string",
+      requiredInt: "99",
     },
   });
 
@@ -1089,24 +1075,17 @@ export const runComplexEnvs = async (
     args: {
       arg: "string",
     },
-    config: {
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {
-            object: {
-              prop: "object another string",
-            },
-            str: "another string",
-            optFilledStr: "optional string",
-            number: 10,
-            bool: true,
-            en: "FIRST",
-            array: [32, 23],
-          },
-        },
-      ],
-    },
+    env: {
+      object: {
+        prop: "object another string",
+      },
+      str: "another string",
+      optFilledStr: "optional string",
+      number: 10,
+      bool: true,
+      en: "FIRST",
+      array: [32, 23],
+    }
   });
   expect(mockUpdatedEnvResult.error).toBeFalsy();
   expect(mockUpdatedEnvResult.data).toEqual({

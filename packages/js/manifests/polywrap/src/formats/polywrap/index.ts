@@ -24,6 +24,13 @@ export enum PolywrapManifestFormats {
   "v0.2.0" = "0.2.0",
 }
 
+export const PolywrapManifestSchemaFiles: Record<string, string> = {
+  // NOTE: Patch fix for backwards compatability
+  "0.1": "formats/polywrap/0.1.0.json",
+  "0.1.0": "formats/polywrap/0.1.0.json",
+  "0.2.0": "formats/polywrap/0.2.0.json",
+}
+
 export type AnyPolywrapManifest =
   | PolywrapManifest_0_1_0
   | PolywrapManifest_0_2_0

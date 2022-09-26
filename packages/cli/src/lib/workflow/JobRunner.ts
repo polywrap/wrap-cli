@@ -1,191 +1,223 @@
-import {
-  Client,
-  executeMaybeAsyncFunction,
-  MaybeAsync,
-  Uri,
-  InvokeResult,
-} from "@polywrap/core-js";
+import { JobResult, JobStatus, Step } from "./types";
+
+import { PolywrapClient } from "@polywrap/client-js";
+import { executeMaybeAsyncFunction, MaybeAsync } from "@polywrap/core-js";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
-export enum JobStatus {
-  SUCCEED = "SUCCEED",
-  FAILED = "FAILED",
-  SKIPPED = "SKIPPED",
-}
-
-export interface JobResult<TData extends unknown = unknown>
-  extends InvokeResult<TData> {
-  status: JobStatus;
-}
-
-export interface JobRunOptions {
-  relativeId: string;
-  parentId: string;
-  jobs: WorkflowJobs;
-}
-
-type DataOrError = "data" | "error";
-
-export class JobRunner<
-  TData extends unknown = unknown,
-  TUri extends Uri | string = string
-> {
-  private jobOutput: Map<string, JobResult<TData>>;
+export class JobRunner {
+  private jobOutput: Map<string, JobResult>;
 
   constructor(
-    private client: Client,
-    private onExecution?: (
-      id: string,
-      JobResult: JobResult<TData>
-    ) => MaybeAsync<void>
+    private client: PolywrapClient,
+    private onExecution?: (id: string, JobResult: JobResult) => MaybeAsync<void>
   ) {
     this.jobOutput = new Map();
   }
 
-  async run(opts: JobRunOptions): Promise<void> {
-    const { relativeId, parentId, jobs } = opts;
+  async run(jobs: WorkflowJobs, ids: string[]): Promise<void> {
+    const running = ids.map(async (absJobId) => {
+      const jobId = this.getJobId(absJobId);
 
-    if (relativeId) {
-      let index = relativeId.indexOf(".");
-      index = index === -1 ? relativeId.length : index;
-
-      const jobId = relativeId.substring(0, index);
-      if (jobId === "") return;
-
-      const steps = jobs[jobId].steps;
+      const steps: Step[] | undefined = jobs[jobId].steps as Step[];
       if (steps) {
-        for (let i = 0; i < steps.length; i++) {
-          let result: JobResult<TData> | undefined;
-          let args: Record<string, unknown> | undefined;
-
-          const step = steps[i];
-          const absoluteId = parentId
-            ? `${parentId}.${jobId}.${i}`
-            : `${jobId}.${i}`;
-          try {
-            args = this.resolveArgs(absoluteId, step.args);
-          } catch (e) {
-            result = {
-              error: e,
-              status: JobStatus.SKIPPED,
-            };
-          }
-
-          if (args) {
-            const invokeResult = await this.client.invoke<TData, TUri>({
-              uri: step.uri,
-              method: step.method,
-              config: step.config,
-              args: args,
-            });
-
-            if (invokeResult.error) {
-              result = { ...invokeResult, status: JobStatus.FAILED };
-            } else {
-              result = { ...invokeResult, status: JobStatus.SUCCEED };
-            }
-          }
-
-          if (result) {
-            this.jobOutput.set(absoluteId, result);
-
-            if (this.onExecution && typeof this.onExecution === "function") {
-              await executeMaybeAsyncFunction(
-                this.onExecution,
-                absoluteId,
-                result
-              );
-            }
-          }
-        }
+        await this.executeSteps(absJobId, steps);
       }
-      const subJobs = jobs[jobId].jobs;
+
+      const subJobs: WorkflowJobs | undefined = jobs[jobId].jobs;
       if (subJobs) {
-        await this.run({
-          relativeId: relativeId.substring(index + 1),
-          parentId: parentId ? `${parentId}.${jobId}` : jobId,
-          jobs: subJobs,
-        });
+        const subIds = Object.keys(subJobs).map((sub) => `${absJobId}.${sub}`);
+        await this.run(subJobs, subIds);
       }
-    } else {
-      const jobIds = Object.keys(jobs);
-      // Run all the sibling jobs in parallel
-      await Promise.all(
-        jobIds.map((jobId) =>
-          this.run({
-            relativeId: jobId,
-            parentId,
-            jobs: jobs,
-          })
-        )
+    });
+    await Promise.all(running);
+  }
+
+  private getJobId(absJobId: string): string {
+    const dotIdx = absJobId.lastIndexOf(".");
+    if (dotIdx > -1) {
+      return absJobId.substring(dotIdx + 1);
+    }
+    return absJobId;
+  }
+
+  private followAccessors(
+    jobResult: JobResult,
+    accessors: string[],
+    referenceId: string,
+    absJobId: string,
+    stepId: number
+  ): unknown {
+    let val = jobResult as unknown;
+    for (const [i, accessor] of accessors.entries()) {
+      const indexable = val as Record<string, unknown>;
+      if (!(accessor in indexable)) {
+        const currentRef = referenceId + accessors.slice(0, i).join(".");
+        throw new Error(
+          `Could not resolve arguments: Property ${accessor} not found in ${currentRef} for step ${absJobId}.${stepId}`
+        );
+      }
+      val = indexable[accessor];
+    }
+    return val;
+  }
+
+  private resolveReference(
+    absJobId: string,
+    stepId: number,
+    reference: string
+  ): unknown {
+    // get numerical index of property accessors
+    let dataOrErrorIdx = reference.indexOf(".data");
+    if (dataOrErrorIdx < 0) {
+      dataOrErrorIdx = reference.indexOf(".error");
+      if (dataOrErrorIdx < 0) {
+        throw new Error(
+          `Could not find 'data' or 'error' properties in reference ${reference} for step ${absJobId}.${stepId}`
+        );
+      }
+    }
+
+    // get reference job output
+    const referenceId: string = reference.substring(1, dataOrErrorIdx);
+    if (!this.jobOutput.has(referenceId)) {
+      throw new Error(
+        `Could not resolve reference id ${referenceId} for step ${absJobId}.${stepId}`
       );
+    }
+    const refJobResult = this.jobOutput.get(referenceId) as JobResult;
+
+    // parse and validate accessors
+    const accessors: string[] = reference
+      .substring(dataOrErrorIdx + 1)
+      .split(".");
+    if (refJobResult.status === JobStatus.SKIPPED) {
+      throw new Error(
+        `Tried to resolve reference to skipped job ${referenceId} for step ${absJobId}.${stepId}`
+      );
+    } else if (
+      accessors[0] === "data" &&
+      refJobResult.status === JobStatus.FAILED
+    ) {
+      throw new Error(
+        `Tried to resolve data of failed job ${referenceId} for step ${absJobId}.${stepId}`
+      );
+    } else if (
+      accessors[0] === "error" &&
+      refJobResult.status === JobStatus.SUCCEED
+    ) {
+      throw new Error(
+        `Tried to resolve error message of successful job ${referenceId} for step ${absJobId}.${stepId}`
+      );
+    }
+
+    // follow accessors through reference output to get requested data
+    return this.followAccessors(
+      refJobResult,
+      accessors,
+      referenceId,
+      absJobId,
+      stepId
+    );
+  }
+
+  private resolveRecord(
+    absJobId: string,
+    stepId: number,
+    record: Record<string, unknown>
+  ): Record<string, unknown> {
+    const resolved: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(record)) {
+      resolved[key] = this.resolveValue(absJobId, stepId, value);
+    }
+    return resolved;
+  }
+
+  private resolveArray(
+    absJobId: string,
+    stepId: number,
+    array: Array<unknown>
+  ): Array<unknown> {
+    return array.map((v) => this.resolveValue(absJobId, stepId, v));
+  }
+
+  private resolveValue(
+    absJobId: string,
+    stepId: number,
+    value: unknown
+  ): unknown {
+    if (this.isReference(value)) {
+      return this.resolveReference(absJobId, stepId, value);
+    } else if (Array.isArray(value)) {
+      return this.resolveArray(absJobId, stepId, value);
+    } else if (this.isRecord(value)) {
+      return this.resolveRecord(absJobId, stepId, value);
+    } else {
+      return value;
     }
   }
 
-  resolveArgs(
-    absCurStepId: string,
-    args: Record<string, unknown> | undefined
-  ): Record<string, unknown> {
-    const index = absCurStepId.lastIndexOf(".");
-    const curStepId = +absCurStepId.substring(index + 1);
-    const absCurJobId = absCurStepId.substring(0, index);
-    const outputs = this.jobOutput;
-
-    function resolveValue(value: unknown): unknown {
-      if (typeof value === "string" && value.startsWith("$")) {
-        const absStepIdArr = value.slice(1).split(".");
-        const absJobId = absStepIdArr
-          .slice(0, absStepIdArr.length - 2)
-          .join(".");
-        const dataOrErr: DataOrError = absStepIdArr[
-          absStepIdArr.length - 1
-        ] as DataOrError;
-        const absStepId = `${absJobId}.${
-          absStepIdArr[absStepIdArr.length - 2]
-        }`;
-
-        if (absCurJobId.includes(absJobId)) {
-          if (absJobId === absCurJobId) {
-            if (+absStepIdArr[absStepIdArr.length - 2] < curStepId) {
-              const output = outputs.get(absStepId);
-              if (output && output[dataOrErr]) {
-                return output[dataOrErr];
-              }
-            }
-          }
-          const output = outputs.get(absStepId);
-          if (
-            output &&
-            dataOrErr === "data" &&
-            output.status === JobStatus.SUCCEED &&
-            output.data
-          ) {
-            return output.data;
-          }
-          if (
-            output &&
-            dataOrErr === "error" &&
-            output.status === JobStatus.FAILED &&
-            output.error
-          ) {
-            return output.error;
-          }
-        }
-
-        throw new Error(
-          `Could not resolve arguments for step with stepId: ${absCurJobId}.${curStepId}`
-        );
-      } else if (Array.isArray(value)) return value.map(resolveValue);
-      else if (typeof value === "object" && value !== null) {
-        return Object.entries(value as Record<string, unknown>).reduce(
-          (obj, [k, v]) => ((obj[k] = resolveValue(v)), obj),
-          {} as Record<string, unknown>
-        );
-      } else return value;
+  private async execStep(
+    absJobId: string,
+    stepId: number,
+    step: Step
+  ): Promise<JobResult> {
+    let args: Record<string, unknown> | undefined;
+    if (step.args) {
+      try {
+        args = this.resolveRecord(absJobId, stepId, step.args);
+      } catch (e) {
+        return {
+          error: e,
+          status: JobStatus.SKIPPED,
+        };
+      }
     }
 
-    return args
-      ? (resolveValue(args) as Record<string, unknown>)
-      : ({} as Record<string, unknown>);
+    let finalClient = this.client;
+
+    if (step.config) {
+      const finalConfig = new ClientConfigBuilder()
+        .add(this.client.getConfig())
+        .add(step.config)
+        .build();
+
+      finalClient = new PolywrapClient(finalConfig);
+    }
+
+    const invokeResult = await finalClient.invoke({
+      uri: step.uri,
+      method: step.method,
+      args: args,
+    });
+
+    if (invokeResult.error) {
+      return { ...invokeResult, status: JobStatus.FAILED };
+    } else {
+      return { ...invokeResult, status: JobStatus.SUCCEED };
+    }
+  }
+
+  private async executeSteps(absJobId: string, steps: Step[]) {
+    for (let i = 0; i < steps.length; i++) {
+      const step = steps[i];
+      const absId = `${absJobId}.${i}`;
+
+      const result: JobResult = await this.execStep(absJobId, i, step);
+
+      this.jobOutput.set(absId, result);
+
+      if (this.onExecution) {
+        await executeMaybeAsyncFunction(this.onExecution, absId, result);
+      }
+    }
+  }
+
+  private isReference(value: unknown): value is string {
+    return typeof value === "string" && value.startsWith("$");
+  }
+
+  private isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null;
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/result",
   "description": "Result helpers",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -15,7 +15,6 @@
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/"
   },
-  "dependencies": {},
   "devDependencies": {
     "rimraf": "3.0.2",
     "ts-node": "8.10.2",

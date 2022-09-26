@@ -14,8 +14,9 @@ const HELP = `Usage: polywrap run|r [options]
 Runs Workflows
 
 Options:
-  -m, --manifest  <manifest>            Workflow Manifest path (default:
-                                        "polywrap.test.yaml")
+  -m, --manifest-file  <path>           Path to the Polywrap Workflow manifest
+                                        file (default: polywrap.test.yaml |
+                                        polywrap.test.yml)
   -c, --client-config <config-path>     Add custom configuration to the
                                         PolywrapClient
   -o, --output-file <output-file-path>  Output file path for the workflow
@@ -104,7 +105,7 @@ describe("e2e tests for run command", () => {
       expect(item.error).toBeUndefined();
       expect(item.data).toBeDefined();
     });
-    expect(output).toHaveLength(3);
+    expect(output).toHaveLength(4);
   });
 
   it("Should successfully return response: using json workflow", async () => {
@@ -124,7 +125,7 @@ describe("e2e tests for run command", () => {
       expect(item.error).toBeUndefined();
       expect(item.data).toBeDefined();
     });
-    expect(output).toHaveLength(3);
+    expect(output).toHaveLength(4);
   });
 
   it("Should successfully create json output file if specified", async () => {
@@ -260,6 +261,59 @@ describe("e2e tests for run command", () => {
     expect(stdout).toBeTruthy();
 
     const output = parseOutput(stdout);
+    expect(output[0].status).toBe("SUCCEED");
+    expect(output[0].validation).toBe("SUCCEED");
+    expect(output[0].error).toBeFalsy();
+  });
+
+  it("Should access nested properties of referenced result objects", async () => {
+    const testCaseDir = getTestCaseDir(8);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(stderr).toBe("");
+    expect(exitCode).toEqual(0);
+    expect(stdout).toBeTruthy();
+
+    const output = parseOutput(stdout);
+    expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
+    expect(output.filter((o => o.validation === "SUCCEED"))).toHaveLength(output.length);
+  });
+
+  it("Should print error on stderr if job is named 'data' or 'error'", async () => {
+    const testCaseDir = getTestCaseDir(9);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(stderr).toBeDefined();
+    const err = "Reserved job name 'data' or 'error' found in job";
+    expect(stderr.indexOf(err)).toBeGreaterThan(-1);
+    expect(exitCode).toEqual(1);
+  });
+
+  it("Should run and validate a subset of ids", async () => {
+    const testCaseDir = getTestCaseDir(10);
+    const args = getCmdArgs(testCaseDir);
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", ...args],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(stderr).toBe("");
+    expect(exitCode).toEqual(0);
+    expect(stdout).toBeTruthy();
+
+    const output = parseOutput(stdout);
+    expect(output[0].id).toBe("case2.0");
     expect(output[0].status).toBe("SUCCEED");
     expect(output[0].validation).toBe("SUCCEED");
     expect(output[0].error).toBeFalsy();

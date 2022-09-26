@@ -22,32 +22,16 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   resolver: IUriResolver<unknown>;
 }
 
-export interface Contextualized {
-  contextId?: string;
-}
-
-export type GetRedirectsOptions = Contextualized;
-
-export type GetPluginsOptions = Contextualized;
-
-export type GetInterfacesOptions = Contextualized;
-
-export type GetEnvsOptions = Contextualized;
-
-export type GetUriResolverOptions = Contextualized;
-
-export interface GetManifestOptions extends Contextualized {
+export interface GetManifestOptions {
   noValidate?: boolean;
 }
 
-export type GetPluginOptions = Contextualized;
-
-export interface GetFileOptions extends Contextualized {
+export interface GetFileOptions {
   path: string;
   encoding?: "utf-8" | string;
 }
 
-export interface GetImplementationsOptions extends Contextualized {
+export interface GetImplementationsOptions {
   applyRedirects?: boolean;
 }
 
@@ -56,27 +40,23 @@ export interface Client
     QueryHandler,
     SubscriptionHandler,
     UriResolverHandler<unknown> {
-  getRedirects(options?: GetRedirectsOptions): readonly UriRedirect<Uri>[];
+  getConfig(): ClientConfig<Uri>;
 
-  getPlugins(options?: GetPluginsOptions): readonly PluginRegistration<Uri>[];
+  getRedirects(): readonly UriRedirect<Uri>[];
+
+  getPlugins(): readonly PluginRegistration<Uri>[];
 
   getPluginByUri<TUri extends Uri | string>(
-    uri: TUri,
-    options?: GetPluginOptions
+    uri: TUri
   ): PluginPackage<unknown> | undefined;
 
-  getInterfaces(
-    options?: GetInterfacesOptions
-  ): readonly InterfaceImplementations<Uri>[];
+  getInterfaces(): readonly InterfaceImplementations<Uri>[];
 
-  getEnvs(options?: GetEnvsOptions): readonly Env<Uri>[];
+  getEnvs(): readonly Env<Uri>[];
 
-  getEnvByUri<TUri extends Uri | string>(
-    uri: TUri,
-    options?: GetEnvsOptions
-  ): Env<Uri> | undefined;
+  getEnvByUri<TUri extends Uri | string>(uri: TUri): Env<Uri> | undefined;
 
-  getUriResolver(options: GetUriResolverOptions): IUriResolver<unknown>;
+  getUriResolver(): IUriResolver<unknown>;
 
   getManifest<TUri extends Uri | string>(
     uri: TUri,

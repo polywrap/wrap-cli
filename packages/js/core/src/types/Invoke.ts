@@ -1,11 +1,8 @@
-import { ClientConfig, Uri, Wrapper } from ".";
+import { Uri, Wrapper } from ".";
 import { IUriResolutionContext } from "../uri-resolution";
 
 /** Options required for an Wrapper invocation. */
-export interface InvokeOptions<
-  TUri extends Uri | string = string,
-  TClientConfig extends ClientConfig = ClientConfig
-> {
+export interface InvokeOptions<TUri extends Uri | string = string> {
   /** The Wrapper's URI */
   uri: TUri;
 
@@ -19,21 +16,11 @@ export interface InvokeOptions<
   args?: Record<string, unknown> | Uint8Array;
 
   /**
-   * Override the client's config for all invokes within this invoke.
-   */
-  config?: Partial<TClientConfig>;
-
-  /**
    * Env variables for the wrapper invocation.
    */
   env?: Record<string, unknown>;
 
   resolutionContext?: IUriResolutionContext;
-
-  /**
-   * Invoke id used to track query context data set internally.
-   */
-  contextId?: string;
 }
 
 /**
@@ -54,10 +41,8 @@ export interface InvokeResult<TData = unknown> {
   error?: Error;
 }
 
-export interface InvokerOptions<
-  TUri extends Uri | string = string,
-  TClientConfig extends ClientConfig = ClientConfig
-> extends InvokeOptions<TUri, TClientConfig> {
+export interface InvokerOptions<TUri extends Uri | string = string>
+  extends InvokeOptions<TUri> {
   encodeResult?: boolean;
 }
 

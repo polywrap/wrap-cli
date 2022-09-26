@@ -3,6 +3,7 @@ export * from "./helpers";
 export * from "./infra";
 export * from "./intl";
 export * from "./option-parsers";
+export * from "./option-defaults";
 export * from "./project";
 export * from "./system";
 export * from "./test-env";
