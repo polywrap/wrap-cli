@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from re import L
 
 from polywrap_msgpack import sanitize
 
@@ -84,18 +85,32 @@ def test_sanitize_str_returns_same_str():
 def test_sanitize_simple_list_returns_simple_list():
     assert [1] == sanitize([1])
 
+def test_sanitize_empty_list_returns_empty_list():
+    assert sanitize([]) == []
+
 def test_sanitize_long_list_returns_long_list():
     assert [2,55,1234,6345] == sanitize([2,55,1234,6345])
 
 def test_sanitize_complex_list_returns_list():
     complex_list = [1, 'foo', 'bar', 0.123, True, None]
-    assert complex_list == sanitize(complex_list)
+    assert sanitize(complex_list) == complex_list
 
 def test_sanitize_nested_list_returns_nested_list():
     nested_list = [23, [[0.123,'dog'], 'cat'], 'boat', ['moon', True]]
-    assert nested_list == sanitize(nested_list)
+    assert sanitize(nested_list) == nested_list 
+
+def test_sanitize_set_returns_set():
+    assert sanitize({'bob','alice','megan','john'}) == {'bob','alice','megan','john'}
+
+def test_sanitize_complex_number_returns_complex_number():
+    assert sanitize(3 + 5j) == 3 + 5j
+
+def test_sanitize_simple_dict_returns_sanitized_values():
+    simple_dict = {'name': 'John'}
+    assert sanitize(simple_dict) == simple_dict
 
 # Tests that are not passing
+
 def test_sanitize_single_tuple_returns_list():
     assert sanitize((8)) == [8] 
 
@@ -105,17 +120,19 @@ def test_sanitize_long_tuple_returns_list():
 def test_sanitize_nested_tuples_returns_nested_list():
     nested_tuple = (23, ((0.123,'dog'), 'cat'), 'boat', ('moon', True))
     assert sanitize(nested_tuple) == nested_tuple
-# WIP Tests
 
-def test_sanitize_dict_returns_sanitized_values():
+def test_sanitize_complex_dict_returns_sanitized_values():
     complex_dict = {'name': ['John', 'Doe'],
         'position':[-0.34478,12.98453],
         'color': 'green',
         'age':33,
-        'origin':(0,0)}
+        'origin':(0,0),
+        'is_online': True,
+        'pet': None,
+        'friends': {'bob','alice','megan','john'} }
     assert sanitize(complex_dict) == complex_dict
 
-
+# WIP Tests
 
 
 # def test_sanitize_dict_returns_xxx():
@@ -123,3 +140,5 @@ def test_sanitize_dict_returns_sanitized_values():
 #     assert sanitize(dictionary) == 
     
 
+#def test_sanitize_has_slot_attributes():
+#  assert
