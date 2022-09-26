@@ -140,9 +140,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      const num = ethers.BigNumber.from(response.data);
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      const num = ethers.BigNumber.from(response.value);
       expect(num.eq("100")).toBeTruthy();
     });
 
@@ -160,9 +160,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      const num = ethers.BigNumber.from(response.data);
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      const num = ethers.BigNumber.from(response.value);
       expect(num.eq("100")).toBeTruthy();
     });
 
@@ -181,10 +181,12 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      if (!response.data) {
+      if (!response.ok) fail(response.error);
+
+      if (!response.value) {
         throw new Error('Empty data on view call, expecting JSON');
       }
-      const result = JSON.parse(response.data);
+      const result = JSON.parse(response.value);
 
       expect(result.length).toEqual(2);
       expect(result[0]).toEqual("100");
@@ -206,10 +208,12 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      if (!response.data) {
+      if (!response.ok) fail(response.error);
+
+      if (!response.value) {
         throw new Error('Empty data on view call, expecting JSON');
       }
-      const result = JSON.parse(response.data);
+      const result = JSON.parse(response.value);
 
       expect(result.length).toEqual(2);
       expect(result[0]).toEqual("100");
@@ -231,10 +235,12 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      if (!response.data) {
+      if (!response.ok) fail(response.error);
+
+      if (!response.value) {
         throw new Error('Empty data on view call, expecting JSON');
       }
-      const result = JSON.parse(response.data);
+      const result = JSON.parse(response.value);
 
       expect(result.length).toEqual(2);
       expect(result[0]).toEqual("100");
@@ -254,7 +260,8 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.data).toEqual('[]');
+      if (!response.ok) fail(response.error);
+      expect(response.value).toEqual('[]');
     });
 
     it("callContractView (struct array single element)", async () => {
@@ -271,10 +278,12 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      if (!response.data) {
+      if (!response.ok) fail(response.error);
+
+      if (!response.value) {
         throw new Error('Empty data on view call, expecting JSON');
       }
-      const result = JSON.parse(response.data);
+      const result = JSON.parse(response.value);
 
       expect(result.length).toEqual(1);
       expect(result[0].to).toEqual(queueAddress);
@@ -296,10 +305,12 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      if (!response.data) {
+      if (!response.ok) fail(response.error);
+
+      if (!response.value) {
         throw new Error('Empty data on view call, expecting JSON');
       }
-      const result = JSON.parse(response.data);
+      const result = JSON.parse(response.value);
 
       expect(result.length).toEqual(2);
       expect(result[0].to).toEqual(queueAddress);
