@@ -40,7 +40,6 @@ export interface Client
     QueryHandler,
     SubscriptionHandler,
     UriResolverHandler<unknown> {
-
   getConfig(): ClientConfig<Uri>;
 
   getRedirects(): readonly UriRedirect<Uri>[];

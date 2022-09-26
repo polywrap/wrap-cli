@@ -182,9 +182,7 @@ export class JobRunner {
         .add(step.config)
         .build();
 
-      finalClient = new PolywrapClient(
-        finalConfig
-      );
+      finalClient = new PolywrapClient(finalConfig);
     }
 
     const invokeResult = await finalClient.invoke({
