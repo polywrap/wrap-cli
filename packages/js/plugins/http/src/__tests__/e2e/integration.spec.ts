@@ -56,9 +56,9 @@ describe("e2e tests for HttpPlugin", () => {
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      expect(response.data?.status).toBe(200);
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(response.value?.status).toBe(200);
     });
 
     it("post", async () => {
@@ -86,10 +86,10 @@ describe("e2e tests for HttpPlugin", () => {
         },
       });
 
-      expect(response.error).toBeFalsy();
-      expect(response.data).toBeTruthy();
-      expect(response.data?.status).toBe(200);
-      expect(response.data?.body).toBeTruthy();
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeTruthy();
+      expect(response.value?.status).toBe(200);
+      expect(response.value?.body).toBeTruthy();
     });
   });
 });
