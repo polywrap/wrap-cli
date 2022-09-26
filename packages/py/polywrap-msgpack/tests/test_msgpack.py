@@ -104,8 +104,19 @@ def test_sanitize_long_tuple_returns_list():
 
 def test_sanitize_nested_tuples_returns_nested_list():
     nested_tuple = (23, ((0.123,'dog'), 'cat'), 'boat', ('moon', True))
-    assert nested_tuple == sanitize(nested_tuple)
+    assert sanitize(nested_tuple) == nested_tuple
 # WIP Tests
+
+def test_sanitize_dict_returns_sanitized_values():
+    complex_dict = {'name': ['John', 'Doe'],
+        'position':[-0.34478,12.98453],
+        'color': 'green',
+        'age':33,
+        'origin':(0,0)}
+    assert sanitize(complex_dict) == complex_dict
+
+
+
 
 # def test_sanitize_dict_returns_xxx():
 #     dictionary = {'key1': 'value1'}
