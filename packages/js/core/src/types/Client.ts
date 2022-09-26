@@ -7,10 +7,10 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
+  PluginPackage,
 } from "./";
-import { UriResolver } from "../uri-resolution/core";
+import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
-import { WrapperCache } from "./WrapperCache";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
@@ -19,34 +19,19 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
-  uriResolvers: UriResolver[];
-  wrapperCache?: WrapperCache;
+  resolver: IUriResolver<unknown>;
 }
 
-export interface Contextualized {
-  contextId?: string;
-}
-
-export type GetRedirectsOptions = Contextualized;
-
-export type GetPluginsOptions = Contextualized;
-
-export type GetInterfacesOptions = Contextualized;
-
-export type GetEnvsOptions = Contextualized;
-
-export type GetUriResolversOptions = Contextualized;
-
-export interface GetManifestOptions extends Contextualized {
+export interface GetManifestOptions {
   noValidate?: boolean;
 }
 
-export interface GetFileOptions extends Contextualized {
+export interface GetFileOptions {
   path: string;
   encoding?: "utf-8" | string;
 }
 
-export interface GetImplementationsOptions extends Contextualized {
+export interface GetImplementationsOptions {
   applyRedirects?: boolean;
 }
 
@@ -54,23 +39,24 @@ export interface Client
   extends Invoker,
     QueryHandler,
     SubscriptionHandler,
-    UriResolverHandler {
-  getRedirects(options?: GetRedirectsOptions): readonly UriRedirect<Uri>[];
+    UriResolverHandler<unknown> {
+  getConfig(): ClientConfig<Uri>;
 
-  getPlugins(options?: GetPluginsOptions): readonly PluginRegistration<Uri>[];
+  getRedirects(): readonly UriRedirect<Uri>[];
 
-  getInterfaces(
-    options?: GetInterfacesOptions
-  ): readonly InterfaceImplementations<Uri>[];
+  getPlugins(): readonly PluginRegistration<Uri>[];
 
-  getEnvs(options?: GetEnvsOptions): readonly Env<Uri>[];
+  getPluginByUri<TUri extends Uri | string>(
+    uri: TUri
+  ): PluginPackage<unknown> | undefined;
 
-  getEnvByUri<TUri extends Uri | string>(
-    uri: TUri,
-    options?: GetEnvsOptions
-  ): Env<Uri> | undefined;
+  getInterfaces(): readonly InterfaceImplementations<Uri>[];
 
-  getUriResolvers(options: GetUriResolversOptions): readonly UriResolver[];
+  getEnvs(): readonly Env<Uri>[];
+
+  getEnvByUri<TUri extends Uri | string>(uri: TUri): Env<Uri> | undefined;
+
+  getUriResolver(): IUriResolver<unknown>;
 
   getManifest<TUri extends Uri | string>(
     uri: TUri,

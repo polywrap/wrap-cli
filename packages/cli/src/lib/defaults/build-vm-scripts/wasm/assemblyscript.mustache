@@ -1,0 +1,11 @@
+{{#polywrap_module}}
+asc {{dir}}/wrap/entry.ts \
+    --path ./node_modules \
+    --outFile ./build/wrap.wasm \
+    --use abort={{dir}}/wrap/entry/wrapAbort \
+    --optimize --importMemory \
+    --runtime stub \
+    --runPasses asyncify
+
+chmod 777 -R ./build
+{{/polywrap_module}}

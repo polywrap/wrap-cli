@@ -15,7 +15,7 @@ import {
 import { BuildStrategy } from "./build-strategies/BuildStrategy";
 import { CodeGenerator } from "./codegen/CodeGenerator";
 
-import { WasmWrapper, WrapImports } from "@polywrap/client-js";
+import { WasmWrapper, WrapImports } from "@polywrap/wasm-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
@@ -25,49 +25,13 @@ import path from "path";
 export interface CompilerConfig {
   outputDir: string;
   project: PolywrapProject;
-  codeGenerator: CodeGenerator;
+  codeGenerator?: CodeGenerator;
   buildStrategy: BuildStrategy;
   schemaComposer: SchemaComposer;
 }
 
 export class Compiler {
   constructor(private _config: CompilerConfig) {}
-
-  public async codegen(): Promise<boolean> {
-    const { project, codeGenerator } = this._config;
-
-    const run = async (): Promise<void> => {
-      if (!(await this._isInterface())) {
-        // Generate the bindings
-        await codeGenerator.generate();
-      }
-    };
-
-    if (project.quiet) {
-      try {
-        await run();
-        return true;
-      } catch (e) {
-        gluegun.print.error(e);
-        return false;
-      }
-    } else {
-      try {
-        await withSpinner(
-          intlMsg.lib_compiler_codegenText(),
-          intlMsg.lib_compiler_codegenError(),
-          intlMsg.lib_compiler_codegenWarning(),
-          async () => {
-            return run();
-          }
-        );
-        return true;
-      } catch (e) {
-        gluegun.print.error(e);
-        return false;
-      }
-    }
-  }
 
   public async compile(): Promise<boolean> {
     const { project, codeGenerator } = this._config;
@@ -81,7 +45,9 @@ export class Compiler {
 
       if (!(await this._isInterface())) {
         // Generate the bindings
-        await codeGenerator.generate();
+        if (codeGenerator) {
+          await codeGenerator.generate();
+        }
 
         // Compile the Wrapper
         await this._buildModules();

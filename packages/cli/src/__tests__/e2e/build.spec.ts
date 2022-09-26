@@ -18,6 +18,7 @@ Options:
                                      (default: ./build)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
+  -n, --no-codegen                   Skip code generation
   -s, --strategy <strategy>          Strategy to use for building the wrapper
                                      (default: docker)
   -w, --watch                        Automatically rebuild when changes are
@@ -242,6 +243,22 @@ describe("e2e tests for build command", () => {
       expect(output).toContain(`Artifacts written to ${buildDir}`);
       expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
     });
+  })
+
+  describe("VM strategy", () => {
+    it("Builds for assemblyscript", async () => {
+      const { exitCode: code, stdout: output } = await runCLI({
+        args: ["build", "-v", "-s", "vm"],
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+      });
+  
+      const buildDir = `./build`;
+
+      expect(code).toEqual(0);
+      expect(output).toContain(`Artifacts written to ${buildDir}`);
+      expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
+    })
   })
 
   describe("test-cases", () => {

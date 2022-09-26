@@ -329,6 +329,7 @@ export const runImplementationsTest = async (
 
 export const runGetImplementationsTest = async (
   client: PolywrapClient,
+  aggregatorUri: string,
   interfaceUri: string,
   implementationUri: string
 ) => {
@@ -336,13 +337,25 @@ export const runGetImplementationsTest = async (
   expect(client.getImplementations(interfaceUri)).toEqual([implUri.uri]);
 
   const result = await client.invoke({
-    uri: implUri.uri,
+    uri: aggregatorUri,
     method: "moduleImplementations",
   });
 
   expect(result.error).toBeFalsy();
   expect(result.data).toBeTruthy();
   expect(result.data).toEqual([implUri.uri]);
+
+  const moduleMethodResult = await client.invoke({
+    uri: aggregatorUri,
+    method: "abstractModuleMethod",
+    args: {
+      arg: {
+        str: "Test String 2",
+      },
+    },
+  });
+  expect(moduleMethodResult.error).toBeFalsy();
+  expect(moduleMethodResult.data).toEqual("Test String 2");
 };
 
 export const runInvalidTypesTest = async (
@@ -412,7 +425,7 @@ export const runInvalidTypesTest = async (
   );
 };
 
-export const runJsonTypeTest = async (client: PolywrapClient, uri: string) => {
+export const runJsonTypeTest = async (client: PolywrapClient, uri: string, testReserved: boolean = false) => {
   type Json = string;
   const value = JSON.stringify({ foo: "bar", bar: "bar" });
   const parseResponse = await client.invoke<{ parse: Json }>({
@@ -473,6 +486,28 @@ export const runJsonTypeTest = async (client: PolywrapClient, uri: string) => {
 
   const methodJSONResult = JSON.stringify(json);
   expect(methodJSONResponse.data).toEqual(methodJSONResult);
+
+  if (testReserved) {
+    const reserved = { const: "hello", if: true };
+    const parseReservedResponse = await client.invoke<{ const: string; if: boolean }>({
+      uri,
+      method: "parseReserved",
+      args: {
+        json: JSON.stringify(reserved)
+      },
+    });
+  
+    expect(parseReservedResponse.data).toEqual(reserved);
+  
+    const stringifyReservedResponse = await client.invoke<string>({
+      uri,
+      method: "stringifyReserved",
+      args: {
+        reserved
+      },
+    });
+    expect(stringifyReservedResponse.data).toEqual(JSON.stringify(reserved));
+  }
 };
 
 export const runLargeTypesTest = async (
@@ -755,13 +790,16 @@ export const runObjectTypesTest = async (
 
 export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
   const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
-  const nestedMapClass = new Map<string, Map<string, number>>().set("Nested", mapClass);
+  const nestedMapClass = new Map<string, Map<string, number>>().set(
+    "Nested",
+    mapClass
+  );
   const mapRecord: Record<string, number> = {
     Hello: 1,
     Heyo: 50,
   };
   const nestedMapRecord: Record<string, Record<string, number>> = {
-    Nested: mapRecord
+    Nested: mapRecord,
   };
 
   const returnMapResponse1 = await client.invoke<Map<string, number>>({
@@ -790,7 +828,7 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     args: {
       foo: {
         map: mapClass,
-        nestedMap: nestedMapClass
+        nestedMap: nestedMapClass,
       },
       key: "Hello",
     },
@@ -804,7 +842,7 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     args: {
       foo: {
         map: mapRecord,
-        nestedMap: nestedMapRecord
+        nestedMap: nestedMapRecord,
       },
       key: "Heyo",
     },
@@ -813,28 +851,33 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
   expect(getKeyResponse2.data).toEqual(mapRecord.Heyo);
 
   const returnCustomMap = await client.invoke<{
-    map: Map<string, number>,
-    nestedMap: Map<string, Map<string, number>>
+    map: Map<string, number>;
+    nestedMap: Map<string, Map<string, number>>;
   }>({
     uri,
     method: "returnCustomMap",
     args: {
       foo: {
         map: mapRecord,
-        nestedMap: nestedMapClass
-      }
+        nestedMap: nestedMapClass,
+      },
     },
   });
   expect(returnCustomMap.error).toBeUndefined();
-  expect(returnCustomMap.data).toEqual({ map: mapClass, nestedMap: nestedMapClass });
-
-  const returnNestedMap = await client.invoke<Map<string, Map<string, number>>>({
-    uri,
-    method: "returnNestedMap",
-    args: {
-      foo: nestedMapClass
-    },
+  expect(returnCustomMap.data).toEqual({
+    map: mapClass,
+    nestedMap: nestedMapClass,
   });
+
+  const returnNestedMap = await client.invoke<Map<string, Map<string, number>>>(
+    {
+      uri,
+      method: "returnNestedMap",
+      args: {
+        foo: nestedMapClass,
+      },
+    }
+  );
   expect(returnNestedMap.error).toBeUndefined();
   expect(returnNestedMap.data).toEqual(nestedMapClass);
 };
@@ -916,14 +959,7 @@ export const runSimpleEnvTest = async (
     args: {
       arg: "not set",
     },
-    config: {
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {},
-        },
-      ],
-    },
+    env: { }
   });
   expect(getEnvNotSetResult.data).toBeUndefined();
   expect(getEnvNotSetResult.error).toBeTruthy();
@@ -935,16 +971,9 @@ export const runSimpleEnvTest = async (
     args: {
       arg: "not set",
     },
-    config: {
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {
-            str: "string",
-            requiredInt: "99",
-          },
-        },
-      ],
+    env: {
+      str: "string",
+      requiredInt: "99",
     },
   });
 
@@ -1046,24 +1075,17 @@ export const runComplexEnvs = async (
     args: {
       arg: "string",
     },
-    config: {
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {
-            object: {
-              prop: "object another string",
-            },
-            str: "another string",
-            optFilledStr: "optional string",
-            number: 10,
-            bool: true,
-            en: "FIRST",
-            array: [32, 23],
-          },
-        },
-      ],
-    },
+    env: {
+      object: {
+        prop: "object another string",
+      },
+      str: "another string",
+      optFilledStr: "optional string",
+      number: 10,
+      bool: true,
+      en: "FIRST",
+      array: [32, 23],
+    }
   });
   expect(mockUpdatedEnvResult.error).toBeFalsy();
   expect(mockUpdatedEnvResult.data).toEqual({

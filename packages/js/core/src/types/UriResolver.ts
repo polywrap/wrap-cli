@@ -1,39 +1,18 @@
-import { ClientConfig, Uri } from ".";
-import { ResolveUriResult } from "..";
+import { Uri } from ".";
+import { IUriResolutionContext, UriPackageOrWrapper } from "../uri-resolution";
+
+import { Result } from "@polywrap/result";
 
 /** Options required for an URI resolution. */
-export interface ResolveUriOptions<
-  TClientConfig extends ClientConfig = ClientConfig
-> {
-  /**
-   * If set to true, the resolveUri function will not use the cache to resolve the uri.
-   */
-  noCacheRead?: boolean;
+export interface TryResolveUriOptions<TUri extends Uri | string> {
+  /** The Wrapper's URI */
+  uri: TUri;
 
-  /**
-   * If set to true, the resolveUri function will not cache the results
-   */
-  noCacheWrite?: boolean;
-
-  /**
-   * Override the client's config for all resolutions.
-   */
-  config?: Partial<TClientConfig>;
-
-  /**
-   * Id used to track context data set internally.
-   */
-  contextId?: string;
+  resolutionContext?: IUriResolutionContext;
 }
 
-export interface UriResolverHandler {
-  resolveUri<TUri extends Uri | string>(
-    uri: TUri,
-    options?: ResolveUriOptions<ClientConfig>
-  ): Promise<ResolveUriResult>;
-
-  loadUriResolvers(): Promise<{
-    success: boolean;
-    failedUriResolvers: string[];
-  }>;
+export interface UriResolverHandler<TError = undefined> {
+  tryResolveUri<TUri extends Uri | string>(
+    options?: TryResolveUriOptions<TUri>
+  ): Promise<Result<UriPackageOrWrapper, TError>>;
 }

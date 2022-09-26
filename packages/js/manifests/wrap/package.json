@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/wrap-manifest-types-js",
   "description": "WRAP Manifest TypeScript Typings",
-  "version": "0.6.0",
+  "version": "0.8.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -16,14 +16,14 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/msgpack-js": "0.6.0",
+    "@polywrap/msgpack-js": "0.8.0",
     "json-schema-ref-parser": "9.0.9",
     "jsonschema": "1.4.0",
     "semver": "7.3.5"
   },
   "devDependencies": {
-    "@polywrap/os-js": "0.6.0",
-    "@polywrap/wrap-manifest-schemas": "0.6.0",
+    "@polywrap/os-js": "0.8.0",
+    "@polywrap/wrap-manifest-schemas": "0.8.0",
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
     "@types/prettier": "2.6.0",

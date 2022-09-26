@@ -2,10 +2,11 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
-import { Uri, PluginModule, Subscription } from "../..";
+import { Uri, PluginModule, Subscription, PolywrapClient } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { getClient } from "../utils/getClient";
 import { makeMemoryStoragePlugin } from "../e2e/memory-storage";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 
@@ -129,7 +130,7 @@ describe("wasm-wrapper", () => {
     expect(result.data).toEqual("plugin response");
   });
 
-  it("should allow query time redirects", async () => {
+  it("should allow clone + reconfigure of redirects", async () => {
     const client = await getClient({
       plugins: [
         {
@@ -146,15 +147,21 @@ describe("wasm-wrapper", () => {
       },
     ];
 
-    const result = await client.invoke({
+    const newConfig = new ClientConfigBuilder()
+      .add(client.getConfig())
+      .add({ redirects })
+      .build();
+
+    const newClient = new PolywrapClient(
+      newConfig
+    );
+
+    const result = await newClient.invoke({
       uri: simpleWrapperUri.uri,
       method: "simpleMethod",
       args: {
         arg: "test",
-      },
-      config: {
-        redirects,
-      },
+      }
     });
 
     expect(result.data).toBeTruthy();
@@ -239,7 +246,7 @@ describe("wasm-wrapper", () => {
     const getSubscription: Subscription<number> = client.subscribe<number>({
       uri: simpleMemoryWrapperUri.uri,
       method: "getData",
-      frequency: { ms: 550 },
+      frequency: { ms: 650 },
     });
 
     for await (let result of getSubscription) {

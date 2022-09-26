@@ -25,6 +25,7 @@ use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeywor
 {{/propertyDeps}}
 {{/propertyDeps.length}}
 
+{{^isInterface}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {}
 
@@ -36,7 +37,7 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     }
 
     {{#methods}}
-    pub fn {{#toLower}}{{name}}{{/toLower}}(args: &Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
+    pub fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(args: &Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
         let uri = {{#parent}}{{#toUpper}}{{type}}{{/toUpper}}{{/parent}}::URI;
         let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(args).map_err(|e| e.to_string())?;
         let result = subinvoke::wrap_subinvoke(
@@ -51,3 +52,34 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     {{/last}}
     {{/methods}}
 }
+{{/isInterface}}
+{{#isInterface}}
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a> {
+    {{#isInterface}}uri: &'a str{{/isInterface}}
+}
+
+impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a> {
+    pub const INTERFACE_URI: &'static str = "{{uri}}";
+
+    pub fn new(uri: &'a str) -> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a> {
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} { uri: uri }
+    }
+
+    {{#methods}}
+    pub fn {{#toLower}}{{name}}{{/toLower}}(&self, args: &Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
+        let uri = self.uri;
+        let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(args).map_err(|e| e.to_string())?;
+        let result = subinvoke::wrap_subinvoke(
+            uri,
+            "{{name}}",
+            args,
+        )?;
+        deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice()).map_err(|e| e.to_string())
+    }
+    {{^last}}
+
+    {{/last}}
+    {{/methods}}
+}
+{{/isInterface}}

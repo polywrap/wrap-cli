@@ -1,4 +1,4 @@
-import { Request, Response, ResponseTypeEnum } from "./wrap";
+import { Http_Request, Http_Response, Http_ResponseTypeEnum } from "./wrap";
 
 import { AxiosResponse, AxiosRequestConfig } from "axios";
 
@@ -9,7 +9,7 @@ import { AxiosResponse, AxiosRequestConfig } from "axios";
  */
 export function fromAxiosResponse(
   axiosResponse: AxiosResponse<unknown>
-): Response {
+): Http_Response {
   const responseHeaders = new Map<string, string>();
   for (const key of Object.keys(axiosResponse.headers)) {
     responseHeaders.set(
@@ -61,12 +61,14 @@ export function fromAxiosResponse(
  *
  * @param request
  */
-export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
+export function toAxiosRequestConfig(
+  request: Http_Request
+): AxiosRequestConfig {
   let responseType: "text" | "arraybuffer" = "text";
 
   switch (request.responseType) {
     case "BINARY":
-    case ResponseTypeEnum.BINARY:
+    case Http_ResponseTypeEnum.BINARY:
       responseType = "arraybuffer";
   }
 

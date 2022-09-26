@@ -6,7 +6,7 @@ import {
   ensAddresses,
   initTestEnvironment,
   providers,
-  stopTestEnvironment
+  stopTestEnvironment,
 } from "@polywrap/test-env-js";
 
 import { ensResolverPlugin } from "..";
@@ -28,19 +28,25 @@ describe("ENS Resolver Plugin", () => {
       wrapperAbsPath: wrapperAbsPath,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
-      ensName: "cool.wrapper.eth"
+      ensName: "cool.wrapper.eth",
     });
 
     wrapperEnsDomain = ensDomain;
 
     client = new PolywrapClient({
+      envs: [
+        {
+          uri: "wrap://ens/ipfs.polywrap.eth",
+          env: {
+            provider: providers.ipfs,
+            fallbackProviders: defaultIpfsProviders
+          }
+        }
+      ],
       plugins: [
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({
-            provider: providers.ipfs,
-            fallbackProviders: defaultIpfsProviders
-          })
+          plugin: ipfsPlugin({}),
         },
         {
           uri: "wrap://ens/ethereum.polywrap.eth",
@@ -59,11 +65,11 @@ describe("ENS Resolver Plugin", () => {
           uri: "wrap://ens/ens-resolver.polywrap.eth",
           plugin: ensResolverPlugin({
             addresses: {
-              testnet: ensAddresses.ensAddress
-            }
-          })
-        }
-      ]
+              testnet: ensAddresses.ensAddress,
+            },
+          }),
+        },
+      ],
     });
   });
 
@@ -73,15 +79,17 @@ describe("ENS Resolver Plugin", () => {
 
   it("Should successfully resolve a deployed wrapper - e2e", async () => {
     const wrapperUri = `ens/testnet/${wrapperEnsDomain}`;
-    const resolution = await client.resolveUri(wrapperUri);
+    const result = await client.tryResolveUri({ uri: wrapperUri });
 
-    expect(resolution.error).toBeFalsy();
-    expect(resolution.wrapper).toBeTruthy();
+    if (!result.ok) {
+      fail("Expected response to not be an error");
+    }
 
-    const manifest = await resolution.wrapper?.getManifest(
-      {},
-      client
-    );
+    if (result.value.type !== "wrapper") {
+      fail("Expected response to be a wrapper");
+    }
+
+    const manifest = await result.value.wrapper.getManifest({}, client);
 
     expect(manifest?.name).toBe("SimpleStorage");
   });
