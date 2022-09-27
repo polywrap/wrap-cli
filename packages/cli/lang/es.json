@@ -232,6 +232,7 @@
   "lib_helpers_copyError": "Failed to write build artifacts to {path}",
   "lib_helpers_copyWarning": "Warnings write build artifacts to {path}",
   "lib_helpers_docker_couldNotConnect": "Could not connect to the Docker daemon. Is the docker daemon running?",
+  "lib_helpers_docker_copyText": "Artifacts written to {path} from the image `{image}`",
   "lib_helpers_docker_copyError": "Failed to write build artifacts to {path} from the image `{image}`",
   "lib_helpers_docker_copyWarning": "Warnings write build artifacts to {path} from the image `{image}`",
   "lib_helpers_docker_buildText": "Building source image `{image}` using dockerfile `{dockerfile}` in context `{context}`",
