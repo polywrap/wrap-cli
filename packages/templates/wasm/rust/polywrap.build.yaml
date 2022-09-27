@@ -1,6 +1,7 @@
-format: 0.1.0
-docker:
-  name: template-wasm-rs
+format: 0.2.0
+strategies:
+  image:
+    name: template-wasm-rs
 config:
   node_version: "16.13.0"
   include:

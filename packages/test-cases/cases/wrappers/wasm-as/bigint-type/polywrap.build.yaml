@@ -1,6 +1,7 @@
-format: 0.1.0
-docker:
-  name: bigint-type-wasm-as
+format: 0.2.0
+strategies:
+  image:
+    name: bigint-type-wasm-as
 config:
   node_version: "14.16.0"
 linked_packages:

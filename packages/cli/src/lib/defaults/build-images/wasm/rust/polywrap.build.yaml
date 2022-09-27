@@ -1,3 +1,4 @@
-format: 0.1.0
-docker:
-  dockerfile: ./Dockerfile.mustache
+format: 0.2.0
+strategies:
+  image:
+    dockerfile: ./Dockerfile.mustache
