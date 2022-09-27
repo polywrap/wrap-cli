@@ -69,10 +69,15 @@ def test_generic_map_decode():
 
     assert decoded == {'firstKey': 'firstValue', 'secondKey': 'secondValue'}
 
-# Passing Tests
+# STRINGS
 
 def test_sanitize_str_returns_same_str():
     assert sanitize("https://docs.polywrap.io/") == "https://docs.polywrap.io/"
+
+#def test_sanitized_polywrap_ens_uri(UriPath):
+#    pass
+
+# LISTS
 
 def test_sanitize_simple_list_returns_simple_list():
     assert  sanitize([1]) == [1]
@@ -88,6 +93,37 @@ def test_sanitize_complex_list_returns_list(complex_list):
 
 def test_sanitize_nested_list_returns_nested_list(nested_list):
     assert sanitize(nested_list) == nested_list 
+
+# COMPLEX NUMBERS
+
+def test_sanitize_complex_number_returns_string():
+    assert sanitize(3 + 5j) == "(3+5j)"
+    assert sanitize(0 + 9j) == "9j"
+
+def test_sanitize_simple_dict_returns_sanitized_values(simple_dict):
+    assert sanitize(simple_dict) == simple_dict
+
+# SLOTS
+
+def test_sanitize_object_with_slots_attributes_returns_dict_instead(object_with_slots_attributes, object_with_slots_sanitized):
+    assert sanitize(object_with_slots_attributes) == object_with_slots_sanitized
+
+# TUPLES
+
+def test_sanitize_single_tuple_returns_list(single_tuple):
+    # To create a tuple with only one item, you have add a comma after the item, 
+    # otherwise Python will not recognize the variable as a tuple.
+    assert type(sanitize(single_tuple)) == list
+    assert sanitize(single_tuple) == [8] 
+
+def test_sanitize_long_tuple_returns_list():
+    assert sanitize((2,3,6)) == [2,3,6] 
+
+def test_sanitize_nested_tuples_returns_nested_list(nested_tuple, nested_list):
+    assert sanitize(nested_tuple) == nested_list
+
+
+# SETS
 
 def test_sanitize_set_returns_list(set1):
     # Remember sets automatically reorganize the contents of the object
@@ -108,32 +144,9 @@ def test_sanitize_set_returns_list_with_all_items_of_the_set(set1, set2):
 def test_sanitize_set_returns_list_of_same_length(set1):
     assert len(sanitize(set1)) == len(set1)
 
-def test_sanitize_complex_number_returns_string():
-    assert sanitize(3 + 5j) == "(3+5j)"
-    assert sanitize(0 + 9j) == "9j"
-
-def test_sanitize_simple_dict_returns_sanitized_values(simple_dict):
-    assert sanitize(simple_dict) == simple_dict
-
-def test_sanitize_object_with_slots_attributes_returns_dict_instead(object_with_slots_attributes):
-    assert sanitize(object_with_slots_attributes) == {'slot_0':'zero','slot_1':'one'}
-
-
-def test_sanitize_single_tuple_returns_list(single_tuple):
-    # To create a tuple with only one item, you have add a comma after the item, 
-    # otherwise Python will not recognize the variable as a tuple.
-    assert type(sanitize(single_tuple)) == list
-    assert sanitize(single_tuple) == [8] 
-
-def test_sanitize_long_tuple_returns_list():
-    assert sanitize((2,3,6)) == [2,3,6] 
-
-def test_sanitize_nested_tuples_returns_nested_list(nested_tuple, nested_list):
-    assert sanitize(nested_tuple) == nested_list
-
-# Tests that are not passing
 
 def test_sanitize_complex_dict_returns_sanitized_values():
+    # This test is not passing because when we sanitize a set, the contents are shuffled around.
     complex_dict = {'name': ['John', 'Doe'],
         'position':[-0.34478,12.98453],
         'color': 'green',
@@ -152,13 +165,21 @@ def test_sanitize_complex_dict_returns_sanitized_values():
         'friends': ['bob','alice','megan','john'] }
     assert sanitize(complex_dict) == sanitized_complex_dict
 
-def test_sanitize_dataclass_object_returns_dict(dataclass_object_without_slots, dataclass_object_without_slots_as_dict):
-    assert sanitize(dataclass_object_without_slots) == {'address': '0x8798249c2e607446efb7ad49ec89dd1865ff4272-IOU', 'name': 'SushiBar', 'symbol': 'xSUSHI', 'decimals': 18, '_totalSupply': 50158519600425129140904955}
+# DATA CLASSES
 
-def test_sanitize_list_of_dataclass_objects_returns_list_of_dicts():
-    assert False
+def test_sanitize_dataclass_object_returns_dict(dataclass_object1, dataclass_object1_as_dict):
+    assert sanitize(dataclass_object1) == dataclass_object1_as_dict
 
+def test_sanitize_list_of_dataclass_objects_returns_list_of_dicts(dataclass_object1, dataclass_object2):
+    print(dataclass_object1)
+    assert sanitize([dataclass_object1, dataclass_object2]) == [dataclass_object1.__dict__, dataclass_object2.__dict__]
 
+# DATA CLASSES WITH SLOTS
+
+def test_sanitize_dataclass_objects_with_slots_returns_dict(dataclass_object_with_slots1, dataclass_object_with_slots1_sanitized):
+    print(dataclass_object_with_slots1.__slots__)
+    sanitize(dataclass_object_with_slots1)
+    assert sanitize(dataclass_object_with_slots1) == dataclass_object_with_slots1_sanitized
 
 # WIP Tests
 
