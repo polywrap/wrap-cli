@@ -6,7 +6,7 @@ from polywrap_msgpack import sanitize
 from polywrap_msgpack import msgpack_encode, msgpack_decode
 
 import pytest
-from typing import Any
+from typing import Any, List
 
 expected_array_like = [
     130, 168, 102, 105, 114, 115, 116, 75,
@@ -101,7 +101,22 @@ def test_sanitize_nested_list_returns_nested_list():
     assert sanitize(nested_list) == nested_list 
 
 def test_sanitize_set_returns_list():
-    assert sanitize({'bob','alice','megan','john'}) == ['bob','alice','megan','john']
+    # Remember sets are automatically reorganize the contents of the object
+    # meaning {'bob', 'alice'} might be stored as {'alice','bob'} in memory
+    set1 = {'alice','bob','john','megan'}
+    assert type(sanitize(set1)) == list
+
+def test_sanitize_set_returns_list_with_all_items_of_the_set():
+    set1 = {'alice','bob','john','megan'}
+    sanitized = sanitize({'alice','bob','john','megan'})
+    r = []       
+    [r.append(True) if item in sanitized else r.append(False) for item in set1]
+    assert False not in r
+
+def test_sanitize_set_returns_list_of_same_length():
+    set1 = {'alice','bob','john','megan'}
+    assert len(sanitize(set1)) == len(set1)
+    
 
 def test_sanitize_complex_number_returns_string():
     assert sanitize(3 + 5j) == "3 + 5j"

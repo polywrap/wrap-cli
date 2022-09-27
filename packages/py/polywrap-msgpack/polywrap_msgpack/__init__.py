@@ -27,7 +27,8 @@ def sanitize(value: Any) -> Any:
         #array: List[Any] = list(*value)
         #return [sanitize(a) for a in array]
     elif type(value) is set:
-        return value 
+        sanitized_set: List[Any] = [i for i in value]
+        return sanitized_set
     elif hasattr(value, "__slots__"):
         return {s: sanitize(getattr(value, s)) for s in getattr(value, "__slots__") if hasattr(value, s)}
     elif hasattr(value, "__dict__"):
