@@ -20,25 +20,23 @@ import {
   TryResolveUriOptions,
   IUriResolver,
   GetManifestOptions,
-  initWrapper,
-  IWrapPackage,
   IUriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionContext,
   getEnvFromUriHistory,
   PluginPackage,
   QueryResult,
-  InvokeResult,
 } from "@polywrap/core-js";
 import {
   buildCleanUriHistory,
   IWrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { DeserializeManifestOptions, WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
+import { UriResolverError } from "./UriResolverError";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
@@ -160,7 +158,7 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetManifestOptions = {}
   ): Promise<Result<WrapManifest, Error>> {
-    const load = await this._loadWrapper(Uri.from(uri), undefined);
+    const load = await this.loadWrapper(Uri.from(uri), undefined);
     if (!load.ok) {
       return load;
     }
@@ -174,7 +172,7 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetFileOptions
   ): Promise<Result<string | Uint8Array, Error>> {
-    const load = await this._loadWrapper(Uri.from(uri), undefined);
+    const load = await this.loadWrapper(Uri.from(uri), undefined);
     if (!load.ok) {
       return load;
     }
@@ -291,10 +289,8 @@ export class PolywrapClient implements Client {
     TUri extends Uri | string = string
   >(
     options: InvokerOptions<TUri> & { wrapper: Wrapper }
-  ): Promise<InvokeResult<TData>> {
-    let error: Error;
-
-    invokeError: try {
+  ): Promise<Result<TData, Error>> {
+    try {
       const typedOptions: InvokeOptions<Uri> = {
         ...options,
         uri: Uri.from(options.uri),
@@ -304,8 +300,7 @@ export class PolywrapClient implements Client {
       const invocableResult = await wrapper.invoke(typedOptions, this);
 
       if (!invocableResult.ok) {
-        error = invocableResult.error as Error;
-        break invokeError;
+        return ResultErr(invocableResult.error);
       }
 
       const value = invocableResult.value;
@@ -319,20 +314,16 @@ export class PolywrapClient implements Client {
       } else {
         return ResultOk(value as TData);
       }
-    } catch (e) {
-      error = e;
+    } catch (error) {
+      return ResultErr(error);
     }
-
-    return ResultErr(error);
   }
 
   @Tracer.traceMethod("PolywrapClient: invoke")
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
     options: InvokerOptions<TUri>
   ): Promise<InvokeResult<TData>> {
-    let error: Error;
-
-    err: try {
+    try {
       const typedOptions: InvokeOptions<Uri> = {
         ...options,
         uri: Uri.from(options.uri),
@@ -341,13 +332,12 @@ export class PolywrapClient implements Client {
       const resolutionContext =
         options.resolutionContext ?? new UriResolutionContext();
 
-      const loadWrapperResult = await this._loadWrapper(
+      const loadWrapperResult = await this.loadWrapper(
         typedOptions.uri,
         resolutionContext
       );
       if (!loadWrapperResult.ok) {
-        error = loadWrapperResult.error as Error;
-        break err;
+        return ResultErr(loadWrapperResult.error);
       }
       const wrapper = loadWrapperResult.value;
 
@@ -361,15 +351,15 @@ export class PolywrapClient implements Client {
         ...typedOptions,
         wrapper,
       });
-      if (invokeResult.ok) {
-        return invokeResult;
-      }
-      error = invokeResult.error as Error;
-    } catch (e) {
-      error = e;
-    }
 
-    return ResultErr(error);
+      if (!invokeResult.ok) {
+        return ResultErr(invokeResult.error);
+      }
+
+      return invokeResult;
+    } catch (error) {
+      return ResultErr(error);
+    }
   }
 
   @Tracer.traceMethod("PolywrapClient: subscribe")
@@ -479,6 +469,63 @@ export class PolywrapClient implements Client {
     return response;
   }
 
+  @Tracer.traceMethod("PolywrapClient: loadWrapper", TracingLevel.High)
+  public async loadWrapper(
+    uri: Uri,
+    resolutionContext?: IUriResolutionContext,
+    options?: DeserializeManifestOptions
+  ): Promise<Result<Wrapper, Error>> {
+    Tracer.setAttribute("label", `Wrapper loaded: ${uri}`, TracingLevel.High);
+
+    if (!resolutionContext) {
+      resolutionContext = new UriResolutionContext();
+    }
+
+    const result = await this.tryResolveUri({
+      uri,
+      resolutionContext,
+    });
+
+    if (!result.ok) {
+      if (result.error) {
+        return ResultErr(new UriResolverError(result.error, resolutionContext));
+      } else {
+        return ResultErr(
+          Error(
+            `Error resolving URI "${
+              uri.uri
+            }"\nResolution Stack: ${JSON.stringify(
+              buildCleanUriHistory(resolutionContext.getHistory()),
+              null,
+              2
+            )}`
+          )
+        );
+      }
+    }
+
+    const uriPackageOrWrapper = result.value;
+
+    if (uriPackageOrWrapper.type === "uri") {
+      const error = Error(
+        `Error resolving URI "${uri.uri}"\nURI not found ${
+          uriPackageOrWrapper.uri.uri
+        }\nResolution Stack: ${JSON.stringify(
+          buildCleanUriHistory(resolutionContext.getHistory()),
+          null,
+          2
+        )}`
+      );
+      return ResultErr(error);
+    }
+
+    if (uriPackageOrWrapper.type === "package") {
+      return ResultOk(await uriPackageOrWrapper.package.createWrapper(options));
+    } else {
+      return ResultOk(uriPackageOrWrapper.wrapper);
+    }
+  }
+
   @Tracer.traceMethod("PolywrapClient: validateConfig")
   private _validateConfig(): void {
     // Require plugins to use non-interface URIs
@@ -494,62 +541,5 @@ export class PolywrapClient implements Client {
         `Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`
       );
     }
-  }
-
-  @Tracer.traceMethod("PolywrapClient: _loadWrapper", TracingLevel.High)
-  private async _loadWrapper(
-    uri: Uri,
-    resolutionContext?: IUriResolutionContext
-  ): Promise<Result<Wrapper, Error>> {
-    Tracer.setAttribute("label", `Wrapper loaded: ${uri}`, TracingLevel.High);
-
-    if (!resolutionContext) {
-      resolutionContext = new UriResolutionContext();
-    }
-
-    const result = await this.tryResolveUri({
-      uri,
-      resolutionContext,
-    });
-
-    if (!result.ok) {
-      if (result.error && result.error instanceof Error) {
-        return result as Result<Wrapper, Error>;
-      } else if (result.error && typeof result.error === "string") {
-        return ResultErr(Error(result.error));
-      } else {
-        const error = Error(
-          `Error resolving URI "${uri.uri}"\nResolution Stack: ${JSON.stringify(
-            resolutionContext.getHistory(),
-            null,
-            2
-          )}`
-        );
-        return ResultErr(error);
-      }
-    }
-
-    const uriPackageOrWrapper = result.value;
-
-    if (uriPackageOrWrapper.type === "uri") {
-      const error = Error(
-        `Error resolving URI "${uri.uri}"\nURI not found ${
-          uriPackageOrWrapper.uri.uri
-        }\nResolution Stack: ${JSON.stringify(history, null, 2)}`
-      );
-      return ResultErr(error);
-    }
-
-    let packageOrWrapper: IWrapPackage | Wrapper;
-
-    if (uriPackageOrWrapper.type === "package") {
-      packageOrWrapper = uriPackageOrWrapper.package;
-    } else {
-      packageOrWrapper = uriPackageOrWrapper.wrapper;
-    }
-
-    const wrapper = await initWrapper(packageOrWrapper);
-
-    return ResultOk(wrapper);
   }
 }
