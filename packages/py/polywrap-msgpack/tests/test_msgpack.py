@@ -8,17 +8,8 @@ from polywrap_msgpack import msgpack_encode, msgpack_decode
 import pytest
 from typing import Any, List
 
-expected_array_like = [
-    130, 168, 102, 105, 114, 115, 116, 75,
-    101, 121, 170, 102, 105, 114, 115, 116,
-    86, 97, 108, 117, 101, 169, 115, 101,
-    99, 111, 110, 100, 75, 101, 121, 171,
-    115, 101, 99, 111, 110, 100, 86, 97,
-    108, 117, 101
-]
 
-
-def test_encode_and_decode_object():
+def test_encode_and_decode_object(expected_array_like):
     custom_object = {
         "firstKey": "firstValue",
         "secondKey": "secondValue"
@@ -31,7 +22,7 @@ def test_encode_and_decode_object():
     assert decoded == custom_object
 
 
-def test_encode_and_decode_instance():
+def test_encode_and_decode_instance(expected_array_like):
     @dataclass
     class Test:
         firstKey: str
@@ -81,7 +72,7 @@ def test_generic_map_decode():
 # Passing Tests
 
 def test_sanitize_str_returns_same_str():
-    assert sanitize("string input") == "string input"
+    assert sanitize("https://docs.polywrap.io/") == "https://docs.polywrap.io/"
 
 def test_sanitize_simple_list_returns_simple_list():
     assert  sanitize([1]) == [1]
@@ -92,8 +83,7 @@ def test_sanitize_empty_list_returns_empty_list():
 def test_sanitize_long_list_returns_long_list():
     assert sanitize([2,55,1234,6345]) == [2,55,1234,6345] 
 
-def test_sanitize_complex_list_returns_list():
-    complex_list = [1, 'foo', 'bar', 0.123, True, None]
+def test_sanitize_complex_list_returns_list(complex_list):
     assert sanitize(complex_list) == complex_list
 
 def test_sanitize_nested_list_returns_nested_list():
@@ -172,7 +162,6 @@ def test_sanitize_complex_dict_returns_sanitized_values():
 
 
 # WIP Tests
-
 
 # def test_sanitize_dict_returns_xxx():
 #     dictionary = {'key1': 'value1'}

@@ -14,6 +14,11 @@ def expected_array_like():
     108, 117, 101
 ]
 
+@fixture
+def complex_list():
+    return [1, 'foo', 'bar', 0.123, True, None]
+
+
 @fixture(autouse=True)
 def sample_defiwrapper_response():
     defiwrapper_query_output_sample: Dict[Any, Any] = {
