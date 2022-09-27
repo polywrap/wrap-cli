@@ -104,12 +104,11 @@ def test_sanitize_set_returns_set():
     assert sanitize({'bob','alice','megan','john'}) == {'bob','alice','megan','john'}
 
 def test_sanitize_complex_number_returns_complex_number():
-    assert sanitize(3 + 5j) == 3 + 5j
+    assert sanitize(3 + 5j) == "3 + 5j"
 
 def test_sanitize_simple_dict_returns_sanitized_values():
     simple_dict = {'name': 'John'}
     assert sanitize(simple_dict) == simple_dict
-
 
 def test_sanitize_object_with_slots_attributes_returns_dict_instead():
     class Example():
@@ -130,7 +129,8 @@ def test_sanitize_long_tuple_returns_list():
 
 def test_sanitize_nested_tuples_returns_nested_list():
     nested_tuple = (23, ((0.123,'dog'), 'cat'), 'boat', ('moon', True))
-    assert sanitize(nested_tuple) == nested_tuple
+    nested_list = [23, [[0.123,'dog'], 'cat'], 'boat', ['moon', True]]
+    assert sanitize(nested_tuple) == nested_list
 
 def test_sanitize_complex_dict_returns_sanitized_values():
     complex_dict = {'name': ['John', 'Doe'],
