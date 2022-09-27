@@ -3,7 +3,6 @@ import { WrapExports } from "./types";
 import { createImports } from "./imports";
 import { IFileReader } from "./IFileReader";
 import { WRAP_MODULE_PATH } from "./constants";
-import { WasmPackage } from "./WasmPackage";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
@@ -20,6 +19,7 @@ import {
   GetManifestOptions,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
+import { createWasmWrapper } from "./helpers/createWasmWrapper";
 
 export interface State {
   method: string;
@@ -89,53 +89,14 @@ export class WasmWrapper implements Wrapper {
       | IFileReader
       | GetManifestOptions,
     fileReaderOrManifestOptions?: IFileReader | GetManifestOptions,
-    options?: GetManifestOptions
+    manifestOptions?: GetManifestOptions
   ): Promise<WasmWrapper> {
-    if (
-      !wasmModuleOrFileReaderOrManifestOptions ||
-      (wasmModuleOrFileReaderOrManifestOptions as GetManifestOptions)
-        .noValidate === true ||
-      (wasmModuleOrFileReaderOrManifestOptions as GetManifestOptions)
-        .noValidate === false
-    ) {
-      const result = await WasmPackage.from(
-        manifestBufferOrFileReader
-      ).createWrapper(
-        wasmModuleOrFileReaderOrManifestOptions as GetManifestOptions
-      );
-
-      if (!result.ok) {
-        throw result.error;
-      }
-      return result.value as WasmWrapper;
-    } else if (
-      !fileReaderOrManifestOptions ||
-      (fileReaderOrManifestOptions as GetManifestOptions).noValidate === true ||
-      (fileReaderOrManifestOptions as GetManifestOptions).noValidate === false
-    ) {
-      const result = await WasmPackage.from(
-        manifestBufferOrFileReader,
-        wasmModuleOrFileReaderOrManifestOptions as Uint8Array | IFileReader
-      ).createWrapper(fileReaderOrManifestOptions as GetManifestOptions);
-
-      if (!result.ok) {
-        throw result.error;
-      }
-
-      return result.value as WasmWrapper;
-    } else {
-      const result = await WasmPackage.from(
-        manifestBufferOrFileReader,
-        wasmModuleOrFileReaderOrManifestOptions as Uint8Array,
-        fileReaderOrManifestOptions as IFileReader
-      ).createWrapper(options);
-
-      if (!result.ok) {
-        throw result.error;
-      }
-
-      return result.value as WasmWrapper;
-    }
+    return createWasmWrapper(
+      manifestBufferOrFileReader,
+      wasmModuleOrFileReaderOrManifestOptions,
+      fileReaderOrManifestOptions,
+      manifestOptions
+    );
   }
 
   @Tracer.traceMethod("WasmWrapper: getFile")

@@ -2,7 +2,6 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
 import { InMemoryFileReader } from "../InMemoryFileReader";
-import { deserializeWrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 import { WRAP_MANIFEST_PATH, WRAP_MODULE_PATH } from "../constants";
 
