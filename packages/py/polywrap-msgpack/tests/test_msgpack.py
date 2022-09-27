@@ -180,9 +180,3 @@ def test_sanitize_dataclass_objects_with_slots_returns_dict(dataclass_object_wit
     print(dataclass_object_with_slots1.__slots__)
     sanitize(dataclass_object_with_slots1)
     assert sanitize(dataclass_object_with_slots1) == dataclass_object_with_slots1_sanitized
-
-# WIP Tests
-
-# def test_sanitize_dict_returns_xxx():
-#     dictionary = {'key1': 'value1'}
-#     assert sanitize(dictionary) == 
