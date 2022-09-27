@@ -47,11 +47,7 @@ export class InMemoryFileReader {
         } else if (baseFileReader) {
           return baseFileReader.readFile(filePath);
         } else {
-          const error = Error(
-            `Unable to read file at filepath ${filePath}.` +
-              `Expected '${WRAP_MANIFEST_PATH}' or '${WRAP_MODULE_PATH}'.`
-          );
-          return ResultErr(error);
+          return ResultErr(Error(`File not found at ${filePath}.`));
         }
       },
     };
