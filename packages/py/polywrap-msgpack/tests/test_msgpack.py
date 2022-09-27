@@ -134,7 +134,6 @@ def test_sanitize_object_with_slots_attributes_returns_dict_instead():
     s = Example()
     assert sanitize(s) == {'slot_0':'zero','slot_1':'one'}
 
-# Tests that are not passing
 
 def test_sanitize_single_tuple_returns_list():
     # To create a tuple with only one item, you have add a comma after the item, 
@@ -149,6 +148,8 @@ def test_sanitize_nested_tuples_returns_nested_list():
     nested_tuple = (23, ((0.123,'dog'), 'cat'), 'boat', ('moon', True))
     nested_list = [23, [[0.123,'dog'], 'cat'], 'boat', ['moon', True]]
     assert sanitize(nested_tuple) == nested_list
+
+# Tests that are not passing
 
 def test_sanitize_complex_dict_returns_sanitized_values():
     complex_dict = {'name': ['John', 'Doe'],
@@ -176,5 +177,3 @@ def test_sanitize_complex_dict_returns_sanitized_values():
 # def test_sanitize_dict_returns_xxx():
 #     dictionary = {'key1': 'value1'}
 #     assert sanitize(dictionary) == 
-    
-
