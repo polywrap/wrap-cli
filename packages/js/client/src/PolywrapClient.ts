@@ -168,7 +168,8 @@ export class PolywrapClient implements Client {
       return load;
     }
     const wrapper = load.value;
-    const manifest = wrapper.getManifest(options, this);
+    const manifest = wrapper.getManifest(options);
+
     return ResultOk(manifest);
   }
 
@@ -182,7 +183,8 @@ export class PolywrapClient implements Client {
       return load;
     }
     const wrapper = load.value;
-    return await wrapper.getFile(options, this);
+
+    return await wrapper.getFile(options);
   }
 
   @Tracer.traceMethod("PolywrapClient: getImplementations")
