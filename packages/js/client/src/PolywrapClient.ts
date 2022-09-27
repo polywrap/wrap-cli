@@ -1,3 +1,5 @@
+import { UriResolverError } from "./UriResolverError";
+
 import {
   Wrapper,
   Client,
@@ -40,7 +42,6 @@ import {
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
-import { UriResolverError } from "./UriResolverError";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
@@ -524,7 +525,7 @@ export class PolywrapClient implements Client {
     }
 
     if (uriPackageOrWrapper.type === "package") {
-      const result = await uriPackageOrWrapper.package.createWrapper();
+      const result = await uriPackageOrWrapper.package.createWrapper(options);
 
       if (!result.ok) {
         return result;
