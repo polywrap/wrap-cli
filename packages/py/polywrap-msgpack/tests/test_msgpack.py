@@ -103,7 +103,7 @@ def test_sanitize_nested_list_returns_nested_list():
 def test_sanitize_set_returns_list():
     assert sanitize({'bob','alice','megan','john'}) == ['bob','alice','megan','john']
 
-def test_sanitize_complex_number_returns_complex_number():
+def test_sanitize_complex_number_returns_string():
     assert sanitize(3 + 5j) == "3 + 5j"
 
 def test_sanitize_simple_dict_returns_sanitized_values():
