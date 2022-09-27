@@ -1,5 +1,5 @@
-export type Migration = {
+export type Migrator = {
   from: string;
   to: string;
-  migrateFn: (manifest: unknown) => unknown;
+  migrate: (manifest: unknown) => unknown;
 };

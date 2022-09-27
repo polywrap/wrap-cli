@@ -11,7 +11,7 @@ import {
   latestPluginManifestFormat
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
-import { migrations } from "./migrations";
+import { migrators } from "./migrators";
 
 export function migratePluginManifest(
   manifest: AnyPluginManifest,
@@ -27,7 +27,7 @@ export function migratePluginManifest(
     throw new Error(`Unrecognized PluginManifestFormat "${manifest.format}"`);
   }
 
-  const migrationPath = findShortestMigrationPath(migrations, from, to);
+  const migrationPath = findShortestMigrationPath(migrators, from, to);
   if (!migrationPath) {
     throw new Error(
       `Migration path from PluginManifestFormat "${from}" to "${to}" is not available`
@@ -36,8 +36,8 @@ export function migratePluginManifest(
 
   let newManifest = manifest;
 
-  for(const migration of migrationPath){
-    newManifest = migration.migrateFn(newManifest) as AnyPluginManifest;
+  for(const migrator of migrationPath){
+    newManifest = migrator.migrate(newManifest) as AnyPluginManifest;
   }
 
   return newManifest as PluginManifest;

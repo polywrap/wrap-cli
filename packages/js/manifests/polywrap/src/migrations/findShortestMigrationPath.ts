@@ -1,14 +1,14 @@
-import { Migration } from "./migration";
+import { Migrator } from "./migration";
 
-type MigrationWithSearchHistory = [Migration, Migration[]];
+type MigrationWithSearchHistory = [Migrator, Migrator[]];
 
 // A simple BFS intended to find the shortest migration path from one version to another
 // Returns an array of migrations in the order they need to be performed to migrate from one version to another
 export function findShortestMigrationPath(
-  nodes: Migration[],
+  nodes: Migrator[],
   from: string,
   to: string
-): Migration[] | undefined {
+): Migrator[] | undefined {
   if (from === to) {
     return [];
   }

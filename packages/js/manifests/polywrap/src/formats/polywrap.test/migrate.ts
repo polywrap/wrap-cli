@@ -11,7 +11,7 @@ import {
   latestPolywrapWorkflowFormat
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
-import { migrations } from "./migrations";
+import { migrators } from "./migrators";
 
 export function migratePolywrapWorkflow(
   manifest: AnyPolywrapWorkflow,
@@ -27,7 +27,7 @@ export function migratePolywrapWorkflow(
     throw new Error(`Unrecognized PolywrapWorkflowFormat "${manifest.format}"`);
   }
 
-  const migrationPath = findShortestMigrationPath(migrations, from, to);
+  const migrationPath = findShortestMigrationPath(migrators, from, to);
   if (!migrationPath) {
     throw new Error(
       `Migration path from PolywrapWorkflowFormat "${from}" to "${to}" is not available`
@@ -36,8 +36,8 @@ export function migratePolywrapWorkflow(
 
   let newManifest = manifest;
 
-  for(const migration of migrationPath){
-    newManifest = migration.migrateFn(newManifest) as AnyPolywrapWorkflow;
+  for(const migrator of migrationPath){
+    newManifest = migrator.migrate(newManifest) as AnyPolywrapWorkflow;
   }
 
   return newManifest as PolywrapWorkflow;

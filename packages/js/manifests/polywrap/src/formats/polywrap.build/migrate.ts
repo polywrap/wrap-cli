@@ -11,7 +11,7 @@ import {
   latestBuildManifestFormat
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
-import { migrations } from "./migrations";
+import { migrators } from "./migrators";
 
 export function migrateBuildManifest(
   manifest: AnyBuildManifest,
@@ -27,7 +27,7 @@ export function migrateBuildManifest(
     throw new Error(`Unrecognized BuildManifestFormat "${manifest.format}"`);
   }
 
-  const migrationPath = findShortestMigrationPath(migrations, from, to);
+  const migrationPath = findShortestMigrationPath(migrators, from, to);
   if (!migrationPath) {
     throw new Error(
       `Migration path from BuildManifestFormat "${from}" to "${to}" is not available`
@@ -36,8 +36,8 @@ export function migrateBuildManifest(
 
   let newManifest = manifest;
 
-  for(const migration of migrationPath){
-    newManifest = migration.migrateFn(newManifest) as AnyBuildManifest;
+  for(const migrator of migrationPath){
+    newManifest = migrator.migrate(newManifest) as AnyBuildManifest;
   }
 
   return newManifest as BuildManifest;
