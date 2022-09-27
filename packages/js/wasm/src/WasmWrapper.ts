@@ -3,6 +3,7 @@ import { WrapExports } from "./types";
 import { createImports } from "./imports";
 import { IFileReader } from "./IFileReader";
 import { WRAP_MODULE_PATH } from "./constants";
+import { WasmPackage } from "./WasmPackage";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
@@ -19,7 +20,6 @@ import {
   GetFileOptions,
   GetManifestOptions,
 } from "@polywrap/core-js";
-import { WasmPackage } from "./WasmPackage";
 
 type InvokeResultOrError =
   | { type: "InvokeResult"; invokeResult: Uint8Array }
