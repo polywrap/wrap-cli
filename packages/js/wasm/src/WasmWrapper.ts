@@ -98,26 +98,43 @@ export class WasmWrapper implements Wrapper {
       (wasmModuleOrFileReaderOrManifestOptions as GetManifestOptions)
         .noValidate === false
     ) {
-      return (await WasmPackage.from(manifestBufferOrFileReader).createWrapper(
+      const result = await WasmPackage.from(
+        manifestBufferOrFileReader
+      ).createWrapper(
         wasmModuleOrFileReaderOrManifestOptions as GetManifestOptions
-      )) as WasmWrapper;
+      );
+
+      if (!result.ok) {
+        throw result.error;
+      }
+      return result.value as WasmWrapper;
     } else if (
       !fileReaderOrManifestOptions ||
       (fileReaderOrManifestOptions as GetManifestOptions).noValidate === true ||
       (fileReaderOrManifestOptions as GetManifestOptions).noValidate === false
     ) {
-      return (await WasmPackage.from(
+      const result = await WasmPackage.from(
         manifestBufferOrFileReader,
         wasmModuleOrFileReaderOrManifestOptions as Uint8Array | IFileReader
-      ).createWrapper(
-        fileReaderOrManifestOptions as GetManifestOptions
-      )) as WasmWrapper;
+      ).createWrapper(fileReaderOrManifestOptions as GetManifestOptions);
+
+      if (!result.ok) {
+        throw result.error;
+      }
+
+      return result.value as WasmWrapper;
     } else {
-      return (await WasmPackage.from(
+      const result = await WasmPackage.from(
         manifestBufferOrFileReader,
         wasmModuleOrFileReaderOrManifestOptions as Uint8Array,
         fileReaderOrManifestOptions as IFileReader
-      ).createWrapper(options)) as WasmWrapper;
+      ).createWrapper(options);
+
+      if (!result.ok) {
+        throw result.error;
+      }
+
+      return result.value as WasmWrapper;
     }
   }
 

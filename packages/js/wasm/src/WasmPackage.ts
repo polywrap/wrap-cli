@@ -8,7 +8,7 @@ import {
   deserializeWrapManifest,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
-import { GetManifestOptions } from "@polywrap/core-js";
+import { GetManifestOptions, Wrapper } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class WasmPackage implements IWasmPackage {

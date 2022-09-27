@@ -5,6 +5,7 @@ import { WasmPackage } from "../WasmPackage";
 import { InMemoryFileReader } from "../InMemoryFileReader";
 import { deserializeWrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { WasmWrapper } from "../WasmWrapper";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 jest.setTimeout(200000);
 
@@ -20,15 +21,19 @@ describe("In-memory wrappers", () => {
       `${simpleWrapperPath}/build/wrap.info`
     );
     const wrapManifest = await deserializeWrapManifest(manifest);
-   
+
     const wasmModule = await fs.promises.readFile(
       `${simpleWrapperPath}/build/wrap.wasm`
     );
     const wrapper = await WasmWrapper.from(manifest, wasmModule);
 
-    expect(wrapManifest).toEqual(await wrapper.getManifest());
-    expect(manifest).toEqual(await wrapper.getFile({ path: "wrap.info" }));
-    expect(wasmModule).toEqual(await wrapper.getFile({ path: "wrap.wasm" }));
+    expect(wrapper.getManifest()).toEqual(wrapManifest);
+    expect(await wrapper.getFile({ path: "wrap.info" })).toEqual(
+      ResultOk(manifest)
+    );
+    expect(await wrapper.getFile({ path: "wrap.wasm" })).toEqual(
+      ResultOk(wasmModule)
+    );
   });
 
   it("can create in-memory packages from file reader", async () => {
@@ -36,7 +41,7 @@ describe("In-memory wrappers", () => {
       `${simpleWrapperPath}/build/wrap.info`
     );
     const wrapManifest = await deserializeWrapManifest(manifest);
-    
+
     const wasmModule = await fs.promises.readFile(
       `${simpleWrapperPath}/build/wrap.wasm`
     );
@@ -44,9 +49,13 @@ describe("In-memory wrappers", () => {
     const fileReader = InMemoryFileReader.from(manifest, wasmModule);
     const wrapper = await WasmWrapper.from(fileReader);
 
-    expect(wrapManifest).toEqual(await wrapper.getManifest());
-    expect(manifest).toEqual(await wrapper.getFile({ path: "wrap.info" }));
-    expect(wasmModule).toEqual(await wrapper.getFile({ path: "wrap.wasm" }));
+    expect(wrapper.getManifest()).toEqual(wrapManifest);
+    expect(await wrapper.getFile({ path: "wrap.info" })).toEqual(
+      ResultOk(manifest)
+    );
+    expect(await wrapper.getFile({ path: "wrap.wasm" })).toEqual(
+      ResultOk(wasmModule)
+    );
   });
 
   it("can create in-memory packages from manifest and file reader", async () => {
@@ -54,7 +63,7 @@ describe("In-memory wrappers", () => {
       `${simpleWrapperPath}/build/wrap.info`
     );
     const wrapManifest = await deserializeWrapManifest(manifest);
-   
+
     const wasmModule = await fs.promises.readFile(
       `${simpleWrapperPath}/build/wrap.wasm`
     );
@@ -62,9 +71,13 @@ describe("In-memory wrappers", () => {
     const fileReader = InMemoryFileReader.from(manifest, wasmModule);
     const wrapper = await WasmWrapper.from(manifest, fileReader);
 
-    expect(wrapManifest).toEqual(await wrapper.getManifest());
-    expect(manifest).toEqual(await wrapper.getFile({ path: "wrap.info" }));
-    expect(wasmModule).toEqual(await wrapper.getFile({ path: "wrap.wasm" }));
+    expect(wrapper.getManifest()).toEqual(wrapManifest);
+    expect(await wrapper.getFile({ path: "wrap.info" })).toEqual(
+      ResultOk(manifest)
+    );
+    expect(await wrapper.getFile({ path: "wrap.wasm" })).toEqual(
+      ResultOk(wasmModule)
+    );
   });
 
   it("can create in-memory packages from manifest, wasm module and file reader", async () => {
@@ -74,25 +87,31 @@ describe("In-memory wrappers", () => {
       `${simpleWrapperPath}/build/wrap.info`
     );
     const wrapManifest = await deserializeWrapManifest(manifest);
-   
+
     const wasmModule = await fs.promises.readFile(
       `${simpleWrapperPath}/build/wrap.wasm`
     );
 
     const wrapper = await WasmWrapper.from(manifest, wasmModule, {
-      readFile: async (path: string) => {
+      readFile: async (path: string): Promise<Result<Uint8Array, Error>> => {
         if (path === "test.txt") {
-          return testEncoded;
+          return ResultOk(testEncoded);
         } else {
-          return undefined;
+          return ResultErr(Error(`File ${path} not found`));
         }
-      }
+      },
     });
-    
-    expect(wrapManifest).toEqual(await wrapper.getManifest());
-    expect(manifest).toEqual(await wrapper.getFile({ path: "wrap.info" }));
-    expect(wasmModule).toEqual(await wrapper.getFile({ path: "wrap.wasm" }));
-    expect(testEncoded).toEqual(await wrapper.getFile({ path: "test.txt" }));
+
+    expect(await wrapper.getManifest()).toEqual(wrapManifest);
+    expect(await wrapper.getFile({ path: "wrap.info" })).toEqual(
+      ResultOk(manifest)
+    );
+    expect(await wrapper.getFile({ path: "wrap.wasm" })).toEqual(
+      ResultOk(wasmModule)
+    );
+    expect(await wrapper.getFile({ path: "test.txt" })).toEqual(
+      ResultOk(testEncoded)
+    );
   });
 
   it("can create in-memory wrappers from buffers", async () => {
@@ -105,10 +124,20 @@ describe("In-memory wrappers", () => {
       `${simpleWrapperPath}/build/wrap.wasm`
     );
     const wasmPackage = WasmPackage.from(manifest, wasmModule);
-    const wrapper = await wasmPackage.createWrapper();
+    const wrapperResult = await wasmPackage.createWrapper();
 
-    expect(wrapManifest).toEqual(await wrapper.getManifest());
-    expect(manifest).toEqual(await wrapper.getFile({ path: "wrap.info" }));
-    expect(wasmModule).toEqual(await wrapper.getFile({ path: "wrap.wasm" }));
+    if (!wrapperResult.ok) {
+      throw wrapperResult.error;
+    }
+
+    const wrapper = wrapperResult.value;
+
+    expect(wrapper.getManifest()).toEqual(wrapManifest);
+    expect(await wrapper.getFile({ path: "wrap.info" })).toEqual(
+      ResultOk(manifest)
+    );
+    expect(await wrapper.getFile({ path: "wrap.wasm" })).toEqual(
+      ResultOk(wasmModule)
+    );
   });
 });
