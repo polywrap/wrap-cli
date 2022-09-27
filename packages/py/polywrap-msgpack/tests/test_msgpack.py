@@ -163,7 +163,7 @@ def test_sanitize_complex_dict_returns_sanitized_values():
         'position':[-0.34478,12.98453],
         'color': 'green',
         'age':33,
-        'origin':(0,0),
+        'origin':[0,0],
         'is_online': True,
         'pet': None,
         'friends': ['bob','alice','megan','john'] }
