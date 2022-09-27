@@ -3,6 +3,7 @@ import { WrapExports } from "./types";
 import { createImports } from "./imports";
 import { IFileReader } from "./IFileReader";
 import { WRAP_MODULE_PATH } from "./constants";
+import { createWasmWrapper } from "./helpers/createWasmWrapper";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
@@ -19,7 +20,6 @@ import {
   GetManifestOptions,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
-import { createWasmWrapper } from "./helpers/createWasmWrapper";
 
 export interface State {
   method: string;

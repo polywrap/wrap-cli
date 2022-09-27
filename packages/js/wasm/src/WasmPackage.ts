@@ -2,6 +2,7 @@ import { IFileReader } from "./IFileReader";
 import { IWasmPackage } from "./IWasmPackage";
 import { WasmWrapper } from "./WasmWrapper";
 import { WRAP_MODULE_PATH, WRAP_MANIFEST_PATH } from "./constants";
+import { createWasmPackage } from "./helpers/createWasmPackage";
 
 import {
   deserializeWrapManifest,
@@ -9,7 +10,6 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 import { GetManifestOptions, Wrapper } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
-import { createWasmPackage } from "./helpers/createWasmPackage";
 
 export class WasmPackage implements IWasmPackage {
   constructor(private readonly fileReader: IFileReader) {}

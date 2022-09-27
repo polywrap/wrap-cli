@@ -1,6 +1,7 @@
-import { GetManifestOptions } from "@polywrap/core-js";
 import { IFileReader, WasmWrapper } from "..";
 import { createWasmPackage } from "./createWasmPackage";
+
+import { GetManifestOptions } from "@polywrap/core-js";
 
 // Helper function for creating wasm wrappers
 // Not meant for exporting out of this library
