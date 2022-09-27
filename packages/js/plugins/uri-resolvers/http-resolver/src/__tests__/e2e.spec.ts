@@ -68,13 +68,16 @@ describe("HTTP Plugin", () => {
     if (result.value.type !== "wrapper") {
       fail("Expected response to be a wrapper");
     }
-    
-    const { data } = await axios.get(`${providers.http}/wrappers/local/${wrapperName}/wrap.info`, {
-      responseType: "arraybuffer"
-    });
+
+    const { data } = await axios.get(
+      `${providers.http}/wrappers/local/${wrapperName}/wrap.info`,
+      {
+        responseType: "arraybuffer",
+      }
+    );
     const expectedManifest = await deserializeWrapManifest(data);
 
-    const manifest = await result.value.wrapper.getManifest({}, client);
+    const manifest = await result.value.wrapper.getManifest({});
 
     expect(manifest?.name).toBe("SimpleStorage");
     expect(manifest).toEqual(expectedManifest);
@@ -93,12 +96,15 @@ describe("HTTP Plugin", () => {
       fail("Expected response to be a wrapper");
     }
 
-    const { data } = await axios.get(`${providers.http}/wrappers/local/${wrapperName}/wrap.info`, {
-      responseType: "arraybuffer"
-    });
+    const { data } = await axios.get(
+      `${providers.http}/wrappers/local/${wrapperName}/wrap.info`,
+      {
+        responseType: "arraybuffer",
+      }
+    );
     const expectedManifest = await deserializeWrapManifest(data);
 
-    const manifest = await result.value.wrapper.getManifest({}, client);
+    const manifest = await result.value.wrapper.getManifest({});
 
     expect(manifest?.name).toBe("SimpleStorage");
     expect(manifest).toEqual(expectedManifest);
