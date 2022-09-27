@@ -240,7 +240,7 @@ export class PolywrapClient implements Client {
       // Execute all invocations in parallel
       const parallelInvocations: Promise<{
         name: string;
-        result: Result<unknown, Error>;
+        result: InvokeResult<unknown>;
       }>[] = [];
 
       for (const invocationName of Object.keys(queryInvocations)) {
