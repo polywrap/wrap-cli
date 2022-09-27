@@ -18,6 +18,22 @@ def expected_array_like():
 def complex_list():
     return [1, 'foo', 'bar', 0.123, True, None]
 
+@fixture 
+def nested_list():
+    return [23, [[0.123,'dog'], 'cat'], 'boat', ['moon', True]]
+
+@fixture
+def nested_tuple():
+    return (23, ((0.123,'dog'), 'cat'), 'boat', ('moon', True))
+
+@fixture 
+def set1():
+    return {'alice','bob','john','megan'}
+
+@fixture
+def simple_dict ():
+    return {'name': 'John'}
+
 
 @fixture(autouse=True)
 def sample_defiwrapper_response():

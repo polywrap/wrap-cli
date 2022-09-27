@@ -86,14 +86,12 @@ def test_sanitize_long_list_returns_long_list():
 def test_sanitize_complex_list_returns_list(complex_list):
     assert sanitize(complex_list) == complex_list
 
-def test_sanitize_nested_list_returns_nested_list():
-    nested_list = [23, [[0.123,'dog'], 'cat'], 'boat', ['moon', True]]
+def test_sanitize_nested_list_returns_nested_list(nested_list):
     assert sanitize(nested_list) == nested_list 
 
-def test_sanitize_set_returns_list():
+def test_sanitize_set_returns_list(set1):
     # Remember sets automatically reorganize the contents of the object
     # meaning {'bob', 'alice'} might be stored as {'alice','bob'} in memory
-    set1 = {'alice','bob','john','megan'}
     assert type(sanitize(set1)) == list
 
 def test_sanitize_set_returns_list_with_all_items_of_the_set():
@@ -103,16 +101,14 @@ def test_sanitize_set_returns_list_with_all_items_of_the_set():
     [r.append(True) if item in sanitized else r.append(False) for item in set1]
     assert False not in r
 
-def test_sanitize_set_returns_list_of_same_length():
-    set1 = {'alice','bob','john','megan'}
+def test_sanitize_set_returns_list_of_same_length(set1):
     assert len(sanitize(set1)) == len(set1)
 
 def test_sanitize_complex_number_returns_string():
     assert sanitize(3 + 5j) == "(3+5j)"
     assert sanitize(0 + 9j) == "9j"
 
-def test_sanitize_simple_dict_returns_sanitized_values():
-    simple_dict = {'name': 'John'}
+def test_sanitize_simple_dict_returns_sanitized_values(simple_dict):
     assert sanitize(simple_dict) == simple_dict
 
 def test_sanitize_object_with_slots_attributes_returns_dict_instead():
@@ -134,7 +130,7 @@ def test_sanitize_single_tuple_returns_list():
 def test_sanitize_long_tuple_returns_list():
     assert sanitize((2,3,6)) == [2,3,6] 
 
-def test_sanitize_nested_tuples_returns_nested_list():
+def test_sanitize_nested_tuples_returns_nested_list(nested_tuple, nested_list):
     nested_tuple = (23, ((0.123,'dog'), 'cat'), 'boat', ('moon', True))
     nested_list = [23, [[0.123,'dog'], 'cat'], 'boat', ['moon', True]]
     assert sanitize(nested_tuple) == nested_list
