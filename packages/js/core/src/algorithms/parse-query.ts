@@ -1,4 +1,4 @@
-import { QueryInvocations, QueryDocument, Uri, InvokeResult } from "../types";
+import { QueryInvocations, QueryDocument, Uri } from "../types";
 
 import { SelectionSetNode, ValueNode } from "graphql";
 import { Tracer } from "@polywrap/tracing-js";
@@ -93,7 +93,7 @@ const extractValue = Tracer.traceFunc(
   (
     node: ValueNode,
     variables?: Record<string, unknown>
-  ): InvokeResult<unknown> => {
+  ): Result<unknown, Error> => {
     if (node.kind === "Variable") {
       // Get the argument's value from the variables object
       if (!variables) {
