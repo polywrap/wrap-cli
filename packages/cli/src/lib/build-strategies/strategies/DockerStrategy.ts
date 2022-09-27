@@ -44,16 +44,19 @@ export class DockerBuildStrategy extends BuildStrategy<BuildImageId> {
       const buildManifestDir = await this.project.getBuildManifestDir();
       const buildManifest = await this.project.getBuildManifest();
       const imageName =
-        buildManifest?.docker?.name ||
+        buildManifest?.strategies?.image?.name ||
         generateDockerImageName(await this.project.getBuildUuid());
-      let dockerfile = buildManifest?.docker?.dockerfile
-        ? path.join(buildManifestDir, buildManifest?.docker?.dockerfile)
+      let dockerfile = buildManifest?.strategies?.image?.dockerfile
+        ? path.join(
+            buildManifestDir,
+            buildManifest?.strategies?.image?.dockerfile
+          )
         : path.join(buildManifestDir, "Dockerfile");
 
       await this.project.cacheBuildManifestLinkedPackages();
 
       // If the dockerfile path isn't provided, generate it
-      if (!buildManifest?.docker?.dockerfile) {
+      if (!buildManifest?.strategies?.image?.dockerfile) {
         // Make sure the default template is in the cached .polywrap/wasm/build/image folder
         await this.project.cacheDefaultBuildImage();
 
@@ -68,7 +71,7 @@ export class DockerBuildStrategy extends BuildStrategy<BuildImageId> {
         );
       }
 
-      const dockerBuildxConfig = buildManifest?.docker?.buildx;
+      const dockerBuildxConfig = buildManifest?.strategies?.image?.buildx;
       const useBuildx = !!dockerBuildxConfig;
 
       let cacheDir: string | undefined;
@@ -92,7 +95,7 @@ export class DockerBuildStrategy extends BuildStrategy<BuildImageId> {
         removeBuilder = !!dockerBuildxConfig.removeBuilder;
       }
 
-      const removeImage = !!buildManifest?.docker?.removeImage;
+      const removeImage = !!buildManifest?.strategies?.image?.removeImage;
 
       // If the dockerfile path contains ".mustache", generate
       if (dockerfile.indexOf(".mustache") > -1) {

@@ -1,0 +1,167 @@
+{
+  "id": "BuildManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format"],
+  "properties": {
+    "format": {
+      "description": "Polywrap build manifest format version.",
+      "type": "string",
+      "enum": ["0.2.0", "0.2"]
+    },
+    "strategies": {
+      "description": "Custom build image configurations.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "image": {
+          "$ref": "#/definitions/image"
+        },
+        "local": {
+          "$ref": "#/definitions/local"
+        },
+        "vm": {
+          "$ref": "#/definitions/vm"
+        }
+      }
+    },
+    "config": {
+      "description": "Custom build image configurations.",
+      "type": "object"
+    },
+    "linked_packages": {
+      "description": "Locally linked packages into docker build image.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "Package name.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Path to linked package directory.",
+            "type": "string"
+          },
+          "filter": {
+            "description": "Ignore files matching this regex in linked package directory.",
+            "type": "string"
+          }
+        },
+        "required": ["name", "path"]
+      }
+    }
+  },
+  "definitions": {
+    "image": {
+      "description": "Docker image strategy configuration",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Docker image name.",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+        },
+        "dockerfile": {
+          "description": "Docker image file name.",
+          "type": "string",
+          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/Dockerfile(.mustache)?$"
+        },
+        "buildx": {
+          "description": "Configuration options for Docker Buildx, set to true for default value.",
+          "type": ["object", "boolean"],
+          "additionalProperties": false,
+          "properties": {
+            "cache": {
+              "description": "Path to cache directory, set to true for default value, set to false to disable caching.",
+              "type": ["string", "boolean"],
+              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
+            },
+            "removeBuilder": {
+              "description": "Remove the builder instance.",
+              "type": "boolean"
+            }
+          }
+        },
+        "removeImage": {
+          "description": "Remove the image.",
+          "type": "boolean"
+        }
+      }
+    },
+    "local": {
+      "description": "Local build strategy configuration",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assemblyscript": {
+          "$ref": "#/definitions/local_assemblyscript"
+        },
+        "rust": {
+          "$ref": "#/definitions/local_rust"
+        }
+      }
+    },
+    "local_rust": {
+      "description": "Local strategy configuration for Rust",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scriptPath": {
+          "description": "Custom script path for local Rust build",
+          "type": "string"
+        }
+      }
+    },
+    "local_assemblyscript": {
+      "description": "Local strategy configuration for Assemblyscript",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scriptPath": {
+          "description": "Custom script path for local Assemblyscript build",
+          "type": "string"
+        }
+      }
+    },
+    "vm": {
+      "description": "Docker VM strategy configuration",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assemblyscript": {
+          "$ref": "#/definitions/vm_assemblyscript"
+        },
+        "rust": {
+          "$ref": "#/definitions/vm_rust"
+        }
+      }
+    },
+    "vm_rust": {
+      "description": "Docker VM strategy configuration for Rust",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "baseImage": {
+          "description": "Base image for the Rust VM",
+          "type": "string",
+          "pattern": "^([a-zA-Z0-9\\-\\_]+\\/)?[a-zA-Z0-9\\-\\_]+:[a-zA-Z0-9\\-\\_\\.]+$"
+        }
+      }
+    },
+    "vm_assemblyscript": {
+      "description": "Docker VM strategy configuration for Assemblyscript",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "baseImage": {
+          "description": "Base image for the Assemblyscript VM",
+          "type": "string",
+          "pattern": "^([a-zA-Z0-9\\-\\_]+\\/)?[a-zA-Z0-9\\-\\_]+:[a-zA-Z0-9\\-\\_\\.]+$"
+        }
+      }
+    }
+  }
+}

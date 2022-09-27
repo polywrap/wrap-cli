@@ -12,7 +12,15 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
       const buildManifestConfig = buildManifest.config as BuildManifestConfig;
 
       if (buildManifestConfig.polywrap_module) {
-        const scriptPath = `${__dirname}/../../defaults/build-scripts/${bindLanguage}.sh`;
+        let scriptPath = `${__dirname}/../../defaults/build-scripts/${bindLanguage}.sh`;
+
+        if (bindLanguage.startsWith("wasm")) {
+          const lang = bindLanguage.split("/")[1] as "assemblyscript" | "rust";
+          const customScript =
+            buildManifest.strategies?.local?.[lang]?.scriptPath;
+          scriptPath = customScript ?? scriptPath;
+        }
+
         const command = `chmod +x ${scriptPath} && ${scriptPath} ${buildManifestConfig.polywrap_module.dir} ${this.outputDir}`;
 
         await withSpinner(

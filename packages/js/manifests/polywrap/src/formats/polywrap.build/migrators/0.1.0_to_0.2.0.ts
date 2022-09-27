@@ -1,0 +1,17 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import { BuildManifest as OldManifest } from "../0.1.0";
+import { BuildManifest as NewManifest } from "../0.2.0";
+
+export function migrate(old: OldManifest): NewManifest {
+  return {
+    ...old,
+    __type: "BuildManifest",
+    format: "0.2.0",
+    strategies: {
+      image: {
+        ...old.docker,
+      },
+    },
+  };
+}

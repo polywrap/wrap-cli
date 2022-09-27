@@ -11,12 +11,16 @@ import {
   latestBuildManifestFormat
 } from ".";
 
+import {
+  migrate as migrate_0_1_0_to_0_2_0
+} from "./migrators/0.1.0_to_0.2.0";
 
 type Migrator = {
   [key in BuildManifestFormats]?: (m: AnyBuildManifest) => BuildManifest;
 };
 
 export const migrators: Migrator = {
+  "0.1.0": migrate_0_1_0_to_0_2_0,
 };
 
 export function migrateBuildManifest(
@@ -38,5 +42,12 @@ export function migrateBuildManifest(
     throw new Error(`Unrecognized BuildManifestFormat "${manifest.format}"`);
   }
 
-  throw new Error(`This should never happen, BuildManifest migrators is empty. from: ${from}, to: ${to}`);
+  const migrator = migrators[from];
+  if (!migrator) {
+    throw new Error(
+      `Migrator from BuildManifestFormat "${from}" to "${to}" is not available`
+    );
+  }
+
+  return migrator(manifest);
 }
