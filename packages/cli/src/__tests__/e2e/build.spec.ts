@@ -205,7 +205,7 @@ describe("e2e tests for build command", () => {
       path.join(cacheBuildEnvPath, "polywrap.build.yaml")
     );
 
-    const buildImageName = cachedBuildManifest.docker?.name;
+    const buildImageName = cachedBuildManifest.strategies?.image?.name;
 
     expect(buildImageName?.length).toBeGreaterThan(36);
     expect((buildImageName?.match(/-/g) || []).length).toBeGreaterThanOrEqual(

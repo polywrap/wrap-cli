@@ -319,9 +319,12 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     const defaultManifest = await loadBuildManifest(defaultPath);
 
     // Set a unique docker image name
-    defaultManifest.docker = {
-      ...defaultManifest.docker,
-      name: generateDockerImageName(await this.getBuildUuid()),
+    defaultManifest.strategies = {
+      ...defaultManifest.strategies,
+      image: {
+        ...defaultManifest.strategies?.image,
+        name: generateDockerImageName(await this.getBuildUuid()),
+      },
     };
 
     // Output the modified build manifest
