@@ -1,7 +1,55 @@
 
 from typing import Dict
 from pytest import fixture
+from dataclasses import dataclass
 
+@fixture
+def object_with_slots_attributes():
+    class Example():
+        __slots__ = ("slot_0", "slot_1")
+        def __init__(self):
+            self.slot_0 = "zero"
+            self.slot_1 = "one"
+    s = Example()
+    return s
+
+@dataclass
+class DataClassObjectWithoutSlots():
+    address: str
+    name: str
+    symbol: str
+    decimals: int
+    _totalSupply: int
+
+    def total_supply(self) -> float:
+        return self._totalSupply / (10**self.decimals)
+
+@fixture 
+def dataclass_object_without_slots():
+    return DataClassObjectWithoutSlots('0x8798249c2e607446efb7ad49ec89dd1865ff4272-IOU',
+         "SushiBar", "xSUSHI", 18, 50158519600425129140904955)
+
+@fixture
+def dataclass_object_without_slots_as_dict():
+    {'address': '0x8798249c2e607446efb7ad49ec89dd1865ff4272-IOU', 'name': 'SushiBar', 'symbol': 'xSUSHI', 'decimals': 18, '_totalSupply': 50158519600425129140904955}
+
+
+
+@dataclass
+class DataClassObjectWithSlots():
+    address: str
+    name: str
+    symbol: str
+    decimals: int
+    _totalSupply: int
+
+    def total_supply(self) -> float:
+        return self._totalSupply / (10**self.decimals)
+
+@fixture 
+def dataclass_object_with_slots():
+    return DataClassObjectWithoutSlots('0x8798249c2e607446efb7ad49ec89dd1865ff4272-IOU',
+         "SushiBar", "xSUSHI", 18, 50158519600425129140904955)
 
 @fixture 
 def expected_array_like(): 

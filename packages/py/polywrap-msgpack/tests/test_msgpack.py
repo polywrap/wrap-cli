@@ -115,14 +115,8 @@ def test_sanitize_complex_number_returns_string():
 def test_sanitize_simple_dict_returns_sanitized_values(simple_dict):
     assert sanitize(simple_dict) == simple_dict
 
-def test_sanitize_object_with_slots_attributes_returns_dict_instead():
-    class Example():
-        __slots__ = ("slot_0", "slot_1")
-        def __init__(self):
-            self.slot_0 = "zero"
-            self.slot_1 = "one"
-    s = Example()
-    assert sanitize(s) == {'slot_0':'zero','slot_1':'one'}
+def test_sanitize_object_with_slots_attributes_returns_dict_instead(object_with_slots_attributes):
+    assert sanitize(object_with_slots_attributes) == {'slot_0':'zero','slot_1':'one'}
 
 
 def test_sanitize_single_tuple_returns_list(single_tuple):
@@ -157,6 +151,14 @@ def test_sanitize_complex_dict_returns_sanitized_values():
         'pet': None,
         'friends': ['bob','alice','megan','john'] }
     assert sanitize(complex_dict) == sanitized_complex_dict
+
+def test_sanitize_dataclass_object_returns_dict(dataclass_object_without_slots, dataclass_object_without_slots_as_dict):
+    assert sanitize(dataclass_object_without_slots) == {'address': '0x8798249c2e607446efb7ad49ec89dd1865ff4272-IOU', 'name': 'SushiBar', 'symbol': 'xSUSHI', 'decimals': 18, '_totalSupply': 50158519600425129140904955}
+
+def test_sanitize_list_of_dataclass_objects_returns_list_of_dicts():
+    assert False
+
+
 
 # WIP Tests
 
