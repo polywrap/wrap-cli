@@ -33,5 +33,5 @@ rm -rf ./build/bg_module.wasm
 wasm-opt --asyncify -Os ./build/snipped_module.wasm -o ./build/wrap.wasm
 rm -rf ./build/snipped_module.wasm
 
-chmod 777 -R ./build
+chmod -R g+wX .
 {{/polywrap_module}}
