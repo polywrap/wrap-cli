@@ -100,8 +100,8 @@ def test_sanitize_nested_list_returns_nested_list():
     nested_list = [23, [[0.123,'dog'], 'cat'], 'boat', ['moon', True]]
     assert sanitize(nested_list) == nested_list 
 
-def test_sanitize_set_returns_set():
-    assert sanitize({'bob','alice','megan','john'}) == {'bob','alice','megan','john'}
+def test_sanitize_set_returns_list():
+    assert sanitize({'bob','alice','megan','john'}) == ['bob','alice','megan','john']
 
 def test_sanitize_complex_number_returns_complex_number():
     assert sanitize(3 + 5j) == "3 + 5j"
