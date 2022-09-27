@@ -16,7 +16,7 @@ describe("In-memory wrappers", () => {
     await buildWrapper(simpleWrapperPath);
   });
 
-  it("can create in-memory wrapper from buffers", async () => {
+  it("can create in-memory wrappers from buffers", async () => {
     const manifest = await fs.promises.readFile(
       `${simpleWrapperPath}/build/${WRAP_MANIFEST_PATH}`
     );
@@ -36,7 +36,7 @@ describe("In-memory wrappers", () => {
     );
   });
 
-  it("can create in-memory packages from file reader", async () => {
+  it("can create in-memory wrappers from file reader", async () => {
     const manifest = await fs.promises.readFile(
       `${simpleWrapperPath}/build/${WRAP_MANIFEST_PATH}`
     );
@@ -58,7 +58,7 @@ describe("In-memory wrappers", () => {
     );
   });
 
-  it("can create in-memory packages from manifest and file reader", async () => {
+  it("can create in-memory wrappers from manifest and file reader", async () => {
     const manifest = await fs.promises.readFile(
       `${simpleWrapperPath}/build/${WRAP_MANIFEST_PATH}`
     );
@@ -80,7 +80,7 @@ describe("In-memory wrappers", () => {
     );
   });
 
-  it("can create in-memory packages from manifest, wasm module and file reader", async () => {
+  it("can create in-memory wrappers from manifest, wasm module and file reader", async () => {
     const testEncoded = new TextEncoder().encode("test");
 
     const manifest = await fs.promises.readFile(
