@@ -21,8 +21,13 @@ def sanitize(value: Any) -> Any:
         array: List[Any] = value
         return [sanitize(a) for a in array]
     elif type(value) is tuple:
-        array: List[Any] = list(*value)
-        return [sanitize(a) for a in array]
+        array: List[Any] = list(value)
+        return sanitize(array)
+        #previous implementation
+        #array: List[Any] = list(*value)
+        #return [sanitize(a) for a in array]
+    elif type(value) is set:
+        return value 
     elif hasattr(value, "__slots__"):
         return {s: sanitize(getattr(value, s)) for s in getattr(value, "__slots__") if hasattr(value, s)}
     elif hasattr(value, "__dict__"):
