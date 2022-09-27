@@ -26,13 +26,17 @@ import {
   getEnvFromUriHistory,
   PluginPackage,
   QueryResult,
+  InvokeResult,
 } from "@polywrap/core-js";
 import {
   buildCleanUriHistory,
   IWrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
-import { DeserializeManifestOptions, WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import {
+  DeserializeManifestOptions,
+  WrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
@@ -289,7 +293,7 @@ export class PolywrapClient implements Client {
     TUri extends Uri | string = string
   >(
     options: InvokerOptions<TUri> & { wrapper: Wrapper }
-  ): Promise<Result<TData, Error>> {
+  ): Promise<InvokeResult<TData>> {
     try {
       const typedOptions: InvokeOptions<Uri> = {
         ...options,
@@ -322,7 +326,7 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: invoke")
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
     options: InvokerOptions<TUri>
-  ): Promise<Result<TData, Error>> {
+  ): Promise<InvokeResult<TData>> {
     try {
       const typedOptions: InvokeOptions<Uri> = {
         ...options,
@@ -394,7 +398,7 @@ export class PolywrapClient implements Client {
       stop(): void {
         subscription.isActive = false;
       },
-      async *[Symbol.asyncIterator](): AsyncGenerator<Result<TData, Error>> {
+      async *[Symbol.asyncIterator](): AsyncGenerator<InvokeResult<TData>> {
         let timeout: NodeJS.Timeout | undefined = undefined;
         subscription.isActive = true;
 

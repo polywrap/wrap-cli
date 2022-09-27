@@ -2,6 +2,7 @@ import {
   Client,
   combinePaths,
   InvokeOptions,
+  InvokeResult,
   Uri,
   UriResolverInterface,
   Wrapper,
@@ -21,11 +22,11 @@ export class UriResolverExtensionFileReader implements IFileReader {
       {
         invoke: <TData = unknown, TUri extends Uri | string = string>(
           options: InvokeOptions<TUri>
-        ): Promise<Result<TData, Error>> =>
+        ): Promise<InvokeResult<TData>> =>
           this.client.invoke<TData, TUri>(options),
         invokeWrapper: <TData = unknown, TUri extends Uri | string = string>(
           options: InvokeOptions<TUri> & { wrapper: Wrapper }
-        ): Promise<Result<TData, Error>> =>
+        ): Promise<InvokeResult<TData>> =>
           this.client.invokeWrapper<TData, TUri>(options),
       },
       this.resolverExtensionUri,
