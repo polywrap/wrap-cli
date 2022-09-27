@@ -2,10 +2,12 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
-import { Uri, PluginModule, Subscription } from "../..";
+import { Uri, PluginModule, Subscription, PolywrapClient } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { getClient } from "../utils/getClient";
 import { makeMemoryStoragePlugin } from "../e2e/memory-storage";
+import { ErrResult } from "../utils/resultTypes";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 
@@ -46,10 +48,10 @@ describe("wasm-wrapper", () => {
       },
     });
 
-    expect(result.error).toBeFalsy();
-    expect(result.data).toBeTruthy();
-    expect(typeof result.data).toBe("string");
-    expect(result.data).toEqual("test");
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBeTruthy();
+    expect(typeof result.value).toBe("string");
+    expect(result.value).toEqual("test");
   });
 
   test("can invoke with typed URI", async () => {
@@ -62,10 +64,10 @@ describe("wasm-wrapper", () => {
       },
     });
 
-    expect(result.error).toBeFalsy();
-    expect(result.data).toBeTruthy();
-    expect(typeof result.data).toBe("string");
-    expect(result.data).toEqual("test");
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBeTruthy();
+    expect(typeof result.value).toBe("string");
+    expect(result.value).toEqual("test");
   });
 
   test("invoke with decode defaulted to true works as expected", async () => {
@@ -78,10 +80,10 @@ describe("wasm-wrapper", () => {
       },
     });
 
-    expect(result.error).toBeFalsy();
-    expect(result.data).toBeTruthy();
-    expect(typeof result.data).toBe("string");
-    expect(result.data).toEqual("test");
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBeTruthy();
+    expect(typeof result.value).toBe("string");
+    expect(result.value).toEqual("test");
   });
 
   test("invoke with decode set to false works as expected", async () => {
@@ -95,10 +97,10 @@ describe("wasm-wrapper", () => {
       encodeResult: true,
     });
 
-    expect(result.error).toBeFalsy();
-    expect(result.data).toBeTruthy();
-    expect(result.data instanceof Uint8Array).toBeTruthy();
-    expect(msgpackDecode(result.data as Uint8Array)).toEqual("test");
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBeTruthy();
+    expect(result.value instanceof Uint8Array).toBeTruthy();
+    expect(msgpackDecode(result.value as Uint8Array)).toEqual("test");
   });
 
   it("should invoke wrapper with custom redirects", async () => {
@@ -125,11 +127,12 @@ describe("wasm-wrapper", () => {
       },
     });
 
-    expect(result.data).toBeTruthy();
-    expect(result.data).toEqual("plugin response");
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBeTruthy();
+    expect(result.value).toEqual("plugin response");
   });
 
-  it("should allow query time redirects", async () => {
+  it("should allow clone + reconfigure of redirects", async () => {
     const client = await getClient({
       plugins: [
         {
@@ -146,19 +149,26 @@ describe("wasm-wrapper", () => {
       },
     ];
 
-    const result = await client.invoke({
+    const newConfig = new ClientConfigBuilder()
+      .add(client.getConfig())
+      .add({ redirects })
+      .build();
+
+    const newClient = new PolywrapClient(
+      newConfig
+    );
+
+    const result = await newClient.invoke({
       uri: simpleWrapperUri.uri,
       method: "simpleMethod",
       args: {
         arg: "test",
-      },
-      config: {
-        redirects,
-      },
+      }
     });
 
-    expect(result.data).toBeTruthy();
-    expect(result.data).toEqual("plugin response");
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBeTruthy();
+    expect(result.value).toEqual("plugin response");
   });
 
   test("get file from wrapper", async () => {
@@ -168,12 +178,14 @@ describe("wasm-wrapper", () => {
       await fs.promises.readFile(`${simpleWrapperPath}/build/wrap.info`)
     );
 
-    const receivedManifest: Uint8Array = (await client.getFile(
+    const receivedManifestResult = await client.getFile(
       simpleWrapperUri,
       {
         path: "./wrap.info",
       }
-    )) as Uint8Array;
+    );
+    if (!receivedManifestResult.ok) fail(receivedManifestResult.error);
+    const receivedManifest = receivedManifestResult.value as Uint8Array;
 
     expect(receivedManifest).toEqual(expectedManifest);
 
@@ -181,12 +193,14 @@ describe("wasm-wrapper", () => {
       await fs.promises.readFile(`${simpleWrapperPath}/build/wrap.wasm`)
     );
 
-    const receivedWasmModule: Uint8Array = (await client.getFile(
+    const receivedWasmModuleResult = await client.getFile(
       simpleWrapperUri,
       {
         path: "./wrap.wasm",
       }
-    )) as Uint8Array;
+    );
+    if (!receivedWasmModuleResult.ok) fail(receivedWasmModuleResult.error);
+    const receivedWasmModule = receivedWasmModuleResult.value as Uint8Array;
 
     expect(receivedWasmModule).toEqual(expectedWasmModule);
 
@@ -202,11 +216,12 @@ describe("wasm-wrapper", () => {
       ],
     });
 
-    await expect(() =>
-      pluginClient.getFile("ens/mock-plugin.eth", {
-        path: "./index.js",
-      })
-    ).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
+    let pluginGetFileResult = await pluginClient.getFile("ens/mock-plugin.eth", {
+      path: "./index.js",
+    });
+
+    pluginGetFileResult = pluginGetFileResult as ErrResult;
+    expect(pluginGetFileResult.error?.message).toContain("client.getFile(...) is not implemented for Plugins.");
   });
 
   test("subscribe", async () => {
@@ -243,8 +258,8 @@ describe("wasm-wrapper", () => {
     });
 
     for await (let result of getSubscription) {
-      expect(result.error).toBeFalsy();
-      const val = result.data;
+      if (!result.ok) fail(result.error);
+      const val = result.value;
 
       if (val !== undefined) {
         results.push(val);
@@ -290,8 +305,9 @@ describe("wasm-wrapper", () => {
 
     new Promise(async () => {
       for await (let result of getSubscription) {
-        expect(result.error).toBeFalsy();
-        const val = result.data;
+        if (!result.ok) fail(result.error);
+        const val = result.value;
+
         if (val !== undefined) {
           results.push(val);
           if (val >= 2) {

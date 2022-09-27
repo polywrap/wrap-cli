@@ -9,6 +9,7 @@ import {
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
 import { GetManifestOptions } from "@polywrap/core-js";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class WasmPackage implements IWasmPackage {
   protected constructor(private readonly fileReader: IFileReader) {}
@@ -71,29 +72,39 @@ export class WasmPackage implements IWasmPackage {
     }
   }
 
-  async getManifest(options?: GetManifestOptions): Promise<WrapManifest> {
-    const wrapManifest = await this.fileReader.readFile(WRAP_MANIFEST_PATH);
+  // TODO: return Result
+  async getManifest(
+    options?: GetManifestOptions
+  ): Promise<Result<WrapManifest, Error>> {
+    const result = await this.fileReader.readFile(WRAP_MANIFEST_PATH);
 
-    if (!wrapManifest) {
-      throw Error(`WRAP manifest not found`);
+    if (!result.ok) {
+      return result;
     }
 
-    return deserializeWrapManifest(wrapManifest, options);
+    const wrapManifest = result.value;
+    return ResultOk(await deserializeWrapManifest(wrapManifest, options));
   }
 
-  async getWasmModule(): Promise<Uint8Array> {
-    const wasmModule = await this.fileReader.readFile(WRAP_MODULE_PATH);
+  async getWasmModule(): Promise<Result<Uint8Array, Error>> {
+    const result = await this.fileReader.readFile(WRAP_MODULE_PATH);
 
-    if (!wasmModule) {
-      throw Error(`Wrapper does not contain a wasm module`);
+    if (!result.ok) {
+      return ResultErr(Error(`Wrapper does not contain a wasm module`));
     }
 
-    return wasmModule;
+    return result;
   }
 
-  async createWrapper(options?: GetManifestOptions): Promise<WasmWrapper> {
-    const manifest = await this.getManifest(options);
+  async createWrapper(
+    options?: GetManifestOptions
+  ): Promise<Result<Wrapper, Error>> {
+    const result = await this.getManifest(options);
 
-    return new WasmWrapper(manifest, this.fileReader);
+    if (!result.ok) {
+      return result;
+    }
+
+    return ResultOk(new WasmWrapper(result.value, this.fileReader));
   }
 }

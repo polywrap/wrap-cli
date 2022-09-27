@@ -1,11 +1,4 @@
-import {
-  Uri,
-  Client,
-  IWrapPackage,
-  Wrapper,
-  initWrapper,
-  IUriResolutionContext,
-} from "@polywrap/core-js";
+import { Uri, Client, Wrapper, IUriResolutionContext } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export const loadResolverExtension = async (
@@ -33,15 +26,15 @@ export const loadResolverExtension = async (
     );
   }
 
-  let wrapperOrPackage: IWrapPackage | Wrapper;
-
   if (uriPackageOrWrapper.type === "package") {
-    wrapperOrPackage = uriPackageOrWrapper.package;
+    const result = await uriPackageOrWrapper.package.createWrapper();
+
+    if (!result.ok) {
+      return result;
+    }
+
+    return ResultOk(result.value);
   } else {
-    wrapperOrPackage = uriPackageOrWrapper.wrapper;
+    return ResultOk(uriPackageOrWrapper.wrapper);
   }
-
-  const wrapper = await initWrapper(wrapperOrPackage);
-
-  return ResultOk(wrapper);
 };

@@ -47,10 +47,8 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
         _client
       );
 
-      if (manifestResult.data) {
-        manifest = Buffer.from(manifestResult.data);
-      } else {
-        throw new Error();
+      if (manifestResult.ok) {
+        manifest = Buffer.from(manifestResult.value);
       }
     } catch (e) {
       // TODO: logging
@@ -79,13 +77,11 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
           client
         );
 
-        const result = resolveResult.data;
-
-        if (!result) {
+        if (!resolveResult.ok || !resolveResult.value) {
           return null;
         }
 
-        provider = result.provider;
+        provider = resolveResult.value.provider;
       }
 
       const catResult = await Ipfs_Module.cat(
@@ -100,7 +96,11 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
         client
       );
 
-      return catResult.data ?? null;
+      if (!catResult.ok) {
+        return null;
+      }
+
+      return catResult.value;
     } catch (e) {
       return null;
     }
