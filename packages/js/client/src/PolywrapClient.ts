@@ -644,7 +644,7 @@ export class PolywrapClient implements Client {
       } else {
         throw Error(
           `Error resolving URI "${uri.uri}"\nResolution Stack: ${JSON.stringify(
-            resolutionContext.getHistory(),
+            buildCleanUriHistory(resolutionContext.getHistory()),
             null,
             2
           )}`
@@ -658,7 +658,11 @@ export class PolywrapClient implements Client {
       throw Error(
         `Error resolving URI "${uri.uri}"\nURI not found ${
           uriPackageOrWrapper.uri.uri
-        }\nResolution Stack: ${JSON.stringify(history, null, 2)}`
+        }\nResolution Stack: ${JSON.stringify(
+          buildCleanUriHistory(resolutionContext.getHistory()),
+          null,
+          2
+        )}`
       );
     }
 
