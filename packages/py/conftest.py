@@ -22,6 +22,10 @@ def complex_list():
 def nested_list():
     return [23, [[0.123,'dog'], 'cat'], 'boat', ['moon', True]]
 
+@fixture 
+def single_tuple():
+    return (8,)
+
 @fixture
 def nested_tuple():
     return (23, ((0.123,'dog'), 'cat'), 'boat', ('moon', True))
@@ -29,6 +33,10 @@ def nested_tuple():
 @fixture 
 def set1():
     return {'alice','bob','john','megan'}
+
+@fixture 
+def set2():
+    return {'alice',9,5.23,True}
 
 @fixture
 def simple_dict ():

@@ -94,11 +94,15 @@ def test_sanitize_set_returns_list(set1):
     # meaning {'bob', 'alice'} might be stored as {'alice','bob'} in memory
     assert type(sanitize(set1)) == list
 
-def test_sanitize_set_returns_list_with_all_items_of_the_set():
-    set1 = {'alice','bob','john','megan'}
-    sanitized = sanitize({'alice','bob','john','megan'})
+def test_sanitize_set_returns_list_with_all_items_of_the_set(set1, set2):
+    sanitized = sanitize(set1)
     r = []       
     [r.append(True) if item in sanitized else r.append(False) for item in set1]
+    assert False not in r
+    
+    sanitized = sanitize(set2)
+    r = []       
+    [r.append(True) if item in sanitized else r.append(False) for item in set2]
     assert False not in r
 
 def test_sanitize_set_returns_list_of_same_length(set1):
@@ -121,18 +125,16 @@ def test_sanitize_object_with_slots_attributes_returns_dict_instead():
     assert sanitize(s) == {'slot_0':'zero','slot_1':'one'}
 
 
-def test_sanitize_single_tuple_returns_list():
+def test_sanitize_single_tuple_returns_list(single_tuple):
     # To create a tuple with only one item, you have add a comma after the item, 
     # otherwise Python will not recognize the variable as a tuple.
-    assert type(sanitize((8,))) == list
-    assert sanitize((8,)) == [8] 
+    assert type(sanitize(single_tuple)) == list
+    assert sanitize(single_tuple) == [8] 
 
 def test_sanitize_long_tuple_returns_list():
     assert sanitize((2,3,6)) == [2,3,6] 
 
 def test_sanitize_nested_tuples_returns_nested_list(nested_tuple, nested_list):
-    nested_tuple = (23, ((0.123,'dog'), 'cat'), 'boat', ('moon', True))
-    nested_list = [23, [[0.123,'dog'], 'cat'], 'boat', ['moon', True]]
     assert sanitize(nested_tuple) == nested_list
 
 # Tests that are not passing
@@ -155,7 +157,6 @@ def test_sanitize_complex_dict_returns_sanitized_values():
         'pet': None,
         'friends': ['bob','alice','megan','john'] }
     assert sanitize(complex_dict) == sanitized_complex_dict
-
 
 # WIP Tests
 
