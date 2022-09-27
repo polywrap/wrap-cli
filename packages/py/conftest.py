@@ -1,8 +1,20 @@
 
 from typing import Dict
-import pytest
+from pytest import fixture
 
-@pytest.fixture(autouse=True)
+
+@fixture 
+def expected_array_like(): 
+    return [
+    130, 168, 102, 105, 114, 115, 116, 75,
+    101, 121, 170, 102, 105, 114, 115, 116,
+    86, 97, 108, 117, 101, 169, 115, 101,
+    99, 111, 110, 100, 75, 101, 121, 171,
+    115, 101, 99, 111, 110, 100, 86, 97,
+    108, 117, 101
+]
+
+@fixture(autouse=True)
 def sample_defiwrapper_response():
     defiwrapper_query_output_sample: Dict[Any, Any] = {
         "data": {
