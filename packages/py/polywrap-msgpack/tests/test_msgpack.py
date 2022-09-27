@@ -101,7 +101,7 @@ def test_sanitize_nested_list_returns_nested_list():
     assert sanitize(nested_list) == nested_list 
 
 def test_sanitize_set_returns_list():
-    # Remember sets are automatically reorganize the contents of the object
+    # Remember sets automatically reorganize the contents of the object
     # meaning {'bob', 'alice'} might be stored as {'alice','bob'} in memory
     set1 = {'alice','bob','john','megan'}
     assert type(sanitize(set1)) == list
@@ -116,7 +116,6 @@ def test_sanitize_set_returns_list_with_all_items_of_the_set():
 def test_sanitize_set_returns_list_of_same_length():
     set1 = {'alice','bob','john','megan'}
     assert len(sanitize(set1)) == len(set1)
-    
 
 def test_sanitize_complex_number_returns_string():
     assert sanitize(3 + 5j) == "3 + 5j"
@@ -137,7 +136,10 @@ def test_sanitize_object_with_slots_attributes_returns_dict_instead():
 # Tests that are not passing
 
 def test_sanitize_single_tuple_returns_list():
-    assert sanitize((8)) == [8] 
+    # To create a tuple with only one item, you have add a comma after the item, 
+    # otherwise Python will not recognize the variable as a tuple.
+    assert type(sanitize((8,))) == list
+    assert sanitize((8,)) == [8] 
 
 def test_sanitize_long_tuple_returns_list():
     assert sanitize((2,3,6)) == [2,3,6] 
