@@ -1,4 +1,4 @@
-import { ClientConfig, InvokeResult, Uri } from "@polywrap/core-js";
+import { ClientConfig, Uri } from "@polywrap/core-js";
 
 export interface Step {
   uri: string | Uri;
@@ -15,7 +15,9 @@ export enum JobStatus {
   SKIPPED = "SKIPPED",
 }
 
-export interface JobResult<TData = unknown> extends InvokeResult<TData> {
+export interface JobResult<TData = unknown> {
+  data?: TData;
+  error?: Error;
   status: JobStatus;
 }
 

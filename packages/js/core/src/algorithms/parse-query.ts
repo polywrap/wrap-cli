@@ -2,6 +2,7 @@ import { QueryInvocations, QueryDocument, Uri } from "../types";
 
 import { SelectionSetNode, ValueNode } from "graphql";
 import { Tracer } from "@polywrap/tracing-js";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export const parseQuery = Tracer.traceFunc(
   "core: parseQuery",
@@ -9,19 +10,20 @@ export const parseQuery = Tracer.traceFunc(
     uri: Uri,
     doc: QueryDocument,
     variables?: Record<string, unknown>
-  ): QueryInvocations<Uri> => {
+  ): Result<QueryInvocations<Uri>, Error> => {
     if (doc.definitions.length === 0) {
-      throw Error("Empty query document found.");
+      return ResultErr(Error("Empty query document found."));
     }
 
     const queryInvocations: QueryInvocations<Uri> = {};
 
     for (const def of doc.definitions) {
       if (def.kind !== "OperationDefinition") {
-        throw Error(
+        const error = Error(
           `Unrecognized root level definition type: ${def.kind}\n` +
             "Please use a 'query' or 'mutation' operations."
         );
+        return ResultErr(error);
       }
 
       // Get the method name
@@ -29,26 +31,29 @@ export const parseQuery = Tracer.traceFunc(
       const selections = selectionSet.selections;
 
       if (selections.length === 0) {
-        throw Error(
+        const error = Error(
           "Empty selection set found. Please include the name of a method you'd like to query."
         );
+        return ResultErr(error);
       }
 
       for (const selection of selections) {
         if (selection.kind !== "Field") {
-          throw Error(
+          const error = Error(
             `Unsupported selection type found: ${selection.kind}\n` +
               "Please query a method."
           );
+          return ResultErr(error);
         }
 
         const method = selection.name.value;
         const invocationName = selection.alias ? selection.alias.value : method;
 
         if (queryInvocations[invocationName]) {
-          throw Error(
+          const error = Error(
             `Duplicate query name found "${invocationName}". Please use GraphQL aliases that each have unique names.`
           );
+          return ResultErr(error);
         }
 
         // Get all arguments
@@ -60,10 +65,14 @@ export const parseQuery = Tracer.traceFunc(
             const name = arg.name.value;
 
             if (args[name]) {
-              throw Error(`Duplicate arguments found: ${name}`);
+              return ResultErr(Error(`Duplicate arguments found: ${name}`));
             }
 
-            args[name] = extractValue(arg.value, variables);
+            const extractionResult = extractValue(arg.value, variables);
+            if (!extractionResult.ok) {
+              return extractionResult;
+            }
+            args[name] = extractionResult.value;
           }
         }
 
@@ -75,88 +84,105 @@ export const parseQuery = Tracer.traceFunc(
       }
     }
 
-    return queryInvocations;
+    return ResultOk(queryInvocations);
   }
 );
 
 const extractValue = Tracer.traceFunc(
   "core: extractValue",
-  (node: ValueNode, variables?: Record<string, unknown>): unknown => {
+  (
+    node: ValueNode,
+    variables?: Record<string, unknown>
+  ): Result<unknown, Error> => {
     if (node.kind === "Variable") {
       // Get the argument's value from the variables object
       if (!variables) {
-        throw Error(
+        const error = Error(
           `Variables were not specified, tried to resolve variable from query. Name: ${node.name.value}\n`
         );
+        return ResultErr(error);
       }
 
       if (variables[node.name.value] === undefined) {
-        throw Error(`Missing variable: ${node.name.value}`);
+        return ResultErr(Error(`Missing variable: ${node.name.value}`));
       }
 
-      return variables[node.name.value];
+      return ResultOk(variables[node.name.value]);
     } else if (
       node.kind === "StringValue" ||
       node.kind === "EnumValue" ||
       node.kind === "BooleanValue"
     ) {
-      return node.value;
+      return ResultOk(node.value);
     } else if (node.kind === "IntValue") {
-      return Number.parseInt(node.value);
+      return ResultOk(Number.parseInt(node.value));
     } else if (node.kind === "FloatValue") {
-      return Number.parseFloat(node.value);
+      return ResultOk(Number.parseFloat(node.value));
     } else if (node.kind === "NullValue") {
-      return null;
+      return ResultOk(null);
     } else if (node.kind === "ListValue") {
       const length = node.values.length;
       const list = [];
 
       for (let i = 0; i < length; ++i) {
-        list.push(extractValue(node.values[i], variables));
+        const extractionResult = extractValue(node.values[i], variables);
+        if (!extractionResult.ok) {
+          return extractionResult;
+        }
+        list.push(extractionResult.value);
       }
 
-      return list;
+      return ResultOk(list);
     } else if (node.kind === "ObjectValue") {
       const length = node.fields.length;
       const object: Record<string, unknown> = {};
 
       for (let i = 0; i < length; ++i) {
         const field = node.fields[i];
-        object[field.name.value] = extractValue(field.value, variables);
+        const extractionResult = extractValue(field.value, variables);
+        if (!extractionResult.ok) {
+          return extractionResult;
+        }
+        object[field.name.value] = extractionResult.value;
       }
 
-      return object;
+      return ResultOk(object);
     } else {
-      throw Error(`Unsupported value node: ${node}`);
+      return ResultErr(Error(`Unsupported value node: ${node}`));
     }
   }
 );
 
 export const extractSelections = Tracer.traceFunc(
   "core: extractSelections",
-  (node: SelectionSetNode): Record<string, unknown> => {
+  (node: SelectionSetNode): Result<Record<string, unknown>, Error> => {
     const result: Record<string, unknown> = {};
 
     for (const selection of node.selections) {
       if (selection.kind !== "Field") {
-        throw Error(
+        const error = Error(
           `Unsupported result selection type found: ${selection.kind}`
         );
+        return ResultErr(error);
       }
 
       const name = selection.name.value;
 
       if (result[name]) {
-        throw Error(`Duplicate result selections found: ${name}`);
+        return ResultErr(Error(`Duplicate result selections found: ${name}`));
       }
 
       if (selection.selectionSet) {
-        result[name] = extractSelections(selection.selectionSet);
+        const selectionsResult = extractSelections(selection.selectionSet);
+        if (!selectionsResult.ok) {
+          return selectionsResult;
+        }
+        result[name] = selectionsResult.value;
       } else {
         result[name] = true;
       }
     }
 
-    return result;
+    return ResultOk(result);
   }
 );

@@ -1,6 +1,8 @@
 import { Uri, Wrapper } from ".";
 import { IUriResolutionContext } from "../uri-resolution";
 
+import { Result } from "@polywrap/result";
+
 /** Options required for an Wrapper invocation. */
 export interface InvokeOptions<TUri extends Uri | string = string> {
   /** The Wrapper's URI */
@@ -28,18 +30,7 @@ export interface InvokeOptions<TUri extends Uri | string = string> {
  *
  * @template TData Type of the invoke result data.
  */
-export interface InvokeResult<TData = unknown> {
-  /**
-   * Invoke result data. The type of this value is the return type
-   * of the method. If undefined, it means something went wrong.
-   * Errors should be populated with information as to what happened.
-   * Null is used to represent an intentionally null result.
-   */
-  data?: TData;
-
-  /** Errors encountered during the invocation. */
-  error?: Error;
-}
+export type InvokeResult<TData = unknown> = Result<TData, Error>;
 
 export interface InvokerOptions<TUri extends Uri | string = string>
   extends InvokeOptions<TUri> {
@@ -55,9 +46,9 @@ export interface Invoker {
   ): Promise<InvokeResult<TData>>;
 }
 
-export interface InvocableResult<TData = unknown> extends InvokeResult<TData> {
+export type InvocableResult<TData = unknown> = InvokeResult<TData> & {
   encoded?: boolean;
-}
+};
 
 export interface Invocable {
   invoke(
