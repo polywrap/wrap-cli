@@ -118,7 +118,8 @@ def test_sanitize_set_returns_list_of_same_length():
     assert len(sanitize(set1)) == len(set1)
 
 def test_sanitize_complex_number_returns_string():
-    assert sanitize(3 + 5j) == "3 + 5j"
+    assert sanitize(3 + 5j) == "(3+5j)"
+    assert sanitize(0 + 9j) == "9j"
 
 def test_sanitize_simple_dict_returns_sanitized_values():
     simple_dict = {'name': 'John'}

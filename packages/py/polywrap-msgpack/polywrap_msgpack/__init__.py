@@ -29,6 +29,10 @@ def sanitize(value: Any) -> Any:
     elif type(value) is set:
         sanitized_set: List[Any] = [i for i in value]
         return sanitized_set
+    elif type(value) == complex:
+        print(value)
+        print(str(value)) 
+        return str(value)
     elif hasattr(value, "__slots__"):
         return {s: sanitize(getattr(value, s)) for s in getattr(value, "__slots__") if hasattr(value, s)}
     elif hasattr(value, "__dict__"):
