@@ -1,15 +1,15 @@
 import { JobResult, JobStatus, Step } from "./types";
 
-import { PolywrapClient } from "@polywrap/client-js";
-import { executeMaybeAsyncFunction, MaybeAsync } from "@polywrap/core-js";
+import { Client, MaybeAsync } from "@polywrap/core-js";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
 export class JobRunner {
   private jobOutput: Map<string, JobResult>;
 
   constructor(
-    private client: PolywrapClient,
+    private client: Client,
     private onExecution?: (id: string, JobResult: JobResult) => MaybeAsync<void>
   ) {
     this.jobOutput = new Map();
@@ -208,7 +208,7 @@ export class JobRunner {
       this.jobOutput.set(absId, result);
 
       if (this.onExecution) {
-        await executeMaybeAsyncFunction(this.onExecution, absId, result);
+        await this.onExecution(absId, result);
       }
     }
   }

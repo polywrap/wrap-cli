@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Client, MaybeAsync, executeMaybeAsyncFunction } from ".";
+import { Client, MaybeAsync } from ".";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
@@ -60,9 +60,7 @@ export abstract class PluginModule<
       );
     }
 
-    const data = await executeMaybeAsyncFunction<TResult>(
-      fn.bind(this, args, client)
-    );
+    const data = await fn(args, client);
     return ResultOk(data);
   }
 
