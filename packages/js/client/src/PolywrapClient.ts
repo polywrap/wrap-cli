@@ -236,7 +236,7 @@ export class PolywrapClient implements Client {
       // Execute all invocations in parallel
       const parallelInvocations: Promise<{
         name: string;
-        result: InvokeResult<unknown>;
+        result: Result<unknown, Error>;
       }>[] = [];
 
       for (const invocationName of Object.keys(queryInvocations)) {
@@ -322,7 +322,7 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: invoke")
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
     options: InvokerOptions<TUri>
-  ): Promise<InvokeResult<TData>> {
+  ): Promise<Result<TData, Error>> {
     try {
       const typedOptions: InvokeOptions<Uri> = {
         ...options,
@@ -394,7 +394,7 @@ export class PolywrapClient implements Client {
       stop(): void {
         subscription.isActive = false;
       },
-      async *[Symbol.asyncIterator](): AsyncGenerator<InvokeResult<TData>> {
+      async *[Symbol.asyncIterator](): AsyncGenerator<Result<TData, Error>> {
         let timeout: NodeJS.Timeout | undefined = undefined;
         subscription.isActive = true;
 
@@ -520,7 +520,13 @@ export class PolywrapClient implements Client {
     }
 
     if (uriPackageOrWrapper.type === "package") {
-      return ResultOk(await uriPackageOrWrapper.package.createWrapper(options));
+      const result = await uriPackageOrWrapper.package.createWrapper();
+
+      if (!result.ok) {
+        return result;
+      }
+
+      return ResultOk(result.value);
     } else {
       return ResultOk(uriPackageOrWrapper.wrapper);
     }
