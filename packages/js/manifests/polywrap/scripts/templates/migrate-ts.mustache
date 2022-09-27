@@ -10,33 +10,14 @@ import {
   {{#latest}}{{type}}{{/latest}}Formats,
   latest{{#latest}}{{type}}{{/latest}}Format
 } from ".";
-
-{{#prevFormats}}
-import {
-  migrate as migrate_{{tsVersion}}_to_{{#latest}}{{tsVersion}}{{/latest}}
-} from "./migrators/{{version}}_to_{{#latest}}{{version}}{{/latest}}";
-{{/prevFormats}}
-
-type Migrator = {
-  [key in {{#latest}}{{type}}{{/latest}}Formats]?: (m: Any{{#latest}}{{type}}{{/latest}}) => {{#latest}}{{type}}{{/latest}};
-};
-
-export const migrators: Migrator = {
-{{#prevFormats}}
-  "{{version}}": migrate_{{tsVersion}}_to_{{#latest}}{{tsVersion}}{{/latest}},
-{{/prevFormats}}
-};
+import { findShortestMigrationPath } from "../../migrations";
+import { migrations } from "./migrations";
 
 export function migrate{{#latest}}{{type}}{{/latest}}(
   manifest: Any{{#latest}}{{type}}{{/latest}},
   to: {{#latest}}{{type}}{{/latest}}Formats
 ): {{#latest}}{{type}}{{/latest}} {
   let from = manifest.format as {{#latest}}{{type}}{{/latest}}Formats;
-
-  // HACK: Patch fix for backwards compatability
-  if(from === "0.1" && ("0.1.0" in migrators)) {
-    from = "0.1.0" as {{#latest}}{{type}}{{/latest}}Formats;
-  }
 
   if (from === latest{{#latest}}{{type}}{{/latest}}Format) {
     return manifest as {{#latest}}{{type}}{{/latest}};
@@ -46,17 +27,18 @@ export function migrate{{#latest}}{{type}}{{/latest}}(
     throw new Error(`Unrecognized {{#latest}}{{type}}{{/latest}}Format "${manifest.format}"`);
   }
 
-{{#prevFormats.length}}
-  const migrator = migrators[from];
-  if (!migrator) {
+  const migrationPath = findShortestMigrationPath(migrations, from, to);
+  if (!migrationPath) {
     throw new Error(
-      `Migrator from {{#latest}}{{type}}{{/latest}}Format "${from}" to "${to}" is not available`
+      `Migration path from {{#latest}}{{type}}{{/latest}}Format "${from}" to "${to}" is not available`
     );
   }
 
-  return migrator(manifest);
-{{/prevFormats.length}}
-{{^prevFormats.length}}
-  throw new Error(`This should never happen, {{#latest}}{{type}}{{/latest}} migrators is empty. from: ${from}, to: ${to}`);
-{{/prevFormats.length}}
+  let newManifest = manifest;
+
+  for(const migration of migrationPath){
+    newManifest = migration.migrateFn(newManifest) as Any{{#latest}}{{type}}{{/latest}};
+  }
+
+  return newManifest as {{#latest}}{{type}}{{/latest}};
 }

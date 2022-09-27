@@ -10,29 +10,14 @@ import {
   AppManifestFormats,
   latestAppManifestFormat
 } from ".";
-
-import {
-  migrate as migrate_0_1_0_to_0_2_0
-} from "./migrators/0.1.0_to_0.2.0";
-
-type Migrator = {
-  [key in AppManifestFormats]?: (m: AnyAppManifest) => AppManifest;
-};
-
-export const migrators: Migrator = {
-  "0.1.0": migrate_0_1_0_to_0_2_0,
-};
+import { findShortestMigrationPath } from "../../migrations";
+import { migrations } from "./migrations";
 
 export function migrateAppManifest(
   manifest: AnyAppManifest,
   to: AppManifestFormats
 ): AppManifest {
   let from = manifest.format as AppManifestFormats;
-
-  // HACK: Patch fix for backwards compatability
-  if(from === "0.1" && ("0.1.0" in migrators)) {
-    from = "0.1.0" as AppManifestFormats;
-  }
 
   if (from === latestAppManifestFormat) {
     return manifest as AppManifest;
@@ -42,12 +27,18 @@ export function migrateAppManifest(
     throw new Error(`Unrecognized AppManifestFormat "${manifest.format}"`);
   }
 
-  const migrator = migrators[from];
-  if (!migrator) {
+  const migrationPath = findShortestMigrationPath(migrations, from, to);
+  if (!migrationPath) {
     throw new Error(
-      `Migrator from AppManifestFormat "${from}" to "${to}" is not available`
+      `Migration path from AppManifestFormat "${from}" to "${to}" is not available`
     );
   }
 
-  return migrator(manifest);
+  let newManifest = manifest;
+
+  for(const migration of migrationPath){
+    newManifest = migration.migrateFn(newManifest) as AnyAppManifest;
+  }
+
+  return newManifest as AppManifest;
 }
