@@ -20,9 +20,6 @@ class ClassInstance implements IClassInterface {
 }
 
 describe("MaybeAsync", () => {
-  const promise: MaybeAsync<string> = new Promise<string>((resolve, reject) => {
-    return "";
-  });
   const testFunction = (): MaybeAsync<string> => {
     return "foo";
   };
@@ -32,7 +29,6 @@ describe("MaybeAsync", () => {
     });
 
   it("sanity", async () => {
-    expect(isPromise(promise)).toBe(true);
     expect(await testFunction()).toBe("foo");
     expect(await testFunctionReturnPromise()).toBe("foo");
   });
