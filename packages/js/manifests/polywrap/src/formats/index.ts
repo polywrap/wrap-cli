@@ -1,5 +1,6 @@
 export * from "./polywrap";
 export * from "./polywrap.build";
+export * from "./polywrap.codegen";
 export * from "./polywrap.infra";
 export * from "./polywrap.deploy";
 export * from "./polywrap.meta";
