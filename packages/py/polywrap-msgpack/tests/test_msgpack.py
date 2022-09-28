@@ -181,3 +181,7 @@ def test_sanitize_dataclass_objects_with_slots_returns_dict(dataclass_object_wit
     print(dataclass_object_with_slots1.__slots__)
     sanitize(dataclass_object_with_slots1)
     assert sanitize(dataclass_object_with_slots1) == dataclass_object_with_slots1_sanitized
+
+def test_sanitize_list_of_dataclass_objects_with_slots_returns_list_of_dicts(dataclass_object_with_slots1, dataclass_object_with_slots2,
+                                                                             dataclass_object_with_slots1_sanitized, dataclass_object_with_slots2_sanitized):
+    assert sanitize([dataclass_object_with_slots1, dataclass_object_with_slots2]) == [dataclass_object_with_slots1_sanitized, dataclass_object_with_slots2_sanitized]
