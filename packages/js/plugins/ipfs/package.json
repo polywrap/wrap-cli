@@ -22,7 +22,7 @@
   "dependencies": {
     "@dorgjelli-test/ipfs-http-client-lite": "0.3.1",
     "@polywrap/core-js": "0.8.0",
-    "@polywrap/plugin-js": "0.7.0",
+    "@polywrap/plugin-js": "0.8.0",
     "abort-controller": "3.0.0",
     "is-ipfs": "1.0.3",
     "multiformats": "9.7.0"
