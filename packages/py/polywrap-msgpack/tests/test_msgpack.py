@@ -174,13 +174,21 @@ def test_sanitize_dataclass_object_returns_dict(dataclass_object1, dataclass_obj
 def test_sanitize_list_of_dataclass_objects_returns_list_of_dicts(dataclass_object1, dataclass_object2):
     assert sanitize([dataclass_object1, dataclass_object2]) == [dataclass_object1.__dict__, dataclass_object2.__dict__]
 
+def test_sanitize_dict_of_dataclass_objects_returns_dict_of_dicts(dataclass_object1, dataclass_object2):
+    assert sanitize({'firstKey':dataclass_object1, 'secondKey':dataclass_object2}) == {
+        'firstKey':dataclass_object1.__dict__, 'secondKey': dataclass_object2.__dict__}
+
 # DATA CLASSES WITH SLOTS
 
 def test_sanitize_dataclass_objects_with_slots_returns_dict(dataclass_object_with_slots1, dataclass_object_with_slots1_sanitized):
-    print(dataclass_object_with_slots1.__slots__)
     sanitize(dataclass_object_with_slots1)
     assert sanitize(dataclass_object_with_slots1) == dataclass_object_with_slots1_sanitized
 
 def test_sanitize_list_of_dataclass_objects_with_slots_returns_list_of_dicts(dataclass_object_with_slots1, dataclass_object_with_slots2,
                                                                              dataclass_object_with_slots1_sanitized, dataclass_object_with_slots2_sanitized):
     assert sanitize([dataclass_object_with_slots1, dataclass_object_with_slots2]) == [dataclass_object_with_slots1_sanitized, dataclass_object_with_slots2_sanitized]
+
+def test_sanitize_dict_of_dataclass_objects_with_slots_returns_list_of_dicts(dataclass_object_with_slots1, dataclass_object_with_slots2,
+                                                                             dataclass_object_with_slots1_sanitized, dataclass_object_with_slots2_sanitized,):
+    assert sanitize({'firstKey':dataclass_object_with_slots1, 'secondKey':dataclass_object_with_slots2}) == {
+        'firstKey':dataclass_object_with_slots1_sanitized,'secondKey': dataclass_object_with_slots2_sanitized}

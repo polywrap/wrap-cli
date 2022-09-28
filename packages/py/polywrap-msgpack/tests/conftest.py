@@ -147,10 +147,6 @@ def dataclass_object_with_slots2_sanitized():
         '_totalSupply': 244512668851294512182250751
         }
 
-# @fixture
-# def list_of_dataclass_objects_with_slots():
-#     return [dataclass_object_with_slots1, dataclass_object_with_slots2]
-
 
 # OTHER FIXTURES FROM POLYWRAP
 
