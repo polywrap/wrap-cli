@@ -22,15 +22,6 @@ const VM_SCRIPTS_DIR = path.join(
   "defaults",
   "build-vm-scripts"
 );
-const ADDITIONAL_INCLUDES: Record<BuildableLanguage, string[]> = {
-  "wasm/assemblyscript": ["package.json", "node_modules"],
-  "wasm/rust": ["Cargo.toml", "Cargo.lock"],
-};
-
-const BASE_IMAGES: Record<BuildableLanguage, string> = {
-  "wasm/assemblyscript": "namesty/base-assemblyscript",
-  "wasm/rust": "namesty/base-rust",
-};
 
 interface BuildManifestConfig {
   [k: string]: unknown;
