@@ -148,6 +148,13 @@
           "description": "Base image for the Rust VM",
           "type": "string",
           "pattern": "^([a-zA-Z0-9\\-\\_]+\\/)?[a-zA-Z0-9\\-\\_]+:[a-zA-Z0-9\\-\\_\\.]+$"
+        },
+        "defaultIncludes": {
+          "description": "Files to include in build VM container, by default",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -160,6 +167,13 @@
           "description": "Base image for the Assemblyscript VM",
           "type": "string",
           "pattern": "^([a-zA-Z0-9\\-\\_]+\\/)?[a-zA-Z0-9\\-\\_]+:[a-zA-Z0-9\\-\\_\\.]+$"
+        },
+        "defaultIncludes": {
+          "description": "Files to include in build VM container, by default",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }

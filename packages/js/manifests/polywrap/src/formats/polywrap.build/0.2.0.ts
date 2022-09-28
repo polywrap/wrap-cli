@@ -116,6 +116,10 @@ export interface VmAssemblyscript {
    * Base image for the Assemblyscript VM
    */
   baseImage?: string;
+  /**
+   * Files to include in build VM container, by default
+   */
+  defaultIncludes?: string[];
 }
 /**
  * Docker VM strategy configuration for Rust
@@ -125,4 +129,8 @@ export interface VmRust {
    * Base image for the Rust VM
    */
   baseImage?: string;
+  /**
+   * Files to include in build VM container, by default
+   */
+  defaultIncludes?: string[];
 }
