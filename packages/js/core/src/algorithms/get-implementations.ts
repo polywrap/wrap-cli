@@ -32,7 +32,7 @@ export const getImplementations = Tracer.traceFunc(
             redirects
           );
           if (!redirectsResult.ok) {
-            throw redirectsResult.error;
+            return redirectsResult;
           }
           fullyResolvedUri = redirectsResult.value;
         } else {
