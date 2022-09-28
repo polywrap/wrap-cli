@@ -6,7 +6,7 @@ from dataclasses import dataclass
 # LISTS
 
 @fixture 
-def expected_array_like(): 
+def list_of_ints(): 
     return [
     130, 168, 102, 105, 114, 115, 116, 75,
     101, 121, 170, 102, 105, 114, 115, 116,
@@ -43,6 +43,9 @@ def set1():
 @fixture 
 def set2():
     return {'alice',9,5.23,True}
+
+# DICTIONARIES
+
 
 @fixture
 def simple_dict ():

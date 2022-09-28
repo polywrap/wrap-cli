@@ -8,21 +8,22 @@ from polywrap_msgpack import msgpack_encode, msgpack_decode
 import pytest
 from typing import Any, List
 
+# ENCODING AND DECODING
 
-def test_encode_and_decode_object(expected_array_like):
+def test_encode_and_decode_object(list_of_ints):
     custom_object = {
         "firstKey": "firstValue",
         "secondKey": "secondValue"
     }
 
     encoded = msgpack_encode(custom_object)
-    assert encoded == bytes(expected_array_like)
+    assert encoded == bytes(list_of_ints)
 
     decoded = msgpack_decode(encoded)
     assert decoded == custom_object
 
 
-def test_encode_and_decode_instance(expected_array_like):
+def test_encode_and_decode_instance(list_of_ints):
     @dataclass
     class Test:
         firstKey: str
@@ -34,7 +35,7 @@ def test_encode_and_decode_instance(expected_array_like):
     custom_object = Test("firstValue", "secondValue")
     encoded = msgpack_encode(custom_object)
 
-    assert encoded == bytes(expected_array_like)
+    assert encoded == bytes(list_of_ints)
 
     complex_custom_object_with_class = {
         "foo": custom_object,
