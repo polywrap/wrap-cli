@@ -1,4 +1,4 @@
-import { PluginRegistration, Env } from "@polywrap/core-js";
+import { Env } from "@polywrap/core-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
   ethereumPlugin,
@@ -51,7 +51,7 @@ export function getSimpleClient(config: SimpleClientConfig): PolywrapClient {
   if (ipfsProvider) {
     plugins.push({
       uri: "wrap://ens/ipfs.polywrap.eth",
-      plugin: ipfsPlugin({}),
+      package: ipfsPlugin({}),
     });
 
     envs.push({

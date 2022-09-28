@@ -46,7 +46,7 @@ export async function getTestEnvClientConfig(): Promise<
     },
     {
       uri: "wrap://ens/ipfs.polywrap.eth",
-      plugin: ipfsPlugin({}),
+      package: ipfsPlugin({}),
     },
     {
       uri: "wrap://ens/ens-resolver.polywrap.eth",

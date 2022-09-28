@@ -12,6 +12,7 @@ import {
   Connection,
 } from "@polywrap/ethereum-plugin-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
+import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 
 class ENSRecursiveNameRegisterPublisher implements Deployer {
   async execute(
@@ -58,10 +59,10 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
           to: embeddedWrappers.sha3,
         },
       ],
-      plugins: [
+      resolver: buildUriResolver([
         {
           uri: ethereumPluginUri,
-          plugin: ethereumPlugin({
+          package: ethereumPlugin({
             connections: new Connections({
               networks: {
                 [network]: new Connection({
@@ -73,7 +74,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
             }),
           }),
         },
-      ],
+      ]),
     });
 
     const signerAddress = await client.invoke<string>({

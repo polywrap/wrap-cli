@@ -60,10 +60,10 @@ class ENSPublisher implements Deployer {
           to: embeddedWrappers.sha3,
         },
       ],
-      plugins: [
+      resolver: buildUriResolver([
         {
           uri: ethereumPluginUri,
-          plugin: ethereumPlugin({
+          package: ethereumPlugin({
             connections: new Connections({
               networks: {
                 [network]: new Connection({
@@ -73,11 +73,6 @@ class ENSPublisher implements Deployer {
               },
               defaultNetwork: network,
             }),
-      resolver: buildUriResolver([
-        {
-          uri: ethereumPluginUri,
-          package: ethereumPlugin({
-            connections,
           }),
         },
       ]),

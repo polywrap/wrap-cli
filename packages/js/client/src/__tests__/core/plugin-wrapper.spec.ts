@@ -1,10 +1,10 @@
-import { PolywrapClient, PluginModule, PluginPackage } from "../..";
+import { PolywrapClient } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PluginPackage, PluginModule } from "@polywrap/plugin-js";
 import { buildUriResolver } from "@polywrap/uri-resolvers-js";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 jest.setTimeout(200000);
 
-  "wrap://ens/http-resolver.polywrap.eth",
 describe("plugin-wrapper", () => {
   const mockMapPlugin = () => {
     interface Config extends Record<string, unknown> {
@@ -28,10 +28,10 @@ describe("plugin-wrapper", () => {
     }
 
     return new PluginPackage(
-      {} as WrapManifest,
       new MockMapPlugin({
           map: new Map().set("a", 1).set("b", 2),
       }),
+      {} as WrapManifest,
     );
   };
 
@@ -73,38 +73,12 @@ describe("plugin-wrapper", () => {
     );
   });
 
-  test("get plugin package by uri", async () => {
-    interface SamplePluginConfig {
-      bar: string;
-    }
-    class SamplePluginModule extends PluginModule<SamplePluginConfig> {}
-    const config: SamplePluginConfig = { bar: "test" };
-
-    const pluginPackage = <PluginPackage<SamplePluginConfig>>{
-      factory: () => new SamplePluginModule(config),
-      manifest: {},
-    };
-
-    const client = new PolywrapClient(
-      {
-        plugins: [
-          {
-            uri: "wrap://ens/some.plugin.eth",
-            plugin: pluginPackage,
-          },
-        ],
-      }
-    );
-
-    const plugin = await client.getPluginByUri(
-      "wrap://ens/some.plugin.eth"
-    );
-
-    expect(plugin).toStrictEqual(pluginPackage);
-  });
-
   test("get manifest should fetch wrap manifest from plugin", async () => {
-    const client = await getClient()
+    const client = new PolywrapClient({
+        resolver: buildUriResolver([
+            { uri: "ens/ipfs.polywrap.eth", package: ipfsPlugin({}) },
+        ])
+    });
     const manifest = await client.getManifest("ens/ipfs.polywrap.eth");
     if (!manifest.ok) fail(manifest.error);
     expect(manifest.value.type).toEqual("plugin");

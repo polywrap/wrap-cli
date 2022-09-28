@@ -7,7 +7,6 @@ import axios from "axios";
 import fs from "fs";
 import yaml from "js-yaml";
 import { Uri } from "@polywrap/core-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import {
   DeployManifest,
   deserializePolywrapManifest,
