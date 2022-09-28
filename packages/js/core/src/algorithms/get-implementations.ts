@@ -23,7 +23,7 @@ export const getImplementations = Tracer.traceFunc(
     const addAllImplementationsFromImplementationsArray = (
       implementationsArray: readonly InterfaceImplementations<Uri>[],
       wrapperInterfaceUri: Uri
-    ) => {
+    ): Result<true, Error> => {
       for (const interfaceImplementations of implementationsArray) {
         let fullyResolvedUri: Uri;
         if (redirects) {
@@ -32,7 +32,7 @@ export const getImplementations = Tracer.traceFunc(
             redirects
           );
           if (!redirectsResult.ok) {
-            continue;
+            throw redirectsResult.error;
           }
           fullyResolvedUri = redirectsResult.value;
         } else {
@@ -45,6 +45,7 @@ export const getImplementations = Tracer.traceFunc(
           }
         }
       }
+      return ResultOk(true);
     };
 
     let finalUri = wrapperInterfaceUri;
@@ -57,8 +58,11 @@ export const getImplementations = Tracer.traceFunc(
       finalUri = redirectsResult.value;
     }
 
-    addAllImplementationsFromImplementationsArray(interfaces, finalUri);
+    const addAllImp = addAllImplementationsFromImplementationsArray(
+      interfaces,
+      finalUri
+    );
 
-    return ResultOk(result);
+    return addAllImp.ok ? ResultOk(result) : addAllImp;
   }
 );
