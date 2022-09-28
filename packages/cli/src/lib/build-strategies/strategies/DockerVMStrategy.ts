@@ -101,13 +101,16 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
       // Copy additional includes
 
       ADDITIONAL_INCLUDES[language].forEach((include) => {
-        if (fse.existsSync(path.join(this._volumePaths.project, include))) {
-          fse.removeSync(path.join(this._volumePaths.project, include));
+        if (fse.existsSync(path.join(manifestDir, include))) {
+          if (fse.existsSync(path.join(this._volumePaths.project, include))) {
+            fse.removeSync(path.join(this._volumePaths.project, include));
+          }
+
+          fse.copySync(
+            path.join(manifestDir, include),
+            path.join(this._volumePaths.project, include)
+          );
         }
-        fse.copySync(
-          path.join(manifestDir, include),
-          path.join(this._volumePaths.project, include)
-        );
       });
 
       // Copy includes
