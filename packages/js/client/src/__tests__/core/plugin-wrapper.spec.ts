@@ -1,10 +1,10 @@
-import { PolywrapClient } from "../..";
+import { PolywrapClient, PluginModule, PluginPackage } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PluginPackage, PluginModule } from "@polywrap/plugin-js";
 import { buildUriResolver } from "@polywrap/uri-resolvers-js";
-
 jest.setTimeout(200000);
 
+  "wrap://ens/http-resolver.polywrap.eth",
 describe("plugin-wrapper", () => {
   const mockMapPlugin = () => {
     interface Config extends Record<string, unknown> {
@@ -30,8 +30,8 @@ describe("plugin-wrapper", () => {
     return new PluginPackage(
       {} as WrapManifest,
       new MockMapPlugin({
-        map: new Map().set("a", 1).set("b", 2)
-      })
+          map: new Map().set("a", 1).set("b", 2),
+      }),
     );
   };
 
@@ -52,9 +52,9 @@ describe("plugin-wrapper", () => {
       method: "getMap",
     });
 
-    expect(getResult.error).toBeFalsy();
-    expect(getResult.data).toBeTruthy();
-    expect(getResult.data).toMatchObject(
+    if (!getResult.ok) fail(getResult.error);
+    expect(getResult.value).toBeTruthy();
+    expect(getResult.value).toMatchObject(
       new Map<string, number>().set("a", 1).set("b", 2)
     );
 
@@ -66,17 +66,48 @@ describe("plugin-wrapper", () => {
       },
     });
 
-    expect(updateResult.error).toBeFalsy();
-    expect(updateResult.data).toBeTruthy();
-    expect(updateResult.data).toMatchObject(
+    if (!updateResult.ok) fail(updateResult.error);
+    expect(updateResult.value).toBeTruthy();
+    expect(updateResult.value).toMatchObject(
       new Map<string, number>().set("a", 1).set("b", 3).set("c", 5)
     );
   });
 
+  test("get plugin package by uri", async () => {
+    interface SamplePluginConfig {
+      bar: string;
+    }
+    class SamplePluginModule extends PluginModule<SamplePluginConfig> {}
+    const config: SamplePluginConfig = { bar: "test" };
+
+    const pluginPackage = <PluginPackage<SamplePluginConfig>>{
+      factory: () => new SamplePluginModule(config),
+      manifest: {},
+    };
+
+    const client = new PolywrapClient(
+      {
+        plugins: [
+          {
+            uri: "wrap://ens/some.plugin.eth",
+            plugin: pluginPackage,
+          },
+        ],
+      }
+    );
+
+    const plugin = await client.getPluginByUri(
+      "wrap://ens/some.plugin.eth"
+    );
+
+    expect(plugin).toStrictEqual(pluginPackage);
+  });
+
   test("get manifest should fetch wrap manifest from plugin", async () => {
-    const client = new PolywrapClient()
-    const manifest = await client.getManifest("ens/ipfs.polywrap.eth")
-    expect(manifest.type).toEqual("plugin")
-    expect(manifest.name).toEqual("Ipfs")
-  })
+    const client = await getClient()
+    const manifest = await client.getManifest("ens/ipfs.polywrap.eth");
+    if (!manifest.ok) fail(manifest.error);
+    expect(manifest.value.type).toEqual("plugin");
+    expect(manifest.value.name).toEqual("Ipfs");
+  });
 });

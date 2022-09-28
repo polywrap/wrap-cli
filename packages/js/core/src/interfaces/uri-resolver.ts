@@ -1,7 +1,7 @@
-// TODO: https://github.com/polywrap/monorepo/issues/101
-import { Uri, Invoker, InvokeResult } from "../";
+import { Uri, Invoker } from "../";
 
 import { Tracer } from "@polywrap/tracing-js";
+import { Result } from "@polywrap/result";
 
 export interface MaybeUriOrManifest {
   uri?: string;
@@ -15,7 +15,7 @@ export const module = {
       invoker: Invoker,
       wrapper: Uri,
       uri: Uri
-    ): Promise<InvokeResult<MaybeUriOrManifest>> => {
+    ): Promise<Result<MaybeUriOrManifest, Error>> => {
       return invoker.invoke<MaybeUriOrManifest>({
         uri: wrapper.uri,
         method: `tryResolveUri`,
@@ -32,7 +32,7 @@ export const module = {
       invoker: Invoker,
       wrapper: Uri,
       path: string
-    ): Promise<InvokeResult<Uint8Array>> => {
+    ): Promise<Result<Uint8Array, Error>> => {
       return invoker.invoke<Uint8Array>({
         uri: wrapper.uri,
         method: "getFile",

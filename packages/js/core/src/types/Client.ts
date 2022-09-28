@@ -6,11 +6,13 @@ import {
   Uri,
   InterfaceImplementations,
   Env,
+  PluginPackage,
 } from "./";
 import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { Result } from "@polywrap/result";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
@@ -19,28 +21,16 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   resolver: IUriResolver<unknown>;
 }
 
-export interface Contextualized {
-  contextId?: string;
-}
-
-export type GetRedirectsOptions = Contextualized;
-
-export type GetInterfacesOptions = Contextualized;
-
-export type GetEnvsOptions = Contextualized;
-
-export type GetUriResolverOptions = Contextualized;
-
-export interface GetManifestOptions extends Contextualized {
+export interface GetManifestOptions {
   noValidate?: boolean;
 }
 
-export interface GetFileOptions extends Contextualized {
+export interface GetFileOptions {
   path: string;
   encoding?: "utf-8" | string;
 }
 
-export interface GetImplementationsOptions extends Contextualized {
+export interface GetImplementationsOptions {
   applyRedirects?: boolean;
 }
 
@@ -49,33 +39,31 @@ export interface Client
     QueryHandler,
     SubscriptionHandler,
     UriResolverHandler<unknown> {
-  getRedirects(options?: GetRedirectsOptions): readonly UriRedirect<Uri>[];
+  getConfig(): ClientConfig<Uri>;
 
-  getInterfaces(
-    options?: GetInterfacesOptions
-  ): readonly InterfaceImplementations<Uri>[];
+  getRedirects(): readonly UriRedirect<Uri>[];
 
-  getEnvs(options?: GetEnvsOptions): readonly Env<Uri>[];
 
-  getEnvByUri<TUri extends Uri | string>(
-    uri: TUri,
-    options?: GetEnvsOptions
-  ): Env<Uri> | undefined;
+  getInterfaces(): readonly InterfaceImplementations<Uri>[];
 
-  getUriResolver(options: GetUriResolverOptions): IUriResolver<unknown>;
+  getEnvs(): readonly Env<Uri>[];
+
+  getEnvByUri<TUri extends Uri | string>(uri: TUri): Env<Uri> | undefined;
+
+  getUriResolver(): IUriResolver<unknown>;
 
   getManifest<TUri extends Uri | string>(
     uri: TUri,
     options: GetManifestOptions
-  ): Promise<WrapManifest>;
+  ): Promise<Result<WrapManifest, Error>>;
 
   getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<string | Uint8Array>;
+  ): Promise<Result<string | Uint8Array, Error>>;
 
   getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions
-  ): TUri[];
+  ): Result<TUri[], Error>;
 }

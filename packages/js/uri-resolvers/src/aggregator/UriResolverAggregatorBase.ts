@@ -64,12 +64,12 @@ export abstract class UriResolverAggregatorBase<
       const result = await typeResolver.tryResolveUri(uri, client, subContext);
 
       if (
-        result.ok &&
-        result.value.type === "uri" &&
-        result.value.uri.uri === uri.uri
+        !(
+          result.ok &&
+          result.value.type === "uri" &&
+          result.value.uri.uri === uri.uri
+        )
       ) {
-        continue;
-      } else {
         resolutionContext.trackStep({
           sourceUri: uri,
           result,

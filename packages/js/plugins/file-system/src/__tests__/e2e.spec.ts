@@ -47,21 +47,22 @@ describe("FileSystem plugin", () => {
       { path: sampleFilePath },
       client
     );
-
-    expect(result.error).toBeFalsy();
-    expect(result.data).toEqual(new Uint8Array(expectedContents));
+    
+    if (!result.ok) fail(result.error);
+    expect(result.value).toEqual(new Uint8Array(expectedContents));
   });
 
   it("should fail reading a nonexistent file", async () => {
     const nonExistentFilePath = path.resolve(__dirname, "nonexistent.txt");
 
-    const result = await FileSystem_Module.readFile(
+    let result = await FileSystem_Module.readFile(
       { path: nonExistentFilePath },
       client
     );
 
-    expect(result.data).toBeFalsy();
+    result = result as { ok: false, error: Error | undefined };
     expect(result.error).toBeTruthy();
+    expect(result.ok).toBeFalsy();
   });
 
   it("should read a UTF8-encoded file as a string", async () => {
@@ -76,8 +77,8 @@ describe("FileSystem plugin", () => {
       client
     );
 
-    expect(result.error).toBeFalsy();
-    expect(result.data).toBe(expectedContents);
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBe(expectedContents);
   });
 
   it("should read a file using supported encodings as a string", async () => {
@@ -99,13 +100,13 @@ describe("FileSystem plugin", () => {
         client
       );
 
-      expect(result.error).toBeFalsy();
+      if (!result.ok) fail(result.error);
 
       const expectedContents = await fs.promises.readFile(sampleFilePath, {
         encoding: fileSystemEncodingToBufferEncoding(encoding),
       });
 
-      expect(result.data).toBe(expectedContents);
+      expect(result.value).toBe(expectedContents);
     }
   });
 
@@ -115,8 +116,8 @@ describe("FileSystem plugin", () => {
       client
     );
 
-    expect(result_fileExists.error).toBeFalsy();
-    expect(result_fileExists.data).toBe(true);
+    if (!result_fileExists.ok) fail(result_fileExists.error);
+    expect(result_fileExists.value).toBe(true);
 
     const nonExistentFilePath = path.resolve(
       __dirname,
@@ -128,8 +129,8 @@ describe("FileSystem plugin", () => {
       client
     );
 
-    expect(result_fileMissing.error).toBeFalsy();
-    expect(result_fileMissing.data).toBe(false);
+    if (!result_fileMissing.ok) fail(result_fileMissing.error);
+    expect(result_fileMissing.value).toBe(false);
   });
 
   it("should write byte data to a file", async () => {
@@ -144,8 +145,8 @@ describe("FileSystem plugin", () => {
       await fs.promises.readFile(tempFilePath)
     );
 
-    expect(result.error).toBeFalsy();
-    expect(result.data).toBe(true);
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBe(true);
     expect(expectedFileContents).toEqual(bytes);
   });
 
@@ -156,8 +157,8 @@ describe("FileSystem plugin", () => {
 
     const result = await FileSystem_Module.rm({ path: tempFilePath }, client);
 
-    expect(result.error).toBeFalsy();
-    expect(result.data).toBe(true);
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBe(true);
 
     const fileExists = fs.existsSync(tempFilePath);
 
@@ -178,8 +179,8 @@ describe("FileSystem plugin", () => {
       client
     );
 
-    expect(result.error).toBeFalsy();
-    expect(result.data).toBe(true);
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBe(true);
 
     const fileExists = fs.existsSync(fileInDirPath);
 
@@ -189,7 +190,8 @@ describe("FileSystem plugin", () => {
   it("should create a directory", async () => {
     const result = await FileSystem_Module.mkdir({ path: tempDirPath }, client);
 
-    expect(result.data).toBe(true);
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBe(true);
 
     let directoryExists = fs.existsSync(tempDirPath);
 
@@ -204,7 +206,8 @@ describe("FileSystem plugin", () => {
       client
     );
 
-    expect(result.data).toBe(true);
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBe(true);
 
     let directoryExists = fs.existsSync(dirInDirPath);
 
@@ -216,7 +219,8 @@ describe("FileSystem plugin", () => {
 
     const result = await FileSystem_Module.rmdir({ path: tempDirPath }, client);
 
-    expect(result.data).toBe(true);
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBe(true);
 
     const directoryExists = fs.existsSync(tempDirPath);
 

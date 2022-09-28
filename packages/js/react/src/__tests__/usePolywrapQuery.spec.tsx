@@ -6,15 +6,14 @@ import {
 import {
   UsePolywrapQueryProps
 } from "../query"
-import { createPlugins } from "./plugins";
+import { createPlugins, createEnvs } from "./config";
 
-import { PluginRegistration } from "@polywrap/core-js";
+import { Env, PluginRegistration } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployWrapper,
   ensAddresses,
-  providers
+  providers, buildWrapper,
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 
@@ -30,30 +29,27 @@ jest.setTimeout(360000);
 describe("usePolywrapQuery hook", () => {
   let uri: string;
   let envUri: string;
+  let envs: Env[];
   let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
     await initTestEnvironment();
 
-    const { ensDomain } = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
-      ipfsProvider: providers.ipfs,
-      ethereumProvider: providers.ethereum,
-    });
+    const simpleStoragePath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
+    await buildWrapper(simpleStoragePath);
+    uri = `fs/${simpleStoragePath}/build`
 
-    const { ensDomain: envEnsDomain } = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-env-types`,
-      ipfsProvider: providers.ipfs,
-      ethereumProvider: providers.ethereum,
-    });
+    const simpleEnvPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`;
+    await buildWrapper(simpleEnvPath);
+    envUri = `fs/${simpleEnvPath}/build`
 
-    uri = `ens/testnet/${ensDomain}`;
-    envUri = `ens/testnet/${envEnsDomain}`;
-    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum, providers.ipfs);
+    envs = createEnvs(providers.ipfs);
+    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum);
     WrapperProvider = {
       wrapper: PolywrapProvider,
       initialProps: {
+        envs,
         plugins,
       },
     };
@@ -94,35 +90,6 @@ describe("usePolywrapQuery hook", () => {
     cleanup();
     return result;
   }
-
-  it("Should support passing env to client", async () => {
-    const deployQuery: UsePolywrapQueryProps = {
-      uri: envUri,
-      query: `query {
-        getEnv(arg: "Alice")
-      }`,
-      config: {
-        envs: [{
-          uri: envUri,
-          env: {
-            str: "Hello World!",
-            requiredInt: 2,
-          }
-        }]
-      }
-    };
-
-    const { data, errors } = await sendQuery<{
-      getEnv: {
-        str: string;
-        requiredInt: number;
-      }
-    }>(deployQuery);
-
-    expect(errors).toBeFalsy();
-    expect(data?.getEnv.str).toBe("Hello World!");
-    expect(data?.getEnv.requiredInt).toBe(2);
-  });
 
   it("Should update storage data to five with hard coded value", async () => {
     const deployQuery: UsePolywrapQueryProps = {

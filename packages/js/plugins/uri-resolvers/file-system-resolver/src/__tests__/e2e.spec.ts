@@ -17,6 +17,15 @@ describe("Filesystem plugin", () => {
     await buildWrapper(simpleWrapperPath);
 
     client = getClient();
+      envs: [
+        {
+          uri: "wrap://ens/ipfs.polywrap.eth",
+          env: {
+            provider: providers.ipfs,
+            fallbackProviders: defaultIpfsProviders,
+          },
+        },
+      ],
   });
 
   afterAll(async () => {
@@ -40,20 +49,21 @@ describe("Filesystem plugin", () => {
     // get the manifest
     const manifest = await client.getManifest(simpleWrapperUri);
 
-    expect(manifest).toBeTruthy();
-    expect(manifest.version).toBe("0.1");
-    expect(manifest.type).toEqual("wasm");
+    if (!manifest.ok) fail(manifest.error);
+    expect(manifest.value.version).toBe("0.1");
+    expect(manifest.value.type).toEqual("wasm");
 
     // get a file
     const file = await client.getFile(simpleWrapperUri, {
       path: "wrap.info",
     });
+    if (!file.ok) fail(file.error);
 
     const expectedFile = await fs.promises.readFile(
       `${simpleWrapperPath}/build/wrap.info`
     );
 
     const expectedInfo = Uint8Array.from(expectedFile);
-    expect(file).toStrictEqual(expectedInfo);
+    expect(file.value).toStrictEqual(expectedInfo);
   });
 });

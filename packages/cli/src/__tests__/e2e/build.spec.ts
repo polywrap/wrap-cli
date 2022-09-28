@@ -18,6 +18,7 @@ Options:
                                      (default: ./build)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
+  -n, --no-codegen                   Skip code generation
   -w, --watch                        Automatically rebuild when changes are
                                      made (default: false)
   -v, --verbose                      Verbose output (default: false)

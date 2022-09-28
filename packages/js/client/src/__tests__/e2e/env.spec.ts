@@ -46,9 +46,9 @@ describe("env", () => {
         method: "mockEnv",
       });
 
-      expect(mockEnv.error).toBeFalsy();
-      expect(mockEnv.data).toBeTruthy();
-      expect(mockEnv.data).toMatchObject({ arg1: "10" });
+      if (!mockEnv.ok) fail(mockEnv.error);
+      expect(mockEnv.value).toBeTruthy();
+      expect(mockEnv.value).toMatchObject({ arg1: "10" });
     });
   });
 });

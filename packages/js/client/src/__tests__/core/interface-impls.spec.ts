@@ -38,7 +38,8 @@ describe("interface-impls", () => {
 
     const implementations = client.getImplementations(interfaceUri);
 
-    expect(implementations).toEqual([implementation1Uri, implementation2Uri]);
+    if (!implementations.ok) fail(implementations.error);
+    expect(implementations.value).toEqual([implementation1Uri, implementation2Uri]);
   });
 
   it("should get all implementations of interface", async () => {
@@ -95,19 +96,22 @@ describe("interface-impls", () => {
       applyRedirects: true,
     });
 
-    expect(implementations1).toEqual([
+    if (!implementations1.ok) fail(implementations1.error);
+    expect(implementations1.value).toEqual([
       implementation1Uri,
       implementation2Uri,
       implementation3Uri,
     ]);
 
-    expect(implementations2).toEqual([
+    if (!implementations2.ok) fail(implementations2.error);
+    expect(implementations2.value).toEqual([
       implementation1Uri,
       implementation2Uri,
       implementation3Uri,
     ]);
 
-    expect(implementations3).toEqual([implementation3Uri, implementation4Uri]);
+    if (!implementations3.ok) fail(implementations3.error);
+    expect(implementations3.value).toEqual([implementation3Uri, implementation4Uri]);
   });
 
   it("should merge user-defined interface implementations with each other", async () => {
@@ -201,7 +205,8 @@ describe("interface-impls", () => {
       { applyRedirects: true }
     );
 
-    expect(getImplementationsResult).toEqual([new Uri(implementation2Uri)]);
+    if (!getImplementationsResult.ok) fail(getImplementationsResult.error);
+    expect(getImplementationsResult.value).toEqual([new Uri(implementation2Uri)]);
   });
 
   test("get implementations - return implementations for plugins which don't have interface stated in manifest", () => {
@@ -227,7 +232,8 @@ describe("interface-impls", () => {
       { applyRedirects: true }
     );
 
-    expect(getImplementationsResult).toEqual([
+    if (!getImplementationsResult.ok) fail(getImplementationsResult.error);
+    expect(getImplementationsResult.value).toEqual([
       new Uri(implementation1Uri),
       new Uri(implementation2Uri),
     ]);
@@ -260,20 +266,24 @@ describe("interface-impls", () => {
     });
 
     let result = client.getImplementations(oldInterfaceUri);
-    expect(result).toEqual([implementation1Uri]);
+    if (!result.ok) fail(result.error);
+    expect(result.value).toEqual([implementation1Uri]);
 
     result = client.getImplementations(oldInterfaceUri, {
       applyRedirects: true,
     });
-    expect(result).toEqual([implementation1Uri, implementation2Uri]);
+    if (!result.ok) fail(result.error);
+    expect(result.value).toEqual([implementation1Uri, implementation2Uri]);
 
     let result2 = client.getImplementations(new Uri(oldInterfaceUri));
-    expect(result2).toEqual([new Uri(implementation1Uri)]);
+    if (!result2.ok) fail(result2.error);
+    expect(result2.value).toEqual([new Uri(implementation1Uri)]);
 
     result2 = client.getImplementations(new Uri(oldInterfaceUri), {
       applyRedirects: true,
     });
-    expect(result2).toEqual([
+    if (!result2.ok) fail(result2.error);
+    expect(result2.value).toEqual([
       new Uri(implementation1Uri),
       new Uri(implementation2Uri),
     ]);

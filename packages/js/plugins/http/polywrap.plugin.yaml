@@ -5,3 +5,6 @@ project:
 source:
   module: ./src/index.ts
   schema: ./src/schema.graphql
+  import_abis:
+    - uri: "ens/http.polywrap.eth"
+      abi: ../../../interfaces/http/build/wrap.info

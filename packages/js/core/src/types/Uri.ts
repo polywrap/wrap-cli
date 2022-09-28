@@ -1,4 +1,5 @@
 import { Tracer } from "@polywrap/tracing-js";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 /** URI configuration */
 export interface UriConfig {
@@ -36,7 +37,11 @@ export class Uri {
   }
 
   constructor(uri: string) {
-    this._config = Uri.parseUri(uri);
+    const result = Uri.parseUri(uri);
+    if (!result.ok) {
+      throw result.error;
+    }
+    this._config = result.value;
   }
 
   public static equals(a: Uri, b: Uri): boolean {
@@ -48,17 +53,13 @@ export class Uri {
   }
 
   public static isValidUri(uri: string, parsed?: UriConfig): boolean {
-    try {
-      const result = Uri.parseUri(uri);
+    const result = Uri.parseUri(uri);
 
-      if (parsed) {
-        parsed = Object.assign(parsed, result);
-      }
-
-      return true;
-    } catch (e) {
-      return false;
+    if (parsed && result.ok) {
+      Object.assign(parsed, result.value);
     }
+
+    return result.ok;
   }
 
   public toString(): string {
@@ -66,9 +67,9 @@ export class Uri {
   }
 
   @Tracer.traceMethod("Uri: parseUri")
-  public static parseUri(uri: string): UriConfig {
+  public static parseUri(uri: string): Result<UriConfig, Error> {
     if (!uri) {
-      throw Error("The provided URI is empty");
+      return ResultErr(Error("The provided URI is empty"));
     }
 
     let processed = uri;
@@ -86,10 +87,10 @@ export class Uri {
       processed = "wrap://" + processed;
     }
 
-    // If the wrap:// is not in the beginning, throw an error
+    // If the wrap:// is not in the beginning, return an error
     if (wrapSchemeIdx > -1 && wrapSchemeIdx !== 0) {
-      throw Error(
-        "The wrap:// scheme must be at the beginning of the URI string"
+      return ResultErr(
+        Error("The wrap:// scheme must be at the beginning of the URI string")
       );
     }
 
@@ -102,19 +103,32 @@ export class Uri {
     }
 
     if (!result || result.length !== 3) {
-      throw Error(
-        `URI is malformed, here are some examples of valid URIs:\n` +
-          `wrap://ipfs/QmHASH\n` +
-          `wrap://ens/domain.eth\n` +
-          `ens/domain.eth\n\n` +
-          `Invalid URI Received: ${uri}`
+      return ResultErr(
+        Error(
+          `URI is malformed, here are some examples of valid URIs:\n` +
+            `wrap://ipfs/QmHASH\n` +
+            `wrap://ens/domain.eth\n` +
+            `ens/domain.eth\n\n` +
+            `Invalid URI Received: ${uri}`
+        )
       );
     }
 
-    return {
+    return ResultOk({
       uri: processed,
       authority: result[1],
       path: result[2],
-    };
+    });
+  }
+
+  @Tracer.traceMethod("Uri: from")
+  public static from(uri: Uri | string): Uri {
+    if (typeof uri === "string") {
+      return new Uri(uri);
+    } else if (Uri.isUri(uri)) {
+      return uri;
+    } else {
+      throw Error(`Unknown uri type, cannot convert. ${JSON.stringify(uri)}`);
+    }
   }
 }

@@ -1,4 +1,4 @@
-# @polywrap/ipfs-plugin-js
+# @polywrap/ipfs-resolver-plugin-js
 
 IPFS Resolver Plugin allows the Polywrap JS Client to resolve wrapper URIs from IPFS.
 
@@ -14,7 +14,7 @@ import {
 } from "@polywrap/test-env-js";
 
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ipfsResolverPlugin } from "@polywrap/ipfs-plugin-js";
+import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
@@ -50,20 +50,18 @@ export async function foo({
       },
       {
         uri: "wrap://ens/ipfs-uri-resolver.polywrap.eth",
-        plugin: ipfsResolverPlugin({
-          provider: providers.ipfs,
-        }),
+        plugin: ipfsResolverPlugin({}),
       },
     ],
   });
 
   // and query the wrapper at IPFS
-  const response = await client.getSchema(wrapperUriENS)
+  const response = await client.getManifest(wrapperUriENS)
 
   // we can also resolve the IPFS URI in steps
   // get IPFS URI
   const resolveUriResult = await client.resolveUri(wrapperUri);
-  const response' = await resolution.wrapper?.getSchema(client);
+  const response' = await resolveUriResult.wrapper?.getManifest(client);
 
   await stopTestEnvironment();
 })

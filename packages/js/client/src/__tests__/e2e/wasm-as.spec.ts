@@ -11,7 +11,7 @@ import { PolywrapClient } from "../../PolywrapClient";
 import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import { getClientWithEnsAndIpfs } from "../helpers/getClientWithEnsAndIpfs";
 
-jest.setTimeout(200000);
+jest.setTimeout(300000);
 
 describe("wasm-as test cases", () => {
   beforeAll(async () => {
@@ -94,7 +94,7 @@ describe("wasm-as test cases", () => {
     await buildWrapper(wrapperPath);
     const ensUri = wrapperUri;
 
-    const query = await client.invoke({
+    const result = await client.invoke({
       uri: ensUri,
       method: "if",
       args: {
@@ -104,9 +104,9 @@ describe("wasm-as test cases", () => {
       },
     });
 
-    expect(query.error).toBeFalsy();
-    expect(query.data).toBeTruthy();
-    expect(query.data).toMatchObject({
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBeTruthy();
+    expect(result.value).toMatchObject({
       else: "successfully used reserved keyword",
     });
   });
@@ -138,12 +138,18 @@ describe("wasm-as test cases", () => {
   });
 
   it("implementations - getImplementations", async () => {
+    const interfacePath = `${GetPathToTestWrappers()}/wasm-as/implementations/test-interface`;
     const interfaceUri = "wrap://ens/interface.eth";
 
-    const implementationPath = `${GetPathToTestWrappers()}/wasm-as/implementations/test-use-getImpl`;
-    const implementationUri = `wrap://fs/${implementationPath}/build`;
+    const implementationPath = `${GetPathToTestWrappers()}/wasm-as/implementations/test-wrapper`;
+    const implementationUri = `fs/${implementationPath}/build`;
 
+    const aggregatorPath = `${GetPathToTestWrappers()}/wasm-as/implementations/test-use-getImpl`;
+    const aggregatorUri = `fs/${aggregatorPath}/build`;
+
+    await buildWrapper(interfacePath);
     await buildWrapper(implementationPath);
+    await buildWrapper(aggregatorPath);
 
     const client = new PolywrapClient({
       interfaces: [
@@ -156,6 +162,7 @@ describe("wasm-as test cases", () => {
 
     await TestCases.runGetImplementationsTest(
       client,
+      aggregatorUri,
       interfaceUri,
       implementationUri
     );
@@ -189,7 +196,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    const query = await client.invoke({
+    const result = await client.invoke({
       uri: wrapperUri,
       method: "moduleMethod",
       args: {
@@ -200,9 +207,9 @@ describe("wasm-as test cases", () => {
       },
     });
 
-    expect(query.error).toBeFalsy();
-    expect(query.data).toBeTruthy();
-    expect(query.data).toEqual({
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBeTruthy();
+    expect(result.value).toEqual({
       uint8: 1,
       str: "Test String 1",
     });

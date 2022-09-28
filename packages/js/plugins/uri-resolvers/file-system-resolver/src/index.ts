@@ -33,16 +33,17 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
       _client
     );
 
-    if (manifestExistsResult.data) {
+    if (manifestExistsResult.ok && manifestExistsResult.value) {
       try {
         const manifestResult = await FileSystem_Module.readFile(
           { path: manifestPath },
           _client
         );
-        if (manifestResult.error) {
+        if (!manifestResult.ok) {
           console.warn(manifestResult.error);
+          return { uri: null, manifest: undefined };
         }
-        manifest = manifestResult.data;
+        manifest = manifestResult.value;
       } catch (e) {
         // TODO: logging
       }
@@ -57,8 +58,11 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
         { path: args.path },
         _client
       );
+      if (!fileResult.ok) {
+        return null;
+      }
 
-      return fileResult.data ?? null;
+      return fileResult.value;
     } catch (e) {
       return null;
     }

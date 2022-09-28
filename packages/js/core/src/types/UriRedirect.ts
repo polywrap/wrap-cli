@@ -1,5 +1,4 @@
 import { Uri } from ".";
-import { toUri } from "../utils";
 
 import { Tracer } from "@polywrap/tracing-js";
 
@@ -14,8 +13,8 @@ export const sanitizeUriRedirects = Tracer.traceFunc(
     const output: UriRedirect<Uri>[] = [];
     for (const definition of input) {
       output.push({
-        from: toUri(definition.from),
-        to: toUri(definition.to),
+        from: Uri.from(definition.from),
+        to: Uri.from(definition.to),
       });
     }
 

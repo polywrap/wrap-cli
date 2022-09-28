@@ -11,8 +11,8 @@ export class RedirectResolver<
 
   constructor(from: TUri, to: TUri) {
     super();
-    this.from = toUri(from);
-    this.to = toUri(to);
+    this.from = Uri.from(from);
+    this.to = Uri.from(to);
   }
 
   protected getStepDescription = (): string =>

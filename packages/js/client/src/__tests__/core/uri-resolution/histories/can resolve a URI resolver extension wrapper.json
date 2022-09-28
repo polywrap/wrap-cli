@@ -26,6 +26,16 @@
             "wrap://ens/fs-resolver.polywrap.eth => Package (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://ens/fs-resolver.polywrap.eth)"
           ]
         ],
+        "wrap://ens/http-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/http-resolver.polywrap.eth)",
+        [
+          "wrap://ens/http-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/http-resolver.polywrap.eth)",
+          [
+            "wrap://ens/http-resolver.polywrap.eth => LegacyPluginsResolver => package (wrap://ens/http-resolver.polywrap.eth)",
+            [
+              "wrap://ens/http-resolver.polywrap.eth => Plugin (wrap://ens/http-resolver.polywrap.eth) => package (wrap://ens/http-resolver.polywrap.eth)"
+            ]
+          ]
+        ],
         "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
         [
           "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
@@ -35,11 +45,11 @@
               "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
               "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
               "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
-              "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => ResovlerExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)"
+              "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)"
             ]
           ]
         ],
-        "wrap://simple/$root-wrapper-dir/simple/build => ResovlerExtension (wrap://file/$root-wrapper-dir/simple-fs-resolver/build) => uri (wrap://file/$root-wrapper-dir/simple/build)"
+        "wrap://simple/$root-wrapper-dir/simple/build => ResolverExtension (wrap://file/$root-wrapper-dir/simple-fs-resolver/build) => uri (wrap://file/$root-wrapper-dir/simple/build)"
       ]
     ]
   ],
@@ -52,7 +62,7 @@
         "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
         "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
         "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
-        "wrap://file/$root-wrapper-dir/simple/build => ResovlerExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple/build)"
+        "wrap://file/$root-wrapper-dir/simple/build => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple/build)"
       ]
     ]
   ]

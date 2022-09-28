@@ -61,8 +61,10 @@ async function generateFormatTypes() {
 
         // Add metadata for the root index.ts file to use
         formatModules.push({
+          formatTypeName: formatTypeName,
           interface: formatSchema.id,
           version: formatVersion,
+          schemaFilePath: path.relative(schemasPackageDir, formatSchemaPath)
         });
       } catch (error) {
         console.error(
@@ -96,9 +98,11 @@ async function generateFormatTypes() {
     const formats = formatModules.map((module) => {
       return {
         type: module.interface,
+        formatTypeName: module.formatTypeName,
         isWorkflow: module.interface == "PolywrapWorkflow",
         version: module.version,
         tsVersion: versionToTs(module.version),
+        schemaFilePath: module.schemaFilePath,
       };
     });
     const latest = lastItem(formats);

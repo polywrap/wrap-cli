@@ -40,16 +40,15 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
         {
           cid: `${args.path}/${manifestSearchPattern}`,
           options: {
-            timeout: 5000,
+            timeout: this.env.timeouts?.tryResolveUri,
+            disableParallelRequests: this.env.disableParallelRequests,
           },
         },
         _client
       );
 
-      if (manifestResult.data) {
-        manifest = Buffer.from(manifestResult.data);
-      } else {
-        throw new Error();
+      if (manifestResult.ok) {
+        manifest = Buffer.from(manifestResult.value);
       }
     } catch (e) {
       // TODO: logging
@@ -64,35 +63,44 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
     client: Client
   ): Promise<Bytes | null> {
     try {
-      const resolveResult = await Ipfs_Module.resolve(
-        {
-          cid: args.path,
-          options: {
-            timeout: 5000,
+      let provider: string | undefined = undefined;
+
+      if (!this.env.skipCheckIfExists) {
+        const resolveResult = await Ipfs_Module.resolve(
+          {
+            cid: args.path,
+            options: {
+              timeout: this.env.timeouts?.checkIfExists,
+              disableParallelRequests: this.env.disableParallelRequests,
+            },
           },
-        },
-        client
-      );
+          client
+        );
 
-      const result = resolveResult.data;
+        if (!resolveResult.ok || !resolveResult.value) {
+          return null;
+        }
 
-      if (!result) {
-        return null;
+        provider = resolveResult.value.provider;
       }
 
       const catResult = await Ipfs_Module.cat(
         {
-          cid: result.cid,
+          cid: args.path,
           options: {
-            provider: result.provider,
-            timeout: 20000,
-            disableParallelRequests: true,
+            provider: provider,
+            timeout: this.env.timeouts?.getFile,
+            disableParallelRequests: this.env.disableParallelRequests,
           },
         },
         client
       );
 
-      return catResult.data ?? null;
+      if (!catResult.ok) {
+        return null;
+      }
+
+      return catResult.value;
     } catch (e) {
       return null;
     }

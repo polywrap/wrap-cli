@@ -70,8 +70,8 @@ export async function resolveUseStatements(
   schemaPath: string,
   abi: WrapAbi
 ): Promise<ModuleCapability[]> {
-  const useKeywordCapture = /^[#]*["{3}]*use[ \n\t]/gm;
-  const useCapture = /[#]*["{3}]*use[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*for[ \n\t]*(\w+)[ \n\t]/g;
+  const useKeywordCapture = /^(?:#|""")*use[ \n\t]/gm;
+  const useCapture = /(?:#|""")*use[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*for[ \n\t]*(\w+)[ \n\t]/g;
 
   const keywords = [...schema.matchAll(useKeywordCapture)];
   const useStatements = [...schema.matchAll(useCapture)];
@@ -133,9 +133,9 @@ export async function resolveImportsAndParseSchemas(
   resolvers: AbiResolvers,
   noValidate = false
 ): Promise<WrapAbi> {
-  const importKeywordCapture = /^#+["{3}]*import\s/gm;
-  const externalImportCapture = /#+["{3}]*import\s*(?:({[^}]+}|\*))\s*into\s*(\w+?)\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
-  const localImportCapture = /#+["{3}]*import\s*(?:({[^}]+}|\*))\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
+  const importKeywordCapture = /^(?:#|""")*import\s/gm;
+  const externalImportCapture = /(?:#|""")*import\s*(?:({[^}]+}|\*))\s*into\s*(\w+?)\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
+  const localImportCapture = /(?:#|""")*import\s*(?:({[^}]+}|\*))\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
 
   const keywords = [...schema.matchAll(importKeywordCapture)];
   const externalImportStatements = [...schema.matchAll(externalImportCapture)];

@@ -111,7 +111,7 @@ export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
       args: string[],
       networkNameOrChainId?: string
     ): Promise<string> => {
-      const { data, error } = await Ethereum_Module.callContractView(
+      const result = await Ethereum_Module.callContractView(
         {
           address,
           method,
@@ -125,22 +125,22 @@ export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
         client
       );
 
-      if (error) {
-        throw error;
+      if (!result.ok) {
+        throw result.error;
       }
 
-      if (data) {
-        if (typeof data !== "string") {
+      if (result.value) {
+        if (typeof result.value !== "string") {
           throw Error(
-            `Malformed data returned from Ethereum.callContractView: ${data}`
+            `Malformed data returned from Ethereum.callContractView: ${result.value}`
           );
         }
 
-        return data;
+        return result.value;
       }
 
       throw Error(
-        `Ethereum.callContractView returned nothing.\nData: ${data}\nError: ${error}`
+        `Ethereum.callContractView returned nothing.\nData: \nError: `
       );
     };
 

@@ -374,21 +374,20 @@ describe("URI resolution", () => {
     const fromUri = new Uri(`ens/from.eth`);
     const redirectUri = new Uri(`ens/to.eth`);
 
-    const client = new PolywrapClient();
+    const client = await getClient({
+      resolver: {
+        tryResolveUri: async (uri: Uri) => {
+          if (uri.uri === fromUri.uri) {
+            return UriResolutionResult.ok(redirectUri);
+          }
 
-    const result = await client.tryResolveUri({
-      uri: fromUri,
-      config: {
-        resolver: {
-          tryResolveUri: async (uri: Uri) => {
-            if (uri.uri === fromUri.uri) {
-              return UriResolutionResult.ok(redirectUri);
-            }
-
-            return UriResolutionResult.ok(uri);
-          },
+          return UriResolutionResult.ok(uri);
         },
       },
+    });
+
+    const result = await client.tryResolveUri({
+      uri: fromUri
     });
 
     expect(result).toEqual(UriResolutionResult.ok(redirectUri));

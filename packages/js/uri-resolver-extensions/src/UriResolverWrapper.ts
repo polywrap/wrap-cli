@@ -9,7 +9,7 @@ import {
   UriPackageOrWrapper,
   getEnvFromUriHistory,
 } from "@polywrap/core-js";
-import { Result, ResultOk, ResultErr } from "@polywrap/result";
+import { Result, ResultOk } from "@polywrap/result";
 import { WasmPackage } from "@polywrap/wasm-js";
 import {
   ResolverWithHistory,
@@ -22,7 +22,7 @@ export class UriResolverWrapper extends ResolverWithHistory<unknown> {
   }
 
   protected getStepDescription = (): string =>
-    `ResovlerExtension (${this.implementationUri.uri})`;
+    `ResolverExtension (${this.implementationUri.uri})`;
 
   protected async _tryResolveUri(
     uri: Uri,
@@ -93,13 +93,10 @@ const tryResolveUriWithImplementation = async (
     }
   );
 
-  const { data, error } = invokeResult;
-
-  const uriOrManifest = data as UriResolverInterface.MaybeUriOrManifest;
-
-  if (error) {
-    return ResultErr(error);
+  if (!invokeResult.ok) {
+    return invokeResult;
   }
 
+  const uriOrManifest = invokeResult.value as UriResolverInterface.MaybeUriOrManifest;
   return ResultOk(uriOrManifest ?? undefined);
 };

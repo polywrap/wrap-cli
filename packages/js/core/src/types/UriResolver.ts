@@ -1,31 +1,18 @@
-import { ClientConfig, Uri } from ".";
+import { Uri } from ".";
 import { IUriResolutionContext, UriPackageOrWrapper } from "../uri-resolution";
 
 import { Result } from "@polywrap/result";
 
 /** Options required for an URI resolution. */
-export interface TryResolveUriOptions<
-  TUri extends Uri | string,
-  TClientConfig extends ClientConfig = ClientConfig
-> {
+export interface TryResolveUriOptions<TUri extends Uri | string> {
   /** The Wrapper's URI */
   uri: TUri;
 
   resolutionContext?: IUriResolutionContext;
-
-  /**
-   * Override the client's config for all resolutions.
-   */
-  config?: Partial<TClientConfig>;
-
-  /**
-   * Id used to track context data set internally.
-   */
-  contextId?: string;
 }
 
 export interface UriResolverHandler<TError = undefined> {
   tryResolveUri<TUri extends Uri | string>(
-    options?: TryResolveUriOptions<TUri, ClientConfig>
+    options?: TryResolveUriOptions<TUri>
   ): Promise<Result<UriPackageOrWrapper, TError>>;
 }

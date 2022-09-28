@@ -24,6 +24,7 @@ describe("sanity", () => {
       },
     ]);
 
+      new Uri("wrap://ens/http-resolver.polywrap.eth"),
     expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
@@ -31,6 +32,7 @@ describe("sanity", () => {
           new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
           new Uri("wrap://ens/ens-resolver.polywrap.eth"),
           new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+          new Uri("wrap://ens/http-resolver.polywrap.eth"),
         ],
       },
       {

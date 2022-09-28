@@ -1,0 +1,3 @@
+{
+  "args": ["--output-file", "./output.json"]
+}
