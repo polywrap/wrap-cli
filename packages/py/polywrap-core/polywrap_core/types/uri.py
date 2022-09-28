@@ -80,16 +80,16 @@ class Uri:
         processed = uri
         # Trim preceding '/' characters
         processed = processed.lstrip('/')
-        # Check for the w3:// scheme, add if it isn't there
+        # Check for the wrap:// scheme, add if it isn't there
         wrap_scheme_idx = processed.find("wrap://")
         if wrap_scheme_idx == -1:
             processed = f"wrap://{processed}"
 
-        # If the w3:// is not in the beginning, throw an error
+        # If the wrap:// is not in the beginning, throw an error
         if wrap_scheme_idx > -1 and wrap_scheme_idx != 0:
             raise ValueError("The wrap:// scheme must be at the beginning of the URI string")
 
-        # Extract the authoriy & path
+        # Extract the authority & path
         result: List[str] = re.findall(r"(wrap:\/\/([a-z][a-z0-9-_]+)\/(.*))", processed)
 
         # Remove all empty strings
