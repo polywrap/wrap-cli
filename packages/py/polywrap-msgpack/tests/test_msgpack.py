@@ -172,7 +172,6 @@ def test_sanitize_dataclass_object_returns_dict(dataclass_object1, dataclass_obj
     assert sanitize(dataclass_object1) == dataclass_object1_as_dict
 
 def test_sanitize_list_of_dataclass_objects_returns_list_of_dicts(dataclass_object1, dataclass_object2):
-    print(dataclass_object1)
     assert sanitize([dataclass_object1, dataclass_object2]) == [dataclass_object1.__dict__, dataclass_object2.__dict__]
 
 # DATA CLASSES WITH SLOTS
