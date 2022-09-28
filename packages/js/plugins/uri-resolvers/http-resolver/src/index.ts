@@ -8,8 +8,7 @@ import {
   Module,
   UriResolver_MaybeUriOrManifest,
 } from "./wrap";
-
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 type NoConfig = Record<string, never>;
 
@@ -84,11 +83,7 @@ export class HttpResolverPlugin extends Module<NoConfig> {
   }
 }
 
-export const httpResolverPlugin: PluginFactory<NoConfig> = () => {
-  return {
-    factory: () => new HttpResolverPlugin({}),
-    manifest,
-  };
-};
+export const httpResolverPlugin: PluginFactory<NoConfig> = () =>
+  new PluginPackage(new HttpResolverPlugin({}), manifest);
 
 export const plugin = httpResolverPlugin;

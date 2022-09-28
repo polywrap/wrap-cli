@@ -3,13 +3,7 @@ import { PackageResolver } from "../packages";
 import { WrapperResolver } from "../wrappers";
 
 import { Result } from "@polywrap/result";
-import {
-  IUriResolver,
-  Uri,
-  Client,
-  toUri,
-  UriRedirect,
-} from "@polywrap/core-js";
+import { IUriResolver, Uri, Client, UriRedirect } from "@polywrap/core-js";
 import {
   PackageRegistration,
   WrapperRegistration,
@@ -53,7 +47,7 @@ export const buildUriResolver = <TError = undefined>(
   ) {
     const uriPackage = resolverLike as PackageRegistration;
     return (new PackageResolver(
-      toUri(uriPackage.uri),
+      Uri.from(uriPackage.uri),
       uriPackage.package
     ) as unknown) as IUriResolver<TError>;
   } else if (
@@ -62,7 +56,7 @@ export const buildUriResolver = <TError = undefined>(
   ) {
     const uriWrapper = resolverLike as WrapperRegistration;
     return (new WrapperResolver(
-      toUri(uriWrapper.uri),
+      Uri.from(uriWrapper.uri),
       uriWrapper.wrapper
     ) as unknown) as IUriResolver<TError>;
   } else {

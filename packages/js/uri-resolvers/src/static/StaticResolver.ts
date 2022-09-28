@@ -9,7 +9,6 @@ import {
   IUriResolver,
   Uri,
   UriPackageOrWrapper,
-  toUri,
   UriRedirect,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
@@ -34,18 +33,18 @@ export class StaticResolver<TError = undefined>
         (staticResolverLike as UriRedirect<string | Uri>).to !== undefined
       ) {
         const uriRedirect = staticResolverLike as UriRedirect<string | Uri>;
-        const from = toUri(uriRedirect.from);
+        const from = Uri.from(uriRedirect.from);
 
         uriMap.set(from.uri, {
           type: "uri",
-          uri: toUri(uriRedirect.to),
+          uri: Uri.from(uriRedirect.to),
         });
       } else if (
         (staticResolverLike as PackageRegistration).uri !== undefined &&
         (staticResolverLike as PackageRegistration).package !== undefined
       ) {
         const uriPackage = staticResolverLike as PackageRegistration;
-        const uri = toUri(uriPackage.uri);
+        const uri = Uri.from(uriPackage.uri);
 
         uriMap.set(uri.uri, {
           type: "package",
@@ -57,7 +56,7 @@ export class StaticResolver<TError = undefined>
         (staticResolverLike as WrapperRegistration).wrapper !== undefined
       ) {
         const uriWrapper = staticResolverLike as WrapperRegistration;
-        const uri = toUri(uriWrapper.uri);
+        const uri = Uri.from(uriWrapper.uri);
 
         uriMap.set(uri.uri, {
           type: "wrapper",

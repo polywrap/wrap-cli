@@ -25,6 +25,7 @@
     "abort-controller": "3.0.0"
   },
   "devDependencies": {
+    "@polywrap/plugin-js": "0.8.0",
     "@polywrap/http-plugin-js": "0.8.0",
     "@polywrap/polywrap-manifest-types-js": "0.8.0",
     "@polywrap/test-env-js": "0.8.0",

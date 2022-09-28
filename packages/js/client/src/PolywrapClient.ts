@@ -25,7 +25,6 @@ import {
   UriPackageOrWrapper,
   UriResolutionContext,
   getEnvFromUriHistory,
-  PluginPackage,
   QueryResult,
   InvokeResult,
 } from "@polywrap/core-js";
@@ -122,12 +121,6 @@ export class PolywrapClient implements Client {
     return this._config.redirects;
   }
 
-  @Tracer.traceMethod("PolywrapClient: getPlugin")
-  public getPluginByUri<TUri extends Uri | string>(
-    uri: TUri
-  ): PluginPackage<unknown> | undefined {
-    return this.getPlugins().find((x) => Uri.equals(x.uri, Uri.from(uri)))
-      ?.plugin;
   @Tracer.traceMethod("PolywrapClient: getInterfaces")
   public getInterfaces(): readonly InterfaceImplementations<Uri>[] {
     return this._config.interfaces;
@@ -530,23 +523,6 @@ export class PolywrapClient implements Client {
       return ResultOk(result.value);
     } else {
       return ResultOk(uriPackageOrWrapper.wrapper);
-    }
-  }
-
-  @Tracer.traceMethod("PolywrapClient: validateConfig")
-  private _validateConfig(): void {
-    // Require plugins to use non-interface URIs
-    const pluginUris = this.getPlugins().map((x) => x.uri.uri);
-    const interfaceUris = this.getInterfaces().map((x) => x.interface.uri);
-
-    const pluginsWithInterfaceUris = pluginUris.filter((plugin) =>
-      interfaceUris.includes(plugin)
-    );
-
-    if (pluginsWithInterfaceUris.length) {
-      throw Error(
-        `Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`
-      );
     }
   }
 }

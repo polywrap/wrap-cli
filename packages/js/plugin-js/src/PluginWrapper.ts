@@ -53,17 +53,13 @@ export class PluginWrapper implements Wrapper {
     );
     const { method } = options;
     const args = options.args || {};
-    const module = this._getInstance();
-    if (!module) {
-      return ResultErr(Error(`PluginWrapper: module "${module}" not found.`));
-    }
 
-    if (!module.getMethod(method)) {
+    if (!this.module.getMethod(method)) {
       return ResultErr(Error(`PluginWrapper: method "${method}" not found.`));
     }
 
     // Set the module's environment
-    await module.setEnv(options.env || {});
+    this.module.setEnv(options.env || {});
 
     let jsArgs: Record<string, unknown>;
 
@@ -86,7 +82,7 @@ export class PluginWrapper implements Wrapper {
     }
 
     // Invoke the function
-    const result = await module._wrap_invoke(method, jsArgs, client);
+    const result = await this.module._wrap_invoke(method, jsArgs, client);
 
     if (result.ok) {
       const data = result.value;

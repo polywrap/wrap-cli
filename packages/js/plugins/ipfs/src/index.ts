@@ -159,8 +159,7 @@ export class IpfsPlugin extends Module<NoConfig> {
   }
 }
 
-export const ipfsPlugin: PluginFactory<IpfsPluginConfig> = (
-  config: IpfsPluginConfig
-) => new PluginPackage(new IpfsPlugin(config), manifest);
+export const ipfsPlugin: PluginFactory<NoConfig> = () =>
+  new PluginPackage(new IpfsPlugin({}), manifest);
 
 export const plugin = ipfsPlugin;

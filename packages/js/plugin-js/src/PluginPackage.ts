@@ -1,4 +1,5 @@
 import { IWrapPackage, Wrapper } from "@polywrap/core-js";
+import { Result, ResultOk } from "@polywrap/result";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PluginModule } from "./PluginModule";
 import { PluginWrapper } from "./PluginWrapper";
@@ -37,11 +38,11 @@ export class PluginPackage<TConfig> implements IWrapPackage {
     }
   }
 
-  async getManifest(): Promise<WrapManifest> {
-    return this.manifest;
+  async getManifest(): Promise<Result<WrapManifest, Error>> {
+    return ResultOk(this.manifest);
   }
 
-  async createWrapper(): Promise<Wrapper> {
-    return new PluginWrapper(this.manifest, this.pluginModule);
+  async createWrapper(): Promise<Result<Wrapper, Error>> {
+    return ResultOk(new PluginWrapper(this.manifest, this.pluginModule));
   }
 }

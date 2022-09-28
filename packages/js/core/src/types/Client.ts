@@ -6,7 +6,6 @@ import {
   Uri,
   InterfaceImplementations,
   Env,
-  PluginPackage,
 } from "./";
 import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";

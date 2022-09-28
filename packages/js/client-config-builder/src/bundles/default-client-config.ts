@@ -103,7 +103,7 @@ export const getDefaultPlugins = (): UriResolverLike[] => {
     // IPFS is required for downloading Polywrap packages
     {
       uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
-      plugin: ipfsPlugin({}),
+      package: ipfsPlugin({}),
     },
     // ENS is required for resolving domain to IPFS hashes
     {
@@ -132,10 +132,10 @@ export const getDefaultPlugins = (): UriResolverLike[] => {
       package: httpPlugin({}),
     },
     {
-        uri: new Uri("wrap://ens/http-resolver.polywrap.eth"),
-        plugin: httpResolverPlugin({}),
-      },
-      {
+      uri: new Uri("wrap://ens/http-resolver.polywrap.eth"),
+      package: httpResolverPlugin({}),
+    },
+    {
       uri: new Uri("wrap://ens/js-logger.polywrap.eth"),
       package: loggerPlugin({}),
     },
@@ -151,6 +151,5 @@ export const getDefaultPlugins = (): UriResolverLike[] => {
       uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
       package: ipfsResolverPlugin({}),
     },
-          new Uri("wrap://ens/http-resolver.polywrap.eth"),
   ];
 };
