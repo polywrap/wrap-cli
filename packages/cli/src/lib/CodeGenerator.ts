@@ -17,6 +17,7 @@ import {
   SchemaComposer,
   intlMsg,
   resetDir,
+  defaultCodegenDir,
 } from "./";
 
 import { BindLanguage, GenerateBindingFn } from "@polywrap/schema-bind";
@@ -28,7 +29,7 @@ import { Ora } from "ora";
 import Mustache from "mustache";
 
 export interface CodeGeneratorConfig {
-  codegenDirAbs: string;
+  codegenDirAbs?: string;
   project: Project<AnyProjectManifest>;
   schemaComposer: SchemaComposer;
   customScript?: string;
@@ -90,6 +91,7 @@ export class CodeGenerator {
 
       if (this._config.customScript) {
         const customScript = this._config.customScript;
+        const outputDirAbs = codegenDirAbs ?? path.resolve(defaultCodegenDir);
 
         // Check the generation file if it has the proper run() method
         // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
@@ -112,14 +114,14 @@ export class CodeGenerator {
         const binding = await generateBinding({
           projectName: await project.getName(),
           abi,
-          outputDirAbs: codegenDirAbs,
+          outputDirAbs,
           bindLanguage,
           config: this._config.mustacheView,
         });
 
-        resetDir(codegenDirAbs);
+        resetDir(outputDirAbs);
         writeDirectorySync(
-          codegenDirAbs,
+          outputDirAbs,
           binding.output,
           (templatePath: string) =>
             this._generateTemplate(templatePath, abi, spinner)
@@ -127,7 +129,7 @@ export class CodeGenerator {
       } else {
         const binding = await project.generateSchemaBindings(
           abi,
-          path.relative(project.getManifestDir(), codegenDirAbs)
+          codegenDirAbs
         );
 
         // Output the bindings

@@ -6,3 +6,7 @@ export function parseDirOption(
 ): string {
   return dir ? path.resolve(dir) : path.resolve(defaultDir);
 }
+
+export function parseDirOptionIfExists(dir?: string): string | undefined {
+  return dir ? path.resolve(dir) : undefined;
+}

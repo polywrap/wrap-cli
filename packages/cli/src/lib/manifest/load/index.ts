@@ -1,6 +1,7 @@
 export * from "./loadAppManifest";
 export * from "./loadPluginManifest";
 export * from "./loadPolywrapManifest";
+export * from "./loadCodegenManifest";
 export * from "./loadBuildManifest";
 export * from "./loadDeployManifest";
 export * from "./loadMetaManifest";

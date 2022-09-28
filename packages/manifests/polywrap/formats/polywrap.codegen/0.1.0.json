@@ -19,11 +19,6 @@
       "type": "string",
       "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+"
     },
-    "clientConfig": {
-      "description": "Path to custom configuration for the PolywrapClient",
-      "type": "string",
-      "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(ts|js)$"
-    },
     "config": {
       "description": "Custom configuration for binding target.",
       "type": "object"

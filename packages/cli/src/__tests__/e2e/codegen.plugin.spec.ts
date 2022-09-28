@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 import { testCliOutput } from "./helpers/testCliOutput";
 import { testCodegenOutput } from "./helpers/testCodegenOutput";
+import { CodegenManifest, deserializeCodegenManifest } from "@polywrap/polywrap-manifest-types-js";
 
 describe("e2e tests for codegen command - plugin project", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin/codegen");
@@ -19,8 +20,22 @@ describe("e2e tests for codegen command - plugin project", () => {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 
-      let codegenDir = path.join(testCaseDir, "src", "wrap");
-      let buildDir = path.join(testCaseDir, "build");
+      // retrieve codegen manifest
+      let codegenManifest: CodegenManifest | undefined;
+      const codegenManifestPath = path.join(testCaseDir, "polywrap.codegen.yaml");
+      if (fs.existsSync(codegenManifestPath)) {
+        const codegenManifestStr = fs.readFileSync(codegenManifestPath, "utf-8");
+        codegenManifest = deserializeCodegenManifest(codegenManifestStr)
+      }
+
+      let codegenDir = codegenManifest?.codegenDir
+        ? path.join(testCaseDir, codegenManifest?.codegenDir)
+        : path.join(testCaseDir, "src", "wrap");
+
+      let buildDir = codegenManifest?.publishDir
+        ? path.join(testCaseDir, codegenManifest?.publishDir)
+        : path.join(testCaseDir, "build");
+
       let cmdArgs: string[] = [];
       let cmdFile = path.join(testCaseDir, "cmd.json");
       if (fs.existsSync(cmdFile)) {

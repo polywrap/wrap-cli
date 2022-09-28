@@ -19,9 +19,12 @@ import {
   loadDeployManifestExt,
   loadPolywrapManifest,
   loadMetaManifest,
+  loadCodegenManifest,
 } from "../manifest";
+import { defaultCodegenDir } from "../option-defaults";
 
 import {
+  CodegenManifest,
   BuildManifest,
   DeployManifest,
   MetaManifest,
@@ -38,6 +41,7 @@ import fsExtra from "fs-extra";
 
 export interface PolywrapProjectConfig extends ProjectConfig {
   polywrapManifestPath: string;
+  codegenManifestPath?: string;
   buildManifestPath?: string;
   deployManifestPath?: string;
   metaManifestPath?: string;
@@ -55,6 +59,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     deployModulesDir: "deploy/modules/",
   };
   private _polywrapManifest: PolywrapManifest | undefined;
+  private _codegenManifest: CodegenManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
   private _deployManifest: DeployManifest | undefined;
   private _metaManifest: MetaManifest | undefined;
@@ -146,10 +151,14 @@ export class PolywrapProject extends Project<PolywrapManifest> {
 
   public async generateSchemaBindings(
     abi: WrapAbi,
-    generationSubPath?: string
+    codegenDirAbs?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const codegenDirectory = this._getGenerationDirectory(generationSubPath);
+    const codegenManifest = await this.getCodegenManifest();
+    const codegenDirectory = this._getGenerationDirectory(
+      codegenDirAbs,
+      codegenManifest
+    );
 
     // Clean the code generation
     resetDir(codegenDirectory);
@@ -166,6 +175,53 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     };
 
     return bindSchema(options);
+  }
+
+  /// Polywrap Codegen Manifest (polywrap.build.yaml)
+
+  public async getCodegenManifestPath(): Promise<string | undefined> {
+    const polywrapManifest = await this.getManifest();
+
+    // If a custom codegen manifest path is configured
+    if (this._config.codegenManifestPath) {
+      return this._config.codegenManifestPath;
+    }
+    // If the polywrap.yaml manifest specifies a custom codegen manifest
+    else if (polywrapManifest.extensions?.codegen) {
+      this._config.codegenManifestPath = path.join(
+        this.getManifestDir(),
+        polywrapManifest.extensions.codegen
+      );
+      return this._config.codegenManifestPath;
+    }
+    // No codegen manifest found
+    else {
+      return undefined;
+    }
+  }
+
+  public async getCodegenManifestDir(): Promise<string | undefined> {
+    const manifestPath = await this.getCodegenManifestPath();
+
+    if (manifestPath) {
+      return path.dirname(manifestPath);
+    } else {
+      return undefined;
+    }
+  }
+
+  public async getCodegenManifest(): Promise<CodegenManifest | undefined> {
+    if (!this._codegenManifest) {
+      const manifestPath = await this.getCodegenManifestPath();
+
+      if (manifestPath) {
+        this._codegenManifest = await loadCodegenManifest(
+          manifestPath,
+          this.quiet
+        );
+      }
+    }
+    return this._codegenManifest;
   }
 
   /// Polywrap Build Manifest (polywrap.build.yaml)
@@ -533,7 +589,14 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     return undefined;
   }
 
-  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
+  private _getGenerationDirectory(
+    codegenDirAbs?: string,
+    codegenManifest?: CodegenManifest
+  ): string {
+    const generationSubPath: string = path.relative(
+      this.getManifestDir(),
+      codegenDirAbs ?? codegenManifest?.codegenDir ?? defaultCodegenDir
+    );
     return path.join(this.getManifestDir(), generationSubPath);
   }
 }

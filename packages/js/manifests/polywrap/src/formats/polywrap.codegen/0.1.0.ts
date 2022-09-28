@@ -20,10 +20,6 @@ export interface CodegenManifest {
    */
   publishDir?: string;
   /**
-   * Path to custom configuration for the PolywrapClient
-   */
-  clientConfig?: string;
-  /**
    * Custom configuration for binding target.
    */
   config?: {
