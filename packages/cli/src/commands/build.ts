@@ -14,7 +14,7 @@ import {
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen/CodeGenerator";
 import { LocalBuildStrategy } from "../lib/build-strategies/strategies/LocalStrategy";
-import { DockerBuildStrategy } from "../lib/build-strategies/strategies/DockerStrategy";
+import { ImageBuildStrategy } from "../lib/build-strategies/strategies/ImageStrategy";
 import { BuildStrategy, SUPPORTED_STRATEGIES } from "../lib/build-strategies";
 import { DockerVMBuildStrategy } from "../lib/build-strategies/strategies/DockerVMStrategy";
 
@@ -24,7 +24,7 @@ import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 
 const defaultOutputDir = "./build";
-const defaultStrategy = "docker";
+const defaultStrategy = "vm";
 const strategyStr = intlMsg.commands_build_options_s_strategy();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
@@ -112,7 +112,7 @@ function createBuildStrategy(
     case "local":
       return new LocalBuildStrategy({ outputDir, project });
     case "docker":
-      return new DockerBuildStrategy({ outputDir, project });
+      return new ImageBuildStrategy({ outputDir, project });
     case "vm":
       return new DockerVMBuildStrategy({ outputDir, project });
     default:

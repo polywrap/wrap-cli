@@ -213,7 +213,7 @@ describe("e2e tests for build command", () => {
     );
   });
 
-  describe("Docker strategy", () => {
+  describe("Image strategy", () => {
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
         args: ["build", "-v"],

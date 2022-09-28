@@ -18,7 +18,7 @@ import Mustache from "mustache";
 
 type BuildImageId = string;
 
-export class DockerBuildStrategy extends BuildStrategy<BuildImageId> {
+export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
   private _dockerLock: FileLock;
 
   constructor(args: BuildStrategyArgs) {
