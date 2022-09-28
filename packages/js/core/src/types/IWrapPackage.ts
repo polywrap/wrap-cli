@@ -4,8 +4,13 @@ import {
   DeserializeManifestOptions,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
+import { Result } from "@polywrap/result";
 
 export interface IWrapPackage {
-  getManifest(options?: GetManifestOptions): Promise<WrapManifest>;
-  createWrapper(options?: DeserializeManifestOptions): Promise<Wrapper>;
+  getManifest(
+    options?: GetManifestOptions
+  ): Promise<Result<WrapManifest, Error>>;
+  createWrapper(
+    options?: DeserializeManifestOptions
+  ): Promise<Result<Wrapper, Error>>;
 }

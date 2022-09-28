@@ -2,6 +2,7 @@ import {
   Client,
   PluginModule
 } from "..";
+import { ResultOk } from "@polywrap/result";
 
 class TestPluginModule extends PluginModule<{}> {
   testMethod(args: { value: number }, _client: Client): number {
@@ -16,6 +17,6 @@ describe("Plugin", () => {
     expect(plugin).toBeTruthy();
     expect (
       await plugin._wrap_invoke("testMethod", { value: 5 }, {} as Client)
-    ).toBe(10);
+    ).toStrictEqual(ResultOk(10));
   });
 });

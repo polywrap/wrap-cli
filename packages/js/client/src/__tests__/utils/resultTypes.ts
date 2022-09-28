@@ -1,0 +1,1 @@
+export type ErrResult<E = undefined> = { ok: false; error: E | undefined };

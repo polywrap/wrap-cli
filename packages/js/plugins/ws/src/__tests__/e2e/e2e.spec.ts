@@ -75,19 +75,20 @@ describe("WebSocket plugin", () => {
     });
 
     it("should close a websocket connection", async () => {
-      const { data: id } = await polywrapClient.invoke({
+      const result = await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "open",
         args: {
           url: "ws://localhost:1234"
         }
       })
+      if (!result.ok) fail(result.error);
 
       await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "close",
         args: {
-          id
+          id: result.value
         }
       })
 
@@ -106,19 +107,20 @@ describe("WebSocket plugin", () => {
 
     it("should send a message to the server", async () => {
 
-      const { data: id } = await polywrapClient.invoke({
+      const result = await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "open",
         args: {
           url: "ws://localhost:1234"
         }
       })
+      if (!result.ok) fail(result.error);
 
       await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "send",
         args: {
-          id,
+          id: result.value,
           message: "test"
         }
       })
@@ -175,19 +177,20 @@ describe("WebSocket plugin", () => {
 
     it("should pass messages to a callback", async () => {
 
-      const { data: id } = await polywrapClient.invoke({
+      const result = await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "open",
         args: {
           url: "ws://localhost:1234"
         }
       })
+      if (!result.ok) fail(result.error);
 
       await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCallback",
         args: {
-          id,
+          id: result.value,
           callback: {
             uri: "wrap://ens/stub.polywrap.eth",
             method: "callback"
@@ -201,19 +204,20 @@ describe("WebSocket plugin", () => {
     });
 
     it("should remove callback", async () => {
-      const { data: id } = await polywrapClient.invoke({
+      const result = await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "open",
         args: {
           url: "ws://localhost:1234"
         }
       })
+      if (!result.ok) fail(result.error);
 
       await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCallback",
         args: {
-          id,
+          id: result.value,
           callback: {
             uri: "wrap://ens/stub.polywrap.eth",
             method: "callback"
@@ -226,7 +230,7 @@ describe("WebSocket plugin", () => {
           uri: "wrap://ens/ws.polywrap.eth",
           method: "removeCallback",
           args: {
-            id,
+            id: result.value,
             callback: {
               uri: "wrap://ens/stub.polywrap.eth",
               method: "callback"
@@ -253,19 +257,20 @@ describe("WebSocket plugin", () => {
 
     it("should receive a message", async () => {
 
-      const { data: id } = await polywrapClient.invoke({
+      const result = await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "open",
         args: {
           url: "ws://localhost:1234"
         }
       })
+      if (!result.ok) fail(result.error);
 
       await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id
+          id: result.value
         }
       })
 
@@ -275,28 +280,30 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id
+          id: result.value
         }
       })
+      if (!response.ok) fail(response.error);
 
-      let data = response?.data?.map((msg) => msg.data)
+      let data = response.value.map((msg) => msg.data)
       expect(data).toEqual(["1", "2"]);
     });
 
     it("should remove cache callback", async () => {
-      const { data: id } = await polywrapClient.invoke({
+      const result = await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "open",
         args: {
           url: "ws://localhost:1234"
         }
       })
+      if (!result.ok) fail(result.error);
 
       await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id
+          id: result.value
         }
       })
 
@@ -305,7 +312,7 @@ describe("WebSocket plugin", () => {
           uri: "wrap://ens/ws.polywrap.eth",
           method: "removeCache",
           args: {
-            id
+            id: result.value
           }
         })
         resolve()
@@ -317,28 +324,30 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id
+          id: result.value
         }
       })
 
-      let data = response?.data?.map((msg) => msg.data)
+      if (!response.ok) fail(response.error);
+      let data = response.value.map((msg) => msg.data)
       expect(data).toEqual(["1", "2"]);
     });
 
     it("should receive messages when a timeout is reached", async () => {
-      const { data: id } = await polywrapClient.invoke({
+      const result = await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "open",
         args: {
           url: "ws://localhost:1234"
         }
       })
+      if (!result.ok) fail(result.error);
 
       await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id
+          id: result.value
         }
       })
 
@@ -346,30 +355,31 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id,
+          id: result.value,
           timeout: 250
         }
       })
 
-
-      let data = response?.data?.map((msg) => msg.data)
+      if (!response.ok) fail(response.error);
+      let data = response.value.map((msg) => msg.data)
       expect(data).toEqual(["1", "2"]);
     });
 
     it("should receive messages when min is reached", async () => {
-      const { data: id } = await polywrapClient.invoke({
+      const result = await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "open",
         args: {
           url: "ws://localhost:1234"
         }
       })
+      if (!result.ok) fail(result.error);
 
       await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id
+          id: result.value
         }
       })
 
@@ -377,29 +387,31 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id,
+          id: result.value,
           min: 2
         }
       })
 
-      let data = response?.data?.map((msg) => msg.data)
+      if (!response.ok) fail(response.error);
+      let data = response.value.map((msg) => msg.data)
       expect(data).toEqual(["1", "2"]);
     });
 
     it("should reach timeout before min", async () => {
-      const { data: id } = await polywrapClient.invoke({
+      const result = await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "open",
         args: {
           url: "ws://localhost:1234"
         }
       })
+      if (!result.ok) fail(result.error);
 
       await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id
+          id: result.value
         }
       })
 
@@ -407,30 +419,32 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id,
+          id: result.value,
           timeout: 110,
           min: 2
         }
       })
 
-      let data = response?.data?.map((msg) => msg.data)
+      if (!response.ok) fail(response.error);
+      let data = response.value.map((msg) => msg.data)
       expect(data).toEqual(["1"]);
     });
 
     it("should reach min before timeout", async () => {
-      const { data: id } = await polywrapClient.invoke({
+      const result = await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "open",
         args: {
           url: "ws://localhost:1234"
         }
       })
+      if (!result.ok) fail(result.error);
 
       await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id
+          id: result.value
         }
       })
 
@@ -438,31 +452,33 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id,
+          id: result.value,
           timeout: 300,
           min: 1
         }
       })
 
-      let data = response?.data?.map((msg) => msg.data)
+      if (!response.ok) fail(response.error);
+      let data = response.value.map((msg) => msg.data)
       expect(data).toEqual(["1"]);
     });
 
     it("should receive messages in batches", async () => {
 
-      const { data: id } = await polywrapClient.invoke({
+      const result = await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "open",
         args: {
           url: "ws://localhost:1234"
         }
       })
+      if (!result.ok) fail(result.error);
 
       await polywrapClient.invoke({
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id
+          id: result.value
         }
       })
 
@@ -472,7 +488,7 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id
+          id: result.value
         }
       })
 
@@ -482,7 +498,7 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id
+          id: result.value
         }
       })
 
@@ -492,17 +508,20 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id
+          id: result.value
         }
       })
 
-      let data1 = response1?.data?.map((msg) => msg.data)
+      if (!response1.ok) fail(response1.error);
+      let data1 = response1.value.map((msg) => msg.data)
       expect(data1).toEqual(["1", "2"]);
 
-      let data2 = response2?.data?.map((msg) => msg.data)
+      if (!response2.ok) fail(response2.error);
+      let data2 = response2.value.map((msg) => msg.data)
       expect(data2).toEqual(["3"]);
 
-      let data3 = response3?.data?.map((msg) => msg.data)
+      if (!response3.ok) fail(response3.error);
+      let data3 = response3.value.map((msg) => msg.data)
       expect(data3).toEqual([]);
     });
   });

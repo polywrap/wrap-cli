@@ -13,7 +13,10 @@ import {
 import { Result, ResultOk } from "@polywrap/result";
 import { UriResolverAggregatorBase } from "@polywrap/uri-resolvers-js";
 
-export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
+export class ExtendableUriResolver extends UriResolverAggregatorBase<
+  Error,
+  Error
+> {
   private readonly resolverName: string;
 
   constructor(resolverName?: string) {
@@ -25,12 +28,18 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
     uri: Uri,
     client: Client,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<IUriResolver<unknown>[]>> {
-    const uriResolverImpls = getImplementations(
+  ): Promise<Result<IUriResolver<unknown>[], Error>> {
+    const getImplementationsResult = getImplementations(
       coreInterfaceUris.uriResolver,
-      client.getInterfaces({}),
-      client.getRedirects({})
+      client.getInterfaces(),
+      client.getRedirects()
     );
+
+    if (!getImplementationsResult.ok) {
+      return getImplementationsResult;
+    }
+
+    const uriResolverImpls = getImplementationsResult.value;
 
     const resolvers: UriResolverWrapper[] = uriResolverImpls
       .filter((x) => !resolutionContext.isResolving(x))
@@ -43,12 +52,12 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
     uri: Uri,
     client: Client,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, unknown>> {
+  ): Promise<Result<UriPackageOrWrapper, Error>> {
     const result = await this.getUriResolvers(uri, client, resolutionContext);
-    const resolvers = (result as {
-      ok: true;
-      value: UriResolverWrapper[];
-    }).value;
+    if (!result.ok) {
+      return UriResolutionResult.err(result.error);
+    }
+    const resolvers = result.value as UriResolverWrapper[];
 
     if (resolvers.length === 0) {
       return UriResolutionResult.ok(uri);

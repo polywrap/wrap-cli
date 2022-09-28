@@ -6,7 +6,7 @@ export class LegacyPluginsResolver extends UriResolverAggregator {
   constructor() {
     super(
       async (_: Uri, client: Client) =>
-        client.getPlugins({}).map((x) => new PluginResolver(x)),
+        client.getPlugins().map((x) => new PluginResolver(x)),
       "LegacyPluginsResolver"
     );
   }

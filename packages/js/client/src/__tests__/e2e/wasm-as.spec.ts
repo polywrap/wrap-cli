@@ -93,7 +93,7 @@ describe("wasm-as test cases", () => {
     await buildWrapper(wrapperPath);
     const ensUri = wrapperUri;
 
-    const query = await client.invoke({
+    const result = await client.invoke({
       uri: ensUri,
       method: "if",
       args: {
@@ -103,9 +103,9 @@ describe("wasm-as test cases", () => {
       },
     });
 
-    expect(query.error).toBeFalsy();
-    expect(query.data).toBeTruthy();
-    expect(query.data).toMatchObject({
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBeTruthy();
+    expect(result.value).toMatchObject({
       else: "successfully used reserved keyword",
     });
   });
@@ -195,7 +195,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    const query = await client.invoke({
+    const result = await client.invoke({
       uri: wrapperUri,
       method: "moduleMethod",
       args: {
@@ -206,9 +206,9 @@ describe("wasm-as test cases", () => {
       },
     });
 
-    expect(query.error).toBeFalsy();
-    expect(query.data).toBeTruthy();
-    expect(query.data).toEqual({
+    if (!result.ok) fail(result.error);
+    expect(result.value).toBeTruthy();
+    expect(result.value).toEqual({
       uint8: 1,
       str: "Test String 1",
     });
