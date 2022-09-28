@@ -61,6 +61,7 @@ export abstract class PluginModule<
     }
 
     const data = await fn(args, client);
+
     return ResultOk(data);
   }
 
@@ -75,7 +76,7 @@ export abstract class PluginModule<
       PluginMethod<TArgs, TResult>
     >)[method];
 
-    return fn;
+    return fn.bind(this);
   }
 }
 
