@@ -8,6 +8,8 @@ import { BuildStrategyArgs, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
 import { PolywrapManifestLanguage, PolywrapProject } from "../../project";
 import { withSpinner } from "../../helpers";
+import RustVMConfig from "../../defaults/build-strategies/wasm/rust/vm.config";
+import ASVMConfig from "../../defaults/build-strategies/wasm/assemblyscript/vm.config";
 
 import fse from "fs-extra";
 import path from "path";
@@ -15,13 +17,23 @@ import Mustache from "mustache";
 
 type BuildableLanguage = Exclude<PolywrapManifestLanguage, "interface">;
 const VOLUME_DIR_CACHE_SUBPATH = "build/volume";
-const VM_SCRIPTS_DIR = path.join(
+const DEFAULTS_DIR = path.join(
   __dirname,
   "..",
   "..",
   "defaults",
-  "build-vm-scripts"
+  "build-strategies"
 );
+
+export interface VMConfig {
+  defaultIncludes: string[];
+  baseImage: string;
+}
+
+const CONFIGS: Record<BuildableLanguage, VMConfig> = {
+  "wasm/rust": RustVMConfig,
+  "wasm/assemblyscript": ASVMConfig,
+};
 
 interface BuildManifestConfig {
   [k: string]: unknown;
@@ -91,7 +103,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
       // Copy additional includes
 
-      ADDITIONAL_INCLUDES[language].forEach((include) => {
+      CONFIGS[language].defaultIncludes.forEach((include) => {
         if (fse.existsSync(path.join(manifestDir, include))) {
           if (fse.existsSync(path.join(this._volumePaths.project, include))) {
             fse.removeSync(path.join(this._volumePaths.project, include));
@@ -140,7 +152,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         }
 
         const scriptTemplate = fse.readFileSync(
-          path.join(VM_SCRIPTS_DIR, `${language}.mustache`),
+          path.join(DEFAULTS_DIR, language, "vm-script.mustache"),
           "utf8"
         );
 
@@ -160,7 +172,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
           )}:/project -v ${path.resolve(
             this._volumePaths.linkedPackages
           )}:/linked-packages ${
-            BASE_IMAGES[language]
+            CONFIGS[language].baseImage
           }:latest /bin/bash -c "${scriptContent}"`
         );
       }

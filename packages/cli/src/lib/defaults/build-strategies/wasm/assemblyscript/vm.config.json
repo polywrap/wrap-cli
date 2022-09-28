@@ -1,4 +1,0 @@
-{
-  "defaultIncludes": ["package.json", "node_modules"],
-  "baseImage": "namesty/base-assemblyscript"
-}

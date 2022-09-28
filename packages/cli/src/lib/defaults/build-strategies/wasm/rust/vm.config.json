@@ -1,4 +1,0 @@
-{
-  "defaultIncludes": ["Cargo.toml", "Cargo.lock"],
-  "baseImage": "namesty/base-rust"
-}
