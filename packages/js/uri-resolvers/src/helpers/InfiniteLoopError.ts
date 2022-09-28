@@ -1,5 +1,6 @@
-import { Uri, IUriResolutionStep } from "@polywrap/core-js";
 import { getUriResolutionPath } from "./getUriResolutionPath";
+
+import { Uri, IUriResolutionStep } from "@polywrap/core-js";
 
 export class InfiniteLoopError extends Error {
   constructor(

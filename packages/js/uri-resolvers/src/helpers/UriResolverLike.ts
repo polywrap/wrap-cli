@@ -1,3 +1,6 @@
+import { PackageRegistration } from "./PackageRegistration";
+import { WrapperRegistration } from "./WrapperRegistration";
+
 import {
   IUriResolver,
   UriRedirect,
@@ -5,8 +8,6 @@ import {
   IUriPackage,
   IUriWrapper,
 } from "@polywrap/core-js";
-import { PackageRegistration } from "./PackageRegistration";
-import { WrapperRegistration } from "./WrapperRegistration";
 
 export type UriResolverLike =
   | IUriResolver<unknown>

@@ -1,3 +1,5 @@
+import { PluginModule } from "./PluginModule";
+
 import {
   Wrapper,
   Client,
@@ -8,11 +10,9 @@ import {
   GetManifestOptions,
   isBuffer,
 } from "@polywrap/core-js";
-
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Tracer, TracingLevel } from "@polywrap/tracing-js";
-import { PluginModule } from "./PluginModule";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class PluginWrapper implements Wrapper {

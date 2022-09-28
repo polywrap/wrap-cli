@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Client, executeMaybeAsyncFunction } from "@polywrap/core-js";
 
 import { PluginMethod } from "../PluginMethod";
 import { PluginModule } from "../PluginModule";
 import { GetPluginMethodsFunc } from "./GetPluginMethodsFunc";
+
+import { Client, executeMaybeAsyncFunction } from "@polywrap/core-js";
 
 export class PluginModuleWithMethods<
   TEnv extends Record<string, unknown> = Record<string, unknown>

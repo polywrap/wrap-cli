@@ -1,6 +1,8 @@
 import { InfiniteLoopError } from "./InfiniteLoopError";
+import { UriResolverLike } from "./UriResolverLike";
+import { UriResolutionResult } from "./UriResolutionResult";
+import { buildUriResolver } from "./buildUriResolver";
 
-import { Result } from "@polywrap/result";
 import {
   IUriResolver,
   Uri,
@@ -8,9 +10,7 @@ import {
   IUriResolutionContext,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
-import { UriResolverLike } from "./UriResolverLike";
-import { UriResolutionResult } from "./UriResolutionResult";
-import { buildUriResolver } from "./buildUriResolver";
+import { Result } from "@polywrap/result";
 
 export class ResolverWithLoopGuard<TError = undefined>
   implements IUriResolver<TError | InfiniteLoopError> {

@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@polywrap/core-js": "0.8.0",
+    "@polywrap/plugin-js": "0.8.0",
     "abort-controller": "3.0.0"
   },
   "devDependencies": {

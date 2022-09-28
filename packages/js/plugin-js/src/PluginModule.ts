@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Client, executeMaybeAsyncFunction } from "@polywrap/core-js";
-
 import { PluginMethod } from "./PluginMethod";
+
+import { Client, executeMaybeAsyncFunction } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export abstract class PluginModule<

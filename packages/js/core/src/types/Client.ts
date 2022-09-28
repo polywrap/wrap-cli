@@ -42,7 +42,6 @@ export interface Client
 
   getRedirects(): readonly UriRedirect<Uri>[];
 
-
   getInterfaces(): readonly InterfaceImplementations<Uri>[];
 
   getEnvs(): readonly Env<Uri>[];

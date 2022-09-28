@@ -18,8 +18,7 @@ export class StaticResolver<TError = undefined>
   constructor(public uriMap: Map<string, UriPackageOrWrapper>) {}
 
   static from<TError = undefined>(
-    staticResolverLikes: UriResolverLike[],
-    resolverName?: string
+    staticResolverLikes: UriResolverLike[]
   ): StaticResolver<TError> {
     const uriMap = new Map<string, UriPackageOrWrapper>();
     for (const staticResolverLike of staticResolverLikes) {

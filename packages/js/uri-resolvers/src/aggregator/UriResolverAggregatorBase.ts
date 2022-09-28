@@ -1,3 +1,5 @@
+import { UriResolutionResult } from "../helpers";
+
 import {
   IUriResolver,
   Uri,
@@ -6,7 +8,6 @@ import {
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
-import { UriResolutionResult } from "../helpers";
 
 export abstract class UriResolverAggregatorBase<
   TResolutionError = undefined,

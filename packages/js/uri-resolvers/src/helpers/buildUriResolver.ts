@@ -1,15 +1,15 @@
 import { UriResolverAggregator } from "../aggregator";
 import { PackageResolver } from "../packages";
 import { WrapperResolver } from "../wrappers";
-
-import { Result } from "@polywrap/result";
-import { IUriResolver, Uri, Client, UriRedirect } from "@polywrap/core-js";
 import {
   PackageRegistration,
   WrapperRegistration,
   UriResolverLike,
 } from "../helpers";
 import { RedirectResolver } from "../redirects";
+
+import { Result } from "@polywrap/result";
+import { IUriResolver, Uri, Client, UriRedirect } from "@polywrap/core-js";
 
 export const buildUriResolver = <TError = undefined>(
   resolverLike: UriResolverLike,

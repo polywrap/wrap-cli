@@ -1,9 +1,10 @@
-import { IWrapPackage, Wrapper } from "@polywrap/core-js";
-import { Result, ResultOk } from "@polywrap/result";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PluginModule } from "./PluginModule";
 import { PluginWrapper } from "./PluginWrapper";
 import { GetPluginMethodsFunc, PluginModuleWithMethods } from "./utils";
+
+import { IWrapPackage, Wrapper } from "@polywrap/core-js";
+import { Result, ResultOk } from "@polywrap/result";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 export class PluginPackage<TConfig> implements IWrapPackage {
   constructor(

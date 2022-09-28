@@ -1,10 +1,7 @@
-import {
-  Uri,
-  UriPackageOrWrapper,
-  Wrapper,
-} from "@polywrap/core-js";
-import { Result } from "@polywrap/result";
 import { ResolverWithHistory, UriResolutionResult } from "../helpers";
+
+import { Uri, UriPackageOrWrapper, Wrapper } from "@polywrap/core-js";
+import { Result } from "@polywrap/result";
 
 export class WrapperResolver extends ResolverWithHistory {
   constructor(private uri: Uri, private wrapper: Wrapper) {
