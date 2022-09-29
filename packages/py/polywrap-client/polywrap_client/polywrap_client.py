@@ -37,12 +37,9 @@ class PolywrapClient(Client):
 
     async def invoke(self, options: InvokeApiOptions) -> InvokeApiResult:
         try:
-            typed_options = {
-                                "uri": self._to_uri(options.uri)
-                            } | options
-
-            wrapper = await self._load_wrapper(typed_options.uri)
-            result = await wrapper.invoke(typed_options)
+            options["uri"] = Uri.parse(options['uri'])
+            wrapper = self._load_wrapper(options.uri)
+            return wrapper.invoke(options)
 
         except Exception as e:
             result = e

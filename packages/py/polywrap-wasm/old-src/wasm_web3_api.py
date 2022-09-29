@@ -3,18 +3,15 @@ import json
 from typing import Dict, Any, Union, List
 from dataclasses import dataclass
 
-from .imports import create_imports
-from core import (
+from wasm.imports import create_imports
+from polywrap_msgpack {
+
+}
+from polywrap_core import (
     Api,
     UriResolverInterface,
     Uri,
-    msgpack_encode,
-    msgpack_decode,
     GetFileOptions,
-    deserialize_build_manifest,
-    deserialize_meta_manifest,
-    deserialize_web3_api_manifest,
-    combine_paths,
     InvokeApiResult
 )
 from asyncify import AsyncWasmInstance
@@ -34,7 +31,7 @@ class State():
     invoke: Dict[str, Union[bytearray, str]]
     subinvoke: Dict[str, Union[bytearray, str, List[Any]]]
     subinvoke_implementation: Dict[str, Union[bytearray, str, List[Any]]]
-    invokeResult: Dict[str, Union[bytearray, str]]
+    invoke_res: Dict[str, Union[bytearray, str]]
     sanitize_env: Dict[str, bytearray]
     get_implementations_result: bytearray = None
     env: bytearray = None

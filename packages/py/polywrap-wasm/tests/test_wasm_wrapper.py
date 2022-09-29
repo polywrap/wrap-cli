@@ -1,4 +1,4 @@
-from wasm import WasmWrapper
+from polywrap_wasm import WasmWrapper
 
 
 def test_invoke():

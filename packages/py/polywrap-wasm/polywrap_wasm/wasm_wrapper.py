@@ -1,11 +1,8 @@
 from dataclasses import dataclass
 from typing import Dict, Union, List, Any
 
-from polywrap_core import {
-    InvokeOptions,
-    Wrapper,
-    Uri
-}
+from polywrap_core import InvokeOptions, Wrapper, Uri
+
 
 @dataclass
 class State():

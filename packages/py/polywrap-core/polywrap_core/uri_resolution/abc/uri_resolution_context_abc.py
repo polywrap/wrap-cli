@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Any
 
 from ...types import Uri
-from ..uri_resolution_step import UriResolutionStep
 
 
 class IUriResolutionContext(ABC):
@@ -19,11 +18,11 @@ class IUriResolutionContext(ABC):
         pass
 
     @abstractmethod
-    def track_step(self, step: UriResolutionStep) -> None:
+    def track_step(self, step: Any) -> None:
         pass
 
     @abstractmethod
-    def get_history(self) -> List[UriResolutionStep]:
+    def get_history(self) -> List[Any]:
         pass
 
     @abstractmethod

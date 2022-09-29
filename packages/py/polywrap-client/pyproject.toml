@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "polywrap-wasm"
+name = "polywrap-client"
 version = "0.1.0"
 description = ""
 authors = ["Cesar <cesarbrazon10@gmail.com>"]
@@ -8,8 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 polywrap-core = { path = "../polywrap-core", develop = true }
-polywrap-msgpack = { path = "../polywrap-msgpack", develop = true }
-wasmtime = "^1.0.1"
+
 
 [build-system]
 requires = ["poetry-core"]
