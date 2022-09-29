@@ -33,10 +33,10 @@ COPY {{.}} {{.}}
 COPY {{dir}} {{dir}}
 
 # Build the module at {{dir}}
-RUN ./node_modules/.bin/asc {{dir}}/wrap/entry.ts \
+RUN ./node_modules/.bin/asc {{wrap}}/entry.ts \
     --path ./node_modules \
     --outFile ./build/wrap.wasm \
-    --use abort={{dir}}/wrap/entry/wrapAbort \
+    --use abort={{wrap}}/entry/wrapAbort \
     --optimize --importMemory \
     --runtime stub \
     --runPasses asyncify

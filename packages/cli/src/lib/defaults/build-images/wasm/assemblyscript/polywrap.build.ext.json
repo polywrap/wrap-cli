@@ -20,6 +20,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "bindings": {
+          "description": "Path to directory containing generated code bindings",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+"
         }
       }
     }

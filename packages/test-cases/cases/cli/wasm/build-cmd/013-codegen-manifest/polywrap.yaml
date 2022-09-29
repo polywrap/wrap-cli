@@ -1,0 +1,10 @@
+format: 0.3.0
+project:
+  name: test-project
+  type: wasm/assemblyscript
+source:
+  module: ./src/index.ts
+  schema: ./src/schema.graphql
+extensions:
+  build: ./polywrap.build.yaml
+  codegen: ./polywrap.codegen.yaml

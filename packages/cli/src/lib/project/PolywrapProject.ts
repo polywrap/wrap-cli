@@ -286,9 +286,12 @@ export class PolywrapProject extends Project<PolywrapManifest> {
         ),
       };
       if (module) {
+        const bind = this._buildManifest.config?.bindings as string | undefined;
+        const wrap = (bind ?? "src/wrap").replace("./", "");
         defaultConfig["polywrap_module"] = {
           name: "module",
           dir: normalizePath(module),
+          wrap: normalizePath(wrap),
         };
       }
 
