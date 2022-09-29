@@ -19,6 +19,12 @@ export enum InfraManifestFormats {
   "v0.1.0" = "0.1.0",
 }
 
+export const InfraManifestSchemaFiles: Record<string, string> = {
+  // NOTE: Patch fix for backwards compatability
+  "0.1": "formats/polywrap.infra/0.1.0.json",
+  "0.1.0": "formats/polywrap.infra/0.1.0.json",
+}
+
 export type AnyInfraManifest =
   | InfraManifest_0_1_0
 

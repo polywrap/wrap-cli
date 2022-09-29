@@ -6,7 +6,8 @@ import * as Types from "./";
 
 // @ts-ignore
 import {
-  Client,
+  Client,{{#interfaceTypes.length}}
+  Result,{{/interfaceTypes.length}}
   InvokeResult
 } from "@polywrap/core-js";
 
@@ -162,7 +163,7 @@ export class {{#detectKeyword}}{{namespace}}{{/detectKeyword}} {
   {{#capabilities}}
   {{#getImplementations}}
   {{#enabled}}
-  public static getImplementations(client: Client): string[] {
+  public static getImplementations(client: Client): Result<string[], Error> {
     return client.getImplementations(this.uri, {});
   }
   {{/enabled}}

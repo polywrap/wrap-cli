@@ -1,17 +1,15 @@
 import { JobResult, JobStatus, Step } from "./types";
 
-import {
-  Client,
-  executeMaybeAsyncFunction,
-  MaybeAsync,
-} from "@polywrap/core-js";
+import { PolywrapClient } from "@polywrap/client-js";
+import { executeMaybeAsyncFunction, MaybeAsync } from "@polywrap/core-js";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 export class JobRunner {
   private jobOutput: Map<string, JobResult>;
 
   constructor(
-    private client: Client,
+    private client: PolywrapClient,
     private onExecution?: (id: string, JobResult: JobResult) => MaybeAsync<void>
   ) {
     this.jobOutput = new Map();
@@ -176,17 +174,27 @@ export class JobRunner {
       }
     }
 
-    const invokeResult = await this.client.invoke({
+    let finalClient = this.client;
+
+    if (step.config) {
+      const finalConfig = new ClientConfigBuilder()
+        .add(this.client.getConfig())
+        .add(step.config)
+        .build();
+
+      finalClient = new PolywrapClient(finalConfig);
+    }
+
+    const invokeResult = await finalClient.invoke({
       uri: step.uri,
       method: step.method,
-      config: step.config,
       args: args,
     });
 
-    if (invokeResult.error) {
-      return { ...invokeResult, status: JobStatus.FAILED };
+    if (!invokeResult.ok) {
+      return { error: invokeResult.error, status: JobStatus.FAILED };
     } else {
-      return { ...invokeResult, status: JobStatus.SUCCEED };
+      return { data: invokeResult.value, status: JobStatus.SUCCEED };
     }
   }
 

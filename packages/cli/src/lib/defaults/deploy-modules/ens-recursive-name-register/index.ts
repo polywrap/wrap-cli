@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Deployer } from "../../../deploy/deployer";
+import { Deployer } from "../../../deploy";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
@@ -76,7 +76,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
       ],
     });
 
-    const { data: signerAddress } = await client.invoke<string>({
+    const signerAddress = await client.invoke<string>({
       method: "getSignerAddress",
       uri: ethereumPluginUri,
       args: {
@@ -86,32 +86,30 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
       },
     });
 
-    if (!signerAddress) {
+    if (!signerAddress.ok) {
       throw new Error("Could not get signer");
     }
 
-    const { data: registerData, error } = await client.invoke<{ hash: string }>(
-      {
-        method: "registerDomainAndSubdomainsRecursively",
-        uri: ensWrapperUri,
-        args: {
-          domain: ensDomain,
-          owner: signerAddress,
-          resolverAddress: config.ensResolverAddress,
-          ttl: "0",
-          registrarAddress: config.ensRegistrarAddress,
-          registryAddress: config.ensRegistryAddress,
-          connection: {
-            networkNameOrChainId: network,
-          },
+    const registerData = await client.invoke<{ hash: string }>({
+      method: "registerDomainAndSubdomainsRecursively",
+      uri: ensWrapperUri,
+      args: {
+        domain: ensDomain,
+        owner: signerAddress.value,
+        resolverAddress: config.ensResolverAddress,
+        ttl: "0",
+        registrarAddress: config.ensRegistrarAddress,
+        registryAddress: config.ensRegistryAddress,
+        connection: {
+          networkNameOrChainId: network,
         },
-      }
-    );
+      },
+    });
 
-    if (!registerData) {
+    if (!registerData.ok) {
       throw new Error(
         `Could not register domain '${ensDomain}'` +
-          (error ? `\nError: ${error.message}` : "")
+          (registerData.error ? `\nError: ${registerData.error.message}` : "")
       );
     }
 
@@ -119,7 +117,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
       method: "awaitTransaction",
       uri: ethereumPluginUri,
       args: {
-        txHash: registerData.hash,
+        txHash: registerData.value.hash,
         confirmations: 1,
         timeout: 15000,
         connection: {

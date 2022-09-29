@@ -18,7 +18,7 @@ interface StepArgs {
   config: Record<string, unknown>;
 }
 
-export class Step {
+export class DeployStep {
   public name: string;
   public deployer: Deployer;
   public uriOrStepResult: string;

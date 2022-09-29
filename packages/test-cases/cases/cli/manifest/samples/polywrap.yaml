@@ -1,0 +1,8 @@
+format: 0.1.0
+name: sample-wasm-as
+language: wasm/assemblyscript
+schema: ./src/schema.graphql
+module: ./src/index.ts
+build: ./polywrap.build.yaml
+deploy: ./polywrap.deploy.yaml
+meta: ./polywrap.meta.yaml

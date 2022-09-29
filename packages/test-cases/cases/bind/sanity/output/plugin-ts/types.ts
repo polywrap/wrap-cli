@@ -7,6 +7,7 @@ import * as Types from "./";
 // @ts-ignore
 import {
   Client,
+  Result,
   InvokeResult
 } from "@polywrap/core-js";
 
@@ -212,7 +213,7 @@ export class TestImport_Module {
 export class TestImport {
   static uri: string = "testimport.uri.eth";
 
-  public static getImplementations(client: Client): string[] {
+  public static getImplementations(client: Client): Result<string[], Error> {
     return client.getImplementations(this.uri, {});
   }
 }

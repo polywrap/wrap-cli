@@ -40,7 +40,7 @@ export class AsyncWasmInstance {
   private _instance: WasmInstance;
   private _wrappedImports: WasmImports;
   private _wrappedExports: AsyncifyExports;
-  private _returnValue: Promise<unknown> | unknown;
+  private _importFnResult: Promise<unknown> | unknown;
 
   private constructor() {}
 
@@ -49,20 +49,20 @@ export class AsyncWasmInstance {
     // throw an error if the imported page size differs:
     // https://chromium.googlesource.com/v8/v8/+/644556e6ed0e6e4fac2dfabb441439820ec59813/src/wasm/module-instantiate.cc#924
     const envMemoryImportSignature = Uint8Array.from([
-      // env ; import module name
-      0x65,
-      0x6e,
-      0x76,
+      // env ; import module name (hex for "env" in ascii)
+      0x65, // e
+      0x6e, // n
+      0x76, // v
       // string length
       0x06,
-      // memory ; import field name
-      0x6d,
-      0x65,
-      0x6d,
-      0x6f,
-      0x72,
-      0x79,
-      // import kind
+      // memory ; import field name (hex for "memory" in ascii)
+      0x6d, // m
+      0x65, // e
+      0x6d, // m
+      0x6f, // o
+      0x72, // r
+      0x79, // y
+      // import kind ; https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md#external-kinds
       0x02,
       // limits ; https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md#resizable-limits
       // limits ; flags
@@ -190,19 +190,19 @@ export class AsyncWasmInstance {
     );
   }
 
-  private _wrapImportFn(fn: Function) {
+  private _wrapImportFn(importFn: Function) {
     return (...args: unknown[]) => {
       if (this._getAsyncifyState() === AsyncifyState.Rewinding) {
         this._wrappedExports.asyncify_stop_rewind();
-        return this._returnValue;
+        return this._importFnResult;
       }
       this._assertNoneState();
-      const value = fn(...args);
+      const value = importFn(...args);
       if (!isPromise(value)) {
         return value;
       }
       this._wrappedExports.asyncify_start_unwind(AsyncWasmInstance._dataAddr);
-      this._returnValue = value;
+      this._importFnResult = value;
     };
   }
 
@@ -223,18 +223,18 @@ export class AsyncWasmInstance {
     return newExports;
   }
 
-  private _wrapExportFn(fn: Function) {
+  private _wrapExportFn(exportFn: Function) {
     return async (...args: unknown[]) => {
       this._assertNoneState();
 
-      let result = fn(...args);
+      let result = exportFn(...args);
 
       while (this._getAsyncifyState() === AsyncifyState.Unwinding) {
         this._wrappedExports.asyncify_stop_unwind();
-        this._returnValue = await this._returnValue;
+        this._importFnResult = await this._importFnResult;
         this._assertNoneState();
         this._wrappedExports.asyncify_start_rewind(AsyncWasmInstance._dataAddr);
-        result = fn();
+        result = exportFn();
       }
 
       this._assertNoneState();

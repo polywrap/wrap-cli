@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Deployer } from "../../../deploy/deployer";
+import { Deployer } from "../../../deploy";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
@@ -77,7 +77,7 @@ class ENSPublisher implements Deployer {
       ],
     });
 
-    const { data: resolver } = await client.invoke<string>({
+    const resolver = await client.invoke<string>({
       method: "getResolver",
       uri: ensWrapperUri,
       args: {
@@ -89,30 +89,30 @@ class ENSPublisher implements Deployer {
       },
     });
 
-    if (!resolver) {
+    if (!resolver.ok) {
       throw new Error(`Could not get resolver for '${config.domainName}'`);
     }
 
-    if (resolver === "0x0000000000000000000000000000000000000000") {
+    if (resolver.value === "0x0000000000000000000000000000000000000000") {
       throw new Error(`Resolver not set for '${config.domainName}'`);
     }
 
     const hash = "0x" + contentHash.fromIpfs(cid);
 
-    const { data: setContenthashData } = await client.invoke<{ hash: string }>({
+    const setContenthashData = await client.invoke<{ hash: string }>({
       method: "setContentHash",
       uri: ensWrapperUri,
       args: {
         domain: config.domainName,
         cid: hash,
-        resolverAddress: resolver,
+        resolverAddress: resolver.value,
         connection: {
           networkNameOrChainId: network,
         },
       },
     });
 
-    if (!setContenthashData) {
+    if (!setContenthashData.ok) {
       throw new Error(`Could not set contentHash for '${config.domainName}'`);
     }
 
@@ -120,7 +120,7 @@ class ENSPublisher implements Deployer {
       method: "awaitTransaction",
       uri: ethereumPluginUri,
       args: {
-        txHash: setContenthashData.hash,
+        txHash: setContenthashData.value.hash,
         confirmations: 1,
         timeout: 15000,
         connection: {

@@ -2,6 +2,7 @@ import { Uri, UriRedirect, InterfaceImplementations } from "../types";
 import { applyRedirects } from "./apply-redirects";
 
 import { Tracer } from "@polywrap/tracing-js";
+import { Result, ResultOk } from "@polywrap/result";
 
 export const getImplementations = Tracer.traceFunc(
   "core: getImplementations",
@@ -9,7 +10,7 @@ export const getImplementations = Tracer.traceFunc(
     wrapperInterfaceUri: Uri,
     interfaces: readonly InterfaceImplementations<Uri>[],
     redirects?: readonly UriRedirect<Uri>[]
-  ): Uri[] => {
+  ): Result<Uri[], Error> => {
     const result: Uri[] = [];
 
     const addUniqueResult = (uri: Uri) => {
@@ -24,9 +25,19 @@ export const getImplementations = Tracer.traceFunc(
       wrapperInterfaceUri: Uri
     ) => {
       for (const interfaceImplementations of implementationsArray) {
-        const fullyResolvedUri = redirects
-          ? applyRedirects(interfaceImplementations.interface, redirects)
-          : interfaceImplementations.interface;
+        let fullyResolvedUri: Uri;
+        if (redirects) {
+          const redirectsResult = applyRedirects(
+            interfaceImplementations.interface,
+            redirects
+          );
+          if (!redirectsResult.ok) {
+            continue;
+          }
+          fullyResolvedUri = redirectsResult.value;
+        } else {
+          fullyResolvedUri = interfaceImplementations.interface;
+        }
 
         if (Uri.equals(fullyResolvedUri, wrapperInterfaceUri)) {
           for (const implementation of interfaceImplementations.implementations) {
@@ -39,11 +50,15 @@ export const getImplementations = Tracer.traceFunc(
     let finalUri = wrapperInterfaceUri;
 
     if (redirects) {
-      finalUri = applyRedirects(wrapperInterfaceUri, redirects);
+      const redirectsResult = applyRedirects(wrapperInterfaceUri, redirects);
+      if (!redirectsResult.ok) {
+        return redirectsResult;
+      }
+      finalUri = redirectsResult.value;
     }
 
     addAllImplementationsFromImplementationsArray(interfaces, finalUri);
 
-    return result;
+    return ResultOk(result);
   }
 );
