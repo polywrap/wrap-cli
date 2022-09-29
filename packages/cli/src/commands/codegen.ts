@@ -4,7 +4,6 @@ import {
   CodeGenerator,
   SchemaComposer,
   intlMsg,
-  parseDirOption,
   parseCodegenScriptOption,
   parseManifestFileOption,
   parseClientConfigOption,
@@ -15,6 +14,7 @@ import {
   parseDirOptionIfExists,
   defaultCodegenDir,
   defaultPublishDir,
+  PluginProject,
 } from "../lib";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -27,7 +27,7 @@ const defaultManifestStr = defaultProjectManifestFiles.join(" | ");
 type CodegenCommandOptions = {
   manifestFile: string;
   codegenDir?: string;
-  publishDir: string;
+  publishDir?: string;
   script?: string;
   clientConfig: Partial<PolywrapClientConfig>;
 };
@@ -74,7 +74,7 @@ export const codegen: Command = {
             options.manifestFile,
             defaultProjectManifestFiles
           ),
-          publishDir: parseDirOption(options.publishDir, defaultPublishDir),
+          publishDir: parseDirOptionIfExists(options.publishDir),
         });
       });
   },
@@ -98,10 +98,6 @@ async function run(options: CodegenCommandOptions) {
     return;
   }
 
-  const projectType = await project.getManifestLanguage();
-
-  let result = false;
-
   const schemaComposer = new SchemaComposer({
     project,
     client,
@@ -113,15 +109,24 @@ async function run(options: CodegenCommandOptions) {
     customScript: script,
   });
 
-  result = await codeGenerator.generate();
+  const result = await codeGenerator.generate();
 
   // HACK: Codegen outputs wrap.info into a build directory for plugins, needs to be moved into a build command?
+  const projectType = await project.getManifestLanguage();
   if (isPluginManifestLanguage(projectType)) {
-    // Output the built manifest
-    const manifestPath = path.join(publishDir, "wrap.info");
+    let parsedPublishDir: string;
+    if (!publishDir) {
+      const codegenManifest = await (project as PluginProject).getCodegenManifest();
+      parsedPublishDir = codegenManifest?.publishDir ?? defaultPublishDir;
+    } else {
+      parsedPublishDir = publishDir;
+    }
 
-    if (!fs.existsSync(publishDir)) {
-      fs.mkdirSync(publishDir);
+    // Output the built manifest
+    const manifestPath = path.join(parsedPublishDir, "wrap.info");
+
+    if (!fs.existsSync(parsedPublishDir)) {
+      fs.mkdirSync(parsedPublishDir);
     }
 
     await generateWrapFile(

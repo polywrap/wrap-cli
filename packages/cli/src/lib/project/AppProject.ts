@@ -5,19 +5,25 @@ import {
   isAppManifestLanguage,
   appManifestLanguageToBindLanguage,
 } from "./manifests";
-import { loadAppManifest } from "../manifest";
+import { loadAppManifest, loadCodegenManifest } from "../manifest";
+import { defaultCodegenDir } from "../option-defaults";
 
-import { AppManifest } from "@polywrap/polywrap-manifest-types-js";
+import {
+  AppManifest,
+  CodegenManifest,
+} from "@polywrap/polywrap-manifest-types-js";
 import { bindSchema, BindOutput } from "@polywrap/schema-bind";
 import path from "path";
 import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export interface AppProjectConfig extends ProjectConfig {
   appManifestPath: string;
+  codegenManifestPath?: string;
 }
 
 export class AppProject extends Project<AppManifest> {
   private _appManifest: AppManifest | undefined;
+  private _codegenManifest: CodegenManifest | undefined;
 
   public static cacheLayout = {
     root: "app",
@@ -99,19 +105,81 @@ export class AppProject extends Project<AppManifest> {
 
   public async generateSchemaBindings(
     abi: WrapAbi,
-    generationSubPath?: string
+    codegenDirAbs?: string
   ): Promise<BindOutput> {
+    const codegenManifest = await this.getCodegenManifest();
+    const codegenDirectory = this._getGenerationDirectory(
+      codegenDirAbs,
+      codegenManifest
+    );
+
     return bindSchema({
       projectName: await this.getName(),
       abi,
-      outputDirAbs: this._getGenerationDirectory(generationSubPath),
+      outputDirAbs: codegenDirectory,
       bindLanguage: appManifestLanguageToBindLanguage(
         await this.getManifestLanguage()
       ),
     });
   }
 
-  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
+  /// Polywrap Codegen Manifest (polywrap.build.yaml)
+
+  public async getCodegenManifestPath(): Promise<string | undefined> {
+    const appManifest = await this.getManifest();
+
+    // If a custom codegen manifest path is configured
+    if (this._config.codegenManifestPath) {
+      return this._config.codegenManifestPath;
+    }
+    // If the project manifest specifies a custom codegen manifest
+    else if (appManifest.extensions?.codegen) {
+      this._config.codegenManifestPath = path.join(
+        this.getManifestDir(),
+        appManifest.extensions.codegen
+      );
+      return this._config.codegenManifestPath;
+    }
+    // No codegen manifest found
+    else {
+      return undefined;
+    }
+  }
+
+  public async getCodegenManifestDir(): Promise<string | undefined> {
+    const manifestPath = await this.getCodegenManifestPath();
+
+    if (manifestPath) {
+      return path.dirname(manifestPath);
+    } else {
+      return undefined;
+    }
+  }
+
+  public async getCodegenManifest(): Promise<CodegenManifest | undefined> {
+    if (!this._codegenManifest) {
+      const manifestPath = await this.getCodegenManifestPath();
+
+      if (manifestPath) {
+        this._codegenManifest = await loadCodegenManifest(
+          manifestPath,
+          this.quiet
+        );
+      }
+    }
+    return this._codegenManifest;
+  }
+
+  /// Private Helpers
+
+  private _getGenerationDirectory(
+    codegenDirAbs?: string,
+    codegenManifest?: CodegenManifest
+  ): string {
+    const generationSubPath: string = path.relative(
+      this.getManifestDir(),
+      codegenDirAbs ?? codegenManifest?.codegenDir ?? defaultCodegenDir
+    );
     return path.join(this.getManifestDir(), generationSubPath);
   }
 }

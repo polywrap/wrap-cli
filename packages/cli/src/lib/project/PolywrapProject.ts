@@ -177,7 +177,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     return bindSchema(options);
   }
 
-  /// Polywrap Codegen Manifest (polywrap.build.yaml)
+  /// Polywrap Codegen Manifest (polywrap.codegen.yaml)
 
   public async getCodegenManifestPath(): Promise<string | undefined> {
     const polywrapManifest = await this.getManifest();
@@ -186,7 +186,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     if (this._config.codegenManifestPath) {
       return this._config.codegenManifestPath;
     }
-    // If the polywrap.yaml manifest specifies a custom codegen manifest
+    // If the project manifest specifies a custom codegen manifest
     else if (polywrapManifest.extensions?.codegen) {
       this._config.codegenManifestPath = path.join(
         this.getManifestDir(),

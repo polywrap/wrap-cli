@@ -6,19 +6,25 @@ import {
   pluginManifestLanguageToBindLanguage,
 } from "./manifests";
 import { resetDir } from "../system";
-import { loadPluginManifest } from "../manifest";
+import { loadCodegenManifest, loadPluginManifest } from "../manifest";
+import { defaultCodegenDir } from "../option-defaults";
 
-import { PluginManifest } from "@polywrap/polywrap-manifest-types-js";
+import {
+  CodegenManifest,
+  PluginManifest,
+} from "@polywrap/polywrap-manifest-types-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
 import { WrapAbi } from "@polywrap/schema-parse";
 import path from "path";
 
 export interface PluginProjectConfig extends ProjectConfig {
   pluginManifestPath: string;
+  codegenManifestPath?: string;
 }
 
 export class PluginProject extends Project<PluginManifest> {
   private _pluginManifest: PluginManifest | undefined;
+  private _codegenManifest: CodegenManifest | undefined;
 
   public static cacheLayout = {
     root: "plugin",
@@ -103,10 +109,14 @@ export class PluginProject extends Project<PluginManifest> {
 
   public async generateSchemaBindings(
     abi: WrapAbi,
-    generationSubPath?: string
+    codegenDirAbs?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const moduleDirectory = this._getGenerationDirectory(generationSubPath);
+    const codegenManifest = await this.getCodegenManifest();
+    const moduleDirectory = this._getGenerationDirectory(
+      codegenDirAbs,
+      codegenManifest
+    );
 
     // Clean the code generation
     resetDir(moduleDirectory);
@@ -124,7 +134,63 @@ export class PluginProject extends Project<PluginManifest> {
     return bindSchema(options);
   }
 
-  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
+  /// Polywrap Codegen Manifest (polywrap.build.yaml)
+
+  public async getCodegenManifestPath(): Promise<string | undefined> {
+    const pluginManifest = await this.getManifest();
+
+    // If a custom codegen manifest path is configured
+    if (this._config.codegenManifestPath) {
+      return this._config.codegenManifestPath;
+    }
+    // If the project manifest specifies a custom codegen manifest
+    else if (pluginManifest.extensions?.codegen) {
+      this._config.codegenManifestPath = path.join(
+        this.getManifestDir(),
+        pluginManifest.extensions.codegen
+      );
+      return this._config.codegenManifestPath;
+    }
+    // No codegen manifest found
+    else {
+      return undefined;
+    }
+  }
+
+  public async getCodegenManifestDir(): Promise<string | undefined> {
+    const manifestPath = await this.getCodegenManifestPath();
+
+    if (manifestPath) {
+      return path.dirname(manifestPath);
+    } else {
+      return undefined;
+    }
+  }
+
+  public async getCodegenManifest(): Promise<CodegenManifest | undefined> {
+    if (!this._codegenManifest) {
+      const manifestPath = await this.getCodegenManifestPath();
+
+      if (manifestPath) {
+        this._codegenManifest = await loadCodegenManifest(
+          manifestPath,
+          this.quiet
+        );
+      }
+    }
+    return this._codegenManifest;
+  }
+
+  /// Private Helpers
+
+  private _getGenerationDirectory(
+    codegenDirAbs?: string,
+    codegenManifest?: CodegenManifest
+  ): string {
+    const generationSubPath: string = path.relative(
+      this.getManifestDir(),
+      codegenDirAbs ?? codegenManifest?.codegenDir ?? defaultCodegenDir
+    );
     return path.join(this.getManifestDir(), generationSubPath);
   }
 }

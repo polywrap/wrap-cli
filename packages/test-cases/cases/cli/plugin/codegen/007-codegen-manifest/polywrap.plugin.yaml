@@ -1,7 +1,9 @@
-format: 0.2.0
+format: 0.3.0
 project:
   name: Test
   type: plugin/typescript
 source:
   schema: ./src/schema.graphql
   module: ./src/index.ts
+extensions:
+  codegen: ./polywrap.codegen.yaml

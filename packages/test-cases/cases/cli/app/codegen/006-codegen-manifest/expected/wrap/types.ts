@@ -4,7 +4,7 @@ import * as Types from "./";
 // @ts-ignore
 import {
   Client,
-  Result
+  InvokeResult
 } from "@polywrap/core-js";
 
 export type UInt = number;
@@ -327,7 +327,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_callContractView,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.String, Error>> => {
+  ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri,
       method: "callContractView",
@@ -339,7 +339,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_callContractStatic,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.Ethereum_StaticTxResult, Error>> => {
+  ): Promise<InvokeResult<Types.Ethereum_StaticTxResult>> => {
     return client.invoke<Types.Ethereum_StaticTxResult>({
       uri,
       method: "callContractStatic",
@@ -351,7 +351,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_getBalance,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.BigInt, Error>> => {
+  ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri,
       method: "getBalance",
@@ -363,7 +363,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_encodeParams,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.String, Error>> => {
+  ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri,
       method: "encodeParams",
@@ -375,7 +375,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_encodeFunction,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.String, Error>> => {
+  ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri,
       method: "encodeFunction",
@@ -387,7 +387,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_solidityPack,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.String, Error>> => {
+  ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri,
       method: "solidityPack",
@@ -399,7 +399,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_solidityKeccak256,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.String, Error>> => {
+  ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri,
       method: "solidityKeccak256",
@@ -411,7 +411,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_soliditySha256,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.String, Error>> => {
+  ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri,
       method: "soliditySha256",
@@ -423,7 +423,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_getSignerAddress,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.String, Error>> => {
+  ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri,
       method: "getSignerAddress",
@@ -435,7 +435,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_getSignerBalance,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.BigInt, Error>> => {
+  ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri,
       method: "getSignerBalance",
@@ -447,7 +447,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_getSignerTransactionCount,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.BigInt, Error>> => {
+  ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri,
       method: "getSignerTransactionCount",
@@ -459,7 +459,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_getGasPrice,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.BigInt, Error>> => {
+  ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri,
       method: "getGasPrice",
@@ -471,7 +471,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_estimateTransactionGas,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.BigInt, Error>> => {
+  ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri,
       method: "estimateTransactionGas",
@@ -483,7 +483,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_estimateContractCallGas,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.BigInt, Error>> => {
+  ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri,
       method: "estimateContractCallGas",
@@ -495,7 +495,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_checkAddress,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.Boolean, Error>> => {
+  ): Promise<InvokeResult<Types.Boolean>> => {
     return client.invoke<Types.Boolean>({
       uri,
       method: "checkAddress",
@@ -507,7 +507,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_toWei,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.BigInt, Error>> => {
+  ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri,
       method: "toWei",
@@ -519,7 +519,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_toEth,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.String, Error>> => {
+  ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri,
       method: "toEth",
@@ -531,7 +531,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_awaitTransaction,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.Ethereum_TxReceipt, Error>> => {
+  ): Promise<InvokeResult<Types.Ethereum_TxReceipt>> => {
     return client.invoke<Types.Ethereum_TxReceipt>({
       uri,
       method: "awaitTransaction",
@@ -543,7 +543,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_waitForEvent,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.Ethereum_EventNotification, Error>> => {
+  ): Promise<InvokeResult<Types.Ethereum_EventNotification>> => {
     return client.invoke<Types.Ethereum_EventNotification>({
       uri,
       method: "waitForEvent",
@@ -555,7 +555,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_getNetwork,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.Ethereum_Network, Error>> => {
+  ): Promise<InvokeResult<Types.Ethereum_Network>> => {
     return client.invoke<Types.Ethereum_Network>({
       uri,
       method: "getNetwork",
@@ -567,7 +567,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_requestAccounts,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Array<Types.String>, Error>> => {
+  ): Promise<InvokeResult<Array<Types.String>>> => {
     return client.invoke<Array<Types.String>>({
       uri,
       method: "requestAccounts",
@@ -579,7 +579,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_callContractMethod,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.Ethereum_TxResponse, Error>> => {
+  ): Promise<InvokeResult<Types.Ethereum_TxResponse>> => {
     return client.invoke<Types.Ethereum_TxResponse>({
       uri,
       method: "callContractMethod",
@@ -591,7 +591,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_callContractMethodAndWait,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.Ethereum_TxReceipt, Error>> => {
+  ): Promise<InvokeResult<Types.Ethereum_TxReceipt>> => {
     return client.invoke<Types.Ethereum_TxReceipt>({
       uri,
       method: "callContractMethodAndWait",
@@ -603,7 +603,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_sendTransaction,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.Ethereum_TxResponse, Error>> => {
+  ): Promise<InvokeResult<Types.Ethereum_TxResponse>> => {
     return client.invoke<Types.Ethereum_TxResponse>({
       uri,
       method: "sendTransaction",
@@ -615,7 +615,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_sendTransactionAndWait,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.Ethereum_TxReceipt, Error>> => {
+  ): Promise<InvokeResult<Types.Ethereum_TxReceipt>> => {
     return client.invoke<Types.Ethereum_TxReceipt>({
       uri,
       method: "sendTransactionAndWait",
@@ -627,7 +627,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_deployContract,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.String, Error>> => {
+  ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri,
       method: "deployContract",
@@ -639,7 +639,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_signMessage,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.String, Error>> => {
+  ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri,
       method: "signMessage",
@@ -651,7 +651,7 @@ export const Ethereum_Module = {
     args: Ethereum_Module_Args_sendRPC,
     client: Client,
     uri: string = "wrap://ens/ethereum.polywrap.eth"
-  ): Promise<Result<Types.String | null, Error>> => {
+  ): Promise<InvokeResult<Types.String | null>> => {
     return client.invoke<Types.String | null>({
       uri,
       method: "sendRPC",

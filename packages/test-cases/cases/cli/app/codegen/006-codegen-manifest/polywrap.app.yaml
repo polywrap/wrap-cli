@@ -1,6 +1,8 @@
-format: 0.2.0
+format: 0.3.0
 project:
   name: test-app
   type: app/typescript
 source:
   schema: ./schema.graphql
+extensions:
+  codegen: ./polywrap.codegen.yaml
