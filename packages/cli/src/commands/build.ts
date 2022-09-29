@@ -61,7 +61,10 @@ export const build: Command = {
       .action(async (options) => {
         await run({
           ...options,
-          manifestFile: parseManifestFileOption(options.manifestFile),
+          manifestFile: parseManifestFileOption(
+            options.manifestFile,
+            defaultPolywrapManifest
+          ),
           clientConfig: await parseClientConfigOption(options.clientConfig),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
         });

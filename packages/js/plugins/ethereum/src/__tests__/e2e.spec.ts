@@ -2,7 +2,7 @@ import { ethereumPlugin } from "..";
 import * as Schema from "../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
+import { ClientConfigBuilder, defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import {
@@ -12,9 +12,14 @@ import {
   ensAddresses,
   providers,
 } from "@polywrap/test-env-js";
-import { Wallet } from "ethers";
+import {
+  deployStorage,
+  addPrimitiveToArrayStorage,
+  addStructToStorage,
+  setPrimitiveToStorage
+} from './utils/storage';
 
-import { ethers } from "ethers";
+import { ethers, Wallet } from "ethers";
 import { keccak256 } from "js-sha3";
 import { Connections } from "../Connections";
 import { Connection } from "../Connection";
@@ -28,6 +33,9 @@ const contracts = {
   SimpleStorage: {
     abi: require("./contracts/SimpleStorage.ABI.json"),
     bytecode: `0x${require("./contracts/SimpleStorage.Bytecode.json").object}`,
+    abiSinglePrimitiveMethod: '[{"inputs":[],"name":"get","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]',
+    abiArrayPrimitivesMethod: '[{"inputs":[],"name":"getSimple","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"}]',
+    abiArrayStructsMethod: '[{"inputs":[],"name":"getJobs","outputs":[{"components":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"internalType":"struct SimpleStorage.Job[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"}]',
   },
 };
 
@@ -79,7 +87,7 @@ describe("Ethereum Plugin", () => {
         },
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({}),
+          plugin: ipfsPlugin({ }),
         },
         {
           uri: "wrap://ens/ens-resolver.polywrap.eth",
@@ -113,9 +121,202 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      expect(response.data).toBe("0x0000000000000000000000000000000000000000");
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(response.value).toBe("0x0000000000000000000000000000000000000000");
+    });
+
+    it("callContractView (primitive value - string ABI)", async () => {
+      const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
+      await setPrimitiveToStorage(contracts.SimpleStorage.abi, storageAddress, "100");
+
+      const response = await client.invoke<string>({
+        uri,
+        method: "callContractView",
+        args: {
+          address: storageAddress,
+          method: 'function get() public view returns (uint256)',
+          args: [],
+        },
+      });
+
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      const num = ethers.BigNumber.from(response.value);
+      expect(num.eq("100")).toBeTruthy();
+    });
+
+    it("callContractView (primitive value - JSON ABI)", async () => {
+      const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
+      await setPrimitiveToStorage(contracts.SimpleStorage.abi, storageAddress, "100");
+
+      const response = await client.invoke<string>({
+        uri,
+        method: "callContractView",
+        args: {
+          address: storageAddress,
+          method: contracts.SimpleStorage.abiSinglePrimitiveMethod,
+          args: [],
+        },
+      });
+
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      const num = ethers.BigNumber.from(response.value);
+      expect(num.eq("100")).toBeTruthy();
+    });
+
+    it("callContractView (primitives array - string ABI)", async () => {
+      const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
+      await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "100");
+      await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "90");
+
+      const response = await client.invoke<string>({
+        uri,
+        method: "callContractView",
+        args: {
+          address: storageAddress,
+          method: 'function getSimple() public view returns (uint256[] memory)',
+          args: [],
+        },
+      });
+
+      if (!response.ok) fail(response.error);
+
+      if (!response.value) {
+        throw new Error('Empty data on view call, expecting JSON');
+      }
+      const result = JSON.parse(response.value);
+
+      expect(result.length).toEqual(2);
+      expect(result[0]).toEqual("100");
+      expect(result[1]).toEqual("90");
+    });
+
+    it("callContractView (primitives array - JSON ABI)", async () => {
+      const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
+      await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "100");
+      await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "90");
+
+      const response = await client.invoke<string>({
+        uri,
+        method: "callContractView",
+        args: {
+          address: storageAddress,
+          method: contracts.SimpleStorage.abiArrayPrimitivesMethod,
+          args: [],
+        },
+      });
+
+      if (!response.ok) fail(response.error);
+
+      if (!response.value) {
+        throw new Error('Empty data on view call, expecting JSON');
+      }
+      const result = JSON.parse(response.value);
+
+      expect(result.length).toEqual(2);
+      expect(result[0]).toEqual("100");
+      expect(result[1]).toEqual("90");
+    });
+
+    it("callContractView (primitives array - non-array JSON ABI)", async () => {
+      const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
+      await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "100");
+      await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "90");
+
+      const response = await client.invoke<string>({
+        uri,
+        method: "callContractView",
+        args: {
+          address: storageAddress,
+          method: '{"inputs":[],"name":"getSimple","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"}',
+          args: [],
+        },
+      });
+
+      if (!response.ok) fail(response.error);
+
+      if (!response.value) {
+        throw new Error('Empty data on view call, expecting JSON');
+      }
+      const result = JSON.parse(response.value);
+
+      expect(result.length).toEqual(2);
+      expect(result[0]).toEqual("100");
+      expect(result[1]).toEqual("90");
+    });
+
+    it("callContractView (struct array empty)", async () => {
+      const queueAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
+
+      const response = await client.invoke<string>({
+        uri,
+        method: "callContractView",
+        args: {
+          address: queueAddress,
+          method: contracts.SimpleStorage.abiArrayStructsMethod,
+          args: [],
+        },
+      });
+
+      if (!response.ok) fail(response.error);
+      expect(response.value).toEqual('[]');
+    });
+
+    it("callContractView (struct array single element)", async () => {
+      const queueAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
+      await addStructToStorage(contracts.SimpleStorage.abi, queueAddress, [queueAddress, "100"]);
+
+      const response = await client.invoke<string>({
+        uri,
+        method: "callContractView",
+        args: {
+          address: queueAddress,
+          method: contracts.SimpleStorage.abiArrayStructsMethod,
+          args: [],
+        },
+      });
+
+      if (!response.ok) fail(response.error);
+
+      if (!response.value) {
+        throw new Error('Empty data on view call, expecting JSON');
+      }
+      const result = JSON.parse(response.value);
+
+      expect(result.length).toEqual(1);
+      expect(result[0].to).toEqual(queueAddress);
+      expect(result[0].amount).toEqual("100");
+    });
+
+    it("callContractView (struct array multiple elements)", async () => {
+      const queueAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
+      await addStructToStorage(contracts.SimpleStorage.abi, queueAddress, [queueAddress, "100"]);
+      await addStructToStorage(contracts.SimpleStorage.abi, queueAddress, [ensAddress, "99"]);
+
+      const response = await client.invoke<string>({
+        uri,
+        method: "callContractView",
+        args: {
+          address: queueAddress,
+          method: contracts.SimpleStorage.abiArrayStructsMethod,
+          args: [],
+        },
+      });
+
+      if (!response.ok) fail(response.error);
+
+      if (!response.value) {
+        throw new Error('Empty data on view call, expecting JSON');
+      }
+      const result = JSON.parse(response.value);
+
+      expect(result.length).toEqual(2);
+      expect(result[0].to).toEqual(queueAddress);
+      expect(result[0].amount).toEqual("100");
+      expect(result[1].to).toEqual(ensAddress);
+      expect(result[1].amount).toEqual("99");
     });
 
     it("callContractStatic (no error)", async () => {
@@ -136,9 +337,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data?.error).toBeFalsy();
-      expect(response.data?.result).toBe("");
+      if (!response.ok) fail(response.error);
+      expect(response.value?.error).toBeFalsy();
+      expect(response.value?.result).toBe("");
     });
 
     it("callContractStatic (expecting error)", async () => {
@@ -159,10 +360,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      expect(response.data?.error).toBeTruthy();
-      expect(response.data?.result).toContain(
+      if (!response.ok) fail(response.error);
+      expect(response.value?.error).toBeTruthy();
+      expect(response.value?.result).toContain(
         "missing revert data in call exception"
       );
     });
@@ -172,17 +372,18 @@ describe("Ethereum Plugin", () => {
         uri,
         method: "getSignerAddress",
       });
+      if (!signerAddressQuery.ok) fail(signerAddressQuery.error);
 
       const response = await client.invoke<string>({
         uri,
         method: "getBalance",
         args: {
-          address: signerAddressQuery.data,
+          address: signerAddressQuery.value,
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
     });
 
     it("encodeParams", async () => {
@@ -195,7 +396,8 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.data).toBe(
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBe(
         "0x000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000"
       );
 
@@ -214,7 +416,7 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(acceptsTupleArg.error).toBeUndefined();
+      if (!acceptsTupleArg.ok) fail(acceptsTupleArg.error);
     });
 
     it("encodeFunction", async () => {
@@ -227,8 +429,8 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBe(
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBe(
         "0x46d4adf20000000000000000000000000000000000000000000000000000000000000064"
       );
 
@@ -241,7 +443,7 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(acceptsArrayArg.error).toBeUndefined();
+      if (!acceptsArrayArg.ok) fail(acceptsArrayArg.error);
     });
 
     it("solidityPack", async () => {
@@ -268,9 +470,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(result.error).toBeFalsy();
-      expect(result.data).toBeTruthy();
-      expect(result.data).toBe(
+      if (!result.ok) fail(result.error);
+      expect(result.value).toBeTruthy();
+      expect(result.value).toBe(
         "0x0000000000000000000000000000000000000001000bb80000000000000000000000000000000000000002000bb8c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
       );
     });
@@ -299,9 +501,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(result.error).toBeFalsy();
-      expect(result.data).toBeTruthy();
-      expect(result.data).toBe(
+      if (!result.ok) fail(result.error);
+      expect(result.value).toBeTruthy();
+      expect(result.value).toBe(
         "0x5dd4ee83f9bab0157f0e929b6dddd106fd7de6e5089f0f05c2c0b861e3807588"
       );
     });
@@ -330,9 +532,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(result.error).toBeFalsy();
-      expect(result.data).toBeTruthy();
-      expect(result.data).toBe(
+      if (!result.ok) fail(result.error);
+      expect(result.value).toBeTruthy();
+      expect(result.value).toBe(
         "0x8652504faf6e0d175e62c1d9c7e10d636d5ab8f153ec3257dab1726639058d27"
       );
     });
@@ -343,9 +545,9 @@ describe("Ethereum Plugin", () => {
         method: "getSignerAddress",
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      expect(response.data?.startsWith("0x")).toBe(true);
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(response.value?.startsWith("0x")).toBe(true);
     });
 
     it("getSignerBalance", async () => {
@@ -354,8 +556,8 @@ describe("Ethereum Plugin", () => {
         method: "getSignerBalance",
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
     });
 
     it("getSignerTransactionCount", async () => {
@@ -364,9 +566,9 @@ describe("Ethereum Plugin", () => {
         method: "getSignerTransactionCount",
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      expect(Number(response.data)).toBeTruthy();
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(Number(response.value)).toBeTruthy();
     });
 
     it("getGasPrice", async () => {
@@ -375,9 +577,9 @@ describe("Ethereum Plugin", () => {
         method: "getGasPrice",
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      expect(Number(response.data)).toBeTruthy();
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(Number(response.value)).toBeTruthy();
     });
 
     it("estimateTransactionGas", async () => {
@@ -393,9 +595,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      const num = ethers.BigNumber.from(response.data);
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      const num = ethers.BigNumber.from(response.value);
       expect(num.gt(0)).toBeTruthy();
     });
 
@@ -411,9 +613,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.data).toBeDefined();
-      expect(response.error).toBeUndefined();
-      const num = ethers.BigNumber.from(response.data);
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      const num = ethers.BigNumber.from(response.value);
       expect(num.gt(0)).toBeTruthy();
     });
 
@@ -426,9 +628,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      expect(response.data).toEqual(true);
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(response.value).toEqual(true);
     });
 
     it("toWei", async () => {
@@ -440,9 +642,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      expect(response.data).toEqual("20000000000000000000");
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(response.value).toEqual("20000000000000000000");
     });
 
     it("toEth", async () => {
@@ -454,9 +656,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      expect(response.data).toEqual("20.0");
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(response.value).toEqual("20.0");
     });
 
     it("awaitTransaction", async () => {
@@ -472,9 +674,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data?.hash).toBeTruthy();
-      const txHash = response.data?.hash as string;
+      if (!response.ok) fail(response.error);
+      expect(response.value?.hash).toBeTruthy();
+      const txHash = response.value?.hash as string;
 
       const awaitResponse = await client.invoke<Schema.TxReceipt>({
         uri,
@@ -486,9 +688,9 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(awaitResponse.error).toBeUndefined();
-      expect(awaitResponse.data).toBeDefined();
-      expect(awaitResponse.data?.transactionHash).toBeDefined();
+      if (!awaitResponse.ok) fail(awaitResponse.error);
+      expect(awaitResponse.value).toBeDefined();
+      expect(awaitResponse.value.transactionHash).toBeDefined();
     });
 
     it("waitForEvent (NameTransfer)", async () => {
@@ -497,8 +699,7 @@ describe("Ethereum Plugin", () => {
       const domain = "testwhatever10.eth";
       const newOwner = "0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0";
 
-      const listenerPromise = client
-        .invoke<Schema.EventNotification>({
+      const listenerPromise = client.invoke<Schema.EventNotification>({
           uri,
           method: "waitForEvent",
           args: {
@@ -508,11 +709,15 @@ describe("Ethereum Plugin", () => {
             timeout: 20000,
           },
         })
-        .then((result: { data: Schema.EventNotification }) => {
-          expect(typeof result.data?.data === "string").toBe(true);
-          expect(typeof result.data?.address === "string").toBe(true);
-          expect(result.data?.log).toBeDefined();
-          expect(typeof result.data?.log.transactionHash === "string").toBe(
+        .then((result) => {
+          if (result.ok) return result.value
+          else fail(result.error)
+        })
+        .then((result: Schema.EventNotification) => {
+          expect(typeof result.data === "string").toBe(true);
+          expect(typeof result.address === "string").toBe(true);
+          expect(result.log).toBeDefined();
+          expect(typeof result.log.transactionHash === "string").toBe(
             true
           );
         });
@@ -556,15 +761,17 @@ describe("Ethereum Plugin", () => {
             timeout: 20000,
           },
         })
-        .then((result: { data: Schema.EventNotification }) => {
-          expect(typeof result.data?.data === "string").toBe(true);
-          expect(typeof result.data?.address === "string").toBe(true);
-          expect(result.data?.log).toBeDefined();
-          expect(typeof result.data?.log.transactionHash === "string").toBe(
+        .then((result) => {
+          if (result.ok) return result.value
+          else fail(result.error)
+        })
+        .then((result: Schema.EventNotification) => {
+          expect(typeof result.data === "string").toBe(true);
+          expect(typeof result.address === "string").toBe(true);
+          expect(result.log).toBeDefined();
+          expect(typeof result.log.transactionHash === "string").toBe(
             true
           );
-
-          return;
         });
 
       await client.invoke({
@@ -601,11 +808,11 @@ describe("Ethereum Plugin", () => {
         }
       });
 
-      expect(mainnetNetwork.data).toBeTruthy();
-      expect(mainnetNetwork.error).toBeFalsy();
-      expect(mainnetNetwork.data?.chainId).toBe("1");
-      expect(mainnetNetwork.data?.name).toBe("homestead");
-      expect(mainnetNetwork.data?.ensAddress).toBe(
+      if (!mainnetNetwork.ok) fail(mainnetNetwork.error);
+      expect(mainnetNetwork.value).toBeTruthy();
+      expect(mainnetNetwork.value?.chainId).toBe("1");
+      expect(mainnetNetwork.value?.name).toBe("homestead");
+      expect(mainnetNetwork.value?.ensAddress).toBe(
         "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
       );
     });
@@ -619,19 +826,18 @@ describe("Ethereum Plugin", () => {
           }
         }
       });
-
-      expect(polygonNetwork.data).toBeTruthy();
-      expect(polygonNetwork.error).toBeFalsy();
-      expect(polygonNetwork.data?.chainId).toBe("137");
-      expect(polygonNetwork.data?.name).toBe("matic");
-      expect(polygonNetwork.data?.ensAddress).toBeFalsy();
+ 
+      if (!polygonNetwork.ok) fail(polygonNetwork.error);
+      expect(polygonNetwork.value).toBeTruthy();
+      expect(polygonNetwork.value?.chainId).toBe("137");
+      expect(polygonNetwork.value?.name).toBe("matic");
+      expect(polygonNetwork.value?.ensAddress).toBeFalsy();
     });
 
     it("getNetwork - mainnet with env", async () => {
-      const mainnetNetwork = await client.invoke<Schema.Network>({
-        uri,
-        method: "getNetwork",
-        config: {
+      const config = new ClientConfigBuilder()
+        .add(client.getConfig())
+        .add({
           envs: [
             {
               uri: "wrap://ens/ethereum.polywrap.eth",
@@ -642,23 +848,29 @@ describe("Ethereum Plugin", () => {
               },
             },
           ],
-        },
+        })
+        .build();
+      const mainnetClient = new PolywrapClient(
+        config
+      );
+      const mainnetNetwork = await mainnetClient.invoke<Schema.Network>({
+        uri,
+        method: "getNetwork",
       });
 
-      expect(mainnetNetwork.data).toBeTruthy();
-      expect(mainnetNetwork.error).toBeFalsy();
-      expect(mainnetNetwork.data?.chainId).toBe("1");
-      expect(mainnetNetwork.data?.name).toBe("homestead");
-      expect(mainnetNetwork.data?.ensAddress).toBe(
+      if (!mainnetNetwork.ok) fail(mainnetNetwork.error);
+      expect(mainnetNetwork.value).toBeTruthy();
+      expect(mainnetNetwork.value?.chainId).toBe("1");
+      expect(mainnetNetwork.value?.name).toBe("homestead");
+      expect(mainnetNetwork.value?.ensAddress).toBe(
         "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
       );
     });
 
     it("getNetwork - polygon with env", async () => {
-      const polygonNetwork = await client.invoke<Schema.Network>({
-        uri,
-        method: "getNetwork",
-        config: {
+      const config = new ClientConfigBuilder()
+        .add(client.getConfig())
+        .add({
           envs: [
             {
               uri: "wrap://ens/ethereum.polywrap.eth",
@@ -669,28 +881,31 @@ describe("Ethereum Plugin", () => {
               },
             },
           ],
-        },
+        })
+        .build();
+      const polygonClient = new PolywrapClient(
+        config
+      );
+      const polygonNetwork = await polygonClient.invoke<Schema.Network>({
+        uri,
+        method: "getNetwork",
       });
 
-      expect(polygonNetwork.data).toBeTruthy();
-      expect(polygonNetwork.error).toBeFalsy();
-      expect(polygonNetwork.data?.chainId).toBe("137");
-      expect(polygonNetwork.data?.name).toBe("matic");
+      if (!polygonNetwork.ok) fail(polygonNetwork.error);
+      expect(polygonNetwork.value).toBeTruthy();
+      expect(polygonNetwork.value?.chainId).toBe("137");
+      expect(polygonNetwork.value?.name).toBe("matic");
     });
 
     it("requestAccounts", async () => {
-      const { error } = await client.invoke<string[]>({
+      let result = await client.invoke<string[]>({
         uri,
         method: "requestAccounts",
       })
-
+      result = result as { ok: false; error: Error | undefined };
       // eth_requestAccounts is not supported by Ganache
       // this RPC error indicates that the method call was attempted
-      expect(error?.message.indexOf("Method eth_requestAccounts not supported")).toBeGreaterThanOrEqual(0);
-
-      // expect(error).toBeFalsy();
-      // expect(data).toBeTruthy();
-      // expect(data?.length).toBeGreaterThan(0);
+      expect(result.error?.message.indexOf("Method eth_requestAccounts not supported")).toBeGreaterThanOrEqual(0);
     });
   });
 
@@ -713,8 +928,8 @@ describe("Ethereum Plugin", () => {
         }
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
     });
 
     it("callContractMethodAndWait", async () => {
@@ -735,8 +950,8 @@ describe("Ethereum Plugin", () => {
         }
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
     });
 
     it("sendTransaction", async () => {
@@ -748,9 +963,9 @@ describe("Ethereum Plugin", () => {
         }
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      expect(response.data?.hash).toBeDefined();
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(response.value?.hash).toBeDefined();
     });
 
     it("sendTransactionAndWait", async () => {
@@ -762,10 +977,10 @@ describe("Ethereum Plugin", () => {
         }
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
       expect(
-        response.data?.transactionHash
+        response.value?.transactionHash
       ).toBeDefined();
     });
 
@@ -779,9 +994,9 @@ describe("Ethereum Plugin", () => {
         }
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBeDefined();
-      expect(response.data).toContain("0x");
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(response.value).toContain("0x");
     });
 
     it("signMessage", async () => {
@@ -793,8 +1008,8 @@ describe("Ethereum Plugin", () => {
         }
       });
 
-      expect(response.error).toBeUndefined();
-      expect(response.data).toBe(
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBe(
         "0xa4708243bf782c6769ed04d83e7192dbcf4fc131aa54fde9d889d8633ae39dab03d7babd2392982dff6bc20177f7d887e27e50848c851320ee89c6c63d18ca761c"
       );
     });
@@ -808,8 +1023,8 @@ describe("Ethereum Plugin", () => {
         }
       });
 
-      expect(res.error).toBeUndefined();
-      expect(res.data).toBeDefined();
+      if (!res.ok) fail(res.error);
+      expect(res.value).toBeDefined();
     });
   });
 
@@ -824,11 +1039,11 @@ describe("Ethereum Plugin", () => {
         }
       });
 
-      expect(response1.error).toBeUndefined();
-      expect(response1.data).toBeDefined();
-      expect(response1.data).toContain("0x");
+      if (!response1.ok) fail(response1.error);
+      expect(response1.value).toBeDefined();
+      expect(response1.value).toContain("0x");
 
-      const address = response1.data as string;
+      const address = response1.value;
       const structArg = JSON.stringify({
         str: "foo bar",
         unsigned256: 123456,
@@ -845,10 +1060,10 @@ describe("Ethereum Plugin", () => {
         }
       });
 
-      expect(response2.error).toBeUndefined();
-      expect(response2.data).toBeDefined();
+      if (!response2.ok) fail(response2.error);
+      expect(response2.value).toBeDefined();
       expect(
-        response2.data?.transactionHash
+        response2.value?.transactionHash
       ).toBeDefined();
     });
   });

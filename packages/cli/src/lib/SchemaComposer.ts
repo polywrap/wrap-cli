@@ -127,13 +127,12 @@ export class SchemaComposer {
       }
     }
 
-    try {
-      const manifest = await this._client.getManifest(new Uri(uri));
-      return manifest.abi;
-    } catch (e) {
-      gluegun.print.error(e);
-      throw e;
+    const manifest = await this._client.getManifest(new Uri(uri));
+    if (!manifest.ok) {
+      gluegun.print.error(manifest.error);
+      throw manifest.error;
     }
+    return manifest.value.abi;
   }
 
   private async _loadGraphqlAbi(

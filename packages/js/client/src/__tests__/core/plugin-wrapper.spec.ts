@@ -84,9 +84,9 @@ describe("plugin-wrapper", () => {
       method: "getMap",
     });
 
-    expect(getResult.error).toBeFalsy();
-    expect(getResult.data).toBeTruthy();
-    expect(getResult.data).toMatchObject(
+    if (!getResult.ok) fail(getResult.error);
+    expect(getResult.value).toBeTruthy();
+    expect(getResult.value).toMatchObject(
       new Map<string, number>().set("a", 1).set("b", 2)
     );
 
@@ -98,9 +98,9 @@ describe("plugin-wrapper", () => {
       },
     });
 
-    expect(updateResult.error).toBeFalsy();
-    expect(updateResult.data).toBeTruthy();
-    expect(updateResult.data).toMatchObject(
+    if (!updateResult.ok) fail(updateResult.error);
+    expect(updateResult.value).toBeTruthy();
+    expect(updateResult.value).toMatchObject(
       new Map<string, number>().set("a", 1).set("b", 3).set("c", 5)
     );
   });
@@ -203,7 +203,8 @@ describe("plugin-wrapper", () => {
   test("get manifest should fetch wrap manifest from plugin", async () => {
     const client = await getClient();
     const manifest = await client.getManifest("ens/ipfs.polywrap.eth");
-    expect(manifest.type).toEqual("plugin");
-    expect(manifest.name).toEqual("Ipfs");
+    if (!manifest.ok) fail(manifest.error);
+    expect(manifest.value.type).toEqual("plugin");
+    expect(manifest.value.name).toEqual("Ipfs");
   });
 });

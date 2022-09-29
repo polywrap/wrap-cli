@@ -16,6 +16,7 @@ Commands:
   infra|i [options] <action>   Modular Infrastructure-As-Code Orchestrator
   run|r [options]              Runs Workflows
   docgen|o [options] <action>  Generate wrapper documentation
+  manifest|m                   Inspect & Migrade Polywrap Manifests
   help [command]               display help for command
 `;
 

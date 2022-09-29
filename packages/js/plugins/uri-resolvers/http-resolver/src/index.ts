@@ -37,7 +37,10 @@ export class HttpResolverPlugin extends Module<NoConfig> {
         _client
       );
 
-      const result = manifestResult.data;
+      if (!manifestResult.ok) {
+        return { uri: null, manifest: null };
+      }
+      const result = manifestResult.value;
 
       if (result && result.body) {
         manifest = Buffer.from(result.body, "base64");
@@ -65,7 +68,10 @@ export class HttpResolverPlugin extends Module<NoConfig> {
         client
       );
 
-      const result = resolveResult.data;
+      if (!resolveResult.ok) {
+        return null;
+      }
+      const result = resolveResult.value;
 
       if (!result || !result.body) {
         return null;

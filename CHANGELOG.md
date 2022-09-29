@@ -1,3 +1,38 @@
+# Polywrap Origin (0.8.0)
+## Features
+* [PR-1083](https://github.com/polywrap/toolchain/pull/1083) `@polywrap/client-config-builder-js`: The default client config now has the ability to resolve `http` URIs (ex: `wrap://http/domain.com/path`) via the `@polywrap/http-resolver-plugin-js`.
+* [PR-1083](https://github.com/polywrap/toolchain/pull/1083) `polywrap` CLI: Hosting & deploying wrappers via HTTP is now possible with the new `http` deploy & infra modules.
+* [PR-1097](https://github.com/polywrap/toolchain/pull/1097) & [PR-1272](https://github.com/polywrap/toolchain/pull/1272) `polywrap` CLI, `@polywrap/polywrap-manifest-schemas`, `@polywrap/polywrap-manifest-types-js`: `polywrap.deploy.yaml` format version `0.2.0` has been added, making the schema similar to the `polywrap.test.yaml` schema, where users define a series of `jobs` to be performed.
+* [PR-1097](https://github.com/polywrap/toolchain/pull/1097) `polywrap` CLI: Recursive ENS domain name registration is now supported via the `ens-recursive-name-register` deploy module.
+* [PR-1060](https://github.com/polywrap/toolchain/pull/1060) `@polywrap/ipfs-interface`: Added `fallbackProviders: [String!]` to `type Options`.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/core-js`, `@polywrap/client-js`: URI resolution has been refactored. Resolution is now implemented in a single `IUriResolver` instance.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/client-js`: `invokeWrapper(...)` has been added to the `PolywrapClient` class.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/client-config-builder-js`: `setResolver(...)` has been added, enabling users to set the `IUriResolver` instance on the builder's `ClientConfig`.
+* [PR-1133](https://github.com/polywrap/toolchain/pull/1133) `@polywrap/core-js`, `@polywrap/client-js`: `getPluginByUri(...)` has been added to the `Client` interface, and `PolywrapClient` class.
+* [PR-1231](https://github.com/polywrap/toolchain/pull/1231) `polywrap` CLI: `build` command now supports the `--no-codegen` option, which disables the automatic codegen step when compiling projects.
+
+## Bugs
+* [PR-1244](https://github.com/polywrap/toolchain/pull/1244) `polywrap` CLI: Workflows can now properly access nested properties of previous job step output.
+* [PR-1243](https://github.com/polywrap/toolchain/pull/1243) `@polywrap/schema-compose`: Multi-line imports are now properly supported within block comments.
+* [PR-1097](https://github.com/polywrap/toolchain/pull/1097) `polywrap` CLI: ENS deployment URIs generated via the `deploy` command now properly contain the network's name in the URI.
+* [PR-1234](https://github.com/polywrap/toolchain/pull/1234) `polywrap` CLI: The `run` command and underlying `Workflow` system has had multiple bug fixes added.
+  * Workflow validation always printed "SUCCESS" and errors were never printed.
+  * Workflow manifest was not being validated.
+  * The stderr messages were not being output (previously unnoticed because errors were not printed).
+* [PR-1220](https://github.com/polywrap/toolchain/pull/1220) `@polywrap/schema-bind`: `wasm/rust` bindings handle the serialization of reserved words via serde, so that the original name of properties is reserved during encoding.
+* [PR-1219](https://github.com/polywrap/toolchain/pull/1219) `@polywrap/schema-bind`: `wasm/rust` bindings now properly handle imported interface modules.
+* [PR-1229](https://github.com/polywrap/toolchain/pull/1229) `polywrap` CLI: `run` command now properly resolves the `validation: ...` property within the `polywrap.test.yaml` manifest relative to the manifest's directory, instead of the user's cwd.
+
+## Breaking Changes
+* [PR-1097](https://github.com/polywrap/toolchain/pull/1097) `polywrap` CLI: The `local-dev-ens` deploy module has been removed.
+* [PR-1060](https://github.com/polywrap/toolchain/pull/1060) `@polywrap/ipfs-plugin-js`: `IpfsPluginConfig` has been removed, and all properties (`provider`, `fallbackProviders`) have been moved into the wrapper's `Env`.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/client-js`: `loadUriResolvers(...)` has been removed from the `PolywrapClient` class.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/client-js`: `resolveUri(...)` has been renamed to `tryResolveUri(...)` on the `PolywrapClient` class.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/core-js`, `@polywrap/client-js`: `getUriResolvers(...)` has been renamed to `getUriResolver(...)` on the `Client` interface and `PolywrapClient` class.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/client-config-builder-js`: `addUriResolver(...)` and `setUriResolvers(...)` have been removed from the `ClientConfigBuilder` class.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/core-js`, `@polywrap/wasm-js`: Moved the `WasmWrapper` class and all related types into their own package named `@polywrap/wasm-js`.
+* [PR-1235](https://github.com/polywrap/toolchain/pull/1235) `@polywrap/core-js`: `Uri.from(...)` has been added, and `toUri(...)` has been removed.
+
 # Polywrap Origin (0.7.0)
 ## Bugs
 * [PR-1158](https://github.com/polywrap/toolchain/pull/1158) `@polywrap/client-config-builder-js`: The following plugins have been removed from the default config, and replaced with their WebAssembly wrapper equivalents available at the same URIs:
