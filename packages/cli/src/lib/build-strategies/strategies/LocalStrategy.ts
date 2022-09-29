@@ -12,12 +12,10 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
       const buildManifestConfig = buildManifest.config as BuildManifestConfig;
 
       if (buildManifestConfig.polywrap_module) {
-        let scriptPath = `${__dirname}/../../defaults/build-scripts/${bindLanguage}.sh`;
+        let scriptPath = `${__dirname}/../../defaults/build-strategies/${bindLanguage}/local.sh`;
 
         if (bindLanguage.startsWith("wasm")) {
-          const lang = bindLanguage.split("/")[1] as "assemblyscript" | "rust";
-          const customScript =
-            buildManifest.strategies?.local?.[lang]?.scriptPath;
+          const customScript = buildManifest.strategies?.local?.scriptPath;
           scriptPath = customScript ?? scriptPath;
         }
 

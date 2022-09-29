@@ -6,7 +6,6 @@ import {
   isDockerInstalled,
   runCommand,
 } from "../../system";
-import { PolywrapProject } from "../../project";
 import { BuildStrategyArgs, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
 import { withSpinner } from "../../helpers";
@@ -41,35 +40,43 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
     try {
       await ensureDockerDaemonRunning();
 
-      const buildManifestDir = await this.project.getBuildManifestDir();
+      const buildManifestPath = await this.project.getBuildManifestPath();
+      const buildManifestDir =
+        buildManifestPath && path.dirname(buildManifestPath);
       const buildManifest = await this.project.getBuildManifest();
       const imageName =
         buildManifest?.strategies?.image?.name ||
         generateDockerImageName(await this.project.getBuildUuid());
-      let dockerfile = buildManifest?.strategies?.image?.dockerfile
-        ? path.join(
-            buildManifestDir,
-            buildManifest?.strategies?.image?.dockerfile
-          )
-        : path.join(buildManifestDir, "Dockerfile");
 
-      await this.project.cacheBuildManifestLinkedPackages();
+      const language = await this.project.getManifestLanguage();
 
-      // If the dockerfile path isn't provided, generate it
-      if (!buildManifest?.strategies?.image?.dockerfile) {
-        // Make sure the default template is in the cached .polywrap/wasm/build/image folder
-        await this.project.cacheDefaultBuildImage();
+      const dockerfileTemplatePath = path.join(
+        __dirname,
+        "..",
+        "..",
+        "defaults",
+        "build-strategies",
+        language,
+        "Dockerfile.mustache"
+      );
 
-        dockerfile = this._generateDockerfile(
-          this.project.getCachePath(
-            path.join(
-              PolywrapProject.cacheLayout.buildImageDir,
-              "Dockerfile.mustache"
+      let dockerfilePath: string;
+
+      if (buildManifestDir) {
+        dockerfilePath = buildManifest?.strategies?.image?.dockerfile
+          ? path.join(
+              buildManifestDir,
+              buildManifest?.strategies?.image?.dockerfile
             )
-          ),
+          : path.join(buildManifestDir, "Dockerfile");
+      } else {
+        dockerfilePath = this._generateDockerfile(
+          dockerfileTemplatePath,
           buildManifest.config || {}
         );
       }
+
+      await this.project.cacheBuildManifestLinkedPackages();
 
       const dockerBuildxConfig = buildManifest?.strategies?.image?.buildx;
       const useBuildx = !!dockerBuildxConfig;
@@ -81,9 +88,7 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
         const cache = dockerBuildxConfig.cache;
 
         if (cache == true) {
-          cacheDir = this.project.getCachePath(
-            PolywrapProject.cacheLayout.buildImageCacheDir
-          );
+          cacheDir = this.project.getCachePath("build/image/cache");
         } else if (cache) {
           if (!path.isAbsolute(cache)) {
             cacheDir = path.join(this.project.getManifestDir(), cache);
@@ -97,19 +102,11 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
 
       const removeImage = !!buildManifest?.strategies?.image?.removeImage;
 
-      // If the dockerfile path contains ".mustache", generate
-      if (dockerfile.indexOf(".mustache") > -1) {
-        dockerfile = this._generateDockerfile(
-          dockerfile,
-          buildManifest.config || {}
-        );
-      }
-
       // Construct the build image
       const dockerImageId = await this._createBuildImage(
         this.project.getManifestDir(),
         imageName,
-        dockerfile,
+        dockerfilePath,
         cacheDir,
         useBuildx
       );

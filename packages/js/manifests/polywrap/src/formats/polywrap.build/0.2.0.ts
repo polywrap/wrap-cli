@@ -69,6 +69,12 @@ export interface BuildManifest {
      */
     filter?: string;
   }[];
+  /**
+   * General configurations.
+   */
+  config?: {
+    [k: string]: unknown;
+  };
   __type: "BuildManifest";
 }
 export interface ImageAssemblyscript {

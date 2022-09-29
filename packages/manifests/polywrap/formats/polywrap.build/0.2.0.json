@@ -47,6 +47,10 @@
         },
         "required": ["name", "path"]
       }
+    },
+    "config": {
+      "description": "General configurations.",
+      "type": "object"
     }
   },
   "definitions": {
