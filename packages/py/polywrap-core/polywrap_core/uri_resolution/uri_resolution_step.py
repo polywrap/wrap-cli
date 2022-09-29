@@ -3,7 +3,8 @@ from typing import Optional
 
 from result import Result
 
-from ..types import Uri, UriPackageOrWrapper
+from ..types import Uri
+from ..types.uri_package_wrapper  import UriPackageOrWrapper
 
 
 @dataclass(slots=True, kw_only=True)
