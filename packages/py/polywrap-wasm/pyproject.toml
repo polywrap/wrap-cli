@@ -11,6 +11,9 @@ polywrap-core = { path = "../polywrap-core", develop = true }
 polywrap-msgpack = { path = "../polywrap-msgpack", develop = true }
 wasmtime = "^1.0.1"
 
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
