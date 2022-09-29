@@ -129,6 +129,7 @@ export class PluginProject extends Project<PluginManifest> {
       abi,
       outputDirAbs: moduleDirectory,
       bindLanguage,
+      config: codegenManifest?.config,
     };
 
     return bindSchema(options);
@@ -190,10 +191,9 @@ export class PluginProject extends Project<PluginManifest> {
     codegenDirAbs?: string,
     codegenManifest?: CodegenManifest
   ): string {
-    const generationSubPath: string = path.relative(
+    return path.join(
       this.getManifestDir(),
       codegenDirAbs ?? codegenManifest?.codegenDir ?? defaultCodegenDir
     );
-    return path.join(this.getManifestDir(), generationSubPath);
   }
 }

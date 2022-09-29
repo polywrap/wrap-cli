@@ -599,11 +599,10 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     codegenDirAbs?: string,
     codegenManifest?: CodegenManifest
   ): string {
-    const generationSubPath: string = path.relative(
+    return path.join(
       this.getManifestDir(),
       codegenDirAbs ?? codegenManifest?.codegenDir ?? defaultCodegenDir
     );
-    return path.join(this.getManifestDir(), generationSubPath);
   }
 
   private _getBindingsDirectory(buildManifest: BuildManifest): string {

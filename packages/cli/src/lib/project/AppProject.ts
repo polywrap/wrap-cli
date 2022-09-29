@@ -120,6 +120,7 @@ export class AppProject extends Project<AppManifest> {
       bindLanguage: appManifestLanguageToBindLanguage(
         await this.getManifestLanguage()
       ),
+      config: codegenManifest?.config,
     });
   }
 
@@ -179,10 +180,9 @@ export class AppProject extends Project<AppManifest> {
     codegenDirAbs?: string,
     codegenManifest?: CodegenManifest
   ): string {
-    const generationSubPath: string = path.relative(
+    return path.join(
       this.getManifestDir(),
       codegenDirAbs ?? codegenManifest?.codegenDir ?? defaultCodegenDir
     );
-    return path.join(this.getManifestDir(), generationSubPath);
   }
 }
