@@ -1,4 +1,5 @@
 import { createQueryDocument, parseQuery, QueryInvocations, Uri } from "../";
+import { ResultOk } from "@polywrap/result";
 
 describe("parseQuery", () => {
   const dummy = new Uri("wrap://dumb/dummy");
@@ -59,7 +60,7 @@ describe("parseQuery", () => {
       }
     };
 
-    expect(result).toMatchObject(expected);
+    expect(result).toMatchObject(ResultOk(expected));
   });
 
   it("works with multiple queries", () => {
@@ -171,39 +172,63 @@ describe("parseQuery", () => {
       mutationAnotherMethod: method2.anotherMethod,
     };
 
-    expect(result).toMatchObject(expected);
+    expect(result).toMatchObject(ResultOk(expected));
   });
 
   it("fails when given an empty document", () => {
     const doc = createQueryDocument("{ prop }");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (doc.definitions as any) = [];
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Empty query document found/
-    );
+    const result = parseQuery(dummy, doc);
+
+    expect (result.ok).toBeFalsy();
+    if (result.ok) {
+      throw Error("This should never happen");
+    }
+
+    const error = result.error?.message;
+    expect(error).toContain("Empty query document found");
   });
 
   it("fails when a query operations isn't specified", () => {
     const doc = createQueryDocument("fragment Something on Type { something }");
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Unrecognized root level definition type/
-    );
+    const result = parseQuery(dummy, doc);
+
+    expect (result.ok).toBeFalsy();
+    if (result.ok) {
+      throw Error("This should never happen");
+    }
+
+    const error = result.error?.message;
+    expect(error).toContain("Unrecognized root level definition type");
   });
 
   it("fails when method is missing", () => {
     const doc = createQueryDocument(`query { something }`);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (doc.definitions[0] as any).selectionSet.selections = [];
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Empty selection set found/
-    );
+    const result = parseQuery(dummy, doc);
+
+    expect (result.ok).toBeFalsy();
+    if (result.ok) {
+      throw Error("This should never happen");
+    }
+
+    const error = result.error?.message;
+    expect(error).toContain("Empty selection set found");
   });
 
   it("fails when a fragment spread is used within an operations", () => {
     const doc = createQueryDocument(`query { ...NamedFragment }`);
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Unsupported selection type found: FragmentSpread/
-    );
+    const result = parseQuery(dummy, doc);
+
+    expect (result.ok).toBeFalsy();
+    if (result.ok) {
+      throw Error("This should never happen");
+    }
+
+    const error = result.error?.message;
+    expect(error).toContain("Unsupported selection type found: FragmentSpread");
   });
 
   it("fails when variables were not specified", () => {
@@ -214,10 +239,15 @@ describe("parseQuery", () => {
         )
       }
     `);
+    const result = parseQuery(dummy, doc);
 
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Variables were not specified/
-    );
+    expect (result.ok).toBeFalsy();
+    if (result.ok) {
+      throw Error("This should never happen");
+    }
+
+    const error = result.error?.message;
+    expect(error).toContain("Variables were not specified");
   });
 
   it("fails when variables is missing", () => {
@@ -228,12 +258,15 @@ describe("parseQuery", () => {
         )
       }
     `);
+    const result = parseQuery(dummy, doc, { arg2: "not arg1" });
 
-    expect(() =>
-      parseQuery(dummy, doc, {
-        arg2: "not arg1",
-      })
-    ).toThrowError(/Missing variable/);
+    expect (result.ok).toBeFalsy();
+    if (result.ok) {
+      throw Error("This should never happen");
+    }
+
+    const error = result.error?.message;
+    expect(error).toContain("Missing variable");
   });
 
   it("succeeds when variables is defined by falsy", () => {
@@ -244,12 +277,8 @@ describe("parseQuery", () => {
         )
       }
     `);
-
-    expect(() =>
-      parseQuery(dummy, doc, {
-        arg_1: 0,
-      })
-    ).not.toThrowError(/Missing variable/);
+    const result = parseQuery(dummy, doc, { arg_1: 0 });
+    expect (result.ok).toBeTruthy();
   });
 
   it("fails when duplicate args arguments are provided", () => {
@@ -261,10 +290,15 @@ describe("parseQuery", () => {
         )
       }
     `);
+    const result = parseQuery(dummy, doc);
 
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Duplicate arguments found/
-    );
+    expect (result.ok).toBeFalsy();
+    if (result.ok) {
+      throw Error("This should never happen");
+    }
+
+    const error = result.error?.message;
+    expect(error).toContain("Duplicate arguments found");
   });
 
   it("fails when duplicate aliases found", () => {
@@ -283,10 +317,15 @@ describe("parseQuery", () => {
         }
       }
     `);
+    const result = parseQuery(dummy, doc);
 
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Duplicate query name found "alias"/
-    );
+    expect (result.ok).toBeFalsy();
+    if (result.ok) {
+      throw Error("This should never happen");
+    }
+
+    const error = result.error?.message;
+    expect(error).toContain(`Duplicate query name found "alias"`);
   });
 
   it("fails when duplicate methods without alias found", () => {
@@ -305,9 +344,14 @@ describe("parseQuery", () => {
         }
       }
     `);
+    const result = parseQuery(dummy, doc);
 
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Duplicate query name found "method"/
-    );
+    expect (result.ok).toBeFalsy();
+    if (result.ok) {
+      throw Error("This should never happen");
+    }
+
+    const error = result.error?.message;
+    expect(error).toContain(`Duplicate query name found "method"`);
   });
 });

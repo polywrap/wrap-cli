@@ -5,16 +5,16 @@ import {
   isPluginManifestLanguage,
   isPolywrapManifestLanguage,
 } from "../manifests";
-import { Project } from "../Project";
-import { PolywrapProject } from "../PolywrapProject";
 import { AppProject } from "../AppProject";
 import { PluginProject } from "../PluginProject";
+import { PolywrapProject } from "../PolywrapProject";
+import { Project } from "../Project";
+import { getProjectManifestLanguage } from "./getProjectManifestLanguage";
 
 import { filesystem } from "gluegun";
-import YAML from "js-yaml";
 import path from "path";
 
-type ManifestProjectTypeProps = {
+export type ManifestProjectTypeProps = {
   // >= 0.2
   project?: {
     type: AnyProjectManifestLanguage;
@@ -56,20 +56,4 @@ export async function getProjectFromManifest(
   await project.validate();
 
   return project;
-}
-
-function getProjectManifestLanguage(
-  manifestStr: string
-): AnyProjectManifestLanguage | undefined {
-  let manifest: ManifestProjectTypeProps | undefined;
-
-  try {
-    manifest = JSON.parse(manifestStr) as ManifestProjectTypeProps;
-  } catch (e) {
-    manifest = YAML.safeLoad(manifestStr) as
-      | ManifestProjectTypeProps
-      | undefined;
-  }
-
-  return manifest?.project?.type ?? manifest?.language;
 }

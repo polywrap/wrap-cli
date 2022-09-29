@@ -1,6 +1,6 @@
 format: "0.2.0"
-sequences:
-  - name: fs_to_ens
+jobs:
+  fs_to_ens:
     config:
       provider: 'http://localhost:8545'
       ensRegistryAddress: $ENS_REG_ADDR
@@ -27,7 +27,7 @@ sequences:
         uri: $$ipfs_deploy
         config:
           domainName: test2.eth
-  - name: ipfs_to_ens
+  ipfs_to_ens:
     config:
       provider: 'http://localhost:8545'
       ensRegistryAddress: $ENS_REG_ADDR

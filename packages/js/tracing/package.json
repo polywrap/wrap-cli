@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/tracing-js",
   "description": "Polywrap Core Tracing",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -16,23 +16,15 @@
     "lint": "eslint --color -c ../../../.eslintrc.js src/"
   },
   "dependencies": {
-    "@fetsorn/opentelemetry-console-exporter": "0.0.1",
-    "@opentelemetry/api": "1.1.0",
-    "@opentelemetry/context-zone": "1.4.0",
-    "@opentelemetry/core": "1.4.0",
-    "@opentelemetry/exporter-trace-otlp-http": "^0.28.0",
-    "@opentelemetry/exporter-zipkin": "1.4.0",
-    "@opentelemetry/propagator-b3": "1.4.0",
-    "@opentelemetry/sdk-trace-base": "1.4.0",
-    "@opentelemetry/sdk-trace-node": "1.4.0",
-    "@opentelemetry/sdk-trace-web": "1.4.0",
-    "browser-util-inspect": "0.2.0"
+    "@fetsorn/opentelemetry-console-exporter": "0.0.3",
+    "@opentelemetry/api": "1.2.0",
+    "@opentelemetry/exporter-trace-otlp-http": "0.32.0",
+    "@opentelemetry/resources": "1.6.0",
+    "@opentelemetry/sdk-trace-base": "1.6.0",
+    "@opentelemetry/sdk-trace-web": "1.6.0"
   },
   "devDependencies": {
-    "@types/prettier": "2.6.0",
-    "@types/uuid": "3.4.3",
     "rimraf": "3.0.2",
-    "ts-node": "8.10.2",
     "typescript": "4.0.7"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",

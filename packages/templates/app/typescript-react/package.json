@@ -2,7 +2,7 @@
   "name": "templates-app-typescript-react",
   "description": "Polywrap App TypeScript React Template",
   "private": true,
-  "version": "0.7.0",
+  "version": "0.8.0",
   "workspaces": {
     "nohoist": [
       "react-scripts",
@@ -10,8 +10,8 @@
     ]
   },
   "dependencies": {
-    "@polywrap/client-js": "0.7.0",
-    "@polywrap/react": "0.7.0",
+    "@polywrap/client-js": "0.8.0",
+    "@polywrap/react": "0.8.0",
     "http-proxy": "1.18.1",
     "http-proxy-middleware": "1.0.6",
     "react": "16.13.1",
@@ -27,7 +27,7 @@
     "@types/react": "16.9.0",
     "@types/react-dom": "16.9.0",
     "@types/react-lottie": "1.2.5",
-    "polywrap": "0.7.0"
+    "polywrap": "0.8.0"
   },
   "scripts": {
     "start": "react-scripts start",

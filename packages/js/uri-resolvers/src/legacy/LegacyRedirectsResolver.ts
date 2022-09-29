@@ -8,7 +8,7 @@ export class LegacyRedirectsResolver extends UriResolverAggregator {
     super(
       async (uri: Uri, client: Client) =>
         client
-          .getRedirects({})
+          .getRedirects()
           .map((redirect) => new RedirectResolver(redirect.from, redirect.to)),
       "LegacyRedirectsResolver"
     );
