@@ -16,6 +16,10 @@ export interface CodegenManifest {
    */
   codegenDir?: string;
   /**
+   * If true, compiler will not regenerate bindings when building a Wasm wrapper
+   */
+  skipOnBuild?: boolean;
+  /**
    * Output path for the built schema and manifest (default: ./build)
    */
   publishDir?: string;

@@ -14,6 +14,10 @@
       "type": "string",
       "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+"
     },
+    "skipOnBuild": {
+      "description": "If true, compiler will not regenerate bindings when building a Wasm wrapper",
+      "type": "boolean"
+    },
     "publishDir": {
       "description": "Output path for the built schema and manifest (default: ./build)",
       "type": "string",

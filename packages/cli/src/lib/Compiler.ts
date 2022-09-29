@@ -100,7 +100,9 @@ export class Compiler {
       await this._outputWrapManifest(state);
 
       if (!(await this._isInterface())) {
-        if (this._config.codegen) {
+        const codegenManifest = await project.getCodegenManifest();
+
+        if (this._config.codegen && !codegenManifest?.skipOnBuild) {
           // Generate the bindings
           await this._generateCode(state);
         }
