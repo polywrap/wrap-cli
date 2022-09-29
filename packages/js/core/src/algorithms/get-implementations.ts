@@ -23,7 +23,7 @@ export const getImplementations = Tracer.traceFunc(
     const addAllImplementationsFromImplementationsArray = (
       implementationsArray: readonly InterfaceImplementations<Uri>[],
       wrapperInterfaceUri: Uri
-    ): Result<true, Error> => {
+    ): Result<undefined, Error> => {
       for (const interfaceImplementations of implementationsArray) {
         let fullyResolvedUri: Uri;
         if (redirects) {
@@ -45,7 +45,7 @@ export const getImplementations = Tracer.traceFunc(
           }
         }
       }
-      return ResultOk(true);
+      return ResultOk(undefined);
     };
 
     let finalUri = wrapperInterfaceUri;
