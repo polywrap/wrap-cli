@@ -5,11 +5,10 @@ strategies:
       cache: true
       removeBuilder: true
     removeImage: true
-config:
-  node_version: "14.16.0"
-  include:
-    - ./src
-    - ./package.json
+    node_version: "14.16.0"
+    include:
+      - ./src
+      - ./package.json
 linked_packages:
   - name: "@polywrap/wasm-as"
     path: ../../../../../../../wasm/as

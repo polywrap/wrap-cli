@@ -6,48 +6,10 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface BuildManifest {
-  /**
-   * Polywrap build manifest format version.
-   */
-  format: "0.2.0" | "0.2";
-  /**
-   * Custom build image configurations.
-   */
-  strategies?: {
-    image?: Image;
-    local?: Local;
-    vm?: Vm;
-  };
-  /**
-   * Custom build image configurations.
-   */
-  config?: {
-    [k: string]: unknown;
-  };
-  /**
-   * Locally linked packages into docker build image.
-   */
-  linked_packages?: {
-    /**
-     * Package name.
-     */
-    name: string;
-    /**
-     * Path to linked package directory.
-     */
-    path: string;
-    /**
-     * Ignore files matching this regex in linked package directory.
-     */
-    filter?: string;
-  }[];
-  __type: "BuildManifest";
-}
 /**
  * Docker image strategy configuration
  */
-export interface Image {
+export type Image = (ImageAssemblyscript | ImageRust) & {
   /**
    * Docker image name.
    */
@@ -75,29 +37,62 @@ export interface Image {
    * Remove the image.
    */
   removeImage?: boolean;
+};
+
+export interface BuildManifest {
+  /**
+   * Polywrap build manifest format version.
+   */
+  format: "0.2.0" | "0.2";
+  /**
+   * Custom build image configurations.
+   */
+  strategies?: {
+    image?: Image;
+    local?: Local;
+    vm?: Vm;
+  };
+  /**
+   * Locally linked packages into docker build image.
+   */
+  linked_packages?: {
+    /**
+     * Package name.
+     */
+    name: string;
+    /**
+     * Path to linked package directory.
+     */
+    path: string;
+    /**
+     * Ignore files matching this regex in linked package directory.
+     */
+    filter?: string;
+  }[];
+  __type: "BuildManifest";
+}
+export interface ImageAssemblyscript {
+  /**
+   * Docker image's node version.
+   */
+  node_version: string;
+  /**
+   * Files to include in docker image.
+   */
+  include: string[];
+}
+export interface ImageRust {
+  /**
+   * Files to include in docker image.
+   */
+  include: string[];
 }
 /**
  * Local build strategy configuration
  */
 export interface Local {
-  assemblyscript?: LocalAssemblyscript;
-  rust?: LocalRust;
-}
-/**
- * Local strategy configuration for Assemblyscript
- */
-export interface LocalAssemblyscript {
   /**
-   * Custom script path for local Assemblyscript build
-   */
-  scriptPath?: string;
-}
-/**
- * Local strategy configuration for Rust
- */
-export interface LocalRust {
-  /**
-   * Custom script path for local Rust build
+   * Custom script path for local build
    */
   scriptPath?: string;
 }
@@ -105,28 +100,8 @@ export interface LocalRust {
  * Docker VM strategy configuration
  */
 export interface Vm {
-  assemblyscript?: VmAssemblyscript;
-  rust?: VmRust;
-}
-/**
- * Docker VM strategy configuration for Assemblyscript
- */
-export interface VmAssemblyscript {
   /**
-   * Base image for the Assemblyscript VM
-   */
-  baseImage?: string;
-  /**
-   * Files to include in build VM container, by default
-   */
-  defaultIncludes?: string[];
-}
-/**
- * Docker VM strategy configuration for Rust
- */
-export interface VmRust {
-  /**
-   * Base image for the Rust VM
+   * Base image for the Docker VM
    */
   baseImage?: string;
   /**

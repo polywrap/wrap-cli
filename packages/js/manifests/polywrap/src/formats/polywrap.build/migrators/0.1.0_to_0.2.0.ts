@@ -11,6 +11,8 @@ export function migrate(old: OldManifest): NewManifest {
     strategies: {
       image: {
         ...old.docker,
+        node_version: (old.config?.node_version as string) ?? "16.13.0",
+        include: (old.config?.include as string[]) ?? ["./package.json"],
       },
     },
   };

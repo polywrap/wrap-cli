@@ -25,10 +25,6 @@
         }
       }
     },
-    "config": {
-      "description": "Custom build image configurations.",
-      "type": "object"
-    },
     "linked_packages": {
       "description": "Locally linked packages into docker build image.",
       "type": "array",
@@ -56,38 +52,80 @@
   "definitions": {
     "image": {
       "description": "Docker image strategy configuration",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "description": "Docker image name.",
-          "type": "string",
-          "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+      "allOf": [
+        {
+          "oneOf": [
+            { "$ref": "#/definitions/image_assemblyscript" },
+            { "$ref": "#/definitions/image_rust" }
+          ]
         },
-        "dockerfile": {
-          "description": "Docker image file name.",
-          "type": "string",
-          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/Dockerfile(.mustache)?$"
-        },
-        "buildx": {
-          "description": "Configuration options for Docker Buildx, set to true for default value.",
-          "type": ["object", "boolean"],
+        {
+          "type": "object",
           "additionalProperties": false,
           "properties": {
-            "cache": {
-              "description": "Path to cache directory, set to true for default value, set to false to disable caching.",
-              "type": ["string", "boolean"],
-              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
+            "name": {
+              "description": "Docker image name.",
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9\\-\\_]+$"
             },
-            "removeBuilder": {
-              "description": "Remove the builder instance.",
+            "dockerfile": {
+              "description": "Docker image file name.",
+              "type": "string",
+              "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/Dockerfile(.mustache)?$"
+            },
+            "buildx": {
+              "description": "Configuration options for Docker Buildx, set to true for default value.",
+              "type": ["object", "boolean"],
+              "additionalProperties": false,
+              "properties": {
+                "cache": {
+                  "description": "Path to cache directory, set to true for default value, set to false to disable caching.",
+                  "type": ["string", "boolean"],
+                  "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
+                },
+                "removeBuilder": {
+                  "description": "Remove the builder instance.",
+                  "type": "boolean"
+                }
+              }
+            },
+            "removeImage": {
+              "description": "Remove the image.",
               "type": "boolean"
             }
           }
+        }
+      ]
+    },
+    "image_rust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["include"],
+      "properties": {
+        "include": {
+          "description": "Files to include in docker image.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "image_assemblyscript": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_version", "include"],
+      "properties": {
+        "node_version": {
+          "description": "Docker image's node version.",
+          "type": "string"
         },
-        "removeImage": {
-          "description": "Remove the image.",
-          "type": "boolean"
+        "include": {
+          "description": "Files to include in docker image.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -96,32 +134,8 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "assemblyscript": {
-          "$ref": "#/definitions/local_assemblyscript"
-        },
-        "rust": {
-          "$ref": "#/definitions/local_rust"
-        }
-      }
-    },
-    "local_rust": {
-      "description": "Local strategy configuration for Rust",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
         "scriptPath": {
-          "description": "Custom script path for local Rust build",
-          "type": "string"
-        }
-      }
-    },
-    "local_assemblyscript": {
-      "description": "Local strategy configuration for Assemblyscript",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "scriptPath": {
-          "description": "Custom script path for local Assemblyscript build",
+          "description": "Custom script path for local build",
           "type": "string"
         }
       }
@@ -131,40 +145,8 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "assemblyscript": {
-          "$ref": "#/definitions/vm_assemblyscript"
-        },
-        "rust": {
-          "$ref": "#/definitions/vm_rust"
-        }
-      }
-    },
-    "vm_rust": {
-      "description": "Docker VM strategy configuration for Rust",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
         "baseImage": {
-          "description": "Base image for the Rust VM",
-          "type": "string",
-          "pattern": "^([a-zA-Z0-9\\-\\_]+\\/)?[a-zA-Z0-9\\-\\_]+:[a-zA-Z0-9\\-\\_\\.]+$"
-        },
-        "defaultIncludes": {
-          "description": "Files to include in build VM container, by default",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "vm_assemblyscript": {
-      "description": "Docker VM strategy configuration for Assemblyscript",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "baseImage": {
-          "description": "Base image for the Assemblyscript VM",
+          "description": "Base image for the Docker VM",
           "type": "string",
           "pattern": "^([a-zA-Z0-9\\-\\_]+\\/)?[a-zA-Z0-9\\-\\_]+:[a-zA-Z0-9\\-\\_\\.]+$"
         },

@@ -2,7 +2,6 @@ format: 0.2.0
 strategies:
   image:
     dockerfile: ./Dockerfile.mustache
-config:
-  node_version: "16.13.0"
-  include:
-    - ./package.json
+    node_version: "16.13.0"
+    include:
+      - ./package.json
