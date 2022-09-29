@@ -161,8 +161,11 @@ export class AppProject extends Project<AppManifest> {
       const manifestPath = await this.getCodegenManifestPath();
 
       if (manifestPath) {
+        const language = await this.getManifestLanguage();
+        const extensionDir = `${__dirname}/../defaults/codegen-config/${language}`;
         this._codegenManifest = await loadCodegenManifest(
           manifestPath,
+          extensionDir,
           this.quiet
         );
       }

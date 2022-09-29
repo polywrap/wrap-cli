@@ -210,8 +210,8 @@ describe("e2e tests for build command", () => {
     );
   });
 
-  describe.only("test-cases", () => {
-    for (let i = 13; i < testCases.length; ++i) {
+  describe("test-cases", () => {
+    for (let i = 0; i < testCases.length; ++i) {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 

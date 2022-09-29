@@ -172,6 +172,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       abi,
       outputDirAbs: codegenDirectory,
       bindLanguage,
+      config: codegenManifest?.config,
     };
 
     return bindSchema(options);
@@ -215,8 +216,11 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       const manifestPath = await this.getCodegenManifestPath();
 
       if (manifestPath) {
+        const language = await this.getManifestLanguage();
+        const extensionDir = `${__dirname}/../defaults/codegen-config/${language}`;
         this._codegenManifest = await loadCodegenManifest(
           manifestPath,
+          extensionDir,
           this.quiet
         );
       }

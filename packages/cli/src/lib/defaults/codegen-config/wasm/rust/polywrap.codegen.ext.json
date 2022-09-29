@@ -1,0 +1,14 @@
+{
+  "id": "BuildManifest_WasmRsExt",
+  "type": "object",
+  "properties": {
+    "config": {
+      "type": "object",
+      "properties": {
+        "enable_serde": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

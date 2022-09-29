@@ -176,7 +176,8 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate root entry file
-  output.entries.push(...renderTemplates(templatePath(""), abi, subTemplates));
+  const view = { ...options.config, ...abi };
+  output.entries.push(...renderTemplates(templatePath(""), view, subTemplates));
 
   return result;
 };

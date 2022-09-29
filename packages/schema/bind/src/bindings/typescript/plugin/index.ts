@@ -61,7 +61,8 @@ export const generateBinding: GenerateBindingFn = (
     ),
   };
 
-  output.entries = renderTemplates(templatePath(""), { ...abi, manifest }, {});
+  const view = { ...options.config, ...abi, manifest };
+  output.entries = renderTemplates(templatePath(""), view, {});
 
   return result;
 };

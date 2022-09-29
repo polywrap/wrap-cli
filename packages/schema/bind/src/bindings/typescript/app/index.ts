@@ -27,9 +27,10 @@ export const generateBinding: GenerateBindingFn = (
   const output = result.output;
   const abi = applyTransforms(options.abi);
 
+  const view = { ...options.config, ...abi };
   output.entries = renderTemplates(
     path.join(__dirname, "./templates"),
-    abi,
+    view,
     {}
   );
 

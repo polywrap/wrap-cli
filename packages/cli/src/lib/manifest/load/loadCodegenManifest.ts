@@ -15,6 +15,7 @@ export const defaultCodegenManifest = [
 
 export async function loadCodegenManifest(
   manifestPath: string,
+  configSchemaDir?: string,
   quiet = false
 ): Promise<CodegenManifest> {
   const run = (): Promise<CodegenManifest> => {
@@ -27,20 +28,22 @@ export async function loadCodegenManifest(
       throw Error(noLoadMessage);
     }
 
-    // Load the custom json-schema extension if it exists
-    const configSchemaPath = path.join(
-      path.dirname(manifestPath),
-      "/polywrap.codegen.ext.json"
-    );
+    // Load the json-schema extension if it exists
     let extSchema: JsonSchema | undefined = undefined;
 
-    if (fs.existsSync(configSchemaPath)) {
-      extSchema = JSON.parse(
-        fs.readFileSync(configSchemaPath, "utf-8")
-      ) as JsonSchema;
+    if (configSchemaDir) {
+      const defaultExtensionPath = path.join(
+        configSchemaDir,
+        "/polywrap.codegen.ext.json"
+      );
+      if (fs.existsSync(defaultExtensionPath)) {
+        extSchema = JSON.parse(
+          fs.readFileSync(defaultExtensionPath, "utf-8")
+        ) as JsonSchema;
 
-      // The extension schema must support additional properties
-      extSchema.additionalProperties = true;
+        // The extension schema must support additional properties
+        extSchema.additionalProperties = true;
+      }
     }
 
     try {
