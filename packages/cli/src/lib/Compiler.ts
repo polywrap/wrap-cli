@@ -34,7 +34,7 @@ interface CompilerState {
 
 export interface CompilerOverrides {
   validateManifest: (manifest: PolywrapManifest) => void;
-  generationSubPath: string;
+  generationSubPath?: string;
 }
 
 export interface CompilerConfig {

@@ -286,8 +286,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
         ),
       };
       if (module) {
-        const bind = this._buildManifest.config?.bindings as string | undefined;
-        const wrap = (bind ?? "src/wrap").replace("./", "");
+        const wrap = this._getBindingsDirectory(this._buildManifest);
         defaultConfig["polywrap_module"] = {
           name: "module",
           dir: normalizePath(module),
@@ -601,5 +600,10 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       codegenDirAbs ?? codegenManifest?.codegenDir ?? defaultCodegenDir
     );
     return path.join(this.getManifestDir(), generationSubPath);
+  }
+
+  private _getBindingsDirectory(buildManifest: BuildManifest): string {
+    const bind = buildManifest.config?.bindings as string | undefined;
+    return (bind ?? defaultCodegenDir).replace("./", "");
   }
 }

@@ -269,6 +269,11 @@ describe("wasm-rs test cases", () => {
       wrapperUri
     );
   });
+
+  it("codegen-manifest", async () => {
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/codegen-manifest`;
+    await buildWrapper(wrapperPath);
+  });
 });
 
 describe.skip("Wasm-rs benchmarking", () => {

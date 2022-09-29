@@ -1,0 +1,5 @@
+type Module {
+  method(
+    arg1: Int!
+  ): Int!
+}

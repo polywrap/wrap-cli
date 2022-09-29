@@ -1,0 +1,10 @@
+format: 0.3.0
+project:
+  name: BigInt
+  type: wasm/rust
+source:
+  schema: ./src/schema.graphql
+  module: ./Cargo.toml
+extensions:
+  build: ./polywrap.build.yaml
+  codegen: ./polywrap.codegen.yaml
