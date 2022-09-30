@@ -43,11 +43,14 @@ import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
-export interface PolywrapClientConfig<TUri extends Uri | string = string>
+interface PolywrapClientConfigInternal<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
-  tracerConfig: Partial<TracerConfig>;
-  wrapperCache?: IWrapperCache;
+  tracerConfig: Readonly<Partial<TracerConfig>>;
+  wrapperCache?: Readonly<IWrapperCache>;
 }
+
+export interface PolywrapClientConfig<TUri extends Uri | string = string>
+  extends Readonly<PolywrapClientConfigInternal<TUri>> {}
 
 export class PolywrapClient implements Client {
   private _config: PolywrapClientConfig<Uri> = ({
@@ -111,7 +114,10 @@ export class PolywrapClient implements Client {
     } else {
       Tracer.disableTracing();
     }
-    this._config.tracerConfig = tracerConfig ?? {};
+    this._config = {
+      ...this._config,
+      tracerConfig: tracerConfig ?? {},
+    };
   }
 
   @Tracer.traceMethod("PolywrapClient: getRedirects")
