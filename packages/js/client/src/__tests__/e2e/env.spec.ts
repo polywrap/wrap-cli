@@ -1,23 +1,23 @@
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
+import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PolywrapClient } from "../../PolywrapClient";
 
 jest.setTimeout(200000);
 
+interface MockEnv extends Record<string, unknown> {
+  arg1: number;
+}
+
 describe("env", () => {
   const mockEnvPlugin = () => {
-    interface Env extends Record<string, unknown> {
-      arg1: number;
-    }
-
-    class MockEnvPlugin extends PluginModule<{}, Env> {
-      mockEnv(): Env {
+    class MockEnvPlugin extends PluginModule<{}, MockEnv> {
+      mockEnv(): MockEnv {
         return this.env;
       }
     }
 
-    return new PluginPackage({} as WrapManifest, new MockEnvPlugin({}));
+    return new PluginPackage(new MockEnvPlugin({}), {} as WrapManifest);
   };
 
   describe("env client types", () => {
@@ -25,12 +25,45 @@ describe("env", () => {
       const implementationUri = "wrap://ens/some-implementation.eth";
       const envPlugin = mockEnvPlugin();
       const client = new PolywrapClient({
-        resolver: buildUriResolver([
+        resolver: RecursiveResolver.from( 
           {
             uri: implementationUri,
             package: envPlugin,
           },
-        ]),
+        ),
+        envs: [
+          {
+            uri: implementationUri,
+            env: {
+              arg1: "10",
+            },
+          },
+        ],
+      });
+
+      const mockEnv = await client.invoke({
+        uri: implementationUri,
+        method: "mockEnv",
+      });
+
+      if (!mockEnv.ok) fail(mockEnv.error);
+      expect(mockEnv.value).toBeTruthy();
+      expect(mockEnv.value).toMatchObject({ arg1: "10" });
+    });
+
+    test("inline plugin env types", async () => {
+      const implementationUri = "wrap://ens/some-implementation.eth";
+      const client = new PolywrapClient({
+        resolver: RecursiveResolver.from([
+          {
+            uri: implementationUri,
+            package: PluginPackage.from<MockEnv>((module) => ({
+              mockEnv: (): MockEnv => {
+                return module.env;
+              }
+            })),
+          }]
+        ),
         envs: [
           {
             uri: implementationUri,

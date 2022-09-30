@@ -1,9 +1,9 @@
-import { PolywrapClient, Uri } from "../../";
+import { Client, Uri } from "../../";
 import { BigNumber } from "bignumber.js";
 import { ErrResult } from "../utils/resultTypes";
 
 export const runAsyncifyTest = async (
-  client: PolywrapClient,
+  client: Client,
   wrapperUri: string
 ) => {
   const subsequentInvokes = await client.invoke<string>({
@@ -118,7 +118,7 @@ export const runAsyncifyTest = async (
 };
 
 export const runBigIntTypeTest = async (
-  client: PolywrapClient,
+  client: Client,
   uri: string
 ) => {
   {
@@ -167,7 +167,7 @@ export const runBigIntTypeTest = async (
 };
 
 export const runBigNumberTypeTest = async (
-  client: PolywrapClient,
+  client: Client,
   uri: string
 ) => {
   {
@@ -217,7 +217,7 @@ export const runBigNumberTypeTest = async (
   }
 };
 
-export const runBytesTypeTest = async (client: PolywrapClient, uri: string) => {
+export const runBytesTypeTest = async (client: Client, uri: string) => {
   const response = await client.invoke({
     uri,
     method: "bytesMethod",
@@ -235,7 +235,7 @@ export const runBytesTypeTest = async (client: PolywrapClient, uri: string) => {
   );
 };
 
-export const runEnumTypesTest = async (client: PolywrapClient, uri: string) => {
+export const runEnumTypesTest = async (client: Client, uri: string) => {
   let method1a = await client.invoke({
     uri,
     method: "method1",
@@ -292,11 +292,11 @@ export const runEnumTypesTest = async (client: PolywrapClient, uri: string) => {
 };
 
 export const runImplementationsTest = async (
-  client: PolywrapClient,
+  client: Client,
   interfaceUri: string,
   implementationUri: string
 ) => {
-  const implResult = client.getImplementations(interfaceUri);
+  const implResult = client.getImplementations(interfaceUri, { applyRedirects: false });
   if (!implResult.ok) fail(implResult.error);
   expect(implResult.value).toEqual([new Uri(implementationUri).uri]);
 
@@ -332,13 +332,13 @@ export const runImplementationsTest = async (
 };
 
 export const runGetImplementationsTest = async (
-  client: PolywrapClient,
+  client: Client,
   aggregatorUri: string,
   interfaceUri: string,
   implementationUri: string
 ) => {
   let implUri = new Uri(implementationUri);
-  const implResult = client.getImplementations(interfaceUri);
+  const implResult = client.getImplementations(interfaceUri, { applyRedirects: false });
   if (!implResult.ok) fail(implResult.error);
   expect(implResult.value).toEqual([implUri.uri]);
 
@@ -365,7 +365,7 @@ export const runGetImplementationsTest = async (
 };
 
 export const runInvalidTypesTest = async (
-  client: PolywrapClient,
+  client: Client,
   uri: string
 ) => {
   let invalidBoolIntSent = await client.invoke({
@@ -438,7 +438,7 @@ export const runInvalidTypesTest = async (
   );
 };
 
-export const runJsonTypeTest = async (client: PolywrapClient, uri: string, testReserved: boolean = false) => {
+export const runJsonTypeTest = async (client: Client, uri: string, testReserved: boolean = false) => {
   type Json = string;
   const value = JSON.stringify({ foo: "bar", bar: "bar" });
   const parseResponse = await client.invoke<Json>({
@@ -527,7 +527,7 @@ export const runJsonTypeTest = async (client: PolywrapClient, uri: string, testR
 };
 
 export const runLargeTypesTest = async (
-  client: PolywrapClient,
+  client: Client,
   uri: string
 ) => {
   const largeStr = new Array(5000).join("polywrap ");
@@ -564,7 +564,7 @@ export const runLargeTypesTest = async (
 };
 
 export const runNumberTypesTest = async (
-  client: PolywrapClient,
+  client: Client,
   uri: string
 ) => {
   let i8Underflow = await client.invoke({
@@ -654,7 +654,7 @@ export const runNumberTypesTest = async (
 };
 
 export const runObjectTypesTest = async (
-  client: PolywrapClient,
+  client: Client,
   uri: string
 ) => {
   const method1a = await client.invoke({
@@ -806,7 +806,7 @@ export const runObjectTypesTest = async (
   });
 };
 
-export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
+export const runMapTypeTest = async (client: Client, uri: string) => {
   const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
   const nestedMapClass = new Map<string, Map<string, number>>().set(
     "Nested",
@@ -901,7 +901,7 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
 };
 
 export const runSimpleStorageTest = async (
-  client: PolywrapClient,
+  client: Client,
   wrapperUri: string
 ) => {
   const deploy = await client.invoke<string>({
@@ -951,7 +951,7 @@ export const runSimpleStorageTest = async (
 };
 
 export const runSimpleEnvTest = async (
-  client: PolywrapClient,
+  client: Client,
   wrapperUri: string
 ) => {
   const getEnvResult = await client.invoke({
@@ -999,7 +999,7 @@ export const runSimpleEnvTest = async (
 };
 
 export const runComplexEnvs = async (
-  client: PolywrapClient,
+  client: Client,
   wrapperUri: string
 ) => {
   const methodRequireEnvResult = await client.invoke({

@@ -1,13 +1,13 @@
 import { coreInterfaceUris } from "@polywrap/core-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
-import { Uri, PolywrapClient } from "../..";
+import { Uri } from "../..";
 import { defaultWrappers } from "@polywrap/client-config-builder-js";
+import { createDefaultClient } from "../utils/createDefaultClient";
 
 jest.setTimeout(200000);
 
 describe("sanity", () => {
   test("default client config", () => {
-    const client = new PolywrapClient();
+    const client = createDefaultClient();
 
     expect(client.getRedirects()).toStrictEqual([
       {
@@ -42,38 +42,11 @@ describe("sanity", () => {
     ]);
   });
 
-  test("client noDefaults flag works as expected", async () => {
-    let client = new PolywrapClient();
-    expect(client.getUriResolver()).toBeTruthy();
-
-    client = new PolywrapClient({}, {});
-    expect(client.getUriResolver()).toBeTruthy();
-
-    client = new PolywrapClient({}, { noDefaults: false });
-    expect(client.getUriResolver()).toBeTruthy();
-
-    client = new PolywrapClient(
-      { resolver: buildUriResolver([]) },
-      { noDefaults: true }
-    );
-
-    expect(client.getUriResolver()).toBeTruthy();
-
-    let message = "";
-    try {
-      client = new PolywrapClient({}, { noDefaults: true });
-    } catch (e) {
-      message = e.message;
-    }
-
-    expect(message).toBe("No URI resolver provided");
-  });
-
   test("redirect registration", () => {
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const client = new PolywrapClient({
+    const client = createDefaultClient({
       redirects: [
         {
           from: implementation1Uri,

@@ -6,7 +6,6 @@ import {
   ethereumPlugin,
 } from "@polywrap/ethereum-plugin-js";
 import {
-  buildUriResolver,
   RecursiveResolver,
   PackageToWrapperCacheResolver,
   WrapperCache,
@@ -29,6 +28,14 @@ export const getClientWithEnsAndIpfs = () => {
   });
   return new PolywrapClient(
     {
+      envs: [
+        {
+          uri: "wrap://ens/ipfs.polywrap.eth",
+          env: {
+            provider: providers.ipfs
+          }
+        }
+      ],
       interfaces: [
         {
           interface: coreInterfaceUris.uriResolver,
@@ -39,10 +46,9 @@ export const getClientWithEnsAndIpfs = () => {
           ],
         },
       ],
-      resolver: new RecursiveResolver(
-        new PackageToWrapperCacheResolver(
-          new WrapperCache(),
-          buildUriResolver([
+      resolver: RecursiveResolver.from(
+        PackageToWrapperCacheResolver.from(
+          [
             {
               uri: "wrap://ens/ethereum.polywrap.eth",
               package: ethereumPlugin({ connections }),
@@ -57,7 +63,7 @@ export const getClientWithEnsAndIpfs = () => {
             },
             {
               uri: "wrap://ens/ipfs.polywrap.eth",
-              package: ipfsPlugin({ provider: providers.ipfs }),
+              package: ipfsPlugin({}),
             },
             {
               uri: "wrap://ens/ipfs-resolver.polywrap.eth",
@@ -72,10 +78,10 @@ export const getClientWithEnsAndIpfs = () => {
               package: fileSystemResolverPlugin({}),
             },
             new ExtendableUriResolver(),
-          ])
-        )
+          ],
+          new WrapperCache(),
+        ),
       ),
-    },
-    { noDefaults: true }
+    }
   );
 };

@@ -24,5 +24,5 @@ export const makeMemoryStoragePlugin: PluginFactory<NoConfig> = () => {
     }
   }
 
-  return new PluginPackage({} as WrapManifest, new MemoryStoragePlugin({}));
+  return new PluginPackage(new MemoryStoragePlugin({}), {} as WrapManifest);
 };
