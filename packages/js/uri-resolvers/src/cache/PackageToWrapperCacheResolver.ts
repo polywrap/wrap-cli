@@ -17,22 +17,31 @@ import {
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
-export class PackageToWrapperCacheResolver implements IUriResolver<Error> {
+export class PackageToWrapperCacheResolver<TError>
+  implements IUriResolver<TError | Error> {
   name: string;
-  resolverToCache: IUriResolver<Error>;
 
   constructor(
+    private resolverToCache: IUriResolver<TError>,
     private cache: IWrapperCache,
-    resolverToCache: UriResolverLike,
     private options?: {
       deserializeManifestOptions?: DeserializeManifestOptions;
-      resolverName?: string;
       endOnRedirect?: boolean;
     }
-  ) {
-    this.resolverToCache = buildUriResolver(
-      resolverToCache,
-      options?.resolverName
+  ) {}
+
+  static from<TResolverError = unknown>(
+    resolver: UriResolverLike,
+    cache: IWrapperCache,
+    options?: {
+      deserializeManifestOptions?: DeserializeManifestOptions;
+      endOnRedirect?: boolean;
+    }
+  ): PackageToWrapperCacheResolver<TResolverError> {
+    return new PackageToWrapperCacheResolver(
+      buildUriResolver<TResolverError>(resolver),
+      cache,
+      options
     );
   }
 
@@ -40,7 +49,7 @@ export class PackageToWrapperCacheResolver implements IUriResolver<Error> {
     uri: Uri,
     client: Client,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, Error>> {
+  ): Promise<Result<UriPackageOrWrapper, TError | Error>> {
     const wrapper = await executeMaybeAsyncFunction<Wrapper | undefined>(
       this.cache.get.bind(this.cache, uri)
     );

@@ -14,10 +14,12 @@ import {
 
 export class RecursiveResolver<TError = undefined>
   implements IUriResolver<TError | InfiniteLoopError> {
-  private resolver: IUriResolver<TError>;
+  constructor(private resolver: IUriResolver<TError>) {}
 
-  constructor(resolver: UriResolverLike) {
-    this.resolver = buildUriResolver(resolver);
+  static from<TResolverError = unknown>(
+    resolver: UriResolverLike
+  ): RecursiveResolver<TResolverError> {
+    return new RecursiveResolver(buildUriResolver<TResolverError>(resolver));
   }
 
   async tryResolveUri(

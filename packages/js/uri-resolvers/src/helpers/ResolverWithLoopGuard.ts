@@ -14,10 +14,14 @@ import { Result } from "@polywrap/result";
 
 export class ResolverWithLoopGuard<TError = undefined>
   implements IUriResolver<TError | InfiniteLoopError> {
-  private resolver: IUriResolver<TError>;
+  constructor(private resolver: IUriResolver<TError>) {}
 
-  constructor(resolver: UriResolverLike) {
-    this.resolver = buildUriResolver(resolver);
+  static from<TResolverError = unknown>(
+    resolver: UriResolverLike
+  ): ResolverWithLoopGuard<TResolverError> {
+    return new ResolverWithLoopGuard(
+      buildUriResolver<TResolverError>(resolver)
+    );
   }
 
   async tryResolveUri(
