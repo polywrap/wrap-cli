@@ -1,11 +1,10 @@
-import { ClientConfig, Uri, Wrapper } from ".";
+import { Uri, Wrapper } from ".";
 import { IUriResolutionContext } from "../uri-resolution";
 
+import { Result } from "@polywrap/result";
+
 /** Options required for an Wrapper invocation. */
-export interface InvokeOptions<
-  TUri extends Uri | string = string,
-  TClientConfig extends ClientConfig = ClientConfig
-> {
+export interface InvokeOptions<TUri extends Uri | string = string> {
   /** The Wrapper's URI */
   uri: TUri;
 
@@ -19,21 +18,11 @@ export interface InvokeOptions<
   args?: Record<string, unknown> | Uint8Array;
 
   /**
-   * Override the client's config for all invokes within this invoke.
-   */
-  config?: Partial<TClientConfig>;
-
-  /**
    * Env variables for the wrapper invocation.
    */
   env?: Record<string, unknown>;
 
   resolutionContext?: IUriResolutionContext;
-
-  /**
-   * Invoke id used to track query context data set internally.
-   */
-  contextId?: string;
 }
 
 /**
@@ -41,23 +30,10 @@ export interface InvokeOptions<
  *
  * @template TData Type of the invoke result data.
  */
-export interface InvokeResult<TData = unknown> {
-  /**
-   * Invoke result data. The type of this value is the return type
-   * of the method. If undefined, it means something went wrong.
-   * Errors should be populated with information as to what happened.
-   * Null is used to represent an intentionally null result.
-   */
-  data?: TData;
+export type InvokeResult<TData = unknown> = Result<TData, Error>;
 
-  /** Errors encountered during the invocation. */
-  error?: Error;
-}
-
-export interface InvokerOptions<
-  TUri extends Uri | string = string,
-  TClientConfig extends ClientConfig = ClientConfig
-> extends InvokeOptions<TUri, TClientConfig> {
+export interface InvokerOptions<TUri extends Uri | string = string>
+  extends InvokeOptions<TUri> {
   encodeResult?: boolean;
 }
 
@@ -70,9 +46,9 @@ export interface Invoker {
   ): Promise<InvokeResult<TData>>;
 }
 
-export interface InvocableResult<TData = unknown> extends InvokeResult<TData> {
+export type InvocableResult<TData = unknown> = InvokeResult<TData> & {
   encoded?: boolean;
-}
+};
 
 export interface Invocable {
   invoke(

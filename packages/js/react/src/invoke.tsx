@@ -1,15 +1,11 @@
 import { usePolywrapClient } from "./client";
 import { useStateReducer } from "./state";
 
-import {
-  InvokeOptions,
-  InvokeResult,
-  isBuffer
-} from "@polywrap/core-js";
+import { InvokeOptions, isBuffer, InvokeResult } from "@polywrap/core-js";
 
-export interface UsePolywrapInvokeState<
-  TData = unknown
-> extends InvokeResult<TData> {
+export interface UsePolywrapInvokeState<TData = unknown> {
+  data?: TData;
+  error?: Error
   loading: boolean;
 }
 
@@ -27,9 +23,8 @@ export interface UsePolywrapInvokeProps extends InvokeOptions<string> {
 Note that the initial values passed into the usePolywrapInvoke hook will be
 ignored when an Uint8Array is passed into execute(...).
 */
-export interface UsePolywrapInvoke<
-  TData = unknown
-> extends UsePolywrapInvokeState<TData> {
+export interface UsePolywrapInvoke<TData = unknown>
+  extends UsePolywrapInvokeState<TData> {
   execute: (
     args?: Record<string, unknown> | Uint8Array
   ) => Promise<InvokeResult<TData>>;
@@ -48,15 +43,19 @@ export function usePolywrapInvoke<
 
   const execute = async (args?: Record<string, unknown> | Uint8Array) => {
     dispatch({ loading: true });
-    const { data, error } = await client.invoke<TData>({
+    const result = await client.invoke<TData>({
       ...props,
       args: isBuffer(args) ? args : {
         ...props.args,
         ...args,
       },
     });
-    dispatch({ data, error, loading: false });
-    return { data, error };
+    if (result.ok) {
+      dispatch({ data: result.value, loading: false });
+    } else {
+      dispatch({ error: result.error, loading: false });
+    }
+    return result;
   };
 
   return {

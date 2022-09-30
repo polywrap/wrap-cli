@@ -2,6 +2,7 @@
 import { Client, MaybeAsync, executeMaybeAsyncFunction } from ".";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 /**
  * Invocable plugin method.
@@ -42,20 +43,27 @@ export abstract class PluginModule<
   public async _wrap_invoke<
     TArgs extends Record<string, unknown> = Record<string, unknown>,
     TResult = unknown
-  >(method: string, args: TArgs, client: Client): Promise<TResult> {
+  >(
+    method: string,
+    args: TArgs,
+    client: Client
+  ): Promise<Result<TResult, Error>> {
     const fn = this.getMethod<TArgs, TResult>(method);
 
     if (!fn) {
-      throw Error(`Plugin missing method "${method}"`);
+      return ResultErr(Error(`Plugin missing method "${method}"`));
     }
 
     if (typeof fn !== "function") {
-      throw Error(`Plugin method "${method}" must be of type 'function'`);
+      return ResultErr(
+        Error(`Plugin method "${method}" must be of type 'function'`)
+      );
     }
 
-    return await executeMaybeAsyncFunction<TResult>(
+    const data = await executeMaybeAsyncFunction<TResult>(
       fn.bind(this, args, client)
     );
+    return ResultOk(data);
   }
 
   public getMethod<

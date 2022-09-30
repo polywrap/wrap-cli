@@ -11,7 +11,8 @@ import { ipfsResolverPlugin } from "..";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { IpfsClient } from "./helpers/IpfsClient";
 import { createIpfsClient } from "./helpers/createIpfsClient";
-import { InvokeResult } from "@polywrap/core-js";
+import { Result } from "@polywrap/core-js";
+import { ResultOk } from "@polywrap/result";
 
 jest.setTimeout(300000);
 
@@ -89,13 +90,10 @@ describe("IPFS Plugin", () => {
 
   const createRacePromise = (
     timeout: number
-  ): Promise<InvokeResult<Uint8Array>> => {
-    return new Promise<InvokeResult<Uint8Array>>((resolve) =>
+  ): Promise<Result<Uint8Array, Error>> => {
+    return new Promise<Result<Uint8Array, Error>>((resolve) =>
       setTimeout(() => {
-        resolve({
-          data: Uint8Array.from([1, 2, 3, 4]),
-          error: undefined,
-        });
+        resolve(ResultOk(Uint8Array.from([1, 2, 3, 4])));
       }, timeout)
     );
   };
@@ -128,8 +126,15 @@ describe("IPFS Plugin", () => {
         slowerRacePromise,
       ]);
 
-      expect(fasterRaceResult.data).toStrictEqual((await fasterRacePromise).data);
-      expect(slowerRaceResult.data).toStrictEqual((await getFilePromise).data);
+      if (!fasterRaceResult.ok) fail(fasterRaceResult.error);
+      const expectedFasterResult = await fasterRacePromise;
+      if (!expectedFasterResult.ok) fail(expectedFasterResult.error)
+      expect(fasterRaceResult.value).toStrictEqual(expectedFasterResult.value);
+
+      if (!slowerRaceResult.ok) fail(slowerRaceResult.error);
+      const expectedSlowerResult = await getFilePromise;
+      if (!expectedSlowerResult.ok) fail(expectedSlowerResult.error);
+      expect(slowerRaceResult.value).toStrictEqual(expectedSlowerResult.value);
     };
 
     const timeout = 1000;
@@ -187,8 +192,15 @@ describe("IPFS Plugin", () => {
         slowerRacePromise,
       ]);
 
-      expect(fasterRaceResult.data).toStrictEqual((await fasterRacePromise).data);
-      expect(slowerRaceResult.data).toStrictEqual((await getFilePromise).data);
+      if (!fasterRaceResult.ok) fail(fasterRaceResult.error);
+      const expectedFasterResult = await fasterRacePromise;
+      if (!expectedFasterResult.ok) fail(expectedFasterResult.error)
+      expect(fasterRaceResult.value).toStrictEqual(expectedFasterResult.value);
+
+      if (!slowerRaceResult.ok) fail(slowerRaceResult.error);
+      const expectedSlowerResult = await getFilePromise;
+      if (!expectedSlowerResult.ok) fail(expectedSlowerResult.error);
+      expect(slowerRaceResult.value).toStrictEqual(expectedSlowerResult.value);
     };
 
     const timeout = 1000;

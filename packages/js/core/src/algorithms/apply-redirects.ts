@@ -1,26 +1,28 @@
 import { Uri, UriRedirect } from "../types";
 
 import { Tracer } from "@polywrap/tracing-js";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export const applyRedirects = Tracer.traceFunc(
   "core: applyRedirects",
-  (uri: Uri, redirects: readonly UriRedirect<Uri>[]): Uri => {
+  (uri: Uri, redirects: readonly UriRedirect<Uri>[]): Result<Uri, Error> => {
     // Keep track of past redirects (from -> to) to find the final uri
     const redirectFromToMap: Record<string, Uri> = {};
 
-    const throwError = (message: string) => {
-      throw Error(
+    const createError = (message: string) => {
+      const error = Error(
         `${message}\nResolution Stack: ${JSON.stringify(
           redirectFromToMap,
           null,
           2
         )}`
       );
+      return ResultErr(error);
     };
 
     for (const redirect of redirects) {
       if (!redirect.from) {
-        throwError(
+        return createError(
           `Redirect missing the from property.\nEncountered while resolving ${uri.uri}`
         );
       }
@@ -42,10 +44,10 @@ export const applyRedirects = Tracer.traceFunc(
       finalUri = redirectFromToMap[finalUri.uri];
 
       if (visitedUris[finalUri.uri]) {
-        throwError(`Infinite loop while resolving URI "${uri}".`);
+        return createError(`Infinite loop while resolving URI "${uri}".`);
       }
     }
 
-    return finalUri;
+    return ResultOk(finalUri);
   }
 );

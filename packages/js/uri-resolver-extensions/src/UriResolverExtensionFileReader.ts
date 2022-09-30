@@ -8,6 +8,7 @@ import {
   Wrapper,
 } from "@polywrap/core-js";
 import { IFileReader } from "@polywrap/wasm-js";
+import { Result } from "@polywrap/result";
 
 export class UriResolverExtensionFileReader implements IFileReader {
   constructor(
@@ -16,8 +17,8 @@ export class UriResolverExtensionFileReader implements IFileReader {
     private readonly client: Client
   ) {}
 
-  async readFile(filePath: string): Promise<Uint8Array | undefined> {
-    const { data, error } = await UriResolverInterface.module.getFile(
+  async readFile(filePath: string): Promise<Result<Uint8Array, Error>> {
+    return await UriResolverInterface.module.getFile(
       {
         invoke: <TData = unknown, TUri extends Uri | string = string>(
           options: InvokeOptions<TUri>
@@ -31,11 +32,5 @@ export class UriResolverExtensionFileReader implements IFileReader {
       this.resolverExtensionUri,
       combinePaths(this.wrapperUri.path, filePath)
     );
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
   }
 }
