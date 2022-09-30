@@ -23,9 +23,6 @@ def sanitize(value: Any) -> Any:
     elif type(value) is tuple:
         array: List[Any] = list(value)
         return sanitize(array)
-        ##previous implementation below:
-        #array: List[Any] = list(*value)
-        #return [sanitize(a) for a in array]
     elif type(value) is set:
         sanitized_set: List[Any] = [i for i in value]
         return sanitized_set

@@ -75,8 +75,8 @@ def test_generic_map_decode():
 def test_sanitize_str_returns_same_str():
     assert sanitize("https://docs.polywrap.io/") == "https://docs.polywrap.io/"
 
-#def test_sanitized_polywrap_ens_uri(UriPath):
-#    pass
+def test_sanitized_polywrap_ens_uri(UriPath):
+    assert sanitize("wrap://authority-v2/path.to.thing.root/sub/path") == "wrap://authority-v2/path.to.thing.root/sub/path"
 
 # LISTS
 
@@ -128,7 +128,7 @@ def test_sanitize_nested_tuples_returns_nested_list(nested_tuple, nested_list):
 
 def test_sanitize_set_returns_list(set1):
     # Remember sets automatically reorganize the contents of the object
-    # meaning {'bob', 'alice'} might be stored as {'alice','bob'} in memory
+    # meaning {'bob', 'alice'} might be stored as ['alice','bob'] once sanitized
     assert type(sanitize(set1)) == list
 
 def test_sanitize_set_returns_list_with_all_items_of_the_set(set1, set2):
