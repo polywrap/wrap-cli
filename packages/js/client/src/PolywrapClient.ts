@@ -14,7 +14,7 @@ import {
   SubscribeOptions,
   Subscription,
   Uri,
-  UriRedirect,
+  IUriRedirect,
   createQueryDocument,
   getImplementations,
   parseQuery,
@@ -28,63 +28,53 @@ import {
   QueryResult,
   InvokeResult,
 } from "@polywrap/core-js";
-import {
-  buildCleanUriHistory,
-  IWrapperCache,
-} from "@polywrap/uri-resolvers-js";
+import { buildCleanUriHistory } from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
   DeserializeManifestOptions,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
-import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
+export interface PolywrapClientArgs {
+  redirects?: IUriRedirect<Uri | string>[];
+  interfaces?: InterfaceImplementations<Uri | string>[];
+  envs?: Env<Uri | string>[];
+  resolver: IUriResolver<unknown>;
+  tracerConfig?: Partial<TracerConfig>;
+}
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
   tracerConfig: Partial<TracerConfig>;
-  wrapperCache?: IWrapperCache;
 }
 
 export class PolywrapClient implements Client {
-  private _config: PolywrapClientConfig<Uri> = ({
-    redirects: [],
-    interfaces: [],
-    envs: [],
-    tracerConfig: {},
-  } as unknown) as PolywrapClientConfig<Uri>;
+  private _config: PolywrapClientConfig<Uri>;
 
-  constructor(
-    config?: Partial<PolywrapClientConfig<string | Uri>>,
-    options?: { noDefaults?: boolean }
-  ) {
+  constructor(config: PolywrapClientArgs) {
     try {
       this.setTracingEnabled(config?.tracerConfig);
 
       Tracer.startSpan("PolywrapClient: constructor");
 
-      const builder = new ClientConfigBuilder();
-
-      if (!options?.noDefaults) {
-        builder.addDefaults(config?.wrapperCache, config?.resolver);
-        if (config) {
-          // Add everything except for the resolver because we already added it above
-          builder.add({
-            ...config,
-            resolver: undefined,
-          });
-        }
-      } else {
-        if (config) {
-          builder.add(config);
-        }
-      }
-
-      const sanitizedConfig = builder.build();
-
       this._config = {
-        ...sanitizedConfig,
+        redirects:
+          config?.redirects?.map((x) => ({
+            from: Uri.from(x.from),
+            to: Uri.from(x.to),
+          })) ?? [],
+        interfaces:
+          config?.interfaces?.map((x) => ({
+            interface: Uri.from(x.interface),
+            implementations: x.implementations.map((y) => Uri.from(y)),
+          })) ?? [],
+        envs:
+          config?.envs?.map((x) => ({
+            uri: Uri.from(x.uri),
+            env: x.env,
+          })) ?? [],
+        resolver: config.resolver,
         tracerConfig: {
           consoleEnabled: !!config?.tracerConfig?.consoleEnabled,
           consoleDetailed: config?.tracerConfig?.consoleDetailed,
@@ -113,11 +103,10 @@ export class PolywrapClient implements Client {
     } else {
       Tracer.disableTracing();
     }
-    this._config.tracerConfig = tracerConfig ?? {};
   }
 
   @Tracer.traceMethod("PolywrapClient: getRedirects")
-  public getRedirects(): readonly UriRedirect<Uri>[] {
+  public getRedirects(): readonly IUriRedirect<Uri>[] {
     return this._config.redirects;
   }
 
@@ -330,8 +319,9 @@ export class PolywrapClient implements Client {
         typedOptions.uri,
         resolutionContext
       );
+
       if (!loadWrapperResult.ok) {
-        return ResultErr(loadWrapperResult.error);
+        return loadWrapperResult;
       }
       const wrapper = loadWrapperResult.value;
 
@@ -347,7 +337,7 @@ export class PolywrapClient implements Client {
       });
 
       if (!invokeResult.ok) {
-        return ResultErr(invokeResult.error);
+        return invokeResult;
       }
 
       return invokeResult;
