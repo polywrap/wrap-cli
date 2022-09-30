@@ -21,8 +21,13 @@ def sanitize(value: Any) -> Any:
         array: List[Any] = value
         return [sanitize(a) for a in array]
     elif type(value) is tuple:
-        array: List[Any] = list(*value)
-        return [sanitize(a) for a in array]
+        array: List[Any] = list(value)
+        return sanitize(array)
+    elif type(value) is set:
+        sanitized_set: List[Any] = [i for i in value]
+        return sanitized_set
+    elif type(value) == complex:
+        return str(value)
     elif hasattr(value, "__slots__"):
         return {s: sanitize(getattr(value, s)) for s in getattr(value, "__slots__") if hasattr(value, s)}
     elif hasattr(value, "__dict__"):
