@@ -1,19 +1,24 @@
 import { validateClientConfig } from "../helpers";
 import { intlMsg } from "../intl";
 import { importTypescriptModule } from "../system";
-import { getTestEnvClientConfig } from "../test-env";
+import { getTestEnvConfigBuilder } from "../test-env";
 
-import { executeMaybeAsyncFunction } from "@polywrap/core-js";
-import { PolywrapClientConfig } from "@polywrap/client-js";
+import {
+  ClientConfig,
+  executeMaybeAsyncFunction,
+  Uri,
+} from "@polywrap/core-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import path from "path";
 
 export async function parseClientConfigOption(
   clientConfig: string | undefined
-): Promise<Partial<PolywrapClientConfig>> {
-  let finalClientConfig: Partial<PolywrapClientConfig>;
+): Promise<Partial<ClientConfig<Uri>>> {
+  let builder: ClientConfigBuilder;
+  let config: ClientConfig<Uri>;
 
   try {
-    finalClientConfig = await getTestEnvClientConfig();
+    builder = await getTestEnvConfigBuilder();
   } catch (e) {
     console.error(intlMsg.commands_run_error_noTestEnvFound());
     process.exit(1);
@@ -43,18 +48,21 @@ export async function parseClientConfigOption(
       process.exit(1);
     }
 
-    finalClientConfig = await executeMaybeAsyncFunction(
+    builder = await executeMaybeAsyncFunction(
       configModule.getClientConfig,
-      finalClientConfig
+      builder
     );
 
+    config = builder.build();
     try {
-      validateClientConfig(finalClientConfig);
+      validateClientConfig(config);
     } catch (e) {
       console.error(e.message);
       process.exit(1);
     }
+  } else {
+    config = builder.build();
   }
 
-  return finalClientConfig;
+  return config;
 }

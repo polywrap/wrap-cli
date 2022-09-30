@@ -1,7 +1,10 @@
 import { getTestEnvProviders } from "./providers";
 
 import { PolywrapClientConfig } from "@polywrap/client-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
+import {
+  defaultIpfsProviders,
+  ClientConfigBuilder,
+} from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
   ethereumPlugin,
@@ -72,4 +75,54 @@ export async function getTestEnvClientConfig(): Promise<
     resolver: buildUriResolver(packages),
     envs,
   };
+}
+
+export async function getTestEnvConfigBuilder(): Promise<ClientConfigBuilder> {
+  const builder = new ClientConfigBuilder().addDefaults();
+
+  const providers = await getTestEnvProviders();
+  const ipfsProvider = providers.ipfsProvider;
+  const ethProvider = providers.ethProvider;
+
+  if (!ipfsProvider || !ethProvider) {
+    throw Error("Test environment not found.");
+  }
+
+  const ensAddress = ensAddresses.ensAddress;
+
+  // TODO: move this into its own package, since it's being used everywhere?
+  // maybe have it exported from test-env.
+  builder.addPackages([
+    {
+      uri: "wrap://ens/ethereum.polywrap.eth",
+      package: ethereumPlugin({
+        connections: new Connections({
+          networks: {
+            testnet: new Connection({
+              provider: ethProvider,
+            }),
+          },
+        }),
+      }),
+    },
+    {
+      uri: "wrap://ens/ipfs.polywrap.eth",
+      package: ipfsPlugin({}),
+    },
+    {
+      uri: "wrap://ens/ens-resolver.polywrap.eth",
+      package: ensResolverPlugin({
+        addresses: {
+          testnet: ensAddress,
+        },
+      }),
+    },
+  ]);
+
+  builder.addEnv("wrap://ens/ipfs.polywrap.eth", {
+    provider: ipfsProvider,
+    fallbackProviders: defaultIpfsProviders,
+  });
+
+  return builder;
 }
