@@ -13,8 +13,8 @@ describe("log method", () => {
       },
     });
 
-    expect(response.error).toBeUndefined();
-    expect(response.data).toBeDefined();
-    expect(response.data).toBe(true);
+    if (!response.ok) fail(response.error);
+    expect(response.value).toBeDefined();
+    expect(response.value).toBe(true);
   });
 });

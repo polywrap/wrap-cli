@@ -1,3 +1,3 @@
 {
-  "args": ["--manifest", "./polywrap.test.json"]
+  "args": ["--manifest-file", "./polywrap.test.json"]
 }

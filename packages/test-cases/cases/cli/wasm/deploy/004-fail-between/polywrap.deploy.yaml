@@ -1,6 +1,6 @@
 format: "0.2.0"
-sequences:
-  - name: test
+jobs:
+  test:
     config:
       provider: 'http://localhost:8545'
       gatewayUri: $IPFS_GATEWAY_URI

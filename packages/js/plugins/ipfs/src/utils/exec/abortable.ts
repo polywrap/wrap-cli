@@ -77,7 +77,7 @@ export const execAbortable = <TReturn>(
     provider,
     abort: () => {
       controller.abort();
-      timer && clearTimeout();
+      timer && clearTimeout(timer);
     },
   };
 };
