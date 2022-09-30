@@ -5,18 +5,23 @@ import { PluginModule } from "../PluginModule";
 import { GetPluginMethodsFunc } from "./GetPluginMethodsFunc";
 
 import { Client, executeMaybeAsyncFunction } from "@polywrap/core-js";
+import { Result, ResultOk } from "@polywrap/result";
 
 export class PluginModuleWithMethods<
   TEnv extends Record<string, unknown> = Record<string, unknown>
 > extends PluginModule<never, TEnv> {
-  constructor(private getPluginMethods: GetPluginMethodsFunc) {
+  constructor(private getPluginMethods: GetPluginMethodsFunc<TEnv>) {
     super({} as never);
   }
 
   async _wrap_invoke<
     TArgs extends Record<string, unknown> = Record<string, unknown>,
     TResult = unknown
-  >(method: string, args: TArgs, client: Client): Promise<TResult> {
+  >(
+    method: string,
+    args: TArgs,
+    client: Client
+  ): Promise<Result<TResult, Error>> {
     const fn = this.getMethod<TArgs, TResult>(method);
 
     if (!fn) {
@@ -27,9 +32,10 @@ export class PluginModuleWithMethods<
       throw Error(`Plugin method "${method}" must be of type 'function'`);
     }
 
-    return await executeMaybeAsyncFunction<TResult>(
+    const data = await executeMaybeAsyncFunction<TResult>(
       fn.bind(this, args, client)
     );
+    return ResultOk(data);
   }
 
   getMethod<
