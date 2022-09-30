@@ -1,4 +1,4 @@
-import { ClientConfig, IUriResolver, Uri } from "@polywrap/core-js";
+import { IUriPackage, Uri } from "@polywrap/core-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import {
@@ -6,34 +6,15 @@ import {
   Connection,
   Connections,
 } from "@polywrap/ethereum-plugin-js";
-import {
-  LegacyRedirectsResolver,
-  IWrapperCache,
-  WrapperCache,
-  PackageToWrapperCacheResolver,
-  RecursiveResolver,
-  UriResolverLike,
-  buildUriResolver,
-} from "@polywrap/uri-resolvers-js";
-import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { httpResolverPlugin } from "@polywrap/http-resolver-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
+import { CustomClientConfig } from "../CustomClientConfig";
 
-export const getDefaultClientConfig = (
-  wrapperCache?: IWrapperCache,
-  resolver?: IUriResolver<unknown>
-): ClientConfig<Uri> => {
-  const innerResolvers: UriResolverLike[] = resolver
-    ? [new LegacyRedirectsResolver(), resolver]
-    : [new LegacyRedirectsResolver()];
-
-  innerResolvers.push(...getDefaultPlugins());
-  innerResolvers.push(new ExtendableUriResolver());
-
+export const getDefaultConfig = (): CustomClientConfig<Uri> => {
   return {
     envs: [
       {
@@ -71,6 +52,7 @@ export const getDefaultClientConfig = (
           new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
           new Uri("wrap://ens/ens-resolver.polywrap.eth"),
           new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+          new Uri("wrap://ens/http-resolver.polywrap.eth"),
         ],
       },
       {
@@ -78,12 +60,9 @@ export const getDefaultClientConfig = (
         implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
       },
     ],
-    resolver: new RecursiveResolver(
-      new PackageToWrapperCacheResolver(
-        wrapperCache ?? new WrapperCache(),
-        buildUriResolver(innerResolvers)
-      )
-    ),
+    packages: getDefaultPlugins(),
+    wrappers: [],
+    resolvers: [],
   };
 };
 
@@ -98,7 +77,7 @@ export const defaultWrappers = {
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
 };
 
-export const getDefaultPlugins = (): UriResolverLike[] => {
+export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
   return [
     // IPFS is required for downloading Polywrap packages
     {
