@@ -1,5 +1,26 @@
+import {
+  AnyAppManifest,
+  AnyBuildManifest,
+  AnyDeployManifest,
+  AnyInfraManifest,
+  AnyMetaManifest,
+  AnyPluginManifest,
+  AnyPolywrapManifest,
+  AnyPolywrapWorkflow,
+} from "../formats";
+
+type AnyManifest =
+  | AnyPolywrapManifest
+  | AnyPluginManifest
+  | AnyAppManifest
+  | AnyInfraManifest
+  | AnyDeployManifest
+  | AnyBuildManifest
+  | AnyMetaManifest
+  | AnyPolywrapWorkflow;
+
 export type Migrator = {
   from: string;
   to: string;
-  migrate: (manifest: unknown) => unknown;
+  migrate: (manifest: AnyManifest) => AnyManifest;
 };

@@ -8,27 +8,27 @@ describe("Manifest migration pathfinding", () => {
     {
       from: "0.1.0",
       to: "0.2.0",
-      migrate: () => {},
+      migrate: (x) => x,
     },
     {
       from: "0.2.0",
       to: "0.3.0",
-      migrate: () => {},
+      migrate: (x) => x,
     },
     {
       from: "0.3.0",
       to: "0.4.0",
-      migrate: () => {},
+      migrate: (x) => x,
     },
     {
       from: "0.4.0",
       to: "0.5.0",
-      migrate: () => {},
+      migrate: (x) => x,
     },
     {
       from: "0.2.0",
       to: "0.4.0",
-      migrate: () => {},
+      migrate: (x) => x,
     },
   ];
 
