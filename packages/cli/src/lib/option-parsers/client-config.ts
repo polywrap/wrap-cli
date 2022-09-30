@@ -1,24 +1,27 @@
 import { validateClientConfig } from "../helpers";
 import { intlMsg } from "../intl";
 import { importTypescriptModule } from "../system";
-import { getTestEnvConfigBuilder } from "../test-env";
+import { getTestEnvCustomConfig } from "../test-env";
 
 import {
   ClientConfig,
   executeMaybeAsyncFunction,
   Uri,
 } from "@polywrap/core-js";
-import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import {
+  ClientConfigBuilder,
+  CustomClientConfig,
+} from "@polywrap/client-config-builder-js";
 import path from "path";
 
 export async function parseClientConfigOption(
   clientConfig: string | undefined
 ): Promise<Partial<ClientConfig<Uri>>> {
-  let builder: ClientConfigBuilder;
+  const builder = new ClientConfigBuilder().addDefaults();
   let config: ClientConfig<Uri>;
 
   try {
-    builder = await getTestEnvConfigBuilder();
+    builder.add(getTestEnvCustomConfig());
   } catch (e) {
     console.error(intlMsg.commands_run_error_noTestEnvFound());
     process.exit(1);
@@ -40,7 +43,7 @@ export async function parseClientConfigOption(
       process.exit(1);
     }
 
-    if (!configModule || !configModule.getClientConfig) {
+    if (!configModule || !configModule.getCustomConfig) {
       const configsModuleMissingExportMessage = intlMsg.commands_run_error_clientConfigModuleMissingExport(
         { module: configModule }
       );
@@ -48,20 +51,19 @@ export async function parseClientConfigOption(
       process.exit(1);
     }
 
-    builder = await executeMaybeAsyncFunction(
-      configModule.getClientConfig,
-      builder
-    );
+    const customConfig = await executeMaybeAsyncFunction<
+      Partial<CustomClientConfig<Uri | string>>
+    >(configModule.getCustomConfig);
 
-    config = builder.build();
     try {
-      validateClientConfig(config);
+      validateClientConfig(customConfig);
+      config = builder.add(customConfig).buildDefault();
     } catch (e) {
       console.error(e.message);
       process.exit(1);
     }
   } else {
-    config = builder.build();
+    config = builder.buildDefault();
   }
 
   return config;

@@ -3,7 +3,7 @@ import { getTestEnvProviders } from "./providers";
 import { PolywrapClientConfig } from "@polywrap/client-js";
 import {
   defaultIpfsProviders,
-  ClientConfigBuilder,
+  CustomClientConfig,
 } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
@@ -13,16 +13,11 @@ import {
 } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensAddresses } from "@polywrap/test-env-js";
-import { Env } from "@polywrap/core-js";
-import {
-  PackageRegistration,
-  buildUriResolver,
-} from "@polywrap/uri-resolvers-js";
+import { Env, IUriPackage, Uri } from "@polywrap/core-js";
+import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 
-export async function getTestEnvClientConfig(): Promise<
-  Partial<PolywrapClientConfig>
-> {
-  const providers = await getTestEnvProviders();
+export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
+  const providers = getTestEnvProviders();
   const ipfsProvider = providers.ipfsProvider;
   const ethProvider = providers.ethProvider;
 
@@ -34,7 +29,7 @@ export async function getTestEnvClientConfig(): Promise<
 
   // TODO: move this into its own package, since it's being used everywhere?
   // maybe have it exported from test-env.
-  const packages: PackageRegistration[] = [
+  const packages: IUriPackage<Uri | string>[] = [
     {
       uri: "wrap://ens/ethereum.polywrap.eth",
       package: ethereumPlugin({
@@ -77,10 +72,8 @@ export async function getTestEnvClientConfig(): Promise<
   };
 }
 
-export async function getTestEnvConfigBuilder(): Promise<ClientConfigBuilder> {
-  const builder = new ClientConfigBuilder().addDefaults();
-
-  const providers = await getTestEnvProviders();
+export function getTestEnvCustomConfig(): Partial<CustomClientConfig<string>> {
+  const providers = getTestEnvProviders();
   const ipfsProvider = providers.ipfsProvider;
   const ethProvider = providers.ethProvider;
 
@@ -90,39 +83,41 @@ export async function getTestEnvConfigBuilder(): Promise<ClientConfigBuilder> {
 
   const ensAddress = ensAddresses.ensAddress;
 
-  // TODO: move this into its own package, since it's being used everywhere?
-  // maybe have it exported from test-env.
-  builder.addPackages([
-    {
-      uri: "wrap://ens/ethereum.polywrap.eth",
-      package: ethereumPlugin({
-        connections: new Connections({
-          networks: {
-            testnet: new Connection({
-              provider: ethProvider,
-            }),
+  return {
+    envs: [
+      {
+        uri: "wrap://ens/ipfs.polywrap.eth",
+        env: {
+          provider: ipfsProvider,
+          fallbackProviders: defaultIpfsProviders,
+        },
+      },
+    ],
+    packages: [
+      {
+        uri: "wrap://ens/ethereum.polywrap.eth",
+        package: ethereumPlugin({
+          connections: new Connections({
+            networks: {
+              testnet: new Connection({
+                provider: ethProvider,
+              }),
+            },
+          }),
+        }),
+      },
+      {
+        uri: "wrap://ens/ipfs.polywrap.eth",
+        package: ipfsPlugin({}),
+      },
+      {
+        uri: "wrap://ens/ens-resolver.polywrap.eth",
+        package: ensResolverPlugin({
+          addresses: {
+            testnet: ensAddress,
           },
         }),
-      }),
-    },
-    {
-      uri: "wrap://ens/ipfs.polywrap.eth",
-      package: ipfsPlugin({}),
-    },
-    {
-      uri: "wrap://ens/ens-resolver.polywrap.eth",
-      package: ensResolverPlugin({
-        addresses: {
-          testnet: ensAddress,
-        },
-      }),
-    },
-  ]);
-
-  builder.addEnv("wrap://ens/ipfs.polywrap.eth", {
-    provider: ipfsProvider,
-    fallbackProviders: defaultIpfsProviders,
-  });
-
-  return builder;
+      },
+    ],
+  };
 }

@@ -3,11 +3,8 @@
 
 import * as Types from "./types";
 
-import {
-  Client,
-  PluginModule,
-  MaybeAsync
-} from "@polywrap/core-js";
+import { Client, MaybeAsync } from "@polywrap/core-js";
+import { PluginModule } from "@polywrap/plugin-js";
 
 export interface Args_methodOne {
   str: Types.String;

@@ -4,12 +4,12 @@ import {
   Env,
   InterfaceImplementations,
   Uri,
-  UriRedirect,
-  ClientConfig,
+  IUriRedirect,
 } from "@polywrap/client-js";
+import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 
 export function validateRedirects<TUri extends Uri | string>(
-  redirects: UriRedirect<TUri>[]
+  redirects: IUriRedirect<TUri>[]
 ): void {
   if (!Array.isArray(redirects)) {
     throw new Error(intlMsg.commands_run_error_redirectsExportNotArray());
@@ -121,7 +121,9 @@ export function validateEnvs<TUri extends Uri | string = string>(
   }
 }
 
-export function validateClientConfig(config: Partial<ClientConfig<Uri>>): void {
+export function validateClientConfig(
+  config: Partial<CustomClientConfig<Uri | string>>
+): void {
   if (!config || typeof config !== "object") {
     throw new Error(intlMsg.commands_run_error_clientConfigNotObject());
   }

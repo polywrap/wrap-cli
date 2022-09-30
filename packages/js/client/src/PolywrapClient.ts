@@ -37,14 +37,7 @@ import {
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
-export interface PolywrapClientArgs {
-  redirects?: IUriRedirect<Uri | string>[];
-  interfaces?: InterfaceImplementations<Uri | string>[];
-  envs?: Env<Uri | string>[];
-  resolver: IUriResolver<unknown>;
-  tracerConfig?: Partial<TracerConfig>;
-}
-export interface PolywrapClientConfig<TUri extends Uri | string = string>
+export interface PolywrapClientConfig<TUri extends Uri | string = Uri | string>
   extends ClientConfig<TUri> {
   tracerConfig: Partial<TracerConfig>;
 }
@@ -52,11 +45,15 @@ export interface PolywrapClientConfig<TUri extends Uri | string = string>
 export class PolywrapClient implements Client {
   private _config: PolywrapClientConfig<Uri>;
 
-  constructor(config: PolywrapClientArgs) {
+  constructor(config: Partial<PolywrapClientConfig>) {
     try {
       this.setTracingEnabled(config?.tracerConfig);
 
       Tracer.startSpan("PolywrapClient: constructor");
+
+      if (!config?.resolver) {
+        throw new Error("URI Resolver is required but not defined");
+      }
 
       this._config = {
         redirects:

@@ -5,14 +5,13 @@ import { Deployer } from "../../../deploy";
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
-import { PolywrapClient } from "@polywrap/client-js";
 import {
   ethereumPlugin,
   Connections,
   Connection,
 } from "@polywrap/ethereum-plugin-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
+import { createDefaultClient } from "../../../../utils/createDefaultClient";
 
 class ENSRecursiveNameRegisterPublisher implements Deployer {
   async execute(
@@ -48,7 +47,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
     const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
     const ensWrapperUri = embeddedWrappers.ens;
 
-    const client = new PolywrapClient({
+    const client = createDefaultClient({
       redirects: [
         {
           from: "wrap://ens/uts46.polywrap.eth",
@@ -59,7 +58,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
           to: embeddedWrappers.sha3,
         },
       ],
-      resolver: buildUriResolver([
+      packages: [
         {
           uri: ethereumPluginUri,
           package: ethereumPlugin({
@@ -74,7 +73,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
             }),
           }),
         },
-      ]),
+      ],
     });
 
     const signerAddress = await client.invoke<string>({

@@ -1,5 +1,9 @@
-import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { PluginModule } from "@polywrap/plugin-js";
+import { CustomClientConfig } from "@polywrap/client-config-builder-js";
+import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
+import {
+  latestWrapManifestVersion,
+  WrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
 
 interface Config extends Record<string, unknown> {
   val: number;
@@ -21,9 +25,12 @@ class MockPlugin extends PluginModule<Config> {
 }
 
 const mockPlugin = () => {
-  return {
-    factory: () => new MockPlugin({ val: 0 }),
-    manifest: {
+  return PluginPackage.from(
+    new MockPlugin({ val: 0 }) as PluginModule<Config>,
+    {
+      name: "mock",
+      type: "plugin",
+      version: latestWrapManifestVersion,
       abi: {
         objectTypes: [],
         enumTypes: [],
@@ -34,8 +41,6 @@ const mockPlugin = () => {
         importedEnvTypes: [],
         moduleType: {
           type: "Module",
-          name: null,
-          required: null,
           kind: 128,
           methods: [
             {
@@ -49,17 +54,12 @@ const mockPlugin = () => {
                 name: "getData",
                 required: true,
                 kind: 34,
-                array: null,
-                map: null,
                 scalar: {
                   type: "Int",
                   name: "getData",
                   required: true,
                   kind: 4,
                 },
-                object: null,
-                enum: null,
-                unresolvedObjectOrEnum: null,
               },
             },
             {
@@ -73,17 +73,12 @@ const mockPlugin = () => {
                   name: "value",
                   required: true,
                   kind: 34,
-                  array: null,
-                  map: null,
                   scalar: {
                     type: "Int",
                     name: "value",
                     required: true,
                     kind: 4,
                   },
-                  object: null,
-                  enum: null,
-                  unresolvedObjectOrEnum: null,
                 },
               ],
               return: {
@@ -91,17 +86,12 @@ const mockPlugin = () => {
                 name: "setData",
                 required: true,
                 kind: 34,
-                array: null,
-                map: null,
                 scalar: {
                   type: "Boolean",
                   name: "setData",
                   required: true,
                   kind: 4,
                 },
-                object: null,
-                enum: null,
-                unresolvedObjectOrEnum: null,
               },
             },
             {
@@ -115,17 +105,12 @@ const mockPlugin = () => {
                 name: "deployContract",
                 required: true,
                 kind: 34,
-                array: null,
-                map: null,
                 scalar: {
                   type: "String",
                   name: "deployContract",
                   required: true,
                   kind: 4,
                 },
-                object: null,
-                enum: null,
-                unresolvedObjectOrEnum: null,
               },
             },
           ],
@@ -134,17 +119,17 @@ const mockPlugin = () => {
         },
       },
       implements: [],
-    },
-  };
+    } as WrapManifest
+  );
 };
 
-export function getClientConfig(
-  builder: ClientConfigBuilder
-): ClientConfigBuilder {
-  builder.addPackage({
-    uri: "wrap://ens/mock.eth",
-    plugin: mockPlugin(),
-  });
-
-  return builder;
+export function getCustomConfig(): Partial<CustomClientConfig<string>> {
+  return {
+    packages: [
+      {
+        uri: "wrap://ens/mock.eth",
+        package: mockPlugin(),
+      }
+    ]
+  };
 }

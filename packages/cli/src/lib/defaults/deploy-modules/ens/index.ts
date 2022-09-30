@@ -5,14 +5,13 @@ import { Deployer } from "../../../deploy";
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
-import { PolywrapClient } from "@polywrap/client-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import {
-  ethereumPlugin,
   Connections,
   Connection,
+  ethereumPlugin,
 } from "@polywrap/ethereum-plugin-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
+import { createDefaultClient } from "../../../../utils/createDefaultClient";
 
 const contentHash = require("content-hash");
 
@@ -49,7 +48,7 @@ class ENSPublisher implements Deployer {
     const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
     const ensWrapperUri = embeddedWrappers.ens;
 
-    const client = new PolywrapClient({
+    const client = createDefaultClient({
       redirects: [
         {
           from: "wrap://ens/uts46.polywrap.eth",
@@ -60,7 +59,7 @@ class ENSPublisher implements Deployer {
           to: embeddedWrappers.sha3,
         },
       ],
-      resolver: buildUriResolver([
+      packages: [
         {
           uri: ethereumPluginUri,
           package: ethereumPlugin({
@@ -75,7 +74,7 @@ class ENSPublisher implements Deployer {
             }),
           }),
         },
-      ]),
+      ],
     });
 
     const resolver = await client.invoke<string>({

@@ -1,5 +1,6 @@
-import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { PluginModule } from "@polywrap/plugin-js";
+import { CustomClientConfig } from "@polywrap/client-config-builder-js";
+import { IWrapPackage } from "@polywrap/core-js";
+import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import {
   latestWrapManifestVersion,
   WrapManifest,
@@ -25,27 +26,24 @@ class MockPlugin extends PluginModule<Config> {
   }
 }
 
-const mockPlugin = () => {
-  return {
-    factory: () => new MockPlugin({ val: 0 }),
-    manifest: {
-      name: "mock",
-      type: "plugin",
-      version: latestWrapManifestVersion,
-      abi,
-    } as WrapManifest,
-  };
+const mockPlugin = (): IWrapPackage => {
+  return PluginPackage.from(new MockPlugin({ val: 0 }), {
+    name: "mock",
+    type: "plugin",
+    version: latestWrapManifestVersion,
+    abi,
+  } as WrapManifest);
 };
 
-export function getClientConfig(
-  builder: ClientConfigBuilder
-): ClientConfigBuilder {
-  builder.addPackage({
-    uri: "wrap://ens/mock.eth",
-    plugin: mockPlugin(),
-  });
-
-  return builder;
+export function getCustomConfig(): Partial<CustomClientConfig<string>> {
+  return {
+    packages: [
+      {
+        uri: "wrap://ens/mock.eth",
+        package: mockPlugin(),
+      },
+    ],
+  };
 }
 
 const abi: WrapAbi = {
