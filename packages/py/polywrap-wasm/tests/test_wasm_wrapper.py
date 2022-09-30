@@ -1,7 +1,13 @@
-from polywrap_wasm import WasmWrapper
+from polywrap_wasm import WasmWrapper, InvokeOptions
 
 
 def test_invoke():
     wrapper = WasmWrapper()
-    result = wrapper.invoke()
-    assert result == 3
+    message = "hello polywrap"
+    args = {
+        "arg": message
+    }
+    options = InvokeOptions(method="sampleMethod", args=args)
+    result = wrapper.invoke(options)
+    print(result)
+    assert result.value == message

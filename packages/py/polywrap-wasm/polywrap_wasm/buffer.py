@@ -2,14 +2,14 @@ from typing import List
 
 
 def write_string(
-    str: str,
+    string: str,
     dst: bytearray,
     dst_offset: int
 ) -> List[int]:
-    str_buffer = str.encode("ascii")
+    str_buffer = string.encode("ascii")
     view = list(dst)
     return mem_cpy(
-        str_buffer,
+        list(str_buffer),
         0,
         view,
         dst_offset,
@@ -32,8 +32,8 @@ def read_bytes(
     offset: int,
     length: int
 ) -> bytearray:
-    buffer = bytearray()
-    write_bytes(from_src[offset, offset + length], buffer, 0)
+    buffer = bytearray(length)
+    write_bytes(from_src[offset: offset + length], buffer, 0)
     return buffer
 
 
@@ -42,7 +42,9 @@ def read_string(
     offset: int,
     length: int
 ):
+
     buffer = read_bytes(from_src, offset, length)
+    print("haha", buffer)
     return buffer.decode()
 
 
@@ -53,5 +55,5 @@ def mem_cpy(
     dst_offset: int,
     length: int
 ) -> List[int]:
-    dst[0 + dst_offset: length] = src[0 + src_offset: length]
+    dst[dst_offset: length] = src[src_offset: length]
     return dst
