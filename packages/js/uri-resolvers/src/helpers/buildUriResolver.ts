@@ -1,15 +1,18 @@
 import { UriResolverAggregator } from "../aggregator";
 import { PackageResolver } from "../packages";
 import { WrapperResolver } from "../wrappers";
-import {
-  PackageRegistration,
-  WrapperRegistration,
-  UriResolverLike,
-} from "../helpers";
+import { UriResolverLike } from "../helpers";
 import { RedirectResolver } from "../redirects";
 
 import { Result } from "@polywrap/result";
-import { IUriResolver, Uri, Client, UriRedirect } from "@polywrap/core-js";
+import {
+  IUriResolver,
+  Uri,
+  Client,
+  IUriRedirect,
+  IUriPackage,
+  IUriWrapper,
+} from "@polywrap/core-js";
 
 export const buildUriResolver = <TError = undefined>(
   resolverLike: UriResolverLike,
@@ -33,28 +36,28 @@ export const buildUriResolver = <TError = undefined>(
   } else if ((resolverLike as IUriResolver).tryResolveUri !== undefined) {
     return resolverLike as IUriResolver<TError>;
   } else if (
-    (resolverLike as UriRedirect<string | Uri>).from !== undefined &&
-    (resolverLike as UriRedirect<string | Uri>).to !== undefined
+    (resolverLike as IUriRedirect<Uri | string>).from !== undefined &&
+    (resolverLike as IUriRedirect<Uri | string>).to !== undefined
   ) {
-    const uriRedirect = resolverLike as UriRedirect<string | Uri>;
+    const uriRedirect = resolverLike as IUriRedirect<Uri | string>;
     return (new RedirectResolver(
       uriRedirect.from,
       uriRedirect.to
     ) as unknown) as IUriResolver<TError>;
   } else if (
-    (resolverLike as PackageRegistration).uri !== undefined &&
-    (resolverLike as PackageRegistration).package !== undefined
+    (resolverLike as IUriPackage<Uri | string>).uri !== undefined &&
+    (resolverLike as IUriPackage<Uri | string>).package !== undefined
   ) {
-    const uriPackage = resolverLike as PackageRegistration;
+    const uriPackage = resolverLike as IUriPackage<Uri | string>;
     return (new PackageResolver(
       Uri.from(uriPackage.uri),
       uriPackage.package
     ) as unknown) as IUriResolver<TError>;
   } else if (
-    (resolverLike as WrapperRegistration).uri !== undefined &&
-    (resolverLike as WrapperRegistration).wrapper !== undefined
+    (resolverLike as IUriWrapper<Uri | string>).uri !== undefined &&
+    (resolverLike as IUriWrapper<Uri | string>).wrapper !== undefined
   ) {
-    const uriWrapper = resolverLike as WrapperRegistration;
+    const uriWrapper = resolverLike as IUriWrapper<Uri | string>;
     return (new WrapperResolver(
       Uri.from(uriWrapper.uri),
       uriWrapper.wrapper

@@ -1,15 +1,14 @@
-import {
-  PackageRegistration,
-  UriResolutionResult,
-  UriResolverLike,
-  WrapperRegistration,
-} from "../helpers";
+import { UriResolutionResult, UriResolverLike } from "../helpers";
 
 import {
+  Client,
+  IUriResolutionContext,
   IUriResolver,
   Uri,
   UriPackageOrWrapper,
-  UriRedirect,
+  IUriRedirect,
+  IUriPackage,
+  IUriWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 
@@ -28,10 +27,10 @@ export class StaticResolver<TError = undefined>
           uriMap.set(uri, uriPackageOrWrapper);
         }
       } else if (
-        (staticResolverLike as UriRedirect<string | Uri>).from !== undefined &&
-        (staticResolverLike as UriRedirect<string | Uri>).to !== undefined
+        (staticResolverLike as IUriRedirect<Uri | string>).from !== undefined &&
+        (staticResolverLike as IUriRedirect<Uri | string>).to !== undefined
       ) {
-        const uriRedirect = staticResolverLike as UriRedirect<string | Uri>;
+        const uriRedirect = staticResolverLike as IUriRedirect<Uri | string>;
         const from = Uri.from(uriRedirect.from);
 
         uriMap.set(from.uri, {
@@ -39,10 +38,10 @@ export class StaticResolver<TError = undefined>
           uri: Uri.from(uriRedirect.to),
         });
       } else if (
-        (staticResolverLike as PackageRegistration).uri !== undefined &&
-        (staticResolverLike as PackageRegistration).package !== undefined
+        (staticResolverLike as IUriPackage<Uri | string>).uri !== undefined &&
+        (staticResolverLike as IUriPackage<Uri | string>).package !== undefined
       ) {
-        const uriPackage = staticResolverLike as PackageRegistration;
+        const uriPackage = staticResolverLike as IUriPackage<Uri | string>;
         const uri = Uri.from(uriPackage.uri);
 
         uriMap.set(uri.uri, {
@@ -51,10 +50,10 @@ export class StaticResolver<TError = undefined>
           package: uriPackage.package,
         });
       } else if (
-        (staticResolverLike as WrapperRegistration).uri !== undefined &&
-        (staticResolverLike as WrapperRegistration).wrapper !== undefined
+        (staticResolverLike as IUriWrapper<Uri | string>).uri !== undefined &&
+        (staticResolverLike as IUriWrapper<Uri | string>).wrapper !== undefined
       ) {
-        const uriWrapper = staticResolverLike as WrapperRegistration;
+        const uriWrapper = staticResolverLike as IUriWrapper<Uri | string>;
         const uri = Uri.from(uriWrapper.uri);
 
         uriMap.set(uri.uri, {
@@ -70,14 +69,40 @@ export class StaticResolver<TError = undefined>
     return new StaticResolver(uriMap);
   }
 
-  // TODO: add history
-  async tryResolveUri(uri: Uri): Promise<Result<UriPackageOrWrapper, TError>> {
-    const result = this.uriMap.get(uri.uri);
+  async tryResolveUri(
+    uri: Uri,
+    _: Client,
+    resolutionContext: IUriResolutionContext
+  ): Promise<Result<UriPackageOrWrapper, TError>> {
+    const uriPackageOrWrapper = this.uriMap.get(uri.uri);
 
-    if (result) {
-      return UriResolutionResult.ok(result);
+    let result: Result<UriPackageOrWrapper, TError>;
+    let description = "";
+
+    if (uriPackageOrWrapper) {
+      result = UriResolutionResult.ok(uriPackageOrWrapper);
+      switch (uriPackageOrWrapper.type) {
+        case "package":
+          description = `StaticResolver - Package (${uri.uri})`;
+          break;
+        case "wrapper":
+          description = `StaticResolver - Wrapper (${uri.uri})`;
+          break;
+        case "uri":
+          description = `StaticResolver - Redirect (${uri.uri} - ${uriPackageOrWrapper.uri.uri})`;
+          break;
+      }
     } else {
-      return UriResolutionResult.ok(uri);
+      result = UriResolutionResult.ok(uri);
+      description = `StaticResolver - Miss`;
     }
+
+    resolutionContext.trackStep({
+      sourceUri: uri,
+      result,
+      description,
+    });
+
+    return result;
   }
 }
