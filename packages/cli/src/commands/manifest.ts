@@ -13,6 +13,7 @@ import {
   maybeGetManifestFormatVersion,
   parseManifestFileOption,
   CacheDirectory,
+  defaultPolywrapManifest,
 } from "../lib";
 import {
   getYamlishSchemaForManifestJsonSchemaObject,
@@ -60,7 +61,7 @@ import path from "path";
 
 const pathStr = intlMsg.commands_manifest_options_m_path();
 
-const defaultProjectManifestStr = defaultProjectManifestFiles.join(" | ");
+const defaultProjectManifestStr = defaultPolywrapManifest.join(" | ");
 
 const manifestTypes = [
   "project",

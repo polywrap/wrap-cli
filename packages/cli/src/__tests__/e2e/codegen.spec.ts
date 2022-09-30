@@ -13,10 +13,7 @@ Generate Code For Polywrap Projects
 
 Options:
   -m, --manifest-file <path>         Path to the Polywrap manifest file
-                                     (default: polywrap.yaml | polywrap.yml |
-                                     polywrap.app.yaml | polywrap.app.yml |
-                                     polywrap.plugin.yaml |
-                                     polywrap.plugin.yml)
+                                     (default: polywrap.yaml | polywrap.yml)
   -g, --codegen-dir <path>            Output directory for the generated code
                                      (default: ./src/wrap)
   -p, --publish-dir <path>           Output path for the built schema and

@@ -12,6 +12,7 @@ import {
   isPluginManifestLanguage,
   generateWrapFile,
   defaultProjectManifestFiles,
+  defaultPolywrapManifest
 } from "../lib";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -22,7 +23,7 @@ const defaultCodegenDir = "./src/wrap";
 const defaultPublishDir = "./build";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
-const defaultManifestStr = defaultProjectManifestFiles.join(" | ");
+const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
 type CodegenCommandOptions = {
   manifestFile: string;

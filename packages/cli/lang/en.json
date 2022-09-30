@@ -257,5 +257,6 @@
   "lib_wrap_abi_not_found": "No WRAP ABI found",
   "lib_helpers_wrap_manifest_outputText": "WRAP manifest written in {path}",
   "lib_helpers_wrap_manifest_outputError": "Error writing WRAP manifest in {path}",
-  "lib_helpers_wrap_manifest_outputWarning": "Warning writing WRAP manifest in {path}"
+  "lib_helpers_wrap_manifest_outputWarning": "Warning writing WRAP manifest in {path}",
+  "lib_option_defaults_deprecated_project_manifest": "WARNING: the filename `{fileName}` is deprecated and will be removed from the default project manifest files in the future. Please rename it to `polywrap.yaml`."
 }

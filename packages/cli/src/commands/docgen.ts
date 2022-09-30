@@ -3,7 +3,6 @@ import {
   AnyProjectManifest,
   AppProject,
   CodeGenerator,
-  defaultAppManifest,
   defaultPolywrapManifest,
   Project,
   SchemaComposer,
@@ -11,9 +10,9 @@ import {
   intlMsg,
   PluginProject,
   parseClientConfigOption,
-  defaultPluginManifest,
   parseDirOption,
-  parseDocgenManifestFileOption,
+  parseManifestFileOption,
+  defaultProjectManifestFiles,
 } from "../lib";
 import { Command, Program } from "./types";
 import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
@@ -33,11 +32,6 @@ const commandToPathMap: Record<string, string> = {
 
 export type DocType = keyof typeof commandToPathMap;
 
-// A list of UNIQUE possible default filenames for the polywrap manifest
-const defaultManifest = defaultPolywrapManifest
-  .concat(defaultAppManifest)
-  .concat(defaultPluginManifest)
-  .filter((value, index, self) => self.indexOf(value) === index);
 const defaultDocgenDir = "./docs";
 const pathStr = intlMsg.commands_codegen_options_o_path();
 
@@ -85,7 +79,7 @@ export const docgen: Command = {
       .option(
         `-m, --manifest-file <${pathStr}>`,
         intlMsg.commands_docgen_options_m({
-          default: defaultManifest.join(" | "),
+          default: defaultPolywrapManifest.join(" | "),
         })
       )
       .option(
@@ -102,7 +96,10 @@ export const docgen: Command = {
       .action(async (action, options) => {
         await run(action, {
           ...options,
-          manifestFile: parseDocgenManifestFileOption(options.manifestFile),
+          manifestFile: parseManifestFileOption(
+            options.manifestFile,
+            defaultProjectManifestFiles
+          ),
           docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
           clientConfig: await parseClientConfigOption(options.clientConfig),
         });
