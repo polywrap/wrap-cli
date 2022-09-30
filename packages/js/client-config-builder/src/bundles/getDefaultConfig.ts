@@ -1,3 +1,5 @@
+import { CustomClientConfig } from "../CustomClientConfig";
+
 import { IUriPackage, Uri } from "@polywrap/core-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
@@ -12,7 +14,6 @@ import { httpResolverPlugin } from "@polywrap/http-resolver-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
-import { CustomClientConfig } from "../CustomClientConfig";
 
 export const getDefaultConfig = (): CustomClientConfig<Uri> => {
   return {
