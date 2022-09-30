@@ -43,11 +43,12 @@ import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
-interface PolywrapClientConfigInternal<TUri extends Uri | string = string>
-  extends ClientConfig<TUri> {
+type PolywrapClientConfigInternal<
+  TUri extends Uri | string = string
+> = ClientConfig<TUri> & {
   tracerConfig: Readonly<Partial<TracerConfig>>;
   wrapperCache?: Readonly<IWrapperCache>;
-}
+};
 
 export type PolywrapClientConfig<TUri extends Uri | string = string> = Readonly<
   PolywrapClientConfigInternal<TUri>
