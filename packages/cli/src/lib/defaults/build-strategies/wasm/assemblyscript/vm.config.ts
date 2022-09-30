@@ -1,7 +1,7 @@
 import { VMConfig } from "../../../../build-strategies/strategies/DockerVMStrategy";
 
 const config: VMConfig = {
-  defaultIncludes: ["package.json", "node_modules"],
+  defaultIncludes: ["package.json", "package-lock.json", "yarn.lock"],
   baseImage: "namesty/base-assemblyscript",
 };
 

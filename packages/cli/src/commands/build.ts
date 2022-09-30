@@ -111,7 +111,7 @@ function createBuildStrategy(
   switch (strategy) {
     case "local":
       return new LocalBuildStrategy({ outputDir, project });
-    case "docker":
+    case "image":
       return new ImageBuildStrategy({ outputDir, project });
     case "vm":
       return new DockerVMBuildStrategy({ outputDir, project });

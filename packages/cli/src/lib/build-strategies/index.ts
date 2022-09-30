@@ -1,3 +1,3 @@
 export * from "./BuildStrategy";
 
-export const SUPPORTED_STRATEGIES = ["docker", "local", "vm"] as const;
+export const SUPPORTED_STRATEGIES = ["image", "local", "vm"] as const;
