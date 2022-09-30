@@ -23,8 +23,9 @@ interface ClientConfigInternal<TUri extends Uri | string = string> {
   resolver: Readonly<IUriResolver<unknown>>;
 }
 
-export interface ClientConfig<TUri extends Uri | string = string>
-  extends Readonly<ClientConfigInternal<TUri>> {}
+export type ClientConfig<TUri extends Uri | string = string> = Readonly<
+  ClientConfigInternal<TUri>
+>;
 
 export interface GetManifestOptions {
   noValidate?: boolean;

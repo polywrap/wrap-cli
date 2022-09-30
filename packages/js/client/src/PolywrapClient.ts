@@ -49,8 +49,9 @@ interface PolywrapClientConfigInternal<TUri extends Uri | string = string>
   wrapperCache?: Readonly<IWrapperCache>;
 }
 
-export interface PolywrapClientConfig<TUri extends Uri | string = string>
-  extends Readonly<PolywrapClientConfigInternal<TUri>> {}
+export type PolywrapClientConfig<TUri extends Uri | string = string> = Readonly<
+  PolywrapClientConfigInternal<TUri>
+>;
 
 export class PolywrapClient implements Client {
   private _config: PolywrapClientConfig<Uri> = ({
