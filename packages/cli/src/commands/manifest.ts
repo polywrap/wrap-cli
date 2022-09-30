@@ -13,11 +13,13 @@ import {
   maybeGetManifestFormatVersion,
   parseManifestFileOption,
   CacheDirectory,
+  defaultCodegenManifest,
 } from "../lib";
 import {
   getYamlishSchemaForManifestJsonSchemaObject,
   migrateAppProjectManifest,
   migrateBuildExtensionManifest,
+  migrateCodegenExtensionManifest,
   migrateDeployExtensionManifest,
   migrateInfraExtensionManifest,
   migrateMetaExtensionManifest,
@@ -33,6 +35,8 @@ import {
   AppManifestSchemaFiles,
   BuildManifestFormats,
   BuildManifestSchemaFiles,
+  CodegenManifestFormats,
+  CodegenManifestSchemaFiles,
   DeployManifestFormats,
   DeployManifestSchemaFiles,
   InfraManifestFormats,
@@ -47,6 +51,7 @@ import {
   PolywrapWorkflowSchemaFiles,
   latestAppManifestFormat,
   latestBuildManifestFormat,
+  latestCodegenManifestFormat,
   latestDeployManifestFormat,
   latestInfraManifestFormat,
   latestMetaManifestFormat,
@@ -64,6 +69,7 @@ const defaultProjectManifestStr = defaultProjectManifestFiles.join(" | ");
 
 const manifestTypes = [
   "project",
+  "codegen",
   "build",
   "deploy",
   "infra",
@@ -152,6 +158,13 @@ export const runSchemaCommand = async (
       manifestfile = parseManifestFileOption(
         options.manifestFile,
         defaultProjectManifestFiles
+      );
+      break;
+
+    case "codegen":
+      manifestfile = parseManifestFileOption(
+        options.manifestFile,
+        defaultCodegenManifest
       );
       break;
 
@@ -252,6 +265,21 @@ export const runSchemaCommand = async (
       } else {
         throw new Error("Unsupported project type!");
       }
+      break;
+
+    case "codegen":
+      maybeFailOnUnsupportedManifestFormat(
+        manifestVersion,
+        Object.values(CodegenManifestFormats),
+        manifestfile
+      );
+
+      manifestSchemaFile = path.join(
+        schemasPackageDir,
+        CodegenManifestSchemaFiles[
+          manifestVersion ?? latestCodegenManifestFormat
+        ]
+      );
       break;
 
     case "build":
@@ -387,6 +415,14 @@ const runMigrateCommand = async (
 
       console.log(intlMsg.commands_manifest_projectTypeError());
       process.exit(1);
+      break;
+
+    case "codegen":
+      migrateManifestFile(
+        parseManifestFileOption(options.manifestFile, defaultCodegenManifest),
+        migrateCodegenExtensionManifest,
+        latestCodegenManifestFormat
+      );
       break;
 
     case "build":

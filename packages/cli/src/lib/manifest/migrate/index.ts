@@ -6,3 +6,4 @@ export * from "./migrateMetaExtensionManifest";
 export * from "./migratePluginProjectManifest";
 export * from "./migratePolywrapProjectManifest";
 export * from "./migrateTestExtensionManifest";
+export * from "./migrateCodegenExtensionManifest";
