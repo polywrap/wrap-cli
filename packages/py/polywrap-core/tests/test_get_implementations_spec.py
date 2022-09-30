@@ -57,4 +57,4 @@ def test_interface_implementations_not_redirected():
 
     get_implementations_results = get_implementations(Uri(interface1_uri), interfaces, redirects)
 
-    assert Uri(implementation1_uri) in get_implementations_results
+    assert Uri(implementation1_uri) == get_implementations_results
