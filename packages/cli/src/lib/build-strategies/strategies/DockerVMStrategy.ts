@@ -165,7 +165,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         let buildError: Error | undefined = undefined;
 
         try {
-          await runCommand(
+          const { stderr } = await runCommand(
             `docker run --rm -v ${path.resolve(
               this._volumePaths.project
             )}:/project -v ${path.resolve(
@@ -174,6 +174,13 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
               CONFIGS[language].baseImage
             }:latest /bin/bash -c "${scriptContent}"`
           );
+
+          if (
+            stderr &&
+            !fse.existsSync(path.join(this._volumePaths.project, "build"))
+          ) {
+            buildError = new Error(stderr);
+          }
         } catch (e) {
           buildError = e;
         }
