@@ -18,7 +18,7 @@
   "scripts": {
     "build": "yarn build:intl && yarn build:fast",
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:build-strategies && yarn build:deploy-modules && yarn build:infra-modules && yarn build:docgen-templates",
-    "build:build-strategies": "copyfiles ./src/lib/defaults/build-strategies/**/**/* ./build/lib/defaults/build-strategies/ -u 4",
+    "build:build-strategies": "ts-node ./scripts/copyfiles ./src/lib/defaults/build-strategies ./build/lib/defaults/build-strategies",
     "build:deploy-modules": "copyfiles ./src/lib/defaults/deploy-modules/**/polywrap.deploy.ext.json ./build/lib/defaults/deploy-modules -u 4",
     "build:infra-modules": "ts-node ./scripts/copyfiles ./src/lib/defaults/infra-modules ./build/lib/defaults/infra-modules",
     "build:docgen-templates": "yarn build:docgen-templates:docusaurus && yarn build:docgen-templates:jsdoc && yarn build:docgen-templates:schema",

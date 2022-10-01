@@ -57,6 +57,7 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
         "defaults",
         "build-strategies",
         language,
+        "image",
         "Dockerfile.mustache"
       );
 

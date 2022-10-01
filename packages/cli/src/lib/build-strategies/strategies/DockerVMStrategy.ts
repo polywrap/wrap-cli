@@ -8,8 +8,8 @@ import { BuildStrategyArgs, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
 import { PolywrapManifestLanguage, PolywrapProject } from "../../project";
 import { withSpinner } from "../../helpers";
-import RustVMConfig from "../../defaults/build-strategies/wasm/rust/vm.config";
-import ASVMConfig from "../../defaults/build-strategies/wasm/assemblyscript/vm.config";
+import RustVMConfig from "../../defaults/build-strategies/wasm/rust/vm/vm.config";
+import ASVMConfig from "../../defaults/build-strategies/wasm/assemblyscript/vm/vm.config";
 
 import fse from "fs-extra";
 import path from "path";
@@ -148,7 +148,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         }
 
         const scriptTemplate = fse.readFileSync(
-          path.join(DEFAULTS_DIR, language, "vm-script.mustache"),
+          path.join(DEFAULTS_DIR, language, "vm", "vm-script.mustache"),
           "utf8"
         );
 
