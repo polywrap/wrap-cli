@@ -35,7 +35,11 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
     );
   }
 
-  public async build(): Promise<BuildImageId> {
+  getStrategyName(): string {
+    return "image";
+  }
+
+  public async buildSources(): Promise<BuildImageId> {
     await this._dockerLock.request();
     try {
       await ensureDockerDaemonRunning();
@@ -57,7 +61,7 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
         "defaults",
         "build-strategies",
         language,
-        "image",
+        this.getStrategyName(),
         "Dockerfile.mustache"
       );
 

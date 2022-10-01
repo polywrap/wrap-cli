@@ -5,14 +5,18 @@ import { intlMsg } from "../../intl";
 import { BuildManifestConfig } from "../../project";
 
 export class LocalBuildStrategy extends BuildStrategy<void> {
-  public async build(): Promise<void> {
+  getStrategyName(): string {
+    return "local";
+  }
+
+  public async buildSources(): Promise<void> {
     const run = async () => {
       const bindLanguage = await this.project.getManifestLanguage();
       const buildManifest = await this.project.getBuildManifest();
       const buildManifestConfig = buildManifest.config as BuildManifestConfig;
 
       if (buildManifestConfig.polywrap_module) {
-        let scriptPath = `${__dirname}/../../defaults/build-strategies/${bindLanguage}/local/local.sh`;
+        let scriptPath = `${__dirname}/../../defaults/build-strategies/${bindLanguage}/${this.getStrategyName()}/local.sh`;
 
         if (bindLanguage.startsWith("wasm")) {
           const customScript = buildManifest.strategies?.local?.scriptPath;

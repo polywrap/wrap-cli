@@ -59,6 +59,7 @@ export interface BuildManifestConfig {
 export class PolywrapProject extends Project<PolywrapManifest> {
   public static cacheLayout = {
     root: "wasm/",
+    buildStrategyUsed: "build/strategy-used",
     buildDir: "build/",
     buildUuidFile: "build/uuid",
     buildLinkedPackagesDir: "build/linked-packages/",
