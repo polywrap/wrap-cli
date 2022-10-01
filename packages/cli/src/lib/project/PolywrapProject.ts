@@ -200,13 +200,21 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   public async getBuildManifest(): Promise<BuildManifest> {
     if (!this._buildManifest) {
       const buildManifestPath = await this.getBuildManifestPath();
+      const language = await this.getManifestLanguage();
 
-      this._buildManifest = buildManifestPath
-        ? await loadBuildManifest(buildManifestPath, this.quiet)
-        : {
-            __type: "BuildManifest",
-            format: "0.2.0",
-          };
+      this._buildManifest = await loadBuildManifest(
+        language,
+        buildManifestPath ??
+          path.join(
+            __dirname,
+            "..",
+            "defaults",
+            "build-strategies",
+            language,
+            "default.build.yaml"
+          ),
+        this.quiet
+      );
 
       const root = this.getManifestDir();
       const cacheDir = this._cache.getCachePath(

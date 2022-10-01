@@ -56,80 +56,37 @@
   "definitions": {
     "image": {
       "description": "Docker image strategy configuration",
-      "allOf": [
-        {
-          "oneOf": [
-            { "$ref": "#/definitions/image_assemblyscript" },
-            { "$ref": "#/definitions/image_rust" }
-          ]
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Docker image name.",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9\\-\\_]+$"
         },
-        {
-          "type": "object",
+        "dockerfile": {
+          "description": "Docker image file name.",
+          "type": "string",
+          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/Dockerfile(.mustache)?$"
+        },
+        "buildx": {
+          "description": "Configuration options for Docker Buildx, set to true for default value.",
+          "type": ["object", "boolean"],
           "additionalProperties": false,
           "properties": {
-            "name": {
-              "description": "Docker image name.",
-              "type": "string",
-              "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+            "cache": {
+              "description": "Path to cache directory, set to true for default value, set to false to disable caching.",
+              "type": ["string", "boolean"],
+              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
             },
-            "dockerfile": {
-              "description": "Docker image file name.",
-              "type": "string",
-              "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/Dockerfile(.mustache)?$"
-            },
-            "buildx": {
-              "description": "Configuration options for Docker Buildx, set to true for default value.",
-              "type": ["object", "boolean"],
-              "additionalProperties": false,
-              "properties": {
-                "cache": {
-                  "description": "Path to cache directory, set to true for default value, set to false to disable caching.",
-                  "type": ["string", "boolean"],
-                  "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
-                },
-                "removeBuilder": {
-                  "description": "Remove the builder instance.",
-                  "type": "boolean"
-                }
-              }
-            },
-            "removeImage": {
-              "description": "Remove the image.",
+            "removeBuilder": {
+              "description": "Remove the builder instance.",
               "type": "boolean"
             }
           }
-        }
-      ]
-    },
-    "image_rust": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["include"],
-      "properties": {
-        "include": {
-          "description": "Files to include in docker image.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "image_assemblyscript": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["node_version", "include"],
-      "properties": {
-        "node_version": {
-          "description": "Docker image's node version.",
-          "type": "string"
         },
-        "include": {
-          "description": "Files to include in docker image.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "removeImage": {
+          "description": "Remove the image.",
+          "type": "boolean"
         }
       }
     },

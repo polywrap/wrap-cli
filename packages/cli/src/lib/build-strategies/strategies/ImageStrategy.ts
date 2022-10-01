@@ -62,17 +62,21 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
 
       let dockerfilePath: string;
 
-      if (buildManifestDir) {
-        dockerfilePath = buildManifest?.strategies?.image?.dockerfile
-          ? path.join(
-              buildManifestDir,
-              buildManifest?.strategies?.image?.dockerfile
-            )
-          : path.join(buildManifestDir, "Dockerfile");
+      const customManifestDockerfilePath =
+        buildManifest?.strategies?.image?.dockerfile;
+
+      if (buildManifestDir && customManifestDockerfilePath) {
+        dockerfilePath = path.join(
+          buildManifestDir,
+          customManifestDockerfilePath
+        );
       } else {
         dockerfilePath = this._generateDockerfile(
           dockerfileTemplatePath,
-          buildManifest.config || {}
+          {
+            ...buildManifest.config,
+            ...buildManifest.strategies?.image,
+          } || {}
         );
       }
 

@@ -131,10 +131,6 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
       // Copy sources and build
       if (buildManifestConfig.polywrap_module) {
-        console.log(
-          path.join(manifestDir, buildManifestConfig.polywrap_module.dir)
-        );
-
         // HACK: moduleDir is path to Cargo.toml in Rust
         if (language === "wasm/rust") {
           fse.copySync(
@@ -166,6 +162,22 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         );
         fse.writeFileSync(buildScriptPath, scriptContent);
 
+        let buildError: Error | undefined = undefined;
+
+        try {
+          await runCommand(
+            `docker run --rm -v ${path.resolve(
+              this._volumePaths.project
+            )}:/project -v ${path.resolve(
+              this._volumePaths.linkedPackages
+            )}:/linked-packages ${
+              CONFIGS[language].baseImage
+            }:latest /bin/bash -c "${scriptContent}"`
+          );
+        } catch (e) {
+          buildError = e;
+        }
+
         await runCommand(
           `docker run --rm -v ${path.resolve(
             this._volumePaths.project
@@ -173,8 +185,12 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
             this._volumePaths.linkedPackages
           )}:/linked-packages ${
             CONFIGS[language].baseImage
-          }:latest /bin/bash -c "${scriptContent}"`
+          }:latest /bin/bash -c "chmod -R g+wX ."`
         );
+
+        if (buildError) {
+          throw buildError;
+        }
       }
     };
 

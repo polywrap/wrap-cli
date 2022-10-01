@@ -6,39 +6,6 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-/**
- * Docker image strategy configuration
- */
-export type Image = (ImageAssemblyscript | ImageRust) & {
-  /**
-   * Docker image name.
-   */
-  name?: string;
-  /**
-   * Docker image file name.
-   */
-  dockerfile?: string;
-  /**
-   * Configuration options for Docker Buildx, set to true for default value.
-   */
-  buildx?:
-    | {
-        /**
-         * Path to cache directory, set to true for default value, set to false to disable caching.
-         */
-        cache?: string | boolean;
-        /**
-         * Remove the builder instance.
-         */
-        removeBuilder?: boolean;
-      }
-    | boolean;
-  /**
-   * Remove the image.
-   */
-  removeImage?: boolean;
-};
-
 export interface BuildManifest {
   /**
    * Polywrap build manifest format version.
@@ -77,21 +44,38 @@ export interface BuildManifest {
   };
   __type: "BuildManifest";
 }
-export interface ImageAssemblyscript {
+/**
+ * Docker image strategy configuration
+ */
+export interface Image {
   /**
-   * Docker image's node version.
+   * Docker image name.
    */
-  node_version: string;
+  name?: string;
   /**
-   * Files to include in docker image.
+   * Docker image file name.
    */
-  include: string[];
-}
-export interface ImageRust {
+  dockerfile?: string;
   /**
-   * Files to include in docker image.
+   * Configuration options for Docker Buildx, set to true for default value.
    */
-  include: string[];
+  buildx?:
+    | {
+        /**
+         * Path to cache directory, set to true for default value, set to false to disable caching.
+         */
+        cache?: string | boolean;
+        /**
+         * Remove the builder instance.
+         */
+        removeBuilder?: boolean;
+      }
+    | boolean;
+  /**
+   * Remove the image.
+   */
+  removeImage?: boolean;
+  [k: string]: unknown;
 }
 /**
  * Local build strategy configuration
