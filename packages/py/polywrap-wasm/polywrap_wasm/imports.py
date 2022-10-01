@@ -20,8 +20,7 @@ def create_imports(
     """
     mem = Memory(store, MemoryType(Limits(1, None)))
     memory_buffer = bytearray(mem.data_ptr(store))
-
-    print(list(bytearray(mem.data_ptr(store))))
+    print(memory_buffer)
     wrap_abort_type = FuncType(
         [ValType.i32(), ValType.i32(), ValType.i32(), ValType.i32(), ValType.i32(), ValType.i32()], []
     )
@@ -36,14 +35,12 @@ def create_imports(
     )
 
     def wrap_invoke_args(method_ptr: int, args_ptr: int):
-        # if state.method == 0:
-        #     abort("__wrap_invoke_args: method is not set")
-        #
-        # if not state.args == 0:
-        #     abort("__wrap_invoke_args: args is not set")
+        if state.method == "":
+            abort("__wrap_invoke_args: method is not set")
 
-        print(memory_buffer)
-        print(args_ptr)
+        if state.args == "":
+            abort("__wrap_invoke_args: args is not set")
+
         write_string(state.method, memory_buffer, method_ptr)
         write_bytes(state.args, memory_buffer, args_ptr)
 
@@ -59,9 +56,6 @@ def create_imports(
     )
 
     def wrap_invoke_error(ptr: int, length: int):
-        print("yah")
-        print(ptr)
-        print(length)
         state.invoke['error'] = read_string(memory_buffer, ptr, length)
 
     linker.define_func("wrap", "__wrap_abort", wrap_abort_type, wrap_abort)

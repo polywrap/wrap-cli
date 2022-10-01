@@ -10,7 +10,7 @@ from .imports import create_imports
 
 @dataclass(slots=True, kw_only=True)
 class WasmWrapper:
-    wasm_module: str = "./polywrap_wasm/wrap.wasm"
+    wasm_module: str = "./polywrap_wasm/wrap2.wasm"
 
     def get_wasm_module(self):
         pass

@@ -7,7 +7,7 @@ def test_invoke():
     args = {
         "arg": message
     }
-    options = InvokeOptions(method="sampleMethod", args=args)
+    options = InvokeOptions(method="simpleMethod", args=args)
     result = wrapper.invoke(options)
     print(result)
     assert result.value == message
