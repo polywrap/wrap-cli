@@ -20,7 +20,7 @@ describe("e2e tests for build command", () => {
   describe("Image strategy", () => {
     it("Builds for rust", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v"],
+        args: ["build", "-v", "-s", "image"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });

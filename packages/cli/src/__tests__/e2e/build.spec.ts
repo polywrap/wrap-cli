@@ -1,4 +1,3 @@
-import { PolywrapProject, loadBuildManifest } from "../../lib";
 import { clearStyle, polywrapCli } from "./utils";
 
 import { runCLI } from "@polywrap/test-env-js";
@@ -188,35 +187,10 @@ describe("e2e tests for build command", () => {
     testBuildOutput(testCaseDir, outputDir);
   });
 
-  it("Should add uuid-v4 suffix to build image if no build manifest specified", async () => {
-    const projectRoot = getTestCaseDir(0);
-    const project = new PolywrapProject({
-      rootDir: projectRoot,
-      polywrapManifestPath: path.join(projectRoot, "polywrap.yaml"),
-    });
-
-    await project.cacheDefaultBuildImage();
-
-    const cacheBuildEnvPath = path.join(
-      projectRoot,
-      ".polywrap/wasm/build/image"
-    );
-    const cachedBuildManifest = await loadBuildManifest(
-      path.join(cacheBuildEnvPath, "polywrap.build.yaml")
-    );
-
-    const buildImageName = cachedBuildManifest.strategies?.image?.name;
-
-    expect(buildImageName?.length).toBeGreaterThan(36);
-    expect((buildImageName?.match(/-/g) || []).length).toBeGreaterThanOrEqual(
-      4
-    );
-  });
-
   describe("Image strategy", () => {
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v"],
+        args: ["build", "-v", "-s", "image"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
@@ -226,6 +200,11 @@ describe("e2e tests for build command", () => {
       expect(code).toEqual(0);
       expect(output).toContain(`Artifacts written to ${buildDir}`);
       expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
+
+      const imageNameUUIDSuffix = output.match(/(?<=polywrap-build-env-)(.*)(?= \/bin)/);
+      
+      expect(imageNameUUIDSuffix?.[0]).toBeTruthy();
+      expect(imageNameUUIDSuffix?.[0].length).toBe(36);
     });
   })
 
@@ -245,24 +224,8 @@ describe("e2e tests for build command", () => {
     });
   })
 
-  describe("VM strategy", () => {
-    it("Builds for assemblyscript", async () => {
-      const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v", "-s", "vm"],
-        cwd: getTestCaseDir(0),
-        cli: polywrapCli,
-      });
-  
-      const buildDir = `./build`;
-
-      expect(code).toEqual(0);
-      expect(output).toContain(`Artifacts written to ${buildDir}`);
-      expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
-    })
-  })
-
   describe("test-cases", () => {
-    for (let i = 0; i < testCases.length; ++i) {
+    for (let i = 0; i < testCases.length; i++) {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 
@@ -275,9 +238,18 @@ describe("e2e tests for build command", () => {
         }
       }
 
+      let strategy: "vm" | "image" | "local" = "vm";
+
+      if (fs.existsSync(path.join(testCaseDir, "strategy.json"))) {
+        const strategyConfig = JSON.parse(
+          fs.readFileSync(path.join(testCaseDir, "strategy.json"), "utf-8")
+        );
+        strategy = strategyConfig.strategy;
+      }
+
       test(testCaseName, async () => {
         let { exitCode, stdout, stderr } = await runCLI({
-          args: ["build", "-v", ...cmdArgs],
+          args: ["build", "-v", "-s", strategy, ...cmdArgs],
           cwd: testCaseDir,
           cli: polywrapCli,
         });
