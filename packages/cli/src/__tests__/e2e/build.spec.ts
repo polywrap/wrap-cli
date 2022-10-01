@@ -238,18 +238,9 @@ describe("e2e tests for build command", () => {
         }
       }
 
-      let strategy: "vm" | "image" | "local" = "vm";
-
-      if (fs.existsSync(path.join(testCaseDir, "strategy.json"))) {
-        const strategyConfig = JSON.parse(
-          fs.readFileSync(path.join(testCaseDir, "strategy.json"), "utf-8")
-        );
-        strategy = strategyConfig.strategy;
-      }
-
       test(testCaseName, async () => {
         let { exitCode, stdout, stderr } = await runCLI({
-          args: ["build", "-v", "-s", strategy, ...cmdArgs],
+          args: ["build", "-v", ...cmdArgs],
           cwd: testCaseDir,
           cli: polywrapCli,
         });
