@@ -1,6 +1,6 @@
 {
   "stdout": [
-    "Artifacts written to ./build from the image `polywrap-build-env-",
+    "Artifacts written to ./build",
     "build/polywrap.meta.json",
     "build/meta/links/link.svg",
     "build/meta/icon/icon.png",
