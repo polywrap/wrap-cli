@@ -1,25 +1,20 @@
 /* eslint-disable prefer-const */
 import {
-  AnyProjectManifest,
-  AppProject,
   CodeGenerator,
   defaultPolywrapManifest,
-  Project,
   SchemaComposer,
-  PolywrapProject,
   intlMsg,
-  PluginProject,
   parseClientConfigOption,
   parseDirOption,
   parseManifestFileOption,
   defaultProjectManifestFiles,
+  getProjectFromManifest,
 } from "../lib";
 import { Command, Program } from "./types";
 import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
 import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
 
-import path from "path";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
@@ -110,41 +105,25 @@ export const docgen: Command = {
 async function run(command: DocType, options: DocgenCommandOptions) {
   const { manifestFile, docgenDir, clientConfig, imports } = options;
 
-  const isAppManifest: boolean =
-    (<string>manifestFile).toLowerCase().endsWith("polywrap.app.yaml") ||
-    (<string>manifestFile).toLowerCase().endsWith("polywrap.app.yml");
-  const isPluginManifest: boolean =
-    (<string>manifestFile).toLowerCase().endsWith("polywrap.plugin.yaml") ||
-    (<string>manifestFile).toLowerCase().endsWith("polywrap.plugin.yml");
+  let project = await getProjectFromManifest(manifestFile);
+
+  if (!project) {
+    console.log(
+      intlMsg.commands_docgen_error_projectLoadFailed({
+        manifestFile: manifestFile,
+      })
+    );
+
+    process.exitCode = 1;
+    return;
+  }
+
+  await project.validate();
 
   // Resolve custom script
   const customScript = require.resolve(commandToPathMap[command]);
 
-  // Get client
   const client = new PolywrapClient(clientConfig);
-
-  // Get project
-  let project: Project<AnyProjectManifest>;
-  if (isAppManifest) {
-    project = new AppProject({
-      rootDir: path.dirname(manifestFile),
-      appManifestPath: manifestFile,
-      quiet: true,
-    });
-  } else if (isPluginManifest) {
-    project = new PluginProject({
-      rootDir: path.dirname(manifestFile),
-      pluginManifestPath: manifestFile,
-      quiet: true,
-    });
-  } else {
-    project = new PolywrapProject({
-      rootDir: path.dirname(manifestFile),
-      polywrapManifestPath: manifestFile,
-      quiet: true,
-    });
-  }
-  await project.validate();
 
   const schemaComposer = new SchemaComposer({
     project,

@@ -93,6 +93,7 @@
   "commands_docgen_options_markdown": "Generate {framework} markdown",
   "commands_docgen_options_i": "Also generate docs for dependencies",
   "commands_docgen_error_manifestNotFound": "Manifest not found. Search paths used: {paths}",
+  "commands_docgen_error_projectLoadFailed": "Could not load project form the given manifest. Manifest: `{manifestFile}`",
   "commands_create_description": "Create New Projects",
   "commands_create_directoryExists": "Directory with name {dir} already exists",
   "commands_create_error_commandFail": "Command failed: {error}",
