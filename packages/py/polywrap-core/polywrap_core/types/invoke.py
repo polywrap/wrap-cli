@@ -2,9 +2,22 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, Union
+from abc import ABC, abstractmethod
 
 from .uri import Uri
-from ..uri_resolution.abc import IUriResolutionContext
+from ..uri_resolution.abc.uri_resolver import IUriResolutionContext
+
+
+class Invoker(ABC):
+    @abstractmethod
+    async def invoke(self, options: InvokeOptions) -> InvokeResult:
+        pass
+
+
+class Invocable(ABC):
+    @abstractmethod
+    async def invoke(self, options: InvokeOptions, invoker: Invoker) -> InvocableResult:
+        pass
 
 
 @dataclass(slots=True, kw_only=True)
