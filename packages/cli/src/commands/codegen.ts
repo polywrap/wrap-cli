@@ -12,7 +12,7 @@ import {
   isPluginManifestLanguage,
   generateWrapFile,
   defaultProjectManifestFiles,
-  defaultPolywrapManifest
+  defaultPolywrapManifest,
 } from "../lib";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";

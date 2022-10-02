@@ -1,6 +1,7 @@
 import { intlMsg } from "../intl";
 import { defaultAppManifest, defaultPluginManifest } from "../project";
 import { resolvePathIfExists } from "../system";
+
 import path from "path";
 
 const deprecatedDefaultManifests = [
