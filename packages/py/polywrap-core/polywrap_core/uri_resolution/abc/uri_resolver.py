@@ -2,9 +2,10 @@ from abc import ABC, abstractmethod
 
 from result import Result
 
-from ...types import Client, Uri
+from ...types.client import Client
+from ...types.client import Uri
 from ...types.uri_package_wrapper import UriPackageOrWrapper
-from .uri_resolution_context import IUriResolutionContext
+from ..uri_resolution_context import IUriResolutionContext
 
 
 class IUriResolver(ABC):

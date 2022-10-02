@@ -1,10 +1,17 @@
 from __future__ import annotations
+from abc import ABC, abstractmethod
 
 from dataclasses import dataclass
 from typing import Optional
 
 from .uri import Uri
 from ..uri_resolution.abc import IUriResolutionContext
+
+class UriResolverHandler(ABC):
+    @abstractmethod
+    async def try_resolve_uri(self, options: Optional[TryResolveUriOptions] = None) -> Result[UriPackageOrWrapper, Exception]:
+        pass
+
 
 @dataclass(slots=True, kw_only=True)
 class TryResolveUriOptions:

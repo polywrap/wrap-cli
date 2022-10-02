@@ -1,8 +1,6 @@
 from abc import abstractmethod
-from typing import Dict, Union
-
-from .client import Client, GetFileOptions
-from .invoke import Invocable, InvocableResult, InvokeOptions, Invoker
+from typing import Dict
+from ..invoke import Invocable, InvocableResult, InvokeOptions, Invoker
 
 
 class Wrapper(Invocable):
