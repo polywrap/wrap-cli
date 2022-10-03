@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from typing import Dict
-from ..invoke import Invocable, InvocableResult, InvokeOptions, Invoker
+from ..types.invoke import Invocable, InvocableResult, InvokeOptions, Invoker
 
 
 class Wrapper(Invocable):

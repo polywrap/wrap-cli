@@ -1,16 +1,22 @@
 from dataclasses import dataclass
 from typing import Callable
 
-from polywrap_msgpack import msgpack_encode
 from wasmtime import Store, Module
+from polywrap_core import InvokeOptions, Wrapper
+from polywrap_msgpack import msgpack_encode
 
-from .core_mock import InvokeOptions, State
+from .file_reader import IFileReader
+from .types.state import State
 from .imports import create_imports
 
 
 @dataclass(slots=True, kw_only=True)
-class WasmWrapper:
+class WasmWrapper(Wrapper):
+    file_reader: IFileReader
     wasm_module: str = "./polywrap_wasm/wrap2.wasm"
+
+    def __init__(self, file_reader: IFileReader):
+        self.file_reader = file_reader
 
     def get_wasm_module(self):
         pass
@@ -31,6 +37,7 @@ class WasmWrapper:
         args_length = len(state.args)
         env_length = len(state.env)
 
+        # TODO: Pass all necessary args to this log
         def abort(message: str):
             raise BaseException(f"""
             WasmWrapper: Wasm module aborted execution

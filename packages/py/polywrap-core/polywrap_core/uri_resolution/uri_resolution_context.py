@@ -1,7 +1,6 @@
 from typing import List, Optional, Set
 
-from ..types import Uri
-from .abc import IUriResolutionContext
+from ..types.uri import Uri
 from .uri_resolution_step import UriResolutionStep
 
 from abc import ABC, abstractmethod

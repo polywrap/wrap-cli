@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .wrapper import Wrapper
+from ..wrapper import Wrapper
 
 
 class IWrapPackage(ABC):

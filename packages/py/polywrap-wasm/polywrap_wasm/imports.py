@@ -3,7 +3,7 @@ from typing import Callable
 from wasmtime import Store, Linker, Memory, Module, MemoryType, Limits, ValType, FuncType
 
 from .buffer import read_string, write_string, write_bytes, read_bytes
-from .core_mock import State
+from .types.state import State
 
 
 def create_imports(

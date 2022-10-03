@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from result import Result
 
 from ...types.client import Client
-from ...types.client import Uri
+from ...types.uri import Uri
 from ...types.uri_package_wrapper import UriPackageOrWrapper
 from ..uri_resolution_context import IUriResolutionContext
 

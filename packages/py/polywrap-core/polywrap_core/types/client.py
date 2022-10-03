@@ -1,7 +1,10 @@
 from __future__ import annotations
 from abc import abstractmethod
-
+from typing import List, Optional, Union, TYPE_CHECKING
 from dataclasses import dataclass, field
+
+from polywrap_core.types.env import Env
+from .invoke import Invoker
 from .uri import Uri
 from .uri_resolver import UriResolverHandler
 

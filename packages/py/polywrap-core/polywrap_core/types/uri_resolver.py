@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from .uri import Uri
-from ..uri_resolution.abc import IUriResolutionContext
+from ..uri_resolution.uri_resolution_context import IUriResolutionContext
 
 class UriResolverHandler(ABC):
     @abstractmethod
