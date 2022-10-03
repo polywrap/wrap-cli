@@ -76,13 +76,10 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
           customManifestDockerfilePath
         );
       } else {
-        dockerfilePath = this._generateDockerfile(
-          dockerfileTemplatePath,
-          {
-            ...buildManifest.config,
-            ...buildManifest.strategies?.image,
-          } || {}
-        );
+        dockerfilePath = this._generateDockerfile(dockerfileTemplatePath, {
+          ...buildManifest.config,
+          ...buildManifest.strategies?.image,
+        });
       }
 
       await this.project.cacheBuildManifestLinkedPackages();
