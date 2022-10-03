@@ -1,4 +1,4 @@
-import { InvokeResult } from "@polywrap/core-js";
+import { Result } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import {
   initTestEnvironment,
@@ -9,6 +9,7 @@ import {
 import { ipfsPlugin } from "..";
 import { IpfsClient, IpfsFileInfo } from "../utils/IpfsClient";
 import { Ipfs_Module } from "../wrap";
+import { ResultOk } from "@polywrap/result";
 
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
@@ -58,10 +59,10 @@ describe("IPFS Plugin", () => {
       { cid: sampleFileIpfsInfo.hash.toString() },
       client
     );
+    
+    if (!result.ok) fail(result.error);
 
-    expect(result.error).toBeFalsy();
-
-    expect(result.data).toEqual(sampleFileBuffer);
+    expect(result.value).toEqual(sampleFileBuffer);
   });
 
   it("Should resolve a file successfully", async () => {
@@ -72,9 +73,9 @@ describe("IPFS Plugin", () => {
       client
     );
 
-    expect(result.error).toBeFalsy();
+    if (!result.ok) fail(result.error);
 
-    expect(result.data).toEqual({
+    expect(result.value).toEqual({
       cid: `/ipfs/${sampleFileIpfsInfo.hash.toString()}`,
       provider: providers.ipfs,
     });
@@ -86,11 +87,11 @@ describe("IPFS Plugin", () => {
 
     let result = await Ipfs_Module.addFile({ data: contentsBuffer }, client);
 
-    expect(result.error).toBeFalsy();
+    if (!result.ok) fail(result.error);
 
-    expect(result.data).toBeTruthy();
+    expect(result.value).toBeTruthy();
 
-    const addedFileBuffer = await ipfs.cat(result.data as string);
+    const addedFileBuffer = await ipfs.cat(result.value as string);
 
     expect(contentsBuffer).toEqual(addedFileBuffer);
   });
@@ -98,13 +99,12 @@ describe("IPFS Plugin", () => {
   it("Should timeout within a specified amount of time - env and options", async () => {
     const createRacePromise = (
       timeout: number
-    ): Promise<InvokeResult<Uint8Array>> => {
-      return new Promise<InvokeResult<Uint8Array>>((resolve) =>
+    ): Promise<Result<Uint8Array, Error>> => {
+      return new Promise<Result<Uint8Array, Error>>((resolve) =>
         setTimeout(() => {
-          resolve({
-            data: Uint8Array.from([1, 2, 3, 4]),
-            error: undefined,
-          });
+          resolve(
+            ResultOk(Uint8Array.from([1, 2, 3, 4]))
+          );
         }, timeout)
       );
     };
@@ -133,10 +133,10 @@ describe("IPFS Plugin", () => {
 
     let racePromise = createRacePromise(1100);
 
-    const result = await Promise.race([catPromise, racePromise]);
+    let result = await Promise.race([catPromise, racePromise]);
 
     expect(result).toBeTruthy();
-    expect(result.data).toBeFalsy();
+    result = result as { ok: false; error: Error | undefined };
     expect(result.error).toBeTruthy();
     expect(result.error?.stack).toMatch("Timeout has been reached");
     expect(result.error?.stack).toMatch("Timeout: 1000");
@@ -151,13 +151,13 @@ describe("IPFS Plugin", () => {
 
     racePromise = createRacePromise(600);
 
-    const resultForOverride = await Promise.race([
+    let resultForOverride = await Promise.race([
       catPromiseWithTimeoutOverride,
       racePromise,
     ]);
 
     expect(resultForOverride).toBeTruthy();
-    expect(resultForOverride.data).toBeFalsy();
+    resultForOverride = resultForOverride as { ok: false; error: Error | undefined };
     expect(resultForOverride.error).toBeTruthy();
     expect(resultForOverride.error?.stack).toMatch("Timeout has been reached");
     expect(resultForOverride.error?.stack).toMatch("Timeout: 500");
@@ -189,8 +189,8 @@ describe("IPFS Plugin", () => {
       clientWithBadProvider
     );
 
-    expect(catResult.error).toBeFalsy();
-    expect(catResult.data).toEqual(sampleFileBuffer);
+    if (!catResult.ok) fail(catResult.error);
+    expect(catResult.value).toEqual(sampleFileBuffer);
 
     const resolveResult = await Ipfs_Module.resolve(
       {
@@ -200,8 +200,8 @@ describe("IPFS Plugin", () => {
       clientWithBadProvider
     );
 
-    expect(resolveResult.error).toBeFalsy();
-    expect(resolveResult.data).toEqual({
+    if (!resolveResult.ok) fail(resolveResult.error);
+    expect(resolveResult.value).toEqual({
       cid: `/ipfs/${sampleFileIpfsInfo.hash.toString()}`,
       provider: providers.ipfs,
     });
@@ -236,8 +236,8 @@ describe("IPFS Plugin", () => {
       clientWithBadProvider
     );
 
-    expect(catResult.error).toBeFalsy();
-    expect(catResult.data).toEqual(sampleFileBuffer);
+    if (!catResult.ok) fail(catResult.error);
+    expect(catResult.value).toEqual(sampleFileBuffer);
 
     const resolveResult = await Ipfs_Module.resolve(
       {
@@ -250,8 +250,8 @@ describe("IPFS Plugin", () => {
       clientWithBadProvider
     );
 
-    expect(resolveResult.error).toBeFalsy();
-    expect(resolveResult.data).toEqual({
+    if (!resolveResult.ok) fail(resolveResult.error);
+    expect(resolveResult.value).toEqual({
       cid: `/ipfs/${sampleFileIpfsInfo.hash.toString()}`,
       provider: providers.ipfs,
     });

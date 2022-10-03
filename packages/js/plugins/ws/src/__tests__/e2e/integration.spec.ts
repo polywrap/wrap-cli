@@ -170,8 +170,9 @@ describe("e2e tests for WsPlugin", () => {
           timeout: 20
         }
       });
+      if (!response.ok) fail(response.error);
 
-      expect(response.data).toEqual(["1","2"])
+      expect(response.value).toEqual(["1","2"])
 
       clearTimeout(t1)
       clearTimeout(t2)

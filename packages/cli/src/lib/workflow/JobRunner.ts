@@ -1,7 +1,7 @@
 import { JobResult, JobStatus, Step } from "./types";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import { executeMaybeAsyncFunction, MaybeAsync } from "@polywrap/core-js";
+import { MaybeAsync } from "@polywrap/core-js";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
@@ -191,10 +191,10 @@ export class JobRunner {
       args: args,
     });
 
-    if (invokeResult.error) {
-      return { ...invokeResult, status: JobStatus.FAILED };
+    if (!invokeResult.ok) {
+      return { error: invokeResult.error, status: JobStatus.FAILED };
     } else {
-      return { ...invokeResult, status: JobStatus.SUCCEED };
+      return { data: invokeResult.value, status: JobStatus.SUCCEED };
     }
   }
 
@@ -208,7 +208,7 @@ export class JobRunner {
       this.jobOutput.set(absId, result);
 
       if (this.onExecution) {
-        await executeMaybeAsyncFunction(this.onExecution, absId, result);
+        await this.onExecution(absId, result);
       }
     }
   }

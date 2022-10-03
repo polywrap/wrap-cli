@@ -6,8 +6,6 @@ import {
   IUriResolver,
   Uri,
   Client,
-  executeMaybeAsyncFunction,
-  Wrapper,
   IUriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionResult,
@@ -15,10 +13,9 @@ import {
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
-export class PackageToWrapperCacheResolver<TError = undefined>
-  implements IUriResolver<TError> {
+export class PackageToWrapperCacheResolver implements IUriResolver<Error> {
   name: string;
-  resolverToCache: IUriResolver<TError>;
+  resolverToCache: IUriResolver<Error>;
 
   constructor(
     private cache: IWrapperCache,
@@ -39,10 +36,8 @@ export class PackageToWrapperCacheResolver<TError = undefined>
     uri: Uri,
     client: Client,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TError>> {
-    const wrapper = await executeMaybeAsyncFunction<Wrapper | undefined>(
-      this.cache.get.bind(this.cache, uri)
-    );
+  ): Promise<Result<UriPackageOrWrapper, Error>> {
+    const wrapper = await this.cache.get(uri);
 
     if (wrapper) {
       const result = UriResolutionResult.ok(uri, wrapper);
@@ -68,14 +63,18 @@ export class PackageToWrapperCacheResolver<TError = undefined>
         const wrapPackage = result.value.package;
         const resolutionPath: Uri[] = subContext.getResolutionPath();
 
-        const wrapper = await wrapPackage.createWrapper({
+        const createResult = await wrapPackage.createWrapper({
           noValidate: this.options?.deserializeManifestOptions?.noValidate,
         });
 
+        if (!createResult.ok) {
+          return createResult;
+        }
+
+        const wrapper = createResult.value;
+
         for (const uri of resolutionPath) {
-          await executeMaybeAsyncFunction<Wrapper | undefined>(
-            this.cache.set.bind(this.cache, uri, wrapper)
-          );
+          await this.cache.set(uri, wrapper);
         }
 
         result = UriResolutionResult.ok(result.value.uri, wrapper);
@@ -84,9 +83,7 @@ export class PackageToWrapperCacheResolver<TError = undefined>
         const resolutionPath: Uri[] = subContext.getResolutionPath();
 
         for (const uri of resolutionPath) {
-          await executeMaybeAsyncFunction<Wrapper | undefined>(
-            this.cache.set.bind(this.cache, uri, wrapper)
-          );
+          await this.cache.set(uri, wrapper);
         }
       }
     }
