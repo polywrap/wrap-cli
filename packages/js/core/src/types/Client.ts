@@ -15,17 +15,13 @@ import { UriResolverHandler } from "./UriResolver";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
-type ClientConfigInternal<TUri extends Uri | string = string> = {
+export type ClientConfig<TUri extends Uri | string = string> = Readonly<{
   redirects: readonly UriRedirect<TUri>[];
   plugins: readonly PluginRegistration<TUri>[];
   interfaces: readonly InterfaceImplementations<TUri>[];
   envs: readonly Env<TUri>[];
   resolver: Readonly<IUriResolver<unknown>>;
-};
-
-export type ClientConfig<TUri extends Uri | string = string> = Readonly<
-  ClientConfigInternal<TUri>
->;
+}>;
 
 export interface GetManifestOptions {
   noValidate?: boolean;
