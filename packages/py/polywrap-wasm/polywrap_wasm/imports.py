@@ -1,8 +1,9 @@
+import ctypes
 from typing import Callable
 
 from wasmtime import Store, Linker, Memory, Module, MemoryType, Limits, ValType, FuncType
 
-from .buffer import read_string, write_string, write_bytes, read_bytes
+from .buffer import write_string, write_bytes
 from .types.state import State
 
 
@@ -19,16 +20,16 @@ def create_imports(
     This probably means that memory creation should be moved to its own function 
     """
     mem = Memory(store, MemoryType(Limits(1, None)))
-    memory_buffer = bytearray(mem.data_ptr(store))
-    print(memory_buffer)
+
     wrap_abort_type = FuncType(
         [ValType.i32(), ValType.i32(), ValType.i32(), ValType.i32(), ValType.i32(), ValType.i32()], []
     )
 
     def wrap_abort(msg_ptr: int, msg_len: int, file_ptr: int, file_len: int, line: int, column: int):
-        msg = read_string(memory_buffer, msg_ptr, msg_len)
-        file = read_string(memory_buffer, file_ptr, file_len)
-        abort(f"__wrap_abort: {msg}\nFile: {file}\nLocation: [{line},{column}]")
+        pass
+        # msg = read_string(mem.data_ptr(store), msg_ptr, msg_len)
+        # file = read_string(mem.data_ptr(store), file_ptr, file_len)
+        # abort(f"__wrap_abort: {msg}\nFile: {file}\nLocation: [{line},{column}]")
 
     wrap_invoke_args_type = FuncType(
         [ValType.i32(), ValType.i32()], []
@@ -41,22 +42,32 @@ def create_imports(
         if state.args == "":
             abort("__wrap_invoke_args: args is not set")
 
-        write_string(state.method, memory_buffer, method_ptr)
-        write_bytes(state.args, memory_buffer, args_ptr)
+        write_string(state.method, mem.data_ptr(store), method_ptr)
+        write_bytes(state.args, mem.data_ptr(store), args_ptr)
 
     wrap_invoke_result_type = FuncType(
         [ValType.i32(), ValType.i32()], []
     )
 
     def wrap_invoke_result(ptr: int, length: int):
-        state.invoke['result'] = bytearray(read_bytes(memory_buffer, ptr, length))
+        state.invoke['result'] = bytearray()[ptr: ptr + length]
 
     wrap_invoke_error_type = FuncType(
         [ValType.i32(), ValType.i32()], []
     )
 
     def wrap_invoke_error(ptr: int, length: int):
-        state.invoke['error'] = read_string(memory_buffer, ptr, length)
+        buffer = bytearray(mem.data_ptr(store))[ptr: ptr + length]
+        # print(mem.data_len(store))
+        # print(len(bytearray(mem.data_ptr(store))))
+        # print(list(bytearray(mem.data_ptr(store))))
+        # print(bytearray(mem.data_ptr(store)).decode())
+        print("wrap invoke error")
+        print(ptr)
+        print(length)
+        # bytearray(mem.data_len(store))
+        # bytearray(mem.data_ptr(store)[ptr])
+        state.invoke['error'] = buffer.decode()
 
     linker.define_func("wrap", "__wrap_abort", wrap_abort_type, wrap_abort)
     linker.define_func("wrap", "__wrap_invoke_args", wrap_invoke_args_type, wrap_invoke_args)

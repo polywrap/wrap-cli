@@ -1,51 +1,45 @@
+import ctypes
+
+
+def read_string(source: str, source_length: int, offset: int, length: int):
+    source = (ctypes.c_ubyte * source_length)(source)
+    return source[offset: offset + length]
+
+
 def write_string(
-    string: str,
-    dst: bytearray,
-    dst_offset: int
+        value: str,
+        dst: ctypes._Pointer,
+        value_offset: int,
 ) -> bytearray:
-    str_buffer = string.encode("ascii")
+    value_buffer = value.encode("ascii")
     return mem_cpy(
-        bytearray(str_buffer),
-        0,
+        bytearray(value_buffer),
         dst,
-        dst_offset,
-        len(str_buffer)
+        len(value_buffer),
+        value_offset
     )
 
 
 def write_bytes(
-    bytes: bytearray,
-    dst: bytearray,
-    dst_offset: int
+        value: bytearray,
+        dst: ctypes._Pointer,
+        value_offset: int,
 ) -> bytearray:
-    return mem_cpy(bytes, 0, dst, dst_offset, len(bytes))
-
-
-def read_bytes(
-    from_src: bytearray,
-    offset: int,
-    length: int
-) -> bytearray:
-    buffer = bytearray(length)
-    write_bytes(from_src[offset: offset + length], buffer, 0)
-    return buffer
-
-
-def read_string(
-    from_src: bytearray,
-    offset: int,
-    length: int
-):
-    buffer = read_bytes(from_src, offset, length)
-    return buffer.decode()
+    return mem_cpy(value, dst, len(value), value_offset)
 
 
 def mem_cpy(
-    src: bytearray,
-    src_offset: int,
-    dst: bytearray,
-    dst_offset: int,
-    length: int
+        dst: ctypes._Pointer,
+        src: bytearray,
+        length: int,
+        offset: int
 ) -> bytearray:
-    dst[dst_offset: length] = src[src_offset: length]
+    try:
+        print(src)
+        # src = (ctypes.c_ubyte * offset)(*src)
+        # ctypes.memmove(dst, src, length)
+    except MemoryError as e:
+        print("Memory error!")
+        print(e)
+
     return dst

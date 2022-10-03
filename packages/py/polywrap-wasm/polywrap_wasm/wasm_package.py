@@ -1,4 +1,4 @@
-from polywrap_core import Wrapper
+from polywrap_core import Wrapper, IWrapPackage
 from .wasm_wrapper import WasmWrapper
 from .file_reader import IFileReader
 
@@ -6,7 +6,13 @@ class FileReader(IFileReader):
     def read_file(self, file_path: str) -> bytearray:
         pass
 
-class WasmPackage():
+class WasmPackage(IWrapPackage):
+
+    file_reader: IFileReader
+
+    def __init__(self, file_reader: IFileReader):
+        self.file_reader = file_reader
+
+
     def create_wrapper(self) -> Wrapper:
-        file_reader = FileReader()
-        return WasmWrapper(file_reader)
+        return WasmWrapper(self.file_reader)
