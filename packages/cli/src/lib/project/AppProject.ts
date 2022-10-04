@@ -124,7 +124,7 @@ export class AppProject extends Project<AppManifest> {
     });
   }
 
-  /// Polywrap Codegen Manifest (polywrap.build.yaml)
+  /// Polywrap Codegen Manifest (polywrap.codegen.yaml)
 
   public async getCodegenManifestPath(): Promise<string | undefined> {
     const appManifest = await this.getManifest();

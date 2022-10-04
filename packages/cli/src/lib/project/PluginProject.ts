@@ -135,7 +135,7 @@ export class PluginProject extends Project<PluginManifest> {
     return bindSchema(options);
   }
 
-  /// Polywrap Codegen Manifest (polywrap.build.yaml)
+  /// Polywrap Codegen Manifest (polywrap.codegen.yaml)
 
   public async getCodegenManifestPath(): Promise<string | undefined> {
     const pluginManifest = await this.getManifest();
