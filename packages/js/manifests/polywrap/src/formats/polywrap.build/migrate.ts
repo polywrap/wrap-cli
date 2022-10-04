@@ -10,6 +10,8 @@ import {
   BuildManifestFormats,
   latestBuildManifestFormat
 } from ".";
+import { findShortestMigrationPath } from "../../migrations";
+import { migrators } from "./migrators";
 
 import {
   migrate as migrate_0_1_0_to_0_2_0
@@ -29,11 +31,6 @@ export function migrateBuildManifest(
 ): BuildManifest {
   let from = manifest.format as BuildManifestFormats;
 
-  // HACK: Patch fix for backwards compatability
-  if(from === "0.1" && ("0.1.0" in migrators)) {
-    from = "0.1.0" as BuildManifestFormats;
-  }
-
   if (from === latestBuildManifestFormat) {
     return manifest as BuildManifest;
   }
@@ -42,12 +39,18 @@ export function migrateBuildManifest(
     throw new Error(`Unrecognized BuildManifestFormat "${manifest.format}"`);
   }
 
-  const migrator = migrators[from];
-  if (!migrator) {
+  const migrationPath = findShortestMigrationPath(migrators, from, to);
+  if (!migrationPath) {
     throw new Error(
-      `Migrator from BuildManifestFormat "${from}" to "${to}" is not available`
+      `Migration path from BuildManifestFormat "${from}" to "${to}" is not available`
     );
   }
 
-  return migrator(manifest);
+  let newManifest = manifest;
+
+  for(const migrator of migrationPath){
+    newManifest = migrator.migrate(newManifest) as AnyBuildManifest;
+  }
+
+  return newManifest as BuildManifest;
 }

@@ -10,29 +10,14 @@ import {
   PolywrapManifestFormats,
   latestPolywrapManifestFormat
 } from ".";
-
-import {
-  migrate as migrate_0_1_0_to_0_2_0
-} from "./migrators/0.1.0_to_0.2.0";
-
-type Migrator = {
-  [key in PolywrapManifestFormats]?: (m: AnyPolywrapManifest) => PolywrapManifest;
-};
-
-export const migrators: Migrator = {
-  "0.1.0": migrate_0_1_0_to_0_2_0,
-};
+import { findShortestMigrationPath } from "../../migrations";
+import { migrators } from "./migrators";
 
 export function migratePolywrapManifest(
   manifest: AnyPolywrapManifest,
   to: PolywrapManifestFormats
 ): PolywrapManifest {
   let from = manifest.format as PolywrapManifestFormats;
-
-  // HACK: Patch fix for backwards compatability
-  if(from === "0.1" && ("0.1.0" in migrators)) {
-    from = "0.1.0" as PolywrapManifestFormats;
-  }
 
   if (from === latestPolywrapManifestFormat) {
     return manifest as PolywrapManifest;
@@ -42,12 +27,18 @@ export function migratePolywrapManifest(
     throw new Error(`Unrecognized PolywrapManifestFormat "${manifest.format}"`);
   }
 
-  const migrator = migrators[from];
-  if (!migrator) {
+  const migrationPath = findShortestMigrationPath(migrators, from, to);
+  if (!migrationPath) {
     throw new Error(
-      `Migrator from PolywrapManifestFormat "${from}" to "${to}" is not available`
+      `Migration path from PolywrapManifestFormat "${from}" to "${to}" is not available`
     );
   }
 
-  return migrator(manifest);
+  let newManifest = manifest;
+
+  for(const migrator of migrationPath){
+    newManifest = migrator.migrate(newManifest) as AnyPolywrapManifest;
+  }
+
+  return newManifest as PolywrapManifest;
 }
