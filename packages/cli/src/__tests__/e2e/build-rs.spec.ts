@@ -19,14 +19,11 @@ describe("e2e tests for build command", () => {
 
   describe("Image strategy", () => {
     it("Builds for rust", async () => {
-      const { exitCode: code, stdout: output, stderr } = await runCLI({
+      const { exitCode: code, stdout: output } = await runCLI({
         args: ["build", "-v", "-s", "image"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
-
-      console.log(output);
-      console.log(stderr);
   
       const buildDir = `./build`;
   
@@ -36,16 +33,14 @@ describe("e2e tests for build command", () => {
     });
   })
 
-  describe("Local strategy", () => {
+  // NOTE: Skipped because CI needs system prequisites: bindgen, snip, etc.
+  describe.skip("Local strategy", () => {
     it("Builds for rust", async () => {
-      const { exitCode: code, stdout: output, stderr } = await runCLI({
+      const { exitCode: code, stdout: output } = await runCLI({
         args: ["build", "-v", "-s", "local"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
-
-      console.log(output);
-      console.log(stderr);
   
       const buildDir = `./build`;
   
