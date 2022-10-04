@@ -2,8 +2,9 @@ from __future__ import annotations
 from abc import abstractmethod
 
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, Union
 
+from .uri import Uri
 from .env import Env
 from .uri_resolver import IUriResolver
 from .invoke import Invoker

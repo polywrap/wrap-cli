@@ -1,13 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Generic, List, TypeVar
+from typing import List
 
 from .uri import Uri
 from .uri_resolution_step import IUriResolutionStep
 
-TUriResolutionStep = TypeVar("TUriResolutionStep", bound=IUriResolutionStep)
 
-
-class IUriResolutionContext(Generic[TUriResolutionStep], ABC):
+class IUriResolutionContext(ABC):
     @abstractmethod
     def is_resolving(self, uri: Uri) -> bool:
         pass
@@ -21,11 +19,11 @@ class IUriResolutionContext(Generic[TUriResolutionStep], ABC):
         pass
 
     @abstractmethod
-    def track_step(self, step: TUriResolutionStep) -> None:
+    def track_step(self, step: IUriResolutionStep) -> None:
         pass
 
     @abstractmethod
-    def get_history(self) -> List[TUriResolutionStep]:
+    def get_history(self) -> List[IUriResolutionStep]:
         pass
 
     @abstractmethod
@@ -33,9 +31,9 @@ class IUriResolutionContext(Generic[TUriResolutionStep], ABC):
         pass
 
     @abstractmethod
-    def create_sub_history_context(self) -> "IUriResolutionContext[TUriResolutionStep]":
+    def create_sub_history_context(self) -> "IUriResolutionContext":
         pass
 
     @abstractmethod
-    def create_sub_context(self) -> "IUriResolutionContext[TUriResolutionStep]":
+    def create_sub_context(self) -> "IUriResolutionContext":
         pass

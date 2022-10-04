@@ -1,13 +1,12 @@
 from typing import List, Optional, Set
 
-from ..types import Uri, IUriResolutionContext
-from .uri_resolution_step import UriResolutionStep
+from ..types import Uri, IUriResolutionContext, IUriResolutionStep
 
 
-class UriResolutionContext(IUriResolutionContext[UriResolutionStep]):
+class UriResolutionContext(IUriResolutionContext):
     resolving_uri_set: Set[Uri]
     resolution_path: List[Uri]
-    history: List[UriResolutionStep]
+    history: List[IUriResolutionStep]
 
     __slots__ = ("resolving_uri_map", "resolution_path", "history")
 
@@ -15,7 +14,7 @@ class UriResolutionContext(IUriResolutionContext[UriResolutionStep]):
         self,
         resolving_uri_set: Optional[Set[Uri]] = None,
         resolution_path: Optional[List[Uri]] = None,
-        history: Optional[List[UriResolutionStep]] = None,
+        history: Optional[List[IUriResolutionStep]] = None,
     ):
         self.resolving_uri_set = resolving_uri_set or set()
         self.resolution_path = resolution_path or []
@@ -31,10 +30,10 @@ class UriResolutionContext(IUriResolutionContext[UriResolutionStep]):
     def stop_resolving(self, uri: Uri) -> None:
         self.resolving_uri_set.remove(uri)
 
-    def track_step(self, step: UriResolutionStep) -> None:
+    def track_step(self, step: IUriResolutionStep) -> None:
         self.history.append(step)
 
-    def get_history(self) -> List[UriResolutionStep]:
+    def get_history(self) -> List[IUriResolutionStep]:
         return self.history
 
     def get_resolution_path(self) -> List[Uri]:
