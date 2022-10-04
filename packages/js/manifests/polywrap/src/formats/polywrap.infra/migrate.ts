@@ -10,25 +10,14 @@ import {
   InfraManifestFormats,
   latestInfraManifestFormat
 } from ".";
-
-
-type Migrator = {
-  [key in InfraManifestFormats]?: (m: AnyInfraManifest) => InfraManifest;
-};
-
-export const migrators: Migrator = {
-};
+import { findShortestMigrationPath } from "../../migrations";
+import { migrators } from "./migrators";
 
 export function migrateInfraManifest(
   manifest: AnyInfraManifest,
   to: InfraManifestFormats
 ): InfraManifest {
   let from = manifest.format as InfraManifestFormats;
-
-  // HACK: Patch fix for backwards compatability
-  if(from === "0.1" && ("0.1.0" in migrators)) {
-    from = "0.1.0" as InfraManifestFormats;
-  }
 
   if (from === latestInfraManifestFormat) {
     return manifest as InfraManifest;
@@ -38,5 +27,18 @@ export function migrateInfraManifest(
     throw new Error(`Unrecognized InfraManifestFormat "${manifest.format}"`);
   }
 
-  throw new Error(`This should never happen, InfraManifest migrators is empty. from: ${from}, to: ${to}`);
+  const migrationPath = findShortestMigrationPath(migrators, from, to);
+  if (!migrationPath) {
+    throw new Error(
+      `Migration path from InfraManifestFormat "${from}" to "${to}" is not available`
+    );
+  }
+
+  let newManifest = manifest;
+
+  for(const migrator of migrationPath){
+    newManifest = migrator.migrate(newManifest) as AnyInfraManifest;
+  }
+
+  return newManifest as InfraManifest;
 }
