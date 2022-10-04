@@ -8,9 +8,7 @@ import {
 } from "@polywrap/test-env-js";
 
 import { ipfsResolverPlugin } from "..";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { IpfsClient } from "./helpers/IpfsClient";
-import { createIpfsClient } from "./helpers/createIpfsClient";
+import { ipfsPlugin, createIpfsClient, IpfsClient } from "@polywrap/ipfs-plugin-js";
 import { Result } from "@polywrap/core-js";
 import { ResultOk } from "@polywrap/result";
 
