@@ -36,7 +36,7 @@ def mem_cpy(
 ) -> bytearray:
     try:
         print(src)
-        # src = (ctypes.c_ubyte * offset)(*src)
+        src = (ctypes.c_ubyte * offset)(src)
         # ctypes.memmove(dst, src, length)
     except MemoryError as e:
         print("Memory error!")
