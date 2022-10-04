@@ -42,15 +42,15 @@ def create_imports(
         if state.args == "":
             abort("__wrap_invoke_args: args is not set")
 
-        write_string(state.method, mem.data_ptr(store), method_ptr)
-        write_bytes(state.args, mem.data_ptr(store), args_ptr)
+        write_string(mem.data_ptr(store), mem.data_len(store), state.method, method_ptr)
+        write_bytes(mem.data_ptr(store), mem.data_len(store), state.args, args_ptr)
 
     wrap_invoke_result_type = FuncType(
         [ValType.i32(), ValType.i32()], []
     )
 
-    def wrap_invoke_result(ptr: int, length: int):
-        state.invoke['result'] = bytearray()[ptr: ptr + length]
+    def wrap_invoke_result(offset: int, length: int):
+        state.invoke['result'] = bytearray()[offset: offset + length]
 
     wrap_invoke_error_type = FuncType(
         [ValType.i32(), ValType.i32()], []
