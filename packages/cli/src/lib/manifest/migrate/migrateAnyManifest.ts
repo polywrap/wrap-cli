@@ -16,7 +16,7 @@ export function migrateAnyManifest(
   if (!manifest) {
     throw Error(`Unable to parse ${manifestTypeName}: ${manifestString}`);
   }
-  
+
   const newManifest = migrateFn(manifest, to);
 
   const cleanedManifest = JSON.parse(JSON.stringify(newManifest));
