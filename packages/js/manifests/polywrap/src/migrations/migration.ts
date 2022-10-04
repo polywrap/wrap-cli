@@ -1,6 +1,7 @@
 import {
   AnyAppManifest,
   AnyBuildManifest,
+  AnyCodegenManifest,
   AnyDeployManifest,
   AnyInfraManifest,
   AnyMetaManifest,
@@ -17,7 +18,8 @@ type AnyManifest =
   | AnyDeployManifest
   | AnyBuildManifest
   | AnyMetaManifest
-  | AnyPolywrapWorkflow;
+  | AnyPolywrapWorkflow
+  | AnyCodegenManifest;
 
 export type Migrator = {
   from: string;

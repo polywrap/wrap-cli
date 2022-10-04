@@ -10,25 +10,14 @@ import {
   CodegenManifestFormats,
   latestCodegenManifestFormat
 } from ".";
-
-
-type Migrator = {
-  [key in CodegenManifestFormats]?: (m: AnyCodegenManifest) => CodegenManifest;
-};
-
-export const migrators: Migrator = {
-};
+import { findShortestMigrationPath } from "../../migrations";
+import { migrators } from "./migrators";
 
 export function migrateCodegenManifest(
   manifest: AnyCodegenManifest,
   to: CodegenManifestFormats
 ): CodegenManifest {
   let from = manifest.format as CodegenManifestFormats;
-
-  // HACK: Patch fix for backwards compatability
-  if(from === "0.1" && ("0.1.0" in migrators)) {
-    from = "0.1.0" as CodegenManifestFormats;
-  }
 
   if (from === latestCodegenManifestFormat) {
     return manifest as CodegenManifest;
@@ -38,5 +27,18 @@ export function migrateCodegenManifest(
     throw new Error(`Unrecognized CodegenManifestFormat "${manifest.format}"`);
   }
 
-  throw new Error(`This should never happen, CodegenManifest migrators is empty. from: ${from}, to: ${to}`);
+  const migrationPath = findShortestMigrationPath(migrators, from, to);
+  if (!migrationPath) {
+    throw new Error(
+      `Migration path from CodegenManifestFormat "${from}" to "${to}" is not available`
+    );
+  }
+
+  let newManifest = manifest;
+
+  for(const migrator of migrationPath){
+    newManifest = migrator.migrate(newManifest) as AnyCodegenManifest;
+  }
+
+  return newManifest as CodegenManifest;
 }
