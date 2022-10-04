@@ -1,20 +1,22 @@
 import ctypes
 
-
-def read_string(source: ctypes._Pointer, pointer: int, length: int):
-    result = bytearray(65536)
-    buffer = (ctypes.c_char * 65536).from_buffer(result)
-    ctypes.memmove(buffer, source, 65536)
-
-    return result[pointer: pointer + length]
+from polywrap_msgpack import msgpack_decode
 
 
-def read_bytes(memory_pointer: ctypes._Pointer, memory_length: int, offset: int, length: int):
+def read_bytes(memory_pointer: ctypes._Pointer, memory_length: int, offset: int = None, length: int = None):
     result = bytearray(memory_length)
     buffer = (ctypes.c_char * memory_length).from_buffer(result)
     ctypes.memmove(buffer, memory_pointer, memory_length)
 
-    return result[offset: offset + length]
+    if offset and length:
+        return result[offset: offset + length]
+
+    return result
+
+
+def read_string(memory_pointer: ctypes._Pointer, memory_length: int, offset: int, length: int):
+    value = read_bytes(memory_pointer, memory_length, offset, length)
+    return msgpack_decode(value)
 
 
 def write_string(
@@ -50,28 +52,16 @@ def mem_cpy(
         value_offset: int
 ) -> bytearray:
     try:
-        current_value = bytearray(memory_length)
-        print("just initialized")
-        print(current_value[value_offset: value_offset + value_length])
-        # print(current_value)
-        current_value_buffer = (ctypes.c_char * memory_length).from_buffer(current_value)
-        ctypes.memmove(current_value_buffer, memory_pointer, memory_length)
-
-        print("memory should be updated")
-        print(current_value[value_offset: value_offset + value_length])
+        current_value = read_bytes(
+            memory_pointer,
+            memory_length,
+        )
 
         new_value = (ctypes.c_char * value_length).from_buffer(value)
         current_value[value_offset: value_offset + value_length] = new_value
 
-        print("memory should be updated with current value!")
-        print(current_value[value_offset: value_offset + value_length])
-
         current_value_buffer = (ctypes.c_char * memory_length).from_buffer(current_value)
         ctypes.memmove(memory_pointer, current_value_buffer, memory_length)
-
-        # print(new_value)
-        # print(dst)
-        # ctypes.memmove(dst, src, length)
     except MemoryError as e:
         print("Memory error!")
         print(e)

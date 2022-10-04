@@ -3,7 +3,7 @@ from typing import Callable
 
 from wasmtime import Store, Linker, Memory, Module, MemoryType, Limits, ValType, FuncType
 
-from .buffer import write_string, write_bytes
+from .buffer import write_string, write_bytes, read_string
 from .types.state import State
 
 
@@ -25,11 +25,10 @@ def create_imports(
         [ValType.i32(), ValType.i32(), ValType.i32(), ValType.i32(), ValType.i32(), ValType.i32()], []
     )
 
-    def wrap_abort(msg_ptr: int, msg_len: int, file_ptr: int, file_len: int, line: int, column: int):
-        pass
-        # msg = read_string(mem.data_ptr(store), msg_ptr, msg_len)
-        # file = read_string(mem.data_ptr(store), file_ptr, file_len)
-        # abort(f"__wrap_abort: {msg}\nFile: {file}\nLocation: [{line},{column}]")
+    def wrap_abort(msg_offset: int, msg_len: int, file_offset: int, file_len: int, line: int, column: int):
+        msg = read_string(mem.data_ptr(store), mem.data_len(store), msg_offset, msg_len)
+        file = read_string(mem.data_ptr(store), mem.data_len(store), file_offset, file_len)
+        abort(f"__wrap_abort: {msg}\nFile: {file}\nLocation: [{line},{column}]")
 
     wrap_invoke_args_type = FuncType(
         [ValType.i32(), ValType.i32()], []
@@ -50,24 +49,16 @@ def create_imports(
     )
 
     def wrap_invoke_result(offset: int, length: int):
-        state.invoke['result'] = bytearray()[offset: offset + length]
+        result = read_string(mem.data_ptr(store), mem.data_len(store), offset, length)
+        state.invoke['result'] = result
 
     wrap_invoke_error_type = FuncType(
         [ValType.i32(), ValType.i32()], []
     )
 
-    def wrap_invoke_error(ptr: int, length: int):
-        buffer = bytearray(mem.data_ptr(store))[ptr: ptr + length]
-        # print(mem.data_len(store))
-        # print(len(bytearray(mem.data_ptr(store))))
-        # print(list(bytearray(mem.data_ptr(store))))
-        # print(bytearray(mem.data_ptr(store)).decode())
-        print("wrap invoke error")
-        print(ptr)
-        print(length)
-        # bytearray(mem.data_len(store))
-        # bytearray(mem.data_ptr(store)[ptr])
-        state.invoke['error'] = buffer.decode()
+    def wrap_invoke_error(offset: int, length: int):
+        error = read_string(mem.data_ptr(store), mem.data_len(store), offset, length)
+        state.invoke['error'] = error
 
     linker.define_func("wrap", "__wrap_abort", wrap_abort_type, wrap_abort)
     linker.define_func("wrap", "__wrap_invoke_args", wrap_invoke_args_type, wrap_invoke_args)

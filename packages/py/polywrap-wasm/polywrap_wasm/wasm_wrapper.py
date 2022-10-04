@@ -68,7 +68,6 @@ class WasmWrapper(Wrapper):
 
 
 def _process_invoke_result(state: State, result: int, abort: Callable[[str], None]):
-    print(result)
     if result:
         if state.invoke['result']:
             return state.invoke['result']
