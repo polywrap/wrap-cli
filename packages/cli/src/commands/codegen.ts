@@ -14,7 +14,6 @@ import {
   parseDirOptionIfExists,
   defaultCodegenDir,
   defaultPublishDir,
-  PluginProject,
 } from "../lib";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -116,7 +115,7 @@ async function run(options: CodegenCommandOptions) {
   if (isPluginManifestLanguage(projectType)) {
     let parsedPublishDir: string;
     if (!publishDir) {
-      const codegenManifest = await (project as PluginProject).getCodegenManifest();
+      const codegenManifest = await project.getCodegenManifest();
       parsedPublishDir = codegenManifest?.publishDir ?? defaultPublishDir;
     } else {
       parsedPublishDir = publishDir;
