@@ -10,13 +10,8 @@ import {
 } from "./wrap";
 import { execSimple, execFallbacks } from "./utils/exec";
 
+import createIpfsClient, { IpfsClient } from "@polywrap/ipfs-http-client-lite";
 import { Client, PluginFactory } from "@polywrap/core-js";
-import createIpfsClient, {
-  IpfsClient,
-  IpfsFileInfo,
-} from "@polywrap/ipfs-http-client-lite";
-
-export { createIpfsClient, IpfsClient, IpfsFileInfo };
 
 const isNullOrUndefined = (arg: unknown) => {
   return arg === undefined || arg === null;

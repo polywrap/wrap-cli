@@ -14,10 +14,10 @@ declare module "@polywrap/ipfs-http-client-lite" {
     }>;
   }
 
-  export type IpfsFileInfo = {
+  export interface IpfsFileInfo {
     name: string;
     hash: CID;
-  };
+  }
 
   const createIpfsClient: (opts: unknown) => IpfsClient;
 
