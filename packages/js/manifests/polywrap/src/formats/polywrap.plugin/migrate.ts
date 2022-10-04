@@ -8,7 +8,6 @@ import {
   AnyPluginManifest,
   PluginManifest,
   PluginManifestFormats,
-  latestPluginManifestFormat
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
 import { migrators } from "./migrators";
@@ -19,12 +18,12 @@ export function migratePluginManifest(
 ): PluginManifest {
   let from = manifest.format as PluginManifestFormats;
 
-  if (from === latestPluginManifestFormat) {
-    return manifest as PluginManifest;
-  }
-
   if (!(Object.values(PluginManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized PluginManifestFormat "${manifest.format}"`);
+  }
+
+  if (!(Object.values(PluginManifestFormats).some(x => x === to))) {
+    throw new Error(`Unrecognized PluginManifestFormat "${to}"`);
   }
 
   const migrationPath = findShortestMigrationPath(migrators, from, to);

@@ -3,7 +3,8 @@ import YAML from "js-yaml";
 export function migrateAnyManifest(
   manifestString: string,
   manifestTypeName: string,
-  migrateFn: (manifest: unknown) => unknown
+  migrateFn: (manifest: unknown, to: string) => unknown,
+  to: string
 ): string {
   let manifest: unknown | undefined;
   try {
@@ -15,8 +16,8 @@ export function migrateAnyManifest(
   if (!manifest) {
     throw Error(`Unable to parse ${manifestTypeName}: ${manifestString}`);
   }
-
-  const newManifest = migrateFn(manifest);
+  
+  const newManifest = migrateFn(manifest, to);
 
   const cleanedManifest = JSON.parse(JSON.stringify(newManifest));
   delete cleanedManifest.__type;

@@ -8,7 +8,6 @@ import {
   AnyMetaManifest,
   MetaManifest,
   MetaManifestFormats,
-  latestMetaManifestFormat
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
 import { migrators } from "./migrators";
@@ -19,12 +18,12 @@ export function migrateMetaManifest(
 ): MetaManifest {
   let from = manifest.format as MetaManifestFormats;
 
-  if (from === latestMetaManifestFormat) {
-    return manifest as MetaManifest;
-  }
-
   if (!(Object.values(MetaManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized MetaManifestFormat "${manifest.format}"`);
+  }
+
+  if (!(Object.values(MetaManifestFormats).some(x => x === to))) {
+    throw new Error(`Unrecognized MetaManifestFormat "${to}"`);
   }
 
   const migrationPath = findShortestMigrationPath(migrators, from, to);

@@ -8,7 +8,6 @@ import {
   AnyDeployManifest,
   DeployManifest,
   DeployManifestFormats,
-  latestDeployManifestFormat
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
 import { migrators } from "./migrators";
@@ -19,12 +18,12 @@ export function migrateDeployManifest(
 ): DeployManifest {
   let from = manifest.format as DeployManifestFormats;
 
-  if (from === latestDeployManifestFormat) {
-    return manifest as DeployManifest;
-  }
-
   if (!(Object.values(DeployManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized DeployManifestFormat "${manifest.format}"`);
+  }
+
+  if (!(Object.values(DeployManifestFormats).some(x => x === to))) {
+    throw new Error(`Unrecognized DeployManifestFormat "${to}"`);
   }
 
   const migrationPath = findShortestMigrationPath(migrators, from, to);
