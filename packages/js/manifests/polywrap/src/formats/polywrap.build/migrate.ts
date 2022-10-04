@@ -13,18 +13,6 @@ import {
 import { findShortestMigrationPath } from "../../migrations";
 import { migrators } from "./migrators";
 
-import {
-  migrate as migrate_0_1_0_to_0_2_0
-} from "./migrators/0.1.0_to_0.2.0";
-
-type Migrator = {
-  [key in BuildManifestFormats]?: (m: AnyBuildManifest) => BuildManifest;
-};
-
-export const migrators: Migrator = {
-  "0.1.0": migrate_0_1_0_to_0_2_0,
-};
-
 export function migrateBuildManifest(
   manifest: AnyBuildManifest,
   to: BuildManifestFormats
