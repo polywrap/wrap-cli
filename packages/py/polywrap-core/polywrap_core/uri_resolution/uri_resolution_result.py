@@ -2,12 +2,7 @@ from typing import List, Optional
 
 from result import Err, Ok, Result
 
-from ..types.uri import Uri
-from ..types.uri_package import UriPackage
-from ..types.uri_package_wrapper import UriPackageOrWrapper
-from ..types.abc.wrap_package import IWrapPackage
-from ..types.uri_wrapper import UriWrapper
-from ..types.wrapper import Wrapper
+from ..types import IWrapPackage, Uri, UriPackage, UriPackageOrWrapper, UriWrapper, Wrapper
 from .uri_resolution_step import UriResolutionStep
 
 

@@ -1,46 +1,10 @@
 from typing import List, Optional, Set
 
-from ..types.uri import Uri
+from ..types import Uri, IUriResolutionContext
 from .uri_resolution_step import UriResolutionStep
 
-from abc import ABC, abstractmethod
-from typing import List, Any
 
-class IUriResolutionContext(ABC):
-    @abstractmethod
-    def is_resolving(self, uri: Uri) -> bool:
-        pass
-
-    @abstractmethod
-    def start_resolving(self, uri: Uri) -> None:
-        pass
-
-    @abstractmethod
-    def stop_resolving(self, uri: Uri) -> None:
-        pass
-
-    @abstractmethod
-    def track_step(self, step: Any) -> None:
-        pass
-
-    @abstractmethod
-    def get_history(self) -> List[Any]:
-        pass
-
-    @abstractmethod
-    def get_resolution_path(self) -> List[Uri]:
-        pass
-
-    @abstractmethod
-    def create_sub_history_context(self) -> "IUriResolutionContext":
-        pass
-
-    @abstractmethod
-    def create_sub_context(self) -> "IUriResolutionContext":
-        pass
-
-
-class UriResolutionContext(IUriResolutionContext):
+class UriResolutionContext(IUriResolutionContext[UriResolutionStep]):
     resolving_uri_set: Set[Uri]
     resolution_path: List[Uri]
     history: List[UriResolutionStep]
