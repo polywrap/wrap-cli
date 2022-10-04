@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "uri-resolvers"
+version = "0.1.0"
+description = ""
+authors = ["Cesar <cesarbrazon10@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+polywrap-core = { path = "../polywrap-core", develop = true }
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -5,17 +5,13 @@ from polywrap_core import (
     Client,
     ClientConfig,
     Uri,
-    resolve_uri,
-    ResolveUriOptions,
-    GetUriResolversOptions,
-    ResolveUriResult,
     InvokeApiOptions,
     InvokeApiResult,
-    init_wrapper,
     UriResolutionContext,
     IUriResolutionContext,
     Wrapper
 )
+from polywrap_core.types.uri_resolver import TryResolveUriOptions
 
 
 @dataclass
@@ -55,11 +51,19 @@ class PolywrapClient(Client):
             resolution_context
         })
 
-        if not result.ok:
-            # Improve tests handling
-            raise
+        if not result.ok and result.error:
+            #return ResultErr(UriResolverError(error=result.error, context=resolution_context))
+            raise UriResolverError(error=result.error)
+        else:
+            """
+            return ResultErr(Error(f"Error resolving URI {uri.uri}"))
+            """
+            raise f"Error resolving URI {uri.uri}"
 
-        return init_wrapper(result.value)
+        
+
+    async def try_resolve_uri(self, options: TryResolveUriOptions):
+        pass
 
     # def get_envs(self, options: GetEnvsOptions) -> List[Env]:
     #     return self._get_config(options.context_id).envs

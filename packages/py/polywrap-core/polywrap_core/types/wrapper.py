@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import Dict
 from ..types.invoke import Invocable, InvocableResult, InvokeOptions, Invoker
+from ..types.client import Client, GetFileOptions
 
 
 class Wrapper(Invocable):
@@ -15,6 +16,11 @@ class Wrapper(Invocable):
     @abstractmethod
     async def invoke(self, options: InvokeOptions, invoker: Invoker) -> InvocableResult:
         pass
+    
+    @abstractmethod
+    async def get_file(self, options: GetFileOptions, client: Client) -> InvocableResult:
+        pass
+    
 
 
 WrapperCache = Dict[str, Wrapper]

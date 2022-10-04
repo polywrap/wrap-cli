@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from .uri import Uri
-from .abc import IWrapPackage
+from .abc.wrap_package import IWrapPackage
 
 
 @dataclass(slots=True, kw_only=True)

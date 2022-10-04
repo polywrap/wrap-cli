@@ -13,15 +13,19 @@ if TYPE_CHECKING:
 
 class Client(Invoker, UriResolverHandler):
     @abstractmethod
-    def get_envs(self, options: Optional[GetEnvsOptions] = None) -> List[Env]:
+    def get_envs(self) -> List[Env]:
         pass
 
     @abstractmethod
-    def get_env_by_uri(self, uri: Uri, options: Optional[GetEnvsOptions] = None) -> Union[Env, None]:
+    def get_env_by_uri(self, uri: Uri) -> Union[Env, None]:
         pass
 
     @abstractmethod
-    def get_uri_resolver(self, options: Optional[GetUriResolversOptions] = None) -> List[IUriResolver]:
+    def get_uri_resolver(self) -> List[IUriResolver]:
+        pass
+
+    @abstractmethod
+    def get_file(self, uri: Uri, options: GetFileOptions):
         pass
 
 
@@ -30,12 +34,7 @@ class ClientConfig:
     resolver: List["IUriResolver"]
     envs: List[Env] = field(default_factory=list)
 
-
 @dataclass(slots=True, kw_only=True)
-class GetEnvsOptions:
-    pass
-
-
-@dataclass(slots=True, kw_only=True)
-class GetUriResolversOptions:
-    pass
+class GetFileOptions:
+    path: str
+    encoding: Optional[str]
