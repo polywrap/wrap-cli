@@ -2,10 +2,7 @@ import { httpPlugin } from "../..";
 import { Http_Response } from "../../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import {
-  buildUriResolver,
-  RecursiveResolver,
-} from "@polywrap/uri-resolvers-js";
+import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
 
 import nock from "nock";
 
