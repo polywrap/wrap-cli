@@ -1,6 +1,6 @@
 import { fileSystemPlugin } from "../index";
 import { PolywrapClient } from "@polywrap/client-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
+import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
 import { FileSystem_Module, FileSystem_EncodingEnum } from "../wrap";
 import fs from "fs";
 import path from "path";
@@ -27,12 +27,10 @@ describe("FileSystem plugin", () => {
     await cleanUpTempFiles();
 
     client = new PolywrapClient({
-      resolver: buildUriResolver([
-        {
-          uri: "wrap://ens/fs.polywrap.eth",
-          package: fileSystemPlugin({}),
-        },
-      ]),
+      resolver: RecursiveResolver.from({
+        uri: "wrap://ens/fs.polywrap.eth",
+        package: fileSystemPlugin({}),
+      }),
     });
   });
 
