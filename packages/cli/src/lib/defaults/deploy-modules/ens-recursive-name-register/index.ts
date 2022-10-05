@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Deployer } from "../../../deploy";
-import { createDefaultClient } from "../../../../utils/createDefaultClient";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
@@ -12,6 +11,7 @@ import {
   Connection,
 } from "@polywrap/ethereum-plugin-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
+import { createDefaultClient } from "./createDefaultClient";
 
 class ENSRecursiveNameRegisterPublisher implements Deployer {
   async execute(
