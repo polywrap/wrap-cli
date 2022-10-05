@@ -17,15 +17,6 @@ describe("Filesystem plugin", () => {
     await buildWrapper(simpleWrapperPath);
 
     client = getClient();
-      envs: [
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          env: {
-            provider: providers.ipfs,
-            fallbackProviders: defaultIpfsProviders,
-          },
-        },
-      ],
   });
 
   afterAll(async () => {
@@ -41,10 +32,11 @@ describe("Filesystem plugin", () => {
       },
     });
 
-    expect(result.error).toBeFalsy();
-    expect(result.data).toBeTruthy();
-    expect(typeof result.data).toBe("string");
-    expect(result.data).toEqual("test");
+    if (!result.ok) {
+      fail("Expected response to not be an error");
+    }
+
+    expect(result.value).toEqual("test");
 
     // get the manifest
     const manifest = await client.getManifest(simpleWrapperUri);

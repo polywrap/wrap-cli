@@ -1,5 +1,4 @@
 import {
-  buildUriResolver,
   RecursiveResolver,
   PackageToWrapperCacheResolver,
   WrapperCache,
@@ -11,31 +10,28 @@ import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "../..";
 
 export const getClient = () => {
-  return new PolywrapClient(
-    {
-      interfaces: [
-        {
-          interface: coreInterfaceUris.uriResolver,
-          implementations: ["wrap://ens/fs-resolver.polywrap.eth"],
-        },
-      ],
-      resolver: new RecursiveResolver(
-        new PackageToWrapperCacheResolver(
-          new WrapperCache(),
-          buildUriResolver([
-            {
-              uri: "wrap://ens/fs-resolver.polywrap.eth",
-              package: fileSystemResolverPlugin({}),
-            },
-            {
-              uri: "wrap://ens/fs.polywrap.eth",
-              package: fileSystemPlugin({}),
-            },
-            new ExtendableUriResolver(),
-          ])
-        )
-      ),
-    },
-    { noDefaults: true }
-  );
+  return new PolywrapClient({
+    interfaces: [
+      {
+        interface: coreInterfaceUris.uriResolver,
+        implementations: ["wrap://ens/fs-resolver.polywrap.eth"],
+      },
+    ],
+    resolver: RecursiveResolver.from(
+      PackageToWrapperCacheResolver.from(
+        [
+          {
+            uri: "wrap://ens/fs-resolver.polywrap.eth",
+            package: fileSystemResolverPlugin({}),
+          },
+          {
+            uri: "wrap://ens/fs.polywrap.eth",
+            package: fileSystemPlugin({}),
+          },
+          new ExtendableUriResolver(),
+        ],
+        new WrapperCache()
+      )
+    ),
+  });
 };
