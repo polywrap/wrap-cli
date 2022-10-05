@@ -7,10 +7,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-polywrap-core = { path = "../polywrap-core", develop = true }
-polywrap-msgpack = { path = "../polywrap-msgpack", develop = true }
+polywrap-core = { path = "../polywrap-core", develop = false }
+polywrap-msgpack = { path = "../polywrap-msgpack", develop = false }
 wasmtime = "^1.0.1"
-cffi = "^1.15.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"

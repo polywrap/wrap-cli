@@ -3,15 +3,15 @@ import ctypes
 from polywrap_msgpack import msgpack_decode
 
 
-def read_bytes(memory_pointer: ctypes._Pointer, memory_length: int, offset: int = None, length: int = None):
+Pointer = ctypes._PointerLike # type: ignore
+
+
+def read_bytes(memory_pointer: Pointer, memory_length: int, offset: int = None, length: int = None):
     result = bytearray(memory_length)
     buffer = (ctypes.c_char * memory_length).from_buffer(result)
     ctypes.memmove(buffer, memory_pointer, memory_length)
 
-    if offset and length:
-        return result[offset: offset + length]
-
-    return result
+    return result[offset: offset + length] if offset and length else result
 
 
 def read_string(memory_pointer: ctypes._Pointer, memory_length: int, offset: int, length: int):
