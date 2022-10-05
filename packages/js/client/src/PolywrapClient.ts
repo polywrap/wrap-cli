@@ -45,8 +45,8 @@ import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
-  tracerConfig: Partial<TracerConfig>;
-  wrapperCache?: IWrapperCache;
+  readonly tracerConfig: Readonly<Partial<TracerConfig>>;
+  readonly wrapperCache?: Readonly<IWrapperCache>;
 }
 
 export class PolywrapClient implements Client {
@@ -111,7 +111,10 @@ export class PolywrapClient implements Client {
     } else {
       Tracer.disableTracing();
     }
-    this._config.tracerConfig = tracerConfig ?? {};
+    this._config = {
+      ...this._config,
+      tracerConfig: tracerConfig ?? {},
+    };
   }
 
   @Tracer.traceMethod("PolywrapClient: getRedirects")
