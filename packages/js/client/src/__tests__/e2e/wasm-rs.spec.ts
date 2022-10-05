@@ -295,7 +295,7 @@ describe("wasm-rs test cases", () => {
     jest.clearAllMocks();
   });
 
-  it.only("codegen-manifest", async () => {
+  it("codegen-manifest", async () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/codegen-manifest`;
     await expect(buildWrapper(wrapperPath)).resolves;
   });
