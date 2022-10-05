@@ -1,30 +1,29 @@
 import { wsPlugin } from "../..";
 
 import { Client } from "@polywrap/core-js";
-import { PolywrapClient } from "@polywrap/client-js";
 import { buildWrapper } from "@polywrap/test-env-js";
 import WS from "jest-websocket-mock";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import { PluginPackage } from "@polywrap/plugin-js";
+import { createDefaultClient } from "./helpers/createDefaultClient";
 
 jest.setTimeout(360000);
 
 describe("e2e tests for WsPlugin", () => {
   describe("integration", () => {
-    let client: PolywrapClient;
+    let client: Client;
     let server: WS;
 
     const wrapperPath = `${__dirname}/integration`;
     const uri = `fs/${wrapperPath}/build`;
 
     beforeAll(async () => {
-      client = new PolywrapClient({
-        resolver: buildUriResolver([
+      client = createDefaultClient({
+        packages: [
           {
             uri: "wrap://ens/ws.polywrap.eth",
             package: wsPlugin({}),
           },
-        ]),
+        ],
       });
 
       await buildWrapper(wrapperPath);
@@ -61,17 +60,17 @@ describe("e2e tests for WsPlugin", () => {
         },
       }));
 
-      client = new PolywrapClient({
-        resolver: buildUriResolver([
-          {
-            uri: "wrap://ens/memory.polywrap.eth",
-            package: memoryPlugin,
-          },
+      client = createDefaultClient({
+        packages: [
           {
             uri: "wrap://ens/ws.polywrap.eth",
             package: wsPlugin({}),
           },
-        ]),
+          {
+            uri: "wrap://ens/memory.polywrap.eth",
+            package: memoryPlugin,
+          },
+        ],
       });
 
       await client.invoke<boolean>({
@@ -110,17 +109,17 @@ describe("e2e tests for WsPlugin", () => {
         },
       }));
 
-      client = new PolywrapClient({
-        resolver: buildUriResolver([
-          {
-            uri: "wrap://ens/memory.polywrap.eth",
-            package: memoryPlugin,
-          },
+      client = createDefaultClient({
+        packages: [
           {
             uri: "wrap://ens/ws.polywrap.eth",
             package: wsPlugin({}),
           },
-        ]),
+          {
+            uri: "wrap://ens/memory.polywrap.eth",
+            package: memoryPlugin,
+          },
+        ],
       });
 
       await client.invoke<boolean>({
@@ -163,7 +162,7 @@ describe("e2e tests for WsPlugin", () => {
       });
       if (!response.ok) fail(response.error);
 
-      expect(response.value).toEqual(["1","2"])
+      expect(response.value).toEqual(["1", "2"]);
 
       clearTimeout(t1);
       clearTimeout(t2);
