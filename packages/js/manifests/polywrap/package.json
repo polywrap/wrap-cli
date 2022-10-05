@@ -17,9 +17,9 @@
   },
   "dependencies": {
     "@polywrap/polywrap-manifest-schemas": "0.8.0",
-    "js-yaml": "3.14.0",
     "jsonschema": "1.4.0",
-    "semver": "7.3.5"
+    "semver": "7.3.5",
+    "yaml": "2.1.3"
   },
   "devDependencies": {
     "@polywrap/os-js": "0.8.0",

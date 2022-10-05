@@ -20,8 +20,8 @@
     "@polywrap/core-js": "0.8.0",
     "@polywrap/polywrap-manifest-types-js": "0.8.0",
     "axios": "0.21.2",
-    "js-yaml": "4.1.0",
-    "spawn-command": "0.0.2-1"
+    "spawn-command": "0.0.2-1",
+    "yaml": "2.1.3"
   },
   "devDependencies": {
     "@types/js-yaml": "3.11.1",

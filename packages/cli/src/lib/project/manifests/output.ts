@@ -7,7 +7,7 @@ import {
   PluginManifest,
 } from "@polywrap/polywrap-manifest-types-js";
 import { writeFileSync, normalizePath } from "@polywrap/os-js";
-import YAML from "js-yaml";
+import YAML from "yaml";
 import path from "path";
 import fs from "fs";
 
@@ -52,7 +52,7 @@ export async function outputManifest(
     const isYaml =
       manifestPath.endsWith(".yaml") || manifestPath.endsWith(".yml");
     const str = isYaml
-      ? YAML.safeDump(sanitizedManifest, { indent: 2 })
+      ? YAML.stringify(sanitizedManifest, null, 2 )
       : JSON.stringify(sanitizedManifest, null, 2);
 
     if (!str) {

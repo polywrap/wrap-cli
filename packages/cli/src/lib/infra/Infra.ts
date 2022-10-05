@@ -10,7 +10,7 @@ import {
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
 import path from "path";
 import fs, { lstatSync, readdirSync } from "fs";
-import YAML from "js-yaml";
+import YAML from "yaml";
 import { copySync } from "fs-extra";
 
 export interface InfraConfig {
@@ -230,7 +230,7 @@ export class Infra {
   }
 
   private _generateBaseDockerCompose(composePath: string): void {
-    const fileContent = YAML.dump(DEFAULT_BASE_COMPOSE);
+    const fileContent = YAML.stringify(DEFAULT_BASE_COMPOSE, null, 2);
 
     this._writeFileToCacheFromAbsPath(composePath, fileContent);
   }
@@ -327,7 +327,7 @@ export class Infra {
       );
 
       // Write new docker-compose manifests with corrected build path and 'polywrap' prefix
-      const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
+      const newComposeFile = YAML.stringify(composeFileWithCorrectPaths, null, 2);
       this._writeFileToCacheFromAbsPath(m.path, newComposeFile);
     });
 

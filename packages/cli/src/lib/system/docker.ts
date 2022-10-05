@@ -6,7 +6,7 @@ import { withSpinner, intlMsg } from "../";
 import { isWin, writeFileSync } from "@polywrap/os-js";
 import { system, print } from "gluegun";
 import Mustache from "mustache";
-import YAML from "js-yaml";
+import YAML from "yaml";
 import path from "path";
 import fs from "fs";
 
@@ -238,7 +238,7 @@ interface DockerCompose {
 export function correctBuildContextPathsFromCompose(
   dockerComposePath: string
 ): DockerCompose {
-  const dockerComposeFile = YAML.safeLoad(
+  const dockerComposeFile = YAML.parse(
     fs.readFileSync(dockerComposePath, "utf-8")
   ) as DockerCompose;
 

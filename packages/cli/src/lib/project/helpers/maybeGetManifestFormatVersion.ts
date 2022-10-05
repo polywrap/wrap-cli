@@ -1,4 +1,4 @@
-import YAML from "js-yaml";
+import YAML from "yaml";
 
 export function maybeGetManifestFormatVersion(
   manifestStr: string
@@ -11,8 +11,10 @@ export function maybeGetManifestFormatVersion(
 
   try {
     manifest = JSON.parse(manifestStr) as ManifestFormatProps;
-  } catch (e) {
-    manifest = YAML.safeLoad(manifestStr) as ManifestFormatProps | undefined;
+  } catch (_) {
+    try {
+      manifest = YAML.parse(manifestStr) as ManifestFormatProps;
+    } catch (_) { }
   }
 
   return manifest?.format;
