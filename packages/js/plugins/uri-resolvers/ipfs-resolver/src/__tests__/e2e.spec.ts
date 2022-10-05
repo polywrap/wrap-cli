@@ -1,56 +1,22 @@
-import { PolywrapClient } from "@polywrap/client-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import {
 import { getClientWithIpfs } from "./helpers/getClientWithIpfs";
+import { Result } from "@polywrap/core-js";
+import { ResultOk } from "@polywrap/result";
+import {
   buildAndDeployWrapper,
   initTestEnvironment,
   providers,
   stopTestEnvironment,
 } from "@polywrap/test-env-js";
-import { IpfsClient } from "./helpers/IpfsClient";
-import { createIpfsClient } from "./helpers/createIpfsClient";
-import { Result } from "@polywrap/core-js";
-import { ResultOk } from "@polywrap/result";
 
 jest.setTimeout(300000);
 
 describe("IPFS Plugin", () => {
   let ipfsResolverUri = "wrap://ens/ipfs-resolver.polywrap.eth";
-  let ipfs: IpfsClient;
-
   let wrapperIpfsCid: string;
-
-  const getClientConfigWithIpfsResolverEnv = (env: Record<string, unknown>) => {
-    return {
-      plugins: [
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({}),
-        },
-        {
-          uri: ipfsResolverUri,
-          plugin: ipfsResolverPlugin({}),
-        },
-      ],
-      envs: [
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          env: {
-            provider: providers.ipfs,
-          },
-        },
-        {
-          uri: "wrap://ens/ipfs-resolver.polywrap.eth",
-          env: env,
-        },
-      ],
-    };
-  };
 
   beforeAll(async () => {
     await initTestEnvironment();
-
-    ipfs = createIpfsClient(providers.ipfs);
 
     let { ipfsCid } = await buildAndDeployWrapper({
       wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
@@ -60,7 +26,6 @@ describe("IPFS Plugin", () => {
     });
 
     wrapperIpfsCid = ipfsCid;
-    client = getClientWithIpfs();
   });
 
   afterAll(async () => {
@@ -68,7 +33,7 @@ describe("IPFS Plugin", () => {
   });
 
   it("Should successfully resolve a deployed wrapper - e2e", async () => {
-    const client = new PolywrapClient(getClientConfigWithIpfsResolverEnv({}));
+    const client = getClientWithIpfs({});
 
     const wrapperUri = `ipfs/${wrapperIpfsCid}`;
 
@@ -102,8 +67,9 @@ describe("IPFS Plugin", () => {
       env: Record<string, unknown>,
       timeout: number
     ) => {
-      const nonExistentFileCid = "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-      const client = new PolywrapClient(getClientConfigWithIpfsResolverEnv(env));
+      const nonExistentFileCid =
+        "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+      const client = getClientWithIpfs(env);
 
       const getFilePromise = client.invoke<Uint8Array>({
         uri: ipfsResolverUri,
@@ -127,7 +93,7 @@ describe("IPFS Plugin", () => {
 
       if (!fasterRaceResult.ok) fail(fasterRaceResult.error);
       const expectedFasterResult = await fasterRacePromise;
-      if (!expectedFasterResult.ok) fail(expectedFasterResult.error)
+      if (!expectedFasterResult.ok) fail(expectedFasterResult.error);
       expect(fasterRaceResult.value).toStrictEqual(expectedFasterResult.value);
 
       if (!slowerRaceResult.ok) fail(slowerRaceResult.error);
@@ -156,7 +122,7 @@ describe("IPFS Plugin", () => {
           checkIfExists: timeout,
           tryResolveUri: timeout,
         },
-        skipCheckIfExists: true
+        skipCheckIfExists: true,
       },
       timeout
     );
@@ -167,8 +133,9 @@ describe("IPFS Plugin", () => {
       env: Record<string, unknown>,
       timeout: number
     ) => {
-      const nonExistentFileCid = "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-      const client = new PolywrapClient(getClientConfigWithIpfsResolverEnv(env));
+      const nonExistentFileCid =
+        "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+      const client = getClientWithIpfs(env);
 
       const getFilePromise = client.invoke<Uint8Array>({
         uri: ipfsResolverUri,
@@ -193,7 +160,7 @@ describe("IPFS Plugin", () => {
 
       if (!fasterRaceResult.ok) fail(fasterRaceResult.error);
       const expectedFasterResult = await fasterRacePromise;
-      if (!expectedFasterResult.ok) fail(expectedFasterResult.error)
+      if (!expectedFasterResult.ok) fail(expectedFasterResult.error);
       expect(fasterRaceResult.value).toStrictEqual(expectedFasterResult.value);
 
       if (!slowerRaceResult.ok) fail(slowerRaceResult.error);
