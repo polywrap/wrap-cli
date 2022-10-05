@@ -51,9 +51,7 @@ export async function parseClientConfigOption(
       process.exit(1);
     }
 
-    const customConfig = await executeMaybeAsyncFunction<
-      Partial<CustomClientConfig<Uri | string>>
-    >(configModule.getCustomConfig);
+    const customConfig =  await configModule.getCustomConfig();
 
     try {
       validateClientConfig(customConfig);

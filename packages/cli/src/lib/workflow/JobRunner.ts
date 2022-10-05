@@ -1,6 +1,7 @@
 import { JobResult, JobStatus, Step } from "./types";
 
 import { PolywrapClient } from "@polywrap/client-js";
+import { MaybeAsync } from "@polywrap/core-js";
 import {
   Client,
   executeMaybeAsyncFunction,
@@ -212,7 +213,7 @@ export class JobRunner {
       this.jobOutput.set(absId, result);
 
       if (this.onExecution) {
-        await executeMaybeAsyncFunction(this.onExecution, absId, result);
+        await this.onExecution(absId, result);
       }
     }
   }

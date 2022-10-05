@@ -8,9 +8,7 @@ import {
 } from "@polywrap/client-js";
 import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 
-export function validateRedirects<TUri extends Uri | string>(
-  redirects: IUriRedirect<TUri>[]
-): void {
+export function validateRedirects<TUri extends Uri | string>(redirects: readonly UriRedirect<TUri>[]): void {
   if (!Array.isArray(redirects)) {
     throw new Error(intlMsg.commands_run_error_redirectsExportNotArray());
   }
@@ -42,7 +40,7 @@ export function validateRedirects<TUri extends Uri | string>(
 }
 
 export function validateInterfaces<TUri extends Uri | string = string>(
-  interfaces: InterfaceImplementations<TUri>[]
+  interfaces: readonly InterfaceImplementations<TUri>[]
 ): void {
   if (!Array.isArray(interfaces)) {
     throw new Error(intlMsg.commands_run_error_interfacesExportNotArray());
@@ -92,7 +90,7 @@ export function validateInterfaces<TUri extends Uri | string = string>(
 }
 
 export function validateEnvs<TUri extends Uri | string = string>(
-  envs: Env<TUri>[]
+  envs: readonly Env<TUri>[]
 ): void {
   if (!Array.isArray(envs)) {
     throw new Error(intlMsg.commands_run_error_envsExportNotArray());

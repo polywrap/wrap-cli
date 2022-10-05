@@ -39,7 +39,7 @@ import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = Uri | string>
   extends ClientConfig<TUri> {
-  tracerConfig: Partial<TracerConfig>;
+  readonly tracerConfig: Readonly<Partial<TracerConfig>>;
 }
 
 export class PolywrapClient implements Client {

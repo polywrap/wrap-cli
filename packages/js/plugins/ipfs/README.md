@@ -12,8 +12,7 @@ import {
   stopTestEnvironment,
 } from "@polywrap/test-env-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-
-const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
+import createIpfsClient from "@polywrap/ipfs-http-client-lite";
 
 // IPFS
 export async function foo({

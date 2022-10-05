@@ -8,14 +8,11 @@ import {
   manifest,
   Env,
 } from "./wrap";
-import { IpfsClient } from "./utils/IpfsClient";
 import { execSimple, execFallbacks } from "./utils/exec";
 
 import { Client } from "@polywrap/core-js";
+import createIpfsClient, { IpfsClient } from "@polywrap/ipfs-http-client-lite";
 import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
 const isNullOrUndefined = (arg: unknown) => {
   return arg === undefined || arg === null;

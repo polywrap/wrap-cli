@@ -14,10 +14,10 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
-  redirects: IUriRedirect<TUri>[];
-  interfaces: InterfaceImplementations<TUri>[];
-  envs: Env<TUri>[];
-  resolver: IUriResolver<unknown>;
+  readonly redirects: Readonly<IUriRedirect<TUri>[]>;
+  readonly interfaces: Readonly<InterfaceImplementations<TUri>[]>;
+  readonly envs: Readonly<Env<TUri>[]>;
+  readonly resolver: Readonly<IUriResolver<unknown>>;
 }
 
 export interface GetManifestOptions {

@@ -5,15 +5,13 @@ import {
   stopTestEnvironment,
 } from "@polywrap/test-env-js";
 
-import { IpfsClient, IpfsFileInfo } from "../utils/IpfsClient";
 import { Ipfs_Module } from "../wrap";
 import { Client } from "@polywrap/core-js";
 import { ResultOk } from "@polywrap/result";
 import { PolywrapClient } from "@polywrap/client-js";
+import createIpfsClient, { IpfsClient, IpfsFileInfo } from "@polywrap/ipfs-http-client-lite";
 import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
 import { ipfsPlugin } from "..";
-
-const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
 jest.setTimeout(300000);
 

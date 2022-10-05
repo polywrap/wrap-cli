@@ -9,8 +9,6 @@ import {
   IUriResolver,
   Uri,
   Client,
-  executeMaybeAsyncFunction,
-  Wrapper,
   IUriResolutionContext,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
@@ -50,9 +48,7 @@ export class PackageToWrapperCacheResolver<TError>
     client: Client,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | Error>> {
-    const wrapper = await executeMaybeAsyncFunction<Wrapper | undefined>(
-      this.cache.get.bind(this.cache, uri)
-    );
+    const wrapper = await this.cache.get(uri);
 
     if (wrapper) {
       const result = UriResolutionResult.ok(uri, wrapper);
@@ -89,9 +85,7 @@ export class PackageToWrapperCacheResolver<TError>
         const wrapper = createResult.value;
 
         for (const uri of resolutionPath) {
-          await executeMaybeAsyncFunction<Wrapper | undefined>(
-            this.cache.set.bind(this.cache, uri, wrapper)
-          );
+          await this.cache.set(uri, wrapper);
         }
 
         result = UriResolutionResult.ok(result.value.uri, wrapper);
@@ -100,9 +94,7 @@ export class PackageToWrapperCacheResolver<TError>
         const resolutionPath: Uri[] = subContext.getResolutionPath();
 
         for (const uri of resolutionPath) {
-          await executeMaybeAsyncFunction<Wrapper | undefined>(
-            this.cache.set.bind(this.cache, uri, wrapper)
-          );
+          await this.cache.set(uri, wrapper);
         }
       }
     }
