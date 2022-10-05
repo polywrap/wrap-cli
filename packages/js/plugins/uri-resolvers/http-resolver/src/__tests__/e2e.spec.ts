@@ -2,10 +2,9 @@ import { PolywrapClient } from "@polywrap/client-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { buildAndDeployWrapperToHttp, runCLI, providers } from "@polywrap/test-env-js";
 
-import { httpPlugin } from "@polywrap/http-plugin-js";
 import axios from "axios";
-import { httpResolverPlugin } from "..";
 import { deserializeWrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { getClient } from "./helpers/getClient";
 
 jest.setTimeout(300000);
 
@@ -17,7 +16,7 @@ describe("HTTP Plugin", () => {
 
   beforeAll(async () => {
     const { exitCode, stderr } = await runCLI({
-      args: ["infra", "up", "--modules=http", "--verbose"]
+      args: ["infra", "up", "--modules=http", "--verbose"],
     });
 
     if (exitCode !== 0) {
@@ -32,23 +31,12 @@ describe("HTTP Plugin", () => {
 
     wrapperHttpUri = uri;
 
-    client = new PolywrapClient({
-      plugins: [
-        {
-          uri: "wrap://ens/http.polywrap.eth",
-          plugin: httpPlugin({})
-        },
-        {
-          uri: "wrap://ens/http-uri-resolver.polywrap.eth",
-          plugin: httpResolverPlugin({})
-        }
-      ],
-    });
+    client = getClient();
   });
 
   afterAll(async () => {
     const { exitCode, stderr } = await runCLI({
-      args: ["infra", "down", "--modules=http", "--verbose"]
+      args: ["infra", "down", "--modules=http", "--verbose"],
     });
 
     if (exitCode !== 0) {
@@ -68,10 +56,13 @@ describe("HTTP Plugin", () => {
     if (result.value.type !== "wrapper") {
       fail("Expected response to be a wrapper");
     }
-    
-    const { data } = await axios.get(`${providers.http}/wrappers/local/${wrapperName}/wrap.info`, {
-      responseType: "arraybuffer"
-    });
+
+    const { data } = await axios.get(
+      `${providers.http}/wrappers/local/${wrapperName}/wrap.info`,
+      {
+        responseType: "arraybuffer",
+      }
+    );
     const expectedManifest = await deserializeWrapManifest(data);
 
     const manifest = await result.value.wrapper.getManifest({}, client);
@@ -93,9 +84,12 @@ describe("HTTP Plugin", () => {
       fail("Expected response to be a wrapper");
     }
 
-    const { data } = await axios.get(`${providers.http}/wrappers/local/${wrapperName}/wrap.info`, {
-      responseType: "arraybuffer"
-    });
+    const { data } = await axios.get(
+      `${providers.http}/wrappers/local/${wrapperName}/wrap.info`,
+      {
+        responseType: "arraybuffer",
+      }
+    );
     const expectedManifest = await deserializeWrapManifest(data);
 
     const manifest = await result.value.wrapper.getManifest({}, client);
