@@ -1,4 +1,3 @@
-import { httpPlugin } from "../..";
 import { Http_Response } from "../../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
