@@ -30,12 +30,6 @@ describe("ENS Resolver Plugin", () => {
     wrapperEnsDomain = ensDomain;
 
     client = getClient();
-        }
-      ],
-      plugins: [
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({}),
   });
 
   afterAll(async () => {
