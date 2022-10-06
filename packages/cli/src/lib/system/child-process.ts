@@ -27,7 +27,8 @@ export function runCommandSync(
 export async function runCommand(
   command: string,
   quiet = false,
-  env: Record<string, string> | undefined = undefined
+  env: Record<string, string> | undefined = undefined,
+  cwd: string | undefined = undefined
 ): Promise<{ stdout: string; stderr: string }> {
   if (!quiet) {
     console.log(`> ${command}`);
@@ -49,7 +50,7 @@ export async function runCommand(
     const childObj = exec(
       command,
       {
-        cwd: __dirname,
+        cwd: cwd ?? __dirname,
         env: {
           ...process.env,
           ...env,

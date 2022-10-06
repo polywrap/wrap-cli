@@ -1,0 +1,10 @@
+{
+  "stdout": [
+    "Artifacts written to ./build",
+    "build/polywrap.meta.json",
+    "build/meta/links/link.svg",
+    "build/meta/icon/icon.png",
+    "WRAP manifest written in ./build"
+  ],
+  "exitCode": 0
+}
