@@ -20,7 +20,7 @@ Commands:
   help [command]               display help for command
 `;
 
-describe.skip("e2e tests for no command", () => {
+describe("e2e tests for no command", () => {
   
   it("Should throw error for unrecognized command", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({

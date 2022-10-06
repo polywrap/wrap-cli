@@ -50,7 +50,7 @@ const setup = async () => {
   };
 }
 
-describe.skip("e2e tests for deploy command", () => {
+describe("e2e tests for deploy command", () => {
   beforeAll(async () => {
     await setup()
 

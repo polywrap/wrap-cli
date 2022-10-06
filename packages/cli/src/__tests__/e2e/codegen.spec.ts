@@ -28,7 +28,7 @@ Options:
   -h, --help                         display help for command
 `;
 
-describe.skip("e2e tests for codegen command", () => {
+describe("e2e tests for codegen command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/codegen");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })

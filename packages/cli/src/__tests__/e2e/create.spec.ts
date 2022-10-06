@@ -21,7 +21,7 @@ Commands:
   help [command]                      display help for command
 `;
 
-describe.skip("e2e tests for create command", () => {
+describe("e2e tests for create command", () => {
   it("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "--help"],

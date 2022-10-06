@@ -7,7 +7,7 @@ import fs from "fs";
 import { testCliOutput } from "./helpers/testCliOutput";
 import { testCodegenOutput } from "./helpers/testCodegenOutput";
 
-describe.skip("e2e tests for codegen command - app project", () => {
+describe("e2e tests for codegen command - app project", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "app", "codegen");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })

@@ -19,7 +19,7 @@ Options:
                                      PolywrapClient
   -n, --no-codegen                   Skip code generation
   -s, --strategy <strategy>          Strategy to use for building the wrapper
-                                     (default: vm)
+                                     (default: "vm")
   -w, --watch                        Automatically rebuild when changes are
                                      made (default: false)
   -v, --verbose                      Verbose output (default: false)
@@ -28,7 +28,7 @@ Options:
 
 jest.setTimeout(500000);
 
-describe.skip("e2e tests for build command", () => {
+describe("e2e tests for build command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/build-cmd/assemblyscript");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })

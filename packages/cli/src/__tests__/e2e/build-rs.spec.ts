@@ -5,7 +5,7 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import fs from "fs";
 import path from "path";
 
-jest.setTimeout(500000);
+jest.setTimeout(700000);
 
 describe("e2e tests for build command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/build-cmd/rust");
@@ -17,16 +17,13 @@ describe("e2e tests for build command", () => {
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
 
-  describe.only("Image strategy", () => {
+  describe("Image strategy", () => {
     it("Builds for rust", async () => {
-      const { exitCode: code, stdout: output, stderr } = await runCLI({
+      const { exitCode: code, stdout: output } = await runCLI({
         args: ["build", "-v", "-s", "image"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
-
-      console.log(output);
-      console.log(stderr);
   
       const buildDir = `./build`;
   

@@ -67,9 +67,7 @@ export const build: Command = {
       .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_n()}`)
       .option(
         `-s, --strategy <${strategyStr}>`,
-        `${intlMsg.commands_build_options_s({
-          default: defaultStrategy,
-        })}`,
+        `${intlMsg.commands_build_options_s()}`,
         defaultStrategy
       )
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
