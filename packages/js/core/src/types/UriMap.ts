@@ -6,26 +6,26 @@ export class UriMap<TValue> implements Map<Uri, TValue> {
   constructor(iterable?: Iterable<[Uri, TValue]>) {
     this.map = new Map<string, TValue>();
     if (iterable) {
-      for (let [k, v] of iterable) {
+      for (const [k, v] of iterable) {
         this.set(k, v);
       }
     }
   }
-  
+
   get(key: Uri): TValue | undefined {
     return this.map.get(key.uri);
   }
-  
+
   has(key: Uri): boolean {
     return this.map.has(key.uri);
   }
-  
+
   set(key: Uri, value: TValue): this {
     this.map.set(key.uri, value);
 
     return this;
   }
-  
+
   delete(key: Uri): boolean {
     return this.map.delete(key.uri);
   }
@@ -36,33 +36,33 @@ export class UriMap<TValue> implements Map<Uri, TValue> {
 
   forEach(
     callbackfn: (value: TValue, key: Uri, map: Map<Uri, TValue>) => void,
-    thisArg?: any
+    thisArg?: unknown
   ): void {
-    this.map.forEach((v, k, m) => callbackfn(v, new Uri(k), this), thisArg);
+    this.map.forEach((v, k) => callbackfn(v, new Uri(k), this), thisArg);
   }
 
   get size(): number {
     return this.map.size;
   }
 
-  [Symbol.toStringTag]: string = "UriMap";
+  [Symbol.toStringTag] = "UriMap";
 
   *entries(): IterableIterator<[Uri, TValue]> {
-    for (let [k, v] of this.map.entries()) {
+    for (const [k, v] of this.map.entries()) {
       yield [new Uri(k), v];
     }
   }
-  
+
   *keys(): IterableIterator<Uri> {
-    for (let x of this.map.keys()) {
+    for (const x of this.map.keys()) {
       yield new Uri(x);
     }
   }
-  
+
   values(): IterableIterator<TValue> {
     return this.map.values();
   }
-  
+
   [Symbol.iterator](): IterableIterator<[Uri, TValue]> {
     return this.entries();
   }
