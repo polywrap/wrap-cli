@@ -21,9 +21,13 @@ import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
 
 import path from "path";
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClient, Uri } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
+import {
+  ClientConfigBuilder,
+  CustomClientConfig,
+} from "@polywrap/client-config-builder-js";
 
 const commandToPathMap: Record<string, string> = {
   schema: schemaScriptPath,
@@ -44,7 +48,7 @@ const pathStr = intlMsg.commands_codegen_options_o_path();
 type DocgenCommandOptions = {
   manifestFile: string;
   docgenDir: string;
-  clientConfig: Partial<PolywrapClientConfig>;
+  clientConfig: Partial<CustomClientConfig<Uri | string>>;
   imports: boolean;
 };
 
@@ -124,7 +128,9 @@ async function run(command: DocType, options: DocgenCommandOptions) {
   const customScript = require.resolve(commandToPathMap[command]);
 
   // Get client
-  const client = new PolywrapClient(clientConfig);
+  const client = new PolywrapClient(
+    new ClientConfigBuilder().add(clientConfig).buildDefault()
+  );
 
   // Get project
   let project: Project<AnyProjectManifest>;

@@ -3,11 +3,7 @@ import { intlMsg } from "../intl";
 import { importTypescriptModule } from "../system";
 import { getTestEnvCustomConfig } from "../test-env";
 
-import {
-  ClientConfig,
-  executeMaybeAsyncFunction,
-  Uri,
-} from "@polywrap/core-js";
+import { Uri } from "@polywrap/core-js";
 import {
   ClientConfigBuilder,
   CustomClientConfig,
@@ -16,9 +12,8 @@ import path from "path";
 
 export async function parseClientConfigOption(
   clientConfig: string | undefined
-): Promise<Partial<ClientConfig<Uri>>> {
+): Promise<Partial<CustomClientConfig<Uri>>> {
   const builder = new ClientConfigBuilder().addDefaults();
-  let config: ClientConfig<Uri>;
 
   try {
     builder.add(getTestEnvCustomConfig());
@@ -51,18 +46,16 @@ export async function parseClientConfigOption(
       process.exit(1);
     }
 
-    const customConfig =  await configModule.getCustomConfig();
+    const customConfig = await configModule.getCustomConfig();
 
     try {
       validateClientConfig(customConfig);
-      config = builder.add(customConfig).buildDefault();
+      return builder.add(customConfig).getConfig();
     } catch (e) {
       console.error(e.message);
       process.exit(1);
     }
   } else {
-    config = builder.buildDefault();
+    return builder.getConfig();
   }
-
-  return config;
 }

@@ -4,7 +4,7 @@ import { PluginMethod } from "../PluginMethod";
 import { PluginModule } from "../PluginModule";
 import { GetPluginMethodsFunc } from "./GetPluginMethodsFunc";
 
-import { Client, executeMaybeAsyncFunction } from "@polywrap/core-js";
+import { Client } from "@polywrap/core-js";
 import { Result, ResultOk } from "@polywrap/result";
 
 export class PluginModuleWithMethods<
@@ -32,9 +32,8 @@ export class PluginModuleWithMethods<
       throw Error(`Plugin method "${method}" must be of type 'function'`);
     }
 
-    const data = await executeMaybeAsyncFunction<TResult>(
-      fn.bind(this, args, client)
-    );
+    const data = await fn(args, client);
+
     return ResultOk(data);
   }
 
@@ -46,6 +45,6 @@ export class PluginModuleWithMethods<
       this
     )[method] as PluginMethod<TArgs, TResult>;
 
-    return fn;
+    return fn.bind(this);
   }
 }

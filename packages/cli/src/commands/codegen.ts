@@ -14,9 +14,13 @@ import {
   defaultProjectManifestFiles,
 } from "../lib";
 
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClient, Uri } from "@polywrap/client-js";
 import path from "path";
 import fs from "fs";
+import {
+  ClientConfigBuilder,
+  CustomClientConfig,
+} from "@polywrap/client-config-builder-js";
 
 const defaultCodegenDir = "./src/wrap";
 const defaultPublishDir = "./build";
@@ -29,7 +33,7 @@ type CodegenCommandOptions = {
   codegenDir: string;
   publishDir: string;
   script?: string;
-  clientConfig: Partial<PolywrapClientConfig>;
+  clientConfig: Partial<CustomClientConfig<Uri | string>>;
 };
 
 export const codegen: Command = {
@@ -90,7 +94,9 @@ async function run(options: CodegenCommandOptions) {
   } = options;
 
   // Get Client
-  const client = new PolywrapClient(clientConfig);
+  const client = new PolywrapClient(
+    new ClientConfigBuilder().add(clientConfig).buildDefault()
+  );
 
   const project = await getProjectFromManifest(manifestFile);
 

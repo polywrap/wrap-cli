@@ -18,7 +18,11 @@ import {
 import { print } from "gluegun";
 import path from "path";
 import readline from "readline";
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClient, Uri } from "@polywrap/client-js";
+import {
+  ClientConfigBuilder,
+  CustomClientConfig,
+} from "@polywrap/client-config-builder-js";
 
 const defaultOutputDir = "./build";
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
@@ -27,7 +31,7 @@ const pathStr = intlMsg.commands_build_options_o_path();
 type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
-  clientConfig: Partial<PolywrapClientConfig>;
+  clientConfig: Partial<CustomClientConfig<Uri | string>>;
   codegen: boolean; // defaults to true
   watch?: boolean;
   verbose?: boolean;
@@ -83,7 +87,9 @@ async function run(options: BuildCommandOptions) {
   } = options;
 
   // Get Client
-  const client = new PolywrapClient(clientConfig);
+  const client = new PolywrapClient(
+    new ClientConfigBuilder().add(clientConfig).buildDefault()
+  );
 
   // Ensure docker is installed
   if (!isDockerInstalled()) {

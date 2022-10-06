@@ -3,12 +3,14 @@ import { intlMsg } from "../intl";
 import {
   Env,
   InterfaceImplementations,
-  Uri,
   IUriRedirect,
+  Uri,
 } from "@polywrap/client-js";
 import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 
-export function validateRedirects<TUri extends Uri | string>(redirects: readonly UriRedirect<TUri>[]): void {
+export function validateRedirects<TUri extends Uri | string>(
+  redirects: readonly IUriRedirect<TUri>[]
+): void {
   if (!Array.isArray(redirects)) {
     throw new Error(intlMsg.commands_run_error_redirectsExportNotArray());
   }

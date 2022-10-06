@@ -17,13 +17,14 @@ import {
   parseManifestFileOption,
 } from "../lib";
 
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { Uri } from "@polywrap/client-js";
 import path from "path";
 import yaml from "js-yaml";
 import fs from "fs";
+import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 
 type WorkflowCommandOptions = {
-  clientConfig: Partial<PolywrapClientConfig>;
+  clientConfig: Partial<CustomClientConfig<Uri | string>>;
   manifest: string;
   jobs?: string[];
   validationScript?: string;
@@ -77,7 +78,6 @@ export const run: Command = {
 
 const _run = async (options: WorkflowCommandOptions) => {
   const { manifest, clientConfig, outputFile, quiet, jobs } = options;
-  const client = new PolywrapClient(clientConfig);
 
   const manifestPath = path.resolve(manifest);
   const workflow = await loadWorkflowManifest(manifestPath, quiet);
@@ -108,7 +108,7 @@ const _run = async (options: WorkflowCommandOptions) => {
     }
   };
 
-  const jobRunner = new JobRunner(client, onExecution);
+  const jobRunner = new JobRunner(clientConfig, onExecution);
   await jobRunner.run(workflow.jobs, jobs ?? Object.keys(workflow.jobs));
 
   if (outputFile) {
