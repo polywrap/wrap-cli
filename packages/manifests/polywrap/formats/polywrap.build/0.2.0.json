@@ -7,7 +7,7 @@
     "format": {
       "description": "Polywrap build manifest format version.",
       "type": "string",
-      "enum": ["0.2.0", "0.2"]
+      "enum": ["0.2.0"]
     },
     "strategies": {
       "description": "Custom build image configurations.",
