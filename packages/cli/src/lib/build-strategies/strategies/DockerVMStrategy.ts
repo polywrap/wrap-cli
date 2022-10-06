@@ -162,41 +162,21 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         );
         fse.writeFileSync(buildScriptPath, scriptContent);
 
-        let buildError: Error | undefined = undefined;
-
-        try {
-          const { stderr } = await runCommand(
-            `docker run --rm -v ${path.resolve(
-              this._volumePaths.project
-            )}:/project -v ${path.resolve(
-              this._volumePaths.linkedPackages
-            )}:/linked-packages ${
-              CONFIGS[language].baseImage
-            }:latest /bin/bash -c "${scriptContent}"`
-          );
-
-          if (
-            stderr &&
-            !fse.existsSync(path.join(this._volumePaths.project, "build"))
-          ) {
-            buildError = new Error(stderr);
-          }
-        } catch (e) {
-          buildError = e;
-        }
-
-        await runCommand(
-          `docker run --rm -v ${path.resolve(
+        const { stderr } = await runCommand(
+          `docker run --rm --user $(id -u):$(id -g) -v ${path.resolve(
             this._volumePaths.project
           )}:/project -v ${path.resolve(
             this._volumePaths.linkedPackages
           )}:/linked-packages ${
             CONFIGS[language].baseImage
-          }:latest /bin/bash -c "chmod 777 ."`
+          }:latest /bin/bash -c "${scriptContent}"`
         );
 
-        if (buildError) {
-          throw buildError;
+        if (
+          stderr &&
+          !fse.existsSync(path.join(this._volumePaths.project, "build"))
+        ) {
+          throw new Error(stderr);
         }
       }
     };
