@@ -34,12 +34,12 @@ async def test_asyncio_can_sleep_with_await(async_await_sleeping):
     rested: bool = async_await_sleeping
     assert rested == True
 
-@pytest.mark.asyncio
-async def test_maybeasync_can_inspect_coroutines(awaitable_function):
-    print(awaitable_function)
-    print(type(awaitable_function))
-    test_coroutine_resp: bool = is_coroutine(awaitable_function)
-    assert test_coroutine_resp
+# @pytest.mark.asyncio
+# async def test_maybeasync_can_inspect_coroutines(awaitable_function):
+#     print(awaitable_function)
+#     print(type(awaitable_function))
+#     test_coroutine_resp: bool = is_coroutine(awaitable_function)
+#     assert test_coroutine_resp
 
 # @pytest.mark.asyncio
 # async def test_maybeasync_executes_non_coroutines(coroutine):   
