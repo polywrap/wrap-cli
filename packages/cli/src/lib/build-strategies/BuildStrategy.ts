@@ -31,26 +31,17 @@ export abstract class BuildStrategy<TBuildReturn = unknown> {
       language,
       this.getStrategyName()
     );
+    const strategyUsedCacheDir = this.project.getCachePath(
+      PolywrapProject.cacheLayout.buildStrategyUsed
+    );
 
-    if (
-      fse.existsSync(
-        this.project.getCachePath(PolywrapProject.cacheLayout.buildStrategyUsed)
-      )
-    ) {
-      fse.removeSync(
-        this.project.getCachePath(PolywrapProject.cacheLayout.buildStrategyUsed)
-      );
+    if (fse.existsSync(strategyUsedCacheDir)) {
+      fse.removeSync(strategyUsedCacheDir);
     }
 
-    fse.mkdirSync(
-      this.project.getCachePath(PolywrapProject.cacheLayout.buildStrategyUsed),
-      { recursive: true }
-    );
+    fse.mkdirSync(strategyUsedCacheDir, { recursive: true });
 
-    fse.copySync(
-      defaultsOfStrategyUsed,
-      this.project.getCachePath(PolywrapProject.cacheLayout.buildStrategyUsed)
-    );
+    fse.copySync(defaultsOfStrategyUsed, strategyUsedCacheDir);
     return this.buildSources();
   }
 }
