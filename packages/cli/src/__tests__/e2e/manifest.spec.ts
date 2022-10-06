@@ -33,9 +33,7 @@ Arguments:
 
 Options:
   -m, --manifest-file <path>  Path to the manifest file (default: polywrap.yaml
-                              | polywrap.yml | polywrap.app.yaml |
-                              polywrap.app.yml | polywrap.plugin.yaml |
-                              polywrap.plugin.yml)
+                              | polywrap.yml)
   -f, --format <format>       Target format to migrate to (defaults to latest)
   -h, --help                  display help for command
 `;
@@ -52,9 +50,7 @@ Arguments:
 Options:
   -r, --raw                   Output raw JSON Schema (default: false)
   -m, --manifest-file <path>  Path to the manifest file (default: polywrap.yaml
-                              | polywrap.yml | polywrap.app.yaml |
-                              polywrap.app.yml | polywrap.plugin.yaml |
-                              polywrap.plugin.yml)
+                              | polywrap.yml)
   -h, --help                  display help for command
 `;
 

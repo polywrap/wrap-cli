@@ -95,6 +95,7 @@
   "commands_docgen_options_markdown": "Generate {framework} markdown",
   "commands_docgen_options_i": "Also generate docs for dependencies",
   "commands_docgen_error_manifestNotFound": "Manifest not found. Search paths used: {paths}",
+  "commands_docgen_error_projectLoadFailed": "Could not load project form the given manifest. Manifest: `{manifestFile}`",
   "commands_create_description": "Create New Projects",
   "commands_create_directoryExists": "Directory with name {dir} already exists",
   "commands_create_error_commandFail": "Command failed: {error}",
@@ -270,5 +271,6 @@
   "lib_wrap_abi_not_found": "No WRAP ABI found",
   "lib_helpers_wrap_manifest_outputText": "WRAP manifest written in {path}",
   "lib_helpers_wrap_manifest_outputError": "Error writing WRAP manifest in {path}",
-  "lib_helpers_wrap_manifest_outputWarning": "Warning writing WRAP manifest in {path}"
+  "lib_helpers_wrap_manifest_outputWarning": "Warning writing WRAP manifest in {path}",
+  "lib_option_defaults_deprecated_project_manifest": "WARNING: the filename `{fileName}` is deprecated and will be removed from the default project manifest files in the future. Please rename it to `polywrap.yaml`."
 }
