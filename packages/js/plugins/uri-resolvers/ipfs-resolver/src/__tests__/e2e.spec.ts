@@ -9,8 +9,6 @@ import {
 
 import { ipfsResolverPlugin } from "..";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { IpfsClient } from "./helpers/IpfsClient";
-import { createIpfsClient } from "./helpers/createIpfsClient";
 import { Result } from "@polywrap/core-js";
 import { ResultOk } from "@polywrap/result";
 
@@ -18,7 +16,6 @@ jest.setTimeout(300000);
 
 describe("IPFS Plugin", () => {
   let ipfsResolverUri = "wrap://ens/ipfs-resolver.polywrap.eth";
-  let ipfs: IpfsClient;
 
   let wrapperIpfsCid: string;
 
@@ -51,8 +48,6 @@ describe("IPFS Plugin", () => {
 
   beforeAll(async () => {
     await initTestEnvironment();
-
-    ipfs = createIpfsClient(providers.ipfs);
 
     let { ipfsCid } = await buildAndDeployWrapper({
       wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,

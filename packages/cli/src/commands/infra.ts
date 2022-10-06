@@ -12,7 +12,7 @@ import { print } from "gluegun";
 import path from "path";
 import { Argument } from "commander";
 import chalk from "chalk";
-import yaml from "js-yaml";
+import yaml from "yaml";
 import { readdirSync } from "fs";
 
 type InfraCommandOptions = {
@@ -166,9 +166,7 @@ async function run(
       print.info(await infra.getVars());
       break;
     case InfraActions.CONFIG:
-      print.info(
-        yaml.safeDump((await infra.config()).data.config, { indent: 2 })
-      );
+      print.info(yaml.stringify((await infra.config()).data.config, null, 2));
       break;
     default:
       throw Error(intlMsg.commands_infra_error_never());

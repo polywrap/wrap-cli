@@ -1,5 +1,6 @@
-import { IpfsClient } from "../IpfsClient";
 import { execAbortable } from "./abortable";
+
+import { IpfsClient } from "@polywrap/ipfs-http-client-lite";
 
 // Executes function in a try catch and returns error (if any) and result
 // If timeout is reached, it will return an error

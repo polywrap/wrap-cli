@@ -13,6 +13,7 @@ import {
   maybeGetManifestFormatVersion,
   parseManifestFileOption,
   CacheDirectory,
+  defaultPolywrapManifest,
 } from "../lib";
 import {
   getYamlishSchemaForManifestJsonSchemaObject,
@@ -59,8 +60,9 @@ import fs from "fs";
 import path from "path";
 
 const pathStr = intlMsg.commands_manifest_options_m_path();
+const formatStr = intlMsg.commands_manifest_options_m_format();
 
-const defaultProjectManifestStr = defaultProjectManifestFiles.join(" | ");
+const defaultProjectManifestStr = defaultPolywrapManifest.join(" | ");
 
 const manifestTypes = [
   "project",
@@ -79,6 +81,7 @@ type ManifestSchemaCommandOptions = {
 
 type ManifestMigrateCommandOptions = {
   manifestFile: string;
+  format: string;
 };
 
 export const manifest: Command = {
@@ -134,6 +137,10 @@ export const manifest: Command = {
         `${intlMsg.commands_manifest_options_m({
           default: defaultProjectManifestStr,
         })}`
+      )
+      .option(
+        `-f, --format <${formatStr}>`,
+        `${intlMsg.commands_manifest_options_f()}`
       )
       .action(async (type, options) => {
         await runMigrateCommand(type, options);
@@ -366,22 +373,34 @@ const runMigrateCommand = async (
       }
 
       if (isPolywrapManifestLanguage(language)) {
+        maybeFailOnUnsupportedTargetFormat(
+          options.format,
+          Object.values(PolywrapManifestFormats)
+        );
         return migrateManifestFile(
           manifestFile,
           migratePolywrapProjectManifest,
-          latestPolywrapManifestFormat
+          options.format ?? latestPolywrapManifestFormat
         );
       } else if (isAppManifestLanguage(language)) {
+        maybeFailOnUnsupportedTargetFormat(
+          options.format,
+          Object.values(AppManifestFormats)
+        );
         return migrateManifestFile(
           manifestFile,
           migrateAppProjectManifest,
-          latestPolywrapManifestFormat
+          options.format ?? latestPolywrapManifestFormat
         );
       } else if (isPluginManifestLanguage(language)) {
+        maybeFailOnUnsupportedTargetFormat(
+          options.format,
+          Object.values(PluginManifestFormats)
+        );
         return migrateManifestFile(
           manifestFile,
           migratePluginProjectManifest,
-          latestPolywrapManifestFormat
+          options.format ?? latestPolywrapManifestFormat
         );
       }
 
@@ -390,42 +409,62 @@ const runMigrateCommand = async (
       break;
 
     case "build":
+      maybeFailOnUnsupportedTargetFormat(
+        options.format,
+        Object.values(BuildManifestFormats)
+      );
       migrateManifestFile(
         parseManifestFileOption(options.manifestFile, defaultBuildManifest),
         migrateBuildExtensionManifest,
-        latestBuildManifestFormat
+        options.format ?? latestBuildManifestFormat
       );
       break;
 
     case "meta":
+      maybeFailOnUnsupportedTargetFormat(
+        options.format,
+        Object.values(MetaManifestFormats)
+      );
       migrateManifestFile(
         parseManifestFileOption(options.manifestFile, defaultMetaManifest),
         migrateMetaExtensionManifest,
-        latestMetaManifestFormat
+        options.format ?? latestMetaManifestFormat
       );
       break;
 
     case "deploy":
+      maybeFailOnUnsupportedTargetFormat(
+        options.format,
+        Object.values(DeployManifestFormats)
+      );
       migrateManifestFile(
         parseManifestFileOption(options.manifestFile, defaultDeployManifest),
         migrateDeployExtensionManifest,
-        latestDeployManifestFormat
+        options.format ?? latestDeployManifestFormat
       );
       break;
 
     case "infra":
+      maybeFailOnUnsupportedTargetFormat(
+        options.format,
+        Object.values(InfraManifestFormats)
+      );
       migrateManifestFile(
         parseManifestFileOption(options.manifestFile, defaultInfraManifest),
         migrateInfraExtensionManifest,
-        latestInfraManifestFormat
+        options.format ?? latestInfraManifestFormat
       );
       break;
 
     case "workflow":
+      maybeFailOnUnsupportedTargetFormat(
+        options.format,
+        Object.values(PolywrapWorkflowFormats)
+      );
       migrateManifestFile(
         parseManifestFileOption(options.manifestFile, defaultWorkflowManifest),
         migrateWorkflow,
-        latestPolywrapWorkflowFormat
+        options.format ?? latestPolywrapWorkflowFormat
       );
       break;
   }
@@ -433,8 +472,8 @@ const runMigrateCommand = async (
 
 function migrateManifestFile(
   manifestFile: string,
-  migrationFn: (input: string) => string,
-  version: string
+  migrationFn: (input: string, to: string) => string,
+  to: string
 ): void {
   const manifestFileName = path.basename(manifestFile);
   const manifestFileDir = path.dirname(manifestFile);
@@ -442,7 +481,7 @@ function migrateManifestFile(
   console.log(
     intlMsg.commands_manifest_command_m_migrateManifestMessage({
       manifestFile: manifestFileName,
-      version: version,
+      version: to,
     })
   );
 
@@ -450,7 +489,7 @@ function migrateManifestFile(
     encoding: "utf-8",
   });
 
-  const outputManifestString = migrationFn(manifestString);
+  const outputManifestString = migrationFn(manifestString, to);
 
   // Cache the old manifest file
   const cache = new CacheDirectory({
@@ -489,7 +528,25 @@ function maybeFailOnUnsupportedManifestFormat(
     console.error(
       intlMsg.commands_manifest_formatError({
         fileName: path.relative(".", manifestFile),
-        values: Object.values(PolywrapManifestFormats).join(", "),
+        values: formats.join(", "),
+      })
+    );
+    process.exit(1);
+  }
+}
+
+function maybeFailOnUnsupportedTargetFormat(
+  format: string | undefined,
+  formats: string[]
+) {
+  if (!format) {
+    return;
+  }
+
+  if (!formats.includes(format)) {
+    console.error(
+      intlMsg.commands_manifest_migrate_targetFormatError({
+        formats: formats.join(", "),
       })
     );
     process.exit(1);

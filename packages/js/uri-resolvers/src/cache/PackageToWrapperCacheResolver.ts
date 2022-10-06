@@ -6,8 +6,6 @@ import {
   IUriResolver,
   Uri,
   Client,
-  executeMaybeAsyncFunction,
-  Wrapper,
   IUriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionResult,
@@ -39,9 +37,7 @@ export class PackageToWrapperCacheResolver implements IUriResolver<Error> {
     client: Client,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, Error>> {
-    const wrapper = await executeMaybeAsyncFunction<Wrapper | undefined>(
-      this.cache.get.bind(this.cache, uri)
-    );
+    const wrapper = await this.cache.get(uri);
 
     if (wrapper) {
       const result = UriResolutionResult.ok(uri, wrapper);
@@ -78,9 +74,7 @@ export class PackageToWrapperCacheResolver implements IUriResolver<Error> {
         const wrapper = createResult.value;
 
         for (const uri of resolutionPath) {
-          await executeMaybeAsyncFunction<Wrapper | undefined>(
-            this.cache.set.bind(this.cache, uri, wrapper)
-          );
+          await this.cache.set(uri, wrapper);
         }
 
         result = UriResolutionResult.ok(result.value.uri, wrapper);
@@ -89,9 +83,7 @@ export class PackageToWrapperCacheResolver implements IUriResolver<Error> {
         const resolutionPath: Uri[] = subContext.getResolutionPath();
 
         for (const uri of resolutionPath) {
-          await executeMaybeAsyncFunction<Wrapper | undefined>(
-            this.cache.set.bind(this.cache, uri, wrapper)
-          );
+          await this.cache.set(uri, wrapper);
         }
       }
     }

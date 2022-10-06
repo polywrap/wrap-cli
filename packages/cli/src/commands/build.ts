@@ -8,19 +8,27 @@ import {
   watchEventName,
   intlMsg,
   defaultPolywrapManifest,
-  isDockerInstalled,
-  FileLock,
-  parseManifestFileOption,
   parseDirOption,
   parseClientConfigOption,
+  parseManifestFileOption,
 } from "../lib";
+import { CodeGenerator } from "../lib/codegen";
+import {
+  DockerVMBuildStrategy,
+  BuildStrategy,
+  SupportedStrategies,
+  ImageBuildStrategy,
+  LocalBuildStrategy,
+} from "../lib/build-strategies";
 
-import { print } from "gluegun";
 import path from "path";
 import readline from "readline";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 
 const defaultOutputDir = "./build";
+const defaultStrategy = SupportedStrategies.VM;
+const strategyStr = intlMsg.commands_build_options_s_strategy();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
 
@@ -31,6 +39,7 @@ type BuildCommandOptions = {
   codegen: boolean; // defaults to true
   watch?: boolean;
   verbose?: boolean;
+  strategy: SupportedStrategies;
 };
 
 export const build: Command = {
@@ -56,6 +65,11 @@ export const build: Command = {
         `${intlMsg.commands_common_options_config()}`
       )
       .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_n()}`)
+      .option(
+        `-s, --strategy <${strategyStr}>`,
+        `${intlMsg.commands_build_options_s()}`,
+        defaultStrategy
+      )
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option(`-v, --verbose`, `${intlMsg.commands_build_options_v()}`)
       .action(async (options) => {
@@ -67,10 +81,46 @@ export const build: Command = {
           ),
           clientConfig: await parseClientConfigOption(options.clientConfig),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
+          strategy: options.strategy,
         });
       });
   },
 };
+
+async function validateManifestModules(polywrapManifest: PolywrapManifest) {
+  if (
+    polywrapManifest.project.type !== "interface" &&
+    !polywrapManifest.source.module
+  ) {
+    const missingModuleMessage = intlMsg.lib_compiler_missingModule();
+    throw Error(missingModuleMessage);
+  }
+
+  if (
+    polywrapManifest.project.type === "interface" &&
+    polywrapManifest.source.module
+  ) {
+    const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
+    throw Error(noInterfaceModule);
+  }
+}
+
+function createBuildStrategy(
+  strategy: BuildCommandOptions["strategy"],
+  outputDir: string,
+  project: PolywrapProject
+): BuildStrategy {
+  switch (strategy) {
+    case SupportedStrategies.LOCAL:
+      return new LocalBuildStrategy({ outputDir, project });
+    case SupportedStrategies.IMAGE:
+      return new ImageBuildStrategy({ outputDir, project });
+    case SupportedStrategies.VM:
+      return new DockerVMBuildStrategy({ outputDir, project });
+    default:
+      throw Error(`Unknown strategy: ${strategy}`);
+  }
+}
 
 async function run(options: BuildCommandOptions) {
   const {
@@ -79,17 +129,12 @@ async function run(options: BuildCommandOptions) {
     manifestFile,
     outputDir,
     clientConfig,
+    strategy,
     codegen,
   } = options;
 
   // Get Client
   const client = new PolywrapClient(clientConfig);
-
-  // Ensure docker is installed
-  if (!isDockerInstalled()) {
-    console.log(intlMsg.lib_docker_noInstall());
-    return;
-  }
 
   const project = new PolywrapProject({
     rootDir: path.dirname(manifestFile),
@@ -98,25 +143,29 @@ async function run(options: BuildCommandOptions) {
   });
   await project.validate();
 
-  const dockerLock = new FileLock(
-    project.getCachePath("build/DOCKER_LOCK"),
-    print.error
-  );
+  const polywrapManifest = await project.getManifest();
+  await validateManifestModules(polywrapManifest);
+
+  const buildStrategy = createBuildStrategy(strategy, outputDir, project);
 
   const schemaComposer = new SchemaComposer({
     project,
     client,
   });
 
-  const compiler = new Compiler({
-    project,
-    outputDir,
-    schemaComposer,
-    codegen,
-  });
-
   const execute = async (): Promise<boolean> => {
-    compiler.reset();
+    const codeGenerator = codegen
+      ? new CodeGenerator({ project, schemaComposer })
+      : undefined;
+
+    const compiler = new Compiler({
+      project,
+      outputDir,
+      schemaComposer,
+      buildStrategy,
+      codeGenerator,
+    });
+
     const result = await compiler.compile();
 
     if (!result) {
@@ -127,9 +176,7 @@ async function run(options: BuildCommandOptions) {
   };
 
   if (!watch) {
-    await dockerLock.request();
     const result = await execute();
-    await dockerLock.release();
 
     if (!result) {
       process.exitCode = 1;
@@ -137,9 +184,7 @@ async function run(options: BuildCommandOptions) {
     }
   } else {
     // Execute
-    await dockerLock.request();
     await execute();
-    await dockerLock.release();
 
     const keyPressListener = () => {
       // Watch for escape key presses
@@ -155,7 +200,6 @@ async function run(options: BuildCommandOptions) {
           (key.name == "c" && key.ctrl)
         ) {
           await watcher.stop();
-          await dockerLock.release();
           process.kill(process.pid, "SIGINT");
         }
       });
@@ -182,9 +226,7 @@ async function run(options: BuildCommandOptions) {
         }
 
         // Execute the build
-        await dockerLock.request();
         await execute();
-        await dockerLock.release();
 
         // Process key presses
         keyPressListener();

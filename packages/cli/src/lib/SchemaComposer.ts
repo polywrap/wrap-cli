@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable no-empty */
 
 import { Project, AnyProjectManifest, intlMsg } from "./";
 
@@ -12,7 +13,7 @@ import {
 import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
-import YAML from "js-yaml";
+import YAML from "yaml";
 import {
   deserializeWrapManifest,
   validateWrapManifest,
@@ -178,7 +179,11 @@ export class SchemaComposer {
   private async _loadYamlAbi(path: string): Promise<WrapAbi> {
     // Load the YAML ABI
     const yaml = fs.readFileSync(path, "utf-8");
-    const result = YAML.safeLoad(yaml);
+    let result: unknown | undefined;
+
+    try {
+      result = YAML.parse(yaml);
+    } catch (_) {}
 
     if (!result) {
       throw Error(
