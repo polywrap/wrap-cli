@@ -1,3 +1,5 @@
+/* eslint-disable no-empty */
+
 import { AnyProjectManifestLanguage } from "../manifests";
 import { ManifestProjectTypeProps } from "./getProjectFromManifest";
 
@@ -13,7 +15,7 @@ export function getProjectManifestLanguage(
   } catch (_) {
     try {
       manifest = YAML.parse(manifestStr) as ManifestProjectTypeProps;
-    } catch (_) { }
+    } catch (_) {}
   }
 
   return manifest?.project?.type ?? manifest?.language;

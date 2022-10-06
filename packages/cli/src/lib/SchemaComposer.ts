@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable no-empty */
 
 import { Project, AnyProjectManifest, intlMsg } from "./";
 
@@ -182,7 +183,7 @@ export class SchemaComposer {
 
     try {
       result = YAML.parse(yaml);
-    } catch (_) { }
+    } catch (_) {}
 
     if (!result) {
       throw Error(

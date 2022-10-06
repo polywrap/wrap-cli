@@ -327,7 +327,11 @@ export class Infra {
       );
 
       // Write new docker-compose manifests with corrected build path and 'polywrap' prefix
-      const newComposeFile = YAML.stringify(composeFileWithCorrectPaths, null, 2);
+      const newComposeFile = YAML.stringify(
+        composeFileWithCorrectPaths,
+        null,
+        2
+      );
       this._writeFileToCacheFromAbsPath(m.path, newComposeFile);
     });
 

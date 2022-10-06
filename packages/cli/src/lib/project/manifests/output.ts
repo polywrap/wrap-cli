@@ -52,7 +52,7 @@ export async function outputManifest(
     const isYaml =
       manifestPath.endsWith(".yaml") || manifestPath.endsWith(".yml");
     const str = isYaml
-      ? YAML.stringify(sanitizedManifest, null, 2 )
+      ? YAML.stringify(sanitizedManifest, null, 2)
       : JSON.stringify(sanitizedManifest, null, 2);
 
     if (!str) {

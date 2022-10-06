@@ -1,3 +1,5 @@
+/* eslint-disable no-empty */
+
 import YAML from "yaml";
 
 export function maybeGetManifestFormatVersion(
@@ -14,7 +16,7 @@ export function maybeGetManifestFormatVersion(
   } catch (_) {
     try {
       manifest = YAML.parse(manifestStr) as ManifestFormatProps;
-    } catch (_) { }
+    } catch (_) {}
   }
 
   return manifest?.format;

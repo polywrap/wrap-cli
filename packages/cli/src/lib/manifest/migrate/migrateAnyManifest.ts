@@ -1,3 +1,5 @@
+/* eslint-disable no-empty */
+
 import YAML from "yaml";
 
 export function migrateAnyManifest(
@@ -11,7 +13,7 @@ export function migrateAnyManifest(
   } catch (_) {
     try {
       manifest = YAML.parse(manifestString);
-    } catch (_) { }
+    } catch (_) {}
   }
 
   if (!manifest) {

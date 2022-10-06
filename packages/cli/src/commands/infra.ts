@@ -166,9 +166,7 @@ async function run(
       print.info(await infra.getVars());
       break;
     case InfraActions.CONFIG:
-      print.info(
-        yaml.stringify((await infra.config()).data.config, null, 2)
-      );
+      print.info(yaml.stringify((await infra.config()).data.config, null, 2));
       break;
     default:
       throw Error(intlMsg.commands_infra_error_never());
