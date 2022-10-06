@@ -69,7 +69,8 @@ export const build: Command = {
         `-s, --strategy <${strategyStr}>`,
         `${intlMsg.commands_build_options_s({
           default: defaultStrategy,
-        })}`
+        })}`,
+        defaultStrategy
       )
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option(`-v, --verbose`, `${intlMsg.commands_build_options_v()}`)
@@ -82,7 +83,7 @@ export const build: Command = {
           ),
           clientConfig: await parseClientConfigOption(options.clientConfig),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
-          strategy: options.strategy ?? defaultStrategy,
+          strategy: options.strategy,
         });
       });
   },
