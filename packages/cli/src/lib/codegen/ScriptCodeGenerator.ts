@@ -13,11 +13,11 @@ import { Ora } from "ora";
 import path from "path";
 
 export class ScriptCodegenerator extends CodeGenerator {
-  private _script: string;
-  private _mustacheView: Record<string, unknown> | undefined;
-  private _codegenDirAbs: string;
-  private _omitHeader: boolean;
-  private _schema: string | undefined = "";
+  private readonly _script: string;
+  private readonly _mustacheView: Record<string, unknown> | undefined;
+  private readonly _codegenDirAbs: string;
+  private readonly _omitHeader: boolean;
+  private readonly _schema: string | undefined = "";
 
   constructor(config: {
     project: Project<AnyProjectManifest>;
