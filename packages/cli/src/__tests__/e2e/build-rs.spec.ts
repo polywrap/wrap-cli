@@ -17,13 +17,16 @@ describe("e2e tests for build command", () => {
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
 
-  describe("Image strategy", () => {
+  describe.only("Image strategy", () => {
     it("Builds for rust", async () => {
-      const { exitCode: code, stdout: output } = await runCLI({
+      const { exitCode: code, stdout: output, stderr } = await runCLI({
         args: ["build", "-v", "-s", "image"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
+
+      console.log(output);
+      console.log(stderr);
   
       const buildDir = `./build`;
   

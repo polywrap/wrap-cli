@@ -57,7 +57,7 @@ Options:
   -h, --help                  display help for command
 `;
 
-describe("e2e tests for manifest command", () => {
+describe.skip("e2e tests for manifest command", () => {
   const testsRoot = path.join(GetPathToCliTestFiles(), "manifest");
 
   test("Should show help text", async () => {

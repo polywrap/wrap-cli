@@ -33,7 +33,7 @@ Options:
   -h, --help                         display help for command
 `;
 
-describe("e2e tests for docgen command", () => {
+describe.skip("e2e tests for docgen command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "docgen");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })

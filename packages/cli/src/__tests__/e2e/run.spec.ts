@@ -27,7 +27,7 @@ Options:
   -h, --help                            display help for command
 `;
 
-describe("e2e tests for run command", () => {
+describe.skip("e2e tests for run command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "run");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })

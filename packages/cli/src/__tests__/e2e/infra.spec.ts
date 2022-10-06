@@ -97,7 +97,7 @@ const runPolywrapCli = (args: string[], cwd: string) =>
     env: process.env as Record<string, string>
   });
 
-describe("e2e tests for infra command", () => {
+describe.skip("e2e tests for infra command", () => {
   beforeAll(() => {
     process.env = {
       ...process.env,
