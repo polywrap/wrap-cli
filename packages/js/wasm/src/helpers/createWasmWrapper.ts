@@ -17,9 +17,7 @@ export const createWasmWrapper = async (
   if (
     !wasmModuleOrFileReaderOrManifestOptions ||
     (wasmModuleOrFileReaderOrManifestOptions as GetManifestOptions)
-      .noValidate === true ||
-    (wasmModuleOrFileReaderOrManifestOptions as GetManifestOptions)
-      .noValidate === false
+      .noValidate !== undefined
   ) {
     const result = await createWasmPackage(
       manifestBufferOrFileReader
@@ -33,8 +31,7 @@ export const createWasmWrapper = async (
     return result.value as WasmWrapper;
   } else if (
     !fileReaderOrManifestOptions ||
-    (fileReaderOrManifestOptions as GetManifestOptions).noValidate === true ||
-    (fileReaderOrManifestOptions as GetManifestOptions).noValidate === false
+    (fileReaderOrManifestOptions as GetManifestOptions).noValidate !== undefined
   ) {
     const result = await createWasmPackage(
       manifestBufferOrFileReader,
