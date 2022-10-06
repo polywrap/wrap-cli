@@ -13,8 +13,12 @@ def normal_test_function():
 
 @pytest.fixture
 def awaitable_function():
+    # time_slept = 0
     async def wait_this_many_seconds(s):
+        print('!! i am inside a coroutine, and going to sleep')
+
         await asyncio.sleep(s)
+        print('!! this coroutine just woek up ')
     return wait_this_many_seconds(3)
 
 
