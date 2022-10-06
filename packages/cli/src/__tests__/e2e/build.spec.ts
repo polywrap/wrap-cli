@@ -1,4 +1,3 @@
-import { PolywrapProject, loadBuildManifest } from "../../lib";
 import { clearStyle, polywrapCli } from "./utils";
 
 import { runCLI } from "@polywrap/test-env-js";
@@ -19,6 +18,8 @@ Options:
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
   -n, --no-codegen                   Skip code generation
+  -s, --strategy <strategy>          Strategy to use for building the wrapper
+                                     (default: "vm")
   -w, --watch                        Automatically rebuild when changes are
                                      made (default: false)
   -v, --verbose                      Verbose output (default: false)
@@ -28,11 +29,12 @@ Options:
 jest.setTimeout(500000);
 
 describe("e2e tests for build command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/build-cmd");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/build-cmd/assemblyscript");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name);
+
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
 
@@ -185,33 +187,45 @@ describe("e2e tests for build command", () => {
     testBuildOutput(testCaseDir, outputDir);
   });
 
-  it("Should add uuid-v4 suffix to build image if no build manifest specified", async () => {
-    const projectRoot = getTestCaseDir(0);
-    const project = new PolywrapProject({
-      rootDir: projectRoot,
-      polywrapManifestPath: path.join(projectRoot, "polywrap.yaml"),
+  describe("Image strategy", () => {
+    it("Builds for assemblyscript", async () => {
+      const { exitCode: code, stdout: output } = await runCLI({
+        args: ["build", "-v", "-s", "image"],
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+      });
+  
+      const buildDir = `./build`;
+  
+      expect(code).toEqual(0);
+      expect(output).toContain(`Artifacts written to ${buildDir}`);
+      expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
+
+      const imageNameUUIDSuffix = output.match(/(?<=polywrap-build-env-)(.*)(?= \/bin)/);
+      
+      expect(imageNameUUIDSuffix?.[0]).toBeTruthy();
+      expect(imageNameUUIDSuffix?.[0].length).toBe(36);
     });
+  })
 
-    await project.cacheDefaultBuildImage();
-
-    const cacheBuildEnvPath = path.join(
-      projectRoot,
-      ".polywrap/wasm/build/image"
-    );
-    const cachedBuildManifest = await loadBuildManifest(
-      path.join(cacheBuildEnvPath, "polywrap.build.yaml")
-    );
-
-    const buildImageName = cachedBuildManifest.docker?.name;
-
-    expect(buildImageName?.length).toBeGreaterThan(36);
-    expect((buildImageName?.match(/-/g) || []).length).toBeGreaterThanOrEqual(
-      4
-    );
-  });
+  describe("Local strategy", () => {
+    it("Builds for assemblyscript", async () => {
+      const { exitCode: code, stdout: output } = await runCLI({
+        args: ["build", "-v", "-s", "local"],
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+      });
+  
+      const buildDir = `./build`;
+  
+      expect(code).toEqual(0);
+      expect(output).toContain(`Artifacts written to ${buildDir}`);
+      expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
+    });
+  })
 
   describe("test-cases", () => {
-    for (let i = 0; i < testCases.length; ++i) {
+    for (let i = 0; i < testCases.length; i++) {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 

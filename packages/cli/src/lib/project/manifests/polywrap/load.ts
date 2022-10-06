@@ -4,6 +4,7 @@ import {
   intlMsg,
   searchOptional,
   loadEnvironmentVariables,
+  PolywrapManifestLanguage,
 } from "../../../";
 
 import {
@@ -69,6 +70,7 @@ export const defaultBuildManifest = [
 ];
 
 export async function loadBuildManifest(
+  language: PolywrapManifestLanguage,
   manifestPath: string,
   quiet = false
 ): Promise<BuildManifest> {
@@ -82,20 +84,23 @@ export async function loadBuildManifest(
       throw Error(noLoadMessage);
     }
 
-    // Load the custom json-schema extension if it exists
-    const configSchemaPath = path.join(
-      path.dirname(manifestPath),
-      "/polywrap.build.ext.json"
-    );
     let extSchema: JsonSchema | undefined = undefined;
 
-    if (fs.existsSync(configSchemaPath)) {
-      extSchema = JSON.parse(
-        fs.readFileSync(configSchemaPath, "utf-8")
-      ) as JsonSchema;
+    if (language.startsWith("wasm")) {
+      const extSchemaPath = path.join(
+        __dirname,
+        "..",
+        "..",
+        "..",
+        "defaults",
+        "build-strategies",
+        language,
+        "manifest.ext.json"
+      );
 
-      // The extension schema must support additional properties
-      extSchema.additionalProperties = true;
+      extSchema = JSON.parse(
+        fs.readFileSync(extSchemaPath, "utf-8")
+      ) as JsonSchema;
     }
 
     try {

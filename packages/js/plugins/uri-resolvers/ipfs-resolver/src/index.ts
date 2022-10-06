@@ -10,9 +10,7 @@ import {
 } from "./wrap";
 
 import { PluginFactory } from "@polywrap/core-js";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const isIPFS = require("is-ipfs");
+import isIpfs from "is-ipfs";
 
 type NoConfig = Record<string, never>;
 
@@ -107,7 +105,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
   }
 
   private static isCID(cid: string): boolean {
-    return isIPFS.cid(cid) || isIPFS.cidPath(cid) || isIPFS.ipfsPath(cid);
+    return isIpfs.cid(cid) || isIpfs.cidPath(cid) || isIpfs.ipfsPath(cid);
   }
 }
 

@@ -9,15 +9,13 @@ import {
   loadDeployManifestExt,
   loadMetaManifest,
   loadPolywrapManifest,
-  outputManifest,
   PolywrapManifestLanguage,
   polywrapManifestLanguages,
   polywrapManifestLanguageToBindLanguage,
 } from "./manifests";
 import { Deployer } from "../deploy";
-import { generateDockerImageName, resetDir } from "../system";
+import { resetDir } from "../system";
 import { createUUID } from "../helpers";
-import { intlMsg } from "../intl";
 
 import {
   BuildManifest,
@@ -41,12 +39,28 @@ export interface PolywrapProjectConfig extends ProjectConfig {
   metaManifestPath?: string;
 }
 
+export interface BuildManifestConfig {
+  [k: string]: unknown;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  polywrap_module?: {
+    name: string;
+    dir: string;
+  };
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  polywrap_linked_packages?: {
+    dir: string;
+    name: string;
+  }[];
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  polywrap_manifests: string[];
+  include?: string[];
+}
+
 export class PolywrapProject extends Project<PolywrapManifest> {
   public static cacheLayout = {
     root: "wasm/",
+    buildStrategyUsed: "build/strategy-used",
     buildDir: "build/",
-    buildImageDir: "build/image/",
-    buildImageCacheDir: "build/image/cache",
     buildUuidFile: "build/uuid",
     buildLinkedPackagesDir: "build/linked-packages/",
     deployDir: "deploy/",
@@ -56,7 +70,6 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   private _buildManifest: BuildManifest | undefined;
   private _deployManifest: DeployManifest | undefined;
   private _metaManifest: MetaManifest | undefined;
-  private _defaultBuildImageCached = false;
   private _defaultDeployModulesCached = false;
 
   constructor(protected _config: PolywrapProjectConfig) {
@@ -77,9 +90,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     this._buildManifest = undefined;
     this._metaManifest = undefined;
     this._deployManifest = undefined;
-    this._defaultBuildImageCached = false;
     this._defaultDeployModulesCached = false;
-    this._cache.removeCacheDir(PolywrapProject.cacheLayout.buildImageDir);
     this._cache.removeCacheDir(
       PolywrapProject.cacheLayout.buildLinkedPackagesDir
     );
@@ -168,7 +179,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
 
   /// Polywrap Build Manifest (polywrap.build.yaml)
 
-  public async getBuildManifestPath(): Promise<string> {
+  public async getBuildManifestPath(): Promise<string | undefined> {
     const polywrapManifest = await this.getManifest();
 
     // If a custom build manifest path is configured
@@ -183,27 +194,26 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       );
       return this._config.buildManifestPath;
     }
-    // Use a default build image for the provided language
-    else {
-      await this.cacheDefaultBuildImage();
 
-      // Return the cached manifest
-      this._config.buildManifestPath = path.join(
-        this._cache.getCachePath(PolywrapProject.cacheLayout.buildImageDir),
-        "polywrap.build.yaml"
-      );
-      return this._config.buildManifestPath;
-    }
-  }
-
-  public async getBuildManifestDir(): Promise<string> {
-    return path.dirname(await this.getBuildManifestPath());
+    return undefined;
   }
 
   public async getBuildManifest(): Promise<BuildManifest> {
     if (!this._buildManifest) {
+      const buildManifestPath = await this.getBuildManifestPath();
+      const language = await this.getManifestLanguage();
+
       this._buildManifest = await loadBuildManifest(
-        await this.getBuildManifestPath(),
+        language,
+        buildManifestPath ??
+          path.join(
+            __dirname,
+            "..",
+            "defaults",
+            "build-strategies",
+            language,
+            "default.build.yaml"
+          ),
         this.quiet
       );
 
@@ -264,57 +274,6 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     }
 
     return uuid;
-  }
-
-  public async cacheDefaultBuildImage(): Promise<void> {
-    if (this._defaultBuildImageCached) {
-      return;
-    }
-
-    const language = await this.getManifestLanguage();
-
-    const defaultBuildManifestFilename = "polywrap.build.yaml";
-    const defaultPath = `${__dirname}/../defaults/build-images/${language}/${defaultBuildManifestFilename}`;
-    const buildImageCachePath = this._cache.getCachePath(
-      PolywrapProject.cacheLayout.buildImageDir
-    );
-
-    if (!fs.existsSync(defaultPath)) {
-      throw Error(
-        intlMsg.lib_project_invalid_manifest_language_pathed({
-          language,
-          defaultPath: defaultPath,
-        })
-      );
-    }
-
-    // Clean the directory
-    this._cache.removeCacheDir(PolywrapProject.cacheLayout.buildImageDir);
-
-    // Copy default build image files into cache
-    await this._cache.copyIntoCache(
-      PolywrapProject.cacheLayout.buildImageDir,
-      `${__dirname}/../defaults/build-images/${language}/*`,
-      { up: true }
-    );
-
-    // Load the default build manifest
-    const defaultManifest = await loadBuildManifest(defaultPath);
-
-    // Set a unique docker image name
-    defaultManifest.docker = {
-      ...defaultManifest.docker,
-      name: generateDockerImageName(await this.getBuildUuid()),
-    };
-
-    // Output the modified build manifest
-    await outputManifest(
-      defaultManifest,
-      path.join(buildImageCachePath, defaultBuildManifestFilename),
-      this._config.quiet
-    );
-
-    this._defaultBuildImageCached = true;
   }
 
   public async cacheBuildManifestLinkedPackages(): Promise<void> {
@@ -495,10 +454,15 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       absolute
         ? this.getManifestPath()
         : path.relative(root, this.getManifestPath()),
-      absolute
-        ? await this.getBuildManifestPath()
-        : path.relative(root, await this.getBuildManifestPath()),
     ];
+
+    const buildManifestPath = await this.getBuildManifestPath();
+
+    if (buildManifestPath) {
+      paths.push(
+        absolute ? buildManifestPath : path.relative(root, buildManifestPath)
+      );
+    }
 
     const metaManifestPath = await this.getMetaManifestPath();
 

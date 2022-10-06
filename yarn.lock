@@ -1351,22 +1351,6 @@
   resolved "https://registry.yarnpkg.com/@csstools/normalize.css/-/normalize.css-10.1.0.tgz#f0950bba18819512d42f7197e56c518aa491cf18"
   integrity sha512-ij4wRiunFfaJxjB0BdrYHIH8FxBJpOwNPhhAcunlmPdXudL1WQV1qoP9un6JsEBAgQH+7UXyyjh0g7jTxXK6tg==
 
-"@dorgjelli-test/ipfs-http-client-lite@0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@dorgjelli-test/ipfs-http-client-lite/-/ipfs-http-client-lite-0.3.1.tgz#5514b4400e0c91ea64e0b5faf426ba808809ddfe"
-  integrity sha512-N96ilOlJnjnprOOIrwKjEA7lu67mbXyGmJO/vOBXQvY9AQw9XrPdIEn0x30bHwQ6pWSwN4RhIgJUy1/A7u/hEg==
-  dependencies:
-    abort-controller "^3.0.0"
-    async-iterator-to-pull-stream "^1.3.0"
-    buffer "^5.2.1"
-    cids "^0.7.1"
-    explain-error "^1.0.4"
-    form-data "^2.4.0"
-    iterable-ndjson "^1.1.0"
-    node-fetch "^2.6.0"
-    pull-stream-to-async-iterator "^1.0.2"
-    querystring "^0.2.0"
-
 "@dorgjelli/graphql-schema-cycles@1.1.4":
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/@dorgjelli/graphql-schema-cycles/-/graphql-schema-cycles-1.1.4.tgz#31f230c61f624f7c2ceca7e18fad8b2cb07d392f"
@@ -3313,6 +3297,22 @@
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/@opentelemetry/semantic-conventions/-/semantic-conventions-1.6.0.tgz#ed410c9eb0070491cff9fe914246ce41f88d6f74"
   integrity sha512-aPfcBeLErM/PPiAuAbNFLN5sNbZLc3KZlar27uohllN8Zs6jJbHyJU1y7cMA6W/zuq+thkaG8mujiS+3iD/FWQ==
+
+"@polywrap/ipfs-http-client-lite@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@polywrap/ipfs-http-client-lite/-/ipfs-http-client-lite-0.3.0.tgz#b8caf4b4f39413e591aff4367023a04cb6df83a1"
+  integrity sha512-BriJXaflESPSml0lfsAtp4Prl6i8FC0RoEQpEoTx74E3LIAdiPhdPb8hKDTyOR77oX829WDp0EKsRpQmcvCArg==
+  dependencies:
+    abort-controller "^3.0.0"
+    async-iterator-to-pull-stream "^1.3.0"
+    buffer "^5.2.1"
+    cids "^0.7.1"
+    explain-error "^1.0.4"
+    form-data "^2.4.0"
+    iterable-ndjson "^1.1.0"
+    node-fetch "^2.6.0"
+    pull-stream-to-async-iterator "^1.0.2"
+    querystring "^0.2.0"
 
 "@sinclair/typebox@^0.24.1":
   version "0.24.43"
@@ -8975,11 +8975,6 @@ graphql-tag@2.10.4:
   version "2.10.4"
   resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.10.4.tgz#2f301a98219be8b178a6453bb7e33b79b66d8f83"
   integrity sha512-O7vG5BT3w6Sotc26ybcvLKNTdfr4GfsIVMD+LdYqXCeJIYPRyp8BIsDOUtxw7S1PYvRw5vH3278J2EDezR6mfA==
-
-graphql-tag@2.11.0:
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.11.0.tgz#1deb53a01c46a7eb401d6cb59dec86fa1cccbffd"
-  integrity sha512-VmsD5pJqWJnQZMUeRwrDhfgoyqcfwEkvtpANqcoUG8/tOLkwNgU9mzub/Mc78OJMhHjx7gfAMTxzdG43VGg3bA==
 
 graphql@15.5.0:
   version "15.5.0"
@@ -17127,6 +17122,11 @@ toidentifier@1.0.1:
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.1.tgz#3be34321a88a820ed1bd80dfaa33e479fbb8dd35"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
 
+toml@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/toml/-/toml-3.0.0.tgz#342160f1af1904ec9d204d03a5d61222d762c5ee"
+  integrity sha512-y/mWCZinnvxjTKYhJ+pYxwD0mRLVvOtdS2Awbgxln6iEnt4rk0yBxeSBHkGJcPucRiG0e55mwWp+g/05rsrd6w==
+
 tough-cookie@^2.3.3, tough-cookie@^2.3.4, tough-cookie@^2.5.0, tough-cookie@~2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-2.5.0.tgz#cd9fb2a0aa1d5a12b473bd9fb96fa3dcff65ade2"
@@ -18371,11 +18371,6 @@ ws@7.2.3:
   version "7.2.3"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.2.3.tgz#a5411e1fb04d5ed0efee76d26d5c46d830c39b46"
   integrity sha512-HTDl9G9hbkNDk98naoR/cHDws7+EyYMOdL1BmjsZXRUjf7d+MficC4B7HLUPlSiho0vg+CWKrGIt/VJBd1xunQ==
-
-ws@7.3.1:
-  version "7.3.1"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-7.3.1.tgz#d0547bf67f7ce4f12a72dfe31262c68d7dc551c8"
-  integrity sha512-D3RuNkynyHmEJIpD2qrgVkc9DQ23OrN/moAwZX4L8DfvszsJxpjQuUq3LMx6HoYji9fbIOBY18XWBsAux1ZZUA==
 
 ws@7.4.6:
   version "7.4.6"

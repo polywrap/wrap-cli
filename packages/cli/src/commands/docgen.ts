@@ -1,6 +1,8 @@
 /* eslint-disable prefer-const */
 import {
-  CodeGenerator,
+  AnyProjectManifest,
+  AppProject,
+  defaultAppManifest,
   defaultPolywrapManifest,
   SchemaComposer,
   intlMsg,
@@ -14,6 +16,7 @@ import { Command, Program } from "./types";
 import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
 import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
+import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import chalk from "chalk";
@@ -130,10 +133,10 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     client,
   });
 
-  const codeGenerator = new CodeGenerator({
+  const codeGenerator = new ScriptCodegenerator({
     project,
     schemaComposer,
-    customScript,
+    script: customScript,
     codegenDirAbs: docgenDir,
     omitHeader: true,
     mustacheView: { imports },

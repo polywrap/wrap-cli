@@ -14,6 +14,7 @@ import {
   defaultProjectManifestFiles,
   defaultPolywrapManifest,
 } from "../lib";
+import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
@@ -107,12 +108,20 @@ async function run(options: CodegenCommandOptions) {
     project,
     client,
   });
-  const codeGenerator = new CodeGenerator({
-    project,
-    schemaComposer,
-    codegenDirAbs: codegenDir,
-    customScript: script,
-  });
+
+  const codeGenerator = script
+    ? new ScriptCodegenerator({
+        codegenDirAbs: codegenDir,
+        script,
+        schemaComposer,
+        project,
+        omitHeader: false,
+        mustacheView: undefined,
+      })
+    : new CodeGenerator({
+        schemaComposer,
+        project,
+      });
 
   result = await codeGenerator.generate();
 

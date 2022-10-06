@@ -8,16 +8,9 @@ import {
   AnyPolywrapWorkflow,
   PolywrapWorkflow,
   PolywrapWorkflowFormats,
-  latestPolywrapWorkflowFormat
 } from ".";
-
-
-type Migrator = {
-  [key in PolywrapWorkflowFormats]?: (m: AnyPolywrapWorkflow) => PolywrapWorkflow;
-};
-
-export const migrators: Migrator = {
-};
+import { findShortestMigrationPath } from "../../migrations";
+import { migrators } from "./migrators";
 
 export function migratePolywrapWorkflow(
   manifest: AnyPolywrapWorkflow,
@@ -25,18 +18,26 @@ export function migratePolywrapWorkflow(
 ): PolywrapWorkflow {
   let from = manifest.format as PolywrapWorkflowFormats;
 
-  // HACK: Patch fix for backwards compatability
-  if(from === "0.1" && ("0.1.0" in migrators)) {
-    from = "0.1.0" as PolywrapWorkflowFormats;
-  }
-
-  if (from === latestPolywrapWorkflowFormat) {
-    return manifest as PolywrapWorkflow;
-  }
-
   if (!(Object.values(PolywrapWorkflowFormats).some(x => x === from))) {
     throw new Error(`Unrecognized PolywrapWorkflowFormat "${manifest.format}"`);
   }
 
-  throw new Error(`This should never happen, PolywrapWorkflow migrators is empty. from: ${from}, to: ${to}`);
+  if (!(Object.values(PolywrapWorkflowFormats).some(x => x === to))) {
+    throw new Error(`Unrecognized PolywrapWorkflowFormat "${to}"`);
+  }
+
+  const migrationPath = findShortestMigrationPath(migrators, from, to);
+  if (!migrationPath) {
+    throw new Error(
+      `Migration path from PolywrapWorkflowFormat "${from}" to "${to}" is not available`
+    );
+  }
+
+  let newManifest = manifest;
+
+  for(const migrator of migrationPath){
+    newManifest = migrator.migrate(newManifest) as AnyPolywrapWorkflow;
+  }
+
+  return newManifest as PolywrapWorkflow;
 }
