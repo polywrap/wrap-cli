@@ -10,7 +10,7 @@ export interface BuildManifest {
   /**
    * Polywrap build manifest format version.
    */
-  format: "0.2.0" | "0.2";
+  format: "0.2.0";
   /**
    * Custom build image configurations.
    */

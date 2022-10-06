@@ -15,7 +15,7 @@ import {
 import { DeserializeManifestOptions } from "../../";
 
 import * as Semver from "semver";
-import YAML from "js-yaml";
+import YAML from "yaml";
 
 export function deserializeDeployManifest(
   manifest: string,
@@ -24,10 +24,10 @@ export function deserializeDeployManifest(
   let anyDeployManifest: AnyDeployManifest | undefined;
   try {
     anyDeployManifest = JSON.parse(manifest) as AnyDeployManifest;
-  } catch (e) {
-    anyDeployManifest = YAML.safeLoad(manifest) as
-    | AnyDeployManifest
-    | undefined;
+  } catch (_) {
+    try {
+      anyDeployManifest = YAML.parse(manifest) as AnyDeployManifest;
+    } catch (_) { }
   }
 
   if (!anyDeployManifest) {

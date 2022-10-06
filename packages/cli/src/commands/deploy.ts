@@ -14,7 +14,7 @@ import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
 import nodePath from "path";
 import { print } from "gluegun";
-import yaml from "js-yaml";
+import yaml from "yaml";
 import { validate } from "jsonschema";
 
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
@@ -140,7 +140,7 @@ async function run(options: DeployCommandOptions): Promise<void> {
     switch (outputFileExt) {
       case "yaml":
       case "yml":
-        fs.writeFileSync(outputFile, yaml.dump(jobResults));
+        fs.writeFileSync(outputFile, yaml.stringify(jobResults, null, 2));
         break;
       case "json":
         fs.writeFileSync(outputFile, JSON.stringify(jobResults, null, 2));
