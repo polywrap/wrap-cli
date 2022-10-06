@@ -7,8 +7,21 @@ import asyncio
 import pytest
 
 @pytest.fixture
-async def awaitable_function():
-    return await asyncio.sleep(1)
+def normal_test_function():
+    print('This is a normal function')
+    return 'normal function' 
+
+@pytest.fixture
+def awaitable_function():
+    async def wait_this_many_seconds(s):
+        await asyncio.sleep(s)
+    return wait_this_many_seconds(3)
+
+
+
+@pytest.fixture
+async def coroutine():
+    pass
 
 @pytest.fixture
 async def async_await_sleeping():

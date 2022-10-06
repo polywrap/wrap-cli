@@ -4,25 +4,37 @@ import pytest
 
 from polywrap_core import execute_maybe_async_function, is_coroutine
 
+# Working basic tests
 
 @pytest.mark.asyncio
-async def test_sanity():
-    async def coroutine():
-        pass
+def test_maybeasync_sanity_function_is_coroutine_works_for_coroutines(awaitable_function):
+    assert is_coroutine(awaitable_function)
 
-    def test_function():
-        pass
+def test_maybeasync_sanity_function_is_coroutine_works_for_normal_functions(normal_test_function):
+    assert is_coroutine(normal_test_function) == False
+
+# Experimental Tests
+# Todo Lists 
+# [x] test_maybeasync_sanity_function_is_coroutine_works_for_coroutines
+# [ ] test_maybeasync_sanity_function_is_coroutine_works_for_normal_functions
+# [ ] test_maybeasync_asyncs_awaits_and_executes_coroutines_correctly
+# [ ] test_maybeasync_asyncs_awaits_and_executes_normal_functions_correctly
+
+# [ ] test_maybeasync_asyncs_and_awaits_coroutines_from_class_instances
+# [ ] test_maybeasync_asyncs_and_awaits_normal_functions_from_class_instances
+
+
+
+@pytest.mark.asyncio
+async def test_sanity(normal_test_function):
 
     async def test_function_return_promise():
         pass
 
-    test_coroutine_resp = coroutine()
-    test_function_resp = execute_maybe_async_function(test_function)
+    test_function_resp = execute_maybe_async_function(normal_test_function)
     test_function_return_promise_resp = execute_maybe_async_function(test_function_return_promise)
-    assert is_coroutine(test_coroutine_resp)
     assert inspect.iscoroutine(test_function_resp)
     assert inspect.iscoroutine(test_function_return_promise_resp)
-    await test_coroutine_resp
     await test_function_resp
     await test_function_return_promise_resp
 
