@@ -1,4 +1,8 @@
 export * from "./BuildStrategy";
 export * from "./strategies";
 
-export const SUPPORTED_STRATEGIES = ["image", "local", "vm"] as const;
+export enum SupportedStrategies {
+  VM = "vm",
+  IMAGE = "image",
+  LOCAL = "local",
+}

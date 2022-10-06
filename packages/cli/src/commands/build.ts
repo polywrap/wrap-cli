@@ -16,7 +16,7 @@ import { CodeGenerator } from "../lib/codegen";
 import {
   DockerVMBuildStrategy,
   BuildStrategy,
-  SUPPORTED_STRATEGIES,
+  SupportedStrategies,
   ImageBuildStrategy,
   LocalBuildStrategy,
 } from "../lib/build-strategies";
@@ -27,7 +27,7 @@ import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 
 const defaultOutputDir = "./build";
-const defaultStrategy = "vm";
+const defaultStrategy = SupportedStrategies.VM;
 const strategyStr = intlMsg.commands_build_options_s_strategy();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
@@ -39,7 +39,7 @@ type BuildCommandOptions = {
   codegen: boolean; // defaults to true
   watch?: boolean;
   verbose?: boolean;
-  strategy: typeof SUPPORTED_STRATEGIES[number];
+  strategy: SupportedStrategies;
 };
 
 export const build: Command = {
@@ -112,11 +112,11 @@ function createBuildStrategy(
   project: PolywrapProject
 ): BuildStrategy {
   switch (strategy) {
-    case "local":
+    case SupportedStrategies.LOCAL:
       return new LocalBuildStrategy({ outputDir, project });
-    case "image":
+    case SupportedStrategies.IMAGE:
       return new ImageBuildStrategy({ outputDir, project });
-    case "vm":
+    case SupportedStrategies.VM:
       return new DockerVMBuildStrategy({ outputDir, project });
     default:
       throw Error(`Unknown strategy: ${strategy}`);
