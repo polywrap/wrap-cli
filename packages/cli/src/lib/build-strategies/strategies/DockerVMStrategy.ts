@@ -192,7 +192,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
             this._volumePaths.linkedPackages
           )}:/linked-packages ${
             CONFIGS[language].baseImage
-          }:latest /bin/bash -c "chmod -R g+wX ."`
+          }:latest /bin/bash -c "chmod 777 ."`
         );
 
         if (buildError) {
