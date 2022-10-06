@@ -1,51 +1,69 @@
+import ctypes
+
+from polywrap_msgpack import msgpack_decode
+
+
+def read_bytes(memory_pointer: ctypes._Pointer, memory_length: int, offset: int = None, length: int = None):
+    result = bytearray(memory_length)
+    buffer = (ctypes.c_char * memory_length).from_buffer(result)
+    ctypes.memmove(buffer, memory_pointer, memory_length)
+
+    if offset and length:
+        return result[offset: offset + length]
+
+    return result
+
+
+def read_string(memory_pointer: ctypes._Pointer, memory_length: int, offset: int, length: int):
+    value = read_bytes(memory_pointer, memory_length, offset, length)
+    return msgpack_decode(value)
+
+
 def write_string(
-    string: str,
-    dst: bytearray,
-    dst_offset: int
+        memory_pointer: ctypes._Pointer,
+        memory_length: int,
+        value: str,
+        value_offset: int,
 ) -> bytearray:
-    str_buffer = string.encode("ascii")
+    value_buffer = value.encode()
     return mem_cpy(
-        bytearray(str_buffer),
-        0,
-        dst,
-        dst_offset,
-        len(str_buffer)
+        memory_pointer,
+        memory_length,
+        bytearray(value_buffer),
+        len(value_buffer),
+        value_offset
     )
 
 
 def write_bytes(
-    bytes: bytearray,
-    dst: bytearray,
-    dst_offset: int
+        memory_pointer: ctypes._Pointer,
+        memory_length: int,
+        value: bytearray,
+        value_offset: int,
 ) -> bytearray:
-    return mem_cpy(bytes, 0, dst, dst_offset, len(bytes))
-
-
-def read_bytes(
-    from_src: bytearray,
-    offset: int,
-    length: int
-) -> bytearray:
-    buffer = bytearray(length)
-    write_bytes(from_src[offset: offset + length], buffer, 0)
-    return buffer
-
-
-def read_string(
-    from_src: bytearray,
-    offset: int,
-    length: int
-):
-    buffer = read_bytes(from_src, offset, length)
-    return buffer.decode()
+    return mem_cpy(memory_pointer, memory_length, bytearray(value), len(value), value_offset)
 
 
 def mem_cpy(
-    src: bytearray,
-    src_offset: int,
-    dst: bytearray,
-    dst_offset: int,
-    length: int
+        memory_pointer: ctypes._Pointer,
+        memory_length: int,
+        value: bytearray,
+        value_length: int,
+        value_offset: int
 ) -> bytearray:
-    dst[dst_offset: length] = src[src_offset: length]
-    return dst
+    try:
+        current_value = read_bytes(
+            memory_pointer,
+            memory_length,
+        )
+
+        new_value = (ctypes.c_char * value_length).from_buffer(value)
+        current_value[value_offset: value_offset + value_length] = new_value
+
+        current_value_buffer = (ctypes.c_char * memory_length).from_buffer(current_value)
+        ctypes.memmove(memory_pointer, current_value_buffer, memory_length)
+    except MemoryError as e:
+        print("Memory error!")
+        print(e)
+
+    return bytearray()

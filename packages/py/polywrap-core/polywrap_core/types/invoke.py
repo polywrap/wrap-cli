@@ -1,21 +1,12 @@
 from __future__ import annotations
-
-from dataclasses import dataclass, field
-from typing import Any, Optional, Union, Dict
-
-from .uri import Uri
 from abc import ABC, abstractmethod
 
-class Invoker(ABC):
-    @abstractmethod
-    async def invoke(self, options: InvokeOptions) -> InvokeResult:
-        pass
+from dataclasses import dataclass, field
+from typing import Any, Dict, Optional, Union
 
+from .uri import Uri
+from .uri_resolution_context import IUriResolutionContext
 
-class Invocable(ABC):
-    @abstractmethod
-    async def invoke(self, options: InvokeOptions, invoker: Invoker) -> InvocableResult:
-        pass
 
 @dataclass(slots=True, kw_only=True)
 class InvokeOptions:
@@ -34,8 +25,8 @@ class InvokeOptions:
     method: str
     args: Optional[Union[Dict[str, Any], bytes]] = field(default_factory=dict)
     env: Optional[Dict[str, Any]] = None
-    # resolution_context: Optional[IUriResolutionContext] = None
-    resolution_context: Optional[Any] = None
+    resolution_context: Optional[IUriResolutionContext] = None
+
 
 @dataclass(slots=True, kw_only=True)
 class InvokeResult:
@@ -59,3 +50,15 @@ class InvokerOptions(InvokeOptions):
 @dataclass(slots=True, kw_only=True)
 class InvocableResult(InvokeResult):
     encoded: Optional[bool] = False
+
+
+class Invoker(ABC):
+    @abstractmethod
+    async def invoke(self, options: InvokeOptions) -> InvokeResult:
+        pass
+
+
+class Invocable(ABC):
+    @abstractmethod
+    async def invoke(self, options: InvokeOptions, invoker: Invoker) -> InvocableResult:
+        pass

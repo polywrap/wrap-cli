@@ -1,15 +1,42 @@
 from __future__ import annotations
 from abc import abstractmethod
-from typing import List, Optional, Union, TYPE_CHECKING
+
 from dataclasses import dataclass, field
+from typing import List, Optional, Union
 
-from polywrap_core.types.env import Env
-from .invoke import Invoker
 from .uri import Uri
-from .uri_resolver import UriResolverHandler
+from .env import Env
+from .uri_resolver import IUriResolver
+from .invoke import Invoker
+from .uri_resolver_handler import UriResolverHandler
 
-if TYPE_CHECKING:
-    from ..uri_resolution.abc import IUriResolver
+
+@dataclass(slots=True, kw_only=True)
+class ClientConfig:
+    envs: List[Env] = field(default_factory=list)
+    resolver: List[IUriResolver]
+
+
+@dataclass(slots=True, kw_only=True)
+class Contextualized:
+    context_id: Optional[str] = None
+
+
+@dataclass(slots=True, kw_only=True)
+class GetEnvsOptions(Contextualized):
+    pass
+
+
+@dataclass(slots=True, kw_only=True)
+class GetUriResolversOptions(Contextualized):
+    pass
+
+
+@dataclass(slots=True, kw_only=True)
+class GetFileOptions(Contextualized):
+    path: str
+    encoding: Optional[str] = "utf-8"
+
 
 class Client(Invoker, UriResolverHandler):
     @abstractmethod
@@ -24,18 +51,6 @@ class Client(Invoker, UriResolverHandler):
     def get_uri_resolver(self, options: Optional[GetUriResolversOptions] = None) -> List[IUriResolver]:
         pass
 
-
-@dataclass(slots=True, kw_only=True)
-class ClientConfig:
-    resolver: List["IUriResolver"]
-    envs: List[Env] = field(default_factory=list)
-
-
-@dataclass(slots=True, kw_only=True)
-class GetEnvsOptions:
-    pass
-
-
-@dataclass(slots=True, kw_only=True)
-class GetUriResolversOptions:
-    pass
+    @abstractmethod
+    async def get_file(self, uri: Uri, options: Optional[GetFileOptions] = None) -> Union[bytes, str]:
+        pass

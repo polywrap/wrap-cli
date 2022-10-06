@@ -2,17 +2,12 @@ from typing import List, Optional
 
 from result import Err, Ok, Result
 
-from ..types.abc import IWrapPackage, Wrapper
-from ..types.uri import Uri
-from ..types.uri_package import UriPackage
-from ..types.uri_package_wrapper import UriPackageOrWrapper
-from ..types.uri_wrapper import UriWrapper
-from .uri_resolution_step import UriResolutionStep
+from ..types import IUriResolutionStep, IWrapPackage, Uri, UriPackage, UriPackageOrWrapper, UriWrapper, Wrapper
 
 
 class UriResolutionResult:
     result: Result[UriPackageOrWrapper, Exception]
-    history: Optional[List[UriResolutionStep]]
+    history: Optional[List[IUriResolutionStep]]
 
     @staticmethod
     def ok(
