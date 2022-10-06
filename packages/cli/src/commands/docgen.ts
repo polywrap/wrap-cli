@@ -1,8 +1,5 @@
 /* eslint-disable prefer-const */
 import {
-  AnyProjectManifest,
-  AppProject,
-  defaultAppManifest,
   defaultPolywrapManifest,
   SchemaComposer,
   intlMsg,
