@@ -119,7 +119,7 @@ describe("e2e tests for deploy command", () => {
     );
   });
 
-  it.only("Should output the results to a file if -o is passed", async () => {
+  it("Should output the results to a file if -o is passed", async () => {
     await runCLI(
       {
         args: ["deploy", "-o", "./output.yaml"],
