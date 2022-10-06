@@ -9,21 +9,22 @@ import {
   InterfaceImplementations,
   PluginRegistration,
   UriRedirect,
+  UriMap,
 } from "@polywrap/core-js";
 import { IWrapperCache } from "@polywrap/uri-resolvers-js";
 
 export class ClientConfigBuilder {
   private _config: {
-    redirects: UriRedirect<Uri>[];
-    plugins: PluginRegistration<Uri>[];
-    interfaces: InterfaceImplementations<Uri>[];
-    envs: Env<Uri>[];
+    redirects: UriMap<UriRedirect<Uri>>;
+    plugins: UriMap<PluginRegistration<Uri>>;
+    interfaces: UriMap<InterfaceImplementations<Uri>>;
+    envs: UriMap<Env<Uri>>;
     resolver?: IUriResolver<unknown>;
   } = {
-    redirects: [],
-    plugins: [],
-    interfaces: [],
-    envs: [],
+    redirects: new UriMap(),
+    plugins: new UriMap(),
+    interfaces: new UriMap(),
+    envs: new UriMap(),
   };
 
   add(config: Partial<ClientConfig<Uri | string>>): ClientConfigBuilder {
@@ -71,14 +72,12 @@ export class ClientConfigBuilder {
   ): ClientConfigBuilder {
     const pluginUri = Uri.from(uri);
 
-    const existingRegistration = this._config.plugins.find((x) =>
-      Uri.equals(x.uri, pluginUri)
-    );
+    const existingRegistration = this._config.plugins.get(pluginUri);
 
     if (existingRegistration) {
       existingRegistration.plugin = plugin;
     } else {
-      this._config.plugins.push({
+      this._config.plugins.set(pluginUri, {
         uri: pluginUri,
         plugin: plugin,
       });
@@ -90,13 +89,7 @@ export class ClientConfigBuilder {
   removePlugin(uri: Uri | string): ClientConfigBuilder {
     const pluginUri = Uri.from(uri);
 
-    const idx = this._config.plugins.findIndex((x) =>
-      Uri.equals(x.uri, pluginUri)
-    );
-
-    if (idx > -1) {
-      this._config.plugins.splice(idx, 1);
-    }
+    this._config.plugins.delete(pluginUri);
 
     return this;
   }
@@ -104,17 +97,17 @@ export class ClientConfigBuilder {
   addEnv(uri: Uri | string, env: Record<string, unknown>): ClientConfigBuilder {
     const envUri = Uri.from(uri);
 
-    const idx = this._config.envs.findIndex((x) => Uri.equals(x.uri, envUri));
+    const existingEnv = this._config.envs.get(envUri);
 
-    if (idx > -1) {
-      this._config.envs[idx].env = {
-        ...this._config.envs[idx].env,
+    if (existingEnv) {
+      existingEnv.env = {
+        ...existingEnv.env,
         ...env,
       };
     } else {
-      this._config.envs.push({
-        uri: envUri,
+      this._config.envs.set(envUri, {
         env: env,
+        uri: envUri,
       });
     }
 
@@ -124,11 +117,7 @@ export class ClientConfigBuilder {
   removeEnv(uri: Uri | string): ClientConfigBuilder {
     const envUri = Uri.from(uri);
 
-    const idx = this._config.envs.findIndex((x) => Uri.equals(x.uri, envUri));
-
-    if (idx > -1) {
-      this._config.envs.splice(idx, 1);
-    }
+    this._config.envs.delete(envUri);
 
     return this;
   }
@@ -136,16 +125,10 @@ export class ClientConfigBuilder {
   setEnv(uri: Uri | string, env: Record<string, unknown>): ClientConfigBuilder {
     const envUri = Uri.from(uri);
 
-    const idx = this._config.envs.findIndex((x) => Uri.equals(x.uri, envUri));
-
-    if (idx > -1) {
-      this._config.envs[idx].env = env;
-    } else {
-      this._config.envs.push({
-        uri: envUri,
-        env: env,
-      });
-    }
+    this._config.envs.set(envUri, {
+      uri: envUri,
+      env: env,
+    });
 
     return this;
   }
@@ -157,8 +140,8 @@ export class ClientConfigBuilder {
     const interfaceUriSanitized = Uri.from(interfaceUri);
     const implementationUriSanitized = Uri.from(implementationUri);
 
-    const existingInterface = this._config.interfaces.find((x) =>
-      Uri.equals(x.interface, interfaceUriSanitized)
+    const existingInterface = this._config.interfaces.get(
+      interfaceUriSanitized
     );
 
     if (existingInterface) {
@@ -170,7 +153,7 @@ export class ClientConfigBuilder {
         existingInterface.implementations.push(implementationUriSanitized);
       }
     } else {
-      this._config.interfaces.push({
+      this._config.interfaces.set(interfaceUriSanitized, {
         interface: interfaceUriSanitized,
         implementations: [implementationUriSanitized],
       });
@@ -186,8 +169,8 @@ export class ClientConfigBuilder {
     const interfaceUriSanitized = Uri.from(interfaceUri);
     const implementationUrisSanitized = implementationUris.map(Uri.from);
 
-    const existingInterface = this._config.interfaces.find((x) =>
-      Uri.equals(x.interface, interfaceUriSanitized)
+    const existingInterface = this._config.interfaces.get(
+      interfaceUriSanitized
     );
 
     if (existingInterface) {
@@ -199,7 +182,7 @@ export class ClientConfigBuilder {
         }
       }
     } else {
-      this._config.interfaces.push({
+      this._config.interfaces.set(interfaceUriSanitized, {
         interface: interfaceUriSanitized,
         implementations: implementationUrisSanitized,
       });
@@ -215,8 +198,8 @@ export class ClientConfigBuilder {
     const interfaceUriSanitized = Uri.from(interfaceUri);
     const implementationUriSanitized = Uri.from(implementationUri);
 
-    const existingInterface = this._config.interfaces.find((x) =>
-      Uri.equals(x.interface, interfaceUriSanitized)
+    const existingInterface = this._config.interfaces.get(
+      interfaceUriSanitized
     );
 
     if (existingInterface) {
@@ -229,10 +212,7 @@ export class ClientConfigBuilder {
       }
 
       if (existingInterface.implementations.length === 0) {
-        this._config.interfaces.splice(
-          this._config.interfaces.indexOf(existingInterface),
-          1
-        );
+        this._config.interfaces.delete(interfaceUriSanitized);
       }
     }
 
@@ -243,14 +223,12 @@ export class ClientConfigBuilder {
     const fromSanitized = Uri.from(from);
     const toSanitized = Uri.from(to);
 
-    const existingRedirect = this._config.redirects.find((x) =>
-      Uri.equals(x.from, fromSanitized)
-    );
+    const existingRedirect = this._config.redirects.get(fromSanitized);
 
     if (existingRedirect) {
       existingRedirect.to = toSanitized;
     } else {
-      this._config.redirects.push({
+      this._config.redirects.set(fromSanitized, {
         from: fromSanitized,
         to: toSanitized,
       });
@@ -262,13 +240,7 @@ export class ClientConfigBuilder {
   removeUriRedirect(from: Uri | string): ClientConfigBuilder {
     const fromSanitized = Uri.from(from);
 
-    const idx = this._config.redirects.findIndex((x) =>
-      Uri.equals(x.from, fromSanitized)
-    );
-
-    if (idx > -1) {
-      this._config.redirects.splice(idx, 1);
-    }
+    this._config.redirects.delete(fromSanitized);
 
     return this;
   }
@@ -284,10 +256,22 @@ export class ClientConfigBuilder {
       throw new Error("No URI resolver provided");
     }
 
-    return this._config as ClientConfig<Uri>;
+    return {
+      ...this._config,
+      redirects: [...this._config.redirects.values()],
+      plugins: [...this._config.plugins.values()],
+      interfaces: [...this._config.interfaces.values()],
+      envs: [...this._config.envs.values()],
+    } as ClientConfig<Uri>;
   }
 
   buildPartial(): Partial<ClientConfig<Uri>> {
-    return this._config;
+    return {
+      ...this._config,
+      redirects: [...this._config.redirects.values()],
+      plugins: [...this._config.plugins.values()],
+      interfaces: [...this._config.interfaces.values()],
+      envs: [...this._config.envs.values()],
+    };
   }
 }
