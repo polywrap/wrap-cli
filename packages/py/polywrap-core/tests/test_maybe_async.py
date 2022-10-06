@@ -44,3 +44,8 @@ async def test_asyncio_can_sleep_with_await(async_await_sleeping):
 # @pytest.mark.asyncio
 # async def test_maybeasync_executes_non_coroutines(coroutine):   
 #     pass 
+
+
+class ClassInstance():
+    async def native_awaitable_function():
+        return await asyncio.sleep(1)

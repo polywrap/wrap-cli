@@ -19,8 +19,3 @@ async def async_await_sleeping():
     rested = True
     print(f"gm, just woke up, at {time.strftime('%X')}")
     return rested
-
-#@pytest.fixture
-class ClassInstance():
-    async def native_awaitable_function():
-        return await asyncio.sleep(1)
