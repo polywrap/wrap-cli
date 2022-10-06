@@ -39,23 +39,6 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
   },
 };
 
-interface BuildManifestConfig {
-  [k: string]: unknown;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  polywrap_module?: {
-    name: string;
-    dir: string;
-  };
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  polywrap_linked_packages?: {
-    dir: string;
-    name: string;
-  }[];
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  polywrap_manifests: string[];
-  include?: string[];
-}
-
 export class DockerVMBuildStrategy extends BuildStrategy<void> {
   private _volumePaths: { project: string; linkedPackages: string };
   constructor(args: BuildStrategyArgs) {
