@@ -8,7 +8,6 @@ import {
   AnyBuildManifest,
   BuildManifest,
   BuildManifestFormats,
-  latestBuildManifestFormat
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
 import { migrators } from "./migrators";
@@ -19,12 +18,12 @@ export function migrateBuildManifest(
 ): BuildManifest {
   let from = manifest.format as BuildManifestFormats;
 
-  if (from === latestBuildManifestFormat) {
-    return manifest as BuildManifest;
-  }
-
   if (!(Object.values(BuildManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized BuildManifestFormat "${manifest.format}"`);
+  }
+
+  if (!(Object.values(BuildManifestFormats).some(x => x === to))) {
+    throw new Error(`Unrecognized BuildManifestFormat "${to}"`);
   }
 
   const migrationPath = findShortestMigrationPath(migrators, from, to);

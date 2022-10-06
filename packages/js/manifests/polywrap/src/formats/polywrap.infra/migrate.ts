@@ -8,7 +8,6 @@ import {
   AnyInfraManifest,
   InfraManifest,
   InfraManifestFormats,
-  latestInfraManifestFormat
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
 import { migrators } from "./migrators";
@@ -19,12 +18,12 @@ export function migrateInfraManifest(
 ): InfraManifest {
   let from = manifest.format as InfraManifestFormats;
 
-  if (from === latestInfraManifestFormat) {
-    return manifest as InfraManifest;
-  }
-
   if (!(Object.values(InfraManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized InfraManifestFormat "${manifest.format}"`);
+  }
+
+  if (!(Object.values(InfraManifestFormats).some(x => x === to))) {
+    throw new Error(`Unrecognized InfraManifestFormat "${to}"`);
   }
 
   const migrationPath = findShortestMigrationPath(migrators, from, to);
