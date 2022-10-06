@@ -1,3 +1,0 @@
-format: 0.1.0
-docker:
-  dockerfile: ./Dockerfile.mustache
