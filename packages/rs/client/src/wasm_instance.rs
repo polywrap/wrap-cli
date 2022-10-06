@@ -1,12 +1,12 @@
+use std::cell::RefCell;
 use std::collections::HashMap;
-use std::{
-    error::Error,
-};
+use std::error::Error;
+use std::sync::{Arc, Mutex};
 
 use wasmtime::*;
 struct WasmInstance {
-    shared_state: State,
-    store: Store<u32>,
+    shared_state: Arc<Mutex<State>>,
+    store: Arc<Mutex<Store<u32>>>,
     memory: Memory,
 }
 
@@ -64,46 +64,60 @@ impl WasmInstance {
 
         Ok(Self {
             memory,
-            store: store,
-            shared_state: shared_state,
+            store: Arc::new(Mutex::new(store)),
+            shared_state: Arc::new(Mutex::new(shared_state)),
         })
     }
 
-    pub fn create_imports(&mut self) -> Vec<Extern> {
+    pub fn create_imports(&'static self) -> Vec<Extern> {
         let mut imports = Vec::new();
 
-        let __wrap_invoke_args = Func::wrap(self.store, |method_ptr: u32, args_ptr: u32| {
-            if self.shared_state.method.is_empty() {
-                panic!("{}", "__wrap_invoke_args: method is not set");
-            }
+        let instance_store_ref = Arc::clone(&self.store);
+        let mut instance_store_guard = instance_store_ref.lock().unwrap();
 
-            if self.shared_state.args.is_empty() {
-                panic!("{}", "__wrap_invoke_args: args is not set");
-            }
+        let __wrap_invoke_args = Func::wrap(
+            &mut *instance_store_guard,
+            |method_ptr: u32, args_ptr: u32| {
+                let mut store_ref = self.store.lock().unwrap();
+                let state_guard = self.shared_state.lock().unwrap();
 
-            self.memory
-                .write(
-                    self.store,
-                    method_ptr.try_into().unwrap(),
-                    self.shared_state.method.as_bytes(),
-                )
-                .unwrap();
-            self.memory
-                .write(
-                    self.store,
-                    args_ptr.try_into().unwrap(),
-                    self.shared_state.args.as_slice(),
-                )
-                .unwrap();
-        });
+                if state_guard.method.is_empty() {
+                    panic!("{}", "__wrap_invoke_args: method is not set");
+                }
 
-        let __wrap_invoke_result = Func::wrap(self.store, |ptr: u32, len: u32| {
+                if state_guard.args.is_empty() {
+                    panic!("{}", "__wrap_invoke_args: args is not set");
+                }
+
+                self.memory
+                    .write(
+                        &mut *store_ref,
+                        method_ptr.try_into().unwrap(),
+                        state_guard.method.as_bytes(),
+                    )
+                    .unwrap();
+
+                self.memory
+                    .write(
+                        &mut *store_ref,
+                        args_ptr.try_into().unwrap(),
+                        state_guard.args.as_slice(),
+                    )
+                    .unwrap();
+            },
+        );
+
+        let __wrap_invoke_result = Func::wrap(&mut *instance_store_guard, |ptr: u32, len: u32| {
             let result = &mut [];
+
+            let mut store_ref = self.store.lock().unwrap();
+            let mut state_ref = self.shared_state.lock().unwrap();
+
             self.memory
-                .read(self.store, ptr.try_into().unwrap(), result)
+                .read(&mut *store_ref, ptr.try_into().unwrap(), result)
                 .unwrap();
 
-            self.shared_state.invoke_result = Some(result[0..len.try_into().unwrap()].to_vec());
+            state_ref.invoke_result = Some(result[0..len.try_into().unwrap()].to_vec());
         });
 
         imports
