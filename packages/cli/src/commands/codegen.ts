@@ -12,7 +12,9 @@ import {
   isPluginManifestLanguage,
   generateWrapFile,
   defaultProjectManifestFiles,
+  defaultPolywrapManifest,
 } from "../lib";
+import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
 import { PolywrapClient, Uri } from "@polywrap/client-js";
 import path from "path";
@@ -26,7 +28,7 @@ const defaultCodegenDir = "./src/wrap";
 const defaultPublishDir = "./build";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
-const defaultManifestStr = defaultProjectManifestFiles.join(" | ");
+const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
 type CodegenCommandOptions = {
   manifestFile: string;
@@ -112,12 +114,20 @@ async function run(options: CodegenCommandOptions) {
     project,
     client,
   });
-  const codeGenerator = new CodeGenerator({
-    project,
-    schemaComposer,
-    codegenDirAbs: codegenDir,
-    customScript: script,
-  });
+
+  const codeGenerator = script
+    ? new ScriptCodegenerator({
+        codegenDirAbs: codegenDir,
+        script,
+        schemaComposer,
+        project,
+        omitHeader: false,
+        mustacheView: undefined,
+      })
+    : new CodeGenerator({
+        schemaComposer,
+        project,
+      });
 
   result = await codeGenerator.generate();
 

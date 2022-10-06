@@ -8,7 +8,6 @@ import {
   AnyAppManifest,
   AppManifest,
   AppManifestFormats,
-  latestAppManifestFormat
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
 import { migrators } from "./migrators";
@@ -19,12 +18,12 @@ export function migrateAppManifest(
 ): AppManifest {
   let from = manifest.format as AppManifestFormats;
 
-  if (from === latestAppManifestFormat) {
-    return manifest as AppManifest;
-  }
-
   if (!(Object.values(AppManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized AppManifestFormat "${manifest.format}"`);
+  }
+
+  if (!(Object.values(AppManifestFormats).some(x => x === to))) {
+    throw new Error(`Unrecognized AppManifestFormat "${to}"`);
   }
 
   const migrationPath = findShortestMigrationPath(migrators, from, to);

@@ -13,10 +13,7 @@ Generate Code For Polywrap Projects
 
 Options:
   -m, --manifest-file <path>         Path to the Polywrap manifest file
-                                     (default: polywrap.yaml | polywrap.yml |
-                                     polywrap.app.yaml | polywrap.app.yml |
-                                     polywrap.plugin.yaml |
-                                     polywrap.plugin.yml)
+                                     (default: polywrap.yaml | polywrap.yml)
   -g, --codegen-dir <path>            Output directory for the generated code
                                      (default: ./src/wrap)
   -p, --publish-dir <path>           Output path for the built schema and
@@ -152,5 +149,23 @@ describe("e2e tests for codegen command", () => {
     );
 
     rimraf.sync(`${getTestCaseDir(0)}/types`);
+  });
+
+  it("Should successfully generate types - Rust", async () => {
+    rimraf.sync(`${getTestCaseDir(1)}/types`);
+
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["codegen"],
+      cwd: getTestCaseDir(1),
+      cli: polywrapCli,
+    });
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(clearStyle(output)).toContain(
+      `🔥 Types were generated successfully 🔥`
+    );
+
+    rimraf.sync(`${getTestCaseDir(1)}/types`);
   });
 });

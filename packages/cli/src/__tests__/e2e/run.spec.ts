@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import yaml from "js-yaml";
+import yaml from "yaml";
 
 import { clearStyle, parseOutput, polywrapCli } from "./utils";
 
@@ -167,7 +167,7 @@ describe("e2e tests for run command", () => {
     expect(parseOutput(stdout)).toMatchObject(
       JSON.parse(
         JSON.stringify(
-          (yaml.load(
+          (yaml.parse(
             fs.readFileSync(
               path.join(testCaseDir, "output.yaml"),
               "utf8"

@@ -1,16 +1,15 @@
 import { migrateAnyManifest } from "./migrateAnyManifest";
 
-import {
-  AnyMetaManifest,
-  latestMetaManifestFormat,
-  migrateMetaManifest,
-} from "@polywrap/polywrap-manifest-types-js";
+import { migrateMetaManifest } from "@polywrap/polywrap-manifest-types-js";
 
-export function migrateMetaExtensionManifest(manifestString: string): string {
+export function migrateMetaExtensionManifest(
+  manifestString: string,
+  to: string
+): string {
   return migrateAnyManifest(
     manifestString,
     "MetaManifest",
-    (manifest: AnyMetaManifest) =>
-      migrateMetaManifest(manifest, latestMetaManifestFormat)
+    migrateMetaManifest,
+    to
   );
 }

@@ -33,9 +33,8 @@ Arguments:
 
 Options:
   -m, --manifest-file <path>  Path to the manifest file (default: polywrap.yaml
-                              | polywrap.yml | polywrap.app.yaml |
-                              polywrap.app.yml | polywrap.plugin.yaml |
-                              polywrap.plugin.yml)
+                              | polywrap.yml)
+  -f, --format <format>       Target format to migrate to (defaults to latest)
   -h, --help                  display help for command
 `;
 
@@ -51,9 +50,7 @@ Arguments:
 Options:
   -r, --raw                   Output raw JSON Schema (default: false)
   -m, --manifest-file <path>  Path to the manifest file (default: polywrap.yaml
-                              | polywrap.yml | polywrap.app.yaml |
-                              polywrap.app.yml | polywrap.plugin.yaml |
-                              polywrap.plugin.yml)
+                              | polywrap.yml)
   -h, --help                  display help for command
 `;
 
@@ -135,7 +132,7 @@ describe("e2e tests for manifest command", () => {
         app: "polywrap.app.yaml",
         plugin: "polywrap.plugin.yaml",
       };
-      
+
       const validSampleExtensionManifestFiles: Record<string, string> = {
         build: "polywrap.build.yaml",
         deploy: "polywrap.deploy.yaml",
@@ -143,7 +140,7 @@ describe("e2e tests for manifest command", () => {
         meta: "polywrap.meta.yaml",
         workflow: "polywrap.test.yaml",
       };
-      
+
       const tempDir = path.join(testsRoot, "temp");
 
       beforeAll(async () => {
@@ -193,6 +190,22 @@ describe("e2e tests for manifest command", () => {
 
           expect(oldFileExists).toBeTruthy();
         });
+
+        test(`Should display error when invalid target format is provided for ${projectType} project manifest`, async () => {
+          const {
+            exitCode: code,
+            stdout: output,
+            stderr: error,
+          } = await runCLI({
+            args: ["manifest", "migrate", "-m", manifestFile, "-f", "INVALID_MANIFEST_FORMAT"],
+            cwd: tempDir,
+            cli: polywrapCli,
+          });
+
+          expect(output).toBe("");
+          expect(error).toContain("Unsupported target format. Supported formats:");
+          expect(code).toBe(1);
+        });
       }
 
       for (const extensionType in validSampleExtensionManifestFiles) {
@@ -225,6 +238,22 @@ describe("e2e tests for manifest command", () => {
           const oldFileExists = fs.existsSync(oldFile);
 
           expect(oldFileExists).toBeTruthy();
+        });
+
+        test(`Should display error when invalid target format is provided for ${extensionType} extension manifest`, async () => {
+          const {
+            exitCode: code,
+            stdout: output,
+            stderr: error,
+          } = await runCLI({
+            args: ["manifest", "migrate", extensionType, "-m", manifestFile, "-f", "INVALID_MANIFEST_FORMAT"],
+            cwd: tempDir,
+            cli: polywrapCli,
+          });
+
+          expect(output).toBe("");
+          expect(error).toContain("Unsupported target format. Supported formats:");
+          expect(code).toBe(1);
         });
       }
     });

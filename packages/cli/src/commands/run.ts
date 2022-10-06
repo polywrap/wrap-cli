@@ -19,7 +19,7 @@ import {
 
 import { Uri } from "@polywrap/client-js";
 import path from "path";
-import yaml from "js-yaml";
+import yaml from "yaml";
 import fs from "fs";
 import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 
@@ -117,7 +117,7 @@ const _run = async (options: WorkflowCommandOptions) => {
     switch (outputFileExt) {
       case "yaml":
       case "yml":
-        fs.writeFileSync(outputFile, yaml.dump(workflowOutput));
+        fs.writeFileSync(outputFile, yaml.stringify(workflowOutput, null, 2));
         break;
       case "json":
         fs.writeFileSync(outputFile, JSON.stringify(workflowOutput, null, 2));

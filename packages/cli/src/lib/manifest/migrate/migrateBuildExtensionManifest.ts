@@ -1,16 +1,15 @@
 import { migrateAnyManifest } from "./migrateAnyManifest";
 
-import {
-  AnyBuildManifest,
-  latestBuildManifestFormat,
-  migrateBuildManifest,
-} from "@polywrap/polywrap-manifest-types-js";
+import { migrateBuildManifest } from "@polywrap/polywrap-manifest-types-js";
 
-export function migrateBuildExtensionManifest(manifestString: string): string {
+export function migrateBuildExtensionManifest(
+  manifestString: string,
+  to: string
+): string {
   return migrateAnyManifest(
     manifestString,
     "BuildManifest",
-    (manifest: AnyBuildManifest) =>
-      migrateBuildManifest(manifest, latestBuildManifestFormat)
+    migrateBuildManifest,
+    to
   );
 }

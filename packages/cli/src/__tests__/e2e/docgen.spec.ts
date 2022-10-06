@@ -21,10 +21,7 @@ Arguments:
 
 Options:
   -m, --manifest-file <path>         Path to the project manifest file
-                                     (default: polywrap.yaml | polywrap.yml |
-                                     polywrap.app.yaml | polywrap.app.yml |
-                                     polywrap.plugin.yaml |
-                                     polywrap.plugin.yml)
+                                     (default: polywrap.yaml | polywrap.yml)
   -g, --docgen-dir <path>            Output directory for generated docs
                                      (default: ./docs)
   -c, --client-config <config-path>  Add custom configuration to the
