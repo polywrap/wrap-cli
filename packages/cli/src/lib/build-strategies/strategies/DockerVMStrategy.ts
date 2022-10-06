@@ -6,7 +6,11 @@ import {
 } from "../../system";
 import { BuildStrategyArgs, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
-import { PolywrapManifestLanguage, PolywrapProject } from "../../project";
+import {
+  BuildManifestConfig,
+  PolywrapManifestLanguage,
+  PolywrapProject,
+} from "../../project";
 import { withSpinner } from "../../helpers";
 
 import fse from "fs-extra";

@@ -12,11 +12,14 @@ import {
   parseClientConfigOption,
   parseManifestFileOption,
 } from "../lib";
-import { CodeGenerator } from "../lib/codegen/CodeGenerator";
-import { LocalBuildStrategy } from "../lib/build-strategies/strategies/LocalStrategy";
-import { ImageBuildStrategy } from "../lib/build-strategies/strategies/ImageStrategy";
-import { BuildStrategy, SUPPORTED_STRATEGIES } from "../lib/build-strategies";
-import { DockerVMBuildStrategy } from "../lib/build-strategies/strategies/DockerVMStrategy";
+import { CodeGenerator } from "../lib/codegen";
+import {
+  DockerVMBuildStrategy,
+  BuildStrategy,
+  SUPPORTED_STRATEGIES,
+  ImageBuildStrategy,
+  LocalBuildStrategy,
+} from "../lib/build-strategies";
 
 import path from "path";
 import readline from "readline";

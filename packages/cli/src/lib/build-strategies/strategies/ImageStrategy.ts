@@ -96,10 +96,10 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
         if (cache == true) {
           cacheDir = this.project.getCachePath("build/image/cache");
         } else if (cache) {
-          if (!path.isAbsolute(cache)) {
-            cacheDir = path.join(this.project.getManifestDir(), cache);
-          } else {
+          if (path.isAbsolute(cache)) {
             cacheDir = cache;
+          } else {
+            cacheDir = path.join(this.project.getManifestDir(), cache);
           }
         }
 
