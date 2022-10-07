@@ -1,13 +1,13 @@
 import { coreInterfaceUris } from "@polywrap/core-js";
 import { Uri } from "../..";
 import { defaultWrappers } from "@polywrap/client-config-builder-js";
-import { createDefaultClient } from "../utils/createDefaultClient";
+import { PolywrapClient } from "../../PolywrapClient";
 
 jest.setTimeout(200000);
 
 describe("sanity", () => {
   test("default client config", () => {
-    const client = createDefaultClient();
+    const client = new PolywrapClient();
 
     expect(client.getRedirects()).toStrictEqual([
       {
@@ -24,29 +24,29 @@ describe("sanity", () => {
       },
     ]);
 
-      new Uri("wrap://ens/http-resolver.polywrap.eth"),
-    expect(client.getInterfaces()).toStrictEqual([
-      {
-        interface: coreInterfaceUris.uriResolver,
-        implementations: [
-          new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-          new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-          new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-          new Uri("wrap://ens/http-resolver.polywrap.eth"),
-        ],
-      },
-      {
-        interface: coreInterfaceUris.logger,
-        implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
-      },
-    ]);
+    new Uri("wrap://ens/http-resolver.polywrap.eth"),
+      expect(client.getInterfaces()).toStrictEqual([
+        {
+          interface: coreInterfaceUris.uriResolver,
+          implementations: [
+            new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
+            new Uri("wrap://ens/ens-resolver.polywrap.eth"),
+            new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+            new Uri("wrap://ens/http-resolver.polywrap.eth"),
+          ],
+        },
+        {
+          interface: coreInterfaceUris.logger,
+          implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
+        },
+      ]);
   });
 
   test("redirect registration", () => {
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const client = createDefaultClient({
+    const client = new PolywrapClient({
       redirects: [
         {
           from: implementation1Uri,

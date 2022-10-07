@@ -38,14 +38,17 @@ describe("plugin-wrapper", () => {
   it("plugin map types", async () => {
     const implementationUri = "wrap://ens/some-implementation.eth";
     const mockPlugin = mockMapPlugin();
-    const client = new PolywrapClient({
-      resolver: buildUriResolver([
-        { 
-          uri: implementationUri, 
-          package: mockPlugin 
-        },
-      ]),
-    });
+    const client = new PolywrapClient(
+      {
+        resolver: buildUriResolver([
+          {
+            uri: implementationUri,
+            package: mockPlugin,
+          },
+        ]),
+      },
+      { noDefaults: true }
+    );
 
     const getResult = await client.invoke({
       uri: implementationUri,
@@ -74,11 +77,14 @@ describe("plugin-wrapper", () => {
   });
 
   test("get manifest should fetch wrap manifest from plugin", async () => {
-    const client = new PolywrapClient({
+    const client = new PolywrapClient(
+      {
         resolver: buildUriResolver([
-            { uri: "ens/ipfs.polywrap.eth", package: ipfsPlugin({}) },
-        ])
-    });
+          { uri: "ens/ipfs.polywrap.eth", package: ipfsPlugin({}) },
+        ]),
+      },
+      { noDefaults: true }
+    );
     const manifest = await client.getManifest("ens/ipfs.polywrap.eth");
     if (!manifest.ok) fail(manifest.error);
     expect(manifest.value.type).toEqual("plugin");

@@ -28,6 +28,7 @@
     "@polywrap/tracing-js": "0.8.0",
     "@polywrap/uri-resolvers-js": "0.8.0",
     "@polywrap/wrap-manifest-types-js": "0.8.0",
+    "@polywrap/client-config-builder-js": "0.8.0",
     "graphql": "15.5.0",
     "yaml": "2.1.3"
   },

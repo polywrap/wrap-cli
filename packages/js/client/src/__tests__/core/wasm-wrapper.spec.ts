@@ -10,7 +10,6 @@ import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import { ErrResult } from "../utils/resultTypes";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
-import { createDefaultClient } from "../utils/createDefaultClient";
 
 jest.setTimeout(200000);
 
@@ -39,7 +38,7 @@ describe("wasm-wrapper", () => {
   };
 
   test("can invoke with string URI", async () => {
-    const client = createDefaultClient();
+    const client = new PolywrapClient();
     const result = await client.invoke<string>({
       uri: simpleWrapperUri.uri,
       method: "simpleMethod",
@@ -55,7 +54,7 @@ describe("wasm-wrapper", () => {
   });
 
   test("can invoke with typed URI", async () => {
-    const client = createDefaultClient();
+    const client = new PolywrapClient();
     const result = await client.invoke<string, Uri>({
       uri: simpleWrapperUri,
       method: "simpleMethod",
@@ -71,7 +70,7 @@ describe("wasm-wrapper", () => {
   });
 
   test("invoke with decode defaulted to true works as expected", async () => {
-    const client = createDefaultClient();
+    const client = new PolywrapClient();
     const result = await client.invoke<string>({
       uri: simpleWrapperUri.uri,
       method: "simpleMethod",
@@ -87,7 +86,7 @@ describe("wasm-wrapper", () => {
   });
 
   test("invoke with decode set to false works as expected", async () => {
-    const client = createDefaultClient();
+    const client = new PolywrapClient();
     const result = await client.invoke({
       uri: simpleWrapperUri,
       method: "simpleMethod",
@@ -104,7 +103,7 @@ describe("wasm-wrapper", () => {
   });
 
   it("should invoke wrapper with custom redirects", async () => {
-    const client = createDefaultClient({
+    const client = new PolywrapClient({
       redirects: [
         {
           from: simpleWrapperUri.uri,
@@ -133,23 +132,23 @@ describe("wasm-wrapper", () => {
   });
 
   it("should allow clone + reconfigure of redirects", async () => {
-    let builder = new ClientConfigBuilder().addDefaults().add({
+    let builder = new ClientConfigBuilder().add({
       packages: [
         {
           uri: "wrap://ens/mock.polywrap.eth",
           package: mockPlugin(),
         },
-      ]
+      ],
     });
 
-    const client = createDefaultClient(builder.getConfig());
+    const client = new PolywrapClient(builder.build());
 
     const clientResult = await client.invoke({
       uri: simpleWrapperUri.uri,
       method: "simpleMethod",
       args: {
         arg: "test",
-      }
+      },
     });
 
     if (!clientResult.ok) fail(clientResult.error);
@@ -165,16 +164,14 @@ describe("wasm-wrapper", () => {
 
     builder = builder.add({ redirects });
 
-    const newClient = new PolywrapClient(
-      builder.buildDefault()
-    );
+    const newClient = new PolywrapClient(builder.build());
 
     const newClientResult = await newClient.invoke({
       uri: simpleWrapperUri.uri,
       method: "simpleMethod",
       args: {
         arg: "test",
-      }
+      },
     });
 
     if (!newClientResult.ok) fail(newClientResult.error);
@@ -183,18 +180,15 @@ describe("wasm-wrapper", () => {
   });
 
   test("get file from wrapper", async () => {
-    const client = createDefaultClient();
+    const client = new PolywrapClient();
 
     const expectedManifest = new Uint8Array(
       await fs.promises.readFile(`${simpleWrapperPath}/build/wrap.info`)
     );
 
-    const receivedManifestResult = await client.getFile(
-      simpleWrapperUri,
-      {
-        path: "./wrap.info",
-      }
-    );
+    const receivedManifestResult = await client.getFile(simpleWrapperUri, {
+      path: "./wrap.info",
+    });
     if (!receivedManifestResult.ok) fail(receivedManifestResult.error);
     const receivedManifest = receivedManifestResult.value as Uint8Array;
 
@@ -204,33 +198,40 @@ describe("wasm-wrapper", () => {
       await fs.promises.readFile(`${simpleWrapperPath}/build/wrap.wasm`)
     );
 
-    const receivedWasmModuleResult = await client.getFile(
-      simpleWrapperUri,
-      {
-        path: "./wrap.wasm",
-      }
-    );
+    const receivedWasmModuleResult = await client.getFile(simpleWrapperUri, {
+      path: "./wrap.wasm",
+    });
     if (!receivedWasmModuleResult.ok) fail(receivedWasmModuleResult.error);
     const receivedWasmModule = receivedWasmModuleResult.value as Uint8Array;
 
     expect(receivedWasmModule).toEqual(expectedWasmModule);
 
-    const pluginClient = new PolywrapClient({
-      resolver: buildUriResolver([
-        mockPluginRegistration("ens/mock-plugin.eth")
-      ]),
-    });
+    const pluginClient = new PolywrapClient(
+      {
+        resolver: buildUriResolver([
+          mockPluginRegistration("ens/mock-plugin.eth"),
+        ]),
+      },
+      {
+        noDefaults: true,
+      }
+    );
 
-    let pluginGetFileResult = await pluginClient.getFile("ens/mock-plugin.eth", {
-      path: "./index.js",
-    });
+    let pluginGetFileResult = await pluginClient.getFile(
+      "ens/mock-plugin.eth",
+      {
+        path: "./index.js",
+      }
+    );
 
     pluginGetFileResult = pluginGetFileResult as ErrResult;
-    expect(pluginGetFileResult.error?.message).toContain("client.getFile(...) is not implemented for Plugins.");
+    expect(pluginGetFileResult.error?.message).toContain(
+      "client.getFile(...) is not implemented for Plugins."
+    );
   });
 
   test("subscribe", async () => {
-    const client = createDefaultClient({
+    const client = new PolywrapClient({
       resolvers: [
         {
           uri: memoryStoragePluginUri,
@@ -279,7 +280,7 @@ describe("wasm-wrapper", () => {
   });
 
   test("subscription early stop", async () => {
-    const client = createDefaultClient({
+    const client = new PolywrapClient({
       resolvers: [
         {
           uri: memoryStoragePluginUri,
