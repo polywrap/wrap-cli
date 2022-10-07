@@ -5,7 +5,6 @@ json -I -f package.json -e 'this.dependencies["{{name}}"]="../linked-packages/{{
 {{/polywrap_linked_packages}}
 {{#polywrap_module}}
 yarn
-chmod -R g+wX .
 asc {{dir}}/wrap/entry.ts \
     --path ./node_modules \
     --outFile ./build/wrap.wasm \
@@ -13,6 +12,4 @@ asc {{dir}}/wrap/entry.ts \
     --optimize --importMemory \
     --runtime stub \
     --runPasses asyncify
-
-chmod -R g+wX .
 {{/polywrap_module}}
