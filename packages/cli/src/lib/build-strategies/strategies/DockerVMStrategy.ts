@@ -184,7 +184,9 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
         if (
           stderr &&
-          !fse.existsSync(path.join(this._volumePaths.project, "build", "wrap.wasm"))
+          !fse.existsSync(
+            path.join(this._volumePaths.project, "build", "wrap.wasm")
+          )
         ) {
           throw new Error(stderr);
         }
