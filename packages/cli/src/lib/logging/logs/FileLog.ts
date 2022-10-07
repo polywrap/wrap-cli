@@ -5,10 +5,7 @@ import fs, { WriteStream } from "fs";
 export class FileLog extends Log {
   private _logFileStream: WriteStream;
 
-  constructor(
-    public readonly logFilePath: string,
-    level: LogLevel
-  ) {
+  constructor(public readonly logFilePath: string, level: LogLevel) {
     super(level);
     this._createWriteStream();
   }
@@ -24,31 +21,27 @@ export class FileLog extends Log {
 
     let prefix = Date.now().toString() + " ";
 
-
     switch (level) {
       case LogLevel.DEBUG:
-        prefix += "DEBUG: "
+        prefix += "DEBUG: ";
         break;
       case LogLevel.INFO:
-        prefix += "INFO: "
+        prefix += "INFO: ";
         break;
       case LogLevel.WARN:
-        prefix += "WARN: "
+        prefix += "WARN: ";
         break;
       case LogLevel.ERROR:
-        prefix += "ERROR: "
+        prefix += "ERROR: ";
         break;
     }
 
-    this._logFileStream.write(
-      prefix + message
-    );
+    this._logFileStream.write(prefix + message);
   }
 
   private _createWriteStream() {
-    this._logFileStream = fs.createWriteStream(
-      this.logFilePath,
-      { encoding: "utf8" }
-    );
+    this._logFileStream = fs.createWriteStream(this.logFilePath, {
+      encoding: "utf8",
+    });
   }
 }

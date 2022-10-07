@@ -134,7 +134,7 @@ async function run(options: BuildCommandOptions) {
     strategy,
     codegen,
     verbose,
-    quiet
+    quiet,
   } = options;
   const logger = createLogger({ verbose, quiet });
 

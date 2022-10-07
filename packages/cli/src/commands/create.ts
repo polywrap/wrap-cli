@@ -123,7 +123,7 @@ async function run(
     });
     logger.info(directoryExistsMessage);
     const overwrite = await yesno({
-      question: intlMsg.commands_create_overwritePrompt()
+      question: intlMsg.commands_create_overwritePrompt(),
     });
     if (overwrite) {
       const overwritingMessage = intlMsg.commands_create_overwriting({

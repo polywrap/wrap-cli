@@ -108,13 +108,17 @@ export const docgen: Command = {
 };
 
 async function run(command: DocType, options: DocgenCommandOptions) {
-  const { manifestFile, docgenDir, clientConfig, imports, verbose, quiet } = options;
+  const {
+    manifestFile,
+    docgenDir,
+    clientConfig,
+    imports,
+    verbose,
+    quiet,
+  } = options;
   const logger = createLogger({ verbose, quiet });
 
-  let project = await getProjectFromManifest(
-    manifestFile,
-    logger
-  );
+  let project = await getProjectFromManifest(manifestFile, logger);
 
   if (!project) {
     logger.error(

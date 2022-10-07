@@ -5,11 +5,11 @@ import {
   CacheDirectory,
   CacheDirectoryConfig,
 } from "../";
+import { Logger } from "../logging";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { BindOutput } from "@polywrap/schema-bind";
 import { Abi } from "@polywrap/schema-parse";
-import { Logger } from "../logging";
 
 export interface ProjectConfig {
   rootDir: string;

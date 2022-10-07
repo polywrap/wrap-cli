@@ -52,7 +52,7 @@ export class DockerCompose {
         } else {
           logger.error(chunkStr);
         }
-      }
+      },
     };
   }
 

@@ -29,10 +29,7 @@ export async function getProjectFromManifest(
   logger: Logger
 ): Promise<Project<AnyProjectManifest> | undefined> {
   const manifestPath = path.resolve(manifestFile);
-  const manifest = fs.readFileSync(
-    manifestPath,
-    "utf-8"
-  );
+  const manifest = fs.readFileSync(manifestPath, "utf-8");
   const type = getProjectManifestLanguage(manifest);
   if (!type) {
     return undefined;

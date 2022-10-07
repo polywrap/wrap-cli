@@ -95,17 +95,14 @@ async function run(options: CodegenCommandOptions) {
     clientConfig,
     publishDir,
     verbose,
-    quiet
+    quiet,
   } = options;
   const logger = createLogger({ verbose, quiet });
 
   // Get Client
   const client = new PolywrapClient(clientConfig);
 
-  const project = await getProjectFromManifest(
-    manifestFile,
-    logger
-  );
+  const project = await getProjectFromManifest(manifestFile, logger);
 
   if (!project) {
     return;

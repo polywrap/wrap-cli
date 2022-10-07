@@ -4,7 +4,7 @@ import {
   loadEnvironmentVariables,
   PolywrapManifestLanguage,
   Logger,
-  logActivity
+  logActivity,
 } from "../../../";
 
 import {

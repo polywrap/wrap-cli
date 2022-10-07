@@ -60,7 +60,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
       ),
       linkedPackages: this.project.getCachePath(
         PolywrapProject.cacheLayout.buildLinkedPackagesDir
-      )
+      ),
     };
   }
 
@@ -167,11 +167,10 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         if (fse.existsSync(buildScriptPath)) {
           fse.removeSync(buildScriptPath);
         }
-        fse.writeFileSync(
-          buildScriptPath,
-          scriptContent,
-          { mode: "777", flag: "wx" }
-        );
+        fse.writeFileSync(buildScriptPath, scriptContent, {
+          mode: "777",
+          flag: "wx",
+        });
 
         let buildError: Error | undefined = undefined;
 

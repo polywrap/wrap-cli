@@ -7,7 +7,6 @@ export function runCommandSync(
   logger: Logger,
   env: Record<string, string> | undefined = undefined
 ): { stdout?: string; stderr?: SpawnSyncReturns<string> & Error } {
-
   logger.info(`> ${command}`);
 
   try {
@@ -30,7 +29,7 @@ export async function runCommand(
   logger: Logger,
   env: Record<string, string> | undefined = undefined,
   cwd: string | undefined = undefined,
-  redirectStderr: boolean = false
+  redirectStderr = false
 ): Promise<{ stdout: string; stderr: string }> {
   logger.info(`> ${command}`);
 

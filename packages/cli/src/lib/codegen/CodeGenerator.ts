@@ -65,9 +65,7 @@ export class CodeGenerator {
     }
   }
 
-  protected async runCodegen(
-    _: BindLanguage
-  ): Promise<string[]> {
+  protected async runCodegen(_: BindLanguage): Promise<string[]> {
     const codegenDir = this._config.codegenDirAbs
       ? path.relative(
           this._config.project.getManifestDir(),

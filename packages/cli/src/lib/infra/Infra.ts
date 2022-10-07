@@ -5,7 +5,7 @@ import {
   ensureDockerDaemonRunning,
   DockerCompose,
   CacheDirectory,
-  Logger
+  Logger,
 } from "../";
 
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -262,7 +262,7 @@ export class Infra {
         cache: this._cache,
         installationDirectory: installationDir,
         name: registry,
-        logger: this._config.logger
+        logger: this._config.logger,
       });
 
       const mappedInfraModules = modules.map((p) => ({

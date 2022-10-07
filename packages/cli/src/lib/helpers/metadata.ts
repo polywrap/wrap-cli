@@ -28,9 +28,12 @@ export async function outputMetadata(
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.copyFileSync(path.join(rootDir, filePath), outputPath);
 
-    logger.info(`✅` + intlMsg.lib_compiler_outputMetadataFileText({
-      path: displayPath(normalizePath(outputPath)),
-    }));
+    logger.info(
+      `✅` +
+        intlMsg.lib_compiler_outputMetadataFileText({
+          path: displayPath(normalizePath(outputPath)),
+        })
+    );
 
     return displayPath(normalizePath(outputFilePath));
   };

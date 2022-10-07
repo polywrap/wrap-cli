@@ -378,7 +378,10 @@ export class PolywrapProject extends Project<PolywrapManifest> {
 
     const manifestExtPath = path.join(cachePath, "polywrap.deploy.ext.json");
 
-    const manifestExt = await loadDeployManifestExt(manifestExtPath, this.logger);
+    const manifestExt = await loadDeployManifestExt(
+      manifestExtPath,
+      this.logger
+    );
 
     return {
       // eslint-disable-next-line @typescript-eslint/no-require-imports

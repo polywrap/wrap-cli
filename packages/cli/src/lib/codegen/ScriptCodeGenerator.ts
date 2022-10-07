@@ -42,9 +42,7 @@ export class ScriptCodegenerator extends CodeGenerator {
     }
   }
 
-  protected async runCodegen(
-    bindLanguage: BindLanguage,
-  ): Promise<string[]> {
+  protected async runCodegen(bindLanguage: BindLanguage): Promise<string[]> {
     const generator = isTypescriptFile(this._script)
       ? await importTypescriptModule(this._script)
       : // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -73,16 +71,11 @@ export class ScriptCodegenerator extends CodeGenerator {
     return writeDirectorySync(
       this._codegenDirAbs,
       binding.output,
-      (templatePath: string) => this._generateTemplate(
-        templatePath, {}
-      )
+      (templatePath: string) => this._generateTemplate(templatePath, {})
     );
   }
 
-  private _generateTemplate(
-    templatePath: string,
-    config: unknown
-  ): string {
+  private _generateTemplate(templatePath: string, config: unknown): string {
     const logger = this._config.project.logger;
 
     logger.info(

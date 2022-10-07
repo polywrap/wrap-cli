@@ -14,7 +14,7 @@ import {
   ValidationResult,
   WorkflowOutput,
   defaultWorkflowManifest,
-  parseManifestFileOption
+  parseManifestFileOption,
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
 

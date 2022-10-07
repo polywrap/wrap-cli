@@ -5,7 +5,7 @@ import {
   generateDockerImageName,
   isDockerInstalled,
   runCommand,
-  runCommandSync
+  runCommandSync,
 } from "../../system";
 import { BuildStrategyArgs, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
@@ -153,7 +153,10 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
         this.project.logger
       );
 
-      if (containerLsOutput && containerLsOutput.indexOf(`root-${imageName}`) > -1) {
+      if (
+        containerLsOutput &&
+        containerLsOutput.indexOf(`root-${imageName}`) > -1
+      ) {
         await runCommand(`docker rm -f root-${imageName}`, this.project.logger);
       }
 
@@ -198,7 +201,10 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
 
       if (useBuildx) {
         if (removeBuilder) {
-          await runCommand(`docker buildx rm ${imageName}`, this.project.logger);
+          await runCommand(
+            `docker buildx rm ${imageName}`,
+            this.project.logger
+          );
         }
       }
       if (removeImage) {
@@ -282,7 +288,9 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
       );
 
       if (!stdout || stdout.indexOf("sha256:") === -1) {
-        throw Error(intlMsg.lib_docker_invalidImageId({ imageId: stdout || "N/A" }));
+        throw Error(
+          intlMsg.lib_docker_invalidImageId({ imageId: stdout || "N/A" })
+        );
       }
 
       return stdout;
@@ -305,8 +313,13 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
   }
 
   private async _isDockerBuildxInstalled(): Promise<boolean> {
-    const { stdout: version } = runCommandSync("docker buildx version", this.project.logger);
-    return version && version.startsWith("github.com/docker/buildx") ? true : false;
+    const { stdout: version } = runCommandSync(
+      "docker buildx version",
+      this.project.logger
+    );
+    return version && version.startsWith("github.com/docker/buildx")
+      ? true
+      : false;
   }
 
   private _generateDockerfile(

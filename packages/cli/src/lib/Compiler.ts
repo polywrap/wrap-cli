@@ -94,7 +94,7 @@ export class Compiler {
 
   private async _outputWrapManifest(): Promise<unknown> {
     const { outputDir, project, schemaComposer } = this._config;
-    let manifestPath = `${outputDir}/wrap.info`;
+    const manifestPath = `${outputDir}/wrap.info`;
     const run = async () => {
       const manifest = await project.getManifest();
 

@@ -2,7 +2,7 @@ import { intlMsg } from "../../";
 
 import { execSync, spawn } from "child_process";
 import fs from "fs";
-import fse from "fs-extra"
+import fse from "fs-extra";
 import dns from "dns";
 import url from "url";
 import chalk from "chalk";
@@ -143,13 +143,14 @@ export const generateProjectTemplate = (
 
     executeCommand(command, args, root)
       .then(() => {
-        fse.copy(
-          `${root}/node_modules/@polywrap/templates/${type}/${lang}`,
-          `${root}`,
-          {
-            overwrite: true,
-          }
-        )
+        fse
+          .copy(
+            `${root}/node_modules/@polywrap/templates/${type}/${lang}`,
+            `${root}`,
+            {
+              overwrite: true,
+            }
+          )
           .then(() => {
             resolve(true);
           })

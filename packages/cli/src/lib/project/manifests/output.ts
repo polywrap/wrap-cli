@@ -1,9 +1,4 @@
-import {
-  displayPath,
-  Logger,
-  logActivity,
-  intlMsg
-} from "../../";
+import { displayPath, Logger, logActivity, intlMsg } from "../../";
 
 import {
   BuildManifest,

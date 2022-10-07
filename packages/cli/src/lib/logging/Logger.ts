@@ -24,9 +24,7 @@ export class Logger {
   }
 
   public log(message: string, level: LogLevel): void {
-    Object.values(this._logs).forEach(
-      (log) => log.log(message, level)
-    );
+    Object.values(this._logs).forEach((log) => log.log(message, level));
   }
 
   public debug(message: string): void {
