@@ -9,7 +9,6 @@ import {
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
-import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
 import { getDefaultConfig } from "../bundles";
 
 class NamedUriResolver implements IUriResolver {
