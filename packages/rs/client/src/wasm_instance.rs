@@ -69,9 +69,7 @@ impl WasmInstance {
         })
     }
 
-    pub fn create_imports(&'static self) -> Vec<Extern> {
-        let mut imports = Vec::new();
-
+    pub fn create_imports(&'static self) -> [Extern; 3] {
         let instance_store_ref = Arc::clone(&self.store);
         let mut instance_store_guard = instance_store_ref.lock().unwrap();
 
@@ -120,7 +118,21 @@ impl WasmInstance {
             state_ref.invoke_result = Some(result[0..len.try_into().unwrap()].to_vec());
         });
 
-        imports
+        let __wrap_invoke_error = Func::wrap(&mut *instance_store_guard, |ptr: u32, len: u32| {
+            let mut store_ref = self.store.lock().unwrap();
+            let mut state_ref = self.shared_state.lock().unwrap();
+
+            let string_buf = &mut [];
+
+            self.memory
+                .read(&mut *store_ref, ptr.try_into().unwrap(), string_buf)
+                .unwrap();
+
+            state_ref.invoke.error =
+                Some(String::from_utf8(string_buf[0..len.try_into().unwrap()].to_vec()).unwrap());
+        });
+
+        [__wrap_invoke_args.into(), __wrap_invoke_result.into(), __wrap_invoke_error.into()]
     }
 
     fn create_memory(store: &mut Store<u32>) -> Memory {
