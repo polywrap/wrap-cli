@@ -4,13 +4,13 @@ import {
   Env,
   InterfaceImplementations,
   Uri,
-  UriRedirect,
+  IUriRedirect,
   IUriResolver,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
-import { getDefaultClientConfig } from "../bundles";
 import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
+import { getDefaultConfig } from "../bundles";
 
 class NamedUriResolver implements IUriResolver {
   private _name: string;
@@ -46,7 +46,7 @@ describe("Client config builder", () => {
     },
   ];
 
-  const testUriRedirects: UriRedirect[] = [
+  const testUriRedirects: IUriRedirect<string>[] = [
     {
       from: "wrap://ens/test-one.polywrap.eth",
       to: "wrap://ens/test1.polywrap.eth",
@@ -60,12 +60,15 @@ describe("Client config builder", () => {
   const testUriResolver: IUriResolver = new NamedUriResolver("test1");
 
   it("should build an empty partial config", () => {
-    const clientConfig = new ClientConfigBuilder().buildPartial();
+    const clientConfig = new ClientConfigBuilder().getConfig();
 
     expect(clientConfig).toStrictEqual({
       envs: [],
       interfaces: [],
       redirects: [],
+      wrappers: [],
+      packages: [],
+      resolvers: [],
     });
   });
 
@@ -75,9 +78,9 @@ describe("Client config builder", () => {
         envs: testEnvs,
         interfaces: testInterfaces,
         redirects: testUriRedirects,
-        resolver: testUriResolver,
+        resolvers: [testUriResolver],
       })
-      .build();
+      .getConfig();
 
     expect(clientConfig).toBeTruthy();
     expect(clientConfig.envs).toStrictEqual(
@@ -98,7 +101,7 @@ describe("Client config builder", () => {
         to: Uri.from(x.to),
       }))
     );
-    expect(clientConfig.resolver).toStrictEqual(testUriResolver);
+    expect(clientConfig.resolvers).toStrictEqual([testUriResolver]);
   });
 
   it("should succesfully add and merge two config objects and build", () => {
@@ -107,14 +110,14 @@ describe("Client config builder", () => {
         envs: [testEnvs[0]],
         interfaces: [testInterfaces[0]],
         redirects: [testUriRedirects[0]],
-        resolver: testUriResolver,
+        resolvers: [testUriResolver],
       })
       .add({
         envs: [testEnvs[1]],
         interfaces: [testInterfaces[1]],
         redirects: [testUriRedirects[1]],
       })
-      .build();
+      .getConfig();
 
     expect(clientConfig).toBeTruthy();
     expect(clientConfig.envs).toStrictEqual(
@@ -135,19 +138,19 @@ describe("Client config builder", () => {
         to: Uri.from(x.to),
       }))
     );
-    expect(clientConfig.resolver).toStrictEqual(testUriResolver);
+    expect(clientConfig.resolvers).toStrictEqual([testUriResolver]);
   });
 
   it("should successfully add the default config", () => {
-    const clientConfig = new ClientConfigBuilder().addDefaults().build();
+    const clientConfig = new ClientConfigBuilder().addDefaults().getConfig();
 
-    const expectedConfig = getDefaultClientConfig();
+    const expectedConfig = getDefaultConfig();
 
     expect(clientConfig).toBeTruthy();
     expect(clientConfig.envs).toStrictEqual(expectedConfig.envs);
     expect(clientConfig.interfaces).toStrictEqual(expectedConfig.interfaces);
     expect(clientConfig.redirects).toStrictEqual(expectedConfig.redirects);
-    expect(clientConfig.resolver instanceof RecursiveResolver).toBe(true);
+    expect(clientConfig.resolvers).toStrictEqual(expectedConfig.resolvers);
   });
 
   it("should successfully add an env", () => {
@@ -159,7 +162,7 @@ describe("Client config builder", () => {
       },
     };
 
-    const config = new ClientConfigBuilder().addEnv(envUri, env).buildPartial();
+    const config = new ClientConfigBuilder().addEnv(envUri, env).getConfig();
 
     if (!config.envs || config.envs.length !== 1) {
       fail(["Expected 1 env, received:", config.envs]);
@@ -183,7 +186,7 @@ describe("Client config builder", () => {
     const config = new ClientConfigBuilder()
       .addEnv(envUri, env1)
       .addEnv(envUri, env2)
-      .buildPartial();
+      .getConfig();
 
     const expectedEnv = { ...env1, ...env2 };
 
@@ -199,7 +202,7 @@ describe("Client config builder", () => {
     const config = new ClientConfigBuilder()
       .addEnv(testEnvs[0].uri, testEnvs[0].env)
       .addEnv(testEnvs[1].uri, testEnvs[1].env)
-      .buildPartial();
+      .getConfig();
 
     if (!config.envs || config.envs.length !== 2) {
       fail(["Expected 2 envs, received:", config.envs]);
@@ -220,7 +223,7 @@ describe("Client config builder", () => {
       .addEnv(testEnvs[0].uri, testEnvs[0].env)
       .addEnv(testEnvs[1].uri, testEnvs[1].env)
       .removeEnv(testEnvs[0].uri)
-      .buildPartial();
+      .getConfig();
 
     if (!config.envs || config.envs.length !== 1) {
       fail(["Expected 1 env, received:", config.envs]);
@@ -239,7 +242,7 @@ describe("Client config builder", () => {
       foo: "bar",
     };
 
-    const config = new ClientConfigBuilder().setEnv(envUri, env).buildPartial();
+    const config = new ClientConfigBuilder().setEnv(envUri, env).getConfig();
 
     if (!config.envs || config.envs.length !== 1) {
       fail(["Expected 1 env, received:", config.envs]);
@@ -264,7 +267,7 @@ describe("Client config builder", () => {
     const config = new ClientConfigBuilder()
       .addEnv(envUri, env1)
       .setEnv(envUri, env2)
-      .buildPartial();
+      .getConfig();
 
     if (!config.envs || config.envs.length !== 1) {
       fail(["Expected 1 env, received:", config.envs]);
@@ -282,7 +285,7 @@ describe("Client config builder", () => {
 
     const config = new ClientConfigBuilder()
       .addInterfaceImplementation(interfaceUri, implUri)
-      .buildPartial();
+      .getConfig();
 
     if (!config.interfaces || config.interfaces.length !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
@@ -302,7 +305,7 @@ describe("Client config builder", () => {
     const config = new ClientConfigBuilder()
       .addInterfaceImplementation(interfaceUri, implUri1)
       .addInterfaceImplementation(interfaceUri, implUri2)
-      .buildPartial();
+      .getConfig();
 
     if (!config.interfaces || config.interfaces.length !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
@@ -332,7 +335,7 @@ describe("Client config builder", () => {
       .addInterfaceImplementation(interfaceUri2, implUri2)
       .addInterfaceImplementation(interfaceUri1, implUri3)
       .addInterfaceImplementation(interfaceUri2, implUri4)
-      .buildPartial();
+      .getConfig();
 
     if (!config.interfaces || config.interfaces.length !== 2) {
       fail(["Expected 2 interfaces, received:", config.interfaces]);
@@ -363,7 +366,7 @@ describe("Client config builder", () => {
 
     const config = new ClientConfigBuilder()
       .addInterfaceImplementations(interfaceUri, [implUri1, implUri2])
-      .buildPartial();
+      .getConfig();
 
     if (!config.interfaces || config.interfaces.length !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
@@ -390,7 +393,7 @@ describe("Client config builder", () => {
     const config = new ClientConfigBuilder()
       .addInterfaceImplementations(interfaceUri, [implUri1])
       .addInterfaceImplementations(interfaceUri, [implUri2, implUri3])
-      .buildPartial();
+      .getConfig();
 
     if (!config.interfaces || config.interfaces.length !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
@@ -426,7 +429,7 @@ describe("Client config builder", () => {
       .addInterfaceImplementation(interfaceUri2, implUri2)
       .addInterfaceImplementations(interfaceUri1, [implUri3, implUri5])
       .addInterfaceImplementations(interfaceUri2, [implUri4, implUri6])
-      .buildPartial();
+      .getConfig();
 
     if (!config.interfaces || config.interfaces.length !== 2) {
       fail(["Expected 2 interfaces, received:", config.interfaces]);
@@ -462,7 +465,7 @@ describe("Client config builder", () => {
       .addInterfaceImplementations(interfaceUri1, [implUri1, implUri2])
       .addInterfaceImplementations(interfaceUri2, [implUri1, implUri2])
       .removeInterfaceImplementation(interfaceUri1, implUri2)
-      .buildPartial();
+      .getConfig();
 
     if (!config.interfaces || config.interfaces.length !== 2) {
       fail(["Expected 2 interfaces, received:", config.interfaces]);
@@ -496,7 +499,7 @@ describe("Client config builder", () => {
       .addInterfaceImplementations(interfaceUri2, [implUri1, implUri2])
       .removeInterfaceImplementation(interfaceUri1, implUri1)
       .removeInterfaceImplementation(interfaceUri1, implUri2)
-      .buildPartial();
+      .getConfig();
 
     if (!config.interfaces || config.interfaces.length !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
@@ -521,9 +524,7 @@ describe("Client config builder", () => {
     const from = "wrap://ens/from.this.ens";
     const to = "wrap://ens/to.that.ens";
 
-    const config = new ClientConfigBuilder()
-      .addUriRedirect(from, to)
-      .buildPartial();
+    const config = new ClientConfigBuilder().addRedirect(from, to).getConfig();
 
     expect(config.redirects).toHaveLength(1);
     expect(config.redirects).toContainEqual({
@@ -540,9 +541,9 @@ describe("Client config builder", () => {
     const to2 = "wrap://ens/to.that2.ens";
 
     const config = new ClientConfigBuilder()
-      .addUriRedirect(from1, to1)
-      .addUriRedirect(from2, to2)
-      .buildPartial();
+      .addRedirect(from1, to1)
+      .addRedirect(from2, to2)
+      .getConfig();
 
     expect(config.redirects).toHaveLength(2);
     expect(config.redirects).toContainEqual({
@@ -562,10 +563,10 @@ describe("Client config builder", () => {
     const to2 = "wrap://ens/to.that2.ens";
 
     const config = new ClientConfigBuilder()
-      .addUriRedirect(from1, to1)
-      .addUriRedirect(from2, to1)
-      .addUriRedirect(from1, to2)
-      .buildPartial();
+      .addRedirect(from1, to1)
+      .addRedirect(from2, to1)
+      .addRedirect(from1, to2)
+      .getConfig();
 
     expect(config.redirects).toHaveLength(2);
     expect(config.redirects).toContainEqual({
@@ -586,10 +587,10 @@ describe("Client config builder", () => {
     const to2 = "wrap://ens/to.that2.ens";
 
     const config = new ClientConfigBuilder()
-      .addUriRedirect(from1, to1)
-      .addUriRedirect(from2, to2)
+      .addRedirect(from1, to1)
+      .addRedirect(from2, to2)
       .removeUriRedirect(from1)
-      .buildPartial();
+      .getConfig();
 
     expect(config.redirects).toHaveLength(1);
     expect(config.redirects).toContainEqual({
@@ -601,9 +602,11 @@ describe("Client config builder", () => {
   it("should set uri resolver", () => {
     const uriResolver = new NamedUriResolver("ResolverName");
 
-    const config = new ClientConfigBuilder().setResolver(uriResolver).build();
+    const config = new ClientConfigBuilder()
+      .addResolver(uriResolver)
+      .getConfig();
 
-    expect(((config.resolver as unknown) as NamedUriResolver).name).toBe(
+    expect(((config.resolvers[0] as unknown) as NamedUriResolver).name).toBe(
       "ResolverName"
     );
   });
@@ -613,11 +616,14 @@ describe("Client config builder", () => {
     const uriResolver2 = new NamedUriResolver("second");
 
     const config = new ClientConfigBuilder()
-      .setResolver(uriResolver1)
-      .setResolver(uriResolver2)
-      .build();
+      .addResolver(uriResolver1)
+      .addResolver(uriResolver2)
+      .getConfig();
 
-    expect(((config.resolver as unknown) as NamedUriResolver).name).toBe(
+    expect(((config.resolvers[0] as unknown) as NamedUriResolver).name).toBe(
+      "first"
+    );
+    expect(((config.resolvers[1] as unknown) as NamedUriResolver).name).toBe(
       "second"
     );
   });
