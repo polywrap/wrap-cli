@@ -1,5 +1,5 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { getClientWithIpfs } from "./helpers/getClientWithIpfs";
+import { getClient } from "./helpers/getClient";
 import { Result } from "@polywrap/core-js";
 import { ResultOk } from "@polywrap/result";
 import {
@@ -33,7 +33,7 @@ describe("IPFS Plugin", () => {
   });
 
   it("Should successfully resolve a deployed wrapper - e2e", async () => {
-    const client = getClientWithIpfs({});
+    const client = getClient({});
 
     const wrapperUri = `ipfs/${wrapperIpfsCid}`;
 
@@ -69,7 +69,7 @@ describe("IPFS Plugin", () => {
     ) => {
       const nonExistentFileCid =
         "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-      const client = getClientWithIpfs(env);
+      const client = getClient(env);
 
       const getFilePromise = client.invoke<Uint8Array>({
         uri: ipfsResolverUri,
@@ -135,7 +135,7 @@ describe("IPFS Plugin", () => {
     ) => {
       const nonExistentFileCid =
         "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-      const client = getClientWithIpfs(env);
+      const client = getClient(env);
 
       const getFilePromise = client.invoke<Uint8Array>({
         uri: ipfsResolverUri,

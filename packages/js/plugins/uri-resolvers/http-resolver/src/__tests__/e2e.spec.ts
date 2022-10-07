@@ -65,7 +65,7 @@ describe("HTTP Plugin", () => {
     );
     const expectedManifest = await deserializeWrapManifest(data);
 
-    const manifest = await result.value.wrapper.getManifest({}, client);
+    const manifest = await result.value.wrapper.getManifest();
 
     expect(manifest?.name).toBe("SimpleStorage");
     expect(manifest).toEqual(expectedManifest);
@@ -92,7 +92,7 @@ describe("HTTP Plugin", () => {
     );
     const expectedManifest = await deserializeWrapManifest(data);
 
-    const manifest = await result.value.wrapper.getManifest({}, client);
+    const manifest = await result.value.wrapper.getManifest();
 
     expect(manifest?.name).toBe("SimpleStorage");
     expect(manifest).toEqual(expectedManifest);

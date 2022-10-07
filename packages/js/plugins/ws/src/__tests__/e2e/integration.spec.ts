@@ -4,7 +4,7 @@ import { Client } from "@polywrap/core-js";
 import { buildWrapper } from "@polywrap/test-env-js";
 import WS from "jest-websocket-mock";
 import { PluginPackage } from "@polywrap/plugin-js";
-import { createDefaultClient } from "./helpers/createDefaultClient";
+import { PolywrapClient } from "@polywrap/client-js";
 
 jest.setTimeout(360000);
 
@@ -17,7 +17,7 @@ describe("e2e tests for WsPlugin", () => {
     const uri = `fs/${wrapperPath}/build`;
 
     beforeAll(async () => {
-      client = createDefaultClient({
+      client = new PolywrapClient({
         packages: [
           {
             uri: "wrap://ens/ws.polywrap.eth",
@@ -60,7 +60,7 @@ describe("e2e tests for WsPlugin", () => {
         },
       }));
 
-      client = createDefaultClient({
+      client = new PolywrapClient({
         packages: [
           {
             uri: "wrap://ens/ws.polywrap.eth",
@@ -109,7 +109,7 @@ describe("e2e tests for WsPlugin", () => {
         },
       }));
 
-      client = createDefaultClient({
+      client = new PolywrapClient({
         packages: [
           {
             uri: "wrap://ens/ws.polywrap.eth",

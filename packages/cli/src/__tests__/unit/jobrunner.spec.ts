@@ -17,7 +17,10 @@ describe("workflow JobRunner", () => {
   for (const testCase of testCases) {
     test(testCase.name, async () => {
       const ids = Object.keys(testCase.workflow.jobs);
-      const jobRunner = new JobRunner(new ClientConfigBuilder().addDefaults().getConfig(), testCase.onExecution);
+      const jobRunner = new JobRunner(
+        new ClientConfigBuilder().addDefaults().build(),
+        testCase.onExecution
+      );
       await jobRunner.run(testCase.workflow.jobs, ids);
     });
   }

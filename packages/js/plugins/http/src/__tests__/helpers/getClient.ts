@@ -11,32 +11,35 @@ import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { httpPlugin } from "../..";
 
 export const getClient = () => {
-  return new PolywrapClient({
-    interfaces: [
-      {
-        interface: coreInterfaceUris.uriResolver,
-        implementations: ["wrap://ens/fs-resolver.polywrap.eth"],
-      },
-    ],
-    resolver: RecursiveResolver.from(
-      PackageToWrapperCacheResolver.from(
-        [
-          {
-            uri: "wrap://ens/http.polywrap.eth",
-            package: httpPlugin({}),
-          },
-          {
-            uri: "wrap://ens/fs-resolver.polywrap.eth",
-            package: fileSystemResolverPlugin({}),
-          },
-          {
-            uri: "wrap://ens/fs.polywrap.eth",
-            package: fileSystemPlugin({}),
-          },
-          new ExtendableUriResolver(),
-        ],
-        new WrapperCache()
-      )
-    ),
-  });
+  return new PolywrapClient(
+    {
+      interfaces: [
+        {
+          interface: coreInterfaceUris.uriResolver,
+          implementations: ["wrap://ens/fs-resolver.polywrap.eth"],
+        },
+      ],
+      resolver: RecursiveResolver.from(
+        PackageToWrapperCacheResolver.from(
+          [
+            {
+              uri: "wrap://ens/http.polywrap.eth",
+              package: httpPlugin({}),
+            },
+            {
+              uri: "wrap://ens/fs-resolver.polywrap.eth",
+              package: fileSystemResolverPlugin({}),
+            },
+            {
+              uri: "wrap://ens/fs.polywrap.eth",
+              package: fileSystemPlugin({}),
+            },
+            new ExtendableUriResolver(),
+          ],
+          new WrapperCache()
+        )
+      ),
+    },
+    { noDefaults: true }
+  );
 };

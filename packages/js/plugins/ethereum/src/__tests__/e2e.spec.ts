@@ -1,10 +1,7 @@
 import * as Schema from "../wrap";
 
 import { PolywrapClient, Uri } from "@polywrap/client-js";
-import {
-  ClientConfigBuilder,
-  CustomClientConfig,
-} from "@polywrap/client-config-builder-js";
+import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -875,22 +872,18 @@ describe("Ethereum Plugin", () => {
     });
 
     it("getNetwork - mainnet with env", async () => {
-      const config = new ClientConfigBuilder()
-        .add(defaultConfig)
-        .add({
-          envs: [
-            {
-              uri: "wrap://ens/ethereum.polywrap.eth",
-              env: {
-                connection: {
-                  networkNameOrChainId: "mainnet",
-                },
+      const mainnetClient = new PolywrapClient({
+        envs: [
+          {
+            uri: "wrap://ens/ethereum.polywrap.eth",
+            env: {
+              connection: {
+                networkNameOrChainId: "mainnet",
               },
             },
-          ],
-        })
-        .buildDefault();
-      const mainnetClient = new PolywrapClient(config);
+          },
+        ],
+      });
       const mainnetNetwork = await mainnetClient.invoke<Schema.Network>({
         uri,
         method: "getNetwork",
@@ -906,22 +899,18 @@ describe("Ethereum Plugin", () => {
     });
 
     it("getNetwork - polygon with env", async () => {
-      const config = new ClientConfigBuilder()
-        .add(defaultConfig)
-        .add({
-          envs: [
-            {
-              uri: "wrap://ens/ethereum.polywrap.eth",
-              env: {
-                connection: {
-                  node: "https://polygon-rpc.com",
-                },
+      const polygonClient = new PolywrapClient({
+        envs: [
+          {
+            uri: "wrap://ens/ethereum.polywrap.eth",
+            env: {
+              connection: {
+                node: "https://polygon-rpc.com",
               },
             },
-          ],
-        })
-        .buildDefault();
-      const polygonClient = new PolywrapClient(config);
+          },
+        ],
+      });
       const polygonNetwork = await polygonClient.invoke<Schema.Network>({
         uri,
         method: "getNetwork",

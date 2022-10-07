@@ -4,10 +4,7 @@ import { Message } from "../../wrap";
 import WS from "jest-websocket-mock";
 import { PolywrapClient } from "@polywrap/client-js"
 import { Client } from "@polywrap/core-js";
-import {
-  buildUriResolver,
-  RecursiveResolver,
-} from "@polywrap/uri-resolvers-js";
+import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import { PluginPackage } from "@polywrap/plugin-js";
 
 describe("WebSocket plugin", () => {
@@ -18,14 +15,17 @@ describe("WebSocket plugin", () => {
   let t3: ReturnType<typeof setTimeout>;
 
   const setup = () => {
-    polywrapClient = new PolywrapClient({
-      resolver: RecursiveResolver.from([
-        {
-          uri: "wrap://ens/ws.polywrap.eth",
-          package: wsPlugin({}),
-        },
-      ]),
-    });
+    polywrapClient = new PolywrapClient(
+      {
+        resolver: buildUriResolver([
+          {
+            uri: "wrap://ens/ws.polywrap.eth",
+            package: wsPlugin({}),
+          },
+        ]),
+      },
+      { noDefaults: true }
+    );
     server = new WS("ws://localhost:1234");
     t1 = setTimeout(() => {
       server.send("1");
@@ -90,7 +90,7 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "close",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
 
@@ -140,21 +140,24 @@ describe("WebSocket plugin", () => {
       const callbackPlugin = PluginPackage.from(() => ({
         callback(args: { data: string }, _client: Client): void {
           msgs.push(args.data);
-        }
+        },
       }));
 
-      polywrapClient = new PolywrapClient({
-        resolver: buildUriResolver([
-          {
-            uri: "wrap://ens/ws.polywrap.eth",
-            package: wsPlugin({}),
-          },
-          {
-            uri: "wrap://ens/stub.polywrap.eth",
-            package: callbackPlugin,
-          },
-        ]),
-      });
+      polywrapClient = new PolywrapClient(
+        {
+          resolver: buildUriResolver([
+            {
+              uri: "wrap://ens/ws.polywrap.eth",
+              package: wsPlugin({}),
+            },
+            {
+              uri: "wrap://ens/stub.polywrap.eth",
+              package: callbackPlugin,
+            },
+          ]),
+        },
+        { noDefaults: true }
+      );
     });
 
     afterEach(() => {
@@ -261,7 +264,7 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
 
@@ -273,12 +276,12 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
       if (!response.ok) fail(response.error);
 
-      let data = response.value.map((msg) => msg.data)
+      let data = response.value.map((msg) => msg.data);
       expect(data).toEqual(["1", "2"]);
     });
 
@@ -296,7 +299,7 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
 
@@ -306,7 +309,7 @@ describe("WebSocket plugin", () => {
             uri: "wrap://ens/ws.polywrap.eth",
             method: "removeCache",
             args: {
-              id: result.value
+              id: result.value,
             },
           });
           resolve();
@@ -321,12 +324,12 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
 
       if (!response.ok) fail(response.error);
-      let data = response.value.map((msg) => msg.data)
+      let data = response.value.map((msg) => msg.data);
       expect(data).toEqual(["1", "2"]);
     });
 
@@ -344,7 +347,7 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
 
@@ -358,7 +361,7 @@ describe("WebSocket plugin", () => {
       });
 
       if (!response.ok) fail(response.error);
-      let data = response.value.map((msg) => msg.data)
+      let data = response.value.map((msg) => msg.data);
       expect(data).toEqual(["1", "2"]);
     });
 
@@ -376,7 +379,7 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
 
@@ -390,7 +393,7 @@ describe("WebSocket plugin", () => {
       });
 
       if (!response.ok) fail(response.error);
-      let data = response.value.map((msg) => msg.data)
+      let data = response.value.map((msg) => msg.data);
       expect(data).toEqual(["1", "2"]);
     });
 
@@ -408,7 +411,7 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
 
@@ -423,7 +426,7 @@ describe("WebSocket plugin", () => {
       });
 
       if (!response.ok) fail(response.error);
-      let data = response.value.map((msg) => msg.data)
+      let data = response.value.map((msg) => msg.data);
       expect(data).toEqual(["1"]);
     });
 
@@ -441,7 +444,7 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
 
@@ -456,7 +459,7 @@ describe("WebSocket plugin", () => {
       });
 
       if (!response.ok) fail(response.error);
-      let data = response.value.map((msg) => msg.data)
+      let data = response.value.map((msg) => msg.data);
       expect(data).toEqual(["1"]);
     });
 
@@ -474,7 +477,7 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "addCache",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
 
@@ -486,7 +489,7 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
 
@@ -498,7 +501,7 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
 
@@ -510,20 +513,20 @@ describe("WebSocket plugin", () => {
         uri: "wrap://ens/ws.polywrap.eth",
         method: "receive",
         args: {
-          id: result.value
+          id: result.value,
         },
       });
 
       if (!response1.ok) fail(response1.error);
-      let data1 = response1.value.map((msg) => msg.data)
+      let data1 = response1.value.map((msg) => msg.data);
       expect(data1).toEqual(["1", "2"]);
 
       if (!response2.ok) fail(response2.error);
-      let data2 = response2.value.map((msg) => msg.data)
+      let data2 = response2.value.map((msg) => msg.data);
       expect(data2).toEqual(["3"]);
 
       if (!response3.ok) fail(response3.error);
-      let data3 = response3.value.map((msg) => msg.data)
+      let data3 = response3.value.map((msg) => msg.data);
       expect(data3).toEqual([]);
     });
   });

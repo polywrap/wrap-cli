@@ -27,18 +27,21 @@ describe("IPFS Plugin", () => {
     await initTestEnvironment();
     ipfs = createIpfsClient(providers.ipfs);
 
-    client = new PolywrapClient({
-      envs: [
-        {
+    client = new PolywrapClient(
+      {
+        envs: [
+          {
+            uri: "wrap://ens/ipfs.polywrap.eth",
+            env: { provider: providers.ipfs },
+          },
+        ],
+        resolver: RecursiveResolver.from({
           uri: "wrap://ens/ipfs.polywrap.eth",
-          env: { provider: providers.ipfs },
-        },
-      ],
-      resolver: RecursiveResolver.from({
-        uri: "wrap://ens/ipfs.polywrap.eth",
-        package: ipfsPlugin({}),
-      }),
-    });
+          package: ipfsPlugin({}),
+        }),
+      },
+      { noDefaults: true }
+    );
 
     let ipfsAddResult = await ipfs.add(sampleFileBuffer);
     sampleFileIpfsInfo = ipfsAddResult[0];
@@ -103,21 +106,24 @@ describe("IPFS Plugin", () => {
       );
     };
 
-    const altClient = new PolywrapClient({
-      envs: [
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          env: {
-            provider: providers.ipfs,
-            timeout: 1000,
+    const altClient = new PolywrapClient(
+      {
+        envs: [
+          {
+            uri: "wrap://ens/ipfs.polywrap.eth",
+            env: {
+              provider: providers.ipfs,
+              timeout: 1000,
+            },
           },
-        },
-      ],
-      resolver: RecursiveResolver.from({
-        uri: "wrap://ens/ipfs.polywrap.eth",
-        package: ipfsPlugin({}),
-      }),
-    });
+        ],
+        resolver: RecursiveResolver.from({
+          uri: "wrap://ens/ipfs.polywrap.eth",
+          package: ipfsPlugin({}),
+        }),
+      },
+      { noDefaults: true }
+    );
 
     const nonExistentFileCid = "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
@@ -159,20 +165,23 @@ describe("IPFS Plugin", () => {
   });
 
   it("Should use provider from method options", async () => {
-    const clientWithBadProvider = new PolywrapClient({
-      envs: [
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          env: {
-            provider: "this-provider-doesnt-exist",
+    const clientWithBadProvider = new PolywrapClient(
+      {
+        envs: [
+          {
+            uri: "wrap://ens/ipfs.polywrap.eth",
+            env: {
+              provider: "this-provider-doesnt-exist",
+            },
           },
-        },
-      ],
-      resolver: RecursiveResolver.from({
-        uri: "wrap://ens/ipfs.polywrap.eth",
-        package: ipfsPlugin({}),
-      }),
-    });
+        ],
+        resolver: RecursiveResolver.from({
+          uri: "wrap://ens/ipfs.polywrap.eth",
+          package: ipfsPlugin({}),
+        }),
+      },
+      { noDefaults: true }
+    );
 
     const catResult = await Ipfs_Module.cat(
       {
@@ -201,20 +210,23 @@ describe("IPFS Plugin", () => {
   });
 
   it("Should use fallback provider from method options", async () => {
-    const clientWithBadProvider = new PolywrapClient({
-      envs: [
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          env: {
-            provider: "this-provider-doesnt-exist",
+    const clientWithBadProvider = new PolywrapClient(
+      {
+        envs: [
+          {
+            uri: "wrap://ens/ipfs.polywrap.eth",
+            env: {
+              provider: "this-provider-doesnt-exist",
+            },
           },
-        },
-      ],
-      resolver: RecursiveResolver.from({
-        uri: "wrap://ens/ipfs.polywrap.eth",
-        package: ipfsPlugin({}),
-      }),
-    });
+        ],
+        resolver: RecursiveResolver.from({
+          uri: "wrap://ens/ipfs.polywrap.eth",
+          package: ipfsPlugin({}),
+        }),
+      },
+      { noDefaults: true }
+    );
 
     const catResult = await Ipfs_Module.cat(
       {

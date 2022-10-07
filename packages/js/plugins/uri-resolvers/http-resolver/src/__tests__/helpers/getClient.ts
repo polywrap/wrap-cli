@@ -10,28 +10,31 @@ import { httpPlugin } from "@polywrap/http-plugin-js";
 import { httpResolverPlugin } from "../..";
 
 export const getClient = () => {
-  return new PolywrapClient({
-    interfaces: [
-      {
-        interface: coreInterfaceUris.uriResolver,
-        implementations: ["wrap://ens/http-uri-resolver.polywrap.eth"],
-      },
-    ],
-    resolver: RecursiveResolver.from(
-      PackageToWrapperCacheResolver.from(
-        [
-          {
-            uri: "wrap://ens/http.polywrap.eth",
-            package: httpPlugin({}),
-          },
-          {
-            uri: "wrap://ens/http-uri-resolver.polywrap.eth",
-            package: httpResolverPlugin({}),
-          },
-          new ExtendableUriResolver(),
-        ],
-        new WrapperCache()
-      )
-    ),
-  });
+  return new PolywrapClient(
+    {
+      interfaces: [
+        {
+          interface: coreInterfaceUris.uriResolver,
+          implementations: ["wrap://ens/http-uri-resolver.polywrap.eth"],
+        },
+      ],
+      resolver: RecursiveResolver.from(
+        PackageToWrapperCacheResolver.from(
+          [
+            {
+              uri: "wrap://ens/http.polywrap.eth",
+              package: httpPlugin({}),
+            },
+            {
+              uri: "wrap://ens/http-uri-resolver.polywrap.eth",
+              package: httpResolverPlugin({}),
+            },
+            new ExtendableUriResolver(),
+          ],
+          new WrapperCache()
+        )
+      ),
+    },
+    { noDefaults: true }
+  );
 };

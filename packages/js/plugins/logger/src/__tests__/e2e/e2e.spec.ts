@@ -1,17 +1,20 @@
 import { PolywrapClient } from "@polywrap/client-js";
-import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
+import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import { loggerPlugin } from "../..";
 
 describe("log method", () => {
   it("logs to console appropriate level", async () => {
-    const polywrapClient = new PolywrapClient({
-      resolver: RecursiveResolver.from([
-        {
-          uri: "wrap://ens/js-logger.polywrap.eth",
-          package: loggerPlugin({}),
-        },
-      ]),
-    });
+    const polywrapClient = new PolywrapClient(
+      {
+        resolver: buildUriResolver([
+          {
+            uri: "wrap://ens/js-logger.polywrap.eth",
+            package: loggerPlugin({}),
+          },
+        ]),
+      },
+      { noDefaults: true }
+    );
 
     const response = await polywrapClient.invoke<boolean>({
       uri: "wrap://ens/js-logger.polywrap.eth",
