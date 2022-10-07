@@ -76,9 +76,7 @@ describe("Ethereum Plugin", () => {
     });
 
     defaultConfig = getDefaultConfig(connections);
-    client = new PolywrapClient(
-      new ClientConfigBuilder().add(defaultConfig).buildDefault()
-    );
+    client = new PolywrapClient(defaultConfig);
     await buildWrapper(wrapperPath);
   });
 

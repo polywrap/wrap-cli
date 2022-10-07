@@ -27,7 +27,10 @@ import {
   QueryResult,
   InvokeResult,
 } from "@polywrap/core-js";
-import { buildCleanUriHistory } from "@polywrap/uri-resolvers-js";
+import {
+  buildCleanUriHistory,
+  IWrapperCache,
+} from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
   DeserializeManifestOptions,
@@ -35,50 +38,53 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
+import {
+  ClientConfigBuilder,
+  CustomClientConfig,
+} from "@polywrap/client-config-builder-js";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = Uri | string>
-  extends ClientConfig<TUri> {
+  extends CustomClientConfig<TUri> {
+  readonly wrapperCache?: IWrapperCache;
+  readonly tracerConfig: Readonly<Partial<TracerConfig>>;
+}
+
+export interface PolywrapCoreClientConfig<
+  TUri extends Uri | string = Uri | string
+> extends ClientConfig<TUri> {
   readonly tracerConfig: Readonly<Partial<TracerConfig>>;
 }
 
 export class PolywrapClient implements Client {
-  private _config: PolywrapClientConfig<Uri>;
+  private _config: PolywrapCoreClientConfig<Uri>;
 
-  constructor(config: Partial<PolywrapClientConfig>) {
+  constructor(
+    config?: Partial<PolywrapClientConfig>,
+    options?: { noDefaults?: false }
+  );
+  constructor(
+    config: Partial<PolywrapCoreClientConfig>,
+    options: { noDefaults: true }
+  );
+  constructor(
+    config:
+      | Partial<PolywrapClientConfig>
+      | undefined
+      | Partial<PolywrapCoreClientConfig>,
+    options?: { noDefaults?: boolean }
+  ) {
     try {
       this.setTracingEnabled(config?.tracerConfig);
 
       Tracer.startSpan("PolywrapClient: constructor");
 
-      if (!config?.resolver) {
-        throw new Error("URI Resolver is required but not defined");
-      }
-
-      this._config = {
-        redirects:
-          config?.redirects?.map((x) => ({
-            from: Uri.from(x.from),
-            to: Uri.from(x.to),
-          })) ?? [],
-        interfaces:
-          config?.interfaces?.map((x) => ({
-            interface: Uri.from(x.interface),
-            implementations: x.implementations.map((y) => Uri.from(y)),
-          })) ?? [],
-        envs:
-          config?.envs?.map((x) => ({
-            uri: Uri.from(x.uri),
-            env: x.env,
-          })) ?? [],
-        resolver: config.resolver,
-        tracerConfig: {
-          consoleEnabled: !!config?.tracerConfig?.consoleEnabled,
-          consoleDetailed: config?.tracerConfig?.consoleDetailed,
-          httpEnabled: !!config?.tracerConfig?.httpEnabled,
-          httpUrl: config?.tracerConfig?.httpUrl,
-          tracingLevel: config?.tracerConfig?.tracingLevel,
-        },
-      };
+      this._config = !options?.noDefaults
+        ? this.buildConfigFromPolywrapClientConfig(
+            config as PolywrapClientConfig
+          )
+        : this.buildConfigFromPolywrapCoreClientConfig(
+            config as PolywrapCoreClientConfig
+          );
 
       Tracer.setAttribute("config", this._config);
     } catch (error) {
@@ -89,7 +95,7 @@ export class PolywrapClient implements Client {
     }
   }
 
-  public getConfig(): PolywrapClientConfig<Uri> {
+  public getConfig(): PolywrapCoreClientConfig<Uri> {
     return this._config;
   }
 
@@ -509,5 +515,60 @@ export class PolywrapClient implements Client {
     } else {
       return ResultOk(uriPackageOrWrapper.wrapper);
     }
+  }
+
+  private buildConfigFromPolywrapClientConfig(
+    config?: PolywrapClientConfig
+  ): PolywrapCoreClientConfig<Uri> {
+    const builder = new ClientConfigBuilder();
+
+    builder.addDefaults();
+
+    if (config) {
+      builder.add(config);
+    }
+
+    const sanitizedConfig = builder.buildDefault(config?.wrapperCache);
+
+    return {
+      ...sanitizedConfig,
+      tracerConfig: {
+        consoleEnabled: !!config?.tracerConfig?.consoleEnabled,
+        consoleDetailed: config?.tracerConfig?.consoleDetailed,
+        httpEnabled: !!config?.tracerConfig?.httpEnabled,
+        httpUrl: config?.tracerConfig?.httpUrl,
+        tracingLevel: config?.tracerConfig?.tracingLevel,
+      },
+    };
+  }
+
+  private buildConfigFromPolywrapCoreClientConfig(
+    config: PolywrapCoreClientConfig
+  ): PolywrapCoreClientConfig<Uri> {
+    return {
+      redirects:
+        config?.redirects?.map((x) => ({
+          from: Uri.from(x.from),
+          to: Uri.from(x.to),
+        })) ?? [],
+      interfaces:
+        config?.interfaces?.map((x) => ({
+          interface: Uri.from(x.interface),
+          implementations: x.implementations.map((y) => Uri.from(y)),
+        })) ?? [],
+      envs:
+        config?.envs?.map((x) => ({
+          uri: Uri.from(x.uri),
+          env: x.env,
+        })) ?? [],
+      resolver: config.resolver,
+      tracerConfig: {
+        consoleEnabled: !!config?.tracerConfig?.consoleEnabled,
+        consoleDetailed: config?.tracerConfig?.consoleDetailed,
+        httpEnabled: !!config?.tracerConfig?.httpEnabled,
+        httpUrl: config?.tracerConfig?.httpUrl,
+        tracingLevel: config?.tracerConfig?.tracingLevel,
+      },
+    };
   }
 }
