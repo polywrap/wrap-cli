@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Logger } from "../logging";
 import { getDockerFileLock } from "./docker";
 
 import path from "path";
@@ -20,7 +21,7 @@ export class DockerCompose {
 
   static getDefaultConfig(
     baseDockerComposePath: string,
-    quiet: boolean,
+    logger: Logger,
     infraManifest?: InfraManifest
   ): Partial<IDockerComposeOptions> {
     const env =
@@ -38,7 +39,20 @@ export class DockerCompose {
     return {
       cwd: path.dirname(baseDockerComposePath),
       env,
-      log: !quiet,
+      log: true,
+      callback: (chunk: Buffer, streamSource?: "stdout" | "stderr") => {
+        if (!streamSource) {
+          return;
+        }
+
+        const chunkStr = chunk.toString();
+
+        if (streamSource === "stdout") {
+          logger.info(chunkStr);
+        } else {
+          logger.error(chunkStr);
+        }
+      }
     };
   }
 

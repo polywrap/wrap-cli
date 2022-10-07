@@ -59,7 +59,14 @@ export class Compiler {
 
     if (project.quiet) {
       try {
-        await run();
+        await withSpinner(
+          intlMsg.lib_compiler_compileText(),
+          intlMsg.lib_compiler_compileError(),
+          intlMsg.lib_compiler_compileWarning(),
+          async () => {
+            return run();
+          }
+        );
         return true;
       } catch (e) {
         gluegun.print.error(e);

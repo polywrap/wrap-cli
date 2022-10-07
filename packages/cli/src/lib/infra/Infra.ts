@@ -5,6 +5,7 @@ import {
   ensureDockerDaemonRunning,
   DockerCompose,
   CacheDirectory,
+  Logger
 } from "../";
 
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -16,9 +17,9 @@ import { copySync } from "fs-extra";
 export interface InfraConfig {
   rootDir: string;
   defaultInfraModulesPath: string;
+  logger: Logger;
   infraManifest?: InfraManifest;
   modulesToUse?: string[];
-  quiet?: boolean;
 }
 
 interface ModuleWithPath {
@@ -71,7 +72,7 @@ export class Infra {
 
     this._defaultDockerOptions = DockerCompose.getDefaultConfig(
       this._baseDockerComposePath,
-      this._config.quiet ?? true,
+      this._config.logger,
       this._config.infraManifest
     );
   }

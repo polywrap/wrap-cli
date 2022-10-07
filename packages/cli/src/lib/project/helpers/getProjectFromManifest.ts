@@ -9,6 +9,7 @@ import { AppProject } from "../AppProject";
 import { PluginProject } from "../PluginProject";
 import { PolywrapProject } from "../PolywrapProject";
 import { Project } from "../Project";
+import { Logger } from "../../logging";
 import { getProjectManifestLanguage } from "./getProjectManifestLanguage";
 
 import { filesystem } from "gluegun";
@@ -24,7 +25,8 @@ export type ManifestProjectTypeProps = {
 };
 
 export async function getProjectFromManifest(
-  manifestFile: string
+  manifestFile: string,
+  logger: Logger
 ): Promise<Project<AnyProjectManifest> | undefined> {
   const manifest = filesystem.read(manifestFile) as string;
   const type = getProjectManifestLanguage(manifest);
@@ -38,16 +40,19 @@ export async function getProjectFromManifest(
     project = new PolywrapProject({
       rootDir: path.dirname(manifestFile),
       polywrapManifestPath: manifestFile,
+      logger,
     });
   } else if (isPluginManifestLanguage(type)) {
     project = new PluginProject({
       rootDir: path.dirname(manifestFile),
       pluginManifestPath: manifestFile,
+      logger,
     });
   } else if (isAppManifestLanguage(type)) {
     project = new AppProject({
       rootDir: path.dirname(manifestFile),
       appManifestPath: manifestFile,
+      logger,
     });
   } else {
     return undefined;

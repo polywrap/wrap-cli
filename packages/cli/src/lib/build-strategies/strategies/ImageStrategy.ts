@@ -8,7 +8,7 @@ import {
 } from "../../system";
 import { BuildStrategyArgs, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
-import { withSpinner } from "../../helpers";
+import { logActivity } from "../../logging";
 
 import fs from "fs";
 import path from "path";
@@ -149,23 +149,23 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
 
       const { stdout: containerLsOutput } = await runCommand(
         "docker container ls -a",
-        this.project.quiet
+        this.project.logger
       );
 
       if (containerLsOutput.indexOf(`root-${imageName}`) > -1) {
-        await runCommand(`docker rm -f root-${imageName}`, this.project.quiet);
+        await runCommand(`docker rm -f root-${imageName}`, this.project.logger);
       }
 
       // Create a new interactive terminal
       await runCommand(
         `docker create -ti --name root-${imageName} ${imageName}`,
-        this.project.quiet
+        this.project.logger
       );
 
       // Make sure the "project" directory exists
       const { stdout: projectLsOutput } = await runCommand(
         `docker run --rm ${imageName} /bin/bash -c "ls /project"`,
-        this.project.quiet
+        this.project.logger
       ).catch(() => ({ stdout: "" }));
 
       if (projectLsOutput.length <= 1) {
@@ -176,7 +176,7 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
 
       const { stdout: buildLsOutput } = await runCommand(
         `docker run --rm ${imageName} /bin/bash -c "ls /project/build"`,
-        this.project.quiet
+        this.project.logger
       ).catch(() => ({ stdout: "" }));
 
       if (buildLsOutput.indexOf(buildArtifact) === -1) {
@@ -190,37 +190,34 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
 
       await runCommand(
         `docker cp root-${imageName}:/project/build/${buildArtifact} ${outputDir}`,
-        this.project.quiet
+        this.project.logger
       );
 
-      await runCommand(`docker rm -f root-${imageName}`, this.project.quiet);
+      await runCommand(`docker rm -f root-${imageName}`, this.project.logger);
 
       if (useBuildx) {
         if (removeBuilder) {
-          await runCommand(`docker buildx rm ${imageName}`, this.project.quiet);
+          await runCommand(`docker buildx rm ${imageName}`, this.project.logger);
         }
       }
       if (removeImage) {
-        await runCommand(`docker rmi ${imageName}`, this.project.quiet);
+        await runCommand(`docker rmi ${imageName}`, this.project.logger);
       }
     };
 
-    if (this.project.quiet) {
-      return await run();
-    } else {
-      const args = {
-        path: displayPath(outputDir),
-        image: imageName,
-      };
-      return (await withSpinner(
-        intlMsg.lib_helpers_docker_copyText(args),
-        intlMsg.lib_helpers_docker_copyError(args),
-        intlMsg.lib_helpers_docker_copyWarning(args),
-        async (_spinner) => {
-          return await run();
-        }
-      )) as void;
-    }
+    const args = {
+      path: displayPath(outputDir),
+      image: imageName,
+    };
+    return await logActivity<void>(
+      this.project.logger,
+      intlMsg.lib_helpers_docker_copyText(args),
+      intlMsg.lib_helpers_docker_copyError(args),
+      intlMsg.lib_helpers_docker_copyWarning(args),
+      async (_spinner) => {
+        return await run();
+      }
+    );
   }
 
   private async _createBuildImage(
@@ -247,7 +244,7 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
         try {
           const { stderr } = await runCommand(
             `docker buildx use ${imageName}`,
-            this.project.quiet
+            this.project.logger
           );
           buildxUseFailed = !!stderr;
         } catch (e) {
@@ -257,17 +254,17 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
         if (buildxUseFailed) {
           await runCommand(
             `docker buildx create --use --name ${imageName}`,
-            this.project.quiet
+            this.project.logger
           );
         }
         await runCommand(
           `docker buildx build -f ${dockerfile} -t ${imageName} ${rootDir} ${cacheFrom} ${cacheTo} --output=type=docker`,
-          this.project.quiet
+          this.project.logger
         );
       } else {
         await runCommand(
           `docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
-          this.project.quiet,
+          this.project.logger,
           isWin()
             ? undefined
             : {
@@ -280,7 +277,7 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
       // Get the docker image ID
       const { stdout } = await runCommand(
         `docker image inspect ${imageName} -f "{{.ID}}"`,
-        this.project.quiet
+        this.project.logger
       );
 
       if (stdout.indexOf("sha256:") === -1) {
@@ -290,29 +287,24 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
       return stdout;
     };
 
-    if (this.project.quiet) {
-      // Show spinner with helpful messages
-      const args = {
-        image: imageName,
-        dockerfile: displayPath(dockerfile),
-        context: displayPath(rootDir),
-      };
-      return (await withSpinner(
-        intlMsg.lib_helpers_docker_buildText(args),
-        intlMsg.lib_helpers_docker_buildError(args),
-        intlMsg.lib_helpers_docker_buildWarning(args),
-        async (_spinner) => {
-          return await run();
-        }
-      )) as string;
-    } else {
-      // Verbose output will be emitted within run()
-      return await run();
-    }
+    const args = {
+      image: imageName,
+      dockerfile: displayPath(dockerfile),
+      context: displayPath(rootDir),
+    };
+    return await logActivity<string>(
+      this.project.logger,
+      intlMsg.lib_helpers_docker_buildText(args),
+      intlMsg.lib_helpers_docker_buildError(args),
+      intlMsg.lib_helpers_docker_buildWarning(args),
+      async (_spinner) => {
+        return await run();
+      }
+    );
   }
 
   private async _isDockerBuildxInstalled(): Promise<boolean> {
-    const { stdout: version } = await runCommand("docker buildx version", true);
+    const { stdout: version } = await runCommand("docker buildx version", this.project.logger);
     return version.startsWith("github.com/docker/buildx");
   }
 

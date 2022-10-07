@@ -1,4 +1,9 @@
-import { displayPath, withSpinner, intlMsg } from "../../../";
+import {
+  displayPath,
+  Logger,
+  logActivity,
+  intlMsg
+} from "../../../";
 
 import {
   PluginManifest,
@@ -13,7 +18,7 @@ export const defaultPluginManifest = [
 
 export async function loadPluginManifest(
   manifestPath: string,
-  quiet = false
+  logger: Logger
 ): Promise<PluginManifest> {
   const run = (): Promise<PluginManifest> => {
     const manifest = fs.readFileSync(manifestPath, "utf-8");
@@ -33,17 +38,14 @@ export async function loadPluginManifest(
     }
   };
 
-  if (quiet) {
-    return await run();
-  } else {
-    manifestPath = displayPath(manifestPath);
-    return (await withSpinner(
-      intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
-      intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
-      intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
-      async (_spinner) => {
-        return await run();
-      }
-    )) as PluginManifest;
-  }
+  manifestPath = displayPath(manifestPath);
+  return await logActivity<PluginManifest>(
+    logger,
+    intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
+    intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
+    intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
+    async () => {
+      return await run();
+    }
+  );
 }

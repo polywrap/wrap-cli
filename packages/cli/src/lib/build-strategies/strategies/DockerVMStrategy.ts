@@ -11,7 +11,7 @@ import {
   PolywrapManifestLanguage,
   PolywrapProject,
 } from "../../project";
-import { withSpinner } from "../../helpers";
+import { logActivity } from "../../logging";
 
 import fse from "fs-extra";
 import path from "path";
@@ -172,7 +172,8 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
               this._volumePaths.linkedPackages
             )}:/linked-packages ${
               CONFIGS[language].baseImage
-            }:latest /bin/bash -c "${scriptContent}"`
+            }:latest /bin/bash -c "${scriptContent}"`,
+            this.project.logger
           );
 
           if (
@@ -192,7 +193,8 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
             this._volumePaths.linkedPackages
           )}:/linked-packages ${
             CONFIGS[language].baseImage
-          }:latest /bin/bash -c "chmod -R g+wX ."`
+          }:latest /bin/bash -c "chmod -R g+wX ."`,
+          this.project.logger
         );
 
         if (buildError) {
@@ -201,16 +203,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
       }
     };
 
-    if (this.project.quiet) {
-      return run();
-    } else {
-      return await withSpinner(
-        intlMsg.lib_helpers_docker_buildVMText(),
-        intlMsg.lib_helpers_docker_buildVMError(),
-        intlMsg.lib_helpers_docker_buildVMWarning(),
-        run
-      );
-    }
+    return run();
   }
 
   private async _copyBuildOutput() {
@@ -221,21 +214,18 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
       );
     };
 
-    if (this.project.quiet) {
-      return run();
-    } else {
-      const args = {
-        path: displayPath(this.outputDir),
-      };
+    const args = {
+      path: displayPath(this.outputDir),
+    };
 
-      return (await withSpinner(
-        intlMsg.lib_helpers_copyText(args),
-        intlMsg.lib_helpers_copyError(args),
-        intlMsg.lib_helpers_copyWarning(args),
-        async () => {
-          run();
-        }
-      )) as void;
-    }
+    return await logActivity<void>(
+      this.project.logger,
+      intlMsg.lib_helpers_copyText(args),
+      intlMsg.lib_helpers_copyError(args),
+      intlMsg.lib_helpers_copyWarning(args),
+      async () => {
+        run();
+      }
+    );
   }
 }
