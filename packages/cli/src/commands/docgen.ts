@@ -18,10 +18,7 @@ import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { PolywrapClient, Uri } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
-import {
-  ClientConfigBuilder,
-  CustomClientConfig,
-} from "@polywrap/client-config-builder-js";
+import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 
 const commandToPathMap: Record<string, string> = {
   schema: schemaScriptPath,
@@ -127,9 +124,7 @@ async function run(command: DocType, options: DocgenCommandOptions) {
   // Resolve custom script
   const customScript = require.resolve(commandToPathMap[command]);
 
-  const client = new PolywrapClient(
-    new ClientConfigBuilder().add(clientConfig).buildDefault()
-  );
+  const client = new PolywrapClient(clientConfig);
 
   const schemaComposer = new SchemaComposer({
     project,

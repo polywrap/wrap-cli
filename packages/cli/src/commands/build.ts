@@ -25,10 +25,7 @@ import path from "path";
 import readline from "readline";
 import { PolywrapClient, Uri } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import {
-  ClientConfigBuilder,
-  CustomClientConfig,
-} from "@polywrap/client-config-builder-js";
+import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
@@ -138,9 +135,7 @@ async function run(options: BuildCommandOptions) {
   } = options;
 
   // Get Client
-  const client = new PolywrapClient(
-    new ClientConfigBuilder().add(clientConfig).buildDefault()
-  );
+  const client = new PolywrapClient(clientConfig);
 
   const project = new PolywrapProject({
     rootDir: path.dirname(manifestFile),

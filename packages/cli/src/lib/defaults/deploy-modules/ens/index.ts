@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Deployer } from "../../../deploy";
-import { createDefaultClient } from "./createDefaultClient";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
@@ -12,6 +11,7 @@ import {
   ethereumPlugin,
 } from "@polywrap/ethereum-plugin-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
 const contentHash = require("content-hash");
 
@@ -48,7 +48,7 @@ class ENSPublisher implements Deployer {
     const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
     const ensWrapperUri = embeddedWrappers.ens;
 
-    const client = createDefaultClient({
+    const client = new PolywrapClient({
       redirects: [
         {
           from: "wrap://ens/uts46.polywrap.eth",

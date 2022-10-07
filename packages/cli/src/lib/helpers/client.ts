@@ -1,5 +1,3 @@
-import { createDefaultClient } from "../../utils/createDefaultClient";
-
 import { Client, Env, IUriPackage, Uri } from "@polywrap/core-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
@@ -9,6 +7,7 @@ import {
 } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
 interface SimpleClientConfig {
   ensAddress?: string;
@@ -60,5 +59,5 @@ export function getSimpleClient(config: SimpleClientConfig): Client {
     });
   }
 
-  return createDefaultClient({ envs, packages: plugins });
+  return new PolywrapClient({ envs, packages: plugins });
 }

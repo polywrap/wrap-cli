@@ -50,12 +50,12 @@ export async function parseClientConfigOption(
 
     try {
       validateClientConfig(customConfig);
-      return builder.add(customConfig).getConfig();
+      return builder.add(customConfig).build();
     } catch (e) {
       console.error(e.message);
       process.exit(1);
     }
   } else {
-    return builder.getConfig();
+    return builder.build();
   }
 }

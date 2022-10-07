@@ -17,9 +17,7 @@ export class JobRunner {
     private onExecution?: (id: string, JobResult: JobResult) => MaybeAsync<void>
   ) {
     this.jobOutput = new Map();
-    this.client = new PolywrapClient(
-      new ClientConfigBuilder().add(this.clientConfig).buildDefault()
-    );
+    this.client = new PolywrapClient(this.clientConfig);
   }
 
   async run(jobs: WorkflowJobs, ids: string[]): Promise<void> {
@@ -187,7 +185,7 @@ export class JobRunner {
       const finalConfig = new ClientConfigBuilder()
         .add(this.clientConfig)
         .add(step.config)
-        .buildDefault();
+        .build();
 
       finalClient = new PolywrapClient(finalConfig);
     }

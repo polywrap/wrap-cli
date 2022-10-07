@@ -14,7 +14,6 @@ import {
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensAddresses } from "@polywrap/test-env-js";
 import { Env, IUriPackage, Uri } from "@polywrap/core-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 
 export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
   const providers = getTestEnvProviders();
@@ -67,7 +66,7 @@ export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
   ];
 
   return {
-    resolver: buildUriResolver(packages),
+    packages,
     envs,
   };
 }
