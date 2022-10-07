@@ -13,7 +13,9 @@ const config = new ClientConfigBuilder()
     envs: [/*...*/],
     interfaces: [/*...*/],
     redirects: [/*...*/],
-    uriResolvers: [/*...*/],
+    wrappers: [/*...*/],
+    packages: [/*...*/],
+    resolvers: [/*...*/],
   })
   .add({/*...*/})
   .build();
@@ -23,6 +25,10 @@ const config = new ClientConfigBuilder()
 const builder = new ClientConfigBuilder();
 
 builder.addDefaults();
+
+builder.add({
+  packages: [/*...*/]
+});
 
 builder.add({
   envs: [/*...*/]
