@@ -163,7 +163,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         fse.writeFileSync(buildScriptPath, scriptContent);
 
         const { stderr } = await runCommand(
-          `docker run --rm --user $(id -u):$(id -g) -v ${path.resolve(
+          `docker run --rm -v ${path.resolve(
             this._volumePaths.project
           )}:/project -v ${path.resolve(
             this._volumePaths.linkedPackages
@@ -172,9 +172,19 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
           }:latest /bin/bash -c "${scriptContent}"`
         );
 
+        await runCommand(
+          `docker run --rm -v ${path.resolve(
+            this._volumePaths.project
+          )}:/project -v ${path.resolve(
+            this._volumePaths.linkedPackages
+          )}:/linked-packages ${
+            CONFIGS[language].baseImage
+          }:latest /bin/bash -c "chmod -R 777 /project && chmod -R 777 /linked-packages"`
+        );
+
         if (
           stderr &&
-          !fse.existsSync(path.join(this._volumePaths.project, "build"))
+          !fse.existsSync(path.join(this._volumePaths.project, "build", "wrap.wasm"))
         ) {
           throw new Error(stderr);
         }
