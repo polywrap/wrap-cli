@@ -8,6 +8,7 @@ import {
   IUriPackage,
   IUriWrapper,
   Env,
+  IUriRedirect,
 } from "@polywrap/core-js";
 import {
   IWrapperCache,
@@ -49,27 +50,15 @@ export class ClientConfigBuilder {
     }
 
     if (config.redirects) {
-      for (const redirect of config.redirects) {
-        this.addUriRedirect(redirect.from, redirect.to);
-      }
+      this.addRedirects(config.redirects);
     }
 
     if (config.wrappers) {
-      for (const uriWrapper of config.wrappers) {
-        this.addWrapper(uriWrapper);
-      }
+      this.addWrappers(config.wrappers);
     }
 
     if (config.packages) {
-      for (const uriPackage of config.packages) {
-        this.addPackage(uriPackage);
-      }
-    }
-
-    if (config.redirects) {
-      for (const redirect of config.redirects) {
-        this.addUriRedirect(redirect.from, redirect.to);
-      }
+      this.addPackages(config.packages);
     }
 
     if (config.resolvers) {
@@ -311,7 +300,7 @@ export class ClientConfigBuilder {
     return this;
   }
 
-  addUriRedirect(from: Uri | string, to: Uri | string): ClientConfigBuilder {
+  addRedirect(from: Uri | string, to: Uri | string): ClientConfigBuilder {
     const fromSanitized = Uri.from(from);
     const toSanitized = Uri.from(to);
 
@@ -326,6 +315,14 @@ export class ClientConfigBuilder {
         from: fromSanitized,
         to: toSanitized,
       });
+    }
+
+    return this;
+  }
+
+  addRedirects(redirects: IUriRedirect<Uri | string>[]): ClientConfigBuilder {
+    for (const redirect of redirects) {
+      this.addRedirect(redirect.from, redirect.to);
     }
 
     return this;
