@@ -142,7 +142,7 @@ describe("wasm-wrapper", () => {
       ]
     });
 
-    const client = createDefaultClient(builder.buildDefault());
+    const client = createDefaultClient(builder.getConfig());
 
     const clientResult = await client.invoke({
       uri: simpleWrapperUri.uri,

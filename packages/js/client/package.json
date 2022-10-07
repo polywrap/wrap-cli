@@ -13,7 +13,6 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "prebuild": "ts-node ./scripts/extractPluginConfigs.ts",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose=true --detectOpenHandles --forceExit",
     "test:ci": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit",
@@ -22,9 +21,7 @@
   },
   "dependencies": {
     "@polywrap/asyncify-js": "0.8.0",
-    "@polywrap/client-config-builder-js": "0.8.0",
     "@polywrap/core-js": "0.8.0",
-    "@polywrap/ens-resolver-plugin-js": "0.8.0",
     "@polywrap/msgpack-js": "0.8.0",
     "@polywrap/result": "0.8.0",
     "@polywrap/schema-parse": "0.8.0",
@@ -38,6 +35,7 @@
     "@polywrap/os-js": "0.8.0",
     "@polywrap/test-cases": "0.8.0",
     "@polywrap/test-env-js": "0.8.0",
+    "@polywrap/client-config-builder-js": "0.8.0",
     "@polywrap/ens-resolver-plugin-js": "0.8.0",
     "@polywrap/ethereum-plugin-js": "0.8.0",
     "@polywrap/http-plugin-js": "0.8.0",
