@@ -23,7 +23,8 @@ Options:
                                         result
   -j, --jobs <jobs...>                  Specify ids of jobs that you want to
                                         run
-  -q, --quiet                           Suppress output
+  -v, --verbose               Verbose output (default: false)
+  -q, --quiet                 Suppress output (default: false)
   -h, --help                            display help for command
 `;
 

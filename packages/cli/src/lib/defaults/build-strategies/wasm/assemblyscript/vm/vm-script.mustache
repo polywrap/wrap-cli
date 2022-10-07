@@ -1,5 +1,7 @@
+set -e
+
 {{#polywrap_linked_packages}}
-json -I -f package.json -e 'this.dependencies[\"{{name}}\"]=\"../linked-packages/{{name}}\"'
+json -I -f package.json -e 'this.dependencies["{{name}}"]="../linked-packages/{{name}}"'
 {{/polywrap_linked_packages}}
 {{#polywrap_module}}
 yarn

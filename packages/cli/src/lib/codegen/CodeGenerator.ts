@@ -18,7 +18,6 @@ import { resetDir } from "../system";
 import { SchemaComposer } from "../SchemaComposer";
 
 import path from "path";
-import * as gluegun from "gluegun";
 import { BindLanguage } from "@polywrap/schema-bind";
 import { writeDirectorySync } from "@polywrap/os-js";
 
@@ -61,7 +60,7 @@ export class CodeGenerator {
 
       return true;
     } catch (e) {
-      gluegun.print.error(e);
+      this._config.project.logger.error(e);
       return false;
     }
   }

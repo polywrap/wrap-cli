@@ -21,6 +21,7 @@ Options:
                               (default: polywrap.yaml | polywrap.yml)
   -o, --output-file <path>    Output file path for the deploy result
   -v, --verbose               Verbose output (default: false)
+  -q, --quiet                 Suppress output (default: false)
   -h, --help                  display help for command
 `;
 

@@ -62,6 +62,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     buildStrategyUsed: "build/strategy-used",
     buildDir: "build/",
     buildUuidFile: "build/uuid",
+    buildProjectDir: "build/project",
     buildLinkedPackagesDir: "build/linked-packages/",
     deployDir: "deploy/",
     deployModulesDir: "deploy/modules/",

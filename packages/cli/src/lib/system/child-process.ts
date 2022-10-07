@@ -29,7 +29,8 @@ export async function runCommand(
   command: string,
   logger: Logger,
   env: Record<string, string> | undefined = undefined,
-  cwd: string | undefined = undefined
+  cwd: string | undefined = undefined,
+  redirectStderr: boolean = false
 ): Promise<{ stdout: string; stderr: string }> {
   logger.info(`> ${command}`);
 
@@ -63,7 +64,11 @@ export async function runCommand(
     });
 
     childObj.stderr?.on("data", (data) => {
-      logger.error(data.toString());
+      if (redirectStderr) {
+        logger.info(data.toString());
+      } else {
+        logger.error(data.toString());
+      }
     });
   });
 }

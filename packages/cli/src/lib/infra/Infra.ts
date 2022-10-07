@@ -78,7 +78,7 @@ export class Infra {
   }
 
   public async up(): Promise<void> {
-    await ensureDockerDaemonRunning();
+    await ensureDockerDaemonRunning(this._config.logger);
 
     const modulesWithPaths = await this._fetchModules();
 
@@ -90,7 +90,7 @@ export class Infra {
   }
 
   public async down(): Promise<void> {
-    await ensureDockerDaemonRunning();
+    await ensureDockerDaemonRunning(this._config.logger);
 
     const modulesWithPaths = await this._fetchModules();
 
@@ -262,6 +262,7 @@ export class Infra {
         cache: this._cache,
         installationDirectory: installationDir,
         name: registry,
+        logger: this._config.logger
       });
 
       const mappedInfraModules = modules.map((p) => ({

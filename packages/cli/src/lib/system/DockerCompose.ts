@@ -7,7 +7,7 @@ import Commands, { IDockerComposeOptions } from "docker-compose";
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
 
 export class DockerCompose {
-  private _dockerLock = getDockerFileLock();
+  private _dockerLock = getDockerFileLock(new Logger({}));
   public commands: typeof Commands;
 
   constructor() {

@@ -5,6 +5,7 @@ import {
   generateDockerImageName,
   isDockerInstalled,
   runCommand,
+  runCommandSync
 } from "../../system";
 import { BuildStrategyArgs, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
@@ -17,13 +18,13 @@ import Mustache from "mustache";
 
 type BuildImageId = string;
 
-export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
+export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
   private _dockerLock: FileLock;
 
   constructor(args: BuildStrategyArgs) {
     super(args);
 
-    if (!isDockerInstalled()) {
+    if (!isDockerInstalled(this.project.logger)) {
       throw new Error(intlMsg.lib_docker_noInstall());
     }
 
@@ -42,7 +43,7 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
   public async buildSources(): Promise<BuildImageId> {
     await this._dockerLock.request();
     try {
-      await ensureDockerDaemonRunning();
+      await ensureDockerDaemonRunning(this.project.logger);
 
       const buildManifestPath = await this.project.getBuildManifestPath();
       const buildManifestDir =
@@ -147,12 +148,12 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
 
       useBuildx &&= await this._isDockerBuildxInstalled();
 
-      const { stdout: containerLsOutput } = await runCommand(
+      const { stdout: containerLsOutput } = runCommandSync(
         "docker container ls -a",
         this.project.logger
       );
 
-      if (containerLsOutput.indexOf(`root-${imageName}`) > -1) {
+      if (containerLsOutput && containerLsOutput.indexOf(`root-${imageName}`) > -1) {
         await runCommand(`docker rm -f root-${imageName}`, this.project.logger);
       }
 
@@ -163,23 +164,23 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
       );
 
       // Make sure the "project" directory exists
-      const { stdout: projectLsOutput } = await runCommand(
+      const { stdout: projectLsOutput } = runCommandSync(
         `docker run --rm ${imageName} /bin/bash -c "ls /project"`,
         this.project.logger
-      ).catch(() => ({ stdout: "" }));
+      );
 
-      if (projectLsOutput.length <= 1) {
+      if (!projectLsOutput || projectLsOutput.length <= 1) {
         throw Error(
           intlMsg.lib_helpers_docker_projectFolderMissing({ image: imageName })
         );
       }
 
-      const { stdout: buildLsOutput } = await runCommand(
+      const { stdout: buildLsOutput } = runCommandSync(
         `docker run --rm ${imageName} /bin/bash -c "ls /project/build"`,
         this.project.logger
-      ).catch(() => ({ stdout: "" }));
+      );
 
-      if (buildLsOutput.indexOf(buildArtifact) === -1) {
+      if (!buildLsOutput || buildLsOutput.indexOf(buildArtifact) === -1) {
         throw Error(
           intlMsg.lib_helpers_docker_projectBuildFolderMissing({
             image: imageName,
@@ -242,7 +243,7 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
         // Build the docker image
         let buildxUseFailed: boolean;
         try {
-          const { stderr } = await runCommand(
+          const { stderr } = runCommandSync(
             `docker buildx use ${imageName}`,
             this.project.logger
           );
@@ -275,13 +276,13 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
       }
 
       // Get the docker image ID
-      const { stdout } = await runCommand(
+      const { stdout } = runCommandSync(
         `docker image inspect ${imageName} -f "{{.ID}}"`,
         this.project.logger
       );
 
-      if (stdout.indexOf("sha256:") === -1) {
-        throw Error(intlMsg.lib_docker_invalidImageId({ imageId: stdout }));
+      if (!stdout || stdout.indexOf("sha256:") === -1) {
+        throw Error(intlMsg.lib_docker_invalidImageId({ imageId: stdout || "N/A" }));
       }
 
       return stdout;
@@ -304,8 +305,8 @@ export class ImageBuildStrategy extends BuildStrategy<BuildImageId> {
   }
 
   private async _isDockerBuildxInstalled(): Promise<boolean> {
-    const { stdout: version } = await runCommand("docker buildx version", this.project.logger);
-    return version.startsWith("github.com/docker/buildx");
+    const { stdout: version } = runCommandSync("docker buildx version", this.project.logger);
+    return version && version.startsWith("github.com/docker/buildx") ? true : false;
   }
 
   private _generateDockerfile(

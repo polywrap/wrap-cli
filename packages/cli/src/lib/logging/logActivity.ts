@@ -32,7 +32,12 @@ export async function logActivity<TReturn>(
       return result;
     }
   } catch (e) {
-    logger.error(`❌ ${errorText}: ${e.message}`);
+    let errMsg = `${e}`;
+    if (errMsg === "[object Object]") {
+      errMsg = JSON.stringify(e, null, 2);
+    }
+
+    logger.error(`❌ ${errorText}: ${errMsg}`);
     throw e;
   }
 }

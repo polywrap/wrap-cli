@@ -1,7 +1,8 @@
 import { intlMsg } from "../../";
 
 import { execSync, spawn } from "child_process";
-import { GluegunFilesystem } from "gluegun";
+import fs from "fs";
+import fse from "fs-extra"
 import dns from "dns";
 import url from "url";
 import chalk from "chalk";
@@ -83,24 +84,20 @@ const executeCommand = (
 export const generateProjectTemplate = (
   type: string,
   lang: string,
-  projectName: string,
-  fs: GluegunFilesystem
+  projectDir: string
 ): Promise<boolean | { command: string }> => {
   return new Promise((resolve, reject) => {
-    const { dir, copyAsync } = fs;
-    dir(projectName);
-
     let command = "";
     let args: string[] = [];
 
     const useYarn = shouldUseYarn();
     const isOnline = checkIfOnline(useYarn);
 
-    const root = path.resolve(projectName);
+    const root = path.resolve(projectDir);
     const dependencies: string[] = ["@polywrap/templates"];
 
-    fs.write(
-      `${root}/package.json`,
+    fs.writeFileSync(
+      path.join(root, "package.json"),
       `
 {
   "name": "template"
@@ -146,7 +143,7 @@ export const generateProjectTemplate = (
 
     executeCommand(command, args, root)
       .then(() => {
-        copyAsync(
+        fse.copy(
           `${root}/node_modules/@polywrap/templates/${type}/${lang}`,
           `${root}`,
           {

@@ -32,7 +32,8 @@ Options:
                                  (default: polywrap.infra.yaml |
                                  polywrap.infra.yml)
   -o, --modules <module,module>  Use only specified modules
-  -v, --verbose                  Verbose output (default: false)
+  -v, --verbose               Verbose output (default: false)
+  -q, --quiet                 Suppress output (default: false)
   -h, --help                     display help for command
 `;
 

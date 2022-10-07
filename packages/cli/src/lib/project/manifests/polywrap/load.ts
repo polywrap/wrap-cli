@@ -71,7 +71,7 @@ export async function loadBuildManifest(
   manifestPath: string,
   logger: Logger
 ): Promise<BuildManifest> {
-  const run = (): Promise<BuildManifest> => {
+  const run = (): BuildManifest => {
     const manifest = fs.readFileSync(manifestPath, "utf-8");
 
     if (!manifest) {
@@ -100,14 +100,9 @@ export async function loadBuildManifest(
       ) as JsonSchema;
     }
 
-    try {
-      const result = deserializeBuildManifest(manifest, {
-        extSchema: extSchema,
-      });
-      return Promise.resolve(result);
-    } catch (e) {
-      return Promise.reject(e);
-    }
+    return deserializeBuildManifest(manifest, {
+      extSchema: extSchema,
+    });
   };
 
   manifestPath = displayPath(manifestPath);
@@ -117,7 +112,7 @@ export async function loadBuildManifest(
     intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
     intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
     async () => {
-      return await run();
+      return run();
     }
   );
 }

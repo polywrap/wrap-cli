@@ -1,4 +1,5 @@
 import { Command, Program } from "./types";
+import { createLogger } from "./utils/createLogger";
 import {
   Compiler,
   PolywrapProject,
@@ -17,7 +18,7 @@ import {
   DockerVMBuildStrategy,
   BuildStrategy,
   SupportedStrategies,
-  ImageBuildStrategy,
+  DockerImageBuildStrategy,
   LocalBuildStrategy,
 } from "../lib/build-strategies";
 
@@ -38,8 +39,9 @@ type BuildCommandOptions = {
   clientConfig: Partial<PolywrapClientConfig>;
   codegen: boolean; // defaults to true
   watch?: boolean;
-  verbose?: boolean;
   strategy: SupportedStrategies;
+  verbose?: boolean;
+  quiet?: boolean;
 };
 
 export const build: Command = {
@@ -71,7 +73,8 @@ export const build: Command = {
         defaultStrategy
       )
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
-      .option(`-v, --verbose`, `${intlMsg.commands_build_options_v()}`)
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (options) => {
         await run({
           ...options,
@@ -114,7 +117,7 @@ function createBuildStrategy(
     case SupportedStrategies.LOCAL:
       return new LocalBuildStrategy({ outputDir, project });
     case SupportedStrategies.IMAGE:
-      return new ImageBuildStrategy({ outputDir, project });
+      return new DockerImageBuildStrategy({ outputDir, project });
     case SupportedStrategies.VM:
       return new DockerVMBuildStrategy({ outputDir, project });
     default:
@@ -125,13 +128,15 @@ function createBuildStrategy(
 async function run(options: BuildCommandOptions) {
   const {
     watch,
-    verbose,
     manifestFile,
     outputDir,
     clientConfig,
     strategy,
     codegen,
+    verbose,
+    quiet
   } = options;
+  const logger = createLogger({ verbose, quiet });
 
   // Get Client
   const client = new PolywrapClient(clientConfig);
@@ -139,7 +144,7 @@ async function run(options: BuildCommandOptions) {
   const project = new PolywrapProject({
     rootDir: path.dirname(manifestFile),
     polywrapManifestPath: manifestFile,
-    quiet: !verbose,
+    logger,
   });
   await project.validate();
 
@@ -188,10 +193,10 @@ async function run(options: BuildCommandOptions) {
 
     const keyPressListener = () => {
       // Watch for escape key presses
-      console.log(
+      logger.info(
         `${intlMsg.commands_build_keypressListener_watching()}: ${project.getManifestDir()}`
       );
-      console.log(intlMsg.commands_build_keypressListener_exit());
+      logger.info(intlMsg.commands_build_keypressListener_exit());
       readline.emitKeypressEvents(process.stdin);
       process.stdin.on("keypress", async (str, key) => {
         if (
@@ -222,7 +227,7 @@ async function run(options: BuildCommandOptions) {
       execute: async (events: WatchEvent[]) => {
         // Log all of the events encountered
         for (const event of events) {
-          console.log(`${watchEventName(event.type)}: ${event.path}`);
+          logger.info(`${watchEventName(event.type)}: ${event.path}`);
         }
 
         // Execute the build

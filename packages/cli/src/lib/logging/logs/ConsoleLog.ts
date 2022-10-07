@@ -1,5 +1,7 @@
 import { Log, LogLevel } from "../Log";
 
+import chalk from "chalk";
+
 export class ConsoleLog extends Log {
   constructor(level: LogLevel) {
     super(level);
@@ -12,16 +14,16 @@ export class ConsoleLog extends Log {
 
     switch (level) {
       case LogLevel.DEBUG:
-        console.debug(message);
+        console.debug(chalk.gray(message));
         break;
       case LogLevel.INFO:
         console.info(message);
         break;
       case LogLevel.WARN:
-        console.warn(message);
+        console.warn(chalk.yellow(message));
         break;
       case LogLevel.ERROR:
-        console.error(message);
+        console.error(chalk.red(message));
         break;
     }
   }

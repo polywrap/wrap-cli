@@ -1,4 +1,4 @@
 {
-  "stdout": "requires property \"include\"",
+  "stderr": "requires property \"include\"",
   "exitCode": 1
 }

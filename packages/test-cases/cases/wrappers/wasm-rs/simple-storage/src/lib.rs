@@ -4,7 +4,6 @@ use wrap::imported::ethereum_module;
 pub use wrap::*;
 
 pub fn get_data(args: ArgsGetData) -> i32 {
-    sdfljsdlfj sljsdflkjsdf
     match EthereumModule::call_contract_view(&ethereum_module::ArgsCallContractView {
         address: args.address,
         method: "function get() view returns (uint256)".to_string(),

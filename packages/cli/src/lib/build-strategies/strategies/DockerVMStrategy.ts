@@ -18,7 +18,6 @@ import path from "path";
 import Mustache from "mustache";
 
 type BuildableLanguage = Exclude<PolywrapManifestLanguage, "interface">;
-const VOLUME_DIR_CACHE_SUBPATH = "build/volume";
 const DEFAULTS_DIR = path.join(
   __dirname,
   "..",
@@ -44,19 +43,24 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
 };
 
 export class DockerVMBuildStrategy extends BuildStrategy<void> {
-  private _volumePaths: { project: string; linkedPackages: string };
+  private _volumePaths: {
+    project: string;
+    linkedPackages: string;
+  };
   constructor(args: BuildStrategyArgs) {
     super(args);
 
-    if (!isDockerInstalled()) {
+    if (!isDockerInstalled(this.project.logger)) {
       throw new Error(intlMsg.lib_docker_noInstall());
     }
 
     this._volumePaths = {
-      project: this.project.getCachePath(VOLUME_DIR_CACHE_SUBPATH),
+      project: this.project.getCachePath(
+        PolywrapProject.cacheLayout.buildProjectDir
+      ),
       linkedPackages: this.project.getCachePath(
         PolywrapProject.cacheLayout.buildLinkedPackagesDir
-      ),
+      )
     };
   }
 
@@ -65,7 +69,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
   }
 
   public async buildSources(): Promise<void> {
-    await ensureDockerDaemonRunning();
+    await ensureDockerDaemonRunning(this.project.logger);
 
     await this._buildSources();
 
@@ -160,42 +164,50 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
           this._volumePaths.project,
           "polywrap-build.sh"
         );
-        fse.writeFileSync(buildScriptPath, scriptContent);
+        if (fse.existsSync(buildScriptPath)) {
+          fse.removeSync(buildScriptPath);
+        }
+        fse.writeFileSync(
+          buildScriptPath,
+          scriptContent,
+          { mode: "777", flag: "wx" }
+        );
 
         let buildError: Error | undefined = undefined;
 
         try {
-          const { stderr } = await runCommand(
+          await runCommand(
             `docker run --rm -v ${path.resolve(
               this._volumePaths.project
             )}:/project -v ${path.resolve(
               this._volumePaths.linkedPackages
             )}:/linked-packages ${
               CONFIGS[language].baseImage
-            }:latest /bin/bash -c "${scriptContent}"`,
-            this.project.logger
+            }:latest /bin/bash --verbose /project/polywrap-build.sh`,
+            this.project.logger,
+            undefined,
+            undefined,
+            true
           );
 
-          if (
-            stderr &&
-            !fse.existsSync(path.join(this._volumePaths.project, "build"))
-          ) {
-            buildError = new Error(stderr);
+          const buildDir = path.join(this._volumePaths.project, "build");
+          if (!fse.existsSync(buildDir)) {
+            buildError = new Error("Build directory missing.");
           }
+
+          await runCommand(
+            `docker run --rm -v ${path.resolve(
+              this._volumePaths.project
+            )}:/project -v ${path.resolve(
+              this._volumePaths.linkedPackages
+            )}:/linked-packages ${
+              CONFIGS[language].baseImage
+            }:latest /bin/bash -c "chmod -R g+wX ."`,
+            this.project.logger
+          );
         } catch (e) {
           buildError = e;
         }
-
-        await runCommand(
-          `docker run --rm -v ${path.resolve(
-            this._volumePaths.project
-          )}:/project -v ${path.resolve(
-            this._volumePaths.linkedPackages
-          )}:/linked-packages ${
-            CONFIGS[language].baseImage
-          }:latest /bin/bash -c "chmod -R g+wX ."`,
-          this.project.logger
-        );
 
         if (buildError) {
           throw buildError;

@@ -19,6 +19,10 @@ export class Logger {
     this._logs[name] = log;
   }
 
+  public removeLog(name: string): void {
+    delete this._logs[name];
+  }
+
   public log(message: string, level: LogLevel): void {
     Object.values(this._logs).forEach(
       (log) => log.log(message, level)
