@@ -20,7 +20,6 @@ import {
   parseQuery,
   TryResolveUriOptions,
   IUriResolver,
-  GetManifestOptions,
   IUriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionContext,
@@ -135,15 +134,14 @@ export class PolywrapClient implements Client {
 
   @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetManifestOptions = {}
+    uri: TUri
   ): Promise<Result<WrapManifest, Error>> {
     const load = await this.loadWrapper(Uri.from(uri), undefined);
     if (!load.ok) {
       return load;
     }
     const wrapper = load.value;
-    const manifest = wrapper.getManifest(options, this);
+    const manifest = wrapper.getManifest();
     return ResultOk(manifest);
   }
 

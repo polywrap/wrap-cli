@@ -51,8 +51,7 @@ export interface Client
   getUriResolver(): IUriResolver<unknown>;
 
   getManifest<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetManifestOptions
+    uri: TUri
   ): Promise<Result<WrapManifest, Error>>;
 
   getFile<TUri extends Uri | string>(

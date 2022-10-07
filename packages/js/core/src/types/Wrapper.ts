@@ -2,7 +2,6 @@ import {
   Uri,
   Client,
   GetFileOptions,
-  GetManifestOptions,
   InvokeOptions,
   Invocable,
   Invoker,
@@ -44,8 +43,6 @@ export interface Wrapper extends Invocable {
 
   /**
    * Get a manifest from the Wrapper package.
-   *
-   * @param client The client instance requesting the manifest.
    */
-  getManifest(options: GetManifestOptions, client: Client): WrapManifest;
+  getManifest(): WrapManifest;
 }

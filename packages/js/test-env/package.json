@@ -19,7 +19,6 @@
   "dependencies": {
     "@polywrap/core-js": "0.8.0",
     "@polywrap/polywrap-manifest-types-js": "0.8.0",
-    "@polywrap/uri-resolvers-js": "0.8.0",
     "axios": "0.21.2",
     "spawn-command": "0.0.2-1",
     "yaml": "2.1.3"

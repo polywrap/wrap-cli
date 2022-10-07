@@ -7,7 +7,6 @@ import {
   InvocableResult,
   Uri,
   GetFileOptions,
-  GetManifestOptions,
   isBuffer,
 } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -37,7 +36,7 @@ export class PluginWrapper implements Wrapper {
   }
 
   @Tracer.traceMethod("PluginWrapper: getManifest")
-  public getManifest(_: GetManifestOptions, _client: Client): WrapManifest {
+  public getManifest(): WrapManifest {
     return this.manifest;
   }
 
