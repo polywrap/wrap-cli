@@ -9,10 +9,10 @@ import {
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 
 export type CustomClientConfig<TUri extends Uri | string> = {
-  redirects: IUriRedirect<TUri>[];
-  interfaces: InterfaceImplementations<TUri>[];
-  envs: Env<TUri>[];
-  wrappers: IUriWrapper<TUri>[];
-  packages: IUriPackage<TUri>[];
-  resolvers: UriResolverLike[];
+  readonly redirects: IUriRedirect<TUri>[];
+  readonly interfaces: InterfaceImplementations<TUri>[];
+  readonly envs: Env<TUri>[];
+  readonly wrappers: IUriWrapper<TUri>[];
+  readonly packages: IUriPackage<TUri>[];
+  readonly resolvers: UriResolverLike[];
 };

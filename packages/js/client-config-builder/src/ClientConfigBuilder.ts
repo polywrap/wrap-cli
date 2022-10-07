@@ -31,10 +31,6 @@ export class ClientConfigBuilder {
     resolvers: [],
   };
 
-  getConfig(): CustomClientConfig<Uri> {
-    return this._config;
-  }
-
   add(config: Partial<CustomClientConfig<Uri | string>>): ClientConfigBuilder {
     if (config.envs) {
       this.addEnvs(config.envs);
@@ -354,6 +350,10 @@ export class ClientConfigBuilder {
     }
 
     return this;
+  }
+
+  build(): CustomClientConfig<Uri> {
+    return this._config;
   }
 
   buildDefault(
