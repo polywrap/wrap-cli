@@ -109,14 +109,13 @@ export class IpfsPlugin extends Module<NoConfig> {
   ): Promise<TReturn> {
     const defaultIpfsClient = createIpfsClient(this.env.provider);
 
-    if (!options?.fallbackProviders) {
-      // Default behavior if no fallback providers are provided
-      // Note that options.timeout is already set by getOptions
+    if (!options) {
+      // Default behavior if no options are provided
       return await execSimple(
         operation,
         defaultIpfsClient,
         this.config.provider,
-        options?.timeout ?? 0,
+        0,
         func
       );
     }
