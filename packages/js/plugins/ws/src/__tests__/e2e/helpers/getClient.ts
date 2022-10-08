@@ -3,15 +3,16 @@ import {
   PackageToWrapperCacheResolver,
   WrapperCache,
   StaticResolver,
+  StaticResolverLike,
 } from "@polywrap/uri-resolvers-js";
 import { coreInterfaceUris } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
-import { httpPlugin } from "../..";
+import { wsPlugin } from "../../..";
 
-export const getClient = () => {
+export const getClient = (staticResolvers?: StaticResolverLike[]) => {
   return new PolywrapClient(
     {
       interfaces: [
@@ -25,8 +26,8 @@ export const getClient = () => {
           [
             StaticResolver.from([
               {
-                uri: "wrap://ens/http.polywrap.eth",
-                package: httpPlugin({}),
+                uri: "wrap://ens/ws.polywrap.eth",
+                package: wsPlugin({}),
               },
               {
                 uri: "wrap://ens/fs-resolver.polywrap.eth",
@@ -36,6 +37,7 @@ export const getClient = () => {
                 uri: "wrap://ens/fs.polywrap.eth",
                 package: fileSystemPlugin({}),
               },
+              ...(staticResolvers ?? []),
             ]),
             new ExtendableUriResolver(),
           ],

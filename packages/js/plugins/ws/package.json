@@ -26,6 +26,8 @@
   "devDependencies": {
     "@polywrap/client-js": "0.8.0",
     "@polywrap/uri-resolvers-js": "0.8.0",
+    "@polywrap/fs-resolver-plugin-js": "0.8.0",
+    "@polywrap/fs-plugin-js": "0.8.0",
     "@polywrap/test-env-js": "0.8.0",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",

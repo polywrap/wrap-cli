@@ -10,7 +10,7 @@ import { Client } from "@polywrap/core-js";
 import { ResultOk } from "@polywrap/result";
 import { PolywrapClient } from "@polywrap/client-js";
 import createIpfsClient, { IpfsClient, IpfsFileInfo } from "@polywrap/ipfs-http-client-lite";
-import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
+import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { ipfsPlugin } from "..";
 
 jest.setTimeout(300000);
@@ -35,7 +35,7 @@ describe("IPFS Plugin", () => {
             env: { provider: providers.ipfs },
           },
         ],
-        resolver: RecursiveResolver.from({
+        resolver: UriResolver.from({
           uri: "wrap://ens/ipfs.polywrap.eth",
           package: ipfsPlugin({}),
         }),
@@ -117,7 +117,7 @@ describe("IPFS Plugin", () => {
             },
           },
         ],
-        resolver: RecursiveResolver.from({
+        resolver: UriResolver.from({
           uri: "wrap://ens/ipfs.polywrap.eth",
           package: ipfsPlugin({}),
         }),
@@ -175,7 +175,7 @@ describe("IPFS Plugin", () => {
             },
           },
         ],
-        resolver: RecursiveResolver.from({
+        resolver: UriResolver.from({
           uri: "wrap://ens/ipfs.polywrap.eth",
           package: ipfsPlugin({}),
         }),
@@ -220,7 +220,7 @@ describe("IPFS Plugin", () => {
             },
           },
         ],
-        resolver: RecursiveResolver.from({
+        resolver: UriResolver.from({
           uri: "wrap://ens/ipfs.polywrap.eth",
           package: ipfsPlugin({}),
         }),
