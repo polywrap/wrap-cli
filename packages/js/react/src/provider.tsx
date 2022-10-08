@@ -33,7 +33,15 @@ export function createPolywrapProvider(
     ClientContext: React.createContext({} as PolywrapClient)
   };
 
-  return ({ envs, redirects, interfaces, tracerConfig, children }) => {
+  return ({
+    envs,
+    redirects,
+    wrappers,
+    packages,
+    interfaces,
+    tracerConfig,
+    children,
+  }) => {
     const [clientCreated, setClientCreated] = React.useState(false);
 
     React.useEffect(() => {
@@ -47,6 +55,8 @@ export function createPolywrapProvider(
       // Instantiate the client
       PROVIDERS[name].client = new PolywrapClient({
         redirects,
+        wrappers,
+        packages,
         interfaces,
         envs,
         tracerConfig,
