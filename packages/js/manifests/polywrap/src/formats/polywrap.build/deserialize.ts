@@ -31,7 +31,7 @@ export function deserializeBuildManifest(
   }
 
   if (!anyBuildManifest) {
-    throw new Error(`Unable to parse BuildManifest: ${manifest}`);
+    throw Error(`Unable to parse BuildManifest: ${manifest}`);
   }
 
   if (!options || !options.noValidate) {
