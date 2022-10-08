@@ -172,6 +172,13 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
           flag: "wx",
         });
 
+        // For rust, we want to also mount the cargo registry's cache directory
+        const localCargoCache = `${process.env.HOME}/.cargo/registry`;
+        let cacheVolume = "";
+        if (language === "wasm/rust" && fse.existsSync(localCargoCache)) {
+          cacheVolume = `-v ${localCargoCache}:/usr/local/cargo/registry`;
+        }
+
         let buildError: Error | undefined = undefined;
 
         try {
@@ -180,7 +187,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
               this._volumePaths.project
             )}:/project -v ${path.resolve(
               this._volumePaths.linkedPackages
-            )}:/linked-packages ${
+            )}:/linked-packages ${cacheVolume} ${
               CONFIGS[language].baseImage
             }:latest /bin/bash --verbose /project/polywrap-build.sh`,
             this.project.logger,
