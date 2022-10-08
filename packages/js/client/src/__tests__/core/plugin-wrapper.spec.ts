@@ -1,7 +1,7 @@
 import { PolywrapClient } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PluginPackage, PluginModule } from "@polywrap/plugin-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
+import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 jest.setTimeout(200000);
 
@@ -29,9 +29,9 @@ describe("plugin-wrapper", () => {
 
     return new PluginPackage(
       new MockMapPlugin({
-          map: new Map().set("a", 1).set("b", 2),
+        map: new Map().set("a", 1).set("b", 2),
       }),
-      {} as WrapManifest,
+      {} as WrapManifest
     );
   };
 
@@ -40,7 +40,7 @@ describe("plugin-wrapper", () => {
     const mockPlugin = mockMapPlugin();
     const client = new PolywrapClient(
       {
-        resolver: buildUriResolver([
+        resolver: UriResolver.from([
           {
             uri: implementationUri,
             package: mockPlugin,
@@ -79,7 +79,7 @@ describe("plugin-wrapper", () => {
   test("get manifest should fetch wrap manifest from plugin", async () => {
     const client = new PolywrapClient(
       {
-        resolver: buildUriResolver([
+        resolver: UriResolver.from([
           { uri: "ens/ipfs.polywrap.eth", package: ipfsPlugin({}) },
         ]),
       },

@@ -6,7 +6,7 @@ import { Uri, Subscription, PolywrapClient, IWrapPackage } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { makeMemoryStoragePlugin } from "../e2e/memory-storage";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
+import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { ErrResult } from "../utils/resultTypes";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
@@ -208,7 +208,7 @@ describe("wasm-wrapper", () => {
 
     const pluginClient = new PolywrapClient(
       {
-        resolver: buildUriResolver([
+        resolver: UriResolver.from([
           mockPluginRegistration("ens/mock-plugin.eth"),
         ]),
       },

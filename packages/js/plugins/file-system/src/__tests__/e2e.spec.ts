@@ -1,6 +1,6 @@
 import { fileSystemPlugin } from "../index";
 import { PolywrapClient } from "@polywrap/client-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
+import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { FileSystem_Module, FileSystem_EncodingEnum } from "../wrap";
 import fs from "fs";
 import path from "path";
@@ -28,7 +28,7 @@ describe("FileSystem plugin", () => {
 
     client = new PolywrapClient(
       {
-        resolver: buildUriResolver({
+        resolver: UriResolver.from({
           uri: "wrap://ens/fs.polywrap.eth",
           package: fileSystemPlugin({}),
         }),
@@ -48,7 +48,7 @@ describe("FileSystem plugin", () => {
       { path: sampleFilePath },
       client
     );
-    
+
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual(new Uint8Array(expectedContents));
   });
@@ -61,7 +61,7 @@ describe("FileSystem plugin", () => {
       client
     );
 
-    result = result as { ok: false, error: Error | undefined };
+    result = result as { ok: false; error: Error | undefined };
     expect(result.error).toBeTruthy();
     expect(result.ok).toBeFalsy();
   });

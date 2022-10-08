@@ -1,6 +1,6 @@
 import { coreInterfaceUris, Uri, PolywrapClient } from "../..";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
+import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
 
 jest.setTimeout(200000);
@@ -11,14 +11,17 @@ describe("interface-impls", () => {
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const client = new PolywrapClient({
-      interfaces: [
-        {
-          interface: interfaceUri,
-          implementations: [implementation1Uri, implementation2Uri],
-        },
-      ],
-    }, { noDefaults: true });
+    const client = new PolywrapClient(
+      {
+        interfaces: [
+          {
+            interface: interfaceUri,
+            implementations: [implementation1Uri, implementation2Uri],
+          },
+        ],
+      },
+      { noDefaults: true }
+    );
 
     const interfaces = client.getInterfaces();
 
@@ -69,7 +72,7 @@ describe("interface-impls", () => {
             to: implementation3Uri,
           },
         ],
-        resolver: buildUriResolver([
+        resolver: UriResolver.from([
           mockPluginRegistration(implementation4Uri),
         ]),
         interfaces: [
@@ -128,20 +131,18 @@ describe("interface-impls", () => {
     const implementationUri1 = "wrap://ens/implementation1.eth";
     const implementationUri2 = "wrap://ens/implementation2.eth";
 
-    const client = new PolywrapClient(
-      {
-        interfaces: [
-          {
-            interface: interfaceUri,
-            implementations: [implementationUri1],
-          },
-          {
-            interface: interfaceUri,
-            implementations: [implementationUri2],
-          },
-        ],
-      }
-    );
+    const client = new PolywrapClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri1],
+        },
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri2],
+        },
+      ],
+    });
 
     const interfaces = client
       .getInterfaces()
@@ -161,20 +162,18 @@ describe("interface-impls", () => {
     const implementationUri1 = "wrap://ens/implementation1.eth";
     const implementationUri2 = "wrap://ens/implementation2.eth";
 
-    const client = new PolywrapClient(
-      {
-        interfaces: [
-          {
-            interface: interfaceUri,
-            implementations: [implementationUri1],
-          },
-          {
-            interface: interfaceUri,
-            implementations: [implementationUri2],
-          },
-        ],
-      }
-    );
+    const client = new PolywrapClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri1],
+        },
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri2],
+        },
+      ],
+    });
 
     const interfaces = client
       .getInterfaces()
@@ -203,7 +202,7 @@ describe("interface-impls", () => {
 
     const client = new PolywrapClient(
       {
-        resolver: buildUriResolver([
+        resolver: UriResolver.from([
           mockPluginRegistration(implementation1Uri),
         ]),
         interfaces: [
@@ -237,7 +236,7 @@ describe("interface-impls", () => {
 
     const client = new PolywrapClient(
       {
-        resolver: buildUriResolver([
+        resolver: UriResolver.from([
           mockPluginRegistration(implementation1Uri),
         ]),
         interfaces: [

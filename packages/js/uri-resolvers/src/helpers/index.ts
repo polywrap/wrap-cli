@@ -4,6 +4,6 @@ export * from "./ResolverWithHistory";
 export * from "./InfiniteLoopError";
 export * from "./RecursiveResolver";
 export * from "./ResolverWithLoopGuard";
-export * from "./buildUriResolver";
+export * from "./UriResolver";
 export * from "./clean-uri-history";
 export * from "./getUriResolutionPath";

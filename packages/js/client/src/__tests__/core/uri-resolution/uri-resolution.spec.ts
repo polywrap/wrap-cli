@@ -9,7 +9,7 @@ import {
 } from "@polywrap/core-js";
 import {
   buildCleanUriHistory,
-  buildUriResolver,
+  UriResolver,
   getUriResolutionPath,
   UriResolutionResult,
 } from "@polywrap/uri-resolvers-js";
@@ -171,7 +171,7 @@ describe("URI resolution", () => {
     const pluginUri = new Uri("ens/plugin.eth");
 
     const client = new PolywrapClient({
-      resolvers: [buildUriResolver(mockPluginRegistration(pluginUri))],
+      resolvers: [UriResolver.from(mockPluginRegistration(pluginUri))],
     });
 
     const resolutionContext = new UriResolutionContext();

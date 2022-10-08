@@ -1,12 +1,12 @@
 import { PolywrapClient } from "@polywrap/client-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
+import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { loggerPlugin } from "../..";
 
 describe("log method", () => {
   it("logs to console appropriate level", async () => {
     const polywrapClient = new PolywrapClient(
       {
-        resolver: buildUriResolver([
+        resolver: UriResolver.from([
           {
             uri: "wrap://ens/js-logger.polywrap.eth",
             package: loggerPlugin({}),

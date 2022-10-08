@@ -4,7 +4,7 @@ import { Message } from "../../wrap";
 import WS from "jest-websocket-mock";
 import { PolywrapClient } from "@polywrap/client-js"
 import { Client } from "@polywrap/core-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
+import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { PluginPackage } from "@polywrap/plugin-js";
 
 describe("WebSocket plugin", () => {
@@ -17,7 +17,7 @@ describe("WebSocket plugin", () => {
   const setup = () => {
     polywrapClient = new PolywrapClient(
       {
-        resolver: buildUriResolver([
+        resolver: UriResolver.from([
           {
             uri: "wrap://ens/ws.polywrap.eth",
             package: wsPlugin({}),
@@ -145,7 +145,7 @@ describe("WebSocket plugin", () => {
 
       polywrapClient = new PolywrapClient(
         {
-          resolver: buildUriResolver([
+          resolver: UriResolver.from([
             {
               uri: "wrap://ens/ws.polywrap.eth",
               package: wsPlugin({}),

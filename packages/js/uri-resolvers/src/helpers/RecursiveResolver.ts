@@ -1,7 +1,7 @@
 import { InfiniteLoopError } from "./InfiniteLoopError";
 import { UriResolverLike } from "./UriResolverLike";
 import { UriResolutionResult } from "./UriResolutionResult";
-import { buildUriResolver } from "./buildUriResolver";
+import { UriResolver } from "./UriResolver";
 
 import { Result } from "@polywrap/result";
 import {
@@ -19,7 +19,7 @@ export class RecursiveResolver<TError = undefined>
   static from<TResolverError = unknown>(
     resolver: UriResolverLike
   ): RecursiveResolver<TResolverError> {
-    return new RecursiveResolver(buildUriResolver<TResolverError>(resolver));
+    return new RecursiveResolver(UriResolver.from<TResolverError>(resolver));
   }
 
   async tryResolveUri(

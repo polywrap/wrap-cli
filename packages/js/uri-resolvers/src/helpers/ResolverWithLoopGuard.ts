@@ -1,7 +1,7 @@
 import { InfiniteLoopError } from "./InfiniteLoopError";
 import { UriResolverLike } from "./UriResolverLike";
 import { UriResolutionResult } from "./UriResolutionResult";
-import { buildUriResolver } from "./buildUriResolver";
+import { UriResolver } from "./UriResolver";
 
 import {
   IUriResolver,
@@ -20,7 +20,7 @@ export class ResolverWithLoopGuard<TError = undefined>
     resolver: UriResolverLike
   ): ResolverWithLoopGuard<TResolverError> {
     return new ResolverWithLoopGuard(
-      buildUriResolver<TResolverError>(resolver)
+      UriResolver.from<TResolverError>(resolver)
     );
   }
 

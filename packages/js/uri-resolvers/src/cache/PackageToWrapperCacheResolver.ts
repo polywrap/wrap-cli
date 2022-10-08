@@ -1,9 +1,5 @@
 import { IWrapperCache } from "./IWrapperCache";
-import {
-  buildUriResolver,
-  UriResolutionResult,
-  UriResolverLike,
-} from "../helpers";
+import { UriResolver, UriResolutionResult, UriResolverLike } from "../helpers";
 
 import {
   IUriResolver,
@@ -37,7 +33,7 @@ export class PackageToWrapperCacheResolver<TError>
     }
   ): PackageToWrapperCacheResolver<TResolverError> {
     return new PackageToWrapperCacheResolver(
-      buildUriResolver<TResolverError>(resolver),
+      UriResolver.from<TResolverError>(resolver),
       cache,
       options
     );

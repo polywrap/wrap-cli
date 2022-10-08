@@ -1,5 +1,5 @@
 import { UriResolverAggregatorBase } from "./UriResolverAggregatorBase";
-import { buildUriResolver, UriResolverLike } from "../helpers";
+import { UriResolver, UriResolverLike } from "../helpers";
 
 import { Result, ResultOk } from "@polywrap/result";
 import { IUriResolver, Uri, Client } from "@polywrap/core-js";
@@ -41,7 +41,7 @@ export class UriResolverAggregator<
   ) {
     super();
     if (Array.isArray(resolvers)) {
-      this.resolvers = resolvers.map((x) => buildUriResolver(x));
+      this.resolvers = resolvers.map((x) => UriResolver.from(x));
     } else {
       this.resolvers = resolvers;
     }

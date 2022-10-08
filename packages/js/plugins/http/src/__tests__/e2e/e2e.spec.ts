@@ -2,7 +2,7 @@ import { httpPlugin } from "../..";
 import { Http_Response } from "../../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
+import { UriResolver } from "@polywrap/uri-resolvers-js";
 
 import nock from "nock";
 
@@ -19,7 +19,7 @@ describe("e2e tests for HttpPlugin", () => {
   beforeEach(() => {
     polywrapClient = new PolywrapClient(
       {
-        resolver: buildUriResolver({
+        resolver: UriResolver.from({
           uri: "wrap://ens/http.polywrap.eth",
           package: httpPlugin({}),
         }),
@@ -45,7 +45,7 @@ describe("e2e tests for HttpPlugin", () => {
           },
         },
       });
-      
+
       if (!response.ok) fail(response.error);
       expect(response.value).toBeDefined();
       expect(response.value?.status).toBe(200);
@@ -133,7 +133,7 @@ describe("e2e tests for HttpPlugin", () => {
         },
       });
 
-      response = response as { ok: false, error: Error | undefined };
+      response = response as { ok: false; error: Error | undefined };
       expect(response.error).toBeDefined();
       expect(response.ok).toBeFalsy();
     });
@@ -283,7 +283,7 @@ describe("e2e tests for HttpPlugin", () => {
         },
       });
 
-      response = response as { ok: false, error: Error | undefined };
+      response = response as { ok: false; error: Error | undefined };
       expect(response.error).toBeDefined();
       expect(response.ok).toBeFalsy();
     });
