@@ -326,8 +326,9 @@ export class PolywrapClient implements Client {
       }
       const wrapper = loadWrapperResult.value;
 
+      const resolutionPath = resolutionContext.getResolutionPath();
       const env = getEnvFromUriHistory(
-        resolutionContext.getResolutionPath(),
+        resolutionPath.length > 0 ? resolutionPath : [typedOptions.uri],
         this
       );
 
