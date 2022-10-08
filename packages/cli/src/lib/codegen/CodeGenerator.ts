@@ -1,4 +1,4 @@
-import { withSpinner } from "../helpers";
+import { logActivity } from "../logging";
 import { intlMsg } from "../intl";
 import {
   AnyProjectManifest,
@@ -18,10 +18,8 @@ import { resetDir } from "../system";
 import { SchemaComposer } from "../SchemaComposer";
 
 import path from "path";
-import * as gluegun from "gluegun";
 import { BindLanguage } from "@polywrap/schema-bind";
 import { writeDirectorySync } from "@polywrap/os-js";
-import { Ora } from "ora";
 
 export interface CodeGeneratorConfig {
   project: Project<AnyProjectManifest>;
@@ -50,28 +48,24 @@ export class CodeGenerator {
         );
       }
 
-      if (this._config.project.quiet) {
-        await this.runCodegen(bindLanguage);
-      } else {
-        await withSpinner(
-          intlMsg.lib_codeGenerator_genCodeText(),
-          intlMsg.lib_codeGenerator_genCodeError(),
-          intlMsg.lib_codeGenerator_genCodeWarning(),
-          async (spinner) => {
-            return this.runCodegen(bindLanguage, spinner);
-          }
-        );
-      }
+      await logActivity(
+        this._config.project.logger,
+        intlMsg.lib_codeGenerator_genCodeText(),
+        intlMsg.lib_codeGenerator_genCodeError(),
+        intlMsg.lib_codeGenerator_genCodeWarning(),
+        async () => {
+          return this.runCodegen(bindLanguage);
+        }
+      );
 
       return true;
     } catch (e) {
-      gluegun.print.error(e);
+      this._config.project.logger.error(e);
       return false;
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  protected async runCodegen(_: BindLanguage, __?: Ora): Promise<string[]> {
+  protected async runCodegen(_: BindLanguage): Promise<string[]> {
     const codegenDir = this._config.codegenDirAbs
       ? path.relative(
           this._config.project.getManifestDir(),

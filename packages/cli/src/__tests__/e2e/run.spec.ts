@@ -23,7 +23,8 @@ Options:
                                         result
   -j, --jobs <jobs...>                  Specify ids of jobs that you want to
                                         run
-  -q, --quiet                           Suppress output
+  -v, --verbose                         Verbose output (default: false)
+  -q, --quiet                           Suppress output (default: false)
   -h, --help                            display help for command
 `;
 
@@ -207,7 +208,7 @@ describe("e2e tests for run command", () => {
 
     const output = parseOutput(stdout);
     expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
-    expect(output.filter((o => o.validation === "SUCCEED"))).toHaveLength(output.length);
+    expect(output.filter((o => o.validation?.startsWith("SUCCEED")))).toHaveLength(output.length);
   });
 
   it("Should print error on stderr if validation fails", async () => {
@@ -281,7 +282,7 @@ describe("e2e tests for run command", () => {
 
     const output = parseOutput(stdout);
     expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
-    expect(output.filter((o => o.validation === "SUCCEED"))).toHaveLength(output.length);
+    expect(output.filter((o => o.validation?.startsWith("SUCCEED")))).toHaveLength(output.length);
   });
 
   it("Should print error on stderr if job is named 'data' or 'error'", async () => {

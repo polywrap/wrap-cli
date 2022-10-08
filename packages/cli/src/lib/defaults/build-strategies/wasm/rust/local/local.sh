@@ -7,8 +7,7 @@ cargo install wasm-bindgen-cli
 
 toml set "$1"/Cargo.toml lib.crate-type ["cdylib"] > "$1"/Cargo-local.toml && \
   rm -rf "$1"/Cargo.toml && \
-  mv "$1"/Cargo-local.toml "$1"/Cargo.toml && \
-  true
+  mv "$1"/Cargo-local.toml "$1"/Cargo.toml
 
 # Clean up artifacts left by the toml CLI program ("["cdylib"]" -> ["cdylib"])
 sed -i 's/"\[cdylib\]"/\["cdylib"\]/g' "$1"/Cargo.toml
@@ -16,8 +15,7 @@ sed -i 's/"\[cdylib\]"/\["cdylib"\]/g' "$1"/Cargo.toml
 # Ensure the package name = "module"
 toml set "$1"/Cargo.toml package.name "module" > "$1"/Cargo-local.toml && \
   rm -rf "$1"/Cargo.toml && \
-  mv "$1"/Cargo-local.toml "$1"/Cargo.toml && \
-  true
+  mv "$1"/Cargo-local.toml "$1"/Cargo.toml
 
 cargo build --manifest-path "$1"/Cargo.toml \
   --target wasm32-unknown-unknown --release

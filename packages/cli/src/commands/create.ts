@@ -1,7 +1,11 @@
 import { Command, Program } from "./types";
+import { createLogger } from "./utils/createLogger";
 import { generateProjectTemplate, intlMsg } from "../lib";
 
-import { prompt, filesystem } from "gluegun";
+import fse from "fs-extra";
+import path from "path";
+import yesno from "yesno";
+import rimraf from "rimraf";
 import { Argument } from "commander";
 
 const nameStr = intlMsg.commands_create_options_projectName();
@@ -22,6 +26,8 @@ export type ProjectType = keyof typeof supportedLangs;
 export type SupportedLangs = typeof supportedLangs[ProjectType][number];
 type CreateCommandOptions = {
   outputDir?: string;
+  verbose?: boolean;
+  quiet?: boolean;
 };
 
 export const create: Command = {
@@ -46,6 +52,8 @@ export const create: Command = {
         `-o, --output-dir <${pathStr}>`,
         `${intlMsg.commands_create_options_o()}`
       )
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (langStr, nameStr, options) => {
         await run("wasm", langStr, nameStr, options);
       });
@@ -65,6 +73,8 @@ export const create: Command = {
         `-o, --output-dir <${pathStr}>`,
         `${intlMsg.commands_create_options_o()}`
       )
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (langStr, nameStr, options) => {
         await run("app", langStr, nameStr, options);
       });
@@ -84,6 +94,8 @@ export const create: Command = {
         `-o, --output-dir <${pathStr}>`,
         `${intlMsg.commands_create_options_o()}`
       )
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (langStr, nameStr, options) => {
         await run("plugin", langStr, nameStr, options);
       });
@@ -96,36 +108,36 @@ async function run(
   name: string,
   options: CreateCommandOptions
 ) {
-  const { outputDir } = options;
+  const { outputDir, verbose, quiet } = options;
+  const logger = createLogger({ verbose, quiet });
 
-  const projectDir = outputDir ? `${outputDir}/${name}` : name;
+  const projectDir = path.resolve(outputDir ? `${outputDir}/${name}` : name);
 
   // check if project already exists
-  if (!filesystem.exists(projectDir)) {
-    console.log();
-    console.info(intlMsg.commands_create_settingUp());
+  if (!fse.existsSync(projectDir)) {
+    logger.info(intlMsg.commands_create_settingUp());
+    fse.mkdirSync(projectDir, { recursive: true });
   } else {
     const directoryExistsMessage = intlMsg.commands_create_directoryExists({
       dir: projectDir,
     });
-    console.info(directoryExistsMessage);
-    const overwrite = await prompt.confirm(
-      intlMsg.commands_create_overwritePrompt()
-    );
+    logger.info(directoryExistsMessage);
+    const overwrite = await yesno({
+      question: intlMsg.commands_create_overwritePrompt(),
+    });
     if (overwrite) {
       const overwritingMessage = intlMsg.commands_create_overwriting({
         dir: projectDir,
       });
-      console.info(overwritingMessage);
-      filesystem.remove(projectDir);
+      logger.info(overwritingMessage);
+      rimraf.sync(projectDir);
     } else {
       process.exit(8);
     }
   }
 
-  generateProjectTemplate(command, lang, projectDir, filesystem)
+  generateProjectTemplate(command, lang, projectDir)
     .then(() => {
-      console.log();
       let readyMessage;
       if (command === "wasm") {
         readyMessage = intlMsg.commands_create_readyProtocol();
@@ -134,12 +146,14 @@ async function run(
       } else if (command === "plugin") {
         readyMessage = intlMsg.commands_create_readyPlugin();
       }
-      console.info(`🔥 ${readyMessage} 🔥`);
+      logger.info(`🔥 ${readyMessage} 🔥`);
+      process.exit(0);
     })
     .catch((err) => {
       const commandFailError = intlMsg.commands_create_error_commandFail({
-        error: err.command,
+        error: JSON.stringify(err, null, 2),
       });
-      console.error(commandFailError);
+      logger.error(commandFailError);
+      process.exit(1);
     });
 }

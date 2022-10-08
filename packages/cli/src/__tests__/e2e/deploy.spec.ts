@@ -21,6 +21,7 @@ Options:
                               (default: polywrap.yaml | polywrap.yml)
   -o, --output-file <path>    Output file path for the deploy result
   -v, --verbose               Verbose output (default: false)
+  -q, --quiet                 Suppress output (default: false)
   -h, --help                  display help for command
 `;
 
@@ -216,7 +217,7 @@ describe("e2e tests for deploy command", () => {
     ])
   });
 
-  it("Should show warning if no manifest ext is found in deploy package", async () => {
+  it.only("Should show warning if no manifest ext is found in deploy package", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
         args: ["deploy"],
@@ -229,9 +230,6 @@ describe("e2e tests for deploy command", () => {
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain(
-      "No manifest extension found in"
-    );
     expect(sanitizedOutput).toContain(
       "Successfully executed step 'ipfs_test'"
     );

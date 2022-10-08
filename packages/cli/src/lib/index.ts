@@ -12,3 +12,4 @@ export * from "./Compiler";
 export * from "./codegen";
 export * from "./SchemaComposer";
 export * from "./workflow";
+export * from "./logging";

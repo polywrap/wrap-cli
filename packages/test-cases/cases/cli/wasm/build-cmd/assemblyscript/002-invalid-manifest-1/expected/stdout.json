@@ -1,6 +1,6 @@
 {
-  "stdout": [
-    "ENOENT: no such file or directory",
+  "stderr": [
+    "ENOENT",
     "wrong/schema.graphql"
   ],
   "exitCode": 1

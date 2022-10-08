@@ -66,8 +66,7 @@ RUN PACKAGE_NAME={{name}}; \
 # Ensure the module at {{dir}} has the crate-type = ["cdylib"]
 RUN toml set ./{{dir}}/Cargo.toml lib.crate-type ["cdylib"] > ./{{dir}}/Cargo-local.toml && \
     rm -rf ./{{dir}}/Cargo.toml && \
-    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
-    true
+    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml
 
 # Clean up artifacts left by the toml CLI program ("["cdylib"]" -> ["cdylib"])
 RUN sed -i 's/"\[cdylib\]"/\["cdylib"\]/g' ./{{dir}}/Cargo.toml
@@ -75,8 +74,7 @@ RUN sed -i 's/"\[cdylib\]"/\["cdylib"\]/g' ./{{dir}}/Cargo.toml
 # Ensure the package name = "module"
 RUN toml set ./{{dir}}/Cargo.toml package.name "module" > ./{{dir}}/Cargo-local.toml && \
     rm -rf ./{{dir}}/Cargo.toml && \
-    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
-    true
+    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml
 
 # Prebuild all project dependencies, adding them to the cache
 RUN cd ./{{dir}} && cargo build-deps --release && cd /project
