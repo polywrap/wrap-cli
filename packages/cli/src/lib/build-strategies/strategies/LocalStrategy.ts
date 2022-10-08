@@ -1,6 +1,6 @@
 import { BuildStrategy } from "../BuildStrategy";
 import { displayPath, runCommand } from "../../system";
-import { withSpinner } from "../../helpers";
+import { logActivity } from "../../logging";
 import { intlMsg } from "../../intl";
 import { BuildManifestConfig } from "../../project";
 
@@ -25,14 +25,15 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
 
         const command = `chmod +x ${scriptPath} && ${scriptPath} ${buildManifestConfig.polywrap_module.dir} ${this.outputDir}`;
 
-        await withSpinner(
+        await logActivity(
+          this.project.logger,
           intlMsg.lib_helpers_buildText(),
           intlMsg.lib_helpers_buildError(),
           intlMsg.lib_helpers_buildWarning(),
           async (_spinner) => {
             return await runCommand(
               command,
-              this.project.quiet,
+              this.project.logger,
               undefined,
               process.cwd()
             );
@@ -41,20 +42,17 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
       }
     };
 
-    if (this.project.quiet) {
-      return await run();
-    } else {
-      const args = {
-        path: displayPath(this.outputDir),
-      };
-      return (await withSpinner(
-        intlMsg.lib_helpers_copyText(args),
-        intlMsg.lib_helpers_copyError(args),
-        intlMsg.lib_helpers_copyWarning(args),
-        async (_spinner) => {
-          return await run();
-        }
-      )) as void;
-    }
+    const args = {
+      path: displayPath(this.outputDir),
+    };
+    return await logActivity<void>(
+      this.project.logger,
+      intlMsg.lib_helpers_copyText(args),
+      intlMsg.lib_helpers_copyError(args),
+      intlMsg.lib_helpers_copyWarning(args),
+      async () => {
+        return await run();
+      }
+    );
   }
 }

@@ -15,7 +15,8 @@ describe("workflow JobRunner", () => {
   });
 
   for (const testCase of testCases) {
-    test(testCase.name, async () => {
+    it(testCase.name, async () => {
+      expect(client).toBeTruthy();
       const ids = Object.keys(testCase.workflow.jobs);
       const jobRunner = new JobRunner(
         new ClientConfigBuilder().addDefaults().build(),

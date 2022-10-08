@@ -1,27 +1,29 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { FileLock } from "./";
-import { intlMsg } from "../";
+import { intlMsg, Logger, runCommandSync } from "../";
 
-import { system, print } from "gluegun";
 import YAML from "yaml";
 import path from "path";
 import fs from "fs";
 
-export function isDockerInstalled(): boolean {
-  return !!system.which("docker");
+export function isDockerInstalled(logger: Logger): boolean {
+  const { stdout } = runCommandSync("docker version", logger);
+  return stdout ? stdout.includes("Version") : false;
 }
 
-export async function ensureDockerDaemonRunning(): Promise<void> {
+export async function ensureDockerDaemonRunning(logger: Logger): Promise<void> {
   try {
-    await system.run("docker stats --no-stream");
+    runCommandSync("docker stats --no-stream", logger);
   } catch (e) {
     throw new Error(intlMsg.lib_helpers_docker_couldNotConnect());
   }
 }
 
-export function getDockerFileLock(): FileLock {
-  return new FileLock(__dirname + "/DOCKER_LOCK", print.error);
+export function getDockerFileLock(logger: Logger): FileLock {
+  return new FileLock(__dirname + "/DOCKER_LOCK", (message: string) =>
+    logger.info(message)
+  );
 }
 
 interface DockerCompose {

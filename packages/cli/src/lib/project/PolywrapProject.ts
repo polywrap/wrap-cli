@@ -62,6 +62,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     buildStrategyUsed: "build/strategy-used",
     buildDir: "build/",
     buildUuidFile: "build/uuid",
+    buildProjectDir: "build/project",
     buildLinkedPackagesDir: "build/linked-packages/",
     deployDir: "deploy/",
     deployModulesDir: "deploy/modules/",
@@ -111,7 +112,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     if (!this._polywrapManifest) {
       this._polywrapManifest = await loadPolywrapManifest(
         this.getManifestPath(),
-        this._config.quiet
+        this.logger
       );
     }
 
@@ -214,7 +215,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
             language,
             "default.build.yaml"
           ),
-        this.quiet
+        this.logger
       );
 
       const root = this.getManifestDir();
@@ -357,7 +358,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       if (manifestPath) {
         this._deployManifest = await loadDeployManifest(
           manifestPath,
-          this.quiet
+          this.logger
         );
       }
     }
@@ -377,7 +378,10 @@ export class PolywrapProject extends Project<PolywrapManifest> {
 
     const manifestExtPath = path.join(cachePath, "polywrap.deploy.ext.json");
 
-    const manifestExt = await loadDeployManifestExt(manifestExtPath);
+    const manifestExt = await loadDeployManifestExt(
+      manifestExtPath,
+      this.logger
+    );
 
     return {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -442,7 +446,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       const manifestPath = await this.getMetaManifestPath();
 
       if (manifestPath) {
-        this._metaManifest = await loadMetaManifest(manifestPath, this.quiet);
+        this._metaManifest = await loadMetaManifest(manifestPath, this.logger);
       }
     }
     return this._metaManifest;

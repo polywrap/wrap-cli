@@ -1,5 +1,6 @@
 /* eslint-disable prefer-const */
 import { Command, Program } from "./types";
+import { createLogger } from "./utils/createLogger";
 import {
   defaultPolywrapManifest,
   DeployPackage,
@@ -13,7 +14,6 @@ import {
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
 import nodePath from "path";
-import { print } from "gluegun";
 import yaml from "yaml";
 import { validate } from "jsonschema";
 
@@ -24,6 +24,7 @@ type DeployCommandOptions = {
   manifestFile: string;
   outputFile?: string;
   verbose?: boolean;
+  quiet?: boolean;
 };
 
 type ManifestJob = DeployManifest["jobs"][number];
@@ -45,7 +46,8 @@ export const deploy: Command = {
         `-o, --output-file <${pathStr}>`,
         `${intlMsg.commands_deploy_options_o()}`
       )
-      .option(`-v, --verbose`, `${intlMsg.commands_deploy_options_v()}`)
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (options) => {
         await run({
           ...options,
@@ -59,12 +61,13 @@ export const deploy: Command = {
 };
 
 async function run(options: DeployCommandOptions): Promise<void> {
-  const { manifestFile, verbose, outputFile } = options;
+  const { manifestFile, outputFile, verbose, quiet } = options;
+  const logger = createLogger({ verbose, quiet });
 
   const project = new PolywrapProject({
     rootDir: nodePath.dirname(manifestFile),
     polywrapManifestPath: manifestFile,
-    quiet: !verbose,
+    logger,
   });
   await project.validate();
 
@@ -128,7 +131,7 @@ async function run(options: DeployCommandOptions): Promise<void> {
       name: jobName,
       steps,
       config: job.config ?? {},
-      printer: print,
+      logger,
     });
   });
 

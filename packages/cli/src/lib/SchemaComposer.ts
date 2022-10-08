@@ -12,7 +12,6 @@ import {
 } from "@polywrap/schema-compose";
 import fs from "fs";
 import path from "path";
-import * as gluegun from "gluegun";
 import YAML from "yaml";
 import {
   deserializeWrapManifest,
@@ -130,7 +129,11 @@ export class SchemaComposer {
 
     const manifest = await this._client.getManifest(new Uri(uri));
     if (!manifest.ok) {
-      gluegun.print.error(manifest.error);
+      if (manifest.error) {
+        this._config.project.logger.error(
+          JSON.stringify(manifest.error, null, 2)
+        );
+      }
       throw manifest.error;
     }
     return manifest.value.abi;

@@ -1,4 +1,3 @@
-import { step } from "../helpers";
 import { intlMsg } from "../intl";
 import { AnyProjectManifest, Project } from "../project";
 import { isTypescriptFile, importTypescriptModule, resetDir } from "../system";
@@ -9,7 +8,6 @@ import { writeDirectorySync } from "@polywrap/os-js";
 import { BindLanguage, GenerateBindingFn } from "@polywrap/schema-bind";
 import { readFileSync } from "fs-extra";
 import Mustache from "mustache";
-import { Ora } from "ora";
 import path from "path";
 
 export class ScriptCodegenerator extends CodeGenerator {
@@ -44,10 +42,7 @@ export class ScriptCodegenerator extends CodeGenerator {
     }
   }
 
-  protected async runCodegen(
-    bindLanguage: BindLanguage,
-    spinner?: Ora
-  ): Promise<string[]> {
+  protected async runCodegen(bindLanguage: BindLanguage): Promise<string[]> {
     const generator = isTypescriptFile(this._script)
       ? await importTypescriptModule(this._script)
       : // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -76,21 +71,18 @@ export class ScriptCodegenerator extends CodeGenerator {
     return writeDirectorySync(
       this._codegenDirAbs,
       binding.output,
-      (templatePath: string) => this._generateTemplate(templatePath, spinner)
+      (templatePath: string) => this._generateTemplate(templatePath, {})
     );
   }
 
-  private _generateTemplate(
-    templatePath: string,
-    config: unknown,
-    spinner?: Ora
-  ): string {
-    if (!this._config.project.quiet && spinner) {
-      const stepMessage = intlMsg.lib_codeGenerator_genTemplateStep({
+  private _generateTemplate(templatePath: string, config: unknown): string {
+    const logger = this._config.project.logger;
+
+    logger.info(
+      intlMsg.lib_codeGenerator_genTemplateStep({
         path: `${templatePath}`,
-      });
-      step(spinner, stepMessage);
-    }
+      })
+    );
 
     if (this._script) {
       // Update template path when the generation file is given

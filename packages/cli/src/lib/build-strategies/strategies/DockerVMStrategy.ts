@@ -11,14 +11,13 @@ import {
   PolywrapManifestLanguage,
   PolywrapProject,
 } from "../../project";
-import { withSpinner } from "../../helpers";
+import { logActivity } from "../../logging";
 
 import fse from "fs-extra";
 import path from "path";
 import Mustache from "mustache";
 
 type BuildableLanguage = Exclude<PolywrapManifestLanguage, "interface">;
-const VOLUME_DIR_CACHE_SUBPATH = "build/volume";
 const DEFAULTS_DIR = path.join(
   __dirname,
   "..",
@@ -44,16 +43,21 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
 };
 
 export class DockerVMBuildStrategy extends BuildStrategy<void> {
-  private _volumePaths: { project: string; linkedPackages: string };
+  private _volumePaths: {
+    project: string;
+    linkedPackages: string;
+  };
   constructor(args: BuildStrategyArgs) {
     super(args);
 
-    if (!isDockerInstalled()) {
+    if (!isDockerInstalled(this.project.logger)) {
       throw new Error(intlMsg.lib_docker_noInstall());
     }
 
     this._volumePaths = {
-      project: this.project.getCachePath(VOLUME_DIR_CACHE_SUBPATH),
+      project: this.project.getCachePath(
+        PolywrapProject.cacheLayout.buildProjectDir
+      ),
       linkedPackages: this.project.getCachePath(
         PolywrapProject.cacheLayout.buildLinkedPackagesDir
       ),
@@ -65,7 +69,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
   }
 
   public async buildSources(): Promise<void> {
-    await ensureDockerDaemonRunning();
+    await ensureDockerDaemonRunning(this.project.logger);
 
     await this._buildSources();
 
@@ -160,40 +164,56 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
           this._volumePaths.project,
           "polywrap-build.sh"
         );
-        fse.writeFileSync(buildScriptPath, scriptContent);
+        if (fse.existsSync(buildScriptPath)) {
+          fse.removeSync(buildScriptPath);
+        }
+        fse.writeFileSync(buildScriptPath, scriptContent, {
+          mode: "777",
+          flag: "wx",
+        });
+
+        // For rust, we want to also mount the cargo registry's cache directory
+        const localCargoCache = `${process.env.HOME}/.cargo/registry`;
+        let cacheVolume = "";
+        if (language === "wasm/rust" && fse.existsSync(localCargoCache)) {
+          cacheVolume = `-v ${localCargoCache}:/usr/local/cargo/registry`;
+        }
 
         let buildError: Error | undefined = undefined;
 
         try {
-          const { stderr } = await runCommand(
+          await runCommand(
+            `docker run --rm -v ${path.resolve(
+              this._volumePaths.project
+            )}:/project -v ${path.resolve(
+              this._volumePaths.linkedPackages
+            )}:/linked-packages ${cacheVolume} ${
+              CONFIGS[language].baseImage
+            }:latest /bin/bash --verbose /project/polywrap-build.sh`,
+            this.project.logger,
+            undefined,
+            undefined,
+            true
+          );
+
+          const buildDir = path.join(this._volumePaths.project, "build");
+          if (!fse.existsSync(buildDir)) {
+            buildError = new Error("Build directory missing.");
+          }
+
+          await runCommand(
             `docker run --rm -v ${path.resolve(
               this._volumePaths.project
             )}:/project -v ${path.resolve(
               this._volumePaths.linkedPackages
             )}:/linked-packages ${
               CONFIGS[language].baseImage
-            }:latest /bin/bash -c "${scriptContent}"`
+            }:latest /bin/bash -c "chmod -R 777 /project && chmod -R 777 /linked-packages"`,
+            this.project.logger
           );
-
-          if (
-            stderr &&
-            !fse.existsSync(path.join(this._volumePaths.project, "build"))
-          ) {
-            buildError = new Error(stderr);
-          }
         } catch (e) {
           buildError = e;
         }
-
-        await runCommand(
-          `docker run --rm -v ${path.resolve(
-            this._volumePaths.project
-          )}:/project -v ${path.resolve(
-            this._volumePaths.linkedPackages
-          )}:/linked-packages ${
-            CONFIGS[language].baseImage
-          }:latest /bin/bash -c "chmod -R g+wX ."`
-        );
 
         if (buildError) {
           throw buildError;
@@ -201,16 +221,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
       }
     };
 
-    if (this.project.quiet) {
-      return run();
-    } else {
-      return await withSpinner(
-        intlMsg.lib_helpers_docker_buildVMText(),
-        intlMsg.lib_helpers_docker_buildVMError(),
-        intlMsg.lib_helpers_docker_buildVMWarning(),
-        run
-      );
-    }
+    return run();
   }
 
   private async _copyBuildOutput() {
@@ -221,21 +232,18 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
       );
     };
 
-    if (this.project.quiet) {
-      return run();
-    } else {
-      const args = {
-        path: displayPath(this.outputDir),
-      };
+    const args = {
+      path: displayPath(this.outputDir),
+    };
 
-      return (await withSpinner(
-        intlMsg.lib_helpers_copyText(args),
-        intlMsg.lib_helpers_copyError(args),
-        intlMsg.lib_helpers_copyWarning(args),
-        async () => {
-          run();
-        }
-      )) as void;
-    }
+    return await logActivity<void>(
+      this.project.logger,
+      intlMsg.lib_helpers_copyText(args),
+      intlMsg.lib_helpers_copyError(args),
+      intlMsg.lib_helpers_copyWarning(args),
+      async () => {
+        run();
+      }
+    );
   }
 }

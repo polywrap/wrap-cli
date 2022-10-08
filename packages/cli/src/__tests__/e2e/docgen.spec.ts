@@ -27,6 +27,8 @@ Options:
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
   -i, --imports                      Also generate docs for dependencies
+  -v, --verbose                      Verbose output (default: false)
+  -q, --quiet                        Suppress output (default: false)
   -h, --help                         display help for command
 `;
 

@@ -10,7 +10,7 @@ import {
   PolywrapProject,
   resetDir,
   SchemaComposer,
-  withSpinner,
+  logActivity,
 } from "./";
 import { BuildStrategy } from "./build-strategies/BuildStrategy";
 import { CodeGenerator } from "./codegen/CodeGenerator";
@@ -18,7 +18,6 @@ import { CodeGenerator } from "./codegen/CodeGenerator";
 import { WasmWrapper, WrapImports } from "@polywrap/wasm-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath } from "@polywrap/os-js";
-import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
 
@@ -57,29 +56,19 @@ export class Compiler {
       await this._outputPolywrapMetadata();
     };
 
-    if (project.quiet) {
-      try {
-        await run();
-        return true;
-      } catch (e) {
-        gluegun.print.error(e);
-        return false;
-      }
-    } else {
-      try {
-        await withSpinner(
-          intlMsg.lib_compiler_compileText(),
-          intlMsg.lib_compiler_compileError(),
-          intlMsg.lib_compiler_compileWarning(),
-          async () => {
-            return run();
-          }
-        );
-        return true;
-      } catch (e) {
-        gluegun.print.error(e);
-        return false;
-      }
+    try {
+      await logActivity(
+        project.logger,
+        intlMsg.lib_compiler_compileText(),
+        intlMsg.lib_compiler_compileError(),
+        intlMsg.lib_compiler_compileWarning(),
+        async () => {
+          return run();
+        }
+      );
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -103,36 +92,39 @@ export class Compiler {
     await this._validateWasmModule(outputDir);
   }
 
-  private async _outputWrapManifest(quiet = false): Promise<unknown> {
+  private async _outputWrapManifest(): Promise<unknown> {
     const { outputDir, project, schemaComposer } = this._config;
-    let manifestPath = `${outputDir}/wrap.info`;
+    const manifestPath = `${outputDir}/wrap.info`;
     const run = async () => {
       const manifest = await project.getManifest();
 
       const type = (await this._isInterface()) ? "interface" : "wasm";
       const abi = await schemaComposer.getComposedAbis();
-      await generateWrapFile(abi, manifest.project.name, type, manifestPath);
+      await generateWrapFile(
+        abi,
+        manifest.project.name,
+        type,
+        manifestPath,
+        project.logger
+      );
     };
 
-    if (quiet) {
-      return await run();
-    } else {
-      manifestPath = displayPath(manifestPath);
-      return await withSpinner(
-        intlMsg.lib_helpers_wrap_manifest_outputText({
-          path: normalizePath(manifestPath),
-        }),
-        intlMsg.lib_helpers_wrap_manifest_outputError({
-          path: normalizePath(manifestPath),
-        }),
-        intlMsg.lib_helpers_wrap_manifest_outputWarning({
-          path: normalizePath(manifestPath),
-        }),
-        (_spinner): Promise<unknown> => {
-          return Promise.resolve(run());
-        }
-      );
-    }
+    const displayManifestPath = displayPath(manifestPath);
+    return await logActivity(
+      project.logger,
+      intlMsg.lib_helpers_wrap_manifest_outputText({
+        path: normalizePath(displayManifestPath),
+      }),
+      intlMsg.lib_helpers_wrap_manifest_outputError({
+        path: normalizePath(displayManifestPath),
+      }),
+      intlMsg.lib_helpers_wrap_manifest_outputWarning({
+        path: normalizePath(displayManifestPath),
+      }),
+      (): Promise<unknown> => {
+        return Promise.resolve(run());
+      }
+    );
   }
 
   private async _outputPolywrapMetadata(): Promise<void> {
@@ -148,13 +140,13 @@ export class Compiler {
       projectMetaManifest,
       outputDir,
       project.getManifestDir(),
-      project.quiet
+      project.logger
     );
 
     await outputManifest(
       builtMetaManifest,
       path.join(outputDir, "polywrap.meta.json"),
-      project.quiet
+      project.logger
     );
   }
 

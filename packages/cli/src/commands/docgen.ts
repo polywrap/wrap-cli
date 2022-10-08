@@ -10,6 +10,7 @@ import {
   getProjectFromManifest,
 } from "../lib";
 import { Command, Program } from "./types";
+import { createLogger } from "./utils/createLogger";
 import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
 import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
@@ -36,6 +37,8 @@ type DocgenCommandOptions = {
   docgenDir: string;
   clientConfig: Partial<CustomClientConfig<Uri | string>>;
   imports: boolean;
+  verbose?: boolean;
+  quiet?: boolean;
 };
 
 enum Actions {
@@ -89,6 +92,8 @@ export const docgen: Command = {
         `${intlMsg.commands_common_options_config()}`
       )
       .option(`-i, --imports`, `${intlMsg.commands_docgen_options_i()}`)
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (action, options) => {
         await run(action, {
           ...options,
@@ -104,12 +109,20 @@ export const docgen: Command = {
 };
 
 async function run(command: DocType, options: DocgenCommandOptions) {
-  const { manifestFile, docgenDir, clientConfig, imports } = options;
+  const {
+    manifestFile,
+    docgenDir,
+    clientConfig,
+    imports,
+    verbose,
+    quiet,
+  } = options;
+  const logger = createLogger({ verbose, quiet });
 
-  let project = await getProjectFromManifest(manifestFile);
+  let project = await getProjectFromManifest(manifestFile, logger);
 
   if (!project) {
-    console.log(
+    logger.error(
       intlMsg.commands_docgen_error_projectLoadFailed({
         manifestFile: manifestFile,
       })
@@ -141,7 +154,7 @@ async function run(command: DocType, options: DocgenCommandOptions) {
   });
 
   if (await codeGenerator.generate()) {
-    console.log(`🔥 ${intlMsg.commands_docgen_success()} 🔥`);
+    logger.info(`🔥 ${intlMsg.commands_docgen_success()} 🔥`);
     process.exitCode = 0;
   } else {
     process.exitCode = 1;

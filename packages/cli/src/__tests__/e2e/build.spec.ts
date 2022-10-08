@@ -23,6 +23,7 @@ Options:
   -w, --watch                        Automatically rebuild when changes are
                                      made (default: false)
   -v, --verbose                      Verbose output (default: false)
+  -q, --quiet                        Suppress output (default: false)
   -h, --help                         display help for command
 `;
 
@@ -178,11 +179,13 @@ describe("e2e tests for build command", () => {
       cli: polywrapCli,
     });
 
-    const buildDir = `./${path.relative(testCaseDir, outputDir)}`;
+    const displayPath = "./" + path.relative(
+      getTestCaseDir(0), outputDir
+    );
 
     expect(code).toEqual(0);
-    expect(output).toContain(`Artifacts written to ${buildDir}`);
-    expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
+    expect(output).toContain(`Artifacts written to ${displayPath}`);
+    expect(output).toContain(`WRAP manifest written in ${displayPath}/wrap.info`);
 
     testBuildOutput(testCaseDir, outputDir);
   });
@@ -194,9 +197,9 @@ describe("e2e tests for build command", () => {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
-  
-      const buildDir = `./build`;
-  
+
+      const buildDir = "./build";
+
       expect(code).toEqual(0);
       expect(output).toContain(`Artifacts written to ${buildDir}`);
       expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
@@ -215,9 +218,9 @@ describe("e2e tests for build command", () => {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
-  
+
       const buildDir = `./build`;
-  
+
       expect(code).toEqual(0);
       expect(output).toContain(`Artifacts written to ${buildDir}`);
       expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);

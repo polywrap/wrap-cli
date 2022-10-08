@@ -1,13 +1,13 @@
+import { Logger } from "../logging";
+
 import { exec, ExecException, execSync, SpawnSyncReturns } from "child_process";
 
 export function runCommandSync(
   command: string,
-  quiet = false,
+  logger: Logger,
   env: Record<string, string> | undefined = undefined
 ): { stdout?: string; stderr?: SpawnSyncReturns<string> & Error } {
-  if (!quiet) {
-    console.log(`> ${command}`);
-  }
+  logger.info(`> ${command}`);
 
   try {
     const stdout = execSync(command, {
@@ -26,13 +26,12 @@ export function runCommandSync(
 
 export async function runCommand(
   command: string,
-  quiet = false,
+  logger: Logger,
   env: Record<string, string> | undefined = undefined,
-  cwd: string | undefined = undefined
+  cwd: string | undefined = undefined,
+  redirectStderr = false
 ): Promise<{ stdout: string; stderr: string }> {
-  if (!quiet) {
-    console.log(`> ${command}`);
-  }
+  logger.info(`> ${command}`);
 
   return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
     const callback = (
@@ -59,14 +58,16 @@ export async function runCommand(
       callback
     );
 
-    if (!quiet) {
-      childObj.stdout?.on("data", (data) => {
-        console.log(data.toString());
-      });
+    childObj.stdout?.on("data", (data) => {
+      logger.info(data.toString());
+    });
 
-      childObj.stderr?.on("data", (data) => {
-        console.error(data.toString());
-      });
-    }
+    childObj.stderr?.on("data", (data) => {
+      if (redirectStderr) {
+        logger.info(data.toString());
+      } else {
+        logger.error(data.toString());
+      }
+    });
   });
 }

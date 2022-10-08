@@ -1,9 +1,10 @@
+set -e
+
 {{#polywrap_linked_packages.length}}
 {{#polywrap_linked_packages}}
-  toml set ./{{#polywrap_module}}{{dir}}{{/polywrap_module}}/Cargo.toml dependencies.{{name}}.path /linked-packages/{{name}} > ./{{#polywrap_module}}{{dir}}{{/polywrap_module}}/Cargo-local.toml
+toml set ./{{#polywrap_module}}{{dir}}{{/polywrap_module}}/Cargo.toml dependencies.{{name}}.path /linked-packages/{{name}} > ./{{#polywrap_module}}{{dir}}{{/polywrap_module}}/Cargo-local.toml
   rm -rf ./{{#polywrap_module}}{{dir}}{{/polywrap_module}}/Cargo.toml
   mv ./{{#polywrap_module}}{{dir}}{{/polywrap_module}}/Cargo-local.toml ./{{#polywrap_module}}{{dir}}{{/polywrap_module}}/Cargo.toml
-  true
 {{/polywrap_linked_packages}}
 {{/polywrap_linked_packages.length}}
 
@@ -11,13 +12,11 @@
 toml set ./{{dir}}/Cargo.toml lib.crate-type ["cdylib"] > ./{{dir}}/Cargo-local.toml
 rm -rf ./{{dir}}/Cargo.toml
 mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml
-true
 sed -i 's/\"\[cdylib\]\"/\[\"cdylib\"\]/g' ./{{dir}}/Cargo.toml
 
 toml set ./{{dir}}/Cargo.toml package.name "module" > ./{{dir}}/Cargo-local.toml
 rm -rf ./{{dir}}/Cargo.toml
 mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml
-true
 
 cargo build --manifest-path ./{{dir}}/Cargo.toml \
     --target wasm32-unknown-unknown --release
@@ -32,6 +31,4 @@ rm -rf ./build/bg_module.wasm
 
 wasm-opt --asyncify -Os ./build/snipped_module.wasm -o ./build/wrap.wasm
 rm -rf ./build/snipped_module.wasm
-
-chmod -R g+wX .
 {{/polywrap_module}}
