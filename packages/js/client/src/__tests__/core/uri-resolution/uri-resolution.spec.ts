@@ -16,7 +16,6 @@ import {
 import fs from "fs";
 import { Result } from "@polywrap/result";
 import { mockPluginRegistration } from "../../helpers/mockPluginRegistration";
-import { createDefaultClient } from "../../utils/createDefaultClient";
 import { PolywrapClient } from "../../../PolywrapClient";
 
 jest.setTimeout(200000);

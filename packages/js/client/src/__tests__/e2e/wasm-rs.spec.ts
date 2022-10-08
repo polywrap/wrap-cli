@@ -10,7 +10,7 @@ import { getClientWithEnsAndIpfs } from "../helpers/getClientWithEnsAndIpfs";
 import fse from "fs-extra";
 import path from "path";
 import { execSync } from "child_process";
-import { createDefaultClient } from "../utils/createDefaultClient";
+import { PolywrapClient } from "../../PolywrapClient";
 const { performance } = require("perf_hooks");
 
 jest.setTimeout(1200000);
@@ -30,11 +30,11 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    const client = createDefaultClient({
+    const client = new PolywrapClient({
       packages: [
         {
           uri: "wrap://ens/memory-storage.polywrap.eth",
-          plugin: makeMemoryStoragePlugin({}),
+          package: makeMemoryStoragePlugin({}),
         },
       ],
     });
@@ -48,7 +48,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runBigIntTypeTest(createDefaultClient(), wrapperUri);
+    await TestCases.runBigIntTypeTest(new PolywrapClient(), wrapperUri);
   });
 
   it("bignumber-type", async () => {
@@ -57,7 +57,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runBigNumberTypeTest(createDefaultClient(), wrapperUri);
+    await TestCases.runBigNumberTypeTest(new PolywrapClient(), wrapperUri);
   });
 
   it("bytes-type", async () => {
@@ -66,7 +66,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runBytesTypeTest(createDefaultClient(), wrapperUri);
+    await TestCases.runBytesTypeTest(new PolywrapClient(), wrapperUri);
   });
 
   it("enum-types", async () => {
@@ -75,7 +75,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runEnumTypesTest(createDefaultClient(), wrapperUri);
+    await TestCases.runEnumTypesTest(new PolywrapClient(), wrapperUri);
   });
 
   it("map-type", async () => {
@@ -84,7 +84,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runMapTypeTest(createDefaultClient(), wrapperUri);
+    await TestCases.runMapTypeTest(new PolywrapClient(), wrapperUri);
   });
 
   it("implementations - e2e", async () => {
@@ -98,7 +98,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(implementationPath);
 
-    const client = createDefaultClient({
+    const client = new PolywrapClient({
       interfaces: [
         {
           interface: interfaceUri,
@@ -128,7 +128,7 @@ describe("wasm-rs test cases", () => {
     await buildWrapper(implementationPath);
     await buildWrapper(aggregatorPath);
 
-    const client = createDefaultClient({
+    const client = new PolywrapClient({
       interfaces: [
         {
           interface: interfaceUri,
@@ -151,7 +151,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runInvalidTypesTest(createDefaultClient(), wrapperUri);
+    await TestCases.runInvalidTypesTest(new PolywrapClient(), wrapperUri);
   });
 
   it("JSON-type", async () => {
@@ -160,7 +160,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runJsonTypeTest(createDefaultClient(), wrapperUri, true);
+    await TestCases.runJsonTypeTest(new PolywrapClient(), wrapperUri, true);
   });
 
   it("large-types", async () => {
@@ -169,7 +169,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runLargeTypesTest(createDefaultClient(), wrapperUri);
+    await TestCases.runLargeTypesTest(new PolywrapClient(), wrapperUri);
   });
 
   it("number-types under and overflows", async () => {
@@ -178,7 +178,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runNumberTypesTest(createDefaultClient(), wrapperUri);
+    await TestCases.runNumberTypesTest(new PolywrapClient(), wrapperUri);
   });
 
   it("object-types", async () => {
@@ -187,7 +187,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runObjectTypesTest(createDefaultClient(), wrapperUri);
+    await TestCases.runObjectTypesTest(new PolywrapClient(), wrapperUri);
   });
 
   it("simple-storage", async () => {
@@ -206,7 +206,7 @@ describe("wasm-rs test cases", () => {
     await buildWrapper(wrapperPath);
 
     await TestCases.runSimpleEnvTest(
-      await createDefaultClient({
+      await new PolywrapClient({
         envs: [
           {
             uri: wrapperUri,
@@ -232,7 +232,7 @@ describe("wasm-rs test cases", () => {
     await buildWrapper(wrapperPath);
 
     await TestCases.runComplexEnvs(
-      createDefaultClient({
+      new PolywrapClient({
         envs: [
           {
             uri: wrapperUri,
@@ -275,20 +275,24 @@ describe("wasm-rs test cases", () => {
     console.debug = jest.fn();
     const message = "foo bar baz";
 
-    const client = await getClient();
+    const client = new PolywrapClient();
     const result = await client.invoke<boolean>({
       uri: wrapperUri,
       method: "logMessage",
       args: {
         message,
-      }
+      },
     });
 
     expect(result.ok).toBeTruthy();
     if (!result.ok) return;
     expect(result.value).toBeTruthy();
-    expect((console.debug as any).mock.calls[0][0]).toBe("__wrap_debug_log: " + message);
-    expect((console.debug as any).mock.calls[1][0]).toBe("__wrap_debug_log: " + message);
+    expect((console.debug as any).mock.calls[0][0]).toBe(
+      "__wrap_debug_log: " + message
+    );
+    expect((console.debug as any).mock.calls[1][0]).toBe(
+      "__wrap_debug_log: " + message
+    );
     jest.clearAllMocks();
   });
 });
@@ -327,7 +331,7 @@ describe.skip("Wasm-rs benchmarking", () => {
     const msTime = endTime - startTime;
 
     //Make sure the wrapper works correctly
-    await TestCases.runBigNumberTypeTest(createDefaultClient(), wrapperUri);
+    await TestCases.runBigNumberTypeTest(new PolywrapClient(), wrapperUri);
 
     return msTime;
   };
