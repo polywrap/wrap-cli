@@ -15,16 +15,15 @@ describe("workflow JobRunner", () => {
     await buildWrapper(
       path.join(GetPathToTestWrappers(), "wasm-as", "simple-calculator")
     );
-
     client = new PolywrapClient({});
   });
 
   for (const testCase of testCases) {
-    test(testCase.name, async () => {
+    it(testCase.name, async () => {
+      expect(client).toBeTruthy();
       const ids = Object.keys(testCase.workflow.jobs);
       const jobRunner = new JobRunner(client, testCase.onExecution);
       await jobRunner.run(testCase.workflow.jobs, ids);
     });
   }
 });
-

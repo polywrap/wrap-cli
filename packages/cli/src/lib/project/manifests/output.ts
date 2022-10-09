@@ -1,4 +1,4 @@
-import { displayPath, withSpinner, intlMsg } from "../../";
+import { displayPath, Logger, logActivity, intlMsg } from "../../";
 
 import {
   BuildManifest,
@@ -7,14 +7,14 @@ import {
   PluginManifest,
 } from "@polywrap/polywrap-manifest-types-js";
 import { writeFileSync, normalizePath } from "@polywrap/os-js";
-import YAML from "js-yaml";
+import YAML from "yaml";
 import path from "path";
 import fs from "fs";
 
 export async function outputManifest(
   manifest: PolywrapManifest | BuildManifest | MetaManifest | PluginManifest,
   manifestPath: string,
-  quiet = false
+  logger: Logger
 ): Promise<unknown> {
   const run = () => {
     const removeUndefinedProps = (
@@ -52,7 +52,7 @@ export async function outputManifest(
     const isYaml =
       manifestPath.endsWith(".yaml") || manifestPath.endsWith(".yml");
     const str = isYaml
-      ? YAML.safeDump(sanitizedManifest, { indent: 2 })
+      ? YAML.stringify(sanitizedManifest, null, 2)
       : JSON.stringify(sanitizedManifest, null, 2);
 
     if (!str) {
@@ -71,23 +71,20 @@ export async function outputManifest(
     writeFileSync(manifestPath, str, "utf-8");
   };
 
-  if (quiet) {
-    return run();
-  } else {
-    manifestPath = displayPath(manifestPath);
-    return await withSpinner(
-      intlMsg.lib_helpers_manifest_outputText({
-        path: normalizePath(manifestPath),
-      }),
-      intlMsg.lib_helpers_manifest_outputError({
-        path: normalizePath(manifestPath),
-      }),
-      intlMsg.lib_helpers_manifest_outputWarning({
-        path: normalizePath(manifestPath),
-      }),
-      (_spinner): Promise<unknown> => {
-        return Promise.resolve(run());
-      }
-    );
-  }
+  manifestPath = displayPath(manifestPath);
+  return await logActivity(
+    logger,
+    intlMsg.lib_helpers_manifest_outputText({
+      path: normalizePath(manifestPath),
+    }),
+    intlMsg.lib_helpers_manifest_outputError({
+      path: normalizePath(manifestPath),
+    }),
+    intlMsg.lib_helpers_manifest_outputWarning({
+      path: normalizePath(manifestPath),
+    }),
+    (): Promise<unknown> => {
+      return Promise.resolve(run());
+    }
+  );
 }

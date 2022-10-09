@@ -1,4 +1,4 @@
-import { withSpinner } from "./spinner";
+import { Logger, logActivity } from "../logging";
 import { intlMsg } from "../intl";
 import { displayPath } from "../system";
 
@@ -33,25 +33,22 @@ export const generateWrapFile = async (
   name: string,
   type: "interface" | "wasm" | "plugin",
   path: string,
-  quiet = false
+  logger: Logger
 ): Promise<void> => {
-  if (quiet) {
-    return run(abi, name, type, path);
-  } else {
-    const relativePath = displayPath(path);
-    return await withSpinner(
-      intlMsg.lib_helpers_manifest_outputText({
-        path: normalizePath(relativePath),
-      }),
-      intlMsg.lib_helpers_manifest_outputError({
-        path: normalizePath(relativePath),
-      }),
-      intlMsg.lib_helpers_manifest_outputWarning({
-        path: normalizePath(relativePath),
-      }),
-      async (_spinner): Promise<void> => {
-        await run(abi, name, type, path);
-      }
-    );
-  }
+  const relativePath = displayPath(path);
+  return await logActivity(
+    logger,
+    intlMsg.lib_helpers_manifest_outputText({
+      path: normalizePath(relativePath),
+    }),
+    intlMsg.lib_helpers_manifest_outputError({
+      path: normalizePath(relativePath),
+    }),
+    intlMsg.lib_helpers_manifest_outputWarning({
+      path: normalizePath(relativePath),
+    }),
+    async (): Promise<void> => {
+      await run(abi, name, type, path);
+    }
+  );
 };

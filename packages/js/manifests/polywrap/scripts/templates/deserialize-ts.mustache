@@ -15,7 +15,7 @@ import {
 import { DeserializeManifestOptions } from "../../";
 
 import * as Semver from "semver";
-import YAML from "js-yaml";
+import YAML from "yaml";
 
 export function deserialize{{type}}(
   manifest: string,
@@ -24,10 +24,10 @@ export function deserialize{{type}}(
   let any{{type}}: Any{{type}} | undefined;
   try {
     any{{type}} = JSON.parse(manifest) as Any{{type}};
-  } catch (e) {
-    any{{type}} = YAML.safeLoad(manifest) as
-    | Any{{type}}
-    | undefined;
+  } catch (_) {
+    try {
+      any{{type}} = YAML.parse(manifest) as Any{{type}};
+    } catch (_) { }
   }
 
   if (!any{{type}}) {

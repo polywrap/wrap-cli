@@ -2,7 +2,7 @@ import { IFileReader } from "./IFileReader";
 import { IWasmPackage } from "./IWasmPackage";
 import { WasmWrapper } from "./WasmWrapper";
 import { WRAP_MODULE_PATH, WRAP_MANIFEST_PATH } from "./constants";
-import { InMemoryFileReader } from "./InMemoryFileReader";
+import { createWasmPackage } from "./helpers/createWasmPackage";
 
 import {
   deserializeWrapManifest,
@@ -12,7 +12,7 @@ import { GetManifestOptions, Wrapper } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class WasmPackage implements IWasmPackage {
-  protected constructor(private readonly fileReader: IFileReader) {}
+  constructor(private readonly fileReader: IFileReader) {}
 
   static from(manifestBuffer: Uint8Array, wasmModule: Uint8Array): WasmPackage;
   static from(
@@ -24,47 +24,16 @@ export class WasmPackage implements IWasmPackage {
   static from(fileReader: IFileReader): WasmPackage;
   static from(
     manifestBufferOrFileReader: Uint8Array | IFileReader,
-    wasmModuleOrFileReader?: Uint8Array | IFileReader
+    wasmModuleOrFileReader?: Uint8Array | IFileReader,
+    fileReader?: IFileReader
   ): WasmPackage {
-    let manifestBuffer: Uint8Array | undefined;
-    let wasmModule: Uint8Array | undefined;
-    let fileReader: IFileReader | undefined;
-
-    if (Array.isArray(manifestBufferOrFileReader)) {
-      manifestBuffer = manifestBufferOrFileReader as Uint8Array;
-    } else {
-      fileReader = manifestBufferOrFileReader as IFileReader;
-    }
-
-    if (Array.isArray(wasmModuleOrFileReader)) {
-      wasmModule = wasmModuleOrFileReader as Uint8Array;
-    } else if ((wasmModuleOrFileReader as Partial<IFileReader>).readFile) {
-      fileReader = wasmModuleOrFileReader as IFileReader;
-    }
-
-    if (manifestBuffer) {
-      if (wasmModule) {
-        return new WasmPackage(
-          InMemoryFileReader.from(
-            manifestBuffer,
-            wasmModule,
-            fileReader as IFileReader
-          )
-        );
-      } else {
-        return new WasmPackage(
-          InMemoryFileReader.fromManifest(
-            manifestBuffer,
-            fileReader as IFileReader
-          )
-        );
-      }
-    } else {
-      return new WasmPackage(fileReader as IFileReader);
-    }
+    return createWasmPackage(
+      manifestBufferOrFileReader,
+      wasmModuleOrFileReader,
+      fileReader
+    );
   }
 
-  // TODO: return Result
   async getManifest(
     options?: GetManifestOptions
   ): Promise<Result<WrapManifest, Error>> {

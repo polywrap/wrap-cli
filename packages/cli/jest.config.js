@@ -9,7 +9,8 @@ module.exports = {
     },
   },
   modulePathIgnorePatterns: [
-    "<rootDir>/src/__tests__/project/.polywrap"
+    "<rootDir>/src/__tests__/project/.polywrap",
+    "<rootDir>/src/__tests__/e2e/build-rs.spec.ts"
   ],
   testPathIgnorePatterns: [
     "<rootDir>/src/__tests__/project/.polywrap"

@@ -1,7 +1,7 @@
 import { DeployStep, StepName, StepResult, UriOrPrevStepResult } from "./step";
+import { Logger } from "../logging";
 
 import { Uri } from "@polywrap/core-js";
-import { GluegunPrint } from "gluegun";
 
 export interface DeployJobResult {
   name: string;
@@ -17,7 +17,7 @@ interface DeployJobArgs {
   name: string;
   steps: DeployStep[];
   config: Record<string, unknown>;
-  printer: GluegunPrint;
+  logger: Logger;
 }
 
 export class DeployJob {
@@ -25,7 +25,7 @@ export class DeployJob {
   public steps: DeployStep[];
   public config: Record<string, unknown>;
 
-  private _printer: GluegunPrint;
+  private _logger: Logger;
   private _resultMap: Map<StepName, StepResult> = new Map();
 
   constructor(config: DeployJobArgs) {
@@ -33,7 +33,7 @@ export class DeployJob {
     this.steps = config.steps;
     this.config = config.config;
 
-    this._printer = config.printer;
+    this._logger = config.logger;
 
     this.steps.forEach((step, index) => {
       if (step.uriOrStepResult.startsWith("$")) {
@@ -53,7 +53,7 @@ export class DeployJob {
   }
 
   public async run(): Promise<DeployJobResult> {
-    this._printer.info(
+    this._logger.info(
       `\n\nExecuting '${this.name}' deployment DeployJob: \n${this.steps
         .map((s) => `\n- ${s.name}`)
         .join("")}\n\n`
@@ -62,7 +62,7 @@ export class DeployJob {
     for await (const step of this.steps) {
       const uri = this._getUriArgument(step.uriOrStepResult);
 
-      this._printer.info(
+      this._logger.info(
         `Executing step: '${step.name}', with URI: '${uri.toString()}'`
       );
 
@@ -78,7 +78,7 @@ export class DeployJob {
           result,
         });
 
-        this._printer.success(
+        this._logger.info(
           `Successfully executed step '${
             step.name
           }'. Result: '${result.toString()}'`
@@ -88,7 +88,7 @@ export class DeployJob {
       }
     }
 
-    this._printer.info(
+    this._logger.info(
       `\n\nSuccessfully executed '${this.name}' deployment job\n\n`
     );
 

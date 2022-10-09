@@ -26,9 +26,9 @@
     "@polywrap/wrap-manifest-types-js": "0.8.0",
     "graphql": "15.5.0",
     "graphql-tag": "2.10.4",
-    "js-yaml": "3.14.0",
     "jsonschema": "1.4.0",
-    "semver": "7.3.5"
+    "semver": "7.3.5",
+    "yaml": "2.1.3"
   },
   "devDependencies": {
     "@polywrap/os-js": "0.8.0",
