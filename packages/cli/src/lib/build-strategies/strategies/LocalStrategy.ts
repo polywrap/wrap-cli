@@ -30,10 +30,10 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
           intlMsg.lib_helpers_buildText(),
           intlMsg.lib_helpers_buildError(),
           intlMsg.lib_helpers_buildWarning(),
-          async (_spinner) => {
+          async (logger) => {
             return await runCommand(
               command,
-              this.project.logger,
+              logger,
               undefined,
               process.cwd()
             );
