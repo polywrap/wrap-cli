@@ -58,7 +58,7 @@ export class AppProject extends Project<AppManifest> {
     if (!this._appManifest) {
       this._appManifest = await loadAppManifest(
         this.getManifestPath(),
-        this.quiet
+        this.logger
       );
     }
 

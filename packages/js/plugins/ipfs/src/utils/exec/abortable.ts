@@ -1,5 +1,4 @@
-import { IpfsClient } from "../IpfsClient";
-
+import { IpfsClient } from "@polywrap/ipfs-http-client-lite";
 import AbortController from "abort-controller";
 
 const abortErrorMessage = "The user aborted a request.";
@@ -77,7 +76,7 @@ export const execAbortable = <TReturn>(
     provider,
     abort: () => {
       controller.abort();
-      timer && clearTimeout();
+      timer && clearTimeout(timer);
     },
   };
 };

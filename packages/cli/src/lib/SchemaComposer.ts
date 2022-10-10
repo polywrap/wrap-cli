@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable no-empty */
 
 import { Project, AnyProjectManifest, intlMsg } from "./";
 
@@ -11,8 +12,7 @@ import {
 } from "@polywrap/schema-compose";
 import fs from "fs";
 import path from "path";
-import * as gluegun from "gluegun";
-import YAML from "js-yaml";
+import YAML from "yaml";
 import {
   deserializeWrapManifest,
   validateWrapManifest,
@@ -127,13 +127,16 @@ export class SchemaComposer {
       }
     }
 
-    try {
-      const manifest = await this._client.getManifest(new Uri(uri));
-      return manifest.abi;
-    } catch (e) {
-      gluegun.print.error(e);
-      throw e;
+    const manifest = await this._client.getManifest(new Uri(uri));
+    if (!manifest.ok) {
+      if (manifest.error) {
+        this._config.project.logger.error(
+          JSON.stringify(manifest.error, null, 2)
+        );
+      }
+      throw manifest.error;
     }
+    return manifest.value.abi;
   }
 
   private async _loadGraphqlAbi(
@@ -179,7 +182,11 @@ export class SchemaComposer {
   private async _loadYamlAbi(path: string): Promise<WrapAbi> {
     // Load the YAML ABI
     const yaml = fs.readFileSync(path, "utf-8");
-    const result = YAML.safeLoad(yaml);
+    let result: unknown | undefined;
+
+    try {
+      result = YAML.parse(yaml);
+    } catch (_) {}
 
     if (!result) {
       throw Error(

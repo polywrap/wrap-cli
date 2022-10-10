@@ -1,4 +1,5 @@
 import { CacheDirectory } from "../CacheDirectory";
+import { Logger } from "../logging";
 
 import path from "path";
 
@@ -9,6 +10,7 @@ export interface InfraPackageArg {
 
 export interface InfraDependencyFetcherConfig {
   cache: CacheDirectory;
+  logger: Logger;
   installationDirectory: string;
   name: string;
 }

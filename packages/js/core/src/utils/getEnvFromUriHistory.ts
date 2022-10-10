@@ -5,7 +5,7 @@ export const getEnvFromUriHistory = (
   client: Client
 ): Env<Uri> | undefined => {
   for (const uri of uriHistory) {
-    const env = client.getEnvByUri(uri, {});
+    const env = client.getEnvByUri(uri);
 
     if (env) {
       return env;

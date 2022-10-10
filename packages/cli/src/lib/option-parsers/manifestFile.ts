@@ -1,26 +1,22 @@
 import { intlMsg } from "../intl";
-import {
-  defaultPolywrapManifest,
-  defaultAppManifest,
-  defaultPluginManifest,
-} from "..";
+import { defaultAppManifest, defaultPluginManifest } from "../project";
 import { resolvePathIfExists } from "../system";
 
-const filterUniqueFn = (value: string, index: number, self: Array<string>) =>
-  self.indexOf(value) === index;
+import path from "path";
+
+const deprecatedDefaultManifests = [
+  ...defaultAppManifest,
+  ...defaultPluginManifest,
+];
 
 export function parseManifestFileOption(
-  manifestFile: string | undefined
+  manifestFile: string | undefined,
+  defaults: string[]
 ): string {
-  const defaultManifests = [
-    ...defaultPolywrapManifest,
-    ...defaultAppManifest,
-    ...defaultPluginManifest,
-  ].filter(filterUniqueFn);
+  const didUserProvideManifestFile =
+    manifestFile != undefined && !!manifestFile.length;
 
-  const manifestPaths = manifestFile
-    ? [manifestFile as string]
-    : defaultManifests;
+  const manifestPaths = manifestFile ? [manifestFile as string] : defaults;
 
   manifestFile = resolvePathIfExists(manifestPaths);
 
@@ -31,6 +27,19 @@ export function parseManifestFileOption(
       })
     );
     process.exit(1);
+  }
+
+  const fileName = path.basename(manifestFile);
+
+  if (
+    !didUserProvideManifestFile &&
+    deprecatedDefaultManifests.includes(fileName)
+  ) {
+    console.warn(
+      intlMsg.lib_option_defaults_deprecated_project_manifest({
+        fileName: path.basename(fileName),
+      })
+    );
   }
 
   return manifestFile;

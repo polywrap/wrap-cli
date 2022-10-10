@@ -12,7 +12,7 @@ import {
 
 export function validateRedirects<
   TUri extends PluginPackage<unknown> | Uri | string
->(redirects: UriRedirect<TUri>[]): void {
+>(redirects: readonly UriRedirect<TUri>[]): void {
   if (!Array.isArray(redirects)) {
     throw new Error(intlMsg.commands_run_error_redirectsExportNotArray());
   }
@@ -44,7 +44,7 @@ export function validateRedirects<
 }
 
 export function validatePlugins<TUri extends Uri | string = string>(
-  plugins: PluginRegistration<TUri>[]
+  plugins: readonly PluginRegistration<TUri>[]
 ): void {
   if (!Array.isArray(plugins)) {
     throw new Error(intlMsg.commands_run_error_pluginsExportNotArray());
@@ -88,7 +88,7 @@ export function validatePlugins<TUri extends Uri | string = string>(
 }
 
 export function validateInterfaces<TUri extends Uri | string = string>(
-  interfaces: InterfaceImplementations<TUri>[]
+  interfaces: readonly InterfaceImplementations<TUri>[]
 ): void {
   if (!Array.isArray(interfaces)) {
     throw new Error(intlMsg.commands_run_error_interfacesExportNotArray());
@@ -138,7 +138,7 @@ export function validateInterfaces<TUri extends Uri | string = string>(
 }
 
 export function validateEnvs<TUri extends Uri | string = string>(
-  envs: Env<TUri>[]
+  envs: readonly Env<TUri>[]
 ): void {
   if (!Array.isArray(envs)) {
     throw new Error(intlMsg.commands_run_error_envsExportNotArray());

@@ -1,10 +1,10 @@
 /* eslint-disable  @typescript-eslint/no-unused-vars */
 import { Command, Program } from "./types";
+import { createLogger } from "./utils/createLogger";
 import {
   CodeGenerator,
   SchemaComposer,
   intlMsg,
-  defaultPolywrapManifest,
   parseDirOption,
   parseCodegenScriptOption,
   parseManifestFileOption,
@@ -12,7 +12,10 @@ import {
   getProjectFromManifest,
   isPluginManifestLanguage,
   generateWrapFile,
+  defaultProjectManifestFiles,
+  defaultPolywrapManifest,
 } from "../lib";
+import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
@@ -30,6 +33,8 @@ type CodegenCommandOptions = {
   publishDir: string;
   script?: string;
   clientConfig: Partial<PolywrapClientConfig>;
+  verbose?: boolean;
+  quiet?: boolean;
 };
 
 export const codegen: Command = {
@@ -64,13 +69,18 @@ export const codegen: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (options) => {
         await run({
           ...options,
           clientConfig: await parseClientConfigOption(options.clientConfig),
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           script: parseCodegenScriptOption(options.script),
-          manifestFile: parseManifestFileOption(options.manifestFile),
+          manifestFile: parseManifestFileOption(
+            options.manifestFile,
+            defaultProjectManifestFiles
+          ),
           publishDir: parseDirOption(options.publishDir, defaultPublishDir),
         });
       });
@@ -84,12 +94,15 @@ async function run(options: CodegenCommandOptions) {
     script,
     clientConfig,
     publishDir,
+    verbose,
+    quiet,
   } = options;
+  const logger = createLogger({ verbose, quiet });
 
   // Get Client
   const client = new PolywrapClient(clientConfig);
 
-  const project = await getProjectFromManifest(manifestFile);
+  const project = await getProjectFromManifest(manifestFile, logger);
 
   if (!project) {
     return;
@@ -103,12 +116,20 @@ async function run(options: CodegenCommandOptions) {
     project,
     client,
   });
-  const codeGenerator = new CodeGenerator({
-    project,
-    schemaComposer,
-    codegenDirAbs: codegenDir,
-    customScript: script,
-  });
+
+  const codeGenerator = script
+    ? new ScriptCodegenerator({
+        codegenDirAbs: codegenDir,
+        script,
+        schemaComposer,
+        project,
+        omitHeader: false,
+        mustacheView: undefined,
+      })
+    : new CodeGenerator({
+        schemaComposer,
+        project,
+      });
 
   result = await codeGenerator.generate();
 
@@ -125,12 +146,13 @@ async function run(options: CodegenCommandOptions) {
       await schemaComposer.getComposedAbis(),
       await project.getName(),
       "plugin",
-      manifestPath
+      manifestPath,
+      logger
     );
   }
 
   if (result) {
-    console.log(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
+    logger.info(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
     process.exitCode = 0;
   } else {
     process.exitCode = 1;

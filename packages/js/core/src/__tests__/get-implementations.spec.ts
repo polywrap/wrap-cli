@@ -4,6 +4,7 @@ import {
   UriRedirect,
 } from "../";
 import { InterfaceImplementations } from "../types";
+import { ResultOk } from "@polywrap/result";
 
 describe("getImplementations", () => {
 
@@ -69,21 +70,21 @@ describe("getImplementations", () => {
         redirects
       );
 
-    expect(getImplementationsResult1).toEqual([
+    expect(getImplementationsResult1).toEqual(ResultOk([
       new Uri(implementation1Uri),
       new Uri(implementation2Uri),
       new Uri(implementation3Uri)
-    ]);
+    ]));
 
-    expect(getImplementationsResult2).toEqual([
+    expect(getImplementationsResult2).toEqual(ResultOk([
       new Uri(implementation1Uri),
       new Uri(implementation2Uri),
       new Uri(implementation3Uri)
-    ]);
+    ]));
 
-    expect(getImplementationsResult3).toEqual([
+    expect(getImplementationsResult3).toEqual(ResultOk([
       new Uri(implementation3Uri)
-    ]);
+    ]));
   });
 
   it("interface implementations are not redirected", () => {
@@ -114,8 +115,8 @@ describe("getImplementations", () => {
         redirects
       );
 
-    expect(getImplementationsResult).toEqual([
+    expect(getImplementationsResult).toEqual(ResultOk([
       new Uri(implementation1Uri)
-    ]);
+    ]));
   });
 });

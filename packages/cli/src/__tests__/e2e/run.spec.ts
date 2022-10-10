@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import yaml from "js-yaml";
+import yaml from "yaml";
 
 import { clearStyle, parseOutput, polywrapCli } from "./utils";
 
@@ -14,15 +14,17 @@ const HELP = `Usage: polywrap run|r [options]
 Runs Workflows
 
 Options:
-  -m, --manifest  <manifest>            Workflow Manifest path (default:
-                                        "polywrap.test.yaml")
+  -m, --manifest-file  <path>           Path to the Polywrap Workflow manifest
+                                        file (default: polywrap.test.yaml |
+                                        polywrap.test.yml)
   -c, --client-config <config-path>     Add custom configuration to the
                                         PolywrapClient
   -o, --output-file <output-file-path>  Output file path for the workflow
                                         result
   -j, --jobs <jobs...>                  Specify ids of jobs that you want to
                                         run
-  -q, --quiet                           Suppress output
+  -v, --verbose                         Verbose output (default: false)
+  -q, --quiet                           Suppress output (default: false)
   -h, --help                            display help for command
 `;
 
@@ -166,7 +168,7 @@ describe("e2e tests for run command", () => {
     expect(parseOutput(stdout)).toMatchObject(
       JSON.parse(
         JSON.stringify(
-          (yaml.load(
+          (yaml.parse(
             fs.readFileSync(
               path.join(testCaseDir, "output.yaml"),
               "utf8"
@@ -206,7 +208,7 @@ describe("e2e tests for run command", () => {
 
     const output = parseOutput(stdout);
     expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
-    expect(output.filter((o => o.validation === "SUCCEED"))).toHaveLength(output.length);
+    expect(output.filter((o => o.validation?.startsWith("SUCCEED")))).toHaveLength(output.length);
   });
 
   it("Should print error on stderr if validation fails", async () => {
@@ -280,7 +282,7 @@ describe("e2e tests for run command", () => {
 
     const output = parseOutput(stdout);
     expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
-    expect(output.filter((o => o.validation === "SUCCEED"))).toHaveLength(output.length);
+    expect(output.filter((o => o.validation?.startsWith("SUCCEED")))).toHaveLength(output.length);
   });
 
   it("Should print error on stderr if job is named 'data' or 'error'", async () => {

@@ -14,6 +14,7 @@ import {
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Tracer, TracingLevel } from "@polywrap/tracing-js";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class PluginWrapper implements Wrapper {
   private _instance: PluginModule<unknown> | undefined;
@@ -27,17 +28,15 @@ export class PluginWrapper implements Wrapper {
   }
 
   public async getFile(
-    _: GetFileOptions,
-    _client: Client
-  ): Promise<Uint8Array | string> {
-    throw Error("client.getFile(...) is not implemented for Plugins.");
+    _: GetFileOptions
+  ): Promise<Result<Uint8Array | string, Error>> {
+    return ResultErr(
+      Error("client.getFile(...) is not implemented for Plugins.")
+    );
   }
 
   @Tracer.traceMethod("PluginWrapper: getManifest")
-  public async getManifest(
-    _: GetManifestOptions,
-    _client: Client
-  ): Promise<WrapManifest> {
+  public getManifest(_?: GetManifestOptions): WrapManifest {
     return this._plugin.manifest;
   }
 
@@ -51,70 +50,62 @@ export class PluginWrapper implements Wrapper {
       `Plugin Wrapper invoked: ${options.uri.uri}, with method ${options.method}`,
       TracingLevel.High
     );
-    try {
-      const { method } = options;
-      const args = options.args || {};
-      const module = this._getInstance();
+    const { method } = options;
+    const args = options.args || {};
+    const module = this._getInstance();
 
-      if (!module) {
-        throw new Error(`PluginWrapper: module "${module}" not found.`);
-      }
+    if (!module) {
+      return ResultErr(Error(`PluginWrapper: module "${module}" not found.`));
+    }
 
-      if (!module.getMethod(method)) {
-        throw new Error(`PluginWrapper: method "${method}" not found.`);
-      }
+    if (!module.getMethod(method)) {
+      return ResultErr(Error(`PluginWrapper: method "${method}" not found.`));
+    }
 
-      // Set the module's environment
-      await module.setEnv(options.env || {});
+    // Set the module's environment
+    await module.setEnv(options.env || {});
 
-      let jsArgs: Record<string, unknown>;
+    let jsArgs: Record<string, unknown>;
 
-      // If the args are a msgpack buffer, deserialize it
-      if (isBuffer(args)) {
-        const result = msgpackDecode(args);
+    // If the args are a msgpack buffer, deserialize it
+    if (isBuffer(args)) {
+      const result = msgpackDecode(args);
 
-        Tracer.addEvent("msgpack-decoded", result);
+      Tracer.addEvent("msgpack-decoded", result);
 
-        if (typeof result !== "object") {
-          throw new Error(
-            `PluginWrapper: decoded MsgPack args did not result in an object.\nResult: ${result}`
-          );
-        }
-
-        jsArgs = result as Record<string, unknown>;
-      } else {
-        jsArgs = args as Record<string, unknown>;
-      }
-
-      // Invoke the function
-      try {
-        const result = await module._wrap_invoke(method, jsArgs, client);
-
-        if (result !== undefined) {
-          const data = result as unknown;
-
-          Tracer.addEvent("Result", data);
-
-          return {
-            data: data,
-            encoded: false,
-          };
-        } else {
-          return {};
-        }
-      } catch (e) {
-        throw Error(
-          `PluginWrapper: invocation exception encountered.\n` +
-            `uri: ${options.uri}\nmodule: ${module}\n` +
-            `method: ${method}\n` +
-            `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
-            `exception: ${e.message}`
+      if (typeof result !== "object") {
+        const msgPackException = Error(
+          `PluginWrapper: decoded MsgPack args did not result in an object.\nResult: ${result}`
         );
+        return ResultErr(msgPackException);
       }
-    } catch (error) {
+
+      jsArgs = result as Record<string, unknown>;
+    } else {
+      jsArgs = args as Record<string, unknown>;
+    }
+
+    // Invoke the function
+    const result = await module._wrap_invoke(method, jsArgs, client);
+
+    if (result.ok) {
+      const data = result.value;
+
+      Tracer.addEvent("Result", data);
+
       return {
-        error,
+        ...ResultOk(data),
+        encoded: false,
       };
+    } else {
+      const invocationException = Error(
+        `PluginWrapper: invocation exception encountered.\n` +
+          `uri: ${options.uri}\nmodule: ${module}\n` +
+          `method: ${method}\n` +
+          `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
+          `exception: ${result.error?.message}`
+      );
+      return ResultErr(invocationException);
     }
   }
 

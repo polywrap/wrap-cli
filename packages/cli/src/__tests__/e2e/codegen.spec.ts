@@ -22,6 +22,8 @@ Options:
                                      (JavaScript | TypeScript)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
+  -v, --verbose                      Verbose output (default: false)
+  -q, --quiet                        Suppress output (default: false)
   -h, --help                         display help for command
 `;
 
@@ -84,7 +86,7 @@ describe("e2e tests for codegen command", () => {
   });
 
   it("Should throw error for invalid generation file - wrong file", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+    const { exitCode: code, stderr: error } = await runCLI({
       args: ["codegen", "--script", `polywrap-invalid.gen.js`],
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
@@ -95,23 +97,30 @@ describe("e2e tests for codegen command", () => {
     );
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toContain(
-      `Failed to generate types: Cannot find module '${genFile}'`
+
+    const errorText = clearStyle(error);
+    expect(errorText).toContain(
+      "Failed to generate types"
+    );
+    expect(errorText).toContain(
+      `Cannot find module '${genFile}'`
     );
   });
 
   it("Should throw error for invalid generation file - no run() method", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+    const { exitCode: code, stderr: error } = await runCLI({
       args: ["codegen", "--script", `polywrap-norun.gen.js`],
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toContain(
-      `Failed to generate types: The generation file provided doesn't have the 'generateBinding' method.`
+    const errorText = clearStyle(error);
+    expect(errorText).toContain(
+      "Failed to generate types"
+    );
+    expect(errorText).toContain(
+      `The generation file provided doesn't have the 'generateBinding' method.`
     );
   });
 
@@ -149,5 +158,23 @@ describe("e2e tests for codegen command", () => {
     );
 
     rimraf.sync(`${getTestCaseDir(0)}/types`);
+  });
+
+  it("Should successfully generate types - Rust", async () => {
+    rimraf.sync(`${getTestCaseDir(1)}/types`);
+
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["codegen"],
+      cwd: getTestCaseDir(1),
+      cli: polywrapCli,
+    });
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(clearStyle(output)).toContain(
+      `🔥 Types were generated successfully 🔥`
+    );
+
+    rimraf.sync(`${getTestCaseDir(1)}/types`);
   });
 });

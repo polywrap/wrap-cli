@@ -95,25 +95,26 @@ describe("Filesystem plugin", () => {
       },
     });
 
-    expect(deploy.error).toBeFalsy();
-    expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.indexOf("0x")).toBeGreaterThan(-1);
+    if (!deploy.ok) fail(deploy.error);
+    expect(deploy.value).toBeTruthy();
+    expect(deploy.value.indexOf("0x")).toBeGreaterThan(-1);
 
     // get the manifest
     const manifest = await client.getManifest(fsUri);
 
-    expect(manifest).toBeTruthy();
-    expect(manifest.version).toBe("0.1");
-    expect(manifest.type).toEqual("wasm");
+    if (!manifest.ok) fail(manifest.error);
+    expect(manifest.value.version).toBe("0.1");
+    expect(manifest.value.type).toEqual("wasm");
 
     // get a file
     const file = await client.getFile(fsUri, {
       path: "wrap.info",
     });
+    if (!file.ok) fail(file.error);
 
     const expectedFile = await fs.promises.readFile(`${fsPath}/wrap.info`);
 
     const expectedInfo = Uint8Array.from(expectedFile);
-    expect(file).toStrictEqual(expectedInfo);
+    expect(file.value).toStrictEqual(expectedInfo);
   });
 });

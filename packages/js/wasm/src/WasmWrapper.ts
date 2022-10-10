@@ -3,13 +3,13 @@ import { WrapExports } from "./types";
 import { createImports } from "./imports";
 import { IFileReader } from "./IFileReader";
 import { WRAP_MODULE_PATH } from "./constants";
+import { createWasmWrapper } from "./helpers/createWasmWrapper";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { Tracer, TracingLevel } from "@polywrap/tracing-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import {
-  InvokeResult,
   Wrapper,
   Uri,
   InvokeOptions,
@@ -17,11 +17,9 @@ import {
   InvocableResult,
   isBuffer,
   GetFileOptions,
+  GetManifestOptions,
 } from "@polywrap/core-js";
-
-type InvokeResultOrError =
-  | { type: "InvokeResult"; invokeResult: Uint8Array }
-  | { type: "InvokeError"; invokeError: string };
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export interface State {
   method: string;
@@ -40,7 +38,7 @@ export interface State {
     error?: string;
     args: unknown[];
   };
-  invokeResult: InvokeResult;
+  invokeResult?: Result<unknown>;
   getImplementationsResult?: Uint8Array;
   env: Uint8Array;
 }
@@ -64,33 +62,77 @@ export class WasmWrapper implements Wrapper {
     Tracer.endSpan();
   }
 
+  static async from(
+    manifestBuffer: Uint8Array,
+    wasmModule: Uint8Array,
+    options?: GetManifestOptions
+  ): Promise<WasmWrapper>;
+  static async from(
+    manifestBuffer: Uint8Array,
+    wasmModule: Uint8Array,
+    fileReader: IFileReader,
+    options?: GetManifestOptions
+  ): Promise<WasmWrapper>;
+  static async from(
+    manifestBuffer: Uint8Array,
+    fileReader: IFileReader,
+    options?: GetManifestOptions
+  ): Promise<WasmWrapper>;
+  static async from(
+    fileReader: IFileReader,
+    options?: GetManifestOptions
+  ): Promise<WasmWrapper>;
+  static async from(
+    manifestBufferOrFileReader: Uint8Array | IFileReader,
+    wasmModuleOrFileReaderOrManifestOptions?:
+      | Uint8Array
+      | IFileReader
+      | GetManifestOptions,
+    fileReaderOrManifestOptions?: IFileReader | GetManifestOptions,
+    manifestOptions?: GetManifestOptions
+  ): Promise<WasmWrapper> {
+    return createWasmWrapper(
+      manifestBufferOrFileReader,
+      wasmModuleOrFileReaderOrManifestOptions,
+      fileReaderOrManifestOptions,
+      manifestOptions
+    );
+  }
+
   @Tracer.traceMethod("WasmWrapper: getFile")
-  public async getFile(options: GetFileOptions): Promise<Uint8Array | string> {
+  public async getFile(
+    options: GetFileOptions
+  ): Promise<Result<Uint8Array | string, Error>> {
     const { path, encoding } = options;
 
-    const data = await this._fileReader.readFile(path);
+    const dataResult = await this._fileReader.readFile(path);
 
     // If nothing is returned, the file was not found
-    if (!data) {
-      throw Error(`WasmWrapper: File was not found.\nSubpath: ${path}`);
+    if (!dataResult.ok) {
+      return ResultErr(
+        Error(`WasmWrapper: File was not found.\nSubpath: ${path}`)
+      );
     }
+
+    const data = dataResult.value;
 
     if (encoding) {
       const decoder = new TextDecoder(encoding);
       const text = decoder.decode(data);
 
       if (!text) {
-        throw Error(
+        const error = Error(
           `WasmWrapper: Decoding the file's bytes array failed.\nBytes: ${data}`
         );
+        return ResultErr(error);
       }
-      return text;
+      return ResultOk(text);
     }
-    return data;
+    return ResultOk(data);
   }
 
   @Tracer.traceMethod("WasmWrapper: getManifest")
-  public async getManifest(): Promise<WrapManifest> {
+  public getManifest(): WrapManifest {
     return this._manifest;
   }
 
@@ -107,7 +149,11 @@ export class WasmWrapper implements Wrapper {
     try {
       const { method } = options;
       const args = options.args || {};
-      const wasm = await this._getWasmModule();
+      const wasmResult = await this._getWasmModule();
+      if (!wasmResult.ok) {
+        return wasmResult;
+      }
+      const wasm = wasmResult.value;
 
       const state: State = {
         invoke: {},
@@ -117,7 +163,6 @@ export class WasmWrapper implements Wrapper {
         subinvokeImplementation: {
           args: [],
         },
-        invokeResult: {} as InvokeResult,
         method,
         args: args
           ? isBuffer(args)
@@ -128,7 +173,7 @@ export class WasmWrapper implements Wrapper {
       };
 
       const abort = (message: string) => {
-        throw new Error(
+        throw Error(
           `WasmWrapper: Wasm module aborted execution.\nURI: ${options.uri.uri}\n` +
             `Method: ${method}\n` +
             `Args: ${JSON.stringify(args, null, 2)}\nMessage: ${message}.\n`
@@ -157,30 +202,23 @@ export class WasmWrapper implements Wrapper {
 
       const invokeResult = this._processInvokeResult(state, result, abort);
 
-      switch (invokeResult.type) {
-        case "InvokeError": {
-          throw Error(
-            `WasmWrapper: invocation exception encountered.\n` +
-              `uri: ${options.uri.uri}\n` +
-              `method: ${method}\n` +
-              `args: ${JSON.stringify(args, null, 2)}\n` +
-              `exception: ${invokeResult.invokeError}`
-          );
-        }
-        case "InvokeResult": {
-          return {
-            data: invokeResult.invokeResult,
-            encoded: true,
-          };
-        }
-        default: {
-          throw Error(`WasmWrapper: Unknown state "${state}"`);
-        }
+      if (invokeResult.ok) {
+        return {
+          ...invokeResult,
+          encoded: true,
+        };
+      } else {
+        const error = Error(
+          `WasmWrapper: invocation exception encountered.\n` +
+            `uri: ${options.uri.uri}\n` +
+            `method: ${method}\n` +
+            `args: ${JSON.stringify(args, null, 2)}\n` +
+            `exception: ${invokeResult.error?.message}`
+        );
+        return ResultErr(error);
       }
     } catch (error) {
-      return {
-        error,
-      };
+      return ResultErr(error);
     }
   }
 
@@ -189,38 +227,34 @@ export class WasmWrapper implements Wrapper {
     state: State,
     result: boolean,
     abort: (message: string) => never
-  ): InvokeResultOrError {
+  ): Result<Uint8Array, Error> {
     if (result) {
       if (!state.invoke.result) {
         abort("Invoke result is missing.");
       }
 
-      return {
-        type: "InvokeResult",
-        invokeResult: state.invoke.result,
-      };
+      return ResultOk(state.invoke.result);
     } else {
       if (!state.invoke.error) {
         abort("Invoke error is missing.");
       }
 
-      return {
-        type: "InvokeError",
-        invokeError: state.invoke.error,
-      };
+      return ResultErr(Error(state.invoke.error));
     }
   }
 
   @Tracer.traceMethod("WasmWrapper: getWasmModule")
-  private async _getWasmModule(): Promise<Uint8Array> {
+  private async _getWasmModule(): Promise<Result<Uint8Array, Error>> {
     if (this._wasmModule === undefined) {
-      this._wasmModule = await this._fileReader.readFile(WRAP_MODULE_PATH);
+      const result = await this._fileReader.readFile(WRAP_MODULE_PATH);
 
-      if (!this._wasmModule) {
-        throw Error(`Wrapper does not contain a wasm module`);
+      if (!result.ok) {
+        return ResultErr(Error(`Wrapper does not contain a wasm module`));
       }
+
+      this._wasmModule = result.value;
     }
 
-    return this._wasmModule;
+    return ResultOk(this._wasmModule);
   }
 }

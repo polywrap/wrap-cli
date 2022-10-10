@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Client, MaybeAsync, executeMaybeAsyncFunction } from ".";
+import { Client, MaybeAsync } from ".";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 /**
  * Invocable plugin method.
@@ -42,20 +43,26 @@ export abstract class PluginModule<
   public async _wrap_invoke<
     TArgs extends Record<string, unknown> = Record<string, unknown>,
     TResult = unknown
-  >(method: string, args: TArgs, client: Client): Promise<TResult> {
+  >(
+    method: string,
+    args: TArgs,
+    client: Client
+  ): Promise<Result<TResult, Error>> {
     const fn = this.getMethod<TArgs, TResult>(method);
 
     if (!fn) {
-      throw Error(`Plugin missing method "${method}"`);
+      return ResultErr(Error(`Plugin missing method "${method}"`));
     }
 
     if (typeof fn !== "function") {
-      throw Error(`Plugin method "${method}" must be of type 'function'`);
+      return ResultErr(
+        Error(`Plugin method "${method}" must be of type 'function'`)
+      );
     }
 
-    return await executeMaybeAsyncFunction<TResult>(
-      fn.bind(this, args, client)
-    );
+    const data = await fn(args, client);
+
+    return ResultOk(data);
   }
 
   public getMethod<
@@ -69,7 +76,7 @@ export abstract class PluginModule<
       PluginMethod<TArgs, TResult>
     >)[method];
 
-    return fn;
+    return fn.bind(this);
   }
 }
 

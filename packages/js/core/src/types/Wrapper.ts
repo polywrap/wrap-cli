@@ -1,6 +1,5 @@
 import {
   Uri,
-  Client,
   GetFileOptions,
   GetManifestOptions,
   InvokeOptions,
@@ -10,6 +9,7 @@ import {
 } from ".";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { Result } from "@polywrap/result";
 
 /**
  * The Wrapper definition, which can be used to spawn
@@ -37,10 +37,7 @@ export interface Wrapper extends Invocable {
    * @param options Configuration options for file retrieval
    * @param client The client instance requesting the file.
    */
-  getFile(
-    options: GetFileOptions,
-    client: Client
-  ): Promise<Uint8Array | string>;
+  getFile(options: GetFileOptions): Promise<Result<Uint8Array | string, Error>>;
 
   /**
    * Get a manifest from the Wrapper package.
@@ -48,8 +45,5 @@ export interface Wrapper extends Invocable {
    *
    * @param client The client instance requesting the manifest.
    */
-  getManifest(
-    options: GetManifestOptions,
-    client: Client
-  ): Promise<WrapManifest>;
+  getManifest(options?: GetManifestOptions): WrapManifest;
 }

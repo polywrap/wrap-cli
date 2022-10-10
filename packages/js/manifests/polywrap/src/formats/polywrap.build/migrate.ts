@@ -8,16 +8,9 @@ import {
   AnyBuildManifest,
   BuildManifest,
   BuildManifestFormats,
-  latestBuildManifestFormat
 } from ".";
-
-
-type Migrator = {
-  [key in BuildManifestFormats]?: (m: AnyBuildManifest) => BuildManifest;
-};
-
-export const migrators: Migrator = {
-};
+import { findShortestMigrationPath } from "../../migrations";
+import { migrators } from "./migrators";
 
 export function migrateBuildManifest(
   manifest: AnyBuildManifest,
@@ -25,18 +18,26 @@ export function migrateBuildManifest(
 ): BuildManifest {
   let from = manifest.format as BuildManifestFormats;
 
-  // HACK: Patch fix for backwards compatability
-  if(from === "0.1" && ("0.1.0" in migrators)) {
-    from = "0.1.0" as BuildManifestFormats;
-  }
-
-  if (from === latestBuildManifestFormat) {
-    return manifest as BuildManifest;
-  }
-
   if (!(Object.values(BuildManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized BuildManifestFormat "${manifest.format}"`);
   }
 
-  throw new Error(`This should never happen, BuildManifest migrators is empty. from: ${from}, to: ${to}`);
+  if (!(Object.values(BuildManifestFormats).some(x => x === to))) {
+    throw new Error(`Unrecognized BuildManifestFormat "${to}"`);
+  }
+
+  const migrationPath = findShortestMigrationPath(migrators, from, to);
+  if (!migrationPath) {
+    throw new Error(
+      `Migration path from BuildManifestFormat "${from}" to "${to}" is not available`
+    );
+  }
+
+  let newManifest = manifest;
+
+  for(const migrator of migrationPath){
+    newManifest = migrator.migrate(newManifest) as AnyBuildManifest;
+  }
+
+  return newManifest as BuildManifest;
 }

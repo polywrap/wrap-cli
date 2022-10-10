@@ -10,9 +10,7 @@ import {
 } from "./wrap";
 
 import { PluginFactory } from "@polywrap/core-js";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const isIPFS = require("is-ipfs");
+import isIpfs from "is-ipfs";
 
 type NoConfig = Record<string, never>;
 
@@ -47,10 +45,8 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
         _client
       );
 
-      if (manifestResult.data) {
-        manifest = Buffer.from(manifestResult.data);
-      } else {
-        throw new Error();
+      if (manifestResult.ok) {
+        manifest = Buffer.from(manifestResult.value);
       }
     } catch (e) {
       // TODO: logging
@@ -79,13 +75,11 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
           client
         );
 
-        const result = resolveResult.data;
-
-        if (!result) {
+        if (!resolveResult.ok || !resolveResult.value) {
           return null;
         }
 
-        provider = result.provider;
+        provider = resolveResult.value.provider;
       }
 
       const catResult = await Ipfs_Module.cat(
@@ -100,14 +94,18 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
         client
       );
 
-      return catResult.data ?? null;
+      if (!catResult.ok) {
+        return null;
+      }
+
+      return catResult.value;
     } catch (e) {
       return null;
     }
   }
 
   private static isCID(cid: string): boolean {
-    return isIPFS.cid(cid) || isIPFS.cidPath(cid) || isIPFS.ipfsPath(cid);
+    return isIpfs.cid(cid) || isIpfs.cidPath(cid) || isIpfs.ipfsPath(cid);
   }
 }
 

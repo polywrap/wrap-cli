@@ -19,7 +19,7 @@ const HELP = `Usage: polywrap infra|i <action> [options]
 Modular Infrastructure-As-Code Orchestrator
 
 Arguments:
-  action                                   
+  action                         
     Infra allows you to execute the following commands:
     up      Start Polywrap infrastructure
     down    Stop Polywrap infrastructure
@@ -28,10 +28,13 @@ Arguments:
    (choices: "up", "down", "vars", "config")
 
 Options:
-  --manifest  <manifest>                   Infra Manifest path (default: "polywrap.infra.yaml")
-  -m, --modules <module-name,module-name>  Use only specified modules
-  -v, --verbose                            Verbose output (default: false)
-  -h, --help                               display help for command
+  -m, --manifest-file  <path>    Path to the Polywrap Infra manifest file
+                                 (default: polywrap.infra.yaml |
+                                 polywrap.infra.yml)
+  -o, --modules <module,module>  Use only specified modules
+  -v, --verbose                  Verbose output (default: false)
+  -q, --quiet                    Suppress output (default: false)
+  -h, --help                     display help for command
 `;
 
 const portInUse = (port: number) => {
@@ -177,7 +180,7 @@ describe("e2e tests for infra command", () => {
 
     it("Should set environment up with all modules if no --modules are passed", async () => {
       await runPolywrapCli(
-        ["infra", "down", "--manifest=./polywrap.infra.yaml"],
+        ["infra", "down", "--manifest-file=./polywrap.infra.yaml"],
         getTestCaseDir(0),
       );
 
@@ -188,7 +191,7 @@ describe("e2e tests for infra command", () => {
       ]);
 
       await runPolywrapCli(
-        ["infra", "up", "--manifest=./polywrap.infra.yaml"],
+        ["infra", "up", "--manifest-file=./polywrap.infra.yaml"],
         getTestCaseDir(0),
       );
 
@@ -234,7 +237,7 @@ describe("e2e tests for infra command", () => {
 
     it("Should throw because default module declared in manifest is not recognized", async () => {
       const { stderr } = await runPolywrapCli(
-        ["infra", "up", "--manifest=./polywrap.infra.wrong.yaml"],
+        ["infra", "up", "--manifest-file=./polywrap.infra.wrong.yaml"],
         getTestCaseDir(4),
       );
 

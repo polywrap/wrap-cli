@@ -13,11 +13,14 @@ import {
   validateOutput,
   ValidationResult,
   WorkflowOutput,
+  defaultWorkflowManifest,
+  parseManifestFileOption,
 } from "../lib";
+import { createLogger } from "./utils/createLogger";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
-import yaml from "js-yaml";
+import yaml from "yaml";
 import fs from "fs";
 
 type WorkflowCommandOptions = {
@@ -26,8 +29,12 @@ type WorkflowCommandOptions = {
   jobs?: string[];
   validationScript?: string;
   outputFile?: string;
+  verbose?: boolean;
   quiet?: boolean;
 };
+
+const defaultManifestStr = defaultWorkflowManifest.join(" | ");
+const pathStr = intlMsg.commands_run_options_m_path();
 
 export const run: Command = {
   setup: (program: Program) => {
@@ -36,9 +43,10 @@ export const run: Command = {
       .alias("r")
       .description(intlMsg.commands_run_description())
       .option(
-        `-m, --manifest  <${intlMsg.commands_run_options_manifest()}>`,
-        intlMsg.commands_run_manifestPathDescription(),
-        "polywrap.test.yaml"
+        `-m, --manifest-file  <${pathStr}>`,
+        intlMsg.commands_run_options_m({
+          default: defaultManifestStr,
+        })
       )
       .option(
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
@@ -52,10 +60,15 @@ export const run: Command = {
         `-j, --jobs <${intlMsg.commands_run_options_jobIds()}...>`,
         intlMsg.commands_run_options_jobs()
       )
-      .option(`-q, --quiet`, `${intlMsg.commands_run_options_quiet()}`)
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (options) => {
         await _run({
           ...options,
+          manifest: parseManifestFileOption(
+            options.manifestFile,
+            defaultWorkflowManifest
+          ),
           clientConfig: await parseClientConfigOption(options.clientConfig),
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile)
@@ -66,11 +79,12 @@ export const run: Command = {
 };
 
 const _run = async (options: WorkflowCommandOptions) => {
-  const { manifest, clientConfig, outputFile, quiet, jobs } = options;
+  const { manifest, clientConfig, outputFile, verbose, quiet, jobs } = options;
+  const logger = createLogger({ verbose, quiet });
   const client = new PolywrapClient(clientConfig);
 
   const manifestPath = path.resolve(manifest);
-  const workflow = await loadWorkflowManifest(manifestPath, quiet);
+  const workflow = await loadWorkflowManifest(manifestPath, logger);
   validateJobNames(workflow.jobs);
   const validationScript = workflow.validation
     ? loadValidationScript(manifestPath, workflow.validation)
@@ -90,7 +104,7 @@ const _run = async (options: WorkflowCommandOptions) => {
 
     let validation: ValidationResult | undefined = undefined;
     if (status === JobStatus.SUCCEED && validationScript) {
-      validation = validateOutput(output, validationScript);
+      validation = validateOutput(output, validationScript, logger);
     }
 
     if (!quiet) {
@@ -107,7 +121,7 @@ const _run = async (options: WorkflowCommandOptions) => {
     switch (outputFileExt) {
       case "yaml":
       case "yml":
-        fs.writeFileSync(outputFile, yaml.dump(workflowOutput));
+        fs.writeFileSync(outputFile, yaml.stringify(workflowOutput, null, 2));
         break;
       case "json":
         fs.writeFileSync(outputFile, JSON.stringify(workflowOutput, null, 2));

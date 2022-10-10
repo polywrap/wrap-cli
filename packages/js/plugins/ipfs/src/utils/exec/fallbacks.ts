@@ -1,8 +1,6 @@
-import { IpfsClient } from "../IpfsClient";
 import { execAbortable, AbortablePromise } from "./abortable";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
+import createIpfsClient, { IpfsClient } from "@polywrap/ipfs-http-client-lite";
 
 export const execFallbacks = async <TReturn>(
   operation: string,

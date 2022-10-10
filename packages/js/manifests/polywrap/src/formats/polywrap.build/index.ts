@@ -8,25 +8,38 @@
 import {
   BuildManifest as BuildManifest_0_1_0,
 } from "./0.1.0";
+import {
+  BuildManifest as BuildManifest_0_2_0,
+} from "./0.2.0";
 
 export {
   BuildManifest_0_1_0,
+  BuildManifest_0_2_0,
 };
 
 export enum BuildManifestFormats {
   // NOTE: Patch fix for backwards compatability
   "v0.1" = "0.1",
   "v0.1.0" = "0.1.0",
+  "v0.2.0" = "0.2.0",
+}
+
+export const BuildManifestSchemaFiles: Record<string, string> = {
+  // NOTE: Patch fix for backwards compatability
+  "0.1": "formats/polywrap.build/0.1.0.json",
+  "0.1.0": "formats/polywrap.build/0.1.0.json",
+  "0.2.0": "formats/polywrap.build/0.2.0.json",
 }
 
 export type AnyBuildManifest =
   | BuildManifest_0_1_0
+  | BuildManifest_0_2_0
 
 
 
-export type BuildManifest = BuildManifest_0_1_0;
+export type BuildManifest = BuildManifest_0_2_0;
 
-export const latestBuildManifestFormat = BuildManifestFormats["v0.1.0"]
+export const latestBuildManifestFormat = BuildManifestFormats["v0.2.0"]
 
 export { migrateBuildManifest } from "./migrate";
 

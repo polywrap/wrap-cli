@@ -3,7 +3,6 @@ import { intlMsg } from "../intl";
 import { importTypescriptModule } from "../system";
 import { getTestEnvClientConfig } from "../test-env";
 
-import { executeMaybeAsyncFunction } from "@polywrap/core-js";
 import { PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 
@@ -43,10 +42,7 @@ export async function parseClientConfigOption(
       process.exit(1);
     }
 
-    finalClientConfig = await executeMaybeAsyncFunction(
-      configModule.getClientConfig,
-      finalClientConfig
-    );
+    finalClientConfig = await configModule.getClientConfig(finalClientConfig);
 
     try {
       validateClientConfig(finalClientConfig);
