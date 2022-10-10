@@ -22,7 +22,7 @@ export async function ensureDockerDaemonRunning(logger: Logger): Promise<void> {
 
 export function getDockerFileLock(logger: Logger): FileLock {
   return new FileLock(__dirname + "/DOCKER_LOCK", (message: string) =>
-    logger.info(message)
+    logger.error(message)
   );
 }
 

@@ -5,18 +5,20 @@ import { getDockerFileLock } from "./docker";
 import path from "path";
 import Commands, { IDockerComposeOptions } from "docker-compose";
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
+import { FileLock } from "./file-lock";
 
 export class DockerCompose {
-  private _dockerLock = getDockerFileLock(new Logger({}));
+  private _dockerLock: FileLock;
   public commands: typeof Commands;
 
-  constructor() {
+  constructor(logger: Logger) {
     this.commands = Object.fromEntries(
       Object.entries(Commands).map(([name, func]) => [
         name,
         this._wrapInDockerLock(func),
       ])
     ) as typeof Commands;
+    this._dockerLock = getDockerFileLock(logger);
   }
 
   static getDefaultConfig(
