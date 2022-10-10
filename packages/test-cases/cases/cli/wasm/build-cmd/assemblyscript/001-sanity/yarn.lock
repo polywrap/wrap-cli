@@ -3,7 +3,7 @@
 
 
 "@polywrap/wasm-as@../../../../../../../wasm/as":
-  version "0.8.0"
+  version "0.9.0"
   dependencies:
     "@web3api/assemblyscript-json" "1.2.0"
     as-bigint "0.5.3"
