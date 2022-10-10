@@ -1,3 +1,40 @@
+# Polywrap Origin (0.9.0)
+## Features
+* [PR-1306](https://github.com/polywrap/toolchain/pull/1306) `polywrap` CLI: Console logging has been improved, and all commands now support `-q, --quiet` and `-v, --verbose` options.
+* [PR-1204](https://github.com/polywrap/toolchain/pull/1204) `polywrap` CLI: **Build times are faster for wasm wrappers!!!** The `build` command has been updated to include the concept of "build strategies". The existing way of building (via `Dockerfile` image layers) is available through the `polywrap build --strategy image` command. Building without Docker (if all build-time dependencies are installed locally) can be performed using `--strategy local`. And lastly, the new default build strategy is `--strategy vm`, which runs all build steps in a pre-built base image, allowing for near-local speeds (once the image has been downloaded).
+  * NOTE: `--strategy image` is useful for source-code verification, something we'll be better supporting in the future.
+* [PR-1297](https://github.com/polywrap/toolchain/pull/1297) `@polywrap/schema-bind`: `wasm/rust` now has support for `println!(...)` and `print!(...)` macros. They have been redefined to use the `polywrap_wasm_rs::wrap_debug_log(...)` function.
+* [PR-1192](https://github.com/polywrap/toolchain/pull/1192) `@polywrap/client-js`: `PolywrapClient.invoke(...)` now supports invoke-time environment variables, passed in via the `env` property.
+* [PR-1270](https://github.com/polywrap/toolchain/pull/1270) `polywrap` CLI: The `manifest` command has been added:
+```
+Usage: polywrap manifest|m [options] [command]
+Inspect & Migrade Polywrap Manifests
+Options:
+  -h, --help                  display help for command
+Commands:
+  schema|s [options] [type]   Prints out the schema for the current manifest format.
+  migrate|m [options] [type]  Migrates the polywrap project manifest to the latest version.
+  help [command]              display help for command
+```
+  * [PR-1301](https://github.com/polywrap/toolchain/pull/1301) Added a `--format` option to the `migrate` command, enabling the targeting of specific format versions when migrating manifests (ex: `polywrap manifest migrate -f 0.2.0`).
+* [PR-1218](https://github.com/polywrap/toolchain/pull/1218) `polywrap` CLI, `@polywrap/tracing-js`: The `tracing` infrastructure module (i.e. `polywrap infra up --modules tracing`) now uses version `0.11.0` of the `SizNoz` tracing service. Additionally the underlying `@polywrap/tracing-js` library has been updated to support this, and also now has named traces via the `traceName` configuration property.
+
+## Bugs
+* [PR-1304](https://github.com/polywrap/toolchain/pull/1304) `polywrap` CLI: Generated build files from the `vm` strategy now have proper file-system permissions.
+* [PR-1305](https://github.com/polywrap/toolchain/pull/1305) `@polywrap/ipfs-plugin-js`: Fallback providers are now properly being used.
+* [PR-1296](https://github.com/polywrap/toolchain/pull/1296) `polywrap` CLI: The `polywrap.app.yaml` and `polywrap.plugin.yaml` project manifest file names are being deprecated in favor of a unified `polywrap.yaml` file for all types of projects (wasm, interface, plugin, app). They will still silently work now, but in the future will no longer be recognized defaults.
+* [PR-1303](https://github.com/polywrap/toolchain/pull/1303) `@polywrap/core-js`: The `Uri` class now properly formats itself when being `JSON.stringify(...)`'d.
+* [PR-1288](https://github.com/polywrap/toolchain/pull/1288) `@polywrap/core-js`: Correctly handle errors in the `getImplementations` algorithm.
+* [PR-1298](https://github.com/polywrap/toolchain/pull/1298) `@polywrap/ipfs-plugin-js`, `@polywrap/ipfs-resolver-plugin-js`: Remove the use of `require(...)` statements.
+* [PR-1286](https://github.com/polywrap/toolchain/pull/1286) `@polywrap/polywrap-manifest-types-js`: Manifest migration logic has been upgraded to use a strategy that finds a "shortest path" between the `from` and `to` format versions, using predefined migration functions.
+
+## Breaking Changes
+* [PR-1284](https://github.com/polywrap/toolchain/pull/1284) `@polywrap/core-js`: `Wrapper.getFile(...)` and `Wrapper.getManifest(...)` no longer require a `Client` instance as a second function argument.
+* [PR-1291](https://github.com/polywrap/toolchain/pull/1291) `@polywrap/core-js`, `@polywrap/client-js`: All `ClientConfig` properties are now `readonly`.
+* [PR-1287](https://github.com/polywrap/toolchain/pull/1287) `@polywrap/core-js`: `executeMaybeAsyncFunction` has been removed.
+* [PR-1277](https://github.com/polywrap/toolchain/pull/1277) `@polywrap/client-js`: The following methods now return the `Result<T, E>` type, and will not throw exceptions: `getManifest(...)`, `getFile(...)`, `getImplementations(...)`, `query(...)`, `invokeWrapper(...)`, `invoke(...)`, `loadWrapper(...)`.
+* [PR-1192](https://github.com/polywrap/toolchain/pull/1192) `@polywrap/client-js`: `PolywrapClient.invoke(...)` no longer accepts invoke-time reconfiguration via the `config` property. Users who wish to reconfigure the client can do so by calling `client.getConfig()`, modifying it via the `ClientConfigBuilder`, and constructing a new `PolywrapClient` instance.
+
 # Polywrap Origin (0.8.0)
 ## Features
 * [PR-1083](https://github.com/polywrap/toolchain/pull/1083) `@polywrap/client-config-builder-js`: The default client config now has the ability to resolve `http` URIs (ex: `wrap://http/domain.com/path`) via the `@polywrap/http-resolver-plugin-js`.
