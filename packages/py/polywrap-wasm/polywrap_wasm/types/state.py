@@ -1,9 +1,14 @@
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Union
+from typing import Optional, TypedDict
+
+
+class RawInvokeResult(TypedDict):
+    result: Optional[bytes]
+    error: Optional[str]
 
 @dataclass(kw_only=True, slots=True)
 class State:
-    invoke: Dict[str, Union[bytes, str]] = field(default_factory=dict)
+    invoke: RawInvokeResult = field(default_factory= lambda: {"result": None, "error": None})
     # subinvoke: Dict[str, Union[bytearray, str, List[Any]]]
     # subinvoke_implementation: Dict[str, Union[bytearray, str, List[Any]]]
     method: Optional[str] = None

@@ -1,17 +1,15 @@
-from typing import Callable
+from wasmtime import Store, Linker, Memory, Module, MemoryType, Limits, ValType, FuncType, Instance
 
-from wasmtime import Store, Linker, Memory, Module, MemoryType, Limits, ValType, FuncType
-
-from .buffer import write_string, write_bytes, read_string
+from .buffer import write_string, write_bytes, read_string, read_bytes
 from .types.state import State
+from .errors import WasmAbortError
 
 
-def create_imports(
+def create_instance(
         store: Store,
         module: Module,
         state: State,
-        abort: Callable[[str], None]
-):
+) -> Instance:
     linker = Linker(store.engine)
 
     """
@@ -27,7 +25,7 @@ def create_imports(
     def wrap_abort(msg_offset: int, msg_len: int, file_offset: int, file_len: int, line: int, column: int) -> None:
         msg = read_string(mem.data_ptr(store), mem.data_len(store), msg_offset, msg_len)
         file = read_string(mem.data_ptr(store), mem.data_len(store), file_offset, file_len)
-        abort(f"__wrap_abort: {msg}\nFile: {file}\nLocation: [{line},{column}]")
+        raise WasmAbortError(f"__wrap_abort: {msg}\nFile: {file}\nLocation: [{line},{column}]")
 
     wrap_invoke_args_type = FuncType(
         [ValType.i32(), ValType.i32()], []
@@ -35,21 +33,21 @@ def create_imports(
 
     def wrap_invoke_args(method_ptr: int, args_ptr: int) -> None:
         if not state.method:
-            abort("__wrap_invoke_args: method is not set")
+            raise WasmAbortError("__wrap_invoke_args: method is not set")
         else:
             write_string(mem.data_ptr(store), mem.data_len(store), state.method, method_ptr)
 
         if not state.args:
-            abort("__wrap_invoke_args: args is not set")
+            raise WasmAbortError("__wrap_invoke_args: args is not set")
         else:
-            write_bytes(mem.data_ptr(store), mem.data_len(store), state.args, args_ptr)
+            write_bytes(mem.data_ptr(store), mem.data_len(store), bytearray(state.args), args_ptr)
 
     wrap_invoke_result_type = FuncType(
         [ValType.i32(), ValType.i32()], []
     )
 
     def wrap_invoke_result(offset: int, length: int) -> None:
-        result = read_string(mem.data_ptr(store), mem.data_len(store), offset, length)
+        result = read_bytes(mem.data_ptr(store), mem.data_len(store), offset, length)
         state.invoke['result'] = result
 
     wrap_invoke_error_type = FuncType(

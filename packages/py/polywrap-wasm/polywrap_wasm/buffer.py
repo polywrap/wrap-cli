@@ -1,8 +1,8 @@
 import ctypes
-from typing import Optional
+from typing import TYPE_CHECKING, Optional, Any
 
 
-BufferPointer = ctypes._Pointer[ctypes.c_ubyte] # type: ignore
+BufferPointer = ctypes._Pointer[ctypes.c_ubyte] if TYPE_CHECKING else Any # type: ignore
 
 
 def read_bytes(memory_pointer: BufferPointer, memory_length: int, offset: Optional[int] = None, length: Optional[int] = None) -> bytearray:
