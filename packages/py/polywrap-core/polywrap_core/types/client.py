@@ -14,7 +14,7 @@ from .uri_resolver_handler import UriResolverHandler
 @dataclass(slots=True, kw_only=True)
 class ClientConfig:
     envs: List[Env] = field(default_factory=list)
-    resolver: List[IUriResolver]
+    resolver: IUriResolver
 
 
 @dataclass(slots=True, kw_only=True)

@@ -15,27 +15,28 @@ from .types.state import State
 
 class WasmWrapper(Wrapper):
     file_reader: IFileReader
-    wasm_module: Optional[str] = None
+    wasm_module: bytearray
 
-    def __init__(self, file_reader: IFileReader):
+    def __init__(self, wasm_module: bytearray, file_reader: IFileReader):
         self.file_reader = file_reader
+        self.wasm_module = wasm_module
 
     async def get_file(
         self, options: GetFileOptions, client: Client
     ) -> Union[str, bytes]:
-        return ""
+        data = await self.file_reader.read_file(options.path)
+        return data.decode(encoding=options.encoding) if options.encoding else data
 
-    async def get_wasm_module(self):
-        await self.file_reader.read_file(WRAP_MODULE_PATH)
-        self.wasm_module = "./polywrap_wasm/wrap2.wasm"
-
+    async def get_wasm_module(self) -> bytearray:
+        if not self.wasm_module:
+            self.wasm_module = await self.file_reader.read_file(WRAP_MODULE_PATH)
         return self.wasm_module
 
     def create_wasm_instance(
         self, store: Store, state: State
     ):
         if self.wasm_module:
-            module = Module.from_file(store.engine, self.wasm_module)
+            module = Module(store.engine, self.wasm_module)
             return create_instance(store, module, state)
 
     async def invoke(
