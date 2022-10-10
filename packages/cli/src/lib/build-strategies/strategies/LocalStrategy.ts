@@ -31,12 +31,7 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
           intlMsg.lib_helpers_buildError(),
           intlMsg.lib_helpers_buildWarning(),
           async (logger) => {
-            return await runCommand(
-              command,
-              logger,
-              undefined,
-              process.cwd()
-            );
+            return await runCommand(command, logger, undefined, process.cwd());
           }
         );
       }

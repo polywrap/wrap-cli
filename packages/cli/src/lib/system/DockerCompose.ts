@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Logger } from "../logging";
 import { getDockerFileLock } from "./docker";
+import { FileLock } from "./file-lock";
 
 import path from "path";
 import Commands, { IDockerComposeOptions } from "docker-compose";
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
-import { FileLock } from "./file-lock";
 
 export class DockerCompose {
   private _dockerLock: FileLock;
