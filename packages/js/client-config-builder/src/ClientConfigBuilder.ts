@@ -366,7 +366,7 @@ export class ClientConfigBuilder {
       redirects: this._config.redirects,
       resolver:
         resolver ??
-        new RecursiveResolver(
+        RecursiveResolver.from(
           PackageToWrapperCacheResolver.from(
             [
               new LegacyRedirectsResolver(),
