@@ -56,7 +56,7 @@
     "@polywrap/test-env-js": "0.9.0",
     "@polywrap/wasm-js": "0.9.0",
     "@polywrap/wrap-manifest-types-js": "0.9.0",
-    "@polywrap/uri-resolvers-js": "0.8.0",
+    "@polywrap/uri-resolvers-js": "0.9.0",
     "assemblyscript": "0.19.1",
     "axios": "0.21.2",
     "chalk": "4.1.0",
