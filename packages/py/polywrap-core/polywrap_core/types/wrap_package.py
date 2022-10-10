@@ -4,5 +4,5 @@ from .wrapper import Wrapper
 
 class IWrapPackage(ABC):
     @abstractmethod
-    def create_wrapper() -> Wrapper:
+    def create_wrapper(self) -> Wrapper:
         pass

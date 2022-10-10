@@ -2,9 +2,9 @@ from polywrap_core import Wrapper, IWrapPackage
 from .wasm_wrapper import WasmWrapper
 from .file_reader import IFileReader
 
-class FileReader(IFileReader):
-    def read_file(self, file_path: str) -> bytearray:
-        pass
+# class FileReader(IFileReader):
+#     async def read_file(self, file_path: str) -> bytearray:
+#         pass
 
 class WasmPackage(IWrapPackage):
 

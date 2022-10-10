@@ -22,9 +22,5 @@ class Wrapper(Invocable):
     async def get_file(self, options: GetFileOptions, client: Client) -> Union[str, bytes]:
         pass
 
-    @abstractmethod
-    async def get_schema(self, client: Client) -> str:
-        pass
-
 
 WrapperCache = Dict[str, Wrapper]
