@@ -8,7 +8,6 @@ import {
   AnyPolywrapManifest,
   PolywrapManifest,
   PolywrapManifestFormats,
-  latestPolywrapManifestFormat
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
 import { migrators } from "./migrators";
@@ -19,12 +18,12 @@ export function migratePolywrapManifest(
 ): PolywrapManifest {
   let from = manifest.format as PolywrapManifestFormats;
 
-  if (from === latestPolywrapManifestFormat) {
-    return manifest as PolywrapManifest;
-  }
-
   if (!(Object.values(PolywrapManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized PolywrapManifestFormat "${manifest.format}"`);
+  }
+
+  if (!(Object.values(PolywrapManifestFormats).some(x => x === to))) {
+    throw new Error(`Unrecognized PolywrapManifestFormat "${to}"`);
   }
 
   const migrationPath = findShortestMigrationPath(migrators, from, to);

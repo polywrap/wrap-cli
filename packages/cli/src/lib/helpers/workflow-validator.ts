@@ -1,4 +1,5 @@
 import { runCommandSync } from "../system";
+import { Logger } from "../logging";
 import { intlMsg } from "../intl";
 import { JobStatus, ValidationResult, WorkflowOutput } from "../workflow";
 
@@ -8,16 +9,17 @@ import os from "os";
 
 const TMPDIR = fs.mkdtempSync(path.join(os.tmpdir(), `polywrap-cli`));
 
-export function cueExists(): boolean {
-  const { stdout } = runCommandSync("cue version", true);
+export function cueExists(logger: Logger): boolean {
+  const { stdout } = runCommandSync("cue version", logger);
   return stdout ? stdout.startsWith("cue version ") : false;
 }
 
 export function validateOutput(
   output: WorkflowOutput,
-  validateScriptPath: string
+  validateScriptPath: string,
+  logger: Logger
 ): ValidationResult {
-  if (!cueExists()) {
+  if (!cueExists(logger)) {
     console.warn(intlMsg.commands_run_error_cueDoesNotExist());
   }
 
@@ -34,7 +36,7 @@ export function validateOutput(
 
   const { stderr } = runCommandSync(
     `cue vet -d ${selector} ${validateScriptPath} ${jsonOutput}`,
-    true
+    logger
   );
 
   if (fs.existsSync(jsonOutput)) {

@@ -8,7 +8,6 @@ import {
   Any{{#latest}}{{type}}{{/latest}},
   {{#latest}}{{type}}{{/latest}},
   {{#latest}}{{type}}{{/latest}}Formats,
-  latest{{#latest}}{{type}}{{/latest}}Format
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
 import { migrators } from "./migrators";
@@ -19,12 +18,12 @@ export function migrate{{#latest}}{{type}}{{/latest}}(
 ): {{#latest}}{{type}}{{/latest}} {
   let from = manifest.format as {{#latest}}{{type}}{{/latest}}Formats;
 
-  if (from === latest{{#latest}}{{type}}{{/latest}}Format) {
-    return manifest as {{#latest}}{{type}}{{/latest}};
-  }
-
   if (!(Object.values({{#latest}}{{type}}{{/latest}}Formats).some(x => x === from))) {
     throw new Error(`Unrecognized {{#latest}}{{type}}{{/latest}}Format "${manifest.format}"`);
+  }
+
+  if (!(Object.values({{#latest}}{{type}}{{/latest}}Formats).some(x => x === to))) {
+    throw new Error(`Unrecognized {{#latest}}{{type}}{{/latest}}Format "${to}"`);
   }
 
   const migrationPath = findShortestMigrationPath(migrators, from, to);

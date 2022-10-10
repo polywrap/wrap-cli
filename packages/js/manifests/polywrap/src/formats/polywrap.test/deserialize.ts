@@ -15,7 +15,7 @@ import {
 import { DeserializeManifestOptions } from "../../";
 
 import * as Semver from "semver";
-import YAML from "js-yaml";
+import YAML from "yaml";
 
 export function deserializePolywrapWorkflow(
   manifest: string,
@@ -24,10 +24,10 @@ export function deserializePolywrapWorkflow(
   let anyPolywrapWorkflow: AnyPolywrapWorkflow | undefined;
   try {
     anyPolywrapWorkflow = JSON.parse(manifest) as AnyPolywrapWorkflow;
-  } catch (e) {
-    anyPolywrapWorkflow = YAML.safeLoad(manifest) as
-    | AnyPolywrapWorkflow
-    | undefined;
+  } catch (_) {
+    try {
+      anyPolywrapWorkflow = YAML.parse(manifest) as AnyPolywrapWorkflow;
+    } catch (_) { }
   }
 
   if (!anyPolywrapWorkflow) {

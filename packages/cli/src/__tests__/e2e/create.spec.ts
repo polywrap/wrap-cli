@@ -122,12 +122,12 @@ describe("e2e tests for create command", () => {
               cwd: __dirname,
               cli: polywrapCli,
             });
-        
+
             expect(code).toEqual(0);
-            expect(clearStyle(output)).toMatch(
-              /🔥 You are ready to ([A-Za-z ]+) Polywrap 🔥/
+            expect(clearStyle(output)).toContain(
+              "🔥 You are ready "
             );
-        
+
             rimraf.sync(`${__dirname}/test`);
           }, 60000);
         })
