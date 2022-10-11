@@ -3,5 +3,5 @@ type Module {
 }
 
 type SampleResult {
-    value: String!
+    result: String!
 }
