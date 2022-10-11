@@ -39,7 +39,7 @@ export class UriResolverExtensionFileReader implements IFileReader {
     }
     return {
       value: result.value,
-      ok: true
+      ok: true,
     };
   }
 }
