@@ -96,7 +96,7 @@ describe("e2e tests for WsPlugin", () => {
       server.send("2")
 
       // wait for callbacks to be called
-      await new Promise(async (resolve) => {setTimeout(() => resolve(), 1)})
+      await new Promise<void>(async (resolve) => {setTimeout(() => resolve(), 1)})
 
       expect(msgs).toEqual(["1","2"])
     });

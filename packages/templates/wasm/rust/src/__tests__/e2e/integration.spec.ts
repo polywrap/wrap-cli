@@ -18,13 +18,14 @@ describe("Template Wrapper End to End Tests", () => {
   it("calls sampleMethod", async () => {
     const expected: string = "polywrap";
 
-    const { data, error } = await client.invoke<App.Template_SampleResult>({
+    const result = await client.invoke<App.Template_SampleResult>({
       uri: wrapperUri,
       method: "sampleMethod",
       args: { arg: expected }
     });
 
-    expect(error).toBeFalsy();
-    expect(data?.value).toEqual(expected);
+    expect(result.ok).toBeTruthy();
+    if (!result.ok) return;
+    expect(result.value.result).toEqual(expected);
   });
 });

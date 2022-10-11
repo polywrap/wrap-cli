@@ -30,7 +30,7 @@ export abstract class ResolverWithHistory<TError = undefined>
     result: Result<UriPackageOrWrapper, TError>
   ): string;
 
-  protected abstract async _tryResolveUri(
+  protected abstract _tryResolveUri(
     uri: Uri,
     client: Client,
     resolutionContext: IUriResolutionContext

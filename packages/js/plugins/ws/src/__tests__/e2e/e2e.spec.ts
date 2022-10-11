@@ -198,7 +198,7 @@ describe("WebSocket plugin", () => {
         }
       })
 
-      await new Promise(async (resolve) => {setTimeout(() => resolve(), 250)})
+      await new Promise<void>(async (resolve) => {setTimeout(() => resolve(), 250)})
 
       expect(msgs).toEqual(["1", "2"]);
     });
@@ -225,7 +225,7 @@ describe("WebSocket plugin", () => {
         }
       })
 
-      await new Promise(async (resolve) => {setTimeout(async () => {
+      await new Promise<void>(async (resolve) => {setTimeout(async () => {
         await polywrapClient.invoke({
           uri: "wrap://ens/ws.polywrap.eth",
           method: "removeCallback",
@@ -240,7 +240,7 @@ describe("WebSocket plugin", () => {
         resolve()
       }, 250)})
 
-      await new Promise(async (resolve) => {setTimeout(() => resolve(), 250)})
+      await new Promise<void>(async (resolve) => {setTimeout(() => resolve(), 250)})
 
       expect(msgs).toEqual(["1", "2"]);
     });
@@ -274,7 +274,7 @@ describe("WebSocket plugin", () => {
         }
       })
 
-      await new Promise(async (resolve) => {setTimeout(() => resolve(), 250)})
+      await new Promise<void>(async (resolve) => {setTimeout(() => resolve(), 250)})
 
       const response = await polywrapClient.invoke<Message[]>({
         uri: "wrap://ens/ws.polywrap.eth",
@@ -307,7 +307,7 @@ describe("WebSocket plugin", () => {
         }
       })
 
-      await new Promise(async (resolve) => {setTimeout(async () => {
+      await new Promise<void>(async (resolve) => {setTimeout(async () => {
         await polywrapClient.invoke({
           uri: "wrap://ens/ws.polywrap.eth",
           method: "removeCache",
@@ -318,7 +318,7 @@ describe("WebSocket plugin", () => {
         resolve()
       }, 200)})
 
-      await new Promise(async (resolve) => {setTimeout(() => resolve(), 250)})
+      await new Promise<void>(async (resolve) => {setTimeout(() => resolve(), 250)})
 
       const response = await polywrapClient.invoke<Message[]>({
         uri: "wrap://ens/ws.polywrap.eth",
@@ -482,7 +482,7 @@ describe("WebSocket plugin", () => {
         }
       })
 
-      await new Promise(async (resolve) => {setTimeout(() => resolve(), 250)})
+      await new Promise<void>(async (resolve) => {setTimeout(() => resolve(), 250)})
 
       const response1 = await polywrapClient.invoke<Message[]>({
         uri: "wrap://ens/ws.polywrap.eth",
@@ -492,7 +492,7 @@ describe("WebSocket plugin", () => {
         }
       })
 
-      await new Promise(async (resolve) => {setTimeout(() => resolve(), 100)})
+      await new Promise<void>(async (resolve) => {setTimeout(() => resolve(), 100)})
 
       const response2 = await polywrapClient.invoke<Message[]>({
         uri: "wrap://ens/ws.polywrap.eth",
@@ -502,7 +502,7 @@ describe("WebSocket plugin", () => {
         }
       })
 
-      await new Promise(async (resolve) => {setTimeout(() => resolve(), 100)})
+      await new Promise<void>(async (resolve) => {setTimeout(() => resolve(), 100)})
 
       const response3 = await polywrapClient.invoke<Message[]>({
         uri: "wrap://ens/ws.polywrap.eth",
