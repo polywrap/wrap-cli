@@ -1,1 +1,1 @@
-from .file_resolver import *
+from .fs_resolver import *

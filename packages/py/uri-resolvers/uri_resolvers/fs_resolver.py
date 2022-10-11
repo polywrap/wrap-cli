@@ -8,7 +8,7 @@ from polywrap_core import (
     IUriResolutionContext,
 )
 from polywrap_wasm import WasmPackage
-
+from result import Result, Ok
 
 class SimpleFileReader(IFileReader):
     async def read_file(self, file_path: str) -> bytearray:
@@ -16,7 +16,7 @@ class SimpleFileReader(IFileReader):
             return bytearray(f.read())
 
 
-class FileUriResolver(IUriResolver):
+class FsUriResolver(IUriResolver):
     file_reader: IFileReader
 
     def __init__(self, file_reader: IFileReader):
@@ -24,12 +24,12 @@ class FileUriResolver(IUriResolver):
 
     async def try_resolve_uri(
         self, uri: Uri, client: Client, resolution_context: IUriResolutionContext
-    ) -> UriPackageOrWrapper:
+    ) -> Result[UriPackageOrWrapper, Exception]:
         if uri.authority not in ["fs", "file"]:
-            return uri
+            return Ok(uri)
 
         wasm_module = await self.file_reader.read_file(uri.path)
-        return UriPackage(
+        return Ok(UriPackage(
             uri=uri,
             package=WasmPackage(wasm_module=wasm_module, file_reader=self.file_reader),
-        )
+        ))

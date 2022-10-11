@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional
 
+from result import Result
+
 from .uri import Uri
 from .uri_resolution_context import IUriResolutionContext
 
@@ -28,5 +30,5 @@ class IUriResolver(ABC):
     @abstractmethod
     async def try_resolve_uri(
         self, uri: Uri, client: "Client", resolution_context: IUriResolutionContext
-    ) -> UriPackageOrWrapper:
+    ) -> Result["UriPackageOrWrapper", Exception]:
         pass

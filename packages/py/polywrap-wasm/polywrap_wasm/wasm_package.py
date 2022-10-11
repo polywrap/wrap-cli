@@ -20,7 +20,10 @@ class WasmPackage(IWasmPackage):
         )
 
     async def get_wasm_module(self) -> bytearray:
-        return await self.file_reader.read_file(WRAP_MODULE_PATH)
+        self.wasm_module = self.wasm_module or await self.file_reader.read_file(
+            WRAP_MODULE_PATH
+        )
+        return self.wasm_module
 
     def create_wrapper(self) -> Wrapper:
         return WasmWrapper(self.file_reader, self.wasm_module)
