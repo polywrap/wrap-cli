@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 wasmtime = "1.0.1"
+serde = "1.0.145"
 rmp-serde = "1.1.1"
 tokio = { version = "1", features = ["full"] }
