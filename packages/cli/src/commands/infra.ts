@@ -176,4 +176,5 @@ async function run(
     default:
       throw Error(intlMsg.commands_infra_error_never());
   }
+  process.exit(0);
 }

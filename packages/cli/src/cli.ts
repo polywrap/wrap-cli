@@ -12,5 +12,4 @@ export const run = async (argv: string[]): Promise<void> => {
   }
 
   await program.parseAsync(argv);
-  process.exit();
 };

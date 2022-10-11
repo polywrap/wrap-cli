@@ -127,8 +127,7 @@ async function run(command: DocType, options: DocgenCommandOptions) {
       })
     );
 
-    process.exitCode = 1;
-    return;
+    process.exit(1);
   }
 
   await project.validate();
@@ -154,8 +153,8 @@ async function run(command: DocType, options: DocgenCommandOptions) {
 
   if (await codeGenerator.generate()) {
     logger.info(`🔥 ${intlMsg.commands_docgen_success()} 🔥`);
-    process.exitCode = 0;
+    process.exit(0);
   } else {
-    process.exitCode = 1;
+    process.exit(1);
   }
 }
