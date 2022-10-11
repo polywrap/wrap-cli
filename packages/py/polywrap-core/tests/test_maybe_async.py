@@ -24,6 +24,7 @@ def test_maybeasync_sanity_function_is_coroutine_works_for_normal_functions(norm
 # [ ] test_maybeasync_asyncs_and_awaits_coroutines_from_class_instances
 # [ ] test_maybeasync_asyncs_and_awaits_normal_functions_from_class_instances
 # [ ] test_maybeasync_can_handle_several_coroutines ayncio.gather(*tasks)
+# [ ] confirm if test_asyncio.create_task() is needed for concurrent tasks
 
 @pytest.mark.asyncio
 async def test_maybeasync_asyncs_awaits_and_executes_coroutines_correctly(awaitable_function):
