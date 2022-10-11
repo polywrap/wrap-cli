@@ -181,7 +181,7 @@ description = ""
 category = "main"
 optional = false
 python-versions = "^3.10"
-develop = false
+develop = true
 
 [package.dependencies]
 gql = "3.4.0"
@@ -199,7 +199,7 @@ description = "WRAP msgpack encoding"
 category = "main"
 optional = false
 python-versions = "^3.10"
-develop = false
+develop = true
 
 [package.dependencies]
 msgpack = "^1.0.4"
@@ -215,12 +215,12 @@ description = ""
 category = "main"
 optional = false
 python-versions = "^3.10"
-develop = false
+develop = true
 
 [package.dependencies]
-polywrap-core = {path = "../polywrap-core"}
-polywrap-msgpack = {path = "../polywrap-msgpack"}
-wasmtime = "1.0.1"
+polywrap-core = {path = "../polywrap-core", develop = true}
+polywrap-msgpack = {path = "../polywrap-msgpack", develop = true}
+wasmtime = "^1.0.1"
 
 [package.source]
 type = "directory"

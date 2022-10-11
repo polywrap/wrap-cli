@@ -293,7 +293,7 @@ export class PolywrapClient implements Client {
     TData = unknown,
     TUri extends Uri | string = string
   >(
-    options: InvokerOptions<TUri> & { wrapper: Wrapper }
+    options: InvokerOptiaons<TUri> & { wrapper: Wrapper }
   ): Promise<InvokeResult<TData>> {
     try {
       const typedOptions: InvokeOptions<Uri> = {

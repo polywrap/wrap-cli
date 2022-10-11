@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from result import Result
 
@@ -10,5 +10,5 @@ if TYPE_CHECKING:
 
 class UriResolverHandler(ABC):
     @abstractmethod
-    async def try_resolve_uri(self, options: Optional[TryResolveUriOptions] = None) -> Result["UriPackageOrWrapper", Exception]:
+    async def try_resolve_uri(self, options: TryResolveUriOptions) -> Result["UriPackageOrWrapper", Exception]:
         pass

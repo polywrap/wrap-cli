@@ -54,7 +54,7 @@ class InvocableResult(InvokeResult):
 
 class Invoker(ABC):
     @abstractmethod
-    async def invoke(self, options: InvokeOptions) -> InvokeResult:
+    async def invoke(self, options: InvokerOptions) -> InvokeResult:
         pass
 
 
