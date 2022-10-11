@@ -221,7 +221,7 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
       intlMsg.lib_helpers_docker_copyText(args),
       intlMsg.lib_helpers_docker_copyError(args),
       intlMsg.lib_helpers_docker_copyWarning(args),
-      async (_spinner) => {
+      async () => {
         return await run();
       }
     );
@@ -306,7 +306,7 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
       intlMsg.lib_helpers_docker_buildText(args),
       intlMsg.lib_helpers_docker_buildError(args),
       intlMsg.lib_helpers_docker_buildWarning(args),
-      async (_spinner) => {
+      async () => {
         return await run();
       }
     );
