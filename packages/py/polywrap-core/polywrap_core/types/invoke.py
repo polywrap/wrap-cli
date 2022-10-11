@@ -38,7 +38,7 @@ class InvokeResult:
         error: Error encountered during the invocation.
     """
 
-    data: Optional[Any] = None
+    result: Optional[Any] = None
     error: Optional[Exception] = None
 
 

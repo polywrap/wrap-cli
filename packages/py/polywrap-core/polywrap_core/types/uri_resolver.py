@@ -28,7 +28,7 @@ class TryResolveUriOptions:
 
 class IUriResolver(ABC):
     @abstractmethod
-    def try_resolve_uri(
+    async def try_resolve_uri(
         self, uri: Uri, client: "Client", resolution_context: IUriResolutionContext
     ) -> Result["UriPackageOrWrapper", Exception]:
         pass
