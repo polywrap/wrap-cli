@@ -65,14 +65,19 @@ async def test_maybeasync_asyncs_awaits_and_executes_coroutines_correctly(awaita
     assert False
 
 @pytest.mark.asyncio
-async def test_maybeasync_asyncs_awaits_and_executes_normal_functions_correctly(normal_test_function):
+async def test_maybeasync_asyncs_awaits_and_executes_normal_functions_correctly():
     """ 
     The MaybeAsync module should receive a normal function as input, along with its positional arguments
     The output should be awaited and returned
     """
-    results  = await execute_maybe_async_function(normal_test_function)
+
+    def normal_test_echo_function(answer):
+        return answer
+
+    message = 21312
+    results  = await execute_maybe_async_function(normal_test_echo_function, message)
     print('normal func results: ', results)
-    assert False
+    assert results == message
 
 @pytest.mark.asyncio
 async def test_maybeasync_can_inspect_coroutines(awaitable_function):
