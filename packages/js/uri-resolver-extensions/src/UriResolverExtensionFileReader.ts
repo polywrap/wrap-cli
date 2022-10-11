@@ -18,6 +18,7 @@ export class UriResolverExtensionFileReader implements IFileReader {
   ) {}
 
   async readFile(filePath: string): Promise<Result<Uint8Array, Error>> {
+    const path = combinePaths(this.wrapperUri.path, filePath);
     const result = await UriResolverInterface.module.getFile(
       {
         invoke: <TData = unknown, TUri extends Uri | string = string>(
@@ -30,11 +31,11 @@ export class UriResolverExtensionFileReader implements IFileReader {
           this.client.invokeWrapper<TData, TUri>(options),
       },
       this.resolverExtensionUri,
-      combinePaths(this.wrapperUri.path, filePath)
+      path
     );
     if (!result.ok) return result;
     if (!result.value) {
-      return ResultErr(new Error(`File not found at ${filePath}`));
+      return ResultErr(new Error(`File not found at ${path}`));
     }
     return result;
   }
