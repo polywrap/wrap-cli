@@ -10,6 +10,6 @@
     "@polywrap/wasm-as": "../../../../../../../wasm/as"
   },
   "devDependencies": {
-    "assemblyscript": "0.19.5"
+    "assemblyscript": "0.19.23"
   }
 }
