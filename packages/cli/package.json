@@ -75,7 +75,7 @@
     "regex-parser": "2.2.11",
     "rimraf": "3.0.2",
     "toml": "3.0.0",
-    "typescript": "4.0.7",
+    "typescript": "4.1.6",
     "yaml": "2.1.3",
     "yesno": "0.4.0"
   },
