@@ -217,7 +217,7 @@ describe("e2e tests for deploy command", () => {
     ])
   });
 
-  it.only("Should show warning if no manifest ext is found in deploy package", async () => {
+  it("Should show warning if no manifest ext is found in deploy package", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
         args: ["deploy"],
