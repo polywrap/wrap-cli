@@ -127,6 +127,7 @@ async function run(options: CodegenCommandOptions) {
         mustacheView: undefined,
       })
     : new CodeGenerator({
+        codegenDirAbs: codegenDir,
         schemaComposer,
         project,
       });
