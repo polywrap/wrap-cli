@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-polywrap-core = { path = "../polywrap-core", develop = true }
+polywrap-core = { path = "../polywrap-core", develop = false }
 
 
 [build-system]

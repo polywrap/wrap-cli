@@ -1,17 +1,18 @@
 from __future__ import annotations
 from dataclasses import dataclass
+from typing import Optional
 
 from polywrap_core import (
     Client,
     ClientConfig,
     Uri,
-    InvokeApiOptions,
-    InvokeApiResult,
+    InvokeOptions,
+    InvokeResult,
     UriResolutionContext,
     IUriResolutionContext,
-    Wrapper
+    Wrapper,
+    TryResolveUriOptions
 )
-from polywrap_core.types.uri_resolver import TryResolveUriOptions
 
 
 @dataclass
@@ -19,7 +20,7 @@ class PolywrapClientConfig(ClientConfig):
     pass
 
 class PolywrapClient(Client):
-    def __init__(self, config=None):
+    def __init__(self, config: Optional[PolywrapClientConfig]=None):
         self._config = PolywrapClientConfig()
         try:
             if config:
@@ -31,11 +32,10 @@ class PolywrapClient(Client):
         except Exception:
             raise
 
-    async def invoke(self, options: InvokeApiOptions) -> InvokeApiResult:
+    async def invoke(self, options: InvokeOptions) -> InvokeResult:
         try:
-            options["uri"] = Uri.parse(options['uri'])
             wrapper = self._load_wrapper(options.uri)
-            return wrapper.invoke(options)
+            return await wrapper.invoke(options)
 
         except Exception as e:
             result = e
