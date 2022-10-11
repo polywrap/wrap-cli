@@ -136,7 +136,7 @@ async function run(
     }
   }
 
-  generateProjectTemplate(command, lang, projectDir)
+  await generateProjectTemplate(command, lang, projectDir)
     .then(() => {
       let readyMessage;
       if (command === "wasm") {
