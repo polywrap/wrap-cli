@@ -2,16 +2,16 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from result import Result
 
 from .uri import Uri
-from ..uri_resolution.abc import IUriResolutionContext
+from .uri_resolution_context import IUriResolutionContext
 
-class UriResolverHandler(ABC):
-    @abstractmethod
-    async def try_resolve_uri(self, options: Optional[TryResolveUriOptions] = None) -> Result[UriPackageOrWrapper, Exception]:
-        pass
-
+if TYPE_CHECKING:
+    from .client import Client
+    from .uri_package_wrapper import UriPackageOrWrapper
 
 @dataclass(slots=True, kw_only=True)
 class TryResolveUriOptions:
@@ -24,3 +24,11 @@ class TryResolveUriOptions:
     """
     uri: Uri
     resolution_context: Optional[IUriResolutionContext] = None
+
+
+class IUriResolver(ABC):
+    @abstractmethod
+    async def try_resolve_uri(
+        self, uri: Uri, client: "Client", resolution_context: IUriResolutionContext
+    ) -> Result["UriPackageOrWrapper", Exception]:
+        pass
