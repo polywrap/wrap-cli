@@ -50,7 +50,7 @@ export class WasmPackage implements IWasmPackage {
   async getWasmModule(): Promise<Result<Uint8Array, Error>> {
     const result = await this.fileReader.readFile(WRAP_MODULE_PATH);
 
-    if (!result.ok) {
+    if (!result.ok || result.value === null) {
       return ResultErr(Error(`Wrapper does not contain a wasm module`));
     }
 
