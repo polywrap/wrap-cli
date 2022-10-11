@@ -1,4 +1,5 @@
-from .file_reader import IFileReader
+from polywrap_core import IFileReader
+
 from .constants import WRAP_MODULE_PATH
 
 

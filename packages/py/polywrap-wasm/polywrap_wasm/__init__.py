@@ -2,7 +2,6 @@ from .types import *
 from .buffer import *
 from .constants import *
 from .errors import *
-from .file_reader import *
 from .inmemory_file_reader import *
 from .exports import *
 from .imports import *

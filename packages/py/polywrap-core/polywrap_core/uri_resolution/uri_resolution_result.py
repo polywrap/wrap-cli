@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from result import Err, Ok, Result
 
-from ..types import IUriResolutionStep, IWrapPackage, Uri, UriPackage, UriPackageOrWrapper, UriWrapper, Wrapper
+from ..types import IUriResolutionStep, IWasmPackage, Uri, UriPackage, UriPackageOrWrapper, UriWrapper, Wrapper
 
 
 class UriResolutionResult:
@@ -11,7 +11,7 @@ class UriResolutionResult:
 
     @staticmethod
     def ok(
-        uri: Uri, package: Optional[IWrapPackage] = None, wrapper: Optional[Wrapper] = None
+        uri: Uri, package: Optional[IWasmPackage] = None, wrapper: Optional[Wrapper] = None
     ) -> Result[UriPackageOrWrapper, Exception]:
         if wrapper:
             return Ok(UriWrapper(uri=uri, wrapper=wrapper))
