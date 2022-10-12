@@ -140,6 +140,9 @@ describe("e2e tests for codegen command", () => {
     expect(clearStyle(output)).toContain(
       `🔥 Types were generated successfully 🔥`
     );
+    expect(
+      fs.existsSync(path.join(codegenDir, "index.ts"))
+    ).toBeTruthy();
   });
 
   it("Should successfully generate types", async () => {
