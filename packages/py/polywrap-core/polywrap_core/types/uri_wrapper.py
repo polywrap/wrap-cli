@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from .uri import Uri
-from .abc.wrapper import Wrapper
+from .wrapper import Wrapper
 
 
 @dataclass(slots=True, kw_only=True)

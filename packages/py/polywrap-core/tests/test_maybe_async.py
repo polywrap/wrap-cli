@@ -2,9 +2,12 @@ import inspect
 from typing import Awaitable
 
 import pytest
+
 import asyncio
 import time 
 from polywrap_core.utils.maybe_async import execute_maybe_async_function, is_coroutine
+# from polywrap_core import execute_maybe_async_function, is_coroutine
+
 
 
 @pytest.mark.asyncio

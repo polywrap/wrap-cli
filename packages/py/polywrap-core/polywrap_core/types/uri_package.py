@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from .uri import Uri
-from .abc import IWrapPackage
+from .wasm_package import IWasmPackage
 
 
 @dataclass(slots=True, kw_only=True)
 class UriPackage:
     uri: Uri
-    package: IWrapPackage
+    package: IWasmPackage

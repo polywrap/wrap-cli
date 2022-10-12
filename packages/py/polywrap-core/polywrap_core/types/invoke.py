@@ -1,23 +1,11 @@
 from __future__ import annotations
+from abc import ABC, abstractmethod
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, Union
-from abc import ABC, abstractmethod
 
 from .uri import Uri
-from ..uri_resolution.abc.uri_resolver import IUriResolutionContext
-
-
-class Invoker(ABC):
-    @abstractmethod
-    async def invoke(self, options: InvokeOptions) -> InvokeResult:
-        pass
-
-
-class Invocable(ABC):
-    @abstractmethod
-    async def invoke(self, options: InvokeOptions, invoker: Invoker) -> InvocableResult:
-        pass
+from .uri_resolution_context import IUriResolutionContext
 
 
 @dataclass(slots=True, kw_only=True)
@@ -50,7 +38,7 @@ class InvokeResult:
         error: Error encountered during the invocation.
     """
 
-    data: Optional[Any] = None
+    result: Optional[Any] = None
     error: Optional[Exception] = None
 
 
@@ -62,3 +50,15 @@ class InvokerOptions(InvokeOptions):
 @dataclass(slots=True, kw_only=True)
 class InvocableResult(InvokeResult):
     encoded: Optional[bool] = False
+
+
+class Invoker(ABC):
+    @abstractmethod
+    async def invoke(self, options: InvokerOptions) -> InvokeResult:
+        pass
+
+
+class Invocable(ABC):
+    @abstractmethod
+    async def invoke(self, options: InvokeOptions, invoker: Invoker) -> InvocableResult:
+        pass
