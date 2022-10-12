@@ -25,7 +25,13 @@ export function constructAbi(method: string): string[] {
 }
 
 export function parseResult(result: unknown): string {
-  return JSON.stringify(prepForStringify(result));
+  const prep = prepForStringify(result);
+
+  if (typeof prep === "string") {
+    return prep;
+  } else {
+    return JSON.stringify(prep);
+  }
 }
 
 export function prepForStringify(value: unknown): unknown {

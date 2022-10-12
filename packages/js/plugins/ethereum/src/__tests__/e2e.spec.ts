@@ -139,7 +139,7 @@ describe("Ethereum Plugin", () => {
 
     if (!response.ok) fail(response.error);
     expect(response.value).toBeDefined();
-    expect(response.value).toBe('"0x0000000000000000000000000000000000000000"');
+    expect(response.value).toBe("0x0000000000000000000000000000000000000000");
   });
 
   it("callContractView (primitive value - string ABI)", async () => {
@@ -157,7 +157,7 @@ describe("Ethereum Plugin", () => {
     });
 
     if (!response.ok) fail(response.error);
-    expect(response.value).toEqual('"100"');
+    expect(response.value).toEqual("100");
   });
 
   it("callContractView (primitive value - JSON ABI)", async () => {
@@ -175,7 +175,7 @@ describe("Ethereum Plugin", () => {
     });
 
     if (!response.ok) fail(response.error);
-    expect(response.value).toEqual('"100"');
+    expect(response.value).toEqual("100");
   });
 
   it("callContractView (primitives array - string ABI)", async () => {
@@ -1098,7 +1098,7 @@ describe("Ethereum Plugin", () => {
       await testViewMethod("getUint8", "uint8", "5");
     });
 
-    const getUint256Result = '"115792089237316195423570985008687907853269984665640564039457584007913129639935"';
+    const getUint256Result = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
     it("ViewMethods - getUint256", async () => {
       await testViewMethod("getUint256", "uint256", getUint256Result);
     });
@@ -1108,26 +1108,26 @@ describe("Ethereum Plugin", () => {
     });
 
     it("ViewMethods - getInt256", async () => {
-      await testViewMethod("getInt256", "int256", '"-57896044618658097711785492504343953926634992332820282019728792003956564819967"');
+      await testViewMethod("getInt256", "int256", "-57896044618658097711785492504343953926634992332820282019728792003956564819967");
     });
 
     it("ViewMethods - getAddress", async () => {
-      await testViewMethod("getAddress", "address", '"0xdeAdbeeF3A5632f8A64D10B04Bf7e633A04bFb97"');
+      await testViewMethod("getAddress", "address", "0xdeAdbeeF3A5632f8A64D10B04Bf7e633A04bFb97");
     });
 
     it("ViewMethods - getBytes1", async () => {
-      await testViewMethod("getBytes1", "bytes1", '"0xff"');
+      await testViewMethod("getBytes1", "bytes1", "0xff");
     });
 
     it("ViewMethods - getBytes32", async () => {
-      await testViewMethod("getBytes32", "bytes32", '"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"');
+      await testViewMethod("getBytes32", "bytes32", "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
     });
 
     it("ViewMethods - getBytes", async () => {
-      await testViewMethod("getBytes", "bytes", '"0x4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74"');
+      await testViewMethod("getBytes", "bytes", "0x4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74");
     });
 
-    const getStringResult = '"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"';
+    const getStringResult = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt";
     it("ViewMethods - getString", async () => {
       await testViewMethod("getString", "string", getStringResult);
     });
@@ -1150,21 +1150,21 @@ describe("Ethereum Plugin", () => {
     });
 
     const getStructType = "tuple(string foo, uint256 bar, uint8 baz)";
-    const getStructResult = `[${getStringResult},${getUint256Result},1]`;
+    const getStructResult = `["${getStringResult}","${getUint256Result}",1]`;
     it("ViewMethods - getStruct", async () => {
       await testViewMethod("getStruct", getStructType, getStructResult);
     });
 
     it("ViewMethods - getMultiUnamed", async () => {
-      await testViewMethod("getMultiUnamed", `uint8[6],string,${getStructType}`, `[${getArray1DResult},${getStringResult},${getStructResult}]`);
+      await testViewMethod("getMultiUnamed", `uint8[6],string,${getStructType}`, `[${getArray1DResult},"${getStringResult}",${getStructResult}]`);
     });
 
     it("ViewMethods - getMultiNamed", async () => {
-      await testViewMethod("getMultiNamed", `${getStructType},uint8[6],string`, `[${getStructResult},${getArray1DResult},${getStringResult}]`);
+      await testViewMethod("getMultiNamed", `${getStructType},uint8[6],string`, `[${getStructResult},${getArray1DResult},"${getStringResult}"]`);
     });
 
     it("ViewMethods - getMultiMixed", async () => {
-      await testViewMethod("getMultiMixed", `string,${getStructType},uint8[6]`, `[${getStringResult},${getStructResult},${getArray1DResult}]`);
+      await testViewMethod("getMultiMixed", `string,${getStructType},uint8[6]`, `["${getStringResult}",${getStructResult},${getArray1DResult}]`);
     });
   });
 });
