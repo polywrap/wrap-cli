@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "@polywrap/wasm-as": "0.9.0",
-    "assemblyscript": "0.19.5"
+    "assemblyscript": "0.19.23"
   }
 }

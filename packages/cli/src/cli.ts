@@ -11,5 +11,5 @@ export const run = async (argv: string[]): Promise<void> => {
     }
   }
 
-  program.parse(argv);
+  await program.parseAsync(argv);
 };

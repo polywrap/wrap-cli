@@ -56,7 +56,6 @@
     "@polywrap/test-env-js": "0.9.0",
     "@polywrap/wasm-js": "0.9.0",
     "@polywrap/wrap-manifest-types-js": "0.9.0",
-    "assemblyscript": "0.19.1",
     "axios": "0.21.2",
     "chalk": "4.1.0",
     "chokidar": "3.5.1",
@@ -76,7 +75,7 @@
     "regex-parser": "2.2.11",
     "rimraf": "3.0.2",
     "toml": "3.0.0",
-    "typescript": "4.0.7",
+    "typescript": "4.1.6",
     "yaml": "2.1.3",
     "yesno": "0.4.0"
   },

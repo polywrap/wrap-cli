@@ -39,7 +39,7 @@
     "jest-environment-jsdom": "^26.0.1",
     "polywrap": "0.9.0",
     "rimraf": "3.0.2",
-    "typescript": "4.0.7"
+    "typescript": "4.1.6"
   },
   "peerDependencies": {
     "react": ">=16.9.x"

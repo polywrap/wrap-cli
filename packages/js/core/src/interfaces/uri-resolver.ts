@@ -32,8 +32,8 @@ export const module = {
       invoker: Invoker,
       wrapper: Uri,
       path: string
-    ): Promise<Result<Uint8Array, Error>> => {
-      return invoker.invoke<Uint8Array>({
+    ): Promise<Result<Uint8Array | undefined, Error>> => {
+      return invoker.invoke<Uint8Array | undefined>({
         uri: wrapper.uri,
         method: "getFile",
         args: {
