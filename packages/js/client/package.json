@@ -20,13 +20,14 @@
     "test:watch": "jest --watch --passWithNoTests --verbose --detectOpenHandles"
   },
   "dependencies": {
+    "@polywrap/wrap-manifest-types-js": "0.9.0",
     "@polywrap/core-js": "0.9.0",
     "@polywrap/msgpack-js": "0.9.0",
     "@polywrap/result": "0.9.0",
     "@polywrap/tracing-js": "0.9.0",
+    "@polywrap/client-config-builder-js": "0.9.0",
     "@polywrap/uri-resolvers-js": "0.9.0",
-    "@polywrap/wrap-manifest-types-js": "0.9.0",
-    "@polywrap/client-config-builder-js": "0.9.0"
+    "@polywrap/uri-resolver-extensions-js": "0.9.0"
   },
   "devDependencies": {
     "@polywrap/os-js": "0.9.0",
@@ -41,7 +42,6 @@
     "@polywrap/ipfs-resolver-plugin-js": "0.9.0",
     "@polywrap/logger-plugin-js": "0.9.0",
     "@polywrap/fs-plugin-js": "0.9.0",
-    "@polywrap/uri-resolver-extensions-js": "0.9.0",
     "@polywrap/fs-resolver-plugin-js": "0.9.0",
     "@polywrap/plugin-js": "0.9.0",
     "@types/jest": "26.0.8",
