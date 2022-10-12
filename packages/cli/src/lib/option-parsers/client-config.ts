@@ -1,7 +1,6 @@
 import { validateClientConfig } from "../helpers";
 import { intlMsg } from "../intl";
 import { importTypescriptModule } from "../system";
-import { getTestEnvCustomConfig } from "../test-env";
 
 import { Uri } from "@polywrap/core-js";
 import {
@@ -9,6 +8,7 @@ import {
   CustomClientConfig,
 } from "@polywrap/client-config-builder-js";
 import path from "path";
+import { getTestEnvClientConfig } from "../test-env";
 
 export async function parseClientConfigOption(
   clientConfig: string | undefined
@@ -16,7 +16,7 @@ export async function parseClientConfigOption(
   const builder = new ClientConfigBuilder().addDefaults();
 
   try {
-    builder.add(getTestEnvCustomConfig());
+    builder.add(getTestEnvClientConfig());
   } catch (e) {
     console.error(intlMsg.commands_run_error_noTestEnvFound());
     process.exit(1);
