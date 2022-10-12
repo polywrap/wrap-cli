@@ -1,15 +1,16 @@
-from polywrap_client.client import PolywrapClient
-# from polywrap_core.types.invoke import InvokeOptions
+from pathlib import Path
+
+from polywrap_client import PolywrapClient
+from polywrap_core import Uri, InvokerOptions
 
 
-def test_invoke():
+async def test_invoke():
     client = PolywrapClient()
-    message = "hello polywrap"
+    uri = Uri(f'fs/{Path(__file__).parent.joinpath("cases", "wrap.wasm").absolute()}')
     args = {
-        "arg": message
+        "arg": "hello polywrap"
     }
-    # options = InvokeOptions(method="simpleMethod", args=args)
-    # result = client.invoke(options)
-    # print(result)
-    # assert result.value == message
-    assert True == True
+    options = InvokerOptions(uri=uri, method="simpleMethod", args=args, encode_result=False)
+    result = await client.invoke(options)
+
+    assert result.result == args["arg"]

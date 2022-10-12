@@ -52,5 +52,5 @@ class Client(Invoker, UriResolverHandler):
         pass
 
     @abstractmethod
-    async def get_file(self, uri: Uri, options: Optional[GetFileOptions] = None) -> Union[bytes, str]:
+    async def get_file(self, uri: Uri, options: GetFileOptions) -> Union[bytes, str]:
         pass

@@ -24,8 +24,7 @@ def sanitize(value: Any) -> Any:
         array: List[Any] = list(value)
         return sanitize(array)
     elif type(value) is set:
-        sanitized_set: List[Any] = [i for i in value]
-        return sanitized_set
+        return list(value)
     elif type(value) == complex:
         return str(value)
     elif hasattr(value, "__slots__"):

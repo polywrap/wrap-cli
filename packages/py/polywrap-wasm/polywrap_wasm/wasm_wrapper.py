@@ -1,23 +1,22 @@
 from typing import Optional, Union
 
 from polywrap_core import (Client, GetFileOptions, InvocableResult,
-                           InvokeOptions, Invoker, Wrapper)
+                           InvokeOptions, Invoker, Wrapper, IFileReader)
 from polywrap_msgpack import msgpack_encode
 from wasmtime import Module, Store
 
 from .constants import WRAP_MODULE_PATH
 from .errors import WasmAbortError
 from .exports import WrapExports
-from .file_reader import IFileReader
 from .imports import create_instance
 from .types.state import State
 
 
 class WasmWrapper(Wrapper):
     file_reader: IFileReader
-    wasm_module: bytearray
+    wasm_module: Optional[bytearray]
 
-    def __init__(self, wasm_module: bytearray, file_reader: IFileReader):
+    def __init__(self, file_reader: IFileReader, wasm_module: Optional[bytearray] = None):
         self.file_reader = file_reader
         self.wasm_module = wasm_module
 
@@ -76,7 +75,7 @@ class WasmWrapper(Wrapper):
         state: State, result: bool
     ) -> InvocableResult:
         if result and state.invoke["result"]:
-            return InvocableResult(result=state.invoke["result"])
+            return InvocableResult(result=state.invoke["result"], encoded=True)
         elif result or not state.invoke["error"]:
             raise WasmAbortError("Invoke result is missing")
         else:
