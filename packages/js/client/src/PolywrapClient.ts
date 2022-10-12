@@ -50,13 +50,7 @@ export interface PolywrapClientConfig<TUri extends Uri | string = string>
 }
 
 export class PolywrapClient implements Client {
-  private _config: PolywrapClientConfig<Uri> = ({
-    redirects: [],
-    plugins: [],
-    interfaces: [],
-    envs: [],
-    tracerConfig: {},
-  } as unknown) as PolywrapClientConfig<Uri>;
+  private _config: PolywrapClientConfig<Uri>;
 
   constructor(
     config?: Partial<PolywrapClientConfig<string | Uri>>,
@@ -119,30 +113,29 @@ export class PolywrapClient implements Client {
 
   @Tracer.traceMethod("PolywrapClient: getRedirects")
   public getRedirects(): readonly UriRedirect<Uri>[] {
-    return this._config.redirects;
+    return [...this._config.redirects.values()];
   }
 
   @Tracer.traceMethod("PolywrapClient: getPlugins")
   public getPlugins(): readonly PluginRegistration<Uri>[] {
-    return this._config.plugins;
+    return [...this._config.plugins.values()];
   }
 
   @Tracer.traceMethod("PolywrapClient: getPlugin")
   public getPluginByUri<TUri extends Uri | string>(
     uri: TUri
   ): PluginPackage<unknown> | undefined {
-    return this.getPlugins().find((x) => Uri.equals(x.uri, Uri.from(uri)))
-      ?.plugin;
+    return this._config.plugins.get(uri)?.plugin;
   }
 
   @Tracer.traceMethod("PolywrapClient: getInterfaces")
   public getInterfaces(): readonly InterfaceImplementations<Uri>[] {
-    return this._config.interfaces;
+    return [...this._config.interfaces.values()];
   }
 
   @Tracer.traceMethod("PolywrapClient: getEnvs")
   public getEnvs(): readonly Env<Uri>[] {
-    return this._config.envs;
+    return [...this._config.envs.values()];
   }
 
   @Tracer.traceMethod("PolywrapClient: getUriResolver")
@@ -154,11 +147,7 @@ export class PolywrapClient implements Client {
   public getEnvByUri<TUri extends Uri | string>(
     uri: TUri
   ): Env<Uri> | undefined {
-    const uriUri = Uri.from(uri);
-
-    return this.getEnvs().find((environment) =>
-      Uri.equals(environment.uri, uriUri)
-    );
+    return this._config.envs.get(uri);
   }
 
   @Tracer.traceMethod("PolywrapClient: getManifest")

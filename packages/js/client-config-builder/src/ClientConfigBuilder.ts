@@ -29,29 +29,29 @@ export class ClientConfigBuilder {
 
   add(config: Partial<ClientConfig<Uri | string>>): ClientConfigBuilder {
     if (config.envs) {
-      for (const env of config.envs) {
-        this.addEnv(env.uri, env.env);
+      for (const [key, env] of config.envs) {
+        this.addEnv(key, env.env);
       }
     }
 
     if (config.interfaces) {
-      for (const interfaceImpl of config.interfaces) {
+      for (const [key, interfaceImpl] of config.interfaces) {
         this.addInterfaceImplementations(
-          interfaceImpl.interface,
+          key,
           interfaceImpl.implementations
         );
       }
     }
 
     if (config.plugins) {
-      for (const plugin of config.plugins) {
-        this.addPlugin(plugin.uri, plugin.plugin);
+      for (const [key, plugin] of config.plugins) {
+        this.addPlugin(key, plugin.plugin);
       }
     }
 
     if (config.redirects) {
-      for (const redirect of config.redirects) {
-        this.addUriRedirect(redirect.from, redirect.to);
+      for (const [key, redirect] of config.redirects) {
+        this.addUriRedirect(key, redirect.to);
       }
     }
 
@@ -258,20 +258,20 @@ export class ClientConfigBuilder {
 
     return {
       ...this._config,
-      redirects: [...this._config.redirects.values()],
-      plugins: [...this._config.plugins.values()],
-      interfaces: [...this._config.interfaces.values()],
-      envs: [...this._config.envs.values()],
+      redirects: this._config.redirects,
+      plugins: this._config.plugins,
+      interfaces: this._config.interfaces,
+      envs: this._config.envs,
     } as ClientConfig<Uri>;
   }
 
   buildPartial(): Partial<ClientConfig<Uri>> {
     return {
       ...this._config,
-      redirects: [...this._config.redirects.values()],
-      plugins: [...this._config.plugins.values()],
-      interfaces: [...this._config.interfaces.values()],
-      envs: [...this._config.envs.values()],
+      redirects: this._config.redirects,
+      plugins: this._config.plugins,
+      interfaces: this._config.interfaces,
+      envs: this._config.envs,
     };
   }
 }

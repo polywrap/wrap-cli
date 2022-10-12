@@ -1,4 +1,12 @@
-import { ClientConfig, Uri } from "@polywrap/core-js";
+import {
+  ClientConfig,
+  Env,
+  InterfaceImplementations,
+  PluginRegistration,
+  Uri,
+  UriMap,
+  UriRedirect,
+} from "@polywrap/core-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import {
@@ -26,103 +34,151 @@ export const getDefaultClientConfig = (
   wrapperCache?: IWrapperCache
 ): ClientConfig<Uri> => {
   return {
-    envs: [
-      {
-        uri: new Uri(defaultWrappers.graphNode),
-        env: {
-          provider: "https://api.thegraph.com",
+    envs: new UriMap<Env<Uri>>([
+      [
+        Uri.from(defaultWrappers.graphNode),
+        {
+          uri: Uri.from(defaultWrappers.graphNode),
+          env: {
+            provider: "https://api.thegraph.com",
+          },
         },
-      },
-      {
-        uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
-        env: {
-          provider: defaultIpfsProviders[0],
-          fallbackProviders: defaultIpfsProviders.slice(1),
+      ],
+      [
+        Uri.from("wrap://ens/ipfs.polywrap.eth"),
+        {
+          uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
+          env: {
+            provider: defaultIpfsProviders[0],
+            fallbackProviders: defaultIpfsProviders.slice(1),
+          },
         },
-      },
-    ],
-    redirects: [
-      {
-        from: new Uri("wrap://ens/sha3.polywrap.eth"),
-        to: new Uri(defaultWrappers.sha3),
-      },
-      {
-        from: new Uri("wrap://ens/uts46.polywrap.eth"),
-        to: new Uri(defaultWrappers.uts46),
-      },
-      {
-        from: new Uri("wrap://ens/graph-node.polywrap.eth"),
-        to: new Uri(defaultWrappers.graphNode),
-      },
-    ],
-    plugins: [
+      ],
+    ]),
+    redirects: new UriMap<UriRedirect<Uri>>([
+      [
+        Uri.from("wrap://ens/sha3.polywrap.eth"),
+        {
+          from: Uri.from("wrap://ens/sha3.polywrap.eth"),
+          to: Uri.from(defaultWrappers.sha3),
+        },
+      ],
+      [
+        Uri.from("wrap://ens/uts46.polywrap.eth"),
+        {
+          from: Uri.from("wrap://ens/uts46.polywrap.eth"),
+          to: Uri.from(defaultWrappers.uts46),
+        },
+      ],
+      [
+        Uri.from("wrap://ens/graph-node.polywrap.eth"),
+        {
+          from: Uri.from("wrap://ens/graph-node.polywrap.eth"),
+          to: Uri.from(defaultWrappers.graphNode),
+        },
+      ],
+    ]),
+    plugins: new UriMap<PluginRegistration<Uri>>([
       // IPFS is required for downloading Polywrap packages
-      {
-        uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
-        plugin: ipfsPlugin({}),
-      },
+      [
+        Uri.from("wrap://ens/ipfs.polywrap.eth"),
+        {
+          uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
+          plugin: ipfsPlugin({}),
+        },
+      ],
       // ENS is required for resolving domain to IPFS hashes
-      {
-        uri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-        plugin: ensResolverPlugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/ethereum.polywrap.eth"),
-        plugin: ethereumPlugin({
-          connections: new Connections({
-            networks: {
-              mainnet: new Connection({
-                provider:
-                  "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-              }),
-              goerli: new Connection({
-                provider:
-                  "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-              }),
-            },
+      [
+        Uri.from("wrap://ens/ens-resolver.polywrap.eth"),
+        {
+          uri: Uri.from("wrap://ens/ens-resolver.polywrap.eth"),
+          plugin: ensResolverPlugin({}),
+        },
+      ],
+      [
+        Uri.from("wrap://ens/ethereum.polywrap.eth"),
+        {
+          uri: Uri.from("wrap://ens/ethereum.polywrap.eth"),
+          plugin: ethereumPlugin({
+            connections: new Connections({
+              networks: {
+                mainnet: new Connection({
+                  provider:
+                    "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+                }),
+                goerli: new Connection({
+                  provider:
+                    "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+                }),
+              },
+            }),
           }),
-        }),
-      },
-      {
-        uri: new Uri("wrap://ens/http.polywrap.eth"),
-        plugin: httpPlugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/http-resolver.polywrap.eth"),
-        plugin: httpResolverPlugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/js-logger.polywrap.eth"),
-        plugin: loggerPlugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/fs.polywrap.eth"),
-        plugin: fileSystemPlugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-        plugin: fileSystemResolverPlugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-        plugin: ipfsResolverPlugin({}),
-      },
-    ],
-    interfaces: [
-      {
-        interface: new Uri("wrap://ens/uri-resolver.core.polywrap.eth"),
-        implementations: [
-          new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-          new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-          new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-          new Uri("wrap://ens/http-resolver.polywrap.eth"),
-        ],
-      },
-      {
-        interface: new Uri("wrap://ens/logger.core.polywrap.eth"),
-        implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
-      },
-    ],
+        },
+      ],
+      [
+        Uri.from("wrap://ens/http.polywrap.eth"),
+        {
+          uri: Uri.from("wrap://ens/http.polywrap.eth"),
+          plugin: httpPlugin({}),
+        },
+      ],
+      [
+        Uri.from("wrap://ens/http-resolver.polywrap.eth"),
+        {
+          uri: Uri.from("wrap://ens/http-resolver.polywrap.eth"),
+          plugin: httpResolverPlugin({}),
+        },
+      ],
+      [
+        Uri.from("wrap://ens/js-logger.polywrap.eth"),
+        {
+          uri: Uri.from("wrap://ens/js-logger.polywrap.eth"),
+          plugin: loggerPlugin({}),
+        },
+      ],
+      [
+        Uri.from("wrap://ens/fs.polywrap.eth"),
+        {
+          uri: Uri.from("wrap://ens/fs.polywrap.eth"),
+          plugin: fileSystemPlugin({}),
+        },
+      ],
+      [
+        Uri.from("wrap://ens/fs-resolver.polywrap.eth"),
+        {
+          uri: Uri.from("wrap://ens/fs-resolver.polywrap.eth"),
+          plugin: fileSystemResolverPlugin({}),
+        },
+      ],
+      [
+        Uri.from("wrap://ens/ipfs-resolver.polywrap.eth"),
+        {
+          uri: Uri.from("wrap://ens/ipfs-resolver.polywrap.eth"),
+          plugin: ipfsResolverPlugin({}),
+        },
+      ],
+    ]),
+    interfaces: new UriMap<InterfaceImplementations<Uri>>([
+      [
+        Uri.from("wrap://ens/uri-resolver.core.polywrap.eth"),
+        {
+          interface: Uri.from("wrap://ens/uri-resolver.core.polywrap.eth"),
+          implementations: [
+            Uri.from("wrap://ens/ipfs-resolver.polywrap.eth"),
+            Uri.from("wrap://ens/ens-resolver.polywrap.eth"),
+            Uri.from("wrap://ens/fs-resolver.polywrap.eth"),
+            Uri.from("wrap://ens/http-resolver.polywrap.eth"),
+          ],
+        },
+      ],
+      [
+        Uri.from("wrap://ens/logger.core.polywrap.eth"),
+        {
+          interface: Uri.from("wrap://ens/logger.core.polywrap.eth"),
+          implementations: [Uri.from("wrap://ens/js-logger.polywrap.eth")],
+        },
+      ],
+    ]),
     resolver: new RecursiveResolver(
       new PackageToWrapperCacheResolver(wrapperCache ?? new WrapperCache(), [
         new LegacyRedirectsResolver(),

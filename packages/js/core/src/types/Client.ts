@@ -8,6 +8,7 @@ import {
   InterfaceImplementations,
   Env,
   PluginPackage,
+  ReadonlyUriMap,
 } from "./";
 import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
@@ -16,10 +17,10 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
-  readonly redirects: Readonly<UriRedirect<TUri>[]>;
-  readonly plugins: Readonly<PluginRegistration<TUri>[]>;
-  readonly interfaces: Readonly<InterfaceImplementations<TUri>[]>;
-  readonly envs: Readonly<Env<TUri>[]>;
+  readonly redirects: ReadonlyUriMap<UriRedirect<TUri>>;
+  readonly plugins: ReadonlyUriMap<PluginRegistration<TUri>>;
+  readonly interfaces: ReadonlyUriMap<InterfaceImplementations<TUri>>;
+  readonly envs: ReadonlyUriMap<Env<TUri>>;
   readonly resolver: Readonly<IUriResolver<unknown>>;
 }
 

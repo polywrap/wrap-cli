@@ -1,10 +1,17 @@
 import { Uri } from "./Uri";
 
-export class UriMap<TValue> implements Map<Uri, TValue> {
-  private map: Map<string, TValue>;
+const sanitizeUri = (uri: Uri | string) => {
+  return Uri.from(uri).uri;
+};
 
-  constructor(iterable?: Iterable<[Uri, TValue]>) {
-    this.map = new Map<string, TValue>();
+export type ReadonlyUriMap<TValue> = ReadonlyMap<Uri | string, TValue>;
+
+export class UriMap<TValue>
+  implements Map<Uri | string, TValue>, ReadonlyUriMap<TValue> {
+  private _map: Map<string, TValue>;
+
+  constructor(iterable?: Iterable<[Uri | string, TValue]>) {
+    this._map = new Map<string, TValue>();
     if (iterable) {
       for (const [k, v] of iterable) {
         this.set(k, v);
@@ -12,55 +19,55 @@ export class UriMap<TValue> implements Map<Uri, TValue> {
     }
   }
 
-  get(key: Uri): TValue | undefined {
-    return this.map.get(key.uri);
+  get(key: Uri | string): TValue | undefined {
+    return this._map.get(sanitizeUri(key));
   }
 
-  has(key: Uri): boolean {
-    return this.map.has(key.uri);
+  has(key: Uri | string): boolean {
+    return this._map.has(sanitizeUri(key));
   }
 
-  set(key: Uri, value: TValue): this {
-    this.map.set(key.uri, value);
+  set(key: Uri | string, value: TValue): this {
+    this._map.set(sanitizeUri(key), value);
 
     return this;
   }
 
-  delete(key: Uri): boolean {
-    return this.map.delete(key.uri);
+  delete(key: Uri | string): boolean {
+    return this._map.delete(sanitizeUri(key));
   }
 
   clear(): void {
-    this.map.clear();
+    this._map.clear();
   }
 
   forEach(
     callbackfn: (value: TValue, key: Uri, map: Map<Uri, TValue>) => void,
     thisArg?: unknown
   ): void {
-    this.map.forEach((v, k) => callbackfn(v, new Uri(k), this), thisArg);
+    this._map.forEach((v, k) => callbackfn(v, Uri.from(k), this), thisArg);
   }
 
   get size(): number {
-    return this.map.size;
+    return this._map.size;
   }
 
   [Symbol.toStringTag] = "UriMap";
 
   *entries(): IterableIterator<[Uri, TValue]> {
-    for (const [k, v] of this.map.entries()) {
-      yield [new Uri(k), v];
+    for (const [k, v] of this._map.entries()) {
+      yield [Uri.from(k), v];
     }
   }
 
   *keys(): IterableIterator<Uri> {
-    for (const x of this.map.keys()) {
-      yield new Uri(x);
+    for (const k of this._map.keys()) {
+      yield Uri.from(k);
     }
   }
 
   values(): IterableIterator<TValue> {
-    return this.map.values();
+    return this._map.values();
   }
 
   [Symbol.iterator](): IterableIterator<[Uri, TValue]> {

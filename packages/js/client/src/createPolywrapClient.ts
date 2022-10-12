@@ -81,7 +81,13 @@ export const createPolywrapClient = Tracer.traceFunc(
 
       return new PolywrapClient(sanitizedConfig);
     } else {
-      return new PolywrapClient({ plugins });
+      const builder = new ClientConfigBuilder();
+
+      for (const plugin of plugins) {
+        builder.addPlugin(plugin.uri, plugin.plugin);
+      }
+
+      return new PolywrapClient(builder.build());
     }
   }
 );
