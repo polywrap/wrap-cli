@@ -1,151 +1,118 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, List, Optional, Union
+
+from result import Result, Ok, Err
 
 from polywrap_core import (
     Client,
     ClientConfig,
     Uri,
-    InvokeOptions,
     InvokeResult,
-    UriResolutionContext,
     IUriResolutionContext,
+    UriResolutionContext,
+    UriPackageOrWrapper,
     Wrapper,
-    TryResolveUriOptions
+    InvokerOptions,
+    UriPackage,
+    GetFileOptions,
+    TryResolveUriOptions,
+    GetUriResolversOptions,
+    IUriResolver,
+    GetEnvsOptions,
+    Env,
 )
 
+from polywrap_uri_resolvers import FsUriResolver, SimpleFileReader
+from polywrap_msgpack import msgpack_decode, msgpack_encode
 
-@dataclass
+
+@dataclass(slots=True, kw_only=True)
 class PolywrapClientConfig(ClientConfig):
     pass
 
+
 class PolywrapClient(Client):
-    def __init__(self, config: Optional[PolywrapClientConfig]=None):
-        self._config = PolywrapClientConfig()
+    _config: PolywrapClientConfig
+
+    def __init__(self, config: Optional[PolywrapClientConfig] = None):
+        # TODO: this is naive solution need to use polywrap-client-config-builder once we have it
+        self._config = config or PolywrapClientConfig(
+            resolver=FsUriResolver(file_reader=SimpleFileReader())
+        )
+
+    def getConfig(self):
+        return self._config
+
+    def get_uri_resolver(
+        self, options: Optional[GetUriResolversOptions] = None
+    ) -> IUriResolver:
+        return self._config.resolver
+
+    def get_envs(self, options: Optional[GetEnvsOptions] = None) -> List[Env]:
+        return self._config.envs
+
+    def get_env_by_uri(
+        self, uri: Uri, options: Optional[GetEnvsOptions] = None
+    ) -> Union[Env, None]:
+        return next(filter(lambda env: env.uri == uri, self.get_envs()), None)
+
+    async def get_file(self, uri: Uri, options: GetFileOptions) -> Union[bytes, str]:
+        loaded_wrapper = (await self.load_wrapper(uri)).unwrap()
+        return await loaded_wrapper.get_file(options=options, client=self)
+
+    async def try_resolve_uri(
+        self, options: TryResolveUriOptions
+    ) -> Result[UriPackageOrWrapper, Exception]:
+        uri = options.uri
+        uri_resolver = self._config.resolver
+        resolution_context = options.resolution_context or UriResolutionContext()
+
+        return await uri_resolver.try_resolve_uri(uri, self, resolution_context)
+
+    async def load_wrapper(
+        self, uri: Uri, resolution_context: Optional[IUriResolutionContext] = None
+    ) -> Result[Wrapper, Exception]:
+        resolution_context = resolution_context or UriResolutionContext()
+
+        result = await self.try_resolve_uri(
+            TryResolveUriOptions(uri=uri, resolution_context=resolution_context)
+        )
+
+        if result.is_ok is True and result.ok is None:
+            # FIXME: add other info
+            return Err(RuntimeError(f'Error resolving URI "{uri.uri}"'))
+        if result.is_err is True:
+            return Err(result.unwrap_err())
+
+        uri_package_or_wrapper = result.unwrap()
+
+        if isinstance(uri_package_or_wrapper, Uri):
+            return Err(Exception(f'Error resolving URI "{uri.uri}"\nURI not found'))
+
+        if isinstance(uri_package_or_wrapper, UriPackage):
+            return Ok(uri_package_or_wrapper.package.create_wrapper())
+
+        return Ok(uri_package_or_wrapper.wrapper)
+
+    async def invoke(self, options: InvokerOptions) -> InvokeResult:
         try:
-            if config:
-                self._config = PolywrapClientConfig()
+            resolution_context = options.resolution_context or UriResolutionContext()
+            wrapper = (
+                await self.load_wrapper(
+                    options.uri, resolution_context=resolution_context
+                )
+            ).unwrap()
 
-            # self._validate_config()
-            # self._sanitize_config()
-
-        except Exception:
-            raise
-
-    async def invoke(self, options: InvokeOptions) -> InvokeResult:
-        try:
-            wrapper = self._load_wrapper(options.uri)
-            return await wrapper.invoke(options)
+            result = await wrapper.invoke(options, invoker=self)
+            if options.encode_result and not result.encoded:
+                encoded = msgpack_encode(result.result)
+                return InvokeResult(result=encoded, error=None)
+            elif not options.encode_result and result.encoded and isinstance(result.result, (bytes, bytearray)):
+                decoded: Any = msgpack_decode(result.result)
+                return InvokeResult(result=decoded, error=None)
+            else:
+                return result
 
         except Exception as e:
-            result = e
-
-        return result
-
-    async def _load_wrapper(self, uri: Uri, resolution_context: IUriResolutionContext = None) -> Wrapper:
-        if not resolution_context:
-            resolution_context = UriResolutionContext()
-
-        result = self.try_resolve_uri({
-            uri,
-            resolution_context
-        })
-
-        if not result.ok and result.error:
-            #return ResultErr(UriResolverError(error=result.error, context=resolution_context))
-            raise UriResolverError(error=result.error)
-        else:
-            """
-            return ResultErr(Error(f"Error resolving URI {uri.uri}"))
-            """
-            raise f"Error resolving URI {uri.uri}"
-
-        
-
-    async def try_resolve_uri(self, options: TryResolveUriOptions):
-        pass
-
-    # def get_envs(self, options: GetEnvsOptions) -> List[Env]:
-    #     return self._get_config(options.context_id).envs
-
-    # def get_env_by_uri(self, uri: Union[Uri, str], options: GetEnvsOptions) -> Union[Env, None]:
-    #     uri_uri = self._to_uri(uri)
-    #
-    #     return next((x for x in self.get_envs(options) if Uri.equals(x.uri, uri_uri)), [None])
-
-    # def get_uri_resolvers(self, options: GetUriResolversOptions) -> List[UriResolver]:
-    #     return self._get_config(options.context_id).uri_resolvers
-
-    # async def resolve_uri(self, uri: Union[Uri, str], options: Optional[ResolveUriOptions] = None) -> Awaitable[ResolveUriResult]:
-    #     options = options if options else GetRedirectsOptions(context_id="")
-    #     context_id, should_clear_context = self._set_context(
-    #         options.context_id,
-    #         options.config
-    #     )
-    #
-    #     ignore_cache = self._is_contextualized(context_id)
-    #     cache_write = not ignore_cache and options and not options.no_cache_write
-    #     cache_read = not ignore_cache and options and not options.no_cache_read
-    #
-    #     client = contextualize_client(self, context_id)
-    #
-    #     uri_resolvers = self.get_uri_resolvers(GetUriResolversOptions(context_id=context_id))
-    #
-    #     if not cache_read:
-    #         uri_resolvers = [x for x in uri_resolvers if x.name != CacheResolver.name]
-    #
-    #     resolve_uri_result = await resolve_uri(
-    #         uri=self._to_uri(uri),
-    #         uri_resolvers=uri_resolvers,
-    #         client=client,
-    #         cache=self._api_cache,
-    #     )
-    #
-    #     api = resolve_uri_result.api
-    #     resolved_uri = resolve_uri_result.uri
-    #     uri_history = resolve_uri_result.uri_history
-    #     error = resolve_uri_result.error
-    #
-    #     # Update cache for all URIs in the chain
-    #     if cache_write and api:
-    #         for item in uri_history.get_resolution_path().stack:
-    #             self._api_cache.set(item.source_uri.uri, api)
-    #
-    #     if should_clear_context:
-    #         self._clear_context(context_id)
-    #
-    #     return ResolveUriResult(
-    #         api=api,
-    #         uri=resolved_uri,
-    #         uri_history=uri_history,
-    #         error=error
-    #     )
-
-    # async def load_uri_resolvers(self) -> Awaitable[Dict[bool, List[str]]]:
-    #     extendable_uri_resolver = next(filter(x.name == ExtendableUriResolver.name, self.get_uri_resolvers()), None)
-    #     if not extendable_uri_resolver:
-    #         return {
-    #             "success": True,
-    #             "failed_uri_resolvers": []
-    #         }
-    #
-    #     uri_resolver_impls = get_implementations(
-    #         CoreInterfaceUris.uri_resolver.value,
-    #         self.get_interfaces(),
-    #         self.get_redirects()
-    #     )
-    #
-    #     return extendable_uri_resolver.load_uri_resolver_wrappers(
-    #         self,
-    #         self._api_cache,
-    #         uri_resolver_impls
-    #     )
-
-    # def _get_config(self, context_id: str = None) -> PolywrapClientConfig:
-    #     if context_id:
-    #         context = self._contexts.get(context_id)
-    #         if not context:
-    #             raise ValueError(f"No invoke context found with id: {context_id}")
-    #         return context
-    #     else:
-    #         return self._config
+            return InvokeResult(result=None, error=e)

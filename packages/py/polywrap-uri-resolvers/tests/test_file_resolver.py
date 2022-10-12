@@ -3,7 +3,7 @@ import pytest
 from pathlib import Path
 
 from polywrap_core import IFileReader, IUriResolver, Uri, UriPackage
-from uri_resolvers import FsUriResolver, SimpleFileReader
+from polywrap_uri_resolvers import FsUriResolver, SimpleFileReader
 
 @pytest.fixture
 def file_reader():

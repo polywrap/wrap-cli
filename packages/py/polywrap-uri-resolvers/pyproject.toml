@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "uri-resolvers"
+name = "polywrap-uri-resolvers"
 version = "0.1.0"
 description = ""
 authors = ["Cesar <cesarbrazon10@gmail.com>"]

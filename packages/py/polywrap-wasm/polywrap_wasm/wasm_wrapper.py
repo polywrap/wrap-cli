@@ -75,7 +75,7 @@ class WasmWrapper(Wrapper):
         state: State, result: bool
     ) -> InvocableResult:
         if result and state.invoke["result"]:
-            return InvocableResult(result=state.invoke["result"])
+            return InvocableResult(result=state.invoke["result"], encoded=True)
         elif result or not state.invoke["error"]:
             raise WasmAbortError("Invoke result is missing")
         else:
