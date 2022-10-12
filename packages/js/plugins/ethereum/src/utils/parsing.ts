@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 export function parseArgs(args?: string[] | null): unknown[] {
   if (!args) {
     return [];
@@ -13,7 +11,7 @@ export function parseArgs(args?: string[] | null): unknown[] {
   );
 }
 
-export function constructAbi(method: string): any[] {
+export function constructAbi(method: string): string[] {
   let abi;
   try {
     abi = JSON.parse(method);
@@ -26,22 +24,22 @@ export function constructAbi(method: string): any[] {
   return abi;
 }
 
-export function parseResult(result: any): string {
+export function parseResult(result: unknown): string {
   return JSON.stringify(prepForStringify(result));
 }
 
-export function prepForStringify(value: any): any {
+export function prepForStringify(value: unknown): unknown {
   if (Array.isArray(value)) {
-    let prepared = [];
+    const prepared = [];
     for (const item of value) {
       prepared.push(prepForStringify(item));
     }
     return prepared;
   } else if (
     typeof value === "object" &&
-    typeof value.toString === "function"
+    typeof (value as Record<string, unknown>).toString === "function"
   ) {
-    return value.toString();
+    return (value as Record<string, unknown>).toString();
   } else {
     return value;
   }
