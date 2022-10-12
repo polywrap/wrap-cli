@@ -6,7 +6,7 @@ type Module {
         method: String!
         args: [String!]
         connection: Ethereum_Connection
-    ): JSON!
+    ): String!
 
     callContractStatic(
         address: String!

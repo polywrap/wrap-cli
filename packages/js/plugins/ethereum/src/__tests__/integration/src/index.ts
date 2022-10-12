@@ -34,11 +34,11 @@ import {
   Args_signMessage,
   Args_requestAccounts,
 } from "./wrap";
-import { BigInt, JSON } from "@polywrap/wasm-as";
+import { BigInt } from "@polywrap/wasm-as";
 
 export function callContractView(
   args: Args_callContractView
-): JSON.Value {
+): string {
   return Ethereum_Module.callContractView({
     address: args.address,
     method: args.method,
