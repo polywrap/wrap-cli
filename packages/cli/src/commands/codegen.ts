@@ -111,8 +111,6 @@ async function run(options: CodegenCommandOptions) {
 
   const projectType = await project.getManifestLanguage();
 
-  let result = false;
-
   const schemaComposer = new SchemaComposer({
     project,
     client,
@@ -128,11 +126,12 @@ async function run(options: CodegenCommandOptions) {
         mustacheView: undefined,
       })
     : new CodeGenerator({
+        codegenDirAbs: codegenDir,
         schemaComposer,
         project,
       });
 
-  result = await codeGenerator.generate();
+  const result = await codeGenerator.generate();
 
   // HACK: Codegen outputs wrap.info into a build directory for plugins, needs to be moved into a build command?
   if (isPluginManifestLanguage(projectType)) {
@@ -154,8 +153,8 @@ async function run(options: CodegenCommandOptions) {
 
   if (result) {
     logger.info(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
-    process.exitCode = 0;
+    process.exit(0);
   } else {
-    process.exitCode = 1;
+    process.exit(1);
   }
 }

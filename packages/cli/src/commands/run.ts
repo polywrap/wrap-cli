@@ -96,7 +96,7 @@ const _run = async (options: WorkflowCommandOptions) => {
     const { data, error, status } = jobResult;
 
     if (error !== undefined) {
-      process.exitCode = 1;
+      process.exit(1);
     }
 
     const output: WorkflowOutput = { id, status, data, error };

@@ -185,8 +185,7 @@ async function run(options: BuildCommandOptions) {
     const result = await execute();
 
     if (!result) {
-      process.exitCode = 1;
-      return;
+      process.exit(1);
     }
   } else {
     // Execute
@@ -240,5 +239,5 @@ async function run(options: BuildCommandOptions) {
     });
   }
 
-  process.exitCode = 0;
+  process.exit(0);
 }

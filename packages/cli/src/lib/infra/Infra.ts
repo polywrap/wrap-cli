@@ -46,7 +46,7 @@ export class Infra {
     "./docker-compose.yaml",
   ];
 
-  private _dockerCompose = new DockerCompose();
+  private _dockerCompose = new DockerCompose(this._config.logger);
   private _defaultDockerOptions: ReturnType<
     typeof DockerCompose.getDefaultConfig
   >;

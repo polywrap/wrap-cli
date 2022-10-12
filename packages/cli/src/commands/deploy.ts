@@ -154,7 +154,7 @@ async function run(options: DeployCommandOptions): Promise<void> {
         );
     }
   }
-  return;
+  process.exit(0);
 }
 
 function sanitizePackages(packages: string[]) {
