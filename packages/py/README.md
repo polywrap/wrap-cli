@@ -94,22 +94,19 @@ Calling a function of a wrapper from the python client is as simple as creating 
 
 ```python
 # get_eth_txns.py
-from polywrap-core import client 
-
-portfolio_address = '0x123EtherumAddress12312'
-options = TBD
+from polywrap_client import PolywrapClient
+from polywrap_core import Uri, InvokerOptions
 
 async def get_eth_transactions(accountAddress):
-    query_result = await client.invoke(
-        uri="wrap://ens/defiwrapper.polywrap.eth",
-        method="getTransactions",
-        args={
-            "accountAddress": accountAddress,
-            "options": options,
-            ...
-        }
-    );
-    return query_result
+    client = PolywrapClient()
+    #uri = Uri("wrap://ens/defiwrapper.polywrap.eth")
+    uri = Uri(f'fs/{Path(__file__).parent.joinpath("cases", "wrap.wasm").absolute()}')
+    args = {
+        "accountAddress": "'0x123EtherumAddress12312'"
+    }
+    options = InvokerOptions(uri=uri, method="simpleMethod", args=args, encode_result=False)
+    result = await client.invoke(options)
+    return result.result
 
 if __name__ == "__main__":
     return get_eth_transactions(portfolio_address)
