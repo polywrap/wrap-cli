@@ -107,7 +107,7 @@ type Module {
         method: String!
         args: [String!]
         connection: Connection
-    ): String!
+    ): JSON!
 
     callContractStatic(
         address: String!
