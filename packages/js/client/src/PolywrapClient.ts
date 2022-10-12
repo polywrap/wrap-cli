@@ -1,9 +1,10 @@
 import { UriResolverError } from "./UriResolverError";
+import { PolywrapCoreClientConfig } from "./PolywrapCoreClientConfig";
+import { PolywrapClientConfig } from "./PolywrapClientConfig";
 
 import {
   Wrapper,
   Client,
-  ClientConfig,
   Env,
   GetFileOptions,
   GetImplementationsOptions,
@@ -27,10 +28,7 @@ import {
   QueryResult,
   InvokeResult,
 } from "@polywrap/core-js";
-import {
-  buildCleanUriHistory,
-  IWrapperCache,
-} from "@polywrap/uri-resolvers-js";
+import { buildCleanUriHistory } from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
   DeserializeManifestOptions,
@@ -38,22 +36,7 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
-import {
-  ClientConfigBuilder,
-  CustomClientConfig,
-} from "@polywrap/client-config-builder-js";
-
-export interface PolywrapClientConfig<TUri extends Uri | string = Uri | string>
-  extends CustomClientConfig<TUri> {
-  readonly wrapperCache?: IWrapperCache;
-  readonly tracerConfig: Readonly<Partial<TracerConfig>>;
-}
-
-export interface PolywrapCoreClientConfig<
-  TUri extends Uri | string = Uri | string
-> extends ClientConfig<TUri> {
-  readonly tracerConfig: Readonly<Partial<TracerConfig>>;
-}
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 export class PolywrapClient implements Client {
   private _config: PolywrapCoreClientConfig<Uri>;
