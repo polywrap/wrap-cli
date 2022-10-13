@@ -7,7 +7,7 @@
     "build": "polywrap build"
   },
   "dependencies": {
-    "@polywrap/wasm-as": "0.9.0"
+    "@polywrap/wasm-as": "0.9.1"
   },
   "devDependencies": {
     "assemblyscript": "0.19.23"

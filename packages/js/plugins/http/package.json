@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@polywrap/core-js": "0.9.1",
-    "@polywrap/plugin-js": "0.9.0",
+    "@polywrap/plugin-js": "0.9.1",
     "axios": "0.21.4"
   },
   "devDependencies": {
@@ -29,7 +29,7 @@
     "@polywrap/uri-resolvers-js": "0.9.1",
     "@polywrap/fs-resolver-plugin-js": "0.9.1",
     "@polywrap/fs-plugin-js": "0.9.1",
-    "@polywrap/uri-resolver-extensions-js": "0.9.0",
+    "@polywrap/uri-resolver-extensions-js": "0.9.1",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "jest": "26.6.3",
