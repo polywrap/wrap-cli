@@ -60,6 +60,7 @@ import {
 import { dereference } from "json-schema-ref-parser";
 import fs from "fs";
 import path from "path";
+import { getDefaultLogFileName } from "../lib/option-defaults/getDefaultLogFileName";
 
 const pathStr = intlMsg.commands_manifest_options_m_path();
 const formatStr = intlMsg.commands_manifest_options_m_format();
@@ -81,6 +82,7 @@ type ManifestSchemaCommandOptions = {
   manifestFile: ManifestType;
   verbose?: boolean;
   quiet?: boolean;
+  logFile: string | undefined;
 };
 
 type ManifestMigrateCommandOptions = {
@@ -123,8 +125,15 @@ export const manifest: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_s()}`
+      )
       .action(async (type, options) => {
-        await runSchemaCommand(type, options);
+        await runSchemaCommand(type, {
+          ...options,
+          logFile: parseLogFileOption(options.logFile),
+        });
       });
 
     manifestCommand
@@ -162,8 +171,8 @@ export const runSchemaCommand = async (
   type: ManifestType,
   options: ManifestSchemaCommandOptions
 ): Promise<void> => {
-  const { verbose, quiet } = options;
-  const logger = createLogger({ verbose, quiet });
+  const { verbose, quiet, logFile } = options;
+  const logger = createLogger({ verbose, quiet, logFile });
   let manifestfile = "";
 
   switch (type) {
@@ -592,4 +601,17 @@ function maybeFailOnUnsupportedTargetFormat(
     );
     process.exit(1);
   }
+}
+
+function parseLogFileOption(
+  logFile: string | boolean | undefined
+): string | undefined {
+  if (logFile) {
+    if (logFile === true) {
+      return getDefaultLogFileName();
+    }
+    return logFile;
+  }
+
+  return undefined;
 }

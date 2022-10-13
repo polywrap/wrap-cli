@@ -26,6 +26,7 @@ import path from "path";
 import readline from "readline";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
+import { getDefaultLogFileName } from "../lib/option-defaults/getDefaultLogFileName";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
@@ -75,6 +76,11 @@ export const build: Command = {
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file <${pathStr}>`,
+        `${intlMsg.commands_build_options_s()}`,
+        getDefaultLogFileName()
+      )
       .action(async (options) => {
         await run({
           ...options,
