@@ -25,20 +25,11 @@ async def test_invoke_bignumber():
     print(Uri)
 
     args = {
-        "arg1": '2',
+        "arg1": '98.7654321987654321',
         "arg2": '333333',
-
-        "obj": 2 # This line gives error : 
-        #InvokeResult(result=None, error=WasmAbortError("
-        # WasmWrapper: Wasm module aborted execution\n            
-        # URI:\n           
-        # Method:\n            
-        # Args:\n            
-        # Message: __wrap_abort: Property must be of type 'map'. Found 'int'.\n
-        #   Context: Deserializing module-type: method\n
-        #     at obj: Types.BigNumberArg >> type found, reading property\n
-        #       at obj: unknown >> searching for property type\n
-        # File: ~lib/@polywrap/wasm-as/msgpack/ReadDecoder.ts\nLocation: [277,5]"))
+        "obj": {
+            "prop1": "98.7654321987654321"
+        }
     }
     options = InvokerOptions(uri=uri, method="method", args=args, encode_result=False)
 
