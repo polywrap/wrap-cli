@@ -12,7 +12,8 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.9.1"
+    "@polywrap/core-js": "0.9.1",
+    "@polywrap/plugin-js": "0.9.1"
   },
   "devDependencies": {
     "@polywrap/client-js": "0.9.1",
