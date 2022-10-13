@@ -1,0 +1,3 @@
+type Module {
+  add(a: Int!, b: Int!): Int!
+}

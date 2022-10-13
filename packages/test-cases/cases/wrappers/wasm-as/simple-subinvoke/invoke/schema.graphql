@@ -1,0 +1,5 @@
+#import * into Add from "ens/add.eth"
+
+type Module {
+  add(a: Int!, b: Int!): String!
+}
