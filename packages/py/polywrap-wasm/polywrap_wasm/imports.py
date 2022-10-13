@@ -1,4 +1,5 @@
 import asyncio
+from unsync import unsync, Unfuture
 from wasmtime import (
     Store,
     Linker,
@@ -11,18 +12,23 @@ from wasmtime import (
     Instance,
 )
 
-from polywrap_core import Client, InvokerOptions, Uri
+from polywrap_core import Invoker, InvokerOptions, Uri, InvokeResult
 
 from .buffer import write_string, write_bytes, read_string, read_bytes
 from .types.state import State
 from .errors import WasmAbortError
 
 
+@unsync
+async def unsync_invoke(invoker: Invoker, options: InvokerOptions) -> InvokeResult:
+    return await invoker.invoke(options)
+
+
 def create_instance(
     store: Store,
     module: Module,
     state: State,
-    client: Client,
+    invoker: Invoker,
 ) -> Instance:
     linker = Linker(store.engine)
 
@@ -118,13 +124,14 @@ def create_instance(
         )
         args = read_bytes(mem.data_ptr(store), mem.data_len(store), args_ptr, args_len)
 
-        result = asyncio.run(
-            client.invoke(
-                InvokerOptions(
-                    uri=Uri(uri), method=method, args=args, encode_result=True
-                )
-            )
+        options = InvokerOptions(uri=Uri(uri), method=method, args=args, encode_result=True)
+        unfuture_result: Unfuture[InvokeResult] = unsync_invoke(
+            invoker,
+            InvokerOptions(uri=Uri(uri), method=method, args=args, encode_result=True),
         )
+        result = unfuture_result.result()
+
+        print(result)
 
         if result.result:
             state.subinvoke["result"] = result.result
@@ -148,12 +155,9 @@ def create_instance(
         if not state.subinvoke["result"]:
             raise WasmAbortError("__wrap_subinvoke_result: subinvoke.result is not set")
         write_bytes(
-            mem.data_ptr(store),
-            mem.data_len(store),
-            state.subinvoke["result"],
-            ptr
+            mem.data_ptr(store), mem.data_len(store), state.subinvoke["result"], ptr
         )
-    
+
     wrap_subinvoke_error_len_type = FuncType([], [ValType.i32()])
 
     def wrap_subinvoke_error_len():
@@ -169,10 +173,7 @@ def create_instance(
         if not state.subinvoke["error"]:
             raise WasmAbortError("__wrap_subinvoke_error: subinvoke.error is not set")
         write_string(
-            mem.data_ptr(store),
-            mem.data_len(store),
-            state.subinvoke["error"],
-            ptr
+            mem.data_ptr(store), mem.data_len(store), state.subinvoke["error"], ptr
         )
 
     # TODO: use generics or any on wasmtime codebase to fix typings

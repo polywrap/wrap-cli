@@ -32,14 +32,14 @@ class WasmWrapper(Wrapper):
         return self.wasm_module
 
     def create_wasm_instance(
-        self, store: Store, state: State
+        self, store: Store, state: State, invoker: Invoker
     ):
         if self.wasm_module:
             module = Module(store.engine, self.wasm_module)
-            return create_instance(store, module, state)
+            return create_instance(store, module, state, invoker)
 
     async def invoke(
-        self, options: Optional[InvokeOptions] = None, invoker: Optional[Invoker] = None
+        self, options: InvokeOptions, invoker: Invoker
     ) -> InvocableResult:
         await self.get_wasm_module()
         state = State()
@@ -61,7 +61,7 @@ class WasmWrapper(Wrapper):
         # TODO: Pass all necessary args to this log
 
         store = Store()
-        instance = self.create_wasm_instance(store, state)
+        instance = self.create_wasm_instance(store, state, invoker)
         if not instance:
             raise RuntimeError("Unable to instantiate the wasm module")
         exports = WrapExports(instance, store)
