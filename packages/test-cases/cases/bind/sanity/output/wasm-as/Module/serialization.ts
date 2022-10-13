@@ -682,11 +682,11 @@ export function deserializeoptionalEnvMethodResult(buffer: ArrayBuffer): Types.A
   return res;
 }
 
-export class Args_if {
+export class Args__if {
   _if: Types._else;
 }
 
-export function deserializeifArgs(argsBuf: ArrayBuffer): Args_if {
+export function deserializeifArgs(argsBuf: ArrayBuffer): Args__if {
   const context: Context = new Context("Deserializing module-type: if Args");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
@@ -718,7 +718,7 @@ export function deserializeifArgs(argsBuf: ArrayBuffer): Args_if {
   };
 }
 
-export function serializeifArgs(args: Args_if): ArrayBuffer {
+export function serializeifArgs(args: Args__if): ArrayBuffer {
   const sizerContext: Context = new Context("Serializing (sizing) module-type: if Args");
   const sizer = new WriteSizer(sizerContext);
   writeifArgs(sizer, args);
@@ -731,7 +731,7 @@ export function serializeifArgs(args: Args_if): ArrayBuffer {
 
 export function writeifArgs(
   writer: Write,
-  args: Args_if
+  args: Args__if
 ): void {
   writer.writeMapLength(1);
   writer.context().push("if", "Types._else", "writing property");

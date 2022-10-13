@@ -32,13 +32,13 @@ use crate::{
 
 {{#methods}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}} {
+pub struct Args{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
     {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/arguments}}
 }
 
-pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args: &[u8]) -> Result<Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}}, DecodeError> {
+pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args: &[u8]) -> Result<Args{{#toUpper}}{{name}}{{/toUpper}}, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing module-type: {{#toLower}}{{name}}{{/toLower}} Args".to_string();
 
@@ -112,7 +112,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args: &[u8]) -> Result<
     {{/arguments}}
     {{/arguments.length}}
 
-    Ok(Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}} {
+    Ok(Args{{#toUpper}}{{name}}{{/toUpper}} {
         {{#arguments}}
         {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: _{{#toLower}}{{name}}{{/toLower}},
         {{/arguments}}
