@@ -79,7 +79,7 @@ export const build: Command = {
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .option(
         `-l, --log-file [${pathStr}]`,
-        `${intlMsg.commands_build_options_s()}`
+        `${intlMsg.commands_build_options_l()}`
       )
       .action(async (options) => {
         await run({

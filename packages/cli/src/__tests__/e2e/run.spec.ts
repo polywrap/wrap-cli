@@ -25,6 +25,7 @@ Options:
                                         run
   -v, --verbose                         Verbose output (default: false)
   -q, --quiet                           Suppress output (default: false)
+  -l, --log-file [path]                 Log file to save console output to
   -h, --help                            display help for command
 `;
 

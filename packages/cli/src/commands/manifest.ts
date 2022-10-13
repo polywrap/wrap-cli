@@ -128,7 +128,7 @@ export const manifest: Command = {
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .option(
         `-l, --log-file [${pathStr}]`,
-        `${intlMsg.commands_build_options_s()}`
+        `${intlMsg.commands_build_options_l()}`
       )
       .action(async (type, options) => {
         await runSchemaCommand(type, {
@@ -162,7 +162,7 @@ export const manifest: Command = {
       )
       .option(
         `-l, --log-file [${pathStr}]`,
-        `${intlMsg.commands_build_options_s()}`
+        `${intlMsg.commands_build_options_l()}`
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
