@@ -1,6 +1,7 @@
 import { Log, LogLevel } from "../Log";
 
 import fs, { WriteStream } from "fs";
+import path from "path";
 
 export class FileLog extends Log {
   private _logFileStream: WriteStream;
@@ -40,6 +41,12 @@ export class FileLog extends Log {
   }
 
   private _createWriteStream() {
+    const dir = path.dirname(this.logFilePath);
+
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
     this._logFileStream = fs.createWriteStream(this.logFilePath, {
       encoding: "utf8",
     });

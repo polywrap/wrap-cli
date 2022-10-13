@@ -12,6 +12,7 @@ import {
   parseDirOption,
   parseClientConfigOption,
   parseManifestFileOption,
+  parseLogFileOption,
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen";
 import {
@@ -26,7 +27,6 @@ import path from "path";
 import readline from "readline";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { getDefaultLogFileName } from "../lib/option-defaults/getDefaultLogFileName";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
@@ -43,6 +43,7 @@ type BuildCommandOptions = {
   strategy: SupportedStrategies;
   verbose?: boolean;
   quiet?: boolean;
+  logFile?: string;
 };
 
 export const build: Command = {
@@ -77,9 +78,8 @@ export const build: Command = {
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .option(
-        `-l, --log-file <${pathStr}>`,
-        `${intlMsg.commands_build_options_s()}`,
-        getDefaultLogFileName()
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_s()}`
       )
       .action(async (options) => {
         await run({
@@ -91,6 +91,7 @@ export const build: Command = {
           clientConfig: await parseClientConfigOption(options.clientConfig),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
           strategy: options.strategy,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
@@ -141,8 +142,9 @@ async function run(options: BuildCommandOptions) {
     codegen,
     verbose,
     quiet,
+    logFile,
   } = options;
-  const logger = createLogger({ verbose, quiet });
+  const logger = createLogger({ verbose, quiet, logFile });
 
   // Get Client
   const client = new PolywrapClient(clientConfig);

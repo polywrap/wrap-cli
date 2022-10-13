@@ -16,6 +16,7 @@ import {
   CacheDirectory,
   defaultPolywrapManifest,
   Logger,
+  parseLogFileOption,
 } from "../lib";
 import {
   getYamlishSchemaForManifestJsonSchemaObject,
@@ -60,7 +61,6 @@ import {
 import { dereference } from "json-schema-ref-parser";
 import fs from "fs";
 import path from "path";
-import { getDefaultLogFileName } from "../lib/option-defaults/getDefaultLogFileName";
 
 const pathStr = intlMsg.commands_manifest_options_m_path();
 const formatStr = intlMsg.commands_manifest_options_m_format();
@@ -82,7 +82,7 @@ type ManifestSchemaCommandOptions = {
   manifestFile: ManifestType;
   verbose?: boolean;
   quiet?: boolean;
-  logFile: string | undefined;
+  logFile?: string;
 };
 
 type ManifestMigrateCommandOptions = {
@@ -90,6 +90,7 @@ type ManifestMigrateCommandOptions = {
   format: string;
   verbose?: boolean;
   quiet?: boolean;
+  logFile?: string;
 };
 
 export const manifest: Command = {
@@ -159,10 +160,17 @@ export const manifest: Command = {
         `-f, --format <${formatStr}>`,
         `${intlMsg.commands_manifest_options_f()}`
       )
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_s()}`
+      )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (type, options) => {
-        await runMigrateCommand(type, options);
+        await runMigrateCommand(type, {
+          ...options,
+          logFile: parseLogFileOption(options.logFile),
+        });
       });
   },
 };
@@ -379,8 +387,8 @@ const runMigrateCommand = async (
   type: ManifestType,
   options: ManifestMigrateCommandOptions
 ) => {
-  const { verbose, quiet } = options;
-  const logger = createLogger({ verbose, quiet });
+  const { verbose, quiet, logFile } = options;
+  const logger = createLogger({ verbose, quiet, logFile });
   let manifestFile = "";
   let manifestString: string;
   let language: string | undefined;
@@ -601,17 +609,4 @@ function maybeFailOnUnsupportedTargetFormat(
     );
     process.exit(1);
   }
-}
-
-function parseLogFileOption(
-  logFile: string | boolean | undefined
-): string | undefined {
-  if (logFile) {
-    if (logFile === true) {
-      return getDefaultLogFileName();
-    }
-    return logFile;
-  }
-
-  return undefined;
 }

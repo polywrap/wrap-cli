@@ -8,6 +8,7 @@ import {
   parseManifestFileOption,
   defaultProjectManifestFiles,
   getProjectFromManifest,
+  parseLogFileOption,
 } from "../lib";
 import { Command, Program } from "./types";
 import { createLogger } from "./utils/createLogger";
@@ -38,6 +39,7 @@ type DocgenCommandOptions = {
   imports: boolean;
   verbose?: boolean;
   quiet?: boolean;
+  logFile?: string;
 };
 
 enum Actions {
@@ -93,6 +95,10 @@ export const docgen: Command = {
       .option(`-i, --imports`, `${intlMsg.commands_docgen_options_i()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_s()}`
+      )
       .action(async (action, options) => {
         await run(action, {
           ...options,
@@ -102,6 +108,7 @@ export const docgen: Command = {
           ),
           docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
           clientConfig: await parseClientConfigOption(options.clientConfig),
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
@@ -115,8 +122,9 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     imports,
     verbose,
     quiet,
+    logFile,
   } = options;
-  const logger = createLogger({ verbose, quiet });
+  const logger = createLogger({ verbose, quiet, logFile });
 
   let project = await getProjectFromManifest(manifestFile, logger);
 
