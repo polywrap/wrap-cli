@@ -7,7 +7,7 @@ use polywrap_wasm_rs::{
 use crate::{
     {{#methods}}
     {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}},
-    Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}},
+    Args{{#toUpper}}{{name}}{{/toUpper}},
     deserialize_{{#toLower}}{{name}}{{/toLower}}_args,
     serialize_{{#toLower}}{{name}}{{/toLower}}_result{{^last}},{{/last}}
     {{/methods}}
@@ -46,7 +46,7 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(args: &[u8], env_size: u32) -> V
     match deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args) {
         Ok(args) => {
     {{/arguments.length}}
-            let result = {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}} {
+            let result = {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(Args{{#toUpper}}{{name}}{{/toUpper}} {
                 {{#arguments}}
                 {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}},
                 {{/arguments}}
