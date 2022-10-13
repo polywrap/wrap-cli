@@ -71,7 +71,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     const contract = connection.getContract(args.address, abi, false);
     const funcs = Object.keys(contract.interface.functions);
     const result = await contract[funcs[0]](...parseArgs(args.args));
-    return parseResult(abi, result);
+    return parseResult(result);
   }
 
   async callContractStatic(
@@ -99,7 +99,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
         }
       );
       return {
-        result: result.length ? parseResult(abi, result) : "",
+        result: result.length ? parseResult(result) : "",
         error: false,
       };
     } catch (e) {

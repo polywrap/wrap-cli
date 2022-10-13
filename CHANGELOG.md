@@ -1,3 +1,13 @@
+# Polywrap Origin (0.9.1)
+## Bugs
+* [PR-1320](https://github.com/polywrap/toolchain/pull/1320) `@polywrap/ethereum-plugin-js`: Proper `view` method result parsing.
+* [PR-1317](https://github.com/polywrap/toolchain/pull/1317) `@polywrap/core-js`, `@polywrap/uri-resolvers-extensions-js`: Properly check for null when using UriResolverExtensionFileReader to read wasm module.
+* [PR-1318](https://github.com/polywrap/toolchain/pull/1318) `polywrap` CLI: The `codegen` command properly applies the `-g, --codegen-dir` option.
+* [PR-1318](https://github.com/polywrap/toolchain/pull/1318) `@polywrap/templates`: Fix several issues within the `wasm` template projects.
+* [PR-1316](https://github.com/polywrap/toolchain/pull/1316) `polywrap` CLI: Fix an issue where the CLI process would hang after the command had completed.
+* [PR-1315](https://github.com/polywrap/toolchain/pull/1315) `polywrap` CLI: Minor cleanup post logging refactor.
+* [PR-1310](https://github.com/polywrap/toolchain/pull/1310) `polywrap` CLI: Use base images from the "polywrap" Docker Hub organization.
+
 # Polywrap Origin (0.9.0)
 ## Features
 * [PR-1306](https://github.com/polywrap/toolchain/pull/1306) `polywrap` CLI: Console logging has been improved, and all commands now support `-q, --quiet` and `-v, --verbose` options.

@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/http-plugin-js",
   "description": "Polywrap HTTP Javascript Plugin",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,15 +20,15 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.9.0",
+    "@polywrap/core-js": "0.9.1",
     "@polywrap/plugin-js": "0.9.0",
     "axios": "0.21.4"
   },
   "devDependencies": {
-    "@polywrap/client-js": "0.9.0",
-    "@polywrap/uri-resolvers-js": "0.9.0",
-    "@polywrap/fs-resolver-plugin-js": "0.9.0",
-    "@polywrap/fs-plugin-js": "0.9.0",
+    "@polywrap/client-js": "0.9.1",
+    "@polywrap/uri-resolvers-js": "0.9.1",
+    "@polywrap/fs-resolver-plugin-js": "0.9.1",
+    "@polywrap/fs-plugin-js": "0.9.1",
     "@polywrap/uri-resolver-extensions-js": "0.9.0",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",

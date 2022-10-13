@@ -1,0 +1,334 @@
+[
+  {
+    "inputs": [],
+    "name": "getAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getArray1D",
+    "outputs": [
+      {
+        "internalType": "uint8[6]",
+        "name": "",
+        "type": "uint8[6]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getArray2D",
+    "outputs": [
+      {
+        "internalType": "uint8[3][2]",
+        "name": "",
+        "type": "uint8[3][2]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getArray3D",
+    "outputs": [
+      {
+        "internalType": "uint8[3][3][2]",
+        "name": "",
+        "type": "uint8[3][3][2]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBool",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBytes",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBytes1",
+    "outputs": [
+      {
+        "internalType": "bytes1",
+        "name": "",
+        "type": "bytes1"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBytes32",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getEnum",
+    "outputs": [
+      {
+        "internalType": "enum ViewMethods.Enum",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getInt256",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getInt8",
+    "outputs": [
+      {
+        "internalType": "int8",
+        "name": "",
+        "type": "int8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMultiMixed",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "foo",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bar",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum ViewMethods.Enum",
+            "name": "baz",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct ViewMethods.Struct",
+        "name": "obj",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint8[6]",
+        "name": "",
+        "type": "uint8[6]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMultiNamed",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "foo",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bar",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum ViewMethods.Enum",
+            "name": "baz",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct ViewMethods.Struct",
+        "name": "obj",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint8[6]",
+        "name": "array1d",
+        "type": "uint8[6]"
+      },
+      {
+        "internalType": "string",
+        "name": "str",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMultiUnamed",
+    "outputs": [
+      {
+        "internalType": "uint8[6]",
+        "name": "",
+        "type": "uint8[6]"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "foo",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bar",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum ViewMethods.Enum",
+            "name": "baz",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct ViewMethods.Struct",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getString",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getStruct",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "foo",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bar",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum ViewMethods.Enum",
+            "name": "baz",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct ViewMethods.Struct",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getUint256",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getUint8",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
