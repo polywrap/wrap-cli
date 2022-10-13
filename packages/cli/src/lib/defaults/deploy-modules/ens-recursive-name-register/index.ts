@@ -4,7 +4,7 @@ import { Deployer } from "../../../deploy";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { Uri } from "@polywrap/core-js";
+import { Uri, UriMap } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import {
   ethereumPlugin,
@@ -48,32 +48,41 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
     const ensWrapperUri = embeddedWrappers.ens;
 
     const client = new PolywrapClient({
-      redirects: [
-        {
-          from: "wrap://ens/uts46.polywrap.eth",
-          to: embeddedWrappers.uts46,
-        },
-        {
-          from: "wrap://ens/sha3.polywrap.eth",
-          to: embeddedWrappers.sha3,
-        },
-      ],
-      plugins: [
-        {
-          uri: ethereumPluginUri,
-          plugin: ethereumPlugin({
-            connections: new Connections({
-              networks: {
-                [network]: new Connection({
-                  provider: config.provider,
-                  signer,
-                }),
-              },
-              defaultNetwork: network,
+      redirects: new UriMap([
+        [
+          "wrap://ens/uts46.polywrap.eth",
+          {
+            from: "wrap://ens/uts46.polywrap.eth",
+            to: embeddedWrappers.uts46,
+          },
+        ],
+        [
+          "wrap://ens/sha3.polywrap.eth",
+          {
+            from: "wrap://ens/sha3.polywrap.eth",
+            to: embeddedWrappers.sha3,
+          },
+        ],
+      ]),
+      plugins: new UriMap([
+        [
+          ethereumPluginUri,
+          {
+            uri: ethereumPluginUri,
+            plugin: ethereumPlugin({
+              connections: new Connections({
+                networks: {
+                  [network]: new Connection({
+                    provider: config.provider,
+                    signer,
+                  }),
+                },
+                defaultNetwork: network,
+              }),
             }),
-          }),
-        },
-      ],
+          },
+        ],
+      ]),
     });
 
     const signerAddress = await client.invoke<string>({

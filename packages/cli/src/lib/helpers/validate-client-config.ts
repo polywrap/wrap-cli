@@ -173,8 +173,8 @@ export function validateClientConfig(
   if (!config || typeof config !== "object") {
     throw new Error(intlMsg.commands_run_error_clientConfigNotObject());
   }
-  if (config.plugins) validatePlugins(config.plugins);
-  if (config.envs) validateEnvs(config.envs);
-  if (config.interfaces) validateInterfaces(config.interfaces);
-  if (config.redirects) validateRedirects(config.redirects);
+  if (config.plugins) validatePlugins([...config.plugins.values()]);
+  if (config.envs) validateEnvs([...config.envs.values()]);
+  if (config.interfaces) validateInterfaces([...config.interfaces.values()]);
+  if (config.redirects) validateRedirects([...config.redirects.values()]);
 }

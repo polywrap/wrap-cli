@@ -7,7 +7,10 @@ import {
 } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { PolywrapClient } from "@polywrap/client-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
+import {
+  ClientConfigBuilder,
+  defaultIpfsProviders,
+} from "@polywrap/client-config-builder-js";
 
 interface SimpleClientConfig {
   ensAddress?: string;
@@ -58,5 +61,12 @@ export function getSimpleClient(config: SimpleClientConfig): PolywrapClient {
       },
     });
   }
-  return new PolywrapClient({ plugins });
+
+  const builder = new ClientConfigBuilder();
+
+  for (const plugin of plugins) {
+    builder.addPlugin(plugin.uri, plugin.plugin);
+  }
+
+  return new PolywrapClient(builder.buildPartial());
 }

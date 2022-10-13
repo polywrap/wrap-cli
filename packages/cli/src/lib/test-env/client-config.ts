@@ -10,7 +10,7 @@ import {
 } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensAddresses } from "@polywrap/test-env-js";
-import { Env } from "@polywrap/core-js";
+import { Env, UriMap } from "@polywrap/core-js";
 
 export async function getTestEnvClientConfig(): Promise<
   Partial<PolywrapClientConfig>
@@ -65,7 +65,7 @@ export async function getTestEnvClientConfig(): Promise<
   ];
 
   return {
-    plugins,
-    envs,
+    plugins: new UriMap(plugins.map((x) => [x.uri, x])),
+    envs: new UriMap(envs.map((x) => [x.uri, x])),
   };
 }
