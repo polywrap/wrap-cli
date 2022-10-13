@@ -26,6 +26,7 @@
     "@polywrap/result": "0.9.1",
     "@polywrap/tracing-js": "0.9.1",
     "@polywrap/client-config-builder-js": "0.9.1",
+    "@polywrap/uri-resolvers-js": "0.9.1",
     "@polywrap/uri-resolver-extensions-js": "0.9.1"
   },
   "devDependencies": {
