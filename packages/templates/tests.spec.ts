@@ -22,11 +22,11 @@ describe("Templates", () => {
     },
     assemblyscript: {
       build: "npx polywrap build -m ./polywrap.wasm-linked.yaml",
-      test: "yarn test:e2e",
+      test: "yarn test",
     },
     rust: {
       build: "yarn build",
-      test: "yarn test:e2e",
+      test: "yarn test",
     },
     interface: { build: "yarn build" },
     docusaurus: {

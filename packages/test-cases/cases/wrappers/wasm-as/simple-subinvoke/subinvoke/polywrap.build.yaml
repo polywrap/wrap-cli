@@ -5,4 +5,4 @@ config:
     - ./src
 linked_packages:
   - name: "@polywrap/wasm-as"
-    path: ../../../../../wasm/as
+    path: ../../../../../../wasm/as

@@ -10,7 +10,7 @@ import {
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
-import yaml from "js-yaml";
+import yaml from "yaml";
 
 const HELP = `Usage: polywrap deploy|d [options]
 
@@ -21,6 +21,7 @@ Options:
                               (default: polywrap.yaml | polywrap.yml)
   -o, --output-file <path>    Output file path for the deploy result
   -v, --verbose               Verbose output (default: false)
+  -q, --quiet                 Suppress output (default: false)
   -h, --help                  display help for command
 `;
 
@@ -140,7 +141,7 @@ describe("e2e tests for deploy command", () => {
     
     const yamlOutputFileContents = JSON.parse(
       JSON.stringify(
-        (yaml.load(
+        (yaml.parse(
           fs.readFileSync(
             path.join(getTestCaseDir(0), "output.yaml"),
             "utf8"
@@ -167,92 +168,32 @@ describe("e2e tests for deploy command", () => {
           {
             "name": "ens_register",
             "id": "fs_to_ens.ens_register",
-            "input": {
-              "_config": {
-                "uri": "wrap://ens/test1.eth",
-                "authority": "ens",
-                "path": "test1.eth"
-              }
-            },
-            "result": {
-              "_config": {
-                "uri": "wrap://ens/testnet/test1.eth",
-                "authority": "ens",
-                "path": "testnet/test1.eth"
-              }
-            }
+            "input": "wrap://ens/test1.eth",
+            "result": "wrap://ens/testnet/test1.eth",
           },
           {
             "name": "ens_register2",
             "id": "fs_to_ens.ens_register2",
-            "input": {
-              "_config": {
-                "uri": "wrap://ens/test2.eth",
-                "authority": "ens",
-                "path": "test2.eth"
-              }
-            },
-            "result": {
-              "_config": {
-                "uri": "wrap://ens/testnet/test2.eth",
-                "authority": "ens",
-                "path": "testnet/test2.eth"
-              }
-            }
+            "input": "wrap://ens/test2.eth",
+            "result": "wrap://ens/testnet/test2.eth",
           },
           {
             "name": "ipfs_deploy",
             "id": "fs_to_ens.ipfs_deploy",
-            "input": {
-              "_config": {
-                "uri": "wrap://fs/./build",
-                "authority": "fs",
-                "path": "./build"
-              }
-            },
-            "result": {
-              "_config": {
-                "uri": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
-                "authority": "ipfs",
-                "path": "QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG"
-              }
-            }
+            "input": "wrap://fs/./build",
+            "result": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
           },
           {
             "name": "from_deploy",
             "id": "fs_to_ens.from_deploy",
-            "input": {
-              "_config": {
-                "uri": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
-                "authority": "ipfs",
-                "path": "QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG"
-              }
-            },
-            "result": {
-              "_config": {
-                "uri": "wrap://ens/testnet/test1.eth",
-                "authority": "ens",
-                "path": "testnet/test1.eth"
-              }
-            }
+            "input": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
+            "result": "wrap://ens/testnet/test1.eth",
           },
           {
             "name": "from_deploy2",
             "id": "fs_to_ens.from_deploy2",
-            "input": {
-              "_config": {
-                "uri": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
-                "authority": "ipfs",
-                "path": "QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG"
-              }
-            },
-            "result": {
-              "_config": {
-                "uri": "wrap://ens/testnet/test2.eth",
-                "authority": "ens",
-                "path": "testnet/test2.eth"
-              }
-            }
+            "input": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
+            "result": "wrap://ens/testnet/test2.eth",
           }
         ]
       },
@@ -262,38 +203,14 @@ describe("e2e tests for deploy command", () => {
           {
             "name": "ens_register",
             "id": "ipfs_to_ens.ens_register",
-            "input": {
-              "_config": {
-                "uri": "wrap://ens/test3.eth",
-                "authority": "ens",
-                "path": "test3.eth"
-              }
-            },
-            "result": {
-              "_config": {
-                "uri": "wrap://ens/testnet/test3.eth",
-                "authority": "ens",
-                "path": "testnet/test3.eth"
-              }
-            }
+            "input": "wrap://ens/test3.eth",
+            "result": "wrap://ens/testnet/test3.eth",
           },
           {
             "name": "from_uri",
             "id": "ipfs_to_ens.from_uri",
-            "input": {
-              "_config": {
-                "uri": "wrap://ipfs/QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF",
-                "authority": "ipfs",
-                "path": "QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF"
-              }
-            },
-            "result": {
-              "_config": {
-                "uri": "wrap://ens/testnet/test3.eth",
-                "authority": "ens",
-                "path": "testnet/test3.eth"
-              }
-            }
+            "input": "wrap://ipfs/QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF",
+            "result": "wrap://ens/testnet/test3.eth",
           }
         ]
       }
@@ -313,9 +230,6 @@ describe("e2e tests for deploy command", () => {
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain(
-      "No manifest extension found in"
-    );
     expect(sanitizedOutput).toContain(
       "Successfully executed step 'ipfs_test'"
     );

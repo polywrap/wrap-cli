@@ -15,7 +15,7 @@ import {
 import { DeserializeManifestOptions } from "../../";
 
 import * as Semver from "semver";
-import YAML from "js-yaml";
+import YAML from "yaml";
 
 export function deserializeInfraManifest(
   manifest: string,
@@ -24,10 +24,10 @@ export function deserializeInfraManifest(
   let anyInfraManifest: AnyInfraManifest | undefined;
   try {
     anyInfraManifest = JSON.parse(manifest) as AnyInfraManifest;
-  } catch (e) {
-    anyInfraManifest = YAML.safeLoad(manifest) as
-    | AnyInfraManifest
-    | undefined;
+  } catch (_) {
+    try {
+      anyInfraManifest = YAML.parse(manifest) as AnyInfraManifest;
+    } catch (_) { }
   }
 
   if (!anyInfraManifest) {

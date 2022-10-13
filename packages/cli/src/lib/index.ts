@@ -9,6 +9,7 @@ export * from "./system";
 export * from "./test-env";
 export * from "./CacheDirectory";
 export * from "./Compiler";
-export * from "./CodeGenerator";
+export * from "./codegen";
 export * from "./SchemaComposer";
 export * from "./workflow";
+export * from "./logging";

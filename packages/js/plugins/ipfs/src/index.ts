@@ -8,13 +8,10 @@ import {
   manifest,
   Env,
 } from "./wrap";
-import { IpfsClient } from "./utils/IpfsClient";
 import { execSimple, execFallbacks } from "./utils/exec";
 
+import createIpfsClient, { IpfsClient } from "@polywrap/ipfs-http-client-lite";
 import { Client, PluginFactory } from "@polywrap/core-js";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
 const isNullOrUndefined = (arg: unknown) => {
   return arg === undefined || arg === null;
@@ -111,13 +108,14 @@ export class IpfsPlugin extends Module<NoConfig> {
   ): Promise<TReturn> {
     const defaultIpfsClient = createIpfsClient(this.env.provider);
 
-    if (!options) {
-      // Default behavior if no options are provided
+    if (!options?.fallbackProviders) {
+      // Default behavior if no fallback providers are provided
+      // Note that options.timeout is already set by getOptions
       return await execSimple(
         operation,
         defaultIpfsClient,
         this.config.provider,
-        0,
+        options?.timeout ?? 0,
         func
       );
     }

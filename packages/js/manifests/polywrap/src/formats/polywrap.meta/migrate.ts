@@ -8,16 +8,9 @@ import {
   AnyMetaManifest,
   MetaManifest,
   MetaManifestFormats,
-  latestMetaManifestFormat
 } from ".";
-
-
-type Migrator = {
-  [key in MetaManifestFormats]?: (m: AnyMetaManifest) => MetaManifest;
-};
-
-export const migrators: Migrator = {
-};
+import { findShortestMigrationPath } from "../../migrations";
+import { migrators } from "./migrators";
 
 export function migrateMetaManifest(
   manifest: AnyMetaManifest,
@@ -25,18 +18,26 @@ export function migrateMetaManifest(
 ): MetaManifest {
   let from = manifest.format as MetaManifestFormats;
 
-  // HACK: Patch fix for backwards compatability
-  if(from === "0.1" && ("0.1.0" in migrators)) {
-    from = "0.1.0" as MetaManifestFormats;
-  }
-
-  if (from === latestMetaManifestFormat) {
-    return manifest as MetaManifest;
-  }
-
   if (!(Object.values(MetaManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized MetaManifestFormat "${manifest.format}"`);
   }
 
-  throw new Error(`This should never happen, MetaManifest migrators is empty. from: ${from}, to: ${to}`);
+  if (!(Object.values(MetaManifestFormats).some(x => x === to))) {
+    throw new Error(`Unrecognized MetaManifestFormat "${to}"`);
+  }
+
+  const migrationPath = findShortestMigrationPath(migrators, from, to);
+  if (!migrationPath) {
+    throw new Error(
+      `Migration path from MetaManifestFormat "${from}" to "${to}" is not available`
+    );
+  }
+
+  let newManifest = manifest;
+
+  for(const migrator of migrationPath){
+    newManifest = migrator.migrate(newManifest) as AnyMetaManifest;
+  }
+
+  return newManifest as MetaManifest;
 }

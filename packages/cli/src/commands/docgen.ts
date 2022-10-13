@@ -1,26 +1,21 @@
 /* eslint-disable prefer-const */
 import {
-  AnyProjectManifest,
-  AppProject,
-  CodeGenerator,
-  defaultAppManifest,
   defaultPolywrapManifest,
-  Project,
   SchemaComposer,
-  PolywrapProject,
   intlMsg,
-  PluginProject,
   parseClientConfigOption,
-  defaultPluginManifest,
   parseDirOption,
-  parseDocgenManifestFileOption,
+  parseManifestFileOption,
+  defaultProjectManifestFiles,
+  getProjectFromManifest,
 } from "../lib";
 import { Command, Program } from "./types";
+import { createLogger } from "./utils/createLogger";
 import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
 import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
+import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import path from "path";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
@@ -33,11 +28,6 @@ const commandToPathMap: Record<string, string> = {
 
 export type DocType = keyof typeof commandToPathMap;
 
-// A list of UNIQUE possible default filenames for the polywrap manifest
-const defaultManifest = defaultPolywrapManifest
-  .concat(defaultAppManifest)
-  .concat(defaultPluginManifest)
-  .filter((value, index, self) => self.indexOf(value) === index);
 const defaultDocgenDir = "./docs";
 const pathStr = intlMsg.commands_codegen_options_o_path();
 
@@ -46,6 +36,8 @@ type DocgenCommandOptions = {
   docgenDir: string;
   clientConfig: Partial<PolywrapClientConfig>;
   imports: boolean;
+  verbose?: boolean;
+  quiet?: boolean;
 };
 
 enum Actions {
@@ -85,7 +77,7 @@ export const docgen: Command = {
       .option(
         `-m, --manifest-file <${pathStr}>`,
         intlMsg.commands_docgen_options_m({
-          default: defaultManifest.join(" | "),
+          default: defaultPolywrapManifest.join(" | "),
         })
       )
       .option(
@@ -99,10 +91,15 @@ export const docgen: Command = {
         `${intlMsg.commands_common_options_config()}`
       )
       .option(`-i, --imports`, `${intlMsg.commands_docgen_options_i()}`)
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (action, options) => {
         await run(action, {
           ...options,
-          manifestFile: parseDocgenManifestFileOption(options.manifestFile),
+          manifestFile: parseManifestFileOption(
+            options.manifestFile,
+            defaultProjectManifestFiles
+          ),
           docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
           clientConfig: await parseClientConfigOption(options.clientConfig),
         });
@@ -111,62 +108,53 @@ export const docgen: Command = {
 };
 
 async function run(command: DocType, options: DocgenCommandOptions) {
-  const { manifestFile, docgenDir, clientConfig, imports } = options;
+  const {
+    manifestFile,
+    docgenDir,
+    clientConfig,
+    imports,
+    verbose,
+    quiet,
+  } = options;
+  const logger = createLogger({ verbose, quiet });
 
-  const isAppManifest: boolean =
-    (<string>manifestFile).toLowerCase().endsWith("polywrap.app.yaml") ||
-    (<string>manifestFile).toLowerCase().endsWith("polywrap.app.yml");
-  const isPluginManifest: boolean =
-    (<string>manifestFile).toLowerCase().endsWith("polywrap.plugin.yaml") ||
-    (<string>manifestFile).toLowerCase().endsWith("polywrap.plugin.yml");
+  let project = await getProjectFromManifest(manifestFile, logger);
+
+  if (!project) {
+    logger.error(
+      intlMsg.commands_docgen_error_projectLoadFailed({
+        manifestFile: manifestFile,
+      })
+    );
+
+    process.exit(1);
+  }
+
+  await project.validate();
 
   // Resolve custom script
   const customScript = require.resolve(commandToPathMap[command]);
 
-  // Get client
   const client = new PolywrapClient(clientConfig);
-
-  // Get project
-  let project: Project<AnyProjectManifest>;
-  if (isAppManifest) {
-    project = new AppProject({
-      rootDir: path.dirname(manifestFile),
-      appManifestPath: manifestFile,
-      quiet: true,
-    });
-  } else if (isPluginManifest) {
-    project = new PluginProject({
-      rootDir: path.dirname(manifestFile),
-      pluginManifestPath: manifestFile,
-      quiet: true,
-    });
-  } else {
-    project = new PolywrapProject({
-      rootDir: path.dirname(manifestFile),
-      polywrapManifestPath: manifestFile,
-      quiet: true,
-    });
-  }
-  await project.validate();
 
   const schemaComposer = new SchemaComposer({
     project,
     client,
   });
 
-  const codeGenerator = new CodeGenerator({
+  const codeGenerator = new ScriptCodegenerator({
     project,
     schemaComposer,
-    customScript,
+    script: customScript,
     codegenDirAbs: docgenDir,
     omitHeader: true,
     mustacheView: { imports },
   });
 
   if (await codeGenerator.generate()) {
-    console.log(`🔥 ${intlMsg.commands_docgen_success()} 🔥`);
-    process.exitCode = 0;
+    logger.info(`🔥 ${intlMsg.commands_docgen_success()} 🔥`);
+    process.exit(0);
   } else {
-    process.exitCode = 1;
+    process.exit(1);
   }
 }

@@ -269,6 +269,31 @@ describe("wasm-rs test cases", () => {
       wrapperUri
     );
   });
+
+  it("override rust print macros", async () => {
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/println-logging`;
+    const wrapperUri = `fs/${wrapperPath}/build`;
+    await buildWrapper(wrapperPath);
+
+    console.debug = jest.fn();
+    const message = "foo bar baz";
+
+    const client = await getClient();
+    const result = await client.invoke<boolean>({
+      uri: wrapperUri,
+      method: "logMessage",
+      args: {
+        message,
+      }
+    });
+
+    expect(result.ok).toBeTruthy();
+    if (!result.ok) return;
+    expect(result.value).toBeTruthy();
+    expect((console.debug as any).mock.calls[0][0]).toBe("__wrap_debug_log: " + message);
+    expect((console.debug as any).mock.calls[1][0]).toBe("__wrap_debug_log: " + message);
+    jest.clearAllMocks();
+  });
 });
 
 describe.skip("Wasm-rs benchmarking", () => {

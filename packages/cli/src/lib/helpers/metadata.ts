@@ -1,9 +1,8 @@
-import { withSpinner } from "./";
+import { Logger, logActivity } from "../logging";
 import { displayPath, intlMsg } from "../";
 
 import { normalizePath } from "@polywrap/os-js";
 import { MetaManifest } from "@polywrap/polywrap-manifest-types-js";
-import { Ora } from "ora";
 import fs from "fs";
 import path from "path";
 
@@ -11,7 +10,7 @@ export async function outputMetadata(
   metaManifest: MetaManifest,
   outputDir: string,
   rootDir: string,
-  quiet: boolean
+  logger: Logger
 ): Promise<MetaManifest> {
   const result: MetaManifest = {
     ...metaManifest,
@@ -22,30 +21,29 @@ export async function outputMetadata(
   const writeMetadataFile = (
     filePath: string,
     outputFilePath: string,
-    spinner?: Ora
+    logger: Logger
   ): string => {
     const outputPath = path.join(outputDir, outputFilePath);
 
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.copyFileSync(path.join(rootDir, filePath), outputPath);
 
-    if (spinner) {
-      spinner.succeed(
+    logger.info(
+      `✅` +
         intlMsg.lib_compiler_outputMetadataFileText({
           path: displayPath(normalizePath(outputPath)),
         })
-      );
-    }
+    );
 
     return displayPath(normalizePath(outputFilePath));
   };
 
-  const run = (spinner?: Ora) => {
+  const run = (logger: Logger) => {
     const writeFile = (filePath: string, subDir: string): string => {
       return writeMetadataFile(
         filePath,
         path.join("meta", subDir, path.basename(filePath)),
-        spinner
+        logger
       );
     };
 
@@ -71,18 +69,15 @@ export async function outputMetadata(
     }
   };
 
-  if (quiet) {
-    run();
-  } else {
-    await withSpinner(
-      intlMsg.lib_compiler_outputMetadataText(),
-      intlMsg.lib_compiler_outputMetadataError(),
-      intlMsg.lib_compiler_outputMetadataWarning(),
-      async (spinner: Ora) => {
-        return run(spinner);
-      }
-    );
-  }
+  await logActivity(
+    logger,
+    intlMsg.lib_compiler_outputMetadataText(),
+    intlMsg.lib_compiler_outputMetadataError(),
+    intlMsg.lib_compiler_outputMetadataWarning(),
+    async (logger) => {
+      return run(logger);
+    }
+  );
 
   return result;
 }

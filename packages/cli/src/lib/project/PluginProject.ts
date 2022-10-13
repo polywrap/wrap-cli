@@ -59,7 +59,7 @@ export class PluginProject extends Project<PluginManifest> {
     if (!this._pluginManifest) {
       this._pluginManifest = await loadPluginManifest(
         this.getManifestPath(),
-        this.quiet
+        this.logger
       );
     }
 

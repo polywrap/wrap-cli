@@ -1,16 +1,12 @@
 import { migrateAnyManifest } from "./migrateAnyManifest";
 
-import {
-  AnyPolywrapWorkflow,
-  latestPolywrapWorkflowFormat,
-  migratePolywrapWorkflow,
-} from "@polywrap/polywrap-manifest-types-js";
+import { migratePolywrapWorkflow } from "@polywrap/polywrap-manifest-types-js";
 
-export function migrateWorkflow(manifestString: string): string {
+export function migrateWorkflow(manifestString: string, to: string): string {
   return migrateAnyManifest(
     manifestString,
     "PolywrapWorkflow",
-    (manifest: AnyPolywrapWorkflow) =>
-      migratePolywrapWorkflow(manifest, latestPolywrapWorkflowFormat)
+    migratePolywrapWorkflow,
+    to
   );
 }

@@ -3,6 +3,7 @@ import { WrapExports } from "./types";
 import { createImports } from "./imports";
 import { IFileReader } from "./IFileReader";
 import { WRAP_MODULE_PATH } from "./constants";
+import { createWasmWrapper } from "./helpers/createWasmWrapper";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
@@ -16,6 +17,7 @@ import {
   InvocableResult,
   isBuffer,
   GetFileOptions,
+  GetManifestOptions,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
@@ -58,6 +60,43 @@ export class WasmWrapper implements Wrapper {
       fileReader: this._fileReader,
     });
     Tracer.endSpan();
+  }
+
+  static async from(
+    manifestBuffer: Uint8Array,
+    wasmModule: Uint8Array,
+    options?: GetManifestOptions
+  ): Promise<WasmWrapper>;
+  static async from(
+    manifestBuffer: Uint8Array,
+    wasmModule: Uint8Array,
+    fileReader: IFileReader,
+    options?: GetManifestOptions
+  ): Promise<WasmWrapper>;
+  static async from(
+    manifestBuffer: Uint8Array,
+    fileReader: IFileReader,
+    options?: GetManifestOptions
+  ): Promise<WasmWrapper>;
+  static async from(
+    fileReader: IFileReader,
+    options?: GetManifestOptions
+  ): Promise<WasmWrapper>;
+  static async from(
+    manifestBufferOrFileReader: Uint8Array | IFileReader,
+    wasmModuleOrFileReaderOrManifestOptions?:
+      | Uint8Array
+      | IFileReader
+      | GetManifestOptions,
+    fileReaderOrManifestOptions?: IFileReader | GetManifestOptions,
+    manifestOptions?: GetManifestOptions
+  ): Promise<WasmWrapper> {
+    return createWasmWrapper(
+      manifestBufferOrFileReader,
+      wasmModuleOrFileReaderOrManifestOptions,
+      fileReaderOrManifestOptions,
+      manifestOptions
+    );
   }
 
   @Tracer.traceMethod("WasmWrapper: getFile")

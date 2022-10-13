@@ -1,5 +1,6 @@
 /* eslint-disable  @typescript-eslint/no-unused-vars */
 import { Command, Program } from "./types";
+import { createLogger } from "./utils/createLogger";
 import {
   CodeGenerator,
   SchemaComposer,
@@ -12,7 +13,9 @@ import {
   isPluginManifestLanguage,
   generateWrapFile,
   defaultProjectManifestFiles,
+  defaultPolywrapManifest,
 } from "../lib";
+import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
@@ -22,7 +25,7 @@ const defaultCodegenDir = "./src/wrap";
 const defaultPublishDir = "./build";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
-const defaultManifestStr = defaultProjectManifestFiles.join(" | ");
+const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
 type CodegenCommandOptions = {
   manifestFile: string;
@@ -30,6 +33,8 @@ type CodegenCommandOptions = {
   publishDir: string;
   script?: string;
   clientConfig: Partial<PolywrapClientConfig>;
+  verbose?: boolean;
+  quiet?: boolean;
 };
 
 export const codegen: Command = {
@@ -64,6 +69,8 @@ export const codegen: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (options) => {
         await run({
           ...options,
@@ -87,12 +94,15 @@ async function run(options: CodegenCommandOptions) {
     script,
     clientConfig,
     publishDir,
+    verbose,
+    quiet,
   } = options;
+  const logger = createLogger({ verbose, quiet });
 
   // Get Client
   const client = new PolywrapClient(clientConfig);
 
-  const project = await getProjectFromManifest(manifestFile);
+  const project = await getProjectFromManifest(manifestFile, logger);
 
   if (!project) {
     return;
@@ -100,20 +110,27 @@ async function run(options: CodegenCommandOptions) {
 
   const projectType = await project.getManifestLanguage();
 
-  let result = false;
-
   const schemaComposer = new SchemaComposer({
     project,
     client,
   });
-  const codeGenerator = new CodeGenerator({
-    project,
-    schemaComposer,
-    codegenDirAbs: codegenDir,
-    customScript: script,
-  });
 
-  result = await codeGenerator.generate();
+  const codeGenerator = script
+    ? new ScriptCodegenerator({
+        codegenDirAbs: codegenDir,
+        script,
+        schemaComposer,
+        project,
+        omitHeader: false,
+        mustacheView: undefined,
+      })
+    : new CodeGenerator({
+        codegenDirAbs: codegenDir,
+        schemaComposer,
+        project,
+      });
+
+  const result = await codeGenerator.generate();
 
   // HACK: Codegen outputs wrap.info into a build directory for plugins, needs to be moved into a build command?
   if (isPluginManifestLanguage(projectType)) {
@@ -128,14 +145,15 @@ async function run(options: CodegenCommandOptions) {
       await schemaComposer.getComposedAbis(),
       await project.getName(),
       "plugin",
-      manifestPath
+      manifestPath,
+      logger
     );
   }
 
   if (result) {
-    console.log(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
-    process.exitCode = 0;
+    logger.info(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
+    process.exit(0);
   } else {
-    process.exitCode = 1;
+    process.exit(1);
   }
 }
