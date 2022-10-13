@@ -1,0 +1,7 @@
+{
+  "stderr": [
+    "ENOENT",
+    "wrong/schema.graphql"
+  ],
+  "exitCode": 1
+}

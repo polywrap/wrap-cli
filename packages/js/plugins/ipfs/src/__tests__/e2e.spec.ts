@@ -7,11 +7,9 @@ import {
 } from "@polywrap/test-env-js";
 
 import { ipfsPlugin } from "..";
-import { IpfsClient, IpfsFileInfo } from "../utils/IpfsClient";
 import { Ipfs_Module } from "../wrap";
 import { ResultOk } from "@polywrap/result";
-
-const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
+import createIpfsClient, { IpfsClient, IpfsFileInfo } from "@polywrap/ipfs-http-client-lite";
 
 jest.setTimeout(300000);
 

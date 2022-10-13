@@ -66,6 +66,10 @@ export class Uri {
     return this._config.uri;
   }
 
+  public toJSON(): string {
+    return this._config.uri;
+  }
+
   @Tracer.traceMethod("Uri: parseUri")
   public static parseUri(uri: string): Result<UriConfig, Error> {
     if (!uri) {

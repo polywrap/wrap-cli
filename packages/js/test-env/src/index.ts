@@ -5,7 +5,7 @@ import path from "path";
 import spawn from "spawn-command";
 import axios from "axios";
 import fs from "fs";
-import yaml from "js-yaml";
+import yaml from "yaml";
 import { Uri } from "@polywrap/core-js";
 import {
   DeployManifest,
@@ -265,13 +265,17 @@ export async function buildAndDeployWrapper({
 
   fs.writeFileSync(
     tempManifestPath,
-    yaml.dump({
-      ...polywrapManifest,
-      extensions: {
-        ...polywrapManifest.extensions,
-        deploy: `./${tempDeployManifestFilename}`,
+    yaml.stringify(
+      {
+        ...polywrapManifest,
+        extensions: {
+          ...polywrapManifest.extensions,
+          deploy: `./${tempDeployManifestFilename}`,
+        },
       },
-    })
+      null,
+      2
+    )
   );
 
   const deployManifest: Omit<DeployManifest, "__type"> = {
@@ -310,7 +314,10 @@ export async function buildAndDeployWrapper({
       },
     },
   };
-  fs.writeFileSync(tempDeployManifestPath, yaml.dump(deployManifest));
+  fs.writeFileSync(
+    tempDeployManifestPath,
+    yaml.stringify(deployManifest, null, 2)
+  );
 
   // deploy Wrapper
 
@@ -385,7 +392,10 @@ export async function buildAndDeployWrapperToHttp({
     ...polywrapManifest.extensions,
     deploy: `./${tempDeployManifestFilename}`,
   };
-  fs.writeFileSync(tempManifestPath, yaml.dump({ ...polywrapManifest }));
+  fs.writeFileSync(
+    tempManifestPath,
+    yaml.stringify({ ...polywrapManifest }, null, 2)
+  );
 
   const deployManifest: Omit<DeployManifest, "__type"> = {
     format: "0.2.0",
@@ -404,7 +414,10 @@ export async function buildAndDeployWrapperToHttp({
       },
     },
   };
-  fs.writeFileSync(tempDeployManifestPath, yaml.dump(deployManifest));
+  fs.writeFileSync(
+    tempDeployManifestPath,
+    yaml.stringify(deployManifest, null, 2)
+  );
 
   // deploy Wrapper
 

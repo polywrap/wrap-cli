@@ -36,6 +36,9 @@ class Uri:
     def __str__(self) -> str:
         return self._config.uri
 
+    def __repr__(self) -> str:
+        return f"Uri({self._config.uri})"
+
     def __hash__(self) -> int:
         return hash(self._config.uri)
 

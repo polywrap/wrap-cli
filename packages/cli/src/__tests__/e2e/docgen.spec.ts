@@ -21,15 +21,14 @@ Arguments:
 
 Options:
   -m, --manifest-file <path>         Path to the project manifest file
-                                     (default: polywrap.yaml | polywrap.yml |
-                                     polywrap.app.yaml | polywrap.app.yml |
-                                     polywrap.plugin.yaml |
-                                     polywrap.plugin.yml)
+                                     (default: polywrap.yaml | polywrap.yml)
   -g, --docgen-dir <path>            Output directory for generated docs
                                      (default: ./docs)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
   -i, --imports                      Also generate docs for dependencies
+  -v, --verbose                      Verbose output (default: false)
+  -q, --quiet                        Suppress output (default: false)
   -h, --help                         display help for command
 `;
 

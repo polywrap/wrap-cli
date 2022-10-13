@@ -1,26 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Logger } from "../logging";
 import { getDockerFileLock } from "./docker";
+import { FileLock } from "./file-lock";
 
 import path from "path";
 import Commands, { IDockerComposeOptions } from "docker-compose";
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
 
 export class DockerCompose {
-  private _dockerLock = getDockerFileLock();
+  private _dockerLock: FileLock;
   public commands: typeof Commands;
 
-  constructor() {
+  constructor(logger: Logger) {
     this.commands = Object.fromEntries(
       Object.entries(Commands).map(([name, func]) => [
         name,
         this._wrapInDockerLock(func),
       ])
     ) as typeof Commands;
+    this._dockerLock = getDockerFileLock(logger);
   }
 
   static getDefaultConfig(
     baseDockerComposePath: string,
-    quiet: boolean,
+    logger: Logger,
     infraManifest?: InfraManifest
   ): Partial<IDockerComposeOptions> {
     const env =
@@ -38,7 +41,20 @@ export class DockerCompose {
     return {
       cwd: path.dirname(baseDockerComposePath),
       env,
-      log: !quiet,
+      log: true,
+      callback: (chunk: Buffer, streamSource?: "stdout" | "stderr") => {
+        if (!streamSource) {
+          return;
+        }
+
+        const chunkStr = chunk.toString();
+
+        if (streamSource === "stdout") {
+          logger.info(chunkStr);
+        } else {
+          logger.error(chunkStr);
+        }
+      },
     };
   }
 

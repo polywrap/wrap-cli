@@ -15,8 +15,7 @@ import {
 
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
-
-const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
+import createIpfsClient from "@polywrap/ipfs-http-client-lite";
 
 // query wrapper at IPFS path
 export async function foo({

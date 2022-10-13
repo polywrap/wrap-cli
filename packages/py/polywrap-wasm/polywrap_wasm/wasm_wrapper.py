@@ -32,27 +32,20 @@ class WasmWrapper(Wrapper):
         return self.wasm_module
 
     def create_wasm_instance(
-        self, store: Store, state: State
+        self, store: Store, state: State, invoker: Invoker
     ):
         if self.wasm_module:
             module = Module(store.engine, self.wasm_module)
-            return create_instance(store, module, state)
+            return create_instance(store, module, state, invoker)
 
     async def invoke(
-        self, options: Optional[InvokeOptions] = None, invoker: Optional[Invoker] = None
+        self, options: InvokeOptions, invoker: Invoker
     ) -> InvocableResult:
         await self.get_wasm_module()
         state = State()
-        state.method = options.method if options else ""
-        arguments = options.args if options and options.args else msgpack_encode({})
-        state.args = (
-            arguments if isinstance(arguments, bytes) else msgpack_encode(arguments)
-        )
-        state.env = (
-            msgpack_encode(options.env)
-            if options and options.env
-            else msgpack_encode({})
-        )
+        state.method = options.method
+        state.args = options.args if isinstance(options.args, (bytes, bytearray)) else msgpack_encode(options.args)
+        state.env = options.env if isinstance(options.env, (bytes, bytearray)) else msgpack_encode(options.env)
 
         method_length = len(state.method)
         args_length = len(state.args)
@@ -61,7 +54,7 @@ class WasmWrapper(Wrapper):
         # TODO: Pass all necessary args to this log
 
         store = Store()
-        instance = self.create_wasm_instance(store, state)
+        instance = self.create_wasm_instance(store, state, invoker)
         if not instance:
             raise RuntimeError("Unable to instantiate the wasm module")
         exports = WrapExports(instance, store)

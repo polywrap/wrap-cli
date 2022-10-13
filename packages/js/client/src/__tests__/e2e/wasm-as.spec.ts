@@ -39,6 +39,34 @@ describe("wasm-as test cases", () => {
     await TestCases.runAsyncifyTest(client, wrapperUri);
   });
 
+  it("subinvoke", async() => {
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-subinvoke/invoke`;
+    const wrapperUri = `fs/${wrapperPath}/build`;
+
+    const subwrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-subinvoke/subinvoke`;
+    const subwrapperUri = `fs/${subwrapperPath}/build`;
+
+    await buildWrapper(subwrapperPath);
+    await buildWrapper(wrapperPath);
+
+    const client = await getClient({
+      plugins: [
+        {
+          uri: "wrap://ens/memory-storage.polywrap.eth",
+          plugin: makeMemoryStoragePlugin({}),
+        },
+      ],
+      redirects: [
+        {
+          from: "ens/add.eth",
+          to: subwrapperUri
+        }
+      ]
+    });
+
+    await TestCases.runSubinvokeTest(client, wrapperUri);
+  })
+
   it("bigint-type", async () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/bigint-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;

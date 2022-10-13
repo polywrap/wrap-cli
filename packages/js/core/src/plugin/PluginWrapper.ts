@@ -28,8 +28,7 @@ export class PluginWrapper implements Wrapper {
   }
 
   public async getFile(
-    _: GetFileOptions,
-    _client: Client
+    _: GetFileOptions
   ): Promise<Result<Uint8Array | string, Error>> {
     return ResultErr(
       Error("client.getFile(...) is not implemented for Plugins.")
@@ -37,7 +36,7 @@ export class PluginWrapper implements Wrapper {
   }
 
   @Tracer.traceMethod("PluginWrapper: getManifest")
-  public getManifest(_: GetManifestOptions, _client: Client): WrapManifest {
+  public getManifest(_?: GetManifestOptions): WrapManifest {
     return this._plugin.manifest;
   }
 

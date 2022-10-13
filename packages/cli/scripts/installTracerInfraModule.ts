@@ -6,7 +6,7 @@ import fs from "fs";
 import fse from "fs-extra";
 import extractZip from "extract-zip";
 import rimraf from "rimraf";
-import yaml from "js-yaml";
+import yaml from "yaml";
 
 const tempCacheDir = path.join(__dirname, ".tmp");
 const releaseName = "0.11.0";
@@ -64,9 +64,15 @@ async function main() {
 
   // Misc cleanup
   const yamlDockerComposePath = path.join(destDir, "docker-compose.yaml");
-  const yamlDockerCompose = yaml.safeLoad(
-    fs.readFileSync(yamlDockerComposePath, "utf-8")
-  ) as Record<string, any> | undefined;
+  let yamlDockerCompose: Record<string, any> | undefined;
+
+  try {
+    yamlDockerCompose = yaml.parse(
+      fs.readFileSync(yamlDockerComposePath, "utf-8")
+    ) as Record<string, any> | undefined;
+  } catch (_) {
+    yamlDockerCompose = undefined;
+  }
 
   if (!yamlDockerCompose) {
     throw new Error(`Unable to load ${yamlDockerComposePath}`);
@@ -75,7 +81,7 @@ async function main() {
   // 1. Remove the "hotrod" & "load-hotrod" services
   delete yamlDockerCompose.services.hotrod;
   delete yamlDockerCompose.services["load-hotrod"];
-  let rawYamlDockerCompose = yaml.safeDump(yamlDockerCompose, { indent: 2 });
+  let rawYamlDockerCompose = yaml.stringify(yamlDockerCompose, null, 2);
 
   // 2. Copy the "../common" & patch the file path
   fse.copySync(

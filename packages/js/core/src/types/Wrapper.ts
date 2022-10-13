@@ -1,6 +1,5 @@
 import {
   Uri,
-  Client,
   GetFileOptions,
   GetManifestOptions,
   InvokeOptions,
@@ -38,10 +37,7 @@ export interface Wrapper extends Invocable {
    * @param options Configuration options for file retrieval
    * @param client The client instance requesting the file.
    */
-  getFile(
-    options: GetFileOptions,
-    client: Client
-  ): Promise<Result<Uint8Array | string, Error>>;
+  getFile(options: GetFileOptions): Promise<Result<Uint8Array | string, Error>>;
 
   /**
    * Get a manifest from the Wrapper package.
@@ -49,5 +45,5 @@ export interface Wrapper extends Invocable {
    *
    * @param client The client instance requesting the manifest.
    */
-  getManifest(options: GetManifestOptions, client: Client): WrapManifest;
+  getManifest(options?: GetManifestOptions): WrapManifest;
 }

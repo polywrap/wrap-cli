@@ -5,20 +5,21 @@ import {
   ensureDockerDaemonRunning,
   DockerCompose,
   CacheDirectory,
+  Logger,
 } from "../";
 
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
 import path from "path";
 import fs, { lstatSync, readdirSync } from "fs";
-import YAML from "js-yaml";
+import YAML from "yaml";
 import { copySync } from "fs-extra";
 
 export interface InfraConfig {
   rootDir: string;
   defaultInfraModulesPath: string;
+  logger: Logger;
   infraManifest?: InfraManifest;
   modulesToUse?: string[];
-  quiet?: boolean;
 }
 
 interface ModuleWithPath {
@@ -45,7 +46,7 @@ export class Infra {
     "./docker-compose.yaml",
   ];
 
-  private _dockerCompose = new DockerCompose();
+  private _dockerCompose = new DockerCompose(this._config.logger);
   private _defaultDockerOptions: ReturnType<
     typeof DockerCompose.getDefaultConfig
   >;
@@ -71,13 +72,13 @@ export class Infra {
 
     this._defaultDockerOptions = DockerCompose.getDefaultConfig(
       this._baseDockerComposePath,
-      this._config.quiet ?? true,
+      this._config.logger,
       this._config.infraManifest
     );
   }
 
   public async up(): Promise<void> {
-    await ensureDockerDaemonRunning();
+    await ensureDockerDaemonRunning(this._config.logger);
 
     const modulesWithPaths = await this._fetchModules();
 
@@ -89,7 +90,7 @@ export class Infra {
   }
 
   public async down(): Promise<void> {
-    await ensureDockerDaemonRunning();
+    await ensureDockerDaemonRunning(this._config.logger);
 
     const modulesWithPaths = await this._fetchModules();
 
@@ -230,7 +231,7 @@ export class Infra {
   }
 
   private _generateBaseDockerCompose(composePath: string): void {
-    const fileContent = YAML.dump(DEFAULT_BASE_COMPOSE);
+    const fileContent = YAML.stringify(DEFAULT_BASE_COMPOSE, null, 2);
 
     this._writeFileToCacheFromAbsPath(composePath, fileContent);
   }
@@ -261,6 +262,7 @@ export class Infra {
         cache: this._cache,
         installationDirectory: installationDir,
         name: registry,
+        logger: this._config.logger,
       });
 
       const mappedInfraModules = modules.map((p) => ({
@@ -327,7 +329,11 @@ export class Infra {
       );
 
       // Write new docker-compose manifests with corrected build path and 'polywrap' prefix
-      const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
+      const newComposeFile = YAML.stringify(
+        composeFileWithCorrectPaths,
+        null,
+        2
+      );
       this._writeFileToCacheFromAbsPath(m.path, newComposeFile);
     });
 
