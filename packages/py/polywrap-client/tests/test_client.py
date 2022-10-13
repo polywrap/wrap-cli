@@ -37,7 +37,7 @@ async def test_subinvoke():
     uri = Uri(
         f'fs/{Path(__file__).parent.joinpath("cases", "subinvoke", "wrap-invoke.wasm").absolute()}'
     )
-    args = {"a": 1, "b": 2}
+    args = b'\x82\xa1a\x01\xa1b\x02'
     options = InvokerOptions(
         uri=uri, method="add", args=args, encode_result=False
     )

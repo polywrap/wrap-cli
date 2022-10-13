@@ -18,4 +18,6 @@ class WrapExports():
         self._wrap_invoke = _wrap_invoke
     
     def __wrap_invoke__(self, method_length: int, args_length: int, env_length: int) -> bool:
-        return bool(self._wrap_invoke(self._store, method_length, args_length, env_length))
+        val = self._wrap_invoke(self._store, method_length, args_length, env_length)
+        print("__wrap_invoke__ export", bool(val))
+        return bool(val)

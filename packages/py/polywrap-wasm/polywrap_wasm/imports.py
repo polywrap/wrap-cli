@@ -1,4 +1,3 @@
-import asyncio
 from unsync import unsync, Unfuture
 from wasmtime import (
     Store,
@@ -13,6 +12,7 @@ from wasmtime import (
 )
 
 from polywrap_core import Invoker, InvokerOptions, Uri, InvokeResult
+from polywrap_msgpack import msgpack_decode
 
 from .buffer import write_string, write_bytes, read_string, read_bytes
 from .types.state import State
@@ -89,12 +89,16 @@ def create_instance(
     wrap_invoke_result_type = FuncType([ValType.i32(), ValType.i32()], [])
 
     def wrap_invoke_result(offset: int, length: int) -> None:
+        print("invoke ptr", offset)
+        print("Hello result")
         result = read_bytes(mem.data_ptr(store), mem.data_len(store), offset, length)
         state.invoke["result"] = result
+        print(result)
 
     wrap_invoke_error_type = FuncType([ValType.i32(), ValType.i32()], [])
 
     def wrap_invoke_error(offset: int, length: int):
+        print("hello error")
         error = read_string(mem.data_ptr(store), mem.data_len(store), offset, length)
         state.invoke["error"] = error
 
@@ -117,50 +121,63 @@ def create_instance(
         method_len: int,
         args_ptr: int,
         args_len: int,
-    ):
+    ) -> bool:
         uri = read_string(mem.data_ptr(store), mem.data_len(store), uri_ptr, uri_len)
+        print(uri)
         method = read_string(
             mem.data_ptr(store), mem.data_len(store), method_ptr, method_len
         )
         args = read_bytes(mem.data_ptr(store), mem.data_len(store), args_ptr, args_len)
 
-        options = InvokerOptions(uri=Uri(uri), method=method, args=args, encode_result=True)
+        from typing import Dict, Any
+        vargs: Dict[str, Any] = msgpack_decode(args)
+
+        # options = InvokerOptions(uri=Uri(uri), method=method, args=args, encode_result=True)
         unfuture_result: Unfuture[InvokeResult] = unsync_invoke(
             invoker,
-            InvokerOptions(uri=Uri(uri), method=method, args=args, encode_result=True),
+            InvokerOptions(uri=Uri(uri), method=method, args=vargs, encode_result=True),
         )
         result = unfuture_result.result()
 
+        print("Hello cesar")
         print(result)
 
         if result.result:
             state.subinvoke["result"] = result.result
+            return True
         elif result.error:
             state.subinvoke["error"] = "".join(str(x) for x in result.error.args)
+            return False
         else:
             raise ValueError("subinvocation failed!")
 
     wrap_subinvoke_result_len_type = FuncType([], [ValType.i32()])
 
     def wrap_subinvoke_result_len():
+        print("wrap_subinvoke_result_len")
+        print(state.subinvoke["result"])
         if not state.subinvoke["result"]:
             raise WasmAbortError(
                 "__wrap_subinvoke_result_len: subinvoke.result is not set"
             )
+        print("subinvoke len", len(state.subinvoke["result"]))
         return len(state.subinvoke["result"])
 
     wrap_subinvoke_result_type = FuncType([ValType.i32()], [])
 
     def wrap_subinvoke_result(ptr: int):
+        print("subinvoke ptr", ptr)
         if not state.subinvoke["result"]:
             raise WasmAbortError("__wrap_subinvoke_result: subinvoke.result is not set")
         write_bytes(
             mem.data_ptr(store), mem.data_len(store), state.subinvoke["result"], ptr
         )
+        print("done")
 
     wrap_subinvoke_error_len_type = FuncType([], [ValType.i32()])
 
     def wrap_subinvoke_error_len():
+        print("subinvoke error")
         if not state.subinvoke["error"]:
             raise WasmAbortError(
                 "__wrap_subinvoke_error_len: subinvoke.error is not set"
@@ -170,6 +187,7 @@ def create_instance(
     wrap_subinvoke_error_type = FuncType([ValType.i32()], [])
 
     def wrap_subinvoke_error(ptr: int):
+        print("subinvoke err")
         if not state.subinvoke["error"]:
             raise WasmAbortError("__wrap_subinvoke_error: subinvoke.error is not set")
         write_string(

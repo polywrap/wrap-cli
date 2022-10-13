@@ -67,6 +67,7 @@ class WasmWrapper(Wrapper):
         exports = WrapExports(instance, store)
 
         result = exports.__wrap_invoke__(method_length, args_length, env_length)
+        print(self._process_invoke_result(state, result))
         # TODO: Handle invoke result error
         return self._process_invoke_result(state, result)
 
