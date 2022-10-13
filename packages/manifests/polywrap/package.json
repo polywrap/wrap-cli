@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/polywrap-manifest-schemas",
   "description": "Polywrap Manifest Schemas",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "license": "MIT",
   "repository": {
     "type": "git",
