@@ -30,8 +30,6 @@ class BaseUriResolver(IUriResolver):
             )
         ).unwrap()
 
-        print(redirected_uri)
-
         return await self._fs_resolver.try_resolve_uri(
             redirected_uri, client, resolution_context
         )

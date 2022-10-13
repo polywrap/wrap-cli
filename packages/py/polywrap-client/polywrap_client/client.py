@@ -1,6 +1,6 @@
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union
+from dataclasses import dataclass
+from typing import Any, List, Optional, Union
 
 from result import Result, Ok, Err
 
@@ -107,14 +107,11 @@ class PolywrapClient(Client):
             result = await wrapper.invoke(options, invoker=self)
             if options.encode_result and not result.encoded:
                 encoded = msgpack_encode(result.result)
-                print(result)
                 return InvokeResult(result=encoded, error=None)
             elif not options.encode_result and result.encoded and isinstance(result.result, (bytes, bytearray)):
                 decoded: Any = msgpack_decode(result.result)
-                print(decoded)
                 return InvokeResult(result=decoded, error=None)
             else:
-                print("")
                 return result
 
         except Exception as e:

@@ -43,16 +43,9 @@ class WasmWrapper(Wrapper):
     ) -> InvocableResult:
         await self.get_wasm_module()
         state = State()
-        state.method = options.method if options else ""
-        arguments = options.args if options and options.args else msgpack_encode({})
-        state.args = (
-            arguments if isinstance(arguments, bytes) else msgpack_encode(arguments)
-        )
-        state.env = (
-            msgpack_encode(options.env)
-            if options and options.env
-            else msgpack_encode({})
-        )
+        state.method = options.method
+        state.args = options.args if isinstance(options.args, (bytes, bytearray)) else msgpack_encode(options.args)
+        state.env = options.env if isinstance(options.env, (bytes, bytearray)) else msgpack_encode(options.env)
 
         method_length = len(state.method)
         args_length = len(state.args)
@@ -67,7 +60,6 @@ class WasmWrapper(Wrapper):
         exports = WrapExports(instance, store)
 
         result = exports.__wrap_invoke__(method_length, args_length, env_length)
-        print(self._process_invoke_result(state, result))
         # TODO: Handle invoke result error
         return self._process_invoke_result(state, result)
 
