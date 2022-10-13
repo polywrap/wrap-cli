@@ -1,4 +1,4 @@
-rs![Public Release Announcement](https://user-images.githubusercontent.com/5522128/177473887-2689cf25-7937-4620-8ca5-17620729a65d.png)
+![Public Release Announcement](https://user-images.githubusercontent.com/5522128/177473887-2689cf25-7937-4620-8ca5-17620729a65d.png)
 
 # Polywrap Python Client
 
@@ -35,34 +35,35 @@ For detailed information about Polywrap and the WRAP standard, visit our [develo
 
 ## Pre-reqs
 
-- `python 3.10` -> To make sure you're running the correct version of python, run: `which python3`
+- `python 3.10` -> Make sure you're running the correct version of python by running: `which python3`
 
-- `poetry 1.2.1` -> To make sure you're it's installed properly, run `poetry`. To learn more [here](ttps://python-poetry.org/)
-
-- `pytest 7.1.3` -> Read the [docs](https://docs.pytest.org/en/7.1.x/contents.html)
+- `poetry 1.2.1` -> To make sure you're it's installed properly, run `poetry`; learn more [here](https://python-poetry.org/docs/)
   
-- `result` -> `pip3 install result`
+- `result` -> `pip3 install result` 
   
 
-## Running the python client  Locally
+## Running the Python Client Locally
 
 1. Clone the repository
    - `git clone https://github.com/polywrap/toolchain.git`
 
-2. Use the `cd` command to navigate into the `/packages/py/` subfolder and use poetry to install all the additional dependencies.
+2. Use the `cd` command to navigate into the `toolchain/packages/py/` subfolder and select the module you want to use. In this case we'll check `polywrap-msgpack` From there, leverage `poetry` to install all the additional dependencies.
+   - `cd ./toolchain/packages/py/polywrap-msgpack`
    - `poetry shell` to start env
    - `poetry install`
 
+This should take a couple of seconds to execute, and when it's done you should be ready to use the module.
+
 ## Running Tests 
 
-The Polywrap Python Client uses [pytest](https://docs.pytest.org) as a testing framework.
+In order to assure the integrity of the modules Polywrap Python Client uses [pytest 7.1.3](https://docs.pytest.org/en/7.1.x/contents.html) as a testing framework.
 
-> Right now you can test the `polywrap-msgpack`, `polywrap-client`,and `polywrap-core` modules.
+To run the tests locally, from the terminal `cd` into the appropriate module, for example `./toolchain/packages/py/polywrap-wasm` or `./toolchain/packages/py/polywrap-client`, and run this command:
+ - `poetry shell` to start env
+ - `poetry install` to have all dependencies locally
+ - `poetry run pytest` to test your module 
 
-To run the tests locally, from the terminal `cd` into the appropriate folder, for example `cd polywrap-msgpack`, and run this command:
- - `poetry run pytest`
-
-This will run a series of scripts that verify that the specific module of the client is performing as expected in your local machine. The output on your console should look something like this:
+This last command will run a series of scripts that verify that the specific module of the client is performing as expected in your local machine. The output on your console should look something like this:
 
 ```c
 $ poetry run pytest
@@ -75,7 +76,7 @@ collected 26 items
 tests/test_msgpack.py ..........................                                [100%]
 ```
 
-You should expect to see the tests passing with a 100% accuracy.
+You should expect to see the tests passing with a 100% accuracy. To better understand and read these outputs, check [this quick guide](https://docs.pytest.org/en/7.1.x/how-to/output.html)
 
 If anything fails (F), or if there are any Warnings raised, you can debug them by running a verbose version of the test suite:
 - `poetry run pytests -v` or `poetry run pytests -vv` for even more detail
