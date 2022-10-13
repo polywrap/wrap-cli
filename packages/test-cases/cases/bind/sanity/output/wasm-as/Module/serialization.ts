@@ -240,12 +240,79 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
   };
 }
 
+export function serializemoduleMethodArgs(type: Args_moduleMethod): ArrayBuffer {
+  const sizerContext: Context = new Context("Serializing (sizing) module-method: Args_moduleMethod");
+  const sizer = new WriteSizer(sizerContext);
+  writemoduleMethodArgs(sizer, type);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoderContext: Context = new Context("Serializing (encoding) module-method: Args_moduleMethod");
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
+  writemoduleMethodArgs(encoder, type);
+  return buffer;
+}
+
+export function writemoduleMethodArgs(writer: Write, type: Args_moduleMethod): void {
+  writer.writeMapLength(11);
+  writer.context().push("str", "string", "writing property");
+  writer.writeString("str");
+  writer.writeString(type.str);
+  writer.context().pop();
+  writer.context().push("optStr", "string | null", "writing property");
+  writer.writeString("optStr");
+  writer.writeOptionalString(type.optStr);
+  writer.context().pop();
+  writer.context().push("en", "Types.CustomEnum", "writing property");
+  writer.writeString("en");
+  writer.writeInt32(type.en);
+  writer.context().pop();
+  writer.context().push("optEnum", "Box<Types.CustomEnum> | null", "writing property");
+  writer.writeString("optEnum");
+  writer.writeOptionalInt32(type.optEnum);
+  writer.context().pop();
+  writer.context().push("map", "Map<string, i32>", "writing property");
+  writer.writeString("map");
+  writer.writeExtGenericMap(type.map, (writer: Write, key: string) => {
+    writer.writeString(key);
+  }, (writer: Write, value: i32): void => {
+    writer.writeInt32(value);
+  });
+  writer.context().pop();
+  writer.context().push("mapOfArr", "Map<string, Array<i32>>", "writing property");
+  writer.writeString("mapOfArr");
+  writer.writeExtGenericMap(type.mapOfArr, (writer: Write, key: string) => {
+    writer.writeString(key);
+  }, (writer: Write, value: Array<i32>): void => {
+    writer.writeArray(value, (writer: Write, item: i32): void => {
+      writer.writeInt32(item);
+    });
+  });
+  writer.context().pop();
+  writer.context().push("mapOfObj", "Map<string, Types.AnotherType>", "writing property");
+  writer.writeString("mapOfObj");
+  writer.writeExtGenericMap(type.mapOfObj, (writer: Write, key: string) => {
+    writer.writeString(key);
+  }, (writer: Write, value: Types.AnotherType): void => {
+    Types.AnotherType.write(writer, value);
+  });
+  writer.context().pop();
+  writer.context().push("mapOfArrOfObj", "Map<string, Array<Types.AnotherType>>", "writing property");
+  writer.writeString("mapOfArrOfObj");
+  writer.writeExtGenericMap(type.mapOfArrOfObj, (writer: Write, key: string) => {
+    writer.writeString(key);
+  }, (writer: Write, value: Array<Types.AnotherType>): void => {
+    writer.writeArray(value, (writer: Write, item: Types.AnotherType): void => {
+      Types.AnotherType.write(writer, item);
+    });
+  });
+  writer.context().pop();
+}
+
 export function serializemoduleMethodResult(result: i32): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) module-type: moduleMethod");
+  const sizerContext: Context = new Context("Serializing (sizing) module-type: moduleMethod Result");
   const sizer = new WriteSizer(sizerContext);
   writemoduleMethodResult(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) module-type: moduleMethod");
+  const encoderContext: Context = new Context("Serializing (encoding) module-type: moduleMethod Result");
   const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writemoduleMethodResult(encoder, result);
   return buffer;
@@ -255,6 +322,12 @@ export function writemoduleMethodResult(writer: Write, result: i32): void {
   writer.context().push("moduleMethod", "i32", "writing property");
   writer.writeInt32(result);
   writer.context().pop();
+}
+
+export function deserializemoduleMethodResult(buffer: ArrayBuffer): i32 {
+  const context: Context = new Context("Deserializing module-type: moduleMethod Result");
+  const reader = new ReadDecoder(buffer, context);
+  return reader.readInt32();
 }
 
 export class Args_objectMethod {
@@ -335,12 +408,55 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Args_objectMe
   };
 }
 
+export function serializeobjectMethodArgs(type: Args_objectMethod): ArrayBuffer {
+  const sizerContext: Context = new Context("Serializing (sizing) module-method: Args_objectMethod");
+  const sizer = new WriteSizer(sizerContext);
+  writeobjectMethodArgs(sizer, type);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoderContext: Context = new Context("Serializing (encoding) module-method: Args_objectMethod");
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
+  writeobjectMethodArgs(encoder, type);
+  return buffer;
+}
+
+export function writeobjectMethodArgs(writer: Write, type: Args_objectMethod): void {
+  writer.writeMapLength(4);
+  writer.context().push("object", "Types.AnotherType", "writing property");
+  writer.writeString("object");
+  Types.AnotherType.write(writer, type.object);
+  writer.context().pop();
+  writer.context().push("optObject", "Types.AnotherType | null", "writing property");
+  writer.writeString("optObject");
+  if (type.optObject) {
+    Types.AnotherType.write(writer, type.optObject as Types.AnotherType);
+  } else {
+    writer.writeNil();
+  }
+  writer.context().pop();
+  writer.context().push("objectArray", "Array<Types.AnotherType>", "writing property");
+  writer.writeString("objectArray");
+  writer.writeArray(type.objectArray, (writer: Write, item: Types.AnotherType): void => {
+    Types.AnotherType.write(writer, item);
+  });
+  writer.context().pop();
+  writer.context().push("optObjectArray", "Array<Types.AnotherType | null> | null", "writing property");
+  writer.writeString("optObjectArray");
+  writer.writeOptionalArray(type.optObjectArray, (writer: Write, item: Types.AnotherType | null): void => {
+    if (item) {
+      Types.AnotherType.write(writer, item as Types.AnotherType);
+    } else {
+      writer.writeNil();
+    }
+  });
+  writer.context().pop();
+}
+
 export function serializeobjectMethodResult(result: Types.AnotherType | null): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) module-type: objectMethod");
+  const sizerContext: Context = new Context("Serializing (sizing) module-type: objectMethod Result");
   const sizer = new WriteSizer(sizerContext);
   writeobjectMethodResult(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) module-type: objectMethod");
+  const encoderContext: Context = new Context("Serializing (encoding) module-type: objectMethod Result");
   const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeobjectMethodResult(encoder, result);
   return buffer;
@@ -354,6 +470,16 @@ export function writeobjectMethodResult(writer: Write, result: Types.AnotherType
     writer.writeNil();
   }
   writer.context().pop();
+}
+
+export function deserializeobjectMethodResult(buffer: ArrayBuffer): Types.AnotherType | null {
+  const context: Context = new Context("Deserializing module-type: objectMethod Result");
+  const reader = new ReadDecoder(buffer, context);
+  if (reader.isNextNil()) {
+    return null;
+  } else {
+    return Types.AnotherType.read(reader);
+  }
 }
 
 export class Args_optionalEnvMethod {
@@ -434,12 +560,55 @@ export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer): Args_opt
   };
 }
 
+export function serializeoptionalEnvMethodArgs(type: Args_optionalEnvMethod): ArrayBuffer {
+  const sizerContext: Context = new Context("Serializing (sizing) module-method: Args_optionalEnvMethod");
+  const sizer = new WriteSizer(sizerContext);
+  writeoptionalEnvMethodArgs(sizer, type);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoderContext: Context = new Context("Serializing (encoding) module-method: Args_optionalEnvMethod");
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
+  writeoptionalEnvMethodArgs(encoder, type);
+  return buffer;
+}
+
+export function writeoptionalEnvMethodArgs(writer: Write, type: Args_optionalEnvMethod): void {
+  writer.writeMapLength(4);
+  writer.context().push("object", "Types.AnotherType", "writing property");
+  writer.writeString("object");
+  Types.AnotherType.write(writer, type.object);
+  writer.context().pop();
+  writer.context().push("optObject", "Types.AnotherType | null", "writing property");
+  writer.writeString("optObject");
+  if (type.optObject) {
+    Types.AnotherType.write(writer, type.optObject as Types.AnotherType);
+  } else {
+    writer.writeNil();
+  }
+  writer.context().pop();
+  writer.context().push("objectArray", "Array<Types.AnotherType>", "writing property");
+  writer.writeString("objectArray");
+  writer.writeArray(type.objectArray, (writer: Write, item: Types.AnotherType): void => {
+    Types.AnotherType.write(writer, item);
+  });
+  writer.context().pop();
+  writer.context().push("optObjectArray", "Array<Types.AnotherType | null> | null", "writing property");
+  writer.writeString("optObjectArray");
+  writer.writeOptionalArray(type.optObjectArray, (writer: Write, item: Types.AnotherType | null): void => {
+    if (item) {
+      Types.AnotherType.write(writer, item as Types.AnotherType);
+    } else {
+      writer.writeNil();
+    }
+  });
+  writer.context().pop();
+}
+
 export function serializeoptionalEnvMethodResult(result: Types.AnotherType | null): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) module-type: optionalEnvMethod");
+  const sizerContext: Context = new Context("Serializing (sizing) module-type: optionalEnvMethod Result");
   const sizer = new WriteSizer(sizerContext);
   writeoptionalEnvMethodResult(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) module-type: optionalEnvMethod");
+  const encoderContext: Context = new Context("Serializing (encoding) module-type: optionalEnvMethod Result");
   const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeoptionalEnvMethodResult(encoder, result);
   return buffer;
@@ -453,6 +622,16 @@ export function writeoptionalEnvMethodResult(writer: Write, result: Types.Anothe
     writer.writeNil();
   }
   writer.context().pop();
+}
+
+export function deserializeoptionalEnvMethodResult(buffer: ArrayBuffer): Types.AnotherType | null {
+  const context: Context = new Context("Deserializing module-type: optionalEnvMethod Result");
+  const reader = new ReadDecoder(buffer, context);
+  if (reader.isNextNil()) {
+    return null;
+  } else {
+    return Types.AnotherType.read(reader);
+  }
 }
 
 export class Args__if {
@@ -491,6 +670,24 @@ export function deserializeifArgs(argsBuf: ArrayBuffer): Args__if {
   };
 }
 
+export function serializeifArgs(type: Args__if) {
+  const sizerContext: Context = new Context("Serializing (sizing) module-method: Args__if");
+  const sizer = new WriteSizer(sizerContext);
+  writeifArgs(sizer, type);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoderContext: Context = new Context("Serializing (encoding) module-method: Args__if");
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
+  writeifArgs(encoder, type);
+  return buffer;
+}
+
+export function writeifArgs(writer: Write, type: Args__if): void {
+  writer.writeMapLength(1);
+  writer.context().push("if", "Types._else", "writing property");
+  Types._else.write(writer, type._if);
+  writer.context().pop();
+}
+
 export function serializeifResult(result: Types._else): ArrayBuffer {
   const sizerContext: Context = new Context("Serializing (sizing) module-type: if");
   const sizer = new WriteSizer(sizerContext);
@@ -506,4 +703,10 @@ export function writeifResult(writer: Write, result: Types._else): void {
   writer.context().push("if", "Types._else", "writing property");
   Types._else.write(writer, result);
   writer.context().pop();
+}
+
+export function deserializeifResult(buffer: ArrayBuffer): Types._else {
+  const context: Context = new Context("Deserializing module-type: if Result");
+  const reader = new ReadDecoder(buffer, context);
+  return Types._else.read(reader);
 }
