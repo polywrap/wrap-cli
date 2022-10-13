@@ -8,8 +8,8 @@ from polywrap_wasm import IFileReader, WasmWrapper, WRAP_MODULE_PATH
 
 
 @pytest.fixture
-def wrap_module():
-    wrap_path = Path(__file__).parent / "cases" / "wrap.wasm"
+def simple_wrap_invoke_module():
+    wrap_path = Path(__file__).parent / "cases" / "simple_wrap_invoke.wasm"
     with open(wrap_path, "rb") as f:
         yield bytearray(f.read())
 

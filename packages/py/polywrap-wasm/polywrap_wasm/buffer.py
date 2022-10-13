@@ -37,7 +37,7 @@ def write_string(
 def write_bytes(
         memory_pointer: BufferPointer,
         memory_length: int,
-        value: bytearray,
+        value: bytes,
         value_offset: int,
 ) -> None:
     mem_cpy(memory_pointer, memory_length, bytearray(value), len(value), value_offset)

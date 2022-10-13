@@ -1,4 +1,17 @@
-from wasmtime import Store, Linker, Memory, Module, MemoryType, Limits, ValType, FuncType, Instance
+import asyncio
+from wasmtime import (
+    Store,
+    Linker,
+    Memory,
+    Module,
+    MemoryType,
+    Limits,
+    ValType,
+    FuncType,
+    Instance,
+)
+
+from polywrap_core import Client, InvokerOptions, Uri
 
 from .buffer import write_string, write_bytes, read_string, read_bytes
 from .types.state import State
@@ -6,9 +19,10 @@ from .errors import WasmAbortError
 
 
 def create_instance(
-        store: Store,
-        module: Module,
-        state: State,
+    store: Store,
+    module: Module,
+    state: State,
+    client: Client,
 ) -> Instance:
     linker = Linker(store.engine)
 
@@ -19,49 +33,157 @@ def create_instance(
     mem = Memory(store, MemoryType(Limits(1, None)))
 
     wrap_abort_type = FuncType(
-        [ValType.i32(), ValType.i32(), ValType.i32(), ValType.i32(), ValType.i32(), ValType.i32()], []
+        [
+            ValType.i32(),
+            ValType.i32(),
+            ValType.i32(),
+            ValType.i32(),
+            ValType.i32(),
+            ValType.i32(),
+        ],
+        [],
     )
 
-    def wrap_abort(msg_offset: int, msg_len: int, file_offset: int, file_len: int, line: int, column: int) -> None:
+    def wrap_abort(
+        msg_offset: int,
+        msg_len: int,
+        file_offset: int,
+        file_len: int,
+        line: int,
+        column: int,
+    ) -> None:
         msg = read_string(mem.data_ptr(store), mem.data_len(store), msg_offset, msg_len)
-        file = read_string(mem.data_ptr(store), mem.data_len(store), file_offset, file_len)
-        raise WasmAbortError(f"__wrap_abort: {msg}\nFile: {file}\nLocation: [{line},{column}]")
+        file = read_string(
+            mem.data_ptr(store), mem.data_len(store), file_offset, file_len
+        )
+        raise WasmAbortError(
+            f"__wrap_abort: {msg}\nFile: {file}\nLocation: [{line},{column}]"
+        )
 
-    wrap_invoke_args_type = FuncType(
-        [ValType.i32(), ValType.i32()], []
-    )
+    wrap_invoke_args_type = FuncType([ValType.i32(), ValType.i32()], [])
 
     def wrap_invoke_args(method_ptr: int, args_ptr: int) -> None:
         if not state.method:
             raise WasmAbortError("__wrap_invoke_args: method is not set")
         else:
-            write_string(mem.data_ptr(store), mem.data_len(store), state.method, method_ptr)
+            write_string(
+                mem.data_ptr(store), mem.data_len(store), state.method, method_ptr
+            )
 
         if not state.args:
             raise WasmAbortError("__wrap_invoke_args: args is not set")
         else:
-            write_bytes(mem.data_ptr(store), mem.data_len(store), bytearray(state.args), args_ptr)
+            write_bytes(
+                mem.data_ptr(store),
+                mem.data_len(store),
+                bytearray(state.args),
+                args_ptr,
+            )
 
-    wrap_invoke_result_type = FuncType(
-        [ValType.i32(), ValType.i32()], []
-    )
+    wrap_invoke_result_type = FuncType([ValType.i32(), ValType.i32()], [])
 
     def wrap_invoke_result(offset: int, length: int) -> None:
         result = read_bytes(mem.data_ptr(store), mem.data_len(store), offset, length)
-        state.invoke['result'] = result
+        state.invoke["result"] = result
 
-    wrap_invoke_error_type = FuncType(
-        [ValType.i32(), ValType.i32()], []
-    )
+    wrap_invoke_error_type = FuncType([ValType.i32(), ValType.i32()], [])
 
     def wrap_invoke_error(offset: int, length: int):
         error = read_string(mem.data_ptr(store), mem.data_len(store), offset, length)
-        state.invoke['error'] = error
+        state.invoke["error"] = error
+
+    wrap_subinvoke_type = FuncType(
+        [
+            ValType.i32(),
+            ValType.i32(),
+            ValType.i32(),
+            ValType.i32(),
+            ValType.i32(),
+            ValType.i32(),
+        ],
+        [ValType.i32()],
+    )
+
+    def wrap_subinvoke(
+        uri_ptr: int,
+        uri_len: int,
+        method_ptr: int,
+        method_len: int,
+        args_ptr: int,
+        args_len: int,
+    ):
+        uri = read_string(mem.data_ptr(store), mem.data_len(store), uri_ptr, uri_len)
+        method = read_string(
+            mem.data_ptr(store), mem.data_len(store), method_ptr, method_len
+        )
+        args = read_bytes(mem.data_ptr(store), mem.data_len(store), args_ptr, args_len)
+
+        result = asyncio.run(
+            client.invoke(
+                InvokerOptions(
+                    uri=Uri(uri), method=method, args=args, encode_result=True
+                )
+            )
+        )
+
+        if result.result:
+            state.subinvoke["result"] = result.result
+        elif result.error:
+            state.subinvoke["error"] = "".join(str(x) for x in result.error.args)
+        else:
+            raise ValueError("subinvocation failed!")
+
+    wrap_subinvoke_result_len_type = FuncType([], [ValType.i32()])
+
+    def wrap_subinvoke_result_len():
+        if not state.subinvoke["result"]:
+            raise WasmAbortError(
+                "__wrap_subinvoke_result_len: subinvoke.result is not set"
+            )
+        return len(state.subinvoke["result"])
+
+    wrap_subinvoke_result_type = FuncType([ValType.i32()], [])
+
+    def wrap_subinvoke_result(ptr: int):
+        if not state.subinvoke["result"]:
+            raise WasmAbortError("__wrap_subinvoke_result: subinvoke.result is not set")
+        write_bytes(
+            mem.data_ptr(store),
+            mem.data_len(store),
+            state.subinvoke["result"],
+            ptr
+        )
+    
+    wrap_subinvoke_error_len_type = FuncType([], [ValType.i32()])
+
+    def wrap_subinvoke_error_len():
+        if not state.subinvoke["error"]:
+            raise WasmAbortError(
+                "__wrap_subinvoke_error_len: subinvoke.error is not set"
+            )
+        return len(state.subinvoke["error"])
+
+    wrap_subinvoke_error_type = FuncType([ValType.i32()], [])
+
+    def wrap_subinvoke_error(ptr: int):
+        if not state.subinvoke["error"]:
+            raise WasmAbortError("__wrap_subinvoke_error: subinvoke.error is not set")
+        write_string(
+            mem.data_ptr(store),
+            mem.data_len(store),
+            state.subinvoke["error"],
+            ptr
+        )
 
     # TODO: use generics or any on wasmtime codebase to fix typings
     linker.define_func("wrap", "__wrap_abort", wrap_abort_type, wrap_abort)  # type: ignore partially unknown
     linker.define_func("wrap", "__wrap_invoke_args", wrap_invoke_args_type, wrap_invoke_args)  # type: ignore partially unknown
     linker.define_func("wrap", "__wrap_invoke_result", wrap_invoke_result_type, wrap_invoke_result)  # type: ignore partially unknown
     linker.define_func("wrap", "__wrap_invoke_error", wrap_invoke_error_type, wrap_invoke_error)  # type: ignore partially unknown
+    linker.define_func("wrap", "__wrap_subinvoke", wrap_subinvoke_type, wrap_subinvoke)  # type: ignore partially unknown
+    linker.define_func("wrap", "__wrap_subinvoke_result_len", wrap_subinvoke_result_len_type, wrap_subinvoke_result_len)  # type: ignore partially unknown
+    linker.define_func("wrap", "__wrap_subinvoke_result", wrap_subinvoke_result_type, wrap_subinvoke_result)  # type: ignore partially unknown
+    linker.define_func("wrap", "__wrap_subinvoke_error_len", wrap_subinvoke_error_len_type, wrap_subinvoke_error_len)  # type: ignore partially unknown
+    linker.define_func("wrap", "__wrap_subinvoke_error", wrap_subinvoke_error_type, wrap_subinvoke_error)  # type: ignore partially unknown
     linker.define("env", "memory", mem)
     return linker.instantiate(store, module)
