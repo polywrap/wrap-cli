@@ -86,7 +86,15 @@ export const run: Command = {
 };
 
 const _run = async (options: WorkflowCommandOptions) => {
-  const { manifest, clientConfig, outputFile, verbose, quiet, jobs, logFile } = options;
+  const {
+    manifest,
+    clientConfig,
+    outputFile,
+    verbose,
+    quiet,
+    jobs,
+    logFile,
+  } = options;
   const logger = createLogger({ verbose, quiet, logFile });
   const client = new PolywrapClient(clientConfig);
 

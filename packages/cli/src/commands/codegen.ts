@@ -103,7 +103,7 @@ async function run(options: CodegenCommandOptions) {
     publishDir,
     verbose,
     quiet,
-    logFile
+    logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
