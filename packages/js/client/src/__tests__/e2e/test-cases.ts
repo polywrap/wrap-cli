@@ -1136,6 +1136,6 @@ export const runSubinvokeTest = async (
 
     if (!response.ok) fail(response.error);
     expect(response.value).toBeTruthy();
-    expect(response.value).toEqual("1 + 2 = 3");
+    expect(response.value).toEqual(3);
   }
 };

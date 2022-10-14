@@ -2,7 +2,7 @@
   "name": "test-case-simple-subinvoke",
   "private": true,
   "dependencies": {
-    "@polywrap/wasm-as": "0.3.0",
+    "@polywrap/wasm-as": "0.9.1",
     "assemblyscript": "0.19.1"
   }
 }
