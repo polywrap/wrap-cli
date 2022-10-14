@@ -47,7 +47,7 @@ pub use {{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}}::{
     deserialize_{{#toLower}}{{name}}{{/toLower}}_args,
     serialize_{{#toLower}}{{name}}{{/toLower}}_result,
     {{#toLower}}{{name}}{{/toLower}}_wrapped,
-    Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}}{{^last}},{{/last}}
+    Args{{#toUpper}}{{name}}{{/toUpper}}{{^last}},{{/last}}
     {{/methods}}
 };
 {{/moduleType}}

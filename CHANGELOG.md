@@ -1,3 +1,7 @@
+# Polywrap Origin (0.9.2)
+## Bugs
+* [PR-1327](https://github.com/polywrap/toolchain/pull/1327) `@polywrap/schema-bind`: Added missing serialization bindings for module method arguments & return values.
+
 # Polywrap Origin (0.9.1)
 ## Bugs
 * [PR-1320](https://github.com/polywrap/toolchain/pull/1320) `@polywrap/ethereum-plugin-js`: Proper `view` method result parsing.
