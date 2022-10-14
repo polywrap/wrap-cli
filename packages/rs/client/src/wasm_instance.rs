@@ -1,16 +1,16 @@
 use std::cell::RefCell;
-use std::error::Error;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 
 use wasmtime::*;
 
-use crate::WasmWrapper;
+use crate::error::WrapperError;
+
 pub struct WasmInstance {
     instance: Instance,
-    shared_state: Arc<Mutex<State>>,
+    pub shared_state: Arc<Mutex<State>>,
     store: Store<u32>,
-    module: Module,
+    pub module: Module,
 }
 
 pub enum WasmModule {
@@ -37,37 +37,36 @@ impl WasmInstance {
         wasm_module: &WasmModule,
         shared_state: Arc<Mutex<State>>,
         abort: Arc<dyn Fn(String) + Send + Sync>,
-    ) -> Result<Self, Box<dyn Error>> {
+    ) -> Result<Self, WrapperError> {
         let mut config = Config::new();
         config.async_support(true);
 
-        let engine = Engine::new(&config).unwrap();
+        let engine =
+            Engine::new(&config).map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
         let mut linker = wasmtime::Linker::new(&engine);
 
         let mut store = Store::new(&engine, 4);
 
+        let memory_type = MemoryType::new(1, Option::None);
         let memory = Rc::new(RefCell::new(
-            Memory::new(store.as_context_mut(), MemoryType::new(1, Option::None)).unwrap(),
+            Memory::new(store.as_context_mut(), memory_type)
+                .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?,
         ));
 
-        let module = match wasm_module {
-            WasmModule::Bytes(ref bytes) => Module::new(&engine, bytes)?,
-            WasmModule::Wat(ref wat) => Module::new(&engine, wat)?,
-            WasmModule::Path(ref path) => Module::from_file(&engine, path)?,
+        let module_result = match wasm_module {
+            WasmModule::Bytes(ref bytes) => Module::new(&engine, bytes),
+            WasmModule::Wat(ref wat) => Module::new(&engine, wat),
+            WasmModule::Path(ref path) => Module::from_file(&engine, path),
         };
 
-        Self::create_imports(
-            &mut linker,
-            Arc::clone(&shared_state),
-            abort,
-            memory,
-            &module,
-        );
+        let module = module_result.map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
+
+        Self::create_imports(&mut linker, Arc::clone(&shared_state), abort, memory)?;
 
         let instance = linker
             .instantiate_async(store.as_context_mut(), &module)
             .await
-            .unwrap();
+            .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
 
         Ok(Self {
             module,
@@ -82,8 +81,7 @@ impl WasmInstance {
         shared_state: Arc<Mutex<State>>,
         abort: Arc<dyn Fn(String) + Send + Sync>,
         memory: Rc<RefCell<Memory>>,
-        module: &Module,
-    ) -> () {
+    ) -> Result<(), WrapperError> {
         let arc_shared_state = Arc::clone(&shared_state);
         let arc_memory = Arc::new(Mutex::new(memory.borrow_mut().to_owned()));
         let mem = arc_memory.clone();
@@ -113,7 +111,7 @@ impl WasmInstance {
                         .copy_from_slice(&state_guard.args);
                 },
             )
-            .unwrap();
+            .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
 
         let arc_shared_state = Arc::clone(&shared_state);
         let arc_memory = Arc::clone(&mem);
@@ -131,7 +129,7 @@ impl WasmInstance {
                     state_ref.invoke.result = Some(res);
                 },
             )
-            .unwrap();
+            .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
 
         let arc_shared_state = Arc::clone(&shared_state);
         let arc_memory = Arc::clone(&mem);
@@ -150,7 +148,7 @@ impl WasmInstance {
                     state_ref.invoke.error = Some(String::from_utf8(res).unwrap());
                 },
             )
-            .unwrap();
+            .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
 
         let abort_clone = Arc::clone(&abort);
         let arc_memory = Arc::clone(&mem);
@@ -185,74 +183,36 @@ impl WasmInstance {
                     ));
                 },
             )
-            .unwrap();
-
-        let arc_shared_state = Arc::clone(&shared_state);
-        let arc_memory = Arc::clone(&mem);
-
-        linker
-            .func_wrap(
-                "wrap",
-                "__wrap_abort",
-                move |mut caller: Caller<'_, u32>,
-                      uri_ptr: u32,
-                      uri_len: u32,
-                      method_ptr: u32,
-                      method_len: u32,
-                      args_ptr: u32,
-                      args_len: u32| {
-                    arc_shared_state.lock().unwrap().invoke.result = None;
-                    arc_shared_state.lock().unwrap().invoke.error = None;
-
-                    let memory_guard = arc_memory.lock().unwrap();
-
-                    let uri = String::from_utf8(
-                        memory_guard.data(caller.as_context())
-                            [uri_ptr as usize..uri_ptr as usize + uri_len as usize]
-                            .to_vec(),
-                    );
-                    let method = String::from_utf8(
-                        memory_guard.data(caller.as_context())
-                            [method_ptr as usize..method_ptr as usize + method_len as usize]
-                            .to_vec(),
-                    )
-                    .unwrap();
-                    let args = memory_guard.data(caller.as_context())
-                        [args_ptr as usize..args_ptr as usize + args_len as usize]
-                        .to_vec();
-
-                        let rt = tokio::runtime::Builder::new_current_thread()
-                        .enable_all()
-                        .build().unwrap();
-
-                        rt.block_on(async {
-                          let res = WasmWrapper::invoke_no_decode(
-                            &WasmModule::Bytes("".to_string().into_bytes()),
-                            &method,
-                            args,
-                        )
-                        .await;
-                        });
-                },
-            )
-            .unwrap();
+            .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
 
         linker
             .define("env", "memory", memory.borrow_mut().to_owned())
-            .unwrap();
+            .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
+
+        Ok(())
     }
 
-    pub async fn call_export(&mut self, name: &str, params: &[Val], results: &mut [Val]) -> () {
-        let export = self
-            .instance
-            .get_export(self.store.as_context_mut(), name)
-            .unwrap();
+    pub async fn call_export(
+        &mut self,
+        name: &str,
+        params: &[Val],
+        results: &mut [Val],
+    ) -> Result<(), WrapperError> {
+        let export = self.instance.get_export(self.store.as_context_mut(), name);
 
-        match export {
+        if export.is_none() {
+            return Err(WrapperError::WasmRuntimeError(format!(
+                "Export {} not found",
+                name
+            )));
+        }
+
+        match export.unwrap() {
             Extern::Func(func) => {
                 func.call_async(self.store.as_context_mut(), params, results)
-                    .await
-                    .unwrap();
+                    .await.map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
+
+                Ok(())
             }
             _ => panic!("Export is not a function"),
         }
