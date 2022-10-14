@@ -573,6 +573,7 @@ export class PolywrapClient implements Client {
 
       // @TODO: Make sure the dependency schemas match what's expected
       // if (options.abi) {
+      //
       // }
 
       if (options.recursive) {

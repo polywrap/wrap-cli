@@ -1,7 +1,17 @@
 import { coreInterfaceUris } from "@polywrap/core-js";
-import { buildUriResolver } from "@polywrap/uri-resolvers-js";
-import { Uri, PolywrapClient } from "../..";
-import { defaultWrappers } from "@polywrap/client-config-builder-js";
+import {
+  buildUriResolver, LegacyPluginsResolver,
+  PackageToWrapperCacheResolver,
+  RecursiveResolver,
+  WrapperCache
+} from "@polywrap/uri-resolvers-js";
+import { PolywrapClient, Uri } from "../..";
+import { ClientConfigBuilder, defaultWrappers } from "@polywrap/client-config-builder-js";
+import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
+import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
+import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
+import { buildWrapper } from "@polywrap/test-env-js";
 
 jest.setTimeout(200000);
 
@@ -12,16 +22,16 @@ describe("sanity", () => {
     expect(client.getRedirects()).toStrictEqual([
       {
         from: new Uri("wrap://ens/sha3.polywrap.eth"),
-        to: new Uri(defaultWrappers.sha3),
+        to: new Uri(defaultWrappers.sha3)
       },
       {
         from: new Uri("wrap://ens/uts46.polywrap.eth"),
-        to: new Uri(defaultWrappers.uts46),
+        to: new Uri(defaultWrappers.uts46)
       },
       {
         from: new Uri("wrap://ens/graph-node.polywrap.eth"),
-        to: new Uri(defaultWrappers.graphNode),
-      },
+        to: new Uri(defaultWrappers.graphNode)
+      }
     ]);
 
     const expectedPlugins = [
@@ -33,7 +43,7 @@ describe("sanity", () => {
       new Uri("wrap://ens/js-logger.polywrap.eth"),
       new Uri("wrap://ens/fs.polywrap.eth"),
       new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-      new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
+      new Uri("wrap://ens/ipfs-resolver.polywrap.eth")
     ];
     const actualPlugins = client.getPlugins().map(x => x.uri);
     expect(expectedPlugins).toStrictEqual(actualPlugins);
@@ -45,13 +55,13 @@ describe("sanity", () => {
           new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
           new Uri("wrap://ens/ens-resolver.polywrap.eth"),
           new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-          new Uri("wrap://ens/http-resolver.polywrap.eth"),
-        ],
+          new Uri("wrap://ens/http-resolver.polywrap.eth")
+        ]
       },
       {
         interface: coreInterfaceUris.logger,
-        implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
-      },
+        implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")]
+      }
     ]);
   });
 
@@ -94,9 +104,9 @@ describe("sanity", () => {
       redirects: [
         {
           from: implementation1Uri,
-          to: implementation2Uri,
-        },
-      ],
+          to: implementation2Uri
+        }
+      ]
     });
 
     const redirects = client.getRedirects();
@@ -104,26 +114,58 @@ describe("sanity", () => {
     expect(redirects).toEqual([
       {
         from: new Uri("wrap://ens/sha3.polywrap.eth"),
-        to: new Uri(defaultWrappers.sha3),
+        to: new Uri(defaultWrappers.sha3)
       },
       {
         from: new Uri("wrap://ens/uts46.polywrap.eth"),
-        to: new Uri(defaultWrappers.uts46),
+        to: new Uri(defaultWrappers.uts46)
       },
       {
         from: new Uri("wrap://ens/graph-node.polywrap.eth"),
-        to: new Uri(defaultWrappers.graphNode),
+        to: new Uri(defaultWrappers.graphNode)
       },
       {
         from: new Uri(implementation1Uri),
-        to: new Uri(implementation2Uri),
-      },
+        to: new Uri(implementation2Uri)
+      }
     ]);
   });
 
-  test.only("validate requested uri is available", async () => {
-    const client = new PolywrapClient()
-    const supportUri = await client.validate("wrap://ens/ipfs.polywrap.eth", {})
-    console.log(supportUri.ok)
+  test("validate requested uri is available", async () => {
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/asyncify`;
+    const wrapperUri = `fs/${wrapperPath}/build`;
+    await buildWrapper(wrapperPath);
+    const builder = new ClientConfigBuilder();
+    builder.setResolver(new RecursiveResolver(
+      new PackageToWrapperCacheResolver(new WrapperCache(), [
+        new LegacyPluginsResolver(),
+        new ExtendableUriResolver()
+      ])
+    ));
+
+    let client = new PolywrapClient(builder.build(), { noDefaults: true });
+    let result = await client.validate(wrapperUri, {});
+
+    expect(result.ok).toBeFalsy();
+    expect(result.error).toBeTruthy();
+
+    builder.addInterfaceImplementation(
+      "wrap://ens/uri-resolver.core.polywrap.eth",
+      "wrap://ens/fs-resolver.polywrap.eth"
+    );
+    builder.addPlugin(
+      "wrap://ens/fs-resolver.polywrap.eth",
+      fileSystemResolverPlugin({})
+    );
+    builder.addPlugin(
+      "wrap://ens/fs.polywrap.eth",
+      fileSystemPlugin({})
+    );
+
+    client = new PolywrapClient(builder.build(), { noDefaults: true });
+    result = await client.validate(wrapperUri, {});
+
+    expect(result.ok).toBeTruthy();
+    expect(result).toBeTruthy();
   });
 });
