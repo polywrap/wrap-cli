@@ -5,6 +5,7 @@
 </a>
 
 <br/>
+<br/>
 
 A command-line interface for building and deploying Polywrap projects.
 
@@ -25,7 +26,7 @@ You can install Cue by following the instructions found [here](https://cuelang.o
 
 ## Installation
 
-Within one project:
+Within a single project:
 
 ```bash
 npm install --save-dev polywrap
@@ -40,7 +41,7 @@ npm install -g polywrap
 Alternatively, `polywrap` can be run without installation:
 
 ```bash
-npx polywrap -v
+npx polywrap
 ```
 
 ## Commands
@@ -81,17 +82,50 @@ This command sets up a basic Polywrap-enabled project based on a pre-defined tem
 
 #### Subcommands:
 
-#### `wasm`
+`polywrap create wasm <language> <name>`
 
 Set up a Polywrap WASM Wrapper or Interface project.
 
-#### `app`
+`polywrap create app <language> <name>`
 
 Set up a NodeJS or React application which uses the Polywrap Client to invoke wrappers.
 
-#### `plugin`
+`polywrap create plugin <language> <name>`
 
 Set up a Polywrap Plugin project used to provide the Polywrap Cient with additional functionality.
+
+#### Arguments
+
+All subcommands share the following arguments:
+
+- `language` (required)
+  The type/language of the created project
+
+- `name` (required)
+  The project name.
+
+#### Options
+
+All subcommands share the following options:
+
+- `-o, --output-dir <path>`
+  Specifies a custom output directory for the created project.
+
+#### Sample usage
+
+```bash
+# Create a wrapper project using assemblyscript called "my-wrapper"
+polywrap create wasm assemblyscript my-wrapper
+
+# Create an interface project using assemblyscript called "my-project"
+polywrap create wasm interface my-interface
+
+# Create a React app project using Typescript called "my-react-app"
+polywrap create app typescript-react my-react-app
+
+# Create a Plugin wrapper project using Typescript called "my-plugin"
+polywrap create plugin typescript my-plugin
+```
 
 ### `deploy | d`
 
@@ -186,7 +220,21 @@ polywrap manifest migrate
   polywrap m m -m custom-manifest.yaml
   ```
 
+## Logging
 
+By default, the Polywrap CLI outputs all of its messages to the console.
+Different levels of output verbosity are supported by using the following options:
+
+- `-v, --verbose`
+  Enables logging of informational messages in addition to standard output.
+
+- `-q, --quiet`
+  Disables ALL logging. Overrides the `--verbose` option.
+
+
+### 
+
+### `-q`
 
 https://docs.polywrap.io/reference/cli/polywrap-cli
 
