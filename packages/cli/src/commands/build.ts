@@ -24,9 +24,8 @@ import {
 
 import path from "path";
 import readline from "readline";
-import { PolywrapClient, Uri } from "@polywrap/client-js";
+import { PolywrapClient, PolywrapCoreClientConfig } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
@@ -37,7 +36,7 @@ const pathStr = intlMsg.commands_build_options_o_path();
 type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
-  clientConfig: Partial<CustomClientConfig<Uri | string>>;
+  clientConfig: PolywrapCoreClientConfig;
   codegen: boolean; // defaults to true
   watch?: boolean;
   strategy: SupportedStrategies;
@@ -140,7 +139,7 @@ async function run(options: BuildCommandOptions) {
   const logger = createLogger({ verbose, quiet });
 
   // Get Client
-  const client = new PolywrapClient(clientConfig);
+  const client = new PolywrapClient(clientConfig, { noDefaults: true });
 
   const project = new PolywrapProject({
     rootDir: path.dirname(manifestFile),

@@ -6,5 +6,5 @@ import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 export interface PolywrapClientConfig<TUri extends Uri | string = Uri | string>
   extends CustomClientConfig<TUri> {
   readonly wrapperCache?: IWrapperCache;
-  readonly tracerConfig: Readonly<Partial<TracerConfig>>;
+  readonly tracerConfig?: Readonly<Partial<TracerConfig>>;
 }

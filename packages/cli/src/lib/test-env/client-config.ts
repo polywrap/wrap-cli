@@ -1,7 +1,9 @@
 import { getTestEnvProviders } from "./providers";
 
-import { PolywrapClientConfig } from "@polywrap/client-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
+import {
+  CustomClientConfig,
+  defaultIpfsProviders,
+} from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
   ethereumPlugin,
@@ -10,8 +12,11 @@ import {
 } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensAddresses } from "@polywrap/test-env-js";
+import { Uri } from "@polywrap/core-js";
 
-export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
+export function getTestEnvClientConfig(): Partial<
+  CustomClientConfig<Uri | string>
+> {
   // TODO: move this into its own package, since it's being used everywhere?
   // maybe have it exported from test-env.
   const providers = getTestEnvProviders();

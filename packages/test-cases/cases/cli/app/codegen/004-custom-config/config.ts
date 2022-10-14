@@ -1,7 +1,6 @@
-import {
-  ClientConfigBuilder,
-  CustomClientConfig,
-} from "@polywrap/client-config-builder-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { PolywrapCoreClientConfig } from "@polywrap/client-js";
+import { MaybeAsync, Uri } from "@polywrap/core-js";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import {
   latestWrapManifestVersion,
@@ -31,15 +30,19 @@ const mockPlugin = () => {
   return PluginPackage.from(new MockPlugin({ val: 0 }), mockPluginManifest);
 };
 
-export function getCustomConfig(): Partial<CustomClientConfig<string>> {
-  return {
-    packages: [
-      {
-        uri: "wrap://ens/mock.eth",
-        package: mockPlugin(),
-      },
-    ],
-  };
+export function buildClientConfig(
+  builder: ClientConfigBuilder
+): MaybeAsync<PolywrapCoreClientConfig<Uri | string>> {
+  return builder
+    .add({
+      packages: [
+        {
+          uri: "wrap://ens/mock.eth",
+          package: mockPlugin(),
+        },
+      ],
+    })
+    .buildDefault();
 }
 
 export const mockPluginManifest: WrapManifest = {

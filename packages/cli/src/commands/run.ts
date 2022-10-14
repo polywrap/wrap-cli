@@ -18,14 +18,13 @@ import {
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
 
-import { Uri } from "@polywrap/client-js";
+import { PolywrapCoreClientConfig } from "@polywrap/client-js";
 import path from "path";
 import yaml from "yaml";
 import fs from "fs";
-import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 
 type WorkflowCommandOptions = {
-  clientConfig: Partial<CustomClientConfig<Uri | string>>;
+  clientConfig: PolywrapCoreClientConfig;
   manifest: string;
   jobs?: string[];
   validationScript?: string;
