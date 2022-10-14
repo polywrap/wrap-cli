@@ -12,7 +12,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@polywrap/msgpack-js": "0.9.1",
+    "@polywrap/msgpack-js": "0.9.2",
     "@types/multer": "1.4.7",
     "dotenv": "8.6.0",
     "express": "4.18.1",
