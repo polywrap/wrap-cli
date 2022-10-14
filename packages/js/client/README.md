@@ -398,3 +398,17 @@ tryResolveUri<TUri extends Uri | string>(options: TryResolveUriOptions<TUri>): P
  */
 loadWrapper(uri: Uri, resolutionContext?: IUriResolutionContext, options?: DeserializeManifestOptions): Promise<Result<Wrapper, Error>>;
 ```
+
+## Development
+
+The Polywrap JavaScript client is open-source. It lives within the [Polywrap toolchain monorepo](https://github.com/polywrap/toolchain/tree/origin/packages/js/client). Contributions from the community are welcomed!
+
+### Build
+```bash
+nvm use && yarn install && yarn build
+```
+
+### Test
+```bash
+yarn test
+```
