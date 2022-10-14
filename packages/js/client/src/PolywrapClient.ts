@@ -10,6 +10,7 @@ import {
   InterfaceImplementations,
   InvokeOptions,
   InvokerOptions,
+  ValidateOptions,
   PluginRegistration,
   QueryOptions,
   SubscribeOptions,
@@ -37,6 +38,7 @@ import {
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
   DeserializeManifestOptions,
+  ImportedModuleDefinition,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
@@ -540,6 +542,49 @@ export class PolywrapClient implements Client {
     } else {
       return ResultOk(uriPackageOrWrapper.wrapper);
     }
+  }
+
+  @Tracer.traceMethod("PolywrapClient: validateConfig")
+  public async validate<TUri extends Uri | string>(
+    uri: TUri,
+    options: ValidateOptions
+  ): Promise<Result<boolean, Error>> {
+    // Make sure we can resolve wrapper
+    const wrapper = await this.loadWrapper(Uri.from(uri));
+    if (!wrapper.ok) {
+      if (wrapper.error instanceof UriResolverError) {
+        const errorMessage = `Uri resolver error: ${wrapper.error.message}`;
+        return ResultErr(new Error(errorMessage));
+      }
+      return ResultErr(new Error(`Uri not found: ${wrapper.error?.message}`));
+    }
+
+    // Make sure we can resolve all dependencies
+    const manifest = await this.getManifest(uri);
+    if (manifest.ok) {
+      const importUri = (importedModuleType: ImportedModuleDefinition) => {
+        return this.tryResolveUri({ uri: importedModuleType.uri });
+      };
+
+      const abi = manifest.value.abi;
+      const externalUris = abi.importedModuleTypes || [];
+      const resolvedUris = await Promise.all(externalUris.map(importUri));
+      if (resolvedUris.some((w) => !w.ok)) return ResultOk(false);
+
+      // @TODO: Make sure the dependency schemas match what's expected
+      // if (options.abi) {
+      // }
+
+      if (options.recursive) {
+        for (const externalUri of externalUris) {
+          await this.validate(externalUri.uri, options);
+        }
+      }
+
+      return ResultOk(true);
+    }
+
+    return ResultOk(false);
   }
 
   @Tracer.traceMethod("PolywrapClient: validateConfig")

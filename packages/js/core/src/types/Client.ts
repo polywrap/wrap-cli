@@ -36,6 +36,11 @@ export interface GetImplementationsOptions {
   applyRedirects?: boolean;
 }
 
+export interface ValidateOptions {
+  abi?: boolean;
+  recursive?: boolean;
+}
+
 export interface Client
   extends Invoker,
     QueryHandler,
@@ -73,4 +78,9 @@ export interface Client
     uri: TUri,
     options: GetImplementationsOptions
   ): Result<TUri[], Error>;
+
+  validate<TUri extends Uri | string>(
+    uri: TUri,
+    options?: ValidateOptions
+  ): Promise<Result<boolean, Error>>;
 }

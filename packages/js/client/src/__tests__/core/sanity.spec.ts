@@ -120,4 +120,10 @@ describe("sanity", () => {
       },
     ]);
   });
+
+  test.only("validate requested uri is available", async () => {
+    const client = new PolywrapClient()
+    const supportUri = await client.validate("wrap://ens/ipfs.polywrap.eth", {})
+    console.log(supportUri.ok)
+  });
 });
