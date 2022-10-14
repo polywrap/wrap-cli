@@ -39,7 +39,7 @@ describe("wasm-as test cases", () => {
     await TestCases.runAsyncifyTest(client, wrapperUri);
   });
 
-  it.only("subinvoke", async() => {
+  it("subinvoke", async() => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-subinvoke/invoke`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
