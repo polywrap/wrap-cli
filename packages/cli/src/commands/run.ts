@@ -15,6 +15,7 @@ import {
   WorkflowOutput,
   defaultWorkflowManifest,
   parseManifestFileOption,
+  parseLogFileOption,
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
 
@@ -31,6 +32,7 @@ type WorkflowCommandOptions = {
   outputFile?: string;
   verbose?: boolean;
   quiet?: boolean;
+  logFile?: string;
 };
 
 const defaultManifestStr = defaultWorkflowManifest.join(" | ");
@@ -62,6 +64,10 @@ export const run: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (options) => {
         await _run({
           ...options,
@@ -73,14 +79,23 @@ export const run: Command = {
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile)
             : undefined,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
 };
 
 const _run = async (options: WorkflowCommandOptions) => {
-  const { manifest, clientConfig, outputFile, verbose, quiet, jobs } = options;
-  const logger = createLogger({ verbose, quiet });
+  const {
+    manifest,
+    clientConfig,
+    outputFile,
+    verbose,
+    quiet,
+    jobs,
+    logFile,
+  } = options;
+  const logger = createLogger({ verbose, quiet, logFile });
   const client = new PolywrapClient(clientConfig);
 
   const manifestPath = path.resolve(manifest);

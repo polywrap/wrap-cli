@@ -19,6 +19,7 @@
   "commands_build_options_w": "Automatically rebuild when changes are made (default: false)",
   "commands_build_options_s": "Strategy to use for building the wrapper",
   "commands_build_options_s_strategy": "strategy",
+  "commands_build_options_l": "Log file to save console output to",
   "commands_infra_description": "Modular Infrastructure-As-Code Orchestrator",
   "commands_infra_actions_subtitle": "Infra allows you to execute the following commands:",
   "commands_infra_options_options": "options",
