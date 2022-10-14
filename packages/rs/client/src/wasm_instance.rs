@@ -2,12 +2,14 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 
+use tokio::runtime::Runtime;
 use wasmtime::*;
 
 use crate::error::WrapperError;
 use crate::utils::index_of_array;
 
 pub struct WasmInstance {
+    rt: Arc<Runtime>,
     instance: Instance,
     pub shared_state: Arc<Mutex<State>>,
     store: Store<u32>,
@@ -34,11 +36,17 @@ pub struct State {
 }
 
 impl WasmInstance {
-    pub async fn new(
+    pub fn new(
         wasm_module: &WasmModule,
         shared_state: Arc<Mutex<State>>,
         abort: Arc<dyn Fn(String) + Send + Sync>,
     ) -> Result<Self, WrapperError> {
+        let rt = Arc::new(
+            tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .unwrap(),
+        );
         let mut config = Config::new();
         config.async_support(true);
 
@@ -58,21 +66,22 @@ impl WasmInstance {
             .serialize()
             .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
 
-        let memory = Rc::new(RefCell::new(
-          WasmInstance::create_memory(module_bytes.as_ref(), &mut store)?
-        ));
+        let memory = Rc::new(RefCell::new(WasmInstance::create_memory(
+            module_bytes.as_ref(),
+            &mut store,
+        )?));
 
         Self::create_imports(&mut linker, Arc::clone(&shared_state), abort, memory)?;
 
-        let instance = linker
-            .instantiate_async(store.as_context_mut(), &module)
-            .await
+        let instance = rt
+            .block_on(linker.instantiate_async(store.as_context_mut(), &module))
             .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
 
         Ok(Self {
             module,
             shared_state: shared_state,
             instance: instance,
+            rt: Arc::clone(&rt),
             store,
         })
     }
@@ -190,10 +199,24 @@ impl WasmInstance {
             .define("env", "memory", memory.borrow_mut().to_owned())
             .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
 
+        linker
+            .func_wrap0_async("wrap", "__wrap_async", |_| {
+                Box::new(async move {
+                    println!("async");
+                    let resp = reqwest::get("https://httpbin.org/ip")
+                        .await
+                        .unwrap()
+                        .text()
+                        .await
+                        .unwrap();
+                    println!("{}", resp);
+                })
+            })
+            .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
         Ok(())
     }
 
-    pub async fn call_export(
+    pub fn call_export(
         &mut self,
         name: &str,
         params: &[Val],
@@ -210,8 +233,9 @@ impl WasmInstance {
 
         match export.unwrap() {
             Extern::Func(func) => {
-                func.call_async(self.store.as_context_mut(), params, results)
-                    .await.map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
+                self.rt
+                    .block_on(func.call_async(self.store.as_context_mut(), params, results))
+                    .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
 
                 Ok(())
             }
@@ -220,36 +244,26 @@ impl WasmInstance {
     }
 
     fn create_memory(module_bytes: &[u8], store: &mut Store<u32>) -> Result<Memory, WrapperError> {
-      const ENV_MEMORY_IMPORTS_SIGNATURE: [u8; 11] = [
-        0x65,
-        0x6e,
-        0x76,
-        0x06,
-        0x6d,
-        0x65,
-        0x6d,
-        0x6f,
-        0x72,
-        0x79,
-        0x02,
-      ];
-  
-      let sig_idx = index_of_array(module_bytes, &ENV_MEMORY_IMPORTS_SIGNATURE);
+        const ENV_MEMORY_IMPORTS_SIGNATURE: [u8; 11] = [
+            0x65, 0x6e, 0x76, 0x06, 0x6d, 0x65, 0x6d, 0x6f, 0x72, 0x79, 0x02,
+        ];
 
-      if sig_idx.is_none() {
-        return Err(WrapperError::ModuleReadError(format!(
-          r#"Unable to find Wasm memory import section.
+        let sig_idx = index_of_array(module_bytes, &ENV_MEMORY_IMPORTS_SIGNATURE);
+
+        if sig_idx.is_none() {
+            return Err(WrapperError::ModuleReadError(format!(
+                r#"Unable to find Wasm memory import section.
             Modules must import memory from the "env" module's
             "memory" field like so:
             (import "env" "memory" (memory (;0;) #))"#
-        )));
-      }
-  
-      let memory_initial_limits = module_bytes[sig_idx.unwrap() + ENV_MEMORY_IMPORTS_SIGNATURE.len() + 1];
-      let memory_type = MemoryType::new(memory_initial_limits.into(), Option::None);
+            )));
+        }
 
-      Memory::new(store.as_context_mut(), memory_type)
-                .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))
+        let memory_initial_limits =
+            module_bytes[sig_idx.unwrap() + ENV_MEMORY_IMPORTS_SIGNATURE.len() + 1];
+        let memory_type = MemoryType::new(memory_initial_limits.into(), Option::None);
 
+        Memory::new(store.as_context_mut(), memory_type)
+            .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))
     }
 }

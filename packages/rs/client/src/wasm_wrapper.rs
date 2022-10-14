@@ -26,16 +26,16 @@ impl<FReader: FileReader + Sized> WasmWrapper<FReader> {
             file_reader: config.file_reader,
         }
     }
-    pub async fn invoke<T>(&mut self, method: &str, args: &Vec<u8>) -> Result<T, WrapperError>
+    pub fn invoke<T>(&mut self, method: &str, args: &Vec<u8>) -> Result<T, WrapperError>
     where
         T: DeserializeOwned + std::fmt::Debug,
     {
-        let result = self.invoke_no_decode(method, args).await?;
+        let result = self.invoke_no_decode(method, args)?;
 
         Ok(rmp_serde::decode::from_slice::<T>(&result)?)
     }
 
-    pub async fn invoke_no_decode(
+    pub fn invoke_no_decode(
         &mut self,
         method: &str,
         args: &Vec<u8>,
@@ -56,13 +56,11 @@ impl<FReader: FileReader + Sized> WasmWrapper<FReader> {
         let wasm_module = self.get_wasm_module()?;
 
         let mut wasm_instance = WasmInstance::new(wasm_module, Arc::clone(&state), abort.clone())
-            .await
             .unwrap();
 
         let mut result: [Val; 1] = [Val::I32(0)];
         wasm_instance
-            .call_export("_wrap_invoke", params, &mut result)
-            .await?;
+            .call_export("_wrap_invoke", params, &mut result)?;
 
         let state_guard = state.lock().unwrap();
 
@@ -101,21 +99,23 @@ impl<FReader: FileReader + Sized> WasmWrapper<FReader> {
     }
 }
 
-#[tokio::test]
-pub async fn invoke_test() {
-    let mut wasm_wrapper = WasmWrapper::new(WasmWrapperConfig {
-        file_reader: crate::file_reader::BaseFileReader {},
-    });
-    
-    let invoke_result = wasm_wrapper.invoke::<String>(
-        "method",
-        &vec![
-            130, 164, 97, 114, 103, 49, 179, 49, 50, 51, 52, 46, 53, 54, 55, 56, 57, 49, 50, 51,
-            52, 53, 54, 55, 56, 57, 163, 111, 98, 106, 129, 165, 112, 114, 111, 112, 49, 179, 57,
-            56, 46, 55, 54, 53, 52, 51, 50, 49, 57, 56, 55, 54, 53, 52, 51, 50, 49,
-        ],
-    )
-    .await;
-
-    assert_eq!(invoke_result.unwrap(), "121932.631356500531347203169112635269");
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn invoke_test() {
+      let mut wasm_wrapper = crate::wasm_wrapper::WasmWrapper::new(crate::wasm_wrapper::WasmWrapperConfig {
+          file_reader: crate::file_reader::BaseFileReader {},
+      });
+      
+      let invoke_result = wasm_wrapper.invoke::<String>(
+          "method",
+          &vec![
+              130, 164, 97, 114, 103, 49, 179, 49, 50, 51, 52, 46, 53, 54, 55, 56, 57, 49, 50, 51,
+              52, 53, 54, 55, 56, 57, 163, 111, 98, 106, 129, 165, 112, 114, 111, 112, 49, 179, 57,
+              56, 46, 55, 54, 53, 52, 51, 50, 49, 57, 56, 55, 54, 53, 52, 51, 50, 49,
+          ],
+      );
+  
+      assert_eq!(invoke_result.unwrap(), "121932.631356500531347203169112635269");
+  }
 }
