@@ -191,6 +191,22 @@ describe("e2e tests for build command", () => {
     testBuildOutput(testCaseDir, outputDir);
   });
 
+  it("Should write log to file", async () => {
+    const testCaseDir = getTestCaseDir(0);
+    const logFilePath = "./log-file.txt";
+    const logFileAbsPath = path.join(testCaseDir, logFilePath);
+    const { exitCode: code } = await runCLI({
+      args: ["build", "-v", "-l", logFilePath],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(code).toEqual(0);
+    expect(fs.existsSync(logFileAbsPath)).toBeTruthy();
+    expect(fs.statSync(logFileAbsPath).size).toBeGreaterThan(0);
+    fs.unlinkSync(logFileAbsPath);
+  });
+
   describe("Image strategy", () => {
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
