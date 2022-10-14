@@ -63,7 +63,7 @@ export class PolywrapClient implements Client {
 
       this._config = !options?.noDefaults
         ? this.buildConfigFromPolywrapClientConfig(
-            config as PolywrapClientConfig
+            config as PolywrapClientConfig | undefined
           )
         : this.buildConfigFromPolywrapCoreClientConfig(
             config as PolywrapCoreClientConfig
