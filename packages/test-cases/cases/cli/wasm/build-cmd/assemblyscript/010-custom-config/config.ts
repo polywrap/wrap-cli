@@ -1,9 +1,6 @@
 import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
-import {
-  latestWrapManifestVersion,
-  WrapManifest,
-} from "@polywrap/wrap-manifest-types-js";
+import { latestWrapManifestVersion } from "@polywrap/wrap-manifest-types-js";
 
 interface Config extends Record<string, unknown> {
   val: number;
@@ -117,9 +114,8 @@ const mockPlugin = () => {
           imports: [],
           interfaces: [],
         },
-      },
-      implements: [],
-    } as WrapManifest
+      }
+    }
   );
 };
 

@@ -1,9 +1,7 @@
 import { CustomClientConfig } from "@polywrap/client-config-builder-js";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
-import {
-  latestWrapManifestVersion,
-  WrapManifest,
-} from "@polywrap/wrap-manifest-types-js";
+import { latestWrapManifestVersion } from "@polywrap/wrap-manifest-types-js";
+import { parseSchema } from "@polywrap/schema-parse";
 
 interface Config extends Record<string, unknown> {
   val: number;
@@ -29,16 +27,14 @@ const mockPlugin = () => {
     name: "mock",
     type: "plugin",
     version: latestWrapManifestVersion,
-    schema: `
-        type Module {
-          getData: Int!
-          setData(value: Int!): Boolean!
-          deployContract: String!
-        }
-      `,
-    abi: [],
-    implements: [],
-  } as WrapManifest);
+    abi: parseSchema(`
+      type Module {
+        getData: Int!
+        setData(value: Int!): Boolean!
+        deployContract: String!
+      }
+    `)
+  });
 };
 
 export function getCustomConfig(): Partial<CustomClientConfig<string>> {

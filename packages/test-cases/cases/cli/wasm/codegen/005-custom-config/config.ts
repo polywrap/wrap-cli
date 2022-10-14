@@ -3,7 +3,6 @@ import { IWrapPackage } from "@polywrap/core-js";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import {
   latestWrapManifestVersion,
-  WrapManifest,
   WrapAbi,
 } from "@polywrap/wrap-manifest-types-js";
 
@@ -32,7 +31,7 @@ const mockPlugin = (): IWrapPackage => {
     type: "plugin",
     version: latestWrapManifestVersion,
     abi,
-  } as WrapManifest);
+  });
 };
 
 export function getCustomConfig(): Partial<CustomClientConfig<string>> {
