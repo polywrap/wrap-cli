@@ -45,15 +45,12 @@ export class PolywrapClient implements Client {
     config?: Partial<PolywrapClientConfig>,
     options?: { noDefaults?: false }
   );
-  constructor(
-    config: Partial<PolywrapCoreClientConfig>,
-    options: { noDefaults: true }
-  );
+  constructor(config: PolywrapCoreClientConfig, options: { noDefaults: true });
   constructor(
     config:
       | Partial<PolywrapClientConfig>
       | undefined
-      | Partial<PolywrapCoreClientConfig>,
+      | PolywrapCoreClientConfig,
     options?: { noDefaults?: boolean }
   ) {
     try {
