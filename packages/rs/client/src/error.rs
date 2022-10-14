@@ -2,8 +2,8 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum WrapperError {
-  #[error("Wrapper does not contain a wasm module")]
-  ModuleReadError,
+  #[error("`{0}`")]
+  ModuleReadError(String),
   #[error("`{0}`")]
   FileReadError(#[from] std::io::Error),
   #[error("Invocation error: `{0}`")]

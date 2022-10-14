@@ -5,6 +5,7 @@ use std::sync::{Arc, Mutex};
 use wasmtime::*;
 
 use crate::error::WrapperError;
+use crate::utils::index_of_array;
 
 pub struct WasmInstance {
     instance: Instance,
@@ -46,13 +47,6 @@ impl WasmInstance {
         let mut linker = wasmtime::Linker::new(&engine);
 
         let mut store = Store::new(&engine, 4);
-
-        let memory_type = MemoryType::new(1, Option::None);
-        let memory = Rc::new(RefCell::new(
-            Memory::new(store.as_context_mut(), memory_type)
-                .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?,
-        ));
-
         let module_result = match wasm_module {
             WasmModule::Bytes(ref bytes) => Module::new(&engine, bytes),
             WasmModule::Wat(ref wat) => Module::new(&engine, wat),
@@ -60,6 +54,13 @@ impl WasmInstance {
         };
 
         let module = module_result.map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
+        let module_bytes = module
+            .serialize()
+            .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
+
+        let memory = Rc::new(RefCell::new(
+          WasmInstance::create_memory(module_bytes.as_ref(), &mut store)?
+        ));
 
         Self::create_imports(&mut linker, Arc::clone(&shared_state), abort, memory)?;
 
@@ -216,5 +217,39 @@ impl WasmInstance {
             }
             _ => panic!("Export is not a function"),
         }
+    }
+
+    fn create_memory(module_bytes: &[u8], store: &mut Store<u32>) -> Result<Memory, WrapperError> {
+      const ENV_MEMORY_IMPORTS_SIGNATURE: [u8; 11] = [
+        0x65,
+        0x6e,
+        0x76,
+        0x06,
+        0x6d,
+        0x65,
+        0x6d,
+        0x6f,
+        0x72,
+        0x79,
+        0x02,
+      ];
+  
+      let sig_idx = index_of_array(module_bytes, &ENV_MEMORY_IMPORTS_SIGNATURE);
+
+      if sig_idx.is_none() {
+        return Err(WrapperError::ModuleReadError(format!(
+          r#"Unable to find Wasm memory import section.
+            Modules must import memory from the "env" module's
+            "memory" field like so:
+            (import "env" "memory" (memory (;0;) #))"#
+        )));
+      }
+  
+      let memory_initial_limits = module_bytes[sig_idx.unwrap() + ENV_MEMORY_IMPORTS_SIGNATURE.len() + 1];
+      let memory_type = MemoryType::new(memory_initial_limits.into(), Option::None);
+
+      Memory::new(store.as_context_mut(), memory_type)
+                .map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))
+
     }
 }

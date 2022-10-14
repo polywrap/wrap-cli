@@ -10,8 +10,6 @@ pub fn index_of_array(source: &[u8], search: &[u8]) -> Option<usize> {
       start -= 1;
     }
 
-    let d = Value::from(5);
-
     let idx = iterator.position(|&r| r == search[0]);
 
     if idx.is_none() {
@@ -19,17 +17,18 @@ pub fn index_of_array(source: &[u8], search: &[u8]) -> Option<usize> {
       continue;
     }
 
-    let sub_buff = &source.clone()[idx.unwrap()..idx.unwrap() + search.len()];
+    let sub_buff = &source[idx.unwrap()..idx.unwrap() + search.len()];
 
     let mut retry = false;
-    let mut i = 0;
 
-    while i < search.len() && !retry {
+    for i in 1..search.len() {
+      if !retry {
+        break;
+      }
+
       if sub_buff[i] != search[i] {
         retry = true;
       }
-
-      i += 1;
     }
 
     if retry {
