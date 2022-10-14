@@ -10,7 +10,6 @@ import { ClientConfigBuilder, defaultWrappers } from "@polywrap/client-config-bu
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
-import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { buildWrapper } from "@polywrap/test-env-js";
 
 jest.setTimeout(200000);
@@ -131,8 +130,8 @@ describe("sanity", () => {
     ]);
   });
 
-  test("validate requested uri is available", async () => {
-    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/asyncify`;
+  test.only("validate requested uri is available", async () => {
+    const wrapperPath = `${__dirname}/../utils/validate/wrapper-a`;
     const wrapperUri = `fs/${wrapperPath}/build`;
     await buildWrapper(wrapperPath);
     const builder = new ClientConfigBuilder();
@@ -167,5 +166,9 @@ describe("sanity", () => {
 
     expect(result.ok).toBeTruthy();
     expect(result).toBeTruthy();
+
+
+    result = await client.validate(wrapperUri, {})
+
   });
 });

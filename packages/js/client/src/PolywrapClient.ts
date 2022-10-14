@@ -559,22 +559,34 @@ export class PolywrapClient implements Client {
       return ResultErr(new Error(`Uri not found: ${wrapper.error?.message}`));
     }
 
-    // Make sure we can resolve all dependencies
     const manifest = await this.getManifest(uri);
     if (manifest.ok) {
+      const abi = manifest.value.abi;
+      const externalUris = abi.importedModuleTypes || [];
+
       const importUri = (importedModuleType: ImportedModuleDefinition) => {
         return this.tryResolveUri({ uri: importedModuleType.uri });
       };
-
-      const abi = manifest.value.abi;
-      const externalUris = abi.importedModuleTypes || [];
       const resolvedUris = await Promise.all(externalUris.map(importUri));
-      if (resolvedUris.some((w) => !w.ok)) return ResultOk(false);
+      const notFoundUri = resolvedUris.find((w) => !w.ok);
+      if (notFoundUri) {
+        return ResultErr((notFoundUri as { error: Error }).error);
+      }
 
-      // @TODO: Make sure the dependency schemas match what's expected
-      // if (options.abi) {
-      //
-      // }
+      if (options.abi) {
+        for (const externalUri of externalUris) {
+          const manifest = await this.getManifest(externalUri.uri);
+          if (manifest.ok) {
+            const abi = externalUris.find((uri) => externalUri === uri);
+            if (!(JSON.stringify(manifest.value.abi) === JSON.stringify(abi))) {
+              const message = `ABI from Uri: ${uri} is not compatible with Uri: ${uri}`;
+              return ResultErr(new Error(message));
+            }
+            continue;
+          }
+          return ResultErr((manifest as { error: Error }).error);
+        }
+      }
 
       if (options.recursive) {
         for (const externalUri of externalUris) {
@@ -585,7 +597,7 @@ export class PolywrapClient implements Client {
       return ResultOk(true);
     }
 
-    return ResultOk(false);
+    return ResultErr((manifest as { error: Error }).error);
   }
 
   @Tracer.traceMethod("PolywrapClient: validateConfig")

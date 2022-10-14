@@ -1,0 +1,5 @@
+#import { Module } from "ens/foo.eth"
+
+type Module {
+    foo(bar: Int): String!
+}
