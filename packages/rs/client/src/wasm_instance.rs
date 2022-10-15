@@ -28,6 +28,7 @@ pub struct InvokeState {
     pub error: Option<String>,
 }
 
+#[repr(C)]
 #[derive(Default)]
 pub struct State {
     pub method: Vec<u8>,
