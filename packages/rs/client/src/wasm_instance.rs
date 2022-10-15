@@ -6,6 +6,7 @@ use tokio::runtime::Runtime;
 use wasmtime::*;
 
 use crate::error::WrapperError;
+use crate::state::State;
 use crate::utils::index_of_array;
 
 pub struct WasmInstance {
@@ -16,30 +17,9 @@ pub struct WasmInstance {
     pub module: Module,
 }
 
-pub enum WasmModule {
-    Bytes(Vec<u8>),
-    Wat(String),
-    Path(String),
-}
-
-#[derive(Default)]
-pub struct InvokeState {
-    pub result: Option<Vec<u8>>,
-    pub error: Option<String>,
-}
-
-#[repr(C)]
-#[derive(Default)]
-pub struct State {
-    pub method: Vec<u8>,
-    pub args: Vec<u8>,
-    pub invoke: InvokeState,
-}
-
 impl WasmInstance {
     pub fn new(
-        wasm_module: &WasmModule,
-        shared_state: Arc<Mutex<State>>,
+        wasm_module: &[u8],
         abort: Arc<dyn Fn(String) + Send + Sync>,
     ) -> Result<Self, WrapperError> {
         let rt = Arc::new(
@@ -56,11 +36,7 @@ impl WasmInstance {
         let mut linker = wasmtime::Linker::new(&engine);
 
         let mut store = Store::new(&engine, 4);
-        let module_result = match wasm_module {
-            WasmModule::Bytes(ref bytes) => Module::new(&engine, bytes),
-            WasmModule::Wat(ref wat) => Module::new(&engine, wat),
-            WasmModule::Path(ref path) => Module::from_file(&engine, path),
-        };
+        let module_result = Module::new(&engine, wasm_module);
 
         let module = module_result.map_err(|e| WrapperError::WasmRuntimeError(e.to_string()))?;
         let module_bytes = module
@@ -71,6 +47,8 @@ impl WasmInstance {
             module_bytes.as_ref(),
             &mut store,
         )?));
+
+        let shared_state = Arc::new(Mutex::new(State::default()));
 
         Self::create_imports(&mut linker, Arc::clone(&shared_state), abort, memory)?;
 
