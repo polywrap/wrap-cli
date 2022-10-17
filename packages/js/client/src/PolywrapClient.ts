@@ -566,7 +566,7 @@ export class PolywrapClient implements Client {
       };
       const resolvedModules = await Promise.all(importedModules.map(importUri));
       const moduleNotFound = resolvedModules.find(
-        (w: { ok: boolean }) => !w.ok
+        (m: { ok: boolean }) => !m.ok
       );
 
       if (moduleNotFound) {

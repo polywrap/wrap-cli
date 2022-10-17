@@ -174,8 +174,8 @@ describe("sanity", () => {
 
     builder.setResolver(new RecursiveResolver(
       new PackageToWrapperCacheResolver(new WrapperCache(), [
-        new LegacyPluginsResolver(),
         new LegacyRedirectsResolver(),
+        new LegacyPluginsResolver(),
         new ExtendableUriResolver()
       ])
     ));
@@ -273,7 +273,7 @@ describe("sanity", () => {
 
     const modifiedFooPath = `${__dirname}/../utils/validate/wrapper-c`;
 
-    builder.addUriRedirect("wrap://ens/testnet/foo.eth", `wrap://fs/${modifiedFooPath}/build`)
+    builder.addUriRedirect("wrap://ens/foo.eth", `wrap://fs/${modifiedFooPath}/build`)
 
     client = new PolywrapClient(builder.build(), { noDefaults: true });
     result = await client.validate(greetingUri, {
