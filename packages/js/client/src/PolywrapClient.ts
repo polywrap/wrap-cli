@@ -552,23 +552,21 @@ export class PolywrapClient implements Client {
     // Make sure we can resolve wrapper
     const wrapper = await this.loadWrapper(Uri.from(uri));
     if (!wrapper.ok) {
-      if (wrapper.error instanceof UriResolverError) {
-        const errorMessage = `Uri resolver error: ${wrapper.error.message}`;
-        return ResultErr(new Error(errorMessage));
-      }
-      return ResultErr(new Error(`Uri not found: ${wrapper.error?.message}`));
+      return ResultErr(new Error(wrapper.error?.message));
     }
 
     const manifest = await this.getManifest(uri);
     if (manifest.ok) {
       const abi = manifest.value.abi;
-      const externalUris = abi.importedModuleTypes || [];
+      const externalUris: ImportedModuleDefinition[] =
+        abi.importedModuleTypes || [];
 
       const importUri = (importedModuleType: ImportedModuleDefinition) => {
         return this.tryResolveUri({ uri: importedModuleType.uri });
       };
       const resolvedUris = await Promise.all(externalUris.map(importUri));
-      const notFoundUri = resolvedUris.find((w) => !w.ok);
+      const notFoundUri = resolvedUris.find((w: { ok: boolean }) => !w.ok);
+
       if (notFoundUri) {
         return ResultErr((notFoundUri as { error: Error }).error);
       }
@@ -589,11 +587,15 @@ export class PolywrapClient implements Client {
       }
 
       if (options.recursive) {
-        for (const externalUri of externalUris) {
-          await this.validate(externalUri.uri, options);
+        const validateExternalUris = externalUris.map(({ uri }) =>
+          this.validate(uri, options)
+        );
+        const invalidUris = await Promise.all(validateExternalUris);
+        const invalidUri = invalidUris.find(({ ok }) => !ok);
+        if (invalidUri) {
+          return ResultErr((invalidUri as { error: Error }).error);
         }
       }
-
       return ResultOk(true);
     }
 

@@ -6,13 +6,23 @@ import {
   WrapperCache
 } from "@polywrap/uri-resolvers-js";
 import { PolywrapClient, Uri } from "../..";
-import { ClientConfigBuilder, defaultWrappers } from "@polywrap/client-config-builder-js";
+import {ClientConfigBuilder, defaultIpfsProviders, defaultWrappers} from "@polywrap/client-config-builder-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
-import { buildWrapper } from "@polywrap/test-env-js";
+import {
+  buildWrapper,
+  ensAddresses,
+  initTestEnvironment,
+  providers,
+  runCLI
+} from "@polywrap/test-env-js";
+import {ensResolverPlugin} from "@polywrap/ens-resolver-plugin-js";
+import {Connection, Connections, ethereumPlugin} from "@polywrap/ethereum-plugin-js";
+import {ipfsPlugin} from "@polywrap/ipfs-plugin-js";
+import {ipfsResolverPlugin} from "@polywrap/ipfs-resolver-plugin-js";
 
-jest.setTimeout(200000);
+jest.setTimeout(20000000);
 
 describe("sanity", () => {
   test("default client config", () => {
@@ -131,10 +141,37 @@ describe("sanity", () => {
   });
 
   test.only("validate requested uri is available", async () => {
-    const wrapperPath = `${__dirname}/../utils/validate/wrapper-a`;
-    const wrapperUri = `fs/${wrapperPath}/build`;
-    await buildWrapper(wrapperPath);
+    const fooPath = `${__dirname}/../utils/validate/wrapper-a`;
+    const fooUri = `fs/${fooPath}/build`;
+    const greetingPath = `${__dirname}/../utils/validate/wrapper-b`;
+    const greetingUri = `fs/${greetingPath}/build`;
+
+    // process.env = {
+    //   ...process.env,
+    //   IPFS_GATEWAY_URI: providers.ipfs,
+    //   ENS_REG_ADDR: ensAddresses.ensAddress,
+    //   ENS_REGISTRAR_ADDR: ensAddresses.registrarAddress,
+    //   ENS_RESOLVER_ADDR: ensAddresses.resolverAddress,
+    // };
+    // await initTestEnvironment();
+    // await buildWrapper(fooPath);
+    // await buildWrapper(greetingPath);
+    //
+    // const { exitCode: code } = await runCLI(
+    //   {
+    //     args: ["deploy"],
+    //     cwd: greetingPath,
+    //     cli: `${__dirname}/../../../../cli/bin/polywrap`,
+    //     env: process.env as Record<string, string>
+    //   },
+    // );
+    //
+    // if (code !== 0) {
+    //   fail("Wrapper could not be deployed")
+    // }
+
     const builder = new ClientConfigBuilder();
+
     builder.setResolver(new RecursiveResolver(
       new PackageToWrapperCacheResolver(new WrapperCache(), [
         new LegacyPluginsResolver(),
@@ -143,10 +180,12 @@ describe("sanity", () => {
     ));
 
     let client = new PolywrapClient(builder.build(), { noDefaults: true });
-    let result = await client.validate(wrapperUri, {});
+    let result = await client.validate(fooUri, {});
 
     expect(result.ok).toBeFalsy();
-    expect(result.error).toBeTruthy();
+    let resultError = (result as { error: Error }).error;
+    expect(resultError).toBeTruthy();
+    expect(resultError.message).toContain("Error resolving URI");
 
     builder.addInterfaceImplementation(
       "wrap://ens/uri-resolver.core.polywrap.eth",
@@ -162,13 +201,81 @@ describe("sanity", () => {
     );
 
     client = new PolywrapClient(builder.build(), { noDefaults: true });
-    result = await client.validate(wrapperUri, {});
+    result = await client.validate(fooUri, {});
 
     expect(result.ok).toBeTruthy();
-    expect(result).toBeTruthy();
+
+    result = await client.validate(greetingUri, {
+      recursive: true
+    })
+    resultError = (result as { error: Error }).error;
+    expect(result.ok).toBeFalsy();
+    expect(resultError).toBeTruthy();
+    expect(resultError.message).toContain("Error resolving URI");
+
+    builder.addPlugin(
+      "wrap://ens/ethereum.polywrap.eth",
+      ethereumPlugin({
+        connections: new Connections({
+          networks: {
+            testnet: new Connection({
+              provider: providers.ethereum
+            }),
+            goerli: new Connection({
+              provider:
+                "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+            })
+          },
+          defaultNetwork: "testnet"
+        })
+      })
+  )
+
+    builder.addPlugin(
+      "wrap://ens/ipfs.polywrap.eth",
+      ipfsPlugin({})
+    )
+
+    builder.addEnv("wrap://ens/ipfs.polywrap.eth", {
+      provider: providers.ipfs,
+      fallbackProviders: defaultIpfsProviders
+    })
+
+    builder.addUriRedirect("wrap://ens/sha3.polywrap.eth", "wrap://ens/goerli/sha3.wrappers.eth")
+    builder.addUriRedirect("wrap://ens/uts46.polywrap.eth", "wrap://ens/goerli/uts46-lite.wrappers.eth")
+    builder.addPlugin(
+      "wrap://ens/ipfs-resolver.polywrap.eth",
+      ipfsResolverPlugin({})
+    )
+
+    builder.addPlugin(
+      "wrap://ens/ens-resolver.polywrap.eth",
+      ensResolverPlugin({
+        addresses: {
+          testnet: ensAddresses.ensAddress
+        }
+      })
+    )
+
+    builder.addInterfaceImplementation(
+      "wrap://ens/uri-resolver.core.polywrap.eth",
+      "wrap://ens/ens-resolver.polywrap.eth",
+    )
+    builder.addInterfaceImplementation(
+      "wrap://ens/uri-resolver.core.polywrap.eth",
+      "wrap://ens/ipfs-resolver.polywrap.eth",
+    )
+
+    client = new PolywrapClient(builder.build(), { noDefaults: true });
+
+    result = await client.validate(greetingUri, {
+      recursive: true
+    })
+
+    expect(result.ok).toBeTruthy()
 
 
-    result = await client.validate(wrapperUri, {})
-
+    // result = await client.validate(greetingUri, {})
+    // expect(result.ok).toBeTruthy();
   });
 });

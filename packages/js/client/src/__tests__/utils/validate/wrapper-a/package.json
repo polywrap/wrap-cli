@@ -1,5 +1,5 @@
 {
-  "name": "test-case-simple-storage",
+  "name": "wrapper-a",
   "private": true,
   "dependencies": {
     "@polywrap/wasm-as": "0.9.1",
