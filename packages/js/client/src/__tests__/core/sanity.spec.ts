@@ -12,10 +12,10 @@ import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import {
   buildWrapper,
-  ensAddresses,
   initTestEnvironment,
+  runCLI,
+  ensAddresses,
   providers,
-  runCLI
 } from "@polywrap/test-env-js";
 import {ensResolverPlugin} from "@polywrap/ens-resolver-plugin-js";
 import {Connection, Connections, ethereumPlugin} from "@polywrap/ethereum-plugin-js";
@@ -188,24 +188,32 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
 
-    builder.addInterfaceImplementation(
-      "wrap://ens/uri-resolver.core.polywrap.eth",
-      "wrap://ens/fs-resolver.polywrap.eth"
-    );
-    builder.addPlugin(
-      "wrap://ens/fs-resolver.polywrap.eth",
-      fileSystemResolverPlugin({})
-    );
-    builder.addPlugin(
-      "wrap://ens/fs.polywrap.eth",
-      fileSystemPlugin({})
-    );
+
+    // Add fs resolver, making the possible to fetch wrappers locally
+    builder.add({
+      interfaces: [{
+        interface: "wrap://ens/uri-resolver.core.polywrap.eth",
+        implementations: [
+          "wrap://ens/fs-resolver.polywrap.eth"
+        ]
+      }],
+      plugins: [{
+        uri: "wrap://ens/fs-resolver.polywrap.eth",
+        plugin: fileSystemResolverPlugin({}),
+      }, {
+        uri: "wrap://ens/fs.polywrap.eth",
+        plugin: fileSystemPlugin({}),
+      }]
+    })
+
 
     client = new PolywrapClient(builder.build(), { noDefaults: true });
     result = await client.validate(fooUri, {});
 
     expect(result.ok).toBeTruthy();
 
+    // Greeting wrapper depends on a package from ENS, since we don't have the
+    // ENS resolver added yet, it should fail
     result = await client.validate(greetingUri, {
       recursive: true
     })
@@ -214,73 +222,77 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
 
-    builder.addPlugin(
-      "wrap://ens/ethereum.polywrap.eth",
-      ethereumPlugin({
-        connections: new Connections({
-          networks: {
-            testnet: new Connection({
-              provider: providers.ethereum
-            })
-          },
-          defaultNetwork: "testnet"
-        })
-      })
-  )
-
-    builder.addPlugin(
-      "wrap://ens/ipfs.polywrap.eth",
-      ipfsPlugin({})
-    )
-
-    builder.addEnv("wrap://ens/ipfs.polywrap.eth", {
-      provider: providers.ipfs,
-      fallbackProviders: defaultIpfsProviders
-    })
-
-    builder.addPlugin(
-      "wrap://ens/ipfs-resolver.polywrap.eth",
-      ipfsResolverPlugin({})
-    )
-
-    builder.addPlugin(
-      "wrap://ens/ens-resolver.polywrap.eth",
-      ensResolverPlugin({
-        addresses: {
-          testnet: ensAddresses.ensAddress
+    // Let's add IPFS & ENS resolver, as well as needed dependencies
+    builder.add({
+      envs: [{
+        uri: "wrap://ens/ipfs.polywrap.eth",
+        env: {
+          provider: providers.ipfs,
+          fallbackProviders: defaultIpfsProviders
         }
-      })
-    )
-
-    builder.addInterfaceImplementations(
-      "wrap://ens/uri-resolver.core.polywrap.eth",
-      [
-        "wrap://ens/ens-resolver.polywrap.eth",
-        "wrap://ens/ipfs-resolver.polywrap.eth",
-      ]
-    )
-
+      }],
+      plugins: [
+        {
+          uri: "wrap://ens/ens-resolver.polywrap.eth",
+          plugin: ensResolverPlugin({
+            addresses: {
+              testnet: ensAddresses.ensAddress
+            }
+          })
+        }, {
+          uri: "wrap://ens/ens-resolver.polywrap.eth",
+          plugin: ensResolverPlugin({
+            addresses: {
+              testnet: ensAddresses.ensAddress
+            }
+          }),
+        }, {
+          uri: "wrap://ens/ipfs-resolver.polywrap.eth",
+          plugin: ipfsResolverPlugin({})
+        }, {
+          uri: "wrap://ens/ipfs.polywrap.eth",
+          plugin: ipfsPlugin({})
+        }, {
+        uri: "wrap://ens/ethereum.polywrap.eth",
+          plugin: ethereumPlugin({
+            connections: new Connections({
+              networks: {
+                testnet: new Connection({
+                  provider: providers.ethereum
+                })
+              },
+              defaultNetwork: "testnet"
+            })
+          })
+        }
+      ],
+      interfaces: [{
+        interface: "wrap://ens/uri-resolver.core.polywrap.eth",
+        implementations: [
+          "wrap://ens/ens-resolver.polywrap.eth",
+          "wrap://ens/ipfs-resolver.polywrap.eth",
+        ]
+      }]
+    })
 
     client = new PolywrapClient(builder.build(), { noDefaults: true });
 
+    // Should be able to fetch all packages recursively using FS, ENS & IPFS
     result = await client.validate(greetingUri, {
-      recursive: true,
-      abi: true
+      recursive: true
     })
 
     expect(result.ok).toBeTruthy()
 
-
-    const modifiedFooPath = `${__dirname}/../utils/validate/wrapper-c`;
-
-    builder.addUriRedirect("wrap://ens/foo.eth", `wrap://fs/${modifiedFooPath}/build`)
-
+    /**
+     * Wrapper B has been built with a local dependency, and the dependency from
+     * ENS will have a different method signature, hence, not having same ABI
+     */
     client = new PolywrapClient(builder.build(), { noDefaults: true });
     result = await client.validate(greetingUri, {
       abi: true
     })
 
-    console.log({ result })
     expect(result.ok).toBeFalsy();
   });
 });
