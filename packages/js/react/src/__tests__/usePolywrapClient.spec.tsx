@@ -6,7 +6,6 @@ import {
 } from "..";
 import { createPlugins, createEnvs } from "./config";
 
-import { Env, PluginRegistration } from "@polywrap/core-js";
 import {
   ensAddresses,
   providers,
@@ -19,27 +18,23 @@ import {
   RenderHookOptions,
   cleanup
 } from "@testing-library/react-hooks";
+import { PolywrapClientConfig } from "@polywrap/client-js";
 
 jest.setTimeout(360000);
 
 describe("usePolywrapClient hook", () => {
-  let envs: Env[];
-  let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
     await initTestEnvironment();
 
-    envs = createEnvs(providers.ipfs);
-
-    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum);
-
+    const config: Partial<PolywrapClientConfig> = {
+      envs: createEnvs(providers.ipfs),
+      plugins: createPlugins(ensAddresses.ensAddress, providers.ethereum),
+    }
     WrapperProvider = {
       wrapper: PolywrapProvider,
-      initialProps: {
-        envs,
-        plugins,
-      },
+      initialProps: { config },
     };
   });
 
