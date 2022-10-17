@@ -64,9 +64,34 @@ polywrap create --help
 
 ### `build | b`
 
-Build Polywrap projects.
+Build Wasm and Interface Polywrap projects.
+This outputs the project's ABI schema (Wasm and Interface) and binary package (Wasm) into the `./build` directory.
 
-**TODO: Add documentation**
+#### Options
+- `-m, --manifest-file <path>`
+  Specify your project's manifest file.
+  By default, `build` searches for `polywrap.yaml`.
+
+- `-o, --output-dir <path>`
+  Specify an alternative directory for build output.
+  The default codegen output directory is `./build`.
+
+- `-c, --client-config <config-path>`
+  Use a custom Polywrap Client configuration.
+
+- `-n, --no-codegen`
+  Don't perform codegen before building.
+  By default, `build` performs a `codegen` step before building your Project. This option skips this step. This is especially useful when you are testing manual changes to your types/bindings.
+
+- `-s, --strategy <strategy>`
+  Specify which build strategy to use. By default, the `vm` build strategy is used.
+  Available strategies:
+  - `vm`: Uses Docker only for the source building part of the build process. At build time, it pulls a pre-built image with all necessary system dependencies, env vars and runtime; and it instantiates a Docker container with it. The Docker container instantiates bind-mounts (volumes) to copy the sources and dependencies from the host, build the sources inside the container, and copy the build artifacts back to the host machine. This approach ensures that the sources will be built in a reproducible environment but it doesn't use Docker for anything else and no image is built at runtime.
+  - `image`: Implies building a Docker image at runtime, where dependencies are installed and sources are copied and built as Dockerfile instructions. On subsequent builds, Docker tries to reuse cached image layers and rebuild accordingly. This approach is notably slow but the complete process happens in Docker, and can be reproduced, examined and audited layer by layer (from dependency installation to build artifacts output).
+  - `local` - does not use Docker at all. It simply executes a .sh file that contains the necessary instructions to install dependencies and build sources. While this is the fastest way of building, it requires you, the user, to have all prerequisite system dependencies installed. In addition, given that sources are built on the host machine and not a reproducible docker environment, reproducibility isn't guaranteed.
+
+- `-w, --watch`
+  Watch the Project's files and automatically rebuild when a file is changed.
 
 ### `codegen | g`
 
@@ -105,7 +130,7 @@ Create a Polywrap project.
 
 This command sets up a basic Polywrap-enabled project based on a pre-defined template.
 
-#### Subcommands:
+#### Subcommands
 
 `polywrap create wasm <language> <name>`
 
@@ -179,7 +204,7 @@ Generate wrapper documentation for your project.
 polywrap docgen <action>
 ```
 
-#### Arguments:
+#### Arguments
 
 - `action` (required)
   Specifies the kind of documentation generated.
@@ -191,7 +216,7 @@ polywrap docgen <action>
   - `jsdoc`
     Generates JSDoc markdown for your project.
 
-#### Options:
+#### Options
 - `-m, --manifest-file <path>`
   Specify your project's manifest file.
   By default, `docgen` searches for `polywrap.yaml`.
@@ -210,7 +235,7 @@ polywrap docgen <action>
 
 Inspect and migrate Polywrap manifests.
 
-#### Subcommands:
+#### Subcommands
 
 #### `schema | s`
 
