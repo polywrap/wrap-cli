@@ -189,7 +189,7 @@ describe("sanity", () => {
     expect(resultError.message).toContain("Error resolving URI");
 
 
-    // Add fs resolver, making the possible to fetch wrappers locally
+    // Add fs resolver, making possible to fetch wrappers locally
     builder.add({
       interfaces: [{
         interface: "wrap://ens/uri-resolver.core.polywrap.eth",
@@ -277,7 +277,7 @@ describe("sanity", () => {
 
     client = new PolywrapClient(builder.build(), { noDefaults: true });
 
-    // Should be able to fetch all packages recursively using FS, ENS & IPFS
+    // Should be able to fetch all packages using FS, ENS & IPFS
     result = await client.validate(greetingUri, {
       recursive: true
     })
@@ -285,8 +285,8 @@ describe("sanity", () => {
     expect(result.ok).toBeTruthy()
 
     /**
-     * Wrapper B has been built with a local dependency, and the dependency from
-     * ENS will have a different method signature, hence, not having same ABI
+     * Greeting wrapper has been built with a local dependency, but the one deployed
+     * to ENS has a different signature; hence, not being compatible with the greeting wrapper
      */
     client = new PolywrapClient(builder.build(), { noDefaults: true });
     result = await client.validate(greetingUri, {
