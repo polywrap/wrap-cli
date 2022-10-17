@@ -88,17 +88,17 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: getRedirects")
-  public getRedirects(): readonly IUriRedirect<Uri>[] {
+  public getRedirects(): readonly IUriRedirect<Uri>[] | undefined {
     return this._config.redirects;
   }
 
   @Tracer.traceMethod("PolywrapClient: getInterfaces")
-  public getInterfaces(): readonly InterfaceImplementations<Uri>[] {
+  public getInterfaces(): readonly InterfaceImplementations<Uri>[] | undefined {
     return this._config.interfaces;
   }
 
   @Tracer.traceMethod("PolywrapClient: getEnvs")
-  public getEnvs(): readonly Env<Uri>[] {
+  public getEnvs(): readonly Env<Uri>[] | undefined {
     return this._config.envs;
   }
 
@@ -113,9 +113,12 @@ export class PolywrapClient implements Client {
   ): Env<Uri> | undefined {
     const uriUri = Uri.from(uri);
 
-    return this.getEnvs().find((environment) =>
-      Uri.equals(environment.uri, uriUri)
-    );
+    const envs = this.getEnvs();
+    if (!envs) {
+      return undefined;
+    }
+
+    return envs.find((environment) => Uri.equals(environment.uri, uriUri));
   }
 
   @Tracer.traceMethod("PolywrapClient: getManifest")
@@ -156,7 +159,7 @@ export class PolywrapClient implements Client {
 
     const getImplResult = getImplementations(
       Uri.from(uri),
-      this.getInterfaces(),
+      this.getInterfaces() ?? [],
       applyRedirects ? this.getRedirects() : undefined
     );
 
