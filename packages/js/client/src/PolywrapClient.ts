@@ -590,7 +590,7 @@ export class PolywrapClient implements Client {
 
           const areEqual = compareAbis(
             importedMethods,
-            expectedMethods?.methods
+            expectedMethods?.methods || []
           );
 
           if (!areEqual) {

@@ -195,6 +195,7 @@ async function generateFormatTypes() {
   }
 
   renderTemplate("validate", validateContext);
+  renderTemplate("compare", {});
 
   return Promise.resolve();
 }

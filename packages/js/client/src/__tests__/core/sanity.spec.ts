@@ -16,11 +16,12 @@ import {
   runCLI,
   ensAddresses,
   providers,
+  stopTestEnvironment,
 } from "@polywrap/test-env-js";
-import {ensResolverPlugin} from "@polywrap/ens-resolver-plugin-js";
-import {Connection, Connections, ethereumPlugin} from "@polywrap/ethereum-plugin-js";
-import {ipfsPlugin} from "@polywrap/ipfs-plugin-js";
-import {ipfsResolverPlugin} from "@polywrap/ipfs-resolver-plugin-js";
+import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
+import { Connection, Connections, ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
+import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 
 jest.setTimeout(20000000);
 
@@ -140,35 +141,38 @@ describe("sanity", () => {
     ]);
   });
 
-  test.only("validate requested uri is available", async () => {
+  test("validate requested uri is available", async () => {
     const fooPath = `${__dirname}/../utils/validate/wrapper-a`;
     const fooUri = `fs/${fooPath}/build`;
     const greetingPath = `${__dirname}/../utils/validate/wrapper-b`;
     const greetingUri = `fs/${greetingPath}/build`;
+    const ensGreetingPath = `${__dirname}/../utils/validate/wrapper-c`
 
-    // process.env = {
-    //   ...process.env,
-    //   IPFS_GATEWAY_URI: providers.ipfs,
-    //   ENS_REG_ADDR: ensAddresses.ensAddress,
-    //   ENS_REGISTRAR_ADDR: ensAddresses.registrarAddress,
-    //   ENS_RESOLVER_ADDR: ensAddresses.resolverAddress,
-    // };
-    // await initTestEnvironment();
-    // await buildWrapper(fooPath);
-    // await buildWrapper(greetingPath);
-    //
-    // const { exitCode: code } = await runCLI(
-    //   {
-    //     args: ["deploy"],
-    //     cwd: greetingPath,
-    //     cli: `${__dirname}/../../../../cli/bin/polywrap`,
-    //     env: process.env as Record<string, string>
-    //   },
-    // );
-    //
-    // if (code !== 0) {
-    //   fail("Wrapper could not be deployed")
-    // }
+    process.env = {
+      ...process.env,
+      IPFS_GATEWAY_URI: providers.ipfs,
+      ENS_REG_ADDR: ensAddresses.ensAddress,
+      ENS_REGISTRAR_ADDR: ensAddresses.registrarAddress,
+      ENS_RESOLVER_ADDR: ensAddresses.resolverAddress,
+    };
+
+    await initTestEnvironment();
+    await buildWrapper(fooPath);
+    await buildWrapper(greetingPath);
+    await buildWrapper(ensGreetingPath);
+
+    const { exitCode: code } = await runCLI(
+      {
+        args: ["deploy"],
+        cwd: ensGreetingPath,
+        cli: `${__dirname}/../../../../../cli/bin/polywrap`,
+        env: process.env as Record<string, string>
+      },
+    );
+
+    if (code !== 0) {
+      fail("Wrapper could not be deployed")
+    }
 
     const builder = new ClientConfigBuilder();
 
@@ -294,5 +298,6 @@ describe("sanity", () => {
     })
 
     expect(result.ok).toBeFalsy();
-  });
-});
+    await stopTestEnvironment();
+   });
+} ) ;
