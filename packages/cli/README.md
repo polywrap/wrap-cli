@@ -148,9 +148,39 @@ Run Workflows
 
 ### `docgen | o`
 
-Generate wrapper documentation
+Generate wrapper documentation for your project.
 
-**TODO: Add documentation**
+```bash
+polywrap docgen <action>
+```
+
+#### Arguments:
+
+- `action` (required)
+  Specifies the kind of documentation generated.
+  Values:
+  - `schema`
+    Generates GraphQL-like schema for your project.
+  - `docusaurus`
+    Generates Docusaurus markdown for your project.
+  - `jsdoc`
+    Generates JSDoc markdown for your project.
+
+#### Options:
+- `-m, --manifest-file <path>`
+  Specify your project's manifest file.
+  By default, `docgen` searches for `polywrap.yaml`.
+
+- `-g, --docgen-dir <path>`
+  Specify the output directory for generated docs.
+  By default, `./docs` is used.
+
+- `-c, --client-config <config-path>`
+  Specify a custom Polywrap Client configuration to be used.
+  The Polywrap Client is used to build your project's schema for which the docs will be generated.
+
+- `-i, --imports`
+  Generate docs for your project's dependencies as well.
 
 ### `manifest | m`
 
