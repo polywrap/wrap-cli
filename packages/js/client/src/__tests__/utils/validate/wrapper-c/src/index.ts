@@ -1,8 +1,7 @@
 import {
-  Args_greeting,
-  Foo_Module
+  Args_foo
 } from "./wrap";
 
-export function greeting(args: Args_greeting): String {
-  return Foo_Module.foo({ bar: args.message }).unwrap();
+export function foo(args: Args_foo): String {
+  return args.bar.toString()
 }

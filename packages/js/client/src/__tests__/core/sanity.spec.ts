@@ -1,6 +1,6 @@
 import { coreInterfaceUris } from "@polywrap/core-js";
 import {
-  buildUriResolver, LegacyPluginsResolver,
+  buildUriResolver, LegacyPluginsResolver, LegacyRedirectsResolver,
   PackageToWrapperCacheResolver,
   RecursiveResolver,
   WrapperCache
@@ -175,6 +175,7 @@ describe("sanity", () => {
     builder.setResolver(new RecursiveResolver(
       new PackageToWrapperCacheResolver(new WrapperCache(), [
         new LegacyPluginsResolver(),
+        new LegacyRedirectsResolver(),
         new ExtendableUriResolver()
       ])
     ));
@@ -220,10 +221,6 @@ describe("sanity", () => {
           networks: {
             testnet: new Connection({
               provider: providers.ethereum
-            }),
-            goerli: new Connection({
-              provider:
-                "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
             })
           },
           defaultNetwork: "testnet"
@@ -241,8 +238,6 @@ describe("sanity", () => {
       fallbackProviders: defaultIpfsProviders
     })
 
-    builder.addUriRedirect("wrap://ens/sha3.polywrap.eth", "wrap://ens/goerli/sha3.wrappers.eth")
-    builder.addUriRedirect("wrap://ens/uts46.polywrap.eth", "wrap://ens/goerli/uts46-lite.wrappers.eth")
     builder.addPlugin(
       "wrap://ens/ipfs-resolver.polywrap.eth",
       ipfsResolverPlugin({})
@@ -257,25 +252,35 @@ describe("sanity", () => {
       })
     )
 
-    builder.addInterfaceImplementation(
+    builder.addInterfaceImplementations(
       "wrap://ens/uri-resolver.core.polywrap.eth",
-      "wrap://ens/ens-resolver.polywrap.eth",
+      [
+        "wrap://ens/ens-resolver.polywrap.eth",
+        "wrap://ens/ipfs-resolver.polywrap.eth",
+      ]
     )
-    builder.addInterfaceImplementation(
-      "wrap://ens/uri-resolver.core.polywrap.eth",
-      "wrap://ens/ipfs-resolver.polywrap.eth",
-    )
+
 
     client = new PolywrapClient(builder.build(), { noDefaults: true });
 
     result = await client.validate(greetingUri, {
-      recursive: true
+      recursive: true,
+      abi: true
     })
 
     expect(result.ok).toBeTruthy()
 
 
-    // result = await client.validate(greetingUri, {})
-    // expect(result.ok).toBeTruthy();
+    const modifiedFooPath = `${__dirname}/../utils/validate/wrapper-c`;
+
+    builder.addUriRedirect("wrap://ens/testnet/foo.eth", `wrap://fs/${modifiedFooPath}/build`)
+
+    client = new PolywrapClient(builder.build(), { noDefaults: true });
+    result = await client.validate(greetingUri, {
+      abi: true
+    })
+
+    console.log({ result })
+    expect(result.ok).toBeFalsy();
   });
 });

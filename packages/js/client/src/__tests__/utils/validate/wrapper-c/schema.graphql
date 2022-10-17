@@ -1,5 +1,3 @@
-#import { Module } into Foo from "ens/testnet/foo.eth"
-
 type Module {
-    greeting(message: String!): String!
+    foo(bar: Int!): String!
 }

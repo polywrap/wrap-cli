@@ -2,7 +2,7 @@
   "name": "wrapper-a",
   "private": true,
   "dependencies": {
-    "@polywrap/wasm-as": "0.9.1",
+    "@polywrap/wasm-as": "0.9.2",
     "assemblyscript": "0.19.23"
   }
 }

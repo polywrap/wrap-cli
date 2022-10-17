@@ -52,3 +52,4 @@ export { migrateWrapManifest } from "./migrate";
 export { deserializeWrapManifest } from "./deserialize";
 export { serializeWrapManifest } from "./serialize";
 export { validateWrapManifest } from "./validate";
+export { compareAbis } from "./compare"

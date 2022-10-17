@@ -44,6 +44,7 @@ import {
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
+import { compareAbis } from "@polywrap/wrap-manifest-types-js";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
@@ -549,7 +550,6 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: ValidateOptions
   ): Promise<Result<boolean, Error>> {
-    // Make sure we can resolve wrapper
     const wrapper = await this.loadWrapper(Uri.from(uri));
     if (!wrapper.ok) {
       return ResultErr(new Error(wrapper.error?.message));
@@ -558,39 +558,53 @@ export class PolywrapClient implements Client {
     const manifest = await this.getManifest(uri);
     if (manifest.ok) {
       const abi = manifest.value.abi;
-      const externalUris: ImportedModuleDefinition[] =
+      const importedModules: ImportedModuleDefinition[] =
         abi.importedModuleTypes || [];
 
       const importUri = (importedModuleType: ImportedModuleDefinition) => {
         return this.tryResolveUri({ uri: importedModuleType.uri });
       };
-      const resolvedUris = await Promise.all(externalUris.map(importUri));
-      const notFoundUri = resolvedUris.find((w: { ok: boolean }) => !w.ok);
+      const resolvedModules = await Promise.all(importedModules.map(importUri));
+      const moduleNotFound = resolvedModules.find(
+        (w: { ok: boolean }) => !w.ok
+      );
 
-      if (notFoundUri) {
-        return ResultErr((notFoundUri as { error: Error }).error);
+      if (moduleNotFound) {
+        return ResultErr((moduleNotFound as { error: Error }).error);
       }
 
       if (options.abi) {
-        for (const externalUri of externalUris) {
-          const manifest = await this.getManifest(externalUri.uri);
-          if (manifest.ok) {
-            const abi = externalUris.find((uri) => externalUri === uri);
-            if (!(JSON.stringify(manifest.value.abi) === JSON.stringify(abi))) {
-              const message = `ABI from Uri: ${uri} is not compatible with Uri: ${uri}`;
-              return ResultErr(new Error(message));
-            }
-            continue;
+        for (const importedModule of importedModules) {
+          const importedModuleManifest = await this.getManifest(
+            importedModule.uri
+          );
+          if (!importedModuleManifest.ok) {
+            return ResultErr(importedModuleManifest.error);
           }
-          return ResultErr((manifest as { error: Error }).error);
+          const importedMethods =
+            importedModuleManifest.value.abi.moduleType?.methods || [];
+
+          const expectedMethods = importedModules.find(
+            ({ uri }) => importedModule.uri === uri
+          );
+
+          const areEqual = compareAbis(
+            importedMethods,
+            expectedMethods?.methods
+          );
+
+          if (!areEqual) {
+            const message = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
+            return ResultErr(new Error(message));
+          }
         }
       }
 
       if (options.recursive) {
-        const validateExternalUris = externalUris.map(({ uri }) =>
+        const validateImportedModules = importedModules.map(({ uri }) =>
           this.validate(uri, options)
         );
-        const invalidUris = await Promise.all(validateExternalUris);
+        const invalidUris = await Promise.all(validateImportedModules);
         const invalidUri = invalidUris.find(({ ok }) => !ok);
         if (invalidUri) {
           return ResultErr((invalidUri as { error: Error }).error);
