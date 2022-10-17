@@ -72,7 +72,32 @@ Build Polywrap projects.
 
 Generate code bindings for Polywrap projects.
 
-**TODO: Add documentation**
+This command generates types and bindings for your project based on your project's schema (found in `schema.graphql`).
+
+#### Options
+- `-m, --manifest-file <path>`
+  Specify your project's manifest file.
+  By default, `docgen` searches for `polywrap.yaml`.
+  
+- `-g, --codegen-dir <path>`
+  Specify an alternative directory for codegen output.
+  The default codegen output directory is `./wrap`.
+  
+- `-p, --publish-dir <path>`
+  Output path for the built schema and manifest (default: `./build`)
+  This only applies when running `codegen` for Plugin Projects.
+
+- `-s, --script <path>`
+  Path to a custom generation script (JavaScript | TypeScript).
+  This script is run in place of the standard codegen script if provided.
+  **TODO: Add details about the custom codegen script**
+
+- `-c, --client-config <config-path>`
+  Use a custom Polywrap Client configuration.
+
+#### Special note
+
+When running `codegen` for Plugin Projects, the Polywrap CLI will also output an ABI schema for your plugin into the `./build` directory. You can override this output directory by specifying `-p, --publish-dir <path>`.
 
 ### `create | c`
 
@@ -176,8 +201,7 @@ polywrap docgen <action>
   By default, `./docs` is used.
 
 - `-c, --client-config <config-path>`
-  Specify a custom Polywrap Client configuration to be used.
-  The Polywrap Client is used to build your project's schema for which the docs will be generated.
+  Use a custom Polywrap Client configuration.
 
 - `-i, --imports`
   Generate docs for your project's dependencies as well.
