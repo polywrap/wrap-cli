@@ -13,7 +13,10 @@ import {
   Args_importedMethod,
   serializeanotherMethodArgs,
   deserializeanotherMethodResult,
-  Args_anotherMethod
+  Args_anotherMethod,
+  serializereturnsArrayOfEnumsArgs,
+  deserializereturnsArrayOfEnumsResult,
+  Args_returnsArrayOfEnums
 } from "./serialization";
 import * as Types from "../..";
 
@@ -68,6 +71,28 @@ export class TestImport_Module {
 
     return Result.Ok<i32, string>(
       deserializeanotherMethodResult(result.unwrap())
+    );
+  }
+
+  public returnsArrayOfEnums(
+    args: Args_returnsArrayOfEnums
+  ): Result<Array<Box<Types.TestImport_Enum_Return> | null>, string> {
+    const argsBuf = serializereturnsArrayOfEnumsArgs(args);
+    const result = wrap_subinvokeImplementation(
+      "testimport.uri.eth",
+      this.uri,
+      "returnsArrayOfEnums",
+      argsBuf
+    );
+
+    if (result.isErr) {
+      return Result.Err<Array<Box<Types.TestImport_Enum_Return> | null>, string>(
+        result.unwrapErr()
+      );
+    }
+
+    return Result.Ok<Array<Box<Types.TestImport_Enum_Return> | null>, string>(
+      deserializereturnsArrayOfEnumsResult(result.unwrap())
     );
   }
 }

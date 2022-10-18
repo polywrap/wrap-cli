@@ -19,6 +19,11 @@ use crate::{
     get_test_import_enum_value,
     sanitize_test_import_enum_value
 };
+use crate::{
+    TestImportEnumReturn,
+    get_test_import_enum_return_value,
+    sanitize_test_import_enum_return_value
+};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ArgsImportedMethod {
@@ -448,6 +453,102 @@ pub fn deserialize_another_method_result(result: &[u8]) -> Result<i32, DecodeErr
 
     reader.context().push("anotherMethod", "i32", "reading function output");
     let res = reader.read_i32()?;
+    reader.context().pop();
+    Ok(res)
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct ArgsReturnsArrayOfEnums {
+    pub arg: String,
+}
+
+pub fn deserialize_returns_array_of_enums_args(args: &[u8]) -> Result<ArgsReturnsArrayOfEnums, DecodeError> {
+    let mut context = Context::new();
+    context.description = "Deserializing imported module-type: returns_array_of_enums Args".to_string();
+
+    let mut reader = ReadDecoder::new(args, context);
+    let mut num_of_fields = reader.read_map_length()?;
+
+    let mut _arg: String = String::new();
+    let mut _arg_set = false;
+
+    while num_of_fields > 0 {
+        num_of_fields -= 1;
+        let field = reader.read_string()?;
+
+        match field.as_str() {
+            "arg" => {
+                reader.context().push(&field, "String", "type found, reading argument");
+                _arg = reader.read_string()?;
+                _arg_set = true;
+                reader.context().pop();
+            }
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
+        }
+    }
+    if !_arg_set {
+        return Err(DecodeError::MissingField("arg: String.".to_string()));
+    }
+
+    Ok(ArgsReturnsArrayOfEnums {
+        arg: _arg,
+    })
+}
+
+pub fn serialize_returns_array_of_enums_args(args: &ArgsReturnsArrayOfEnums) -> Result<Vec<u8>, EncodeError> {
+    let mut encoder_context = Context::new();
+    encoder_context.description = "Serializing (encoding) imported module-type: returns_array_of_enums Args".to_string();
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_returns_array_of_enums_args(args, &mut encoder)?;
+    Ok(encoder.get_buffer())
+}
+
+pub fn write_returns_array_of_enums_args<W: Write>(args: &ArgsReturnsArrayOfEnums, writer: &mut W) -> Result<(), EncodeError> {
+    writer.write_map_length(&1)?;
+    writer.context().push("arg", "String", "writing property");
+    writer.write_string("arg")?;
+    writer.write_string(&args.arg)?;
+    writer.context().pop();
+    Ok(())
+}
+
+pub fn serialize_returns_array_of_enums_result(result: &Vec<Option<TestImportEnumReturn>>) -> Result<Vec<u8>, EncodeError> {
+    let mut encoder_context = Context::new();
+    encoder_context.description = "Serializing (encoding) imported module-type: returns_array_of_enums Result".to_string();
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_returns_array_of_enums_result(result, &mut encoder)?;
+    Ok(encoder.get_buffer())
+}
+
+pub fn write_returns_array_of_enums_result<W: Write>(result: &Vec<Option<TestImportEnumReturn>>, writer: &mut W) -> Result<(), EncodeError> {
+    writer.context().push("returnsArrayOfEnums", "Vec<Option<TestImportEnumReturn>>", "writing result");
+    writer.write_array(&result, |writer, item| {
+        writer.write_optional_i32(&item.map(|f| f as i32))
+    })?;
+    writer.context().pop();
+    Ok(())
+}
+
+pub fn deserialize_returns_array_of_enums_result(result: &[u8]) -> Result<Vec<Option<TestImportEnumReturn>>, DecodeError> {
+    let mut context = Context::new();
+    context.description = "Deserializing imported module-type: returns_array_of_enums Result".to_string();
+    let mut reader = ReadDecoder::new(result, context);
+
+    reader.context().push("returnsArrayOfEnums", "Vec<Option<TestImportEnumReturn>>", "reading function output");
+    let res = reader.read_array(|reader| {
+        let mut value: Option<TestImportEnumReturn> = None;
+        if !reader.is_next_nil()? {
+            if reader.is_next_string()? {
+                value = Some(get_test_import_enum_return_value(&reader.read_string()?)?);
+            } else {
+                value = Some(TestImportEnumReturn::try_from(reader.read_i32()?)?);
+                sanitize_test_import_enum_return_value(value.unwrap() as i32)?;
+            }
+        } else {
+            value = None;
+        }
+        Ok(value)
+    })?;
     reader.context().pop();
     Ok(res)
 }
