@@ -55,11 +55,11 @@ polywrap help
 polywrap --help
 ```
 
-Alternatively, you can use the help command or option within any command to get a full list of available subcommands, arguments and options.
+Alternatively, you can use the `-h, --help` option within any command to get a full list of available subcommands, arguments and options.
 
 ```bash
-polywrap create help
 polywrap create --help
+polywrap codegen --help
 ```
 
 ### `build | b`
@@ -181,20 +181,71 @@ polywrap create plugin typescript my-plugin
 
 Deploy Polywrap projects.
 
-**TODO: Add documentation**
+#### Options
+- `-m, --manifest-file <path>`
+  Specify your project's manifest file.
+  By default, `deploy` searches for `polywrap.yaml`.
+
+- `-o, --output-file <path>`
+  Output file path for the deploy result
+  
+**TODO: Extend documentation with examples, more information**
 
 
 ### `infra | i`
 
 Modular Infrastructure-As-Code Orchestrator
 
-**TODO: Add documentation**
+```bash
+polywrap infra <action> [options]
+```
+
+#### Arguments
+- `action` (required)
+  Infra allows you to execute the following actions:
+  - `up`
+    Start Polywrap infrastructure
+  - `down`
+    Stop Polywrap infrastructure
+  - `config`
+    Validate and display Polywrap infrastructure's bundled docker-compose manifest
+  - `vars`
+    Show Polywrap infrastructure's required .env variables
+
+#### Options
+- `-m, --manifest-file <path>`
+  Specify the `infra` extension manifest file.
+  By default, `infra` searches for `polywrap.infra.yaml`.
+
+- `-o, --modules <module, module>`
+  Use only specified modules
+
+**TODO: Extend documentation with examples, more information**
 
 ### `run | r`
 
 Run Workflows
 
-**TODO: Add documentation**
+```bash
+polywrap run [options]
+```
+
+#### Options
+- `-m, --manifest-file <path>`
+  Specify the Workflow extension manifest file.
+  By default, `run` searches for `polywrap.test.yaml`.
+
+- `-c, --client-config <config-path>`
+  Use a custom Polywrap Client configuration.
+
+- `-o, --output-file <output-file-path>`
+  Specify the output file path for the workflow result
+
+- `-j, --jobs <jobs...>`
+  Specify ids of jobs that you want to run
+
+
+**TODO: Extend documentation with examples, more information**
 
 ### `docgen | o`
 
@@ -302,6 +353,8 @@ polywrap manifest migrate
 ## Logging
 
 By default, the Polywrap CLI outputs all of its messages to the console.
+
+### Logging levels
 Different levels of output verbosity are supported by using the following options:
 
 - `-v, --verbose`
@@ -310,17 +363,19 @@ Different levels of output verbosity are supported by using the following option
 - `-q, --quiet`
   Disables ALL logging. Overrides the `--verbose` option.
 
+### Logging to a file
+You can also tell the Polywrap CLI to save its output to a logfile using the `-l, --log-file [path]` option.
 
-### 
+Specifying the `-l` option without a `path` parameter will create a log file within the `./.polywrap/logs` directory.
 
-### `-q`
+```bash
+# Output will be saved to the "./.polywrap/logs" directory
+polywrap codegen -l
+```
 
-https://docs.polywrap.io/reference/cli/polywrap-cli
+Alternatively, you can specify your own log file path.
 
-## Examples
-
-Demos:  
-https://github.com/polywrap/demos
-
-Integrations:  
-https://github.com/polywrap/integrations
+```bash
+# Output will be saved to "my-log-file.log"
+polywrap codegen -l my-log-file.log
+```
