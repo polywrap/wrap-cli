@@ -15,7 +15,9 @@ interface PolywrapProviderMap {
 
 export const PROVIDERS: PolywrapProviderMap = {};
 
-interface PolywrapProviderProps extends Partial<PolywrapClientConfig> { }
+interface PolywrapProviderProps {
+  config: Partial<PolywrapClientConfig>
+}
 
 export type PolywrapProviderFC = React.FC<PolywrapProviderProps>;
 
@@ -33,7 +35,7 @@ export function createPolywrapProvider(
     ClientContext: React.createContext({} as PolywrapClient)
   };
 
-  return ({ envs, redirects, plugins, interfaces, tracerConfig, children }) => {
+  return ({ config, children }) => {
 
     const [clientCreated, setClientCreated] = React.useState(false);
 
@@ -47,7 +49,7 @@ export function createPolywrapProvider(
       }
 
       // Instantiate the client
-      PROVIDERS[name].client = new PolywrapClient({ redirects, plugins, interfaces, envs, tracerConfig });
+      PROVIDERS[name].client = new PolywrapClient(config);
 
       setClientCreated(true);
 
