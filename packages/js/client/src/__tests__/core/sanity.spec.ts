@@ -10,12 +10,7 @@ import {ClientConfigBuilder, defaultWrappers} from "@polywrap/client-config-buil
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
-import {
-  buildWrapper,
-  initTestEnvironment,
-  ensAddresses,
-  providers,
-} from "@polywrap/test-env-js";
+import { buildWrapper } from "@polywrap/test-env-js";
 
 jest.setTimeout(200000);
 
@@ -137,21 +132,12 @@ describe("sanity", () => {
 
   test("validate requested uri is available", async () => {
     const fooPath = `${__dirname}/../utils/validate/wrapper-a`;
-    const fooUri = `fs/${fooPath}/build`;
     const greetingPath = `${__dirname}/../utils/validate/wrapper-b`;
-    const greetingUri = `fs/${greetingPath}/build`;
     const modifiedFooPath = `${__dirname}/../utils/validate/wrapper-c`
+    const fooUri = `fs/${fooPath}/build`;
+    const greetingUri = `fs/${greetingPath}/build`;
     const modifiedFooUri = `fs/${modifiedFooPath}/build`;
 
-    process.env = {
-      ...process.env,
-      IPFS_GATEWAY_URI: providers.ipfs,
-      ENS_REG_ADDR: ensAddresses.ensAddress,
-      ENS_REGISTRAR_ADDR: ensAddresses.registrarAddress,
-      ENS_RESOLVER_ADDR: ensAddresses.resolverAddress,
-    };
-
-    await initTestEnvironment();
     await buildWrapper(fooPath);
 
     const builder = new ClientConfigBuilder();
@@ -172,7 +158,6 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
 
-    // Add fs resolver, making possible to fetch wrappers locally
     builder.add({
       interfaces: [{
         interface: "wrap://ens/uri-resolver.core.polywrap.eth",

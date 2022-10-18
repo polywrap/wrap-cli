@@ -44,7 +44,7 @@ import {
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
-import { compareAbis } from "@polywrap/wrap-manifest-types-js";
+import { compareSignatures } from "@polywrap/wrap-manifest-types-js";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
@@ -563,10 +563,17 @@ export class PolywrapClient implements Client {
       return this.tryResolveUri({ uri: importedModuleType.uri });
     };
     const resolvedModules = await Promise.all(importedModules.map(importUri));
-    const moduleNotFound = resolvedModules.find(({ ok }) => !ok);
+    const modulesNotFound = resolvedModules.filter(({ ok }) => !ok) as {
+      error: Error;
+    }[];
 
-    if (moduleNotFound) {
-      return ResultErr((moduleNotFound as { error: Error }).error);
+    if (modulesNotFound.length) {
+      const missingModules = modulesNotFound.map(({ error }) => {
+        const uriIndex = error?.message.indexOf("\n");
+        return error?.message.substring(0, uriIndex);
+      });
+      const error = new Error(JSON.stringify(missingModules));
+      return ResultErr(error);
     }
 
     if (options.abi) {
@@ -584,7 +591,7 @@ export class PolywrapClient implements Client {
           ({ uri }) => importedModule.uri === uri
         );
 
-        const areEqual = compareAbis(
+        const areEqual = compareSignatures(
           importedMethods,
           expectedMethods?.methods || []
         );
@@ -600,10 +607,17 @@ export class PolywrapClient implements Client {
       const validateImportedModules = importedModules.map(({ uri }) =>
         this.validate(uri, options)
       );
-      const invalidUris = await Promise.all(validateImportedModules);
-      const invalidUri = invalidUris.find(({ ok }) => !ok);
-      if (invalidUri) {
-        return ResultErr((invalidUri as { error: Error }).error);
+      const resolverUris = await Promise.all(validateImportedModules);
+      const invalidUris = resolverUris.filter(({ ok }) => !ok) as {
+        error: Error;
+      }[];
+      if (invalidUris.length) {
+        const missingUris = invalidUris.map(({ error }) => {
+          const uriIndex = error?.message.indexOf("\n");
+          return error?.message.substring(0, uriIndex);
+        });
+        const error = new Error(JSON.stringify(missingUris));
+        return ResultErr(error);
       }
     }
     return ResultOk(true);

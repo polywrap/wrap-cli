@@ -2,7 +2,7 @@ import {
   MethodDefinition, PropertyDefinition,
 } from ".";
 
-export function compareAbis(
+export function compareSignatures(
   importedMethods: MethodDefinition[],
   expectedModules: MethodDefinition[]
 ): boolean {
@@ -14,8 +14,8 @@ export function compareAbis(
 
     if (currentMethod.arguments) {
       const expectedArgs = currentMethod.arguments.some(({type, name}, index) => {
-      const importedArgs = method.arguments as PropertyDefinition[]
-      const { name: importedName, type: importedType } = importedArgs[index]
+        const importedArgs = method.arguments as PropertyDefinition[]
+        const { name: importedName, type: importedType } = importedArgs[index]
         return importedName === name && importedType === type
       })
 
