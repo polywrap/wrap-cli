@@ -143,6 +143,83 @@ export const stopTestEnvironment = async (cli?: string): Promise<void> => {
   return Promise.resolve();
 };
 
+async function awaitPing(url: string, timeout: number, maxTimeout: number) {
+  let time = 0;
+
+  while (time < maxTimeout) {
+    const request = axios.get(url, { timeout });
+    const success = await request
+      .then(() => true)
+      .catch((e) => e.code !== "ECONNRESET");
+
+    if (success) {
+      return true;
+    }
+
+    await new Promise<void>(function (resolve) {
+      setTimeout(() => resolve(), timeout);
+    });
+
+    time += timeout;
+  }
+
+  return false;
+}
+
+/**
+ * Initializes infra
+ *
+ * @param awaitResponseUris: an array of URI's from which to await responses
+ * @param manifestAbsPath: the absolute path of the infra manifest to use
+ * */
+export async function initInfra(
+  awaitResponseUris?: string[],
+  manifestAbsPath?: string
+): Promise<void> {
+  const pathArgs = manifestAbsPath ? ["--manifest-file", manifestAbsPath] : [];
+
+  const { exitCode, stderr, stdout } = await runCLI({
+    args: ["infra", "up", "--verbose", ...pathArgs],
+  });
+
+  if (exitCode) {
+    throw Error(
+      `initInfra failed to start test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}\nStdOut: ${stdout}`
+    );
+  }
+
+  for (const uri of awaitResponseUris ?? []) {
+    const success = await awaitPing(uri, 2000, 20000);
+
+    if (!success) {
+      throw Error(`test-env: resource located at ${uri} failed to start`);
+    }
+  }
+
+  return Promise.resolve();
+}
+
+/**
+ * Stops infra
+ *
+ * @param manifestAbsPath: the absolute path of the infra manifest to use
+ * */
+export async function stopInfra(manifestAbsPath?: string): Promise<void> {
+  const pathArgs = manifestAbsPath ? ["--manifest-file", manifestAbsPath] : [];
+
+  const { exitCode, stderr, stdout } = await runCLI({
+    args: ["infra", "down", "--verbose", ...pathArgs],
+  });
+
+  if (exitCode) {
+    throw Error(
+      `initInfra failed to stop test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}\nStdOut: ${stdout}`
+    );
+  }
+
+  return Promise.resolve();
+}
+
 export const runCLI = async (options: {
   args: string[];
   cwd?: string;
@@ -203,11 +280,15 @@ export const runCLI = async (options: {
 
 export async function buildWrapper(
   wrapperAbsPath: string,
-  manifestPathOverride?: string
+  manifestPathOverride?: string,
+  strategy: "vm" | "image" | "local" = "vm"
 ): Promise<void> {
   const manifestPath = manifestPathOverride
     ? path.join(wrapperAbsPath, manifestPathOverride)
     : `${wrapperAbsPath}/polywrap.yaml`;
+
+  const strategyArgs = strategy ? ["--strategy", strategy] : [];
+
   const {
     exitCode: buildExitCode,
     stdout: buildStdout,
@@ -219,7 +300,36 @@ export async function buildWrapper(
       manifestPath,
       "--output-dir",
       `${wrapperAbsPath}/build`,
+      ...strategyArgs,
     ],
+  });
+
+  if (buildExitCode !== 0) {
+    console.error(`polywrap exited with code: ${buildExitCode}`);
+    console.log(`stderr:\n${buildStderr}`);
+    console.log(`stdout:\n${buildStdout}`);
+    throw Error("polywrap CLI failed");
+  }
+}
+
+export async function deployWrapper(
+  wrapperAbsPath: string,
+  manifestPathOverride?: string,
+  outputPath?: string
+): Promise<void> {
+  const manifestPath = manifestPathOverride
+    ? path.join(wrapperAbsPath, manifestPathOverride)
+    : `${wrapperAbsPath}/polywrap.yaml`;
+
+  const outputArgs = outputPath ? ["--output-file", outputPath] : [];
+
+  const {
+    exitCode: buildExitCode,
+    stdout: buildStdout,
+    stderr: buildStderr,
+  } = await runCLI({
+    args: ["deploy", "--manifest-file", manifestPath, ...outputArgs],
+    cwd: wrapperAbsPath,
   });
 
   if (buildExitCode !== 0) {
