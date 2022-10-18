@@ -37,7 +37,6 @@ export function validateOutput(
     JSON.stringify({ data, error: error?.message }, null, 2)
   );
 
-  console.log(`cue vet -d ${selector} ${validateScriptPath} ${jsonOutput}`);
   const { stderr } = runCommandSync(
     `cue vet -d ${selector} ${validateScriptPath} ${jsonOutput}`,
     logger

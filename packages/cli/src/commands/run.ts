@@ -91,7 +91,7 @@ const _run = async (options: WorkflowCommandOptions) => {
 
   const workflowOutput: WorkflowOutput[] = [];
 
-  const onExecution = async (id: string, jobResult: JobResult) => {
+  const onExecution = (id: string, jobResult: JobResult) => {
     const { data, error, status } = jobResult;
     const output: WorkflowOutput = {
       id,
