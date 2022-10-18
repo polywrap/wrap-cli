@@ -1,8 +1,6 @@
 import { runCLI } from "./index";
 import { awaitPing } from "./utils";
 
-import path from "path";
-
 type InfraCommandOptions = {
   infraManifest?: string;
   modules?: string[];
@@ -121,17 +119,15 @@ export async function infraDown(
 /**
  * Generate code for a Polywrap project
  *
- * @param wrapperAbsPath: absolute path of the wrapper root folder
+ * @param wrapperAbsPath: absolute path of the wrapper root folder, used as the cwd
  * @param options: options for Polywrap CLI 'codegen' command
- * @param cwd: the current working directory for the CLI call
  * */
 export async function codegen(
   wrapperAbsPath: string,
-  options?: CodegenCommandOptions,
-  cwd: string = wrapperAbsPath
+  options?: CodegenCommandOptions
 ): Promise<void> {
   const manifestFile = options?.projectManifest
-    ? ["--manifest-file", path.join(wrapperAbsPath, options.projectManifest)]
+    ? ["--manifest-file", options.projectManifest]
     : [];
 
   const codegenDir = options?.codegenDir
@@ -160,7 +156,7 @@ export async function codegen(
       `--verbose ${!!options?.verbose}`,
       `--quiet ${!!options?.quiet}`,
     ],
-    cwd,
+    cwd: wrapperAbsPath,
   });
 
   if (buildExitCode !== 0) {
@@ -174,17 +170,15 @@ export async function codegen(
 /**
  * Build a wrapper
  *
- * @param wrapperAbsPath: absolute path of the wrapper root folder
+ * @param wrapperAbsPath: absolute path of the wrapper root folder, used as the cwd
  * @param options: options for Polywrap CLI 'build' command
- * @param cwd: the current working directory for the CLI call
  * */
 export async function build(
   wrapperAbsPath: string,
-  options?: BuildCommandOptions,
-  cwd: string = wrapperAbsPath
+  options?: BuildCommandOptions
 ): Promise<void> {
   const manifestFile = options?.projectManifest
-    ? ["--manifest-file", path.join(wrapperAbsPath, options.projectManifest)]
+    ? ["--manifest-file", options.projectManifest]
     : [];
 
   const outputDir = options?.outputDir
@@ -208,11 +202,11 @@ export async function build(
       ...outputDir,
       ...strategy,
       ...clientConfig,
-      `--noCodegen ${!!options?.noCodegen}`,
+      `--no-codegen ${!!options?.noCodegen}`,
       `--verbose ${!!options?.verbose}`,
       `--quiet ${!!options?.quiet}`,
-      cwd,
     ],
+    cwd: wrapperAbsPath,
   });
 
   if (buildExitCode !== 0) {
@@ -226,17 +220,15 @@ export async function build(
 /**
  * Deploy a wrapper using a deploy manifest
  *
- * @param wrapperAbsPath: absolute path of the wrapper root folder
+ * @param wrapperAbsPath: absolute path of the wrapper root folder, used as the cwd
  * @param options: options for Polywrap CLI 'deploy' command
- * @param cwd: the current working directory for the CLI call
  * */
 export async function deploy(
   wrapperAbsPath: string,
-  options?: DeployCommandOptions,
-  cwd: string = wrapperAbsPath
+  options?: DeployCommandOptions
 ): Promise<void> {
   const manifestFile = options?.projectManifest
-    ? ["--manifest-file", path.join(wrapperAbsPath, options.projectManifest)]
+    ? ["--manifest-file", options.projectManifest]
     : [];
 
   const outputArgs = options?.outputFile
@@ -255,7 +247,7 @@ export async function deploy(
       `--verbose ${!!options?.verbose}`,
       `--quiet ${!!options?.quiet}`,
     ],
-    cwd,
+    cwd: wrapperAbsPath,
   });
 
   if (buildExitCode !== 0) {
