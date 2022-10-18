@@ -36,12 +36,12 @@
         "module": {
           "description": "Path to the project's entry point.",
           "type": "string",
-          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
         },
         "schema": {
           "description": "Path to the project's graphql schema.",
           "type": "string",
-          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
         },
         "import_abis": {
           "description": "Specify ABIs to be used for the import URIs within your schema.",
@@ -60,22 +60,22 @@
         "build": {
           "description": "Path to the project build manifest file.",
           "type": "string",
-          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
+          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
         },
         "meta": {
           "description": "Path to project metadata manifest file.",
           "type": "string",
-          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
+          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
         },
         "deploy": {
           "description": "Path to project deploy manifest file.",
           "type": "string",
-          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
+          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
         },
         "infra": {
           "description": "Path to project infra manifest file.",
           "type": "string",
-          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
+          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
         }
       }
     }
@@ -93,7 +93,7 @@
         "abi": {
           "description": "Path to a local ABI (or schema). Supported file formats: [*.graphql, *.info, *.json, *.yaml]",
           "type": "string",
-          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.(info|graphql|json|yaml)$"
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.(info|graphql|json|yaml)$"
         }
       },
       "required": ["uri", "abi"]
