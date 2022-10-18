@@ -6,24 +6,18 @@ import {
   WrapperCache
 } from "@polywrap/uri-resolvers-js";
 import { PolywrapClient, Uri } from "../..";
-import {ClientConfigBuilder, defaultIpfsProviders, defaultWrappers} from "@polywrap/client-config-builder-js";
+import {ClientConfigBuilder, defaultWrappers} from "@polywrap/client-config-builder-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import {
   buildWrapper,
   initTestEnvironment,
-  runCLI,
   ensAddresses,
   providers,
-  stopTestEnvironment,
 } from "@polywrap/test-env-js";
-import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
-import { Connection, Connections, ethereumPlugin } from "@polywrap/ethereum-plugin-js";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 
-jest.setTimeout(20000000);
+jest.setTimeout(200000);
 
 describe("sanity", () => {
   test("default client config", () => {
@@ -146,7 +140,8 @@ describe("sanity", () => {
     const fooUri = `fs/${fooPath}/build`;
     const greetingPath = `${__dirname}/../utils/validate/wrapper-b`;
     const greetingUri = `fs/${greetingPath}/build`;
-    const ensGreetingPath = `${__dirname}/../utils/validate/wrapper-c`
+    const modifiedFooPath = `${__dirname}/../utils/validate/wrapper-c`
+    const modifiedFooUri = `fs/${modifiedFooPath}/build`;
 
     process.env = {
       ...process.env,
@@ -158,21 +153,6 @@ describe("sanity", () => {
 
     await initTestEnvironment();
     await buildWrapper(fooPath);
-    await buildWrapper(greetingPath);
-    await buildWrapper(ensGreetingPath);
-
-    const { exitCode: code } = await runCLI(
-      {
-        args: ["deploy"],
-        cwd: ensGreetingPath,
-        cli: `${__dirname}/../../../../../cli/bin/polywrap`,
-        env: process.env as Record<string, string>
-      },
-    );
-
-    if (code !== 0) {
-      fail("Wrapper could not be deployed")
-    }
 
     const builder = new ClientConfigBuilder();
 
@@ -191,7 +171,6 @@ describe("sanity", () => {
     let resultError = (result as { error: Error }).error;
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
-
 
     // Add fs resolver, making possible to fetch wrappers locally
     builder.add({
@@ -216,8 +195,6 @@ describe("sanity", () => {
 
     expect(result.ok).toBeTruthy();
 
-    // Greeting wrapper depends on a package from ENS, since we don't have the
-    // ENS resolver added yet, it should fail
     result = await client.validate(greetingUri, {
       recursive: true
     })
@@ -226,78 +203,24 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
 
-    // Let's add IPFS & ENS resolver, as well as needed dependencies
-    builder.add({
-      envs: [{
-        uri: "wrap://ens/ipfs.polywrap.eth",
-        env: {
-          provider: providers.ipfs,
-          fallbackProviders: defaultIpfsProviders
-        }
-      }],
-      plugins: [
-        {
-          uri: "wrap://ens/ens-resolver.polywrap.eth",
-          plugin: ensResolverPlugin({
-            addresses: {
-              testnet: ensAddresses.ensAddress
-            }
-          })
-        }, {
-          uri: "wrap://ens/ens-resolver.polywrap.eth",
-          plugin: ensResolverPlugin({
-            addresses: {
-              testnet: ensAddresses.ensAddress
-            }
-          }),
-        }, {
-          uri: "wrap://ens/ipfs-resolver.polywrap.eth",
-          plugin: ipfsResolverPlugin({})
-        }, {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({})
-        }, {
-        uri: "wrap://ens/ethereum.polywrap.eth",
-          plugin: ethereumPlugin({
-            connections: new Connections({
-              networks: {
-                testnet: new Connection({
-                  provider: providers.ethereum
-                })
-              },
-              defaultNetwork: "testnet"
-            })
-          })
-        }
-      ],
-      interfaces: [{
-        interface: "wrap://ens/uri-resolver.core.polywrap.eth",
-        implementations: [
-          "wrap://ens/ens-resolver.polywrap.eth",
-          "wrap://ens/ipfs-resolver.polywrap.eth",
-        ]
-      }]
-    })
-
+    await buildWrapper(greetingPath);
+    builder.addUriRedirect("ens/foo.eth", fooUri);
     client = new PolywrapClient(builder.build(), { noDefaults: true });
 
-    // Should be able to fetch all packages using FS, ENS & IPFS
     result = await client.validate(greetingUri, {
       recursive: true
     })
 
     expect(result.ok).toBeTruthy()
 
-    /**
-     * Greeting wrapper has been built with a local dependency, but the one deployed
-     * to ENS has a different signature; hence, not being compatible with the greeting wrapper
-     */
+    await buildWrapper(modifiedFooPath);
+    builder.addUriRedirect("ens/foo.eth", modifiedFooUri);
     client = new PolywrapClient(builder.build(), { noDefaults: true });
+
     result = await client.validate(greetingUri, {
       abi: true
     })
 
     expect(result.ok).toBeFalsy();
-    await stopTestEnvironment();
    });
 } ) ;

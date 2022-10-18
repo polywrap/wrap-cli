@@ -82,5 +82,5 @@ export interface Client
   validate<TUri extends Uri | string>(
     uri: TUri,
     options?: ValidateOptions
-  ): Promise<Result<boolean, Error>>;
+  ): Promise<Result<true, Error>>;
 }

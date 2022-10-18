@@ -549,71 +549,64 @@ export class PolywrapClient implements Client {
   public async validate<TUri extends Uri | string>(
     uri: TUri,
     options: ValidateOptions
-  ): Promise<Result<boolean, Error>> {
+  ): Promise<Result<true, Error>> {
     const wrapper = await this.loadWrapper(Uri.from(uri));
     if (!wrapper.ok) {
       return ResultErr(new Error(wrapper.error?.message));
     }
 
-    const manifest = await this.getManifest(uri);
-    if (manifest.ok) {
-      const abi = manifest.value.abi;
-      const importedModules: ImportedModuleDefinition[] =
-        abi.importedModuleTypes || [];
+    const { abi } = await wrapper.value.getManifest();
+    const importedModules: ImportedModuleDefinition[] =
+      abi.importedModuleTypes || [];
 
-      const importUri = (importedModuleType: ImportedModuleDefinition) => {
-        return this.tryResolveUri({ uri: importedModuleType.uri });
-      };
-      const resolvedModules = await Promise.all(importedModules.map(importUri));
-      const moduleNotFound = resolvedModules.find(
-        (m: { ok: boolean }) => !m.ok
-      );
+    const importUri = (importedModuleType: ImportedModuleDefinition) => {
+      return this.tryResolveUri({ uri: importedModuleType.uri });
+    };
+    const resolvedModules = await Promise.all(importedModules.map(importUri));
+    const moduleNotFound = resolvedModules.find(({ ok }) => !ok);
 
-      if (moduleNotFound) {
-        return ResultErr((moduleNotFound as { error: Error }).error);
-      }
-
-      if (options.abi) {
-        for (const importedModule of importedModules) {
-          const importedModuleManifest = await this.getManifest(
-            importedModule.uri
-          );
-          if (!importedModuleManifest.ok) {
-            return ResultErr(importedModuleManifest.error);
-          }
-          const importedMethods =
-            importedModuleManifest.value.abi.moduleType?.methods || [];
-
-          const expectedMethods = importedModules.find(
-            ({ uri }) => importedModule.uri === uri
-          );
-
-          const areEqual = compareAbis(
-            importedMethods,
-            expectedMethods?.methods || []
-          );
-
-          if (!areEqual) {
-            const message = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
-            return ResultErr(new Error(message));
-          }
-        }
-      }
-
-      if (options.recursive) {
-        const validateImportedModules = importedModules.map(({ uri }) =>
-          this.validate(uri, options)
-        );
-        const invalidUris = await Promise.all(validateImportedModules);
-        const invalidUri = invalidUris.find(({ ok }) => !ok);
-        if (invalidUri) {
-          return ResultErr((invalidUri as { error: Error }).error);
-        }
-      }
-      return ResultOk(true);
+    if (moduleNotFound) {
+      return ResultErr((moduleNotFound as { error: Error }).error);
     }
 
-    return ResultErr((manifest as { error: Error }).error);
+    if (options.abi) {
+      for (const importedModule of importedModules) {
+        const importedModuleManifest = await this.getManifest(
+          importedModule.uri
+        );
+        if (!importedModuleManifest.ok) {
+          return ResultErr(importedModuleManifest.error);
+        }
+        const importedMethods =
+          importedModuleManifest.value.abi.moduleType?.methods || [];
+
+        const expectedMethods = importedModules.find(
+          ({ uri }) => importedModule.uri === uri
+        );
+
+        const areEqual = compareAbis(
+          importedMethods,
+          expectedMethods?.methods || []
+        );
+
+        if (!areEqual) {
+          const message = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
+          return ResultErr(new Error(message));
+        }
+      }
+    }
+
+    if (options.recursive) {
+      const validateImportedModules = importedModules.map(({ uri }) =>
+        this.validate(uri, options)
+      );
+      const invalidUris = await Promise.all(validateImportedModules);
+      const invalidUri = invalidUris.find(({ ok }) => !ok);
+      if (invalidUri) {
+        return ResultErr((invalidUri as { error: Error }).error);
+      }
+    }
+    return ResultOk(true);
   }
 
   @Tracer.traceMethod("PolywrapClient: validateConfig")

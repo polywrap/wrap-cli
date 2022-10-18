@@ -6,5 +6,5 @@ source:
   schema: ./schema.graphql
   module: ./src/index.ts
   import_abis:
-    - uri: "ens/testnet/foo.eth"
+    - uri: "ens/foo.eth"
       abi: "../wrapper-a/build/wrap.info"
