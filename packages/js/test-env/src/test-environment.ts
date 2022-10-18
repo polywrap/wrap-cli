@@ -1,4 +1,4 @@
-import { awaitResponse } from "./util";
+import { awaitResponse } from "./utils";
 import { ensAddresses, runCLI } from "./index";
 
 export const initTestEnvironment = async (cli?: string): Promise<void> => {

@@ -1,4 +1,4 @@
-import { generateName } from "./generate-name";
+import { generateName } from "./utils";
 import { build } from "./cli-api";
 import { ensAddresses, runCLI } from "./index";
 

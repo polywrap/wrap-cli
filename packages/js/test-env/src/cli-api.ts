@@ -1,5 +1,5 @@
 import { runCLI } from "./index";
-import { awaitPing } from "./util";
+import { awaitPing } from "./utils";
 
 import path from "path";
 
