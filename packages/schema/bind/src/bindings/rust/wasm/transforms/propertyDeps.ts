@@ -77,12 +77,12 @@ export function propertyDeps(): AbiTransforms {
           // if type is map and the value is custom,
           // we need to add it into property dependency
           if (typeName.startsWith("Map<")) {
-            const valueName = def.map?.object?.type;
+            const valueName = def.map?.object?.type ?? def.map?.enum?.type;
             if (valueName && !isKnownType(valueName)) {
               appendUnique({
                 crate: "crate",
                 type: valueName,
-                isEnum: false,
+                isEnum: valueName === def.map?.enum?.type,
               });
 
               return array;
@@ -98,7 +98,7 @@ export function propertyDeps(): AbiTransforms {
           appendUnique({
             crate: "crate",
             type: typeName,
-            isEnum: !!def.enum,
+            isEnum: !!def.enum || !!def.array?.enum,
           });
 
           return array;

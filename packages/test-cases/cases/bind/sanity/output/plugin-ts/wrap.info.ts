@@ -90,6 +90,17 @@ export const manifest: WrapManifest = {
       "nativeType": "Enum",
       "type": "TestImport_Enum",
       "uri": "testimport.uri.eth"
+    },
+    {
+      "constants": [
+        "STRING",
+        "BYTES"
+      ],
+      "kind": 520,
+      "namespace": "TestImport",
+      "nativeType": "Enum",
+      "type": "TestImport_Enum_Return",
+      "uri": "testimport.uri.eth"
     }
   ],
   "importedEnvTypes": [
@@ -402,6 +413,48 @@ export const manifest: WrapManifest = {
             "type": "Int32"
           },
           "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "arg",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "arg",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            }
+          ],
+          "kind": 64,
+          "name": "returnsArrayOfEnums",
+          "required": true,
+          "return": {
+            "array": {
+              "enum": {
+                "kind": 16384,
+                "name": "returnsArrayOfEnums",
+                "type": "TestImport_Enum_Return"
+              },
+              "item": {
+                "kind": 16384,
+                "name": "returnsArrayOfEnums",
+                "type": "TestImport_Enum_Return"
+              },
+              "kind": 18,
+              "name": "returnsArrayOfEnums",
+              "required": true,
+              "type": "[TestImport_Enum_Return]"
+            },
+            "kind": 34,
+            "name": "returnsArrayOfEnums",
+            "required": true,
+            "type": "[TestImport_Enum_Return]"
+          },
+          "type": "Method"
         }
       ],
       "namespace": "TestImport",
@@ -601,6 +654,9 @@ export const manifest: WrapManifest = {
       },
       {
         "type": "TestImport_Enum"
+      },
+      {
+        "type": "TestImport_Enum_Return"
       }
     ],
     "kind": 128,

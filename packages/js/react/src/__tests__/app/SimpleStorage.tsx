@@ -1,8 +1,7 @@
 import { usePolywrapQuery, PolywrapProvider, usePolywrapClient, createPolywrapProvider } from "@polywrap/react";
-import { PluginRegistration } from "@polywrap/client-js";
+import { PolywrapClientConfig } from "@polywrap/client-js";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
-import { Env } from "@polywrap/core-js";
 
 const SimpleStorage = ({ uri }: { uri: string }) => {
   const { execute: deployContract, data: deployData } = usePolywrapQuery<{
@@ -76,16 +75,14 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
 const CustomProvider = createPolywrapProvider("custom");
 
 export const SimpleStorageContainer = ({
-  envs,
-  plugins,
+  config,
   ensUri,
 }: {
-  envs: Env[]
-  plugins: PluginRegistration[];
+  config: Partial<PolywrapClientConfig>,
   ensUri: string;
 }) => (
   <CustomProvider>
-    <PolywrapProvider plugins={plugins} envs={envs}>
+    <PolywrapProvider config={config}>
       <SimpleStorage uri={ensUri} />
     </PolywrapProvider>
   </CustomProvider>

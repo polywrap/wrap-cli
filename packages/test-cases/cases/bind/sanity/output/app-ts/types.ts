@@ -138,6 +138,18 @@ export type TestImport_EnumString =
 
 export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
 
+/* URI: "testimport.uri.eth" */
+export enum TestImport_Enum_ReturnEnum {
+  STRING,
+  BYTES,
+}
+
+export type TestImport_Enum_ReturnString =
+  | "STRING"
+  | "BYTES"
+
+export type TestImport_Enum_Return = TestImport_Enum_ReturnEnum | TestImport_Enum_ReturnString;
+
 /// Imported Enums END ///
 
 /// Imported Modules START ///
@@ -165,6 +177,11 @@ interface TestImport_Module_Args_anotherMethod {
 }
 
 /* URI: "testimport.uri.eth" */
+interface TestImport_Module_Args_returnsArrayOfEnums {
+  arg: Types.String;
+}
+
+/* URI: "testimport.uri.eth" */
 export const TestImport_Module = {
   importedMethod: async (
     args: TestImport_Module_Args_importedMethod,
@@ -186,6 +203,18 @@ export const TestImport_Module = {
     return client.invoke<Types.Int32>({
       uri,
       method: "anotherMethod",
+      args: args as unknown as Record<string, unknown>
+    });
+  },
+
+  returnsArrayOfEnums: async (
+    args: TestImport_Module_Args_returnsArrayOfEnums,
+    client: Client,
+    uri: string = "testimport.uri.eth"
+  ): Promise<InvokeResult<Array<Types.TestImport_Enum_Return | null>>> => {
+    return client.invoke<Array<Types.TestImport_Enum_Return | null>>({
+      uri,
+      method: "returnsArrayOfEnums",
       args: args as unknown as Record<string, unknown>
     });
   }

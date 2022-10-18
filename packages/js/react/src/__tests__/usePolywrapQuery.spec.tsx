@@ -8,7 +8,6 @@ import {
 } from "../query"
 import { createPlugins, createEnvs } from "./config";
 
-import { Env, PluginRegistration } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -23,14 +22,12 @@ import {
   RenderHookOptions,
   cleanup
 } from "@testing-library/react-hooks";
+import { PolywrapClientConfig } from "@polywrap/client-js";
 
 jest.setTimeout(360000);
 
 describe("usePolywrapQuery hook", () => {
   let uri: string;
-  let envUri: string;
-  let envs: Env[];
-  let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
@@ -42,16 +39,14 @@ describe("usePolywrapQuery hook", () => {
 
     const simpleEnvPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`;
     await buildWrapper(simpleEnvPath);
-    envUri = `fs/${simpleEnvPath}/build`
 
-    envs = createEnvs(providers.ipfs);
-    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum);
+    const config: Partial<PolywrapClientConfig> = {
+      envs: createEnvs(providers.ipfs),
+      plugins: createPlugins(ensAddresses.ensAddress, providers.ethereum),
+    }
     WrapperProvider = {
       wrapper: PolywrapProvider,
-      initialProps: {
-        envs,
-        plugins,
-      },
+      initialProps: { config },
     };
   });
 

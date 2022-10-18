@@ -15,11 +15,15 @@ pub use serialization::{
     ArgsImportedMethod,
     deserialize_another_method_result,
     serialize_another_method_args,
-    ArgsAnotherMethod
+    ArgsAnotherMethod,
+    deserialize_returns_array_of_enums_result,
+    serialize_returns_array_of_enums_args,
+    ArgsReturnsArrayOfEnums
 };
 
 use crate::TestImportObject;
 use crate::TestImportEnum;
+use crate::TestImportEnumReturn;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportModule<'a> {
@@ -53,5 +57,16 @@ impl<'a> TestImportModule<'a> {
             args,
         )?;
         deserialize_another_method_result(result.as_slice()).map_err(|e| e.to_string())
+    }
+
+    pub fn returns_array_of_enums(&self, args: &ArgsReturnsArrayOfEnums) -> Result<Vec<Option<TestImportEnumReturn>>, String> {
+        let uri = self.uri;
+        let args = serialize_returns_array_of_enums_args(args).map_err(|e| e.to_string())?;
+        let result = subinvoke::wrap_subinvoke(
+            uri,
+            "returnsArrayOfEnums",
+            args,
+        )?;
+        deserialize_returns_array_of_enums_result(result.as_slice()).map_err(|e| e.to_string())
     }
 }

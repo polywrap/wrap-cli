@@ -10,16 +10,15 @@ import {
   providers
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { Env, PluginRegistration } from "@polywrap/core-js";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
+import { PolywrapClientConfig } from "@polywrap/client-js";
 jest.setTimeout(360000);
 
 describe("Polywrap React Integration", () => {
-  let envs: Env[];
-  let plugins: PluginRegistration[];
+  let config: Partial<PolywrapClientConfig>
   let ensUri: string;
   let wrapper: {
     ensDomain: string;
@@ -29,9 +28,10 @@ describe("Polywrap React Integration", () => {
   beforeAll(async () => {
     await initTestEnvironment();
 
-    envs = createEnvs(providers.ipfs);
-
-    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum);
+    config = {
+      envs: createEnvs(providers.ipfs),
+      plugins: createPlugins(ensAddresses.ensAddress, providers.ethereum),
+    }
 
     wrapper = await buildAndDeployWrapper({
       wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
@@ -47,7 +47,7 @@ describe("Polywrap React Integration", () => {
   });
 
   it("Deploys, read and write on Smart Contract ", async () => {
-    render(<SimpleStorageContainer envs={envs} plugins={plugins} ensUri={ensUri} />);
+    render(<SimpleStorageContainer config={config} ensUri={ensUri} />);
 
     fireEvent.click(screen.getByText("Deploy"));
     await waitFor(() => screen.getByText(/0x/), { timeout: 30000 });
