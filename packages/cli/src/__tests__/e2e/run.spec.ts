@@ -319,4 +319,19 @@ describe("e2e tests for run command", () => {
     expect(output[0].validation.status).toBe("SUCCEED");
     expect(output[0].error).toBeFalsy();
   });
+
+  it("Should validate expected error", async () => {
+    const testCaseDir = getTestCaseDir(11);
+    const { exitCode, stdout } = await runCLI({
+      args: ["run"],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(exitCode).toEqual(0);
+
+    const output = parseOutput(stdout);
+    expect(output[0].status).toBe("FAILED");
+    expect(output[0].validation.status).toBe("SUCCEED");
+  })
 });

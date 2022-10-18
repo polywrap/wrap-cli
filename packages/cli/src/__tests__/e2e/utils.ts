@@ -29,7 +29,9 @@ export const parseOutput = (
     const result: Partial<WorkflowOutput> = {};
 
     result.id = output.substring(idIndex + id.length, statusIndex - 1).replace(/[\s-]+/g, "")
-    result.status = output.substring(statusIndex + status.length, dataIndex - 1) as Status;
+
+    const statusEndIndex = dataIndex !== -1 ? dataIndex - 1 : errorIndex - 1
+    result.status = output.substring(statusIndex + status.length, statusEndIndex) as Status;
 
     const validationStatus = validationIndex !== -1 ?
       validationErrorIndex !== -1 ?
