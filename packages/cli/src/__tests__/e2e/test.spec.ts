@@ -11,7 +11,7 @@ jest.setTimeout(200000);
 
 const HELP = `Usage: polywrap test|t [options]
 
-Execute Test Manifests
+Execute Tests
 
 Options:
   -m, --manifest-file  <path>           Path to the Polywrap Test manifest file
