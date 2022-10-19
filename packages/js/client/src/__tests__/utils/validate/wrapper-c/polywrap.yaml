@@ -5,5 +5,3 @@ project:
 source:
   schema: ./schema.graphql
   module: ./src/index.ts
-extensions:
-  deploy: ./polywrap.deploy.yaml
