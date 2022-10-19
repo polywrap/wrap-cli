@@ -38,8 +38,8 @@ const pathStr = intlMsg.commands_run_options_m_path();
 export const run: Command = {
   setup: (program: Program) => {
     program
-      .command("run")
-      .alias("r")
+      .command("test")
+      .alias("t")
       .description(intlMsg.commands_run_description())
       .option(
         `-m, --manifest-file  <${pathStr}>`,

@@ -9,18 +9,17 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 
 jest.setTimeout(200000);
 
-const HELP = `Usage: polywrap run|r [options]
+const HELP = `Usage: polywrap test|t [options]
 
-Runs Workflows
+Execute Test Manifests
 
 Options:
-  -m, --manifest-file  <path>           Path to the Polywrap Workflow manifest
-                                        file (default: polywrap.test.yaml |
+  -m, --manifest-file  <path>           Path to the Polywrap Test manifest file
+                                        (default: polywrap.test.yaml |
                                         polywrap.test.yml)
   -c, --client-config <config-path>     Add custom configuration to the
                                         PolywrapClient
-  -o, --output-file <output-file-path>  Output file path for the workflow
-                                        result
+  -o, --output-file <output-file-path>  Output file path for the test result
   -j, --jobs <jobs...>                  Specify ids of jobs that you want to
                                         run
   -v, --verbose                         Verbose output (default: false)
@@ -28,8 +27,8 @@ Options:
   -h, --help                            display help for command
 `;
 
-describe("e2e tests for run command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "run");
+describe("e2e tests for test command", () => {
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "test");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory() && !isNaN(parseInt(dirent.name)))
@@ -56,7 +55,7 @@ describe("e2e tests for run command", () => {
 
   it("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["run", "--help"],
+      args: ["test", "--help"],
       cwd: getTestCaseDir(0),
     });
 
@@ -75,7 +74,7 @@ describe("e2e tests for run command", () => {
     for (const [option, errorMessage] of Object.entries(missingOptionArgs)) {
       it(`Should throw error if params not specified for ${option} option`, async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["run", option],
+          args: ["test", option],
           cwd: getTestCaseDir(0),
           cli: polywrapCli,
         });
@@ -93,7 +92,7 @@ describe("e2e tests for run command", () => {
     const testCaseDir = getTestCaseDir(0);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stdout, stderr } = await runCLI({
-      args: ["run", ...args],
+      args: ["test", ...args],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -113,7 +112,7 @@ describe("e2e tests for run command", () => {
     const testCaseDir = getTestCaseDir(1);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stdout, stderr } = await runCLI({
-      args: ["run", ...args],
+      args: ["test", ...args],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -133,7 +132,7 @@ describe("e2e tests for run command", () => {
     const testCaseDir = getTestCaseDir(2);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stdout, stderr } = await runCLI({
-      args: ["run", ...args],
+      args: ["test", ...args],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -157,7 +156,7 @@ describe("e2e tests for run command", () => {
     const testCaseDir = getTestCaseDir(3);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stdout, stderr } = await runCLI({
-      args: ["run", ...args],
+      args: ["test", ...args],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -183,7 +182,7 @@ describe("e2e tests for run command", () => {
 
   it("Should suppress the output if --quiet option is specified", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
-      args: ["run", "--quiet" ],
+      args: ["test", "--quiet" ],
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
@@ -197,7 +196,7 @@ describe("e2e tests for run command", () => {
     const testCaseDir = getTestCaseDir(4);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stdout, stderr } = await runCLI({
-      args: ["run", ...args],
+      args: ["test", ...args],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -215,7 +214,7 @@ describe("e2e tests for run command", () => {
     const testCaseDir = getTestCaseDir(5);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stdout, stderr } = await runCLI({
-      args: ["run", ...args],
+      args: ["test", ...args],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -237,7 +236,7 @@ describe("e2e tests for run command", () => {
     const testCaseDir = getTestCaseDir(6);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stderr } = await runCLI({
-      args: ["run", ...args],
+      args: ["test", ...args],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -252,7 +251,7 @@ describe("e2e tests for run command", () => {
     const testCaseDir = getTestCaseDir(7);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stdout, stderr } = await runCLI({
-      args: ["run", ...args],
+      args: ["test", ...args],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -271,7 +270,7 @@ describe("e2e tests for run command", () => {
     const testCaseDir = getTestCaseDir(8);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stdout, stderr } = await runCLI({
-      args: ["run", ...args],
+      args: ["test", ...args],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -289,7 +288,7 @@ describe("e2e tests for run command", () => {
     const testCaseDir = getTestCaseDir(9);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stderr } = await runCLI({
-      args: ["run", ...args],
+      args: ["test", ...args],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -304,7 +303,7 @@ describe("e2e tests for run command", () => {
     const testCaseDir = getTestCaseDir(10);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stdout, stderr } = await runCLI({
-      args: ["run", ...args],
+      args: ["test", ...args],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -323,7 +322,7 @@ describe("e2e tests for run command", () => {
   it("Should validate expected error", async () => {
     const testCaseDir = getTestCaseDir(11);
     const { exitCode, stdout } = await runCLI({
-      args: ["run"],
+      args: ["test"],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
