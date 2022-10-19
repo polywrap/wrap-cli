@@ -35,7 +35,7 @@ type WorkflowCommandOptions = {
 const defaultManifestStr = defaultWorkflowManifest.join(" | ");
 const pathStr = intlMsg.commands_run_options_m_path();
 
-export const run: Command = {
+export const test: Command = {
   setup: (program: Program) => {
     program
       .command("test")
