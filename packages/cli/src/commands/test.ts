@@ -133,7 +133,9 @@ const _run = async (options: WorkflowCommandOptions) => {
         break;
       default:
         throw new Error(
-          intlMsg.commands_test_error_unsupportedOutputFileExt({ outputFileExt })
+          intlMsg.commands_test_error_unsupportedOutputFileExt({
+            outputFileExt,
+          })
         );
     }
   }
