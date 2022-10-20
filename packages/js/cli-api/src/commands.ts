@@ -1,20 +1,53 @@
 import { runCLI } from "./run-cli";
-import {
-  Commands,
-  CommandNames,
-  CommandOptions,
-  ActionCommandNames,
-} from "./utils";
 import { CreateCommandOptions, ManifestCommandOptions } from "./types";
 
-export const commands: Commands = {
+import {
+  ManifestMigrateCommandOptions,
+  ManifestSchemaCommandOptions,
+  CommandOptions,
+  CommandOptionMappings,
+} from "polywrap";
+
+type CommandFn<TOptions> = (
+  options?: TOptions,
+  cwd?: string,
+  cli?: string
+) => ReturnType<typeof runCLI>;
+
+type CommandFns<
+  TCommands extends CommandOptionMappings = CommandOptions
+> = Required<{
+  [Command in keyof TCommands]:
+    TCommands[Command] extends CommandOptions ?
+      CommandFn<TCommands[Command]["options"]> :
+        TCommands[Command] extends CommandOptionMappings ?
+          CommandFn<TCommands[Command]> : never;
+}>;
+
+type RecurseCommands<
+  TFinalType,
+  TCommands extends CommandOptionMappings = CommandOptions,
+> = Required<{
+  [Command in keyof TCommands]:
+    TCommands[Command] extends CommandOptions ?
+      CommandFn<TCommands[Command]["options"]> :
+        TCommands[Command] extends CommandOptionMappings ?
+          CommandFn<TCommands[Command]> : never;
+}>;
+
+// TODO: generic recusive template <TCommands, TToType>
+
+export const commands: CommandFns = {
   build: simpleCommandExecutorFactory("build"),
   codegen: simpleCommandExecutorFactory("codegen"),
   create: createCommandExecutor,
   deploy: simpleCommandExecutorFactory("deploy"),
   docgen: actionCommandExecutorFactory("docgen"),
   infra: actionCommandExecutorFactory("infra"),
-  manifest: manifestCommandExecutor,
+  manifest: {
+    migrate: manifestCommandExecutor,
+    schema: manifestCommandExecutor
+  },
   run: simpleCommandExecutorFactory("run"),
 };
 
@@ -43,14 +76,11 @@ function parseOptions<Command extends CommandNames>(
   return parsed;
 }
 
-function simpleCommandExecutorFactory<Command extends CommandNames>(
-  command: Command
-) {
-  return async (
-    options?: CommandOptions[Command],
-    cwd?: string,
-    cli?: string
-  ) => {
+function simpleCommandExecutorFactory<
+  TCommand extends keyof CommandOptions,
+  TOptions = CommandOptions[TCommand]
+>(command: TCommand) {
+  return async (options?: TOptions, cwd?: string, cli?: string) => {
     const args = [command, ...parseOptions(options)];
     return await runCLI({ args, cwd, cli });
   };

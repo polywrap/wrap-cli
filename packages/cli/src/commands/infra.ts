@@ -6,7 +6,7 @@ import {
   resolvePathIfExists,
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
 import path from "path";
@@ -15,19 +15,18 @@ import chalk from "chalk";
 import yaml from "yaml";
 import { readdirSync } from "fs";
 
-export type InfraCommandOptions = {
-  manifestFile: string;
-  modules?: string[];
-  verbose?: boolean;
-  quiet?: boolean;
-};
-
 export enum InfraActions {
   UP = "up",
   DOWN = "down",
   VARS = "vars",
   CONFIG = "config",
 }
+
+export interface InfraCommandOptions extends BaseCommandOptions {
+  action: InfraActions;
+  manifestFile: string;
+  modules?: string[];
+};
 
 const DEFAULT_MODULES_PATH = path.join(
   __dirname,
@@ -80,7 +79,10 @@ export const infra: Command = {
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (action, options) => {
-        await run(action, options);
+        await run({
+          ...options,
+          action
+        });
       });
   },
 };
@@ -94,10 +96,9 @@ Default Modules: \n${readdirSync(DEFAULT_MODULES_PATH)
 Example: 'polywrap infra up --modules=eth-ens-ipfs'.`;
 
 async function run(
-  action: InfraActions,
   options: InfraCommandOptions
 ): Promise<void> {
-  const { modules, verbose, quiet, manifestFile } = options;
+  const { action, modules, verbose, quiet, manifestFile } = options;
 
   const logger = createLogger({ verbose, quiet });
 

@@ -1,0 +1,14 @@
+build:
+  x clientConfig => move to string
+  x strategy => BuildStrategy
+codegen:
+  x clientConfig
+create:
+  x wasm|plugin|app => { language + name }
+docgen:
+  x clientConfig
+  x action => DocgenAction
+infra:
+  x action => InfraAction
+run:
+  x clientConfig

@@ -1,4 +1,4 @@
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import { generateProjectTemplate, intlMsg } from "../lib";
 
@@ -31,11 +31,20 @@ type SupportedLangs =
   | SupportedAppLangs
   | SupportedPluginLangs;
 
-export type CreateCommandOptions = {
+export interface CreateCommandOptions<
+  TLangs extends SupportedLangs
+> extends BaseCommandOptions {
+  language: TLangs;
+  name: string;
   outputDir?: string;
-  verbose?: boolean;
-  quiet?: boolean;
 };
+
+export type CreateAppCommandOptions =
+  CreateCommandOptions<SupportedAppLangs>;
+export type CreatePluginCommandOptions =
+  CreateCommandOptions<SupportedPluginLangs>;
+export type CreateWasmCommandOptions =
+  CreateCommandOptions<SupportedWasmLangs>;
 
 export const create: Command = {
   setup: (program: Program) => {
@@ -61,8 +70,12 @@ export const create: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .action(async (langStr, nameStr, options) => {
-        await run("wasm", langStr, nameStr, options);
+      .action(async (language, name, options) => {
+        await run("wasm", {
+          ...options,
+          language,
+          name,
+        });
       });
 
     createCommand
@@ -82,8 +95,12 @@ export const create: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .action(async (langStr, nameStr, options) => {
-        await run("app", langStr, nameStr, options);
+      .action(async (language, name, options) => {
+        await run("app", {
+          ...options,
+          language,
+          name
+        });
       });
 
     createCommand
@@ -103,19 +120,21 @@ export const create: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .action(async (langStr, nameStr, options) => {
-        await run("plugin", langStr, nameStr, options);
+      .action(async (language, name, options) => {
+        await run("plugin", {
+          ...options,
+          language,
+          name
+        });
       });
   },
 };
 
 async function run(
   command: ProjectType,
-  lang: SupportedLangs,
-  name: string,
-  options: CreateCommandOptions
+  options: CreateCommandOptions<SupportedLangs>
 ) {
-  const { outputDir, verbose, quiet } = options;
+  const { language, name, outputDir, verbose, quiet } = options;
   const logger = createLogger({ verbose, quiet });
 
   const projectDir = path.resolve(outputDir ? `${outputDir}/${name}` : name);
@@ -143,7 +162,7 @@ async function run(
     }
   }
 
-  await generateProjectTemplate(command, lang, projectDir)
+  await generateProjectTemplate(command, language, projectDir)
     .then(() => {
       let readyMessage;
       if (command === "wasm") {

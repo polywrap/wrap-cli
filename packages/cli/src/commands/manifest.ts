@@ -1,4 +1,4 @@
-import { Argument, Command, Program } from "./types";
+import { Argument, Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import {
   defaultBuildManifest,
@@ -76,18 +76,16 @@ const manifestTypes = [
 ] as const;
 export type ManifestType = typeof manifestTypes[number];
 
-export type ManifestSchemaCommandOptions = {
+export interface ManifestSchemaCommandOptions extends BaseCommandOptions {
+  type: ManifestType;
   raw: boolean;
   manifestFile: ManifestType;
-  verbose?: boolean;
-  quiet?: boolean;
 };
 
-export type ManifestMigrateCommandOptions = {
+export interface ManifestMigrateCommandOptions extends BaseCommandOptions {
+  type: ManifestType;
   manifestFile: string;
   format: string;
-  verbose?: boolean;
-  quiet?: boolean;
 };
 
 export const manifest: Command = {
@@ -124,7 +122,10 @@ export const manifest: Command = {
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (type, options) => {
-        await runSchemaCommand(type, options);
+        await runSchemaCommand({
+          ...options,
+          type
+        });
       });
 
     manifestCommand
@@ -153,16 +154,18 @@ export const manifest: Command = {
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (type, options) => {
-        await runMigrateCommand(type, options);
+        await runMigrateCommand({
+          ...options,
+          type
+        });
       });
   },
 };
 
 export const runSchemaCommand = async (
-  type: ManifestType,
   options: ManifestSchemaCommandOptions
 ): Promise<void> => {
-  const { verbose, quiet } = options;
+  const { type, verbose, quiet } = options;
   const logger = createLogger({ verbose, quiet });
   let manifestfile = "";
 
@@ -367,10 +370,9 @@ export const runSchemaCommand = async (
 };
 
 const runMigrateCommand = async (
-  type: ManifestType,
   options: ManifestMigrateCommandOptions
 ) => {
-  const { verbose, quiet } = options;
+  const { type, verbose, quiet } = options;
   const logger = createLogger({ verbose, quiet });
   let manifestFile = "";
   let manifestString: string;

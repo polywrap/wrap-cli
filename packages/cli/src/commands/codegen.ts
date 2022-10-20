@@ -1,5 +1,5 @@
 /* eslint-disable  @typescript-eslint/no-unused-vars */
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import {
   CodeGenerator,
@@ -17,7 +17,7 @@ import {
 } from "../lib";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import path from "path";
 import fs from "fs";
 
@@ -27,14 +27,12 @@ const defaultPublishDir = "./build";
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
-export type CodegenCommandOptions = {
+export interface CodegenCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   codegenDir: string;
   publishDir: string;
   script?: string;
-  clientConfig: Partial<PolywrapClientConfig>;
-  verbose?: boolean;
-  quiet?: boolean;
+  clientConfig: string;
 };
 
 export const codegen: Command = {
@@ -74,7 +72,6 @@ export const codegen: Command = {
       .action(async (options) => {
         await run({
           ...options,
-          clientConfig: await parseClientConfigOption(options.clientConfig),
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           script: parseCodegenScriptOption(options.script),
           manifestFile: parseManifestFileOption(
@@ -100,7 +97,8 @@ async function run(options: CodegenCommandOptions) {
   const logger = createLogger({ verbose, quiet });
 
   // Get Client
-  const client = new PolywrapClient(clientConfig);
+  const config = await parseClientConfigOption(clientConfig);
+  const client = new PolywrapClient(config);
 
   const project = await getProjectFromManifest(manifestFile, logger);
 
