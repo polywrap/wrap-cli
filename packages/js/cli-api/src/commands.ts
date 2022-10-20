@@ -1,17 +1,13 @@
 import { runCLI } from "./run-cli";
-import { ICommands } from "./utils";
 import {
-  BuildCommandOptions,
-  CodegenCommandOptions,
-  CreateCommandOptions,
-  DeployCommandOptions,
-  DocgenCommandOptions,
-  InfraCommandOptions,
-  ManifestCommandOptions,
-  RunCommandOptions,
-} from "./types";
+  Commands,
+  CommandNames,
+  CommandOptions,
+  ActionCommandNames,
+} from "./utils";
+import { CreateCommandOptions, ManifestCommandOptions } from "./types";
 
-export const commands: ICommands = {
+export const commands: Commands = {
   build: simpleCommandExecutorFactory("build"),
   codegen: simpleCommandExecutorFactory("codegen"),
   create: createCommandExecutor,
@@ -21,16 +17,6 @@ export const commands: ICommands = {
   manifest: manifestCommandExecutor,
   run: simpleCommandExecutorFactory("run"),
 };
-
-type CommandOptions =
-  | BuildCommandOptions
-  | CodegenCommandOptions
-  | CreateCommandOptions
-  | DeployCommandOptions
-  | DocgenCommandOptions
-  | InfraCommandOptions
-  | ManifestCommandOptions
-  | RunCommandOptions;
 
 function toKebabCase(camelCase: string): string {
   return camelCase.replace(/([a-z])([A-Z])/g, "$1-$2");
@@ -43,7 +29,9 @@ function parseValue(value: string | string[] | boolean): string {
   return value.toString();
 }
 
-function parseOptions(options?: CommandOptions): string[] {
+function parseOptions<Command extends CommandNames>(
+  options?: CommandOptions[Command]
+): string[] {
   const parsed: string[] = [];
   if (options) {
     for (const [key, value] of Object.entries(options)) {
@@ -55,16 +43,24 @@ function parseOptions(options?: CommandOptions): string[] {
   return parsed;
 }
 
-function simpleCommandExecutorFactory(command: string) {
-  return async (options?: CommandOptions, cwd?: string, cli?: string) => {
+function simpleCommandExecutorFactory<Command extends CommandNames>(
+  command: Command
+) {
+  return async (
+    options?: CommandOptions[Command],
+    cwd?: string,
+    cli?: string
+  ) => {
     const args = [command, ...parseOptions(options)];
     return await runCLI({ args, cwd, cli });
   };
 }
 
-function actionCommandExecutorFactory(command: string) {
+function actionCommandExecutorFactory<Command extends ActionCommandNames>(
+  command: Command
+) {
   return async (
-    options: InfraCommandOptions | DocgenCommandOptions,
+    options: CommandOptions[Command],
     cwd?: string,
     cli?: string
   ) => {

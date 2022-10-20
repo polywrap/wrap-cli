@@ -1,1 +1,1 @@
-export * from "./ICommands";
+export * from "./internal-types";
