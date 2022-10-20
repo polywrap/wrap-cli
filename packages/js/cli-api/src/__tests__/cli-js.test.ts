@@ -1,4 +1,4 @@
-import { awaitResponse, Commands, InfraActions } from "../../";
+import { awaitResponse, Commands, InfraActions, runCLI } from "../../";
 
 import path from "path";
 import fs from "fs";
@@ -9,6 +9,13 @@ describe("cli-js tests", () => {
 
   const localIpfsNode = "http://localhost:5001";
   const wrapperPath = path.resolve(path.join(__dirname, "wrapper"));
+
+  afterAll(async () => {
+    await runCLI({
+      args: ["infra", "down"],
+      cwd: wrapperPath,
+    });
+  });
 
   it("build", async () => {
     // clear build dir
@@ -44,7 +51,7 @@ describe("cli-js tests", () => {
     expect(fs.existsSync(wrapDir)).toBeTruthy();
   });
 
-  it.only("infra", async () => {
+  it("infra", async () => {
     // start infra
     await Commands.infra({ action: InfraActions.UP, verbose: true }, wrapperPath);
     const isInfraUp = await awaitResponse(localIpfsNode);
@@ -52,7 +59,7 @@ describe("cli-js tests", () => {
 
     // stop infra
     await Commands.infra({ action: InfraActions.DOWN, verbose: true }, wrapperPath);
-    await new Promise((r) => setTimeout(r, 20000));
+    await new Promise((r) => setTimeout(r, 5000));
     const isInfraStillUp = await awaitResponse(localIpfsNode);
     expect(isInfraStillUp).toBeFalsy();
   });
@@ -75,7 +82,8 @@ describe("cli-js tests", () => {
     
     // check output
     expect(fs.existsSync(outputFile)).toBeTruthy();
+
+    // stop infra
+    await Commands.infra({ action: InfraActions.DOWN }, wrapperPath);
   });
-
-
 });

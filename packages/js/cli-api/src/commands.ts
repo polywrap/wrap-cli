@@ -19,7 +19,7 @@ export const commands: Commands = {
 };
 
 function toKebabCase(camelCase: string): string {
-  return camelCase.replace(/([a-z])([A-Z])/g, "$1-$2");
+  return camelCase.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 }
 
 function parseValue(value: string | string[] | boolean): string {
@@ -36,7 +36,7 @@ function parseOptions<Command extends CommandNames>(
   if (options) {
     for (const [key, value] of Object.entries(options)) {
       if (value === undefined) continue;
-      parsed.push(toKebabCase(key));
+      parsed.push(`--${toKebabCase(key)}`);
       parsed.push(parseValue(value));
     }
   }

@@ -9,7 +9,14 @@ describe("awaitResponse", () => {
   const localIpfsNode = "http://localhost:5001";
   const wrapperPath = path.resolve(path.join(__dirname, "wrapper"));
 
-  it.only("returns false when infra is unavailable", async () => {
+  afterAll(async () => {
+    await runCLI({
+      args: ["infra", "down"],
+      cwd: wrapperPath,
+    });
+  });
+
+  it("returns false when infra is unavailable", async () => {
     const isInfraUp = await awaitResponse(localIpfsNode);
     expect(isInfraUp).toBeFalsy();
   });
