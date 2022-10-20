@@ -4,7 +4,6 @@ import {
   loadInfraManifest,
   defaultInfraManifest,
   resolvePathIfExists,
-  parseLogFileOption,
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
 import { Command, Program } from "./types";
@@ -21,7 +20,6 @@ type InfraCommandOptions = {
   verbose?: boolean;
   quiet?: boolean;
   manifest: string;
-  logFile?: string;
 };
 
 enum InfraActions {
@@ -81,17 +79,12 @@ export const infra: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .option(
-        `-l, --log-file [${pathStr}]`,
-        `${intlMsg.commands_build_options_l()}`
-      )
       .action(async (action, options) => {
         await run(action, {
           ...options,
           manifest: options.manifestFile
             ? [options.manifestFile]
             : defaultInfraManifest,
-          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
@@ -109,9 +102,9 @@ async function run(
   action: InfraActions,
   options: InfraCommandOptions & { manifest: string[] }
 ): Promise<void> {
-  const { modules, verbose, quiet, manifest, logFile } = options;
+  const { modules, verbose, quiet, manifest } = options;
 
-  const logger = createLogger({ verbose, quiet, logFile });
+  const logger = createLogger({ verbose, quiet });
 
   // eslint-disable-next-line prefer-const
   let modulesArray: string[] = [];

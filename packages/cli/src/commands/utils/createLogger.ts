@@ -1,23 +1,16 @@
-import { Logger, LogLevel, ConsoleLog, Logs, FileLog } from "../../lib";
+import { Logger, LogLevel, ConsoleLog } from "../../lib";
 
-export function createLogger(options: {
+export function createLogger(flags: {
   verbose?: boolean;
   quiet?: boolean;
-  logFile?: string;
 }): Logger {
-  const level = options.quiet
+  const level = flags.quiet
     ? LogLevel.ERROR
-    : options.verbose
+    : flags.verbose
     ? LogLevel.DEBUG
     : LogLevel.INFO;
 
-  const logs: Logs = {
+  return new Logger({
     console: new ConsoleLog(level),
-  };
-
-  if (options.logFile) {
-    logs["file"] = new FileLog(options.logFile, level);
-  }
-
-  return new Logger(logs);
+  });
 }

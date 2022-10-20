@@ -35,7 +35,6 @@ Options:
   -m, --manifest-file <path>  Path to the manifest file (default: polywrap.yaml
                               | polywrap.yml)
   -f, --format <format>       Target format to migrate to (defaults to latest)
-  -l, --log-file [path]       Log file to save console output to
   -v, --verbose               Verbose output (default: false)
   -q, --quiet                 Suppress output (default: false)
   -h, --help                  display help for command
@@ -56,7 +55,6 @@ Options:
                               | polywrap.yml)
   -v, --verbose               Verbose output (default: false)
   -q, --quiet                 Suppress output (default: false)
-  -l, --log-file [path]       Log file to save console output to
   -h, --help                  display help for command
 `;
 
