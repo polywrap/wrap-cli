@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/msgpack-js",
   "description": "WRAP MsgPack Encoding",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "license": "MIT",
   "repository": {
     "type": "git",
