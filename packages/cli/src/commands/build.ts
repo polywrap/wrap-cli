@@ -33,11 +33,11 @@ const strategyStr = intlMsg.commands_build_options_s_strategy();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
 
-type BuildCommandOptions = {
+export type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
   clientConfig: Partial<PolywrapClientConfig>;
-  codegen: boolean; // defaults to true
+  skipCodegen?: boolean;
   watch?: boolean;
   strategy: SupportedStrategies;
   verbose?: boolean;
@@ -66,7 +66,7 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
-      .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_n()}`)
+      .option(`-n, --skip-codegen`, `${intlMsg.commands_build_options_n()}`)
       .option(
         `-s, --strategy <${strategyStr}>`,
         `${intlMsg.commands_build_options_s()}`,
@@ -132,7 +132,7 @@ async function run(options: BuildCommandOptions) {
     outputDir,
     clientConfig,
     strategy,
-    codegen,
+    skipCodegen,
     verbose,
     quiet,
   } = options;
@@ -159,9 +159,9 @@ async function run(options: BuildCommandOptions) {
   });
 
   const execute = async (): Promise<boolean> => {
-    const codeGenerator = codegen
-      ? new CodeGenerator({ project, schemaComposer })
-      : undefined;
+    const codeGenerator = skipCodegen
+      ? undefined
+      : new CodeGenerator({ project, schemaComposer });
 
     const compiler = new Compiler({
       project,

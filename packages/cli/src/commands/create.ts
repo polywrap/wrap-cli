@@ -23,8 +23,15 @@ export const supportedLangs = {
 };
 
 export type ProjectType = keyof typeof supportedLangs;
-export type SupportedLangs = typeof supportedLangs[ProjectType][number];
-type CreateCommandOptions = {
+export type SupportedWasmLangs = typeof supportedLangs.wasm[number];
+export type SupportedAppLangs = typeof supportedLangs.app[number];
+export type SupportedPluginLangs = typeof supportedLangs.plugin[number];
+type SupportedLangs =
+  | SupportedWasmLangs
+  | SupportedAppLangs
+  | SupportedPluginLangs;
+
+export type CreateCommandOptions = {
   outputDir?: string;
   verbose?: boolean;
   quiet?: boolean;

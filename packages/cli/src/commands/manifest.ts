@@ -74,16 +74,16 @@ const manifestTypes = [
   "meta",
   "workflow",
 ] as const;
-type ManifestType = typeof manifestTypes[number];
+export type ManifestType = typeof manifestTypes[number];
 
-type ManifestSchemaCommandOptions = {
+export type ManifestSchemaCommandOptions = {
   raw: boolean;
   manifestFile: ManifestType;
   verbose?: boolean;
   quiet?: boolean;
 };
 
-type ManifestMigrateCommandOptions = {
+export type ManifestMigrateCommandOptions = {
   manifestFile: string;
   format: string;
   verbose?: boolean;

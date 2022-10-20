@@ -26,12 +26,10 @@ const commandToPathMap: Record<string, string> = {
   jsdoc: jsdocScriptPath,
 };
 
-export type DocType = keyof typeof commandToPathMap;
-
 const defaultDocgenDir = "./docs";
 const pathStr = intlMsg.commands_codegen_options_o_path();
 
-type DocgenCommandOptions = {
+export type DocgenCommandOptions = {
   manifestFile: string;
   docgenDir: string;
   clientConfig: Partial<PolywrapClientConfig>;
@@ -45,6 +43,7 @@ enum Actions {
   DOCUSAURUS = "docusaurus",
   JSDOC = "jsdoc",
 }
+export type DocgenAction = keyof Record<Actions, string>;
 
 const argumentsDescription = `
   ${chalk.bold(Actions.SCHEMA)}      ${intlMsg.commands_docgen_options_schema()}
@@ -107,7 +106,7 @@ export const docgen: Command = {
   },
 };
 
-async function run(command: DocType, options: DocgenCommandOptions) {
+async function run(command: DocgenAction, options: DocgenCommandOptions) {
   const {
     manifestFile,
     docgenDir,

@@ -27,7 +27,7 @@ const defaultPublishDir = "./build";
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
-type CodegenCommandOptions = {
+export type CodegenCommandOptions = {
   manifestFile: string;
   codegenDir: string;
   publishDir: string;

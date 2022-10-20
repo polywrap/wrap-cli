@@ -15,11 +15,11 @@ import chalk from "chalk";
 import yaml from "yaml";
 import { readdirSync } from "fs";
 
-type InfraCommandOptions = {
-  modules?: string;
+export type InfraCommandOptions = {
+  manifestFile: string;
+  modules?: string[];
   verbose?: boolean;
   quiet?: boolean;
-  manifest: string;
 };
 
 enum InfraActions {
@@ -28,6 +28,7 @@ enum InfraActions {
   VARS = "vars",
   CONFIG = "config",
 }
+export type InfraAction = keyof Record<InfraActions, string>;
 
 const DEFAULT_MODULES_PATH = path.join(
   __dirname,
@@ -74,18 +75,13 @@ export const infra: Command = {
         })
       )
       .option(
-        `-o, --modules <${moduleNameStr},${moduleNameStr}>`,
+        `-o, --modules <${moduleNameStr}...>`,
         intlMsg.commands_infra_options_o()
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (action, options) => {
-        await run(action, {
-          ...options,
-          manifest: options.manifestFile
-            ? [options.manifestFile]
-            : defaultInfraManifest,
-        });
+        await run(action, options);
       });
   },
 };
@@ -100,18 +96,17 @@ Example: 'polywrap infra up --modules=eth-ens-ipfs'.`;
 
 async function run(
   action: InfraActions,
-  options: InfraCommandOptions & { manifest: string[] }
+  options: InfraCommandOptions
 ): Promise<void> {
-  const { modules, verbose, quiet, manifest } = options;
+  const { modules, verbose, quiet, manifestFile } = options;
 
   const logger = createLogger({ verbose, quiet });
 
-  // eslint-disable-next-line prefer-const
-  let modulesArray: string[] = [];
-  if (modules) {
-    modulesArray = modules.split(",").map((m: string) => m.trim());
-  }
+  const modulesArray: string[] = modules ?? [];
 
+  const manifest: string[] = manifestFile
+    ? [manifestFile]
+    : defaultInfraManifest;
   const manifestPath = resolvePathIfExists(manifest);
 
   let infraManifest: InfraManifest | undefined;
@@ -143,7 +138,7 @@ async function run(
   if (!filteredModules.length) {
     if (modules) {
       const errorMsg = intlMsg.commands_infra_error_noModulesMatch({
-        modules,
+        modules: modules.join(", "),
       });
       logger.error(errorMsg);
       return;

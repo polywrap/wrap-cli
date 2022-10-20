@@ -20,7 +20,7 @@ import { validate } from "jsonschema";
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_deploy_options_o_path();
 
-type DeployCommandOptions = {
+export type DeployCommandOptions = {
   manifestFile: string;
   outputFile?: string;
   verbose?: boolean;

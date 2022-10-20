@@ -23,9 +23,9 @@ import path from "path";
 import yaml from "yaml";
 import fs from "fs";
 
-type WorkflowCommandOptions = {
+export type RunCommandOptions = {
   clientConfig: Partial<PolywrapClientConfig>;
-  manifest: string;
+  manifestFile: string;
   jobs?: string[];
   validationScript?: string;
   outputFile?: string;
@@ -65,7 +65,7 @@ export const run: Command = {
       .action(async (options) => {
         await _run({
           ...options,
-          manifest: parseManifestFileOption(
+          manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultWorkflowManifest
           ),
@@ -78,12 +78,19 @@ export const run: Command = {
   },
 };
 
-const _run = async (options: WorkflowCommandOptions) => {
-  const { manifest, clientConfig, outputFile, verbose, quiet, jobs } = options;
+const _run = async (options: RunCommandOptions) => {
+  const {
+    manifestFile,
+    clientConfig,
+    outputFile,
+    verbose,
+    quiet,
+    jobs,
+  } = options;
   const logger = createLogger({ verbose, quiet });
   const client = new PolywrapClient(clientConfig);
 
-  const manifestPath = path.resolve(manifest);
+  const manifestPath = path.resolve(manifestFile);
   const workflow = await loadWorkflowManifest(manifestPath, logger);
   validateJobNames(workflow.jobs);
   const validationScript = workflow.validation
