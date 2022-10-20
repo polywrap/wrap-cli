@@ -38,22 +38,24 @@ export type DocgenCommandOptions = {
   quiet?: boolean;
 };
 
-enum Actions {
+enum DocgenActions {
   SCHEMA = "schema",
   DOCUSAURUS = "docusaurus",
   JSDOC = "jsdoc",
 }
-export type DocgenAction = keyof Record<Actions, string>;
+export type DocgenAction = keyof Record<DocgenActions, string>;
 
 const argumentsDescription = `
-  ${chalk.bold(Actions.SCHEMA)}      ${intlMsg.commands_docgen_options_schema()}
   ${chalk.bold(
-    Actions.DOCUSAURUS
+    DocgenActions.SCHEMA
+  )}      ${intlMsg.commands_docgen_options_schema()}
+  ${chalk.bold(
+    DocgenActions.DOCUSAURUS
   )}    ${intlMsg.commands_docgen_options_markdown({
   framework: "Docusaurus",
 })}
   ${chalk.bold(
-    Actions.JSDOC
+    DocgenActions.JSDOC
   )}         ${intlMsg.commands_docgen_options_markdown({
   framework: "JSDoc",
 })}
@@ -68,9 +70,9 @@ export const docgen: Command = {
       .usage("<action> [options]")
       .addArgument(
         new Argument("<action>", argumentsDescription).choices([
-          Actions.SCHEMA,
-          Actions.DOCUSAURUS,
-          Actions.JSDOC,
+          DocgenActions.SCHEMA,
+          DocgenActions.DOCUSAURUS,
+          DocgenActions.JSDOC,
         ])
       )
       .option(

@@ -51,7 +51,7 @@ export const codegen: Command = {
       )
       .option(
         `-g, --codegen-dir <${pathStr}>`,
-        ` ${intlMsg.commands_codegen_options_codegen({
+        `${intlMsg.commands_codegen_options_codegen({
           default: defaultCodegenDir,
         })}`
       )
