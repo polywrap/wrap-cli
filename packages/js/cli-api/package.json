@@ -13,7 +13,9 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "lint": "eslint --color -c ../../../.eslintrc.js src/"
+    "lint": "eslint --color -c ../../../.eslintrc.js src/",
+    "test": "jest --passWithNoTests --runInBand --verbose",
+    "test:ci": "jest --passWithNoTests --runInBand --detectOpenHandles --verbose"
   },
   "dependencies": {
     "axios": "0.21.2",

@@ -22,13 +22,12 @@ export type InfraCommandOptions = {
   quiet?: boolean;
 };
 
-enum InfraActions {
+export enum InfraActions {
   UP = "up",
   DOWN = "down",
   VARS = "vars",
   CONFIG = "config",
 }
-export type InfraAction = keyof Record<InfraActions, string>;
 
 const DEFAULT_MODULES_PATH = path.join(
   __dirname,

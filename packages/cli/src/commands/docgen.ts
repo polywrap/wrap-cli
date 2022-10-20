@@ -38,12 +38,11 @@ export type DocgenCommandOptions = {
   quiet?: boolean;
 };
 
-enum DocgenActions {
+export enum DocgenActions {
   SCHEMA = "schema",
   DOCUSAURUS = "docusaurus",
   JSDOC = "jsdoc",
 }
-export type DocgenAction = keyof Record<DocgenActions, string>;
 
 const argumentsDescription = `
   ${chalk.bold(
@@ -108,7 +107,7 @@ export const docgen: Command = {
   },
 };
 
-async function run(command: DocgenAction, options: DocgenCommandOptions) {
+async function run(command: DocgenActions, options: DocgenCommandOptions) {
   const {
     manifestFile,
     docgenDir,

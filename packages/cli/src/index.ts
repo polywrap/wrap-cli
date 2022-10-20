@@ -13,7 +13,7 @@ export {
   SupportedWasmLangs,
   SupportedPluginLangs,
   SupportedAppLangs,
-  DocgenAction,
-  InfraAction,
+  DocgenActions,
+  InfraActions,
 } from "./commands";
 export { SupportedStrategies } from "./lib/build-strategies";

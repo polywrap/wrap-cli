@@ -11,18 +11,30 @@ import {
   SupportedWasmLangs,
   SupportedPluginLangs,
   SupportedAppLangs,
-  DocgenAction,
-  InfraAction,
+  DocgenActions,
+  InfraActions,
+  SupportedStrategies,
   ManifestType,
 } from "polywrap";
+
+export {
+  DocgenActions,
+  InfraActions,
+  SupportedStrategies as BuildStrategies,
+} from "polywrap";
+
+export type DocgenAction = `${DocgenActions}`;
+export type InfraAction = `${InfraActions}`;
+export type BuildStrategy = `${SupportedStrategies}`;
 
 export type DeployCommandOptions = Partial<ParsedDeployCommandOptions>;
 
 export type BuildCommandOptions = Omit<
   Partial<ParsedBuildCommandOptions>,
-  "watch" | "clientConfig"
+  "watch" | "clientConfig" | "strategy"
 > & {
   clientConfig?: string;
+  strategy?: BuildStrategy;
 };
 
 export type CodegenCommandOptions = Omit<

@@ -9,9 +9,16 @@ export async function awaitResponse(
 
   while (time < maxTimeout) {
     const request = axios.get(url, { timeout });
+    console.log("requesting: " + url);
     const success = await request
-      .then(() => true)
-      .catch((e) => e.code !== "ECONNRESET");
+      .then(() => {
+        console.log("no error thrown");
+        return true;
+      })
+      .catch((e) => {
+        console.log(e.code);
+        return e.code !== "ECONNRESET";
+      });
 
     if (success) {
       return true;
