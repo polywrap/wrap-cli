@@ -1,4 +1,4 @@
-import { runCLI } from "./run-cli";
+import { runCLI } from "../run-cli";
 import {
   BuildCommandOptions,
   CodegenCommandOptions,
@@ -8,7 +8,7 @@ import {
   InfraCommandOptions,
   ManifestCommandOptions,
   RunCommandOptions,
-} from "./types";
+} from "../types";
 
 export interface ICommands {
   readonly build: (

@@ -18,6 +18,9 @@ import path from "path";
 export async function foo({
   // spin up infra modules defined in a polywrap.infra.yaml manifest
   await Commands.infra({ verbose: true });
+  
+  // wait for infra to be ready to go
+  await awaitResponse("http://localhost:5001");
 
   // get path to the wrapper
   const wrapperPath: string = path.join(path.resolve(__dirname), "..");
@@ -25,7 +28,7 @@ export async function foo({
   // build current wrapper with CLI
   await Commands.build(undefined, wrapperPath);
 
-  // get URI to the local wrapper build
+  // get invokable URI to the local wrapper build
   const wrapperUri = `fs/${wrapperPath}/build`;
 });
 ```
