@@ -12,12 +12,6 @@ export interface BaseCommandOptions {
   quiet?: boolean;
 }
 
-export type CommandOptionsOrSubCommand<
-  TOptions extends BaseCommandOptions = BaseCommandOptions
-> =
-  TOptions |
-  { [subCommand: string]: CommandOptionsOrSubCommand };
-
-export interface CommandOptionMappings {
-  [name: string]: CommandOptionsOrSubCommand;
+export type CommandOptionMapping = {
+  [name: string]: BaseCommandOptions | CommandOptionMapping;
 }

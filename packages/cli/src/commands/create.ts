@@ -39,12 +39,12 @@ export interface CreateCommandOptions<
   outputDir?: string;
 };
 
-export type CreateAppCommandOptions =
-  CreateCommandOptions<SupportedAppLangs>;
-export type CreatePluginCommandOptions =
-  CreateCommandOptions<SupportedPluginLangs>;
-export type CreateWasmCommandOptions =
-  CreateCommandOptions<SupportedWasmLangs>;
+export interface CreateAppCommandOptions
+  extends CreateCommandOptions<SupportedAppLangs> { }
+export interface CreatePluginCommandOptions
+  extends CreateCommandOptions<SupportedPluginLangs> { }
+export interface CreateWasmCommandOptions
+  extends CreateCommandOptions<SupportedWasmLangs> { }
 
 export const create: Command = {
   setup: (program: Program) => {

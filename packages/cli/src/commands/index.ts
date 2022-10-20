@@ -8,7 +8,6 @@ export * from "./manifest";
 export * from "./run";
 export * from "./types";
 
-import { CommandOptionMappings } from "./types";
 import { BuildCommandOptions } from "./build";
 import { CodegenCommandOptions } from "./codegen";
 import {
@@ -25,7 +24,7 @@ import {
 } from "./manifest";
 import { RunCommandOptions } from "./run";
 
-export interface CommandOptions extends CommandOptionMappings {
+export interface CommandOptions {
   "build": BuildCommandOptions;
   "codegen": CodegenCommandOptions;
   "create": {
@@ -41,4 +40,4 @@ export interface CommandOptions extends CommandOptionMappings {
     "schema": ManifestSchemaCommandOptions;
   };
   "run": RunCommandOptions;
-};
+}
