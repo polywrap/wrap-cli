@@ -3,7 +3,7 @@ import {
   intlMsg,
   JobResult,
   JobRunner,
-  JobStatus,
+  Status,
   loadValidationScript,
   loadWorkflowManifest,
   parseClientConfigOption,
@@ -11,7 +11,6 @@ import {
   printJobOutput,
   validateJobNames,
   validateOutput,
-  ValidationResult,
   WorkflowOutput,
   defaultWorkflowManifest,
   parseManifestFileOption,
@@ -94,22 +93,24 @@ const _run = async (options: WorkflowCommandOptions) => {
 
   const onExecution = (id: string, jobResult: JobResult) => {
     const { data, error, status } = jobResult;
+    const output: WorkflowOutput = {
+      id,
+      status,
+      data,
+      error,
+      validation: {
+        status: Status.SKIPPED,
+      },
+    };
 
-    if (error !== undefined) {
-      process.exit(1);
-    }
-
-    const output: WorkflowOutput = { id, status, data, error };
-    workflowOutput.push(output);
-
-    let validation: ValidationResult | undefined = undefined;
-    if (status === JobStatus.SUCCEED && validationScript) {
-      validation = validateOutput(output, validationScript, logger);
+    if (validationScript) {
+      validateOutput(output, validationScript, logger);
     }
 
     if (!quiet) {
-      printJobOutput(output, validation);
+      printJobOutput(output);
     }
+    workflowOutput.push(output);
   };
 
   const jobRunner = new JobRunner(client, onExecution);
@@ -118,13 +119,17 @@ const _run = async (options: WorkflowCommandOptions) => {
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);
     if (!outputFileExt) throw new Error("Require output file extension");
+    const printableOutput = workflowOutput.map((o) => ({
+      ...o,
+      error: o.error?.message,
+    }));
     switch (outputFileExt) {
       case "yaml":
       case "yml":
-        fs.writeFileSync(outputFile, yaml.stringify(workflowOutput, null, 2));
+        fs.writeFileSync(outputFile, yaml.stringify(printableOutput, null, 2));
         break;
       case "json":
-        fs.writeFileSync(outputFile, JSON.stringify(workflowOutput, null, 2));
+        fs.writeFileSync(outputFile, JSON.stringify(printableOutput, null, 2));
         break;
       default:
         throw new Error(

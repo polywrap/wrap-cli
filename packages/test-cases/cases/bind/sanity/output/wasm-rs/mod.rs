@@ -32,6 +32,12 @@ pub use imported::test_import_enum::{
     sanitize_test_import_enum_value,
     TestImportEnum
 };
+pub use imported::test_import_enum_return::{
+    get_test_import_enum_return_key,
+    get_test_import_enum_return_value,
+    sanitize_test_import_enum_return_value,
+    TestImportEnumReturn
+};
 pub use imported::test_import_env::TestImportEnv;
 pub use imported::test_import_module::TestImportModule;
 pub mod test_import;

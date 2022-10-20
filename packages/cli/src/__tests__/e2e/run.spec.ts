@@ -208,10 +208,10 @@ describe("e2e tests for run command", () => {
 
     const output = parseOutput(stdout);
     expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
-    expect(output.filter((o => o.validation?.startsWith("SUCCEED")))).toHaveLength(output.length);
+    expect(output.filter((o => o.validation?.status.startsWith("SUCCEED")))).toHaveLength(output.length);
   });
 
-  it("Should print error on stderr if validation fails", async () => {
+  it("Should print error on validation if it fails", async () => {
     const testCaseDir = getTestCaseDir(5);
     const args = getCmdArgs(testCaseDir);
     const { exitCode, stdout, stderr } = await runCLI({
@@ -225,8 +225,8 @@ describe("e2e tests for run command", () => {
     const output = parseOutput(stdout);
 
     expect(output[0].status).toBe("SUCCEED");
-    expect(output[0].validation).toBe("FAILED");
-    expect(output[0].error).toBeTruthy();
+    expect(output[0].validation.status).toBe("FAILED");
+    expect(output[0].validation.error).toBeTruthy();
 
     expect(stderr).toBeDefined();
     expect(stderr).not.toBe("");
@@ -263,7 +263,7 @@ describe("e2e tests for run command", () => {
 
     const output = parseOutput(stdout);
     expect(output[0].status).toBe("SUCCEED");
-    expect(output[0].validation).toBe("SUCCEED");
+    expect(output[0].validation.status).toBe("SUCCEED");
     expect(output[0].error).toBeFalsy();
   });
 
@@ -282,7 +282,7 @@ describe("e2e tests for run command", () => {
 
     const output = parseOutput(stdout);
     expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
-    expect(output.filter((o => o.validation?.startsWith("SUCCEED")))).toHaveLength(output.length);
+    expect(output.filter((o => o.validation.status.startsWith("SUCCEED")))).toHaveLength(output.length);
   });
 
   it("Should print error on stderr if job is named 'data' or 'error'", async () => {
@@ -316,7 +316,22 @@ describe("e2e tests for run command", () => {
     const output = parseOutput(stdout);
     expect(output[0].id).toBe("case2.0");
     expect(output[0].status).toBe("SUCCEED");
-    expect(output[0].validation).toBe("SUCCEED");
+    expect(output[0].validation.status).toBe("SUCCEED");
     expect(output[0].error).toBeFalsy();
   });
+
+  it("Should validate expected error", async () => {
+    const testCaseDir = getTestCaseDir(11);
+    const { exitCode, stdout } = await runCLI({
+      args: ["run"],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(exitCode).toEqual(0);
+
+    const output = parseOutput(stdout);
+    expect(output[0].status).toBe("FAILED");
+    expect(output[0].validation.status).toBe("SUCCEED");
+  })
 });

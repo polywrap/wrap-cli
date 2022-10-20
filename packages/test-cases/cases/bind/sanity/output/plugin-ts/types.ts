@@ -152,6 +152,18 @@ export type TestImport_EnumString =
 
 export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
 
+/* URI: "testimport.uri.eth" */
+export enum TestImport_Enum_ReturnEnum {
+  STRING,
+  BYTES,
+}
+
+export type TestImport_Enum_ReturnString =
+  | "STRING"
+  | "BYTES"
+
+export type TestImport_Enum_Return = TestImport_Enum_ReturnEnum | TestImport_Enum_ReturnString;
+
 /// Imported Objects END ///
 
 /// Imported Modules START ///
@@ -179,6 +191,11 @@ interface TestImport_Module_Args_anotherMethod {
 }
 
 /* URI: "testimport.uri.eth" */
+interface TestImport_Module_Args_returnsArrayOfEnums {
+  arg: Types.String;
+}
+
+/* URI: "testimport.uri.eth" */
 export class TestImport_Module {
   public static interfaceUri: string = "testimport.uri.eth";
 
@@ -203,6 +220,17 @@ export class TestImport_Module {
     return client.invoke<Types.Int32>({
       uri: this.uri,
       method: "anotherMethod",
+      args: args as unknown as Record<string, unknown>
+    });
+  }
+
+  public async returnsArrayOfEnums (
+    args: TestImport_Module_Args_returnsArrayOfEnums,
+    client: Client
+  ): Promise<InvokeResult<Array<Types.TestImport_Enum_Return | null>>> {
+    return client.invoke<Array<Types.TestImport_Enum_Return | null>>({
+      uri: this.uri,
+      method: "returnsArrayOfEnums",
       args: args as unknown as Record<string, unknown>
     });
   }
