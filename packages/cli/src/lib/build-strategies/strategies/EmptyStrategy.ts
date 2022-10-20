@@ -5,5 +5,7 @@ export class EmptyBuildStrategy extends BuildStrategy<void> {
     return "empty";
   }
 
-  public async buildSources(): Promise<void> {}
+  public async buildSources(): Promise<void> {
+    return;
+  }
 }
