@@ -2,7 +2,7 @@
   "name": "http-js-plugin-integration-test",
   "description": "HTTP JS Plugin Integration Test",
   "private": true,
-  "version": "0.9.2",
+  "version": "0.9.3",
   "scripts": {
     "build": "yarn build:polywrap",
     "build:polywrap": "npx polywrap build",
@@ -12,7 +12,7 @@
     "deploy:polywrap": "npx polywrap build --ipfs http://localhost:5001 --test-ens simplestorage.eth"
   },
   "dependencies": {
-    "@polywrap/wasm-as": "0.9.2",
+    "@polywrap/wasm-as": "0.9.3",
     "assemblyscript": "0.19.23"
   }
 }
