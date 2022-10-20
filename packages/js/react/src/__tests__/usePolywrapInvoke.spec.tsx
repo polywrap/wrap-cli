@@ -6,6 +6,7 @@ import {
 import { UsePolywrapInvokeProps } from "../invoke";
 import { createPlugins, createEnvs } from "./config";
 
+import { Env, PluginRegistration } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -20,12 +21,14 @@ import {
   RenderHookOptions,
   cleanup
 } from "@testing-library/react-hooks";
-import { PolywrapClientConfig } from "@polywrap/client-js";
 
 jest.setTimeout(360000);
 
 describe("usePolywrapInvoke hook", () => {
   let uri: string;
+  let envUri: string;
+  let envs: Env[];
+  let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
@@ -37,14 +40,16 @@ describe("usePolywrapInvoke hook", () => {
 
     const simpleEnvPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`;
     await buildWrapper(simpleEnvPath);
+    envUri = `fs/${simpleEnvPath}/build`
 
-    const config: Partial<PolywrapClientConfig> = {
-      envs: createEnvs(providers.ipfs),
-      plugins: createPlugins(ensAddresses.ensAddress, providers.ethereum),
-    }
+    envs = createEnvs(providers.ipfs);
+    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum);
     WrapperProvider = {
       wrapper: PolywrapProvider,
-      initialProps: { config },
+      initialProps: {
+        envs,
+        plugins,
+      },
     };
   });
 
