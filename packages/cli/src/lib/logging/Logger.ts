@@ -1,6 +1,6 @@
 import { Log, LogLevel } from "./Log";
 
-interface Logs {
+export interface Logs {
   [name: string]: Log;
 }
 
