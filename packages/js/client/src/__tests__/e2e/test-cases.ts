@@ -1119,3 +1119,23 @@ export const runComplexEnvs = async (
     array: [32, 23],
   });
 };
+
+export const runSubinvokeTest = async (
+  client: PolywrapClient,
+  uri: string,
+) => {
+  {
+    const response = await client.invoke({
+      uri,
+      method: "add",
+      args: {
+        a: 1,
+        b: 2
+      },
+    });
+
+    if (!response.ok) fail(response.error);
+    expect(response.value).toBeTruthy();
+    expect(response.value).toEqual(3);
+  }
+};

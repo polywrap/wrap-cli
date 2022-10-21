@@ -30,7 +30,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
       );
     }
 
-    const ensDomain = uri.path;
+    let ensDomain = uri.path;
 
     const connectionProvider = new JsonRpcProvider(config.provider);
     const {
@@ -39,6 +39,10 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
     } = await connectionProvider.getNetwork();
 
     const network = chainIdNum === 1337 ? "testnet" : networkName;
+
+    if (ensDomain.startsWith(network)) {
+      ensDomain = ensDomain.split("/")[1];
+    }
 
     const signer = config.privateKey
       ? new Wallet(config.privateKey).connect(connectionProvider)
