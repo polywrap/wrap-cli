@@ -21,15 +21,15 @@
   },
   "dependencies": {
     "@polywrap/core-js": "0.9.3",
-    "@polywrap/plugin-js": "0.9.2",
+    "@polywrap/plugin-js": "0.9.3",
     "axios": "0.21.4"
   },
   "devDependencies": {
     "@polywrap/client-js": "0.9.3",
-    "@polywrap/uri-resolvers-js": "0.9.2",
-    "@polywrap/fs-resolver-plugin-js": "0.9.2",
-    "@polywrap/fs-plugin-js": "0.9.2",
-    "@polywrap/uri-resolver-extensions-js": "0.9.2",
+    "@polywrap/uri-resolvers-js": "0.9.3",
+    "@polywrap/fs-resolver-plugin-js": "0.9.3",
+    "@polywrap/fs-plugin-js": "0.9.3",
+    "@polywrap/uri-resolver-extensions-js": "0.9.3",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "jest": "26.6.3",

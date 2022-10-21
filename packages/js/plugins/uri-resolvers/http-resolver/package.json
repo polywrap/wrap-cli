@@ -22,12 +22,11 @@
   },
   "dependencies": {
     "@polywrap/core-js": "0.9.3",
-    "@polywrap/plugin-js": "0.9.2",
+    "@polywrap/plugin-js": "0.9.3",
     "abort-controller": "3.0.0"
   },
   "devDependencies": {
     "@polywrap/http-plugin-js": "0.9.3",
-    "@polywrap/polywrap-manifest-types-js": "0.9.3",
     "@polywrap/test-env-js": "0.9.3",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
