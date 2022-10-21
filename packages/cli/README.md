@@ -222,9 +222,12 @@ polywrap infra <action> [options]
 
 **TODO: Extend documentation with examples, more information**
 
-### `run | r`
+### `test | t`
 
-Run Workflows
+Run Test manifests. 
+
+The `test` command executes a series of Wrapper invocations called **steps** organized into **jobs**.
+All steps within a job are run in series, while jobs are run in parallel.
 
 ```bash
 polywrap run [options]
@@ -244,8 +247,124 @@ polywrap run [options]
 - `-j, --jobs <jobs...>`
   Specify ids of jobs that you want to run
 
+#### The Test manifest (`polywrap.test.yaml`)
+Basic structure:
 
-**TODO: Extend documentation with examples, more information**
+```yaml
+# The basic structure of a test file 
+name: my-test-name #the name of the test
+format: 0.1.0
+validation: "path/to/validator.cue" #(optional) path to a validator file (cuelang)
+jobs:
+  first:
+    steps: #each step is a wrapper invocation that consists of a URI, the invoked method and its arguments
+    - uri: ens/example.eth
+      method: helloWorld
+      args:
+        arg1: "test"
+        ...
+    - ...
+    jobs: #after all job steps are executed, additional jobs can be run in parallel
+      ...
+  second:
+    ...
+```
+
+`jobs` is a map of `<string, Job>`, the key being each Job's name.
+
+```yaml
+jobs:
+  helloWorld:
+    ...
+  helloPolywrap:
+    ...
+```
+
+Each Job consists of two properties:
+  - a `steps` collection
+    - This is a wrapper invocation, consisting of:
+      - `uri` - the WRAP URI of the wrapper
+      - `method` - the name of the invoked wrapper method
+      - `args` (optional) - a map of the invoked method's arguments
+      - `config` (optional) - a map of client config properties to be added/overridden
+  - an inner `jobs` map, making the structure of `Job` recursive.
+
+```yaml
+jobs:
+  helloWorld:
+    steps:
+    - uri: ens/helloworld.polywrap.eth #ENS URI
+      method: helloWorld
+      args:
+        name: test
+    - uri: fs/./hello-polywrap/build #Filesystem URI
+      method: helloPolywrap
+    jobs:
+      innerJob1:
+      ...
+      innerJob2:
+      ...
+  helloPolywrap:
+    steps:
+    ...
+    jobs:
+    ...
+```
+
+When running a Test manifest, all top-level Jobs are run in parallel. Within those Jobs, each step is run in series. After all steps for a Job have been run, the inner `jobs` are run in parallel, with their `steps` run in series, and so on.
+
+You can reference the result (`data`/`error`) of any step by using the `$` symbol:
+
+```yaml
+jobs:
+  helloWorld:
+    steps:
+    - uri: ens/helloworld.polywrap.eth #ENS URI
+      method: helloWorld
+      args:
+        name: test
+    - uri: fs/./hello-polywrap/build #Filesystem URI
+      method: helloPolywrap
+    jobs:
+      innerJob1:
+        steps:
+        - uri: ens/helloworld.polywrap.eth
+          method: helloWorld
+          args:
+            name: "$helloWorld.1.data" #Reference to `helloWorld`'s 2nd step return value
+        jobs:
+          innerJob11:
+            steps:
+            - uri: ens/helloworld.polywrap.eth
+              method: helloWorld
+              args:
+                name: "$helloWorld.innerJob1.0.error" #Reference to helloWorld's innerJob1 1st step error
+```
+
+#### Test validation
+
+By specifying a `validation` file within your Test manifest, the result of the run will be validated using `cue`.
+
+Example of a validation file:
+
+```cuelang
+helloWorld: {
+  $0: {
+    data: "Hello test!",
+    error?: _|_, // Never fails
+  }
+  $1: {
+    data: "Hello Polywrap!",
+    error?: _|_, // Never fails
+  }
+  innerJob1: {
+    $0: {
+      data: "Hello Hello test!!",
+      error?: _|_,
+    }
+  }
+}
+```
 
 ### `docgen | o`
 
