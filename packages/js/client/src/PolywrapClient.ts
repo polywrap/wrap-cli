@@ -81,12 +81,12 @@ export class PolywrapClient implements Client {
     }
   }
 
-  public getConfig(): PolywrapCoreClientConfig<Uri> {
   /**
    * Returns the configuration used to instantiate the client
    *
    * @returns an immutable Polywrap client config
    */
+  public getConfig(): PolywrapCoreClientConfig<Uri> {
     return this._config;
   }
 
