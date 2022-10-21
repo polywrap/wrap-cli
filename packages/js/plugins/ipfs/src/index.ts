@@ -9,11 +9,11 @@ import {
   Env,
 } from "./wrap";
 import { execSimple, execFallbacks } from "./utils/exec";
+import { ExecOptions } from "./ExecOptions";
 
 import { Client } from "@polywrap/core-js";
 import createIpfsClient, { IpfsClient } from "@polywrap/ipfs-http-client-lite";
 import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
-import { ExecOptions } from "./ExecOptions";
 
 const isNullOrUndefined = (arg: unknown) => {
   return arg === undefined || arg === null;
