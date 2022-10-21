@@ -1,6 +1,0 @@
-format: 0.2.0
-config:
-  node_version: "16.13.0"
-  include:
-    - ./src
-    - ./package.json

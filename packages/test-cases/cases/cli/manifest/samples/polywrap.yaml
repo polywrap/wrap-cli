@@ -1,8 +1,11 @@
-format: 0.1.0
-name: sample-wasm-as
-language: wasm/assemblyscript
-schema: ./src/schema.graphql
-module: ./src/index.ts
-build: ./polywrap.build.yaml
-deploy: ./polywrap.deploy.yaml
-meta: ./polywrap.meta.yaml
+format: 0.2.0
+project:
+  name: sample-wasm-as
+  type: wasm/assemblyscript
+source:
+  schema: ./src/schema.graphql
+  module: ./src/index.ts
+extensions:
+  build: ./polywrap.build.yaml
+  deploy: ./polywrap.deploy.yaml
+  meta: ./polywrap.meta.yaml

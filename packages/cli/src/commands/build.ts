@@ -39,7 +39,7 @@ export interface BuildCommandOptions extends BaseCommandOptions {
   clientConfig: string | false;
   skipCodegen: boolean;
   watch: boolean;
-  strategy: SupportedStrategies;
+  strategy: `${SupportedStrategies}`;
 };
 
 export const build: Command = {

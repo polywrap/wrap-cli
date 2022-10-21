@@ -1,4 +1,0 @@
-- For all command option interfaces, make optional arguments undefine-able (i.e. `prop?: Type`), this way the cli-js library doesn't have to pass them in if they have defaults. Inside of the command's `run(...)` method, we should require all options to be defined (i.e. `run(options: Require<CommandOptions>)`).
-- Make sure all CLI command options are serializable (string, number, array<string | number>, etc)
-- Usage of enums is awkward, and requires the user to import the enum type (see `commands.build({ strategy: ... })`). Instead, we can just use TypeScript string unions (i.e. `type BuildStrategy = "vm" | "image" | ...`). I think this will make our life easier.
-- Create an automated test suite in cli-js that ensures test input is defined for all possible commands.

@@ -1,4 +1,0 @@
-format: 0.1.0
-modules:
-  local-ipfs-node:
-    path: ./local-ipfs-node
