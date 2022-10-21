@@ -123,13 +123,6 @@ export const commands: CommandFns<CommandTypings> = {
   run: execCommandFn<CommandTypings["run"]>("run"),
 };
 
-// TODO:
-// x clean up templates
-// x remove argument-as-options
-// x make all options optional
-// x make all options required in run functions
-// - make all option structs serializable
-
 function toKebabCase(camelCase: string): string {
   return camelCase.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 }
@@ -142,7 +135,7 @@ function parseValue(value: string | string[] | boolean): string {
 }
 
 function parseOptions<TOptions extends BaseCommandOptions>(
-  options?: TOptions
+  options?: Partial<TOptions>
 ): string[] {
   const parsed: string[] = [];
   if (options) {

@@ -36,9 +36,9 @@ const pathStr = intlMsg.commands_build_options_o_path();
 export interface BuildCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputDir: string;
-  clientConfig?: string | false;
-  skipCodegen?: boolean;
-  watch?: boolean;
+  clientConfig: string | false;
+  skipCodegen: boolean;
+  watch: boolean;
   strategy: SupportedStrategies;
 };
 

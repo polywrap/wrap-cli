@@ -7,9 +7,12 @@ export interface Command {
   setup: (program: Program) => MaybeAsync<void>;
 }
 
+type SerializableOption = string | number | boolean;
+
 export interface BaseCommandOptions {
   verbose: boolean;
   quiet: boolean;
+  [prop: string]: SerializableOption | SerializableOption[];
 }
 
 export interface CommandTypes {
