@@ -179,10 +179,19 @@ const testData: CommandTestCaseData<CommandTypings> = {
   }],
   manifest: {
     migrate: [{
-      cwd: path.join(GetPathToCliTestFiles(), "manifest/samples"),
+      cwd: fs.mkdtempSync(path.join(os.tmpdir(), "manifest-migrate")),
       arguments: ["project"],
-      after: (_, stdout) => {
+      before: (test) => {
+        if (!test.cwd)
+          throw Error("This shouldn't happen");
+        fs.copyFileSync(
+          path.join(GetPathToCliTestFiles(), "manifest/samples/polywrap.yaml"),
+          path.join(test.cwd, "polywrap.yaml")
+        );
+      },
+      after: (_, stdout, __, exitCode) => {
         expect(stdout).toContain("Migrating polywrap.yaml to version");
+        expect(exitCode).toBe(0);
       }
     }],
     schema: [{
