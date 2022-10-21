@@ -26,7 +26,6 @@
     "graphql-tag": "2.10.4"
   },
   "devDependencies": {
-    "@polywrap/os-js": "0.9.3",
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
     "@types/prettier": "2.6.0",

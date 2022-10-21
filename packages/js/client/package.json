@@ -30,7 +30,6 @@
     "@polywrap/uri-resolver-extensions-js": "0.9.3"
   },
   "devDependencies": {
-    "@polywrap/os-js": "0.9.3",
     "@polywrap/test-cases": "0.9.3",
     "@polywrap/test-env-js": "0.9.3",
     "@polywrap/client-config-builder-js": "0.9.3",
