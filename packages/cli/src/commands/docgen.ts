@@ -36,7 +36,6 @@ export enum DocgenActions {
 }
 
 export interface DocgenCommandOptions extends BaseCommandOptions {
-  action: DocgenActions;
   manifestFile: string;
   docgenDir: string;
   clientConfig: string;
@@ -93,9 +92,8 @@ export const docgen: Command = {
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (action, options) => {
-        await run({
+        await run(action, {
           ...options,
-          action,
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultProjectManifestFiles
@@ -106,9 +104,8 @@ export const docgen: Command = {
   },
 };
 
-async function run(options: DocgenCommandOptions) {
+async function run(action: DocgenActions, options: DocgenCommandOptions) {
   const {
-    action,
     manifestFile,
     docgenDir,
     clientConfig,

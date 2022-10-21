@@ -23,7 +23,6 @@ export enum InfraActions {
 }
 
 export interface InfraCommandOptions extends BaseCommandOptions {
-  action: InfraActions;
   manifestFile: string;
   modules?: string[];
 };
@@ -79,10 +78,7 @@ export const infra: Command = {
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (action, options) => {
-        await run({
-          ...options,
-          action
-        });
+        await run(action, options);
       });
   },
 };
@@ -96,9 +92,10 @@ Default Modules: \n${readdirSync(DEFAULT_MODULES_PATH)
 Example: 'polywrap infra up --modules=eth-ens-ipfs'.`;
 
 async function run(
+  action: InfraActions,
   options: InfraCommandOptions
 ): Promise<void> {
-  const { action, modules, verbose, quiet, manifestFile } = options;
+  const { modules, verbose, quiet, manifestFile } = options;
 
   const logger = createLogger({ verbose, quiet });
 

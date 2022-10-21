@@ -12,6 +12,11 @@ export interface BaseCommandOptions {
   quiet?: boolean;
 }
 
-export type CommandOptionMapping = {
-  [name: string]: BaseCommandOptions | CommandOptionMapping;
+export interface CommandTypes {
+  options: BaseCommandOptions;
+  arguments: string[];
+}
+
+export type CommandTypeMapping = {
+  [name: string]: BaseCommandOptions | CommandTypes | CommandTypeMapping;
 }

@@ -77,13 +77,11 @@ const manifestTypes = [
 export type ManifestType = typeof manifestTypes[number];
 
 export interface ManifestSchemaCommandOptions extends BaseCommandOptions {
-  type: ManifestType;
   raw: boolean;
   manifestFile: ManifestType;
 };
 
 export interface ManifestMigrateCommandOptions extends BaseCommandOptions {
-  type: ManifestType;
   manifestFile: string;
   format: string;
 };
@@ -122,10 +120,7 @@ export const manifest: Command = {
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (type, options) => {
-        await runSchemaCommand({
-          ...options,
-          type
-        });
+        await runSchemaCommand(type, options);
       });
 
     manifestCommand
@@ -154,18 +149,16 @@ export const manifest: Command = {
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (type, options) => {
-        await runMigrateCommand({
-          ...options,
-          type
-        });
+        await runMigrateCommand(type, options);
       });
   },
 };
 
 export const runSchemaCommand = async (
+  type: ManifestType,
   options: ManifestSchemaCommandOptions
 ): Promise<void> => {
-  const { type, verbose, quiet } = options;
+  const { verbose, quiet } = options;
   const logger = createLogger({ verbose, quiet });
   let manifestfile = "";
 
@@ -370,9 +363,10 @@ export const runSchemaCommand = async (
 };
 
 const runMigrateCommand = async (
+  type: ManifestType,
   options: ManifestMigrateCommandOptions
 ) => {
-  const { type, verbose, quiet } = options;
+  const { verbose, quiet } = options;
   const logger = createLogger({ verbose, quiet });
   let manifestFile = "";
   let manifestString: string;

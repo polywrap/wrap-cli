@@ -11,33 +11,62 @@ export * from "./types";
 import { BuildCommandOptions } from "./build";
 import { CodegenCommandOptions } from "./codegen";
 import {
-  CreateAppCommandOptions,
-  CreatePluginCommandOptions,
-  CreateWasmCommandOptions
+  CreateCommandOptions,
+  SupportedAppLangs,
+  SupportedPluginLangs,
+  SupportedWasmLangs
 } from "./create";
 import { DeployCommandOptions } from "./deploy";
-import { DocgenCommandOptions } from "./docgen";
-import { InfraCommandOptions } from "./infra";
+import {
+  DocgenCommandOptions,
+  DocgenActions
+} from "./docgen";
+import {
+  InfraCommandOptions,
+  InfraActions
+} from "./infra";
 import {
   ManifestSchemaCommandOptions,
-  ManifestMigrateCommandOptions
+  ManifestMigrateCommandOptions,
+  ManifestType
 } from "./manifest";
 import { RunCommandOptions } from "./run";
 
-export interface CommandOptions {
+export interface CommandTypings {
   "build": BuildCommandOptions;
   "codegen": CodegenCommandOptions;
   "create": {
-    "app": CreateAppCommandOptions;
-    "plugin": CreatePluginCommandOptions;
-    "wasm": CreateWasmCommandOptions;
+    "app": {
+      options: CreateCommandOptions;
+      arguments: [language: SupportedAppLangs, name: string];
+    };
+    "plugin": {
+      options: CreateCommandOptions;
+      arguments: [language: SupportedPluginLangs, name: string];
+    };
+    "wasm": {
+      options: CreateCommandOptions;
+      arguments: [language: SupportedWasmLangs, name: string];
+    };
   };
   "deploy": DeployCommandOptions;
-  "docgen": DocgenCommandOptions;
-  "infra": InfraCommandOptions;
+  "docgen": {
+    options: DocgenCommandOptions;
+    arguments: [action: `${DocgenActions}`];
+  };
+  "infra": {
+    options: InfraCommandOptions;
+    arguments: [action: `${InfraActions}`];
+  };
   "manifest": {
-    "migrate": ManifestMigrateCommandOptions;
-    "schema": ManifestSchemaCommandOptions;
+    "migrate": {
+      options: ManifestMigrateCommandOptions;
+      arguments: [type: ManifestType];
+    };
+    "schema": {
+      options: ManifestSchemaCommandOptions;
+      arguments: [type: ManifestType];
+    };
   };
   "run": RunCommandOptions;
 }

@@ -31,20 +31,9 @@ type SupportedLangs =
   | SupportedAppLangs
   | SupportedPluginLangs;
 
-export interface CreateCommandOptions<
-  TLangs extends SupportedLangs
-> extends BaseCommandOptions {
-  language: TLangs;
-  name: string;
+export interface CreateCommandOptions extends BaseCommandOptions {
   outputDir?: string;
 };
-
-export interface CreateAppCommandOptions
-  extends CreateCommandOptions<SupportedAppLangs> { }
-export interface CreatePluginCommandOptions
-  extends CreateCommandOptions<SupportedPluginLangs> { }
-export interface CreateWasmCommandOptions
-  extends CreateCommandOptions<SupportedWasmLangs> { }
 
 export const create: Command = {
   setup: (program: Program) => {
@@ -71,11 +60,7 @@ export const create: Command = {
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (language, name, options) => {
-        await run("wasm", {
-          ...options,
-          language,
-          name,
-        });
+        await run("wasm", language, name, options);
       });
 
     createCommand
@@ -96,11 +81,7 @@ export const create: Command = {
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (language, name, options) => {
-        await run("app", {
-          ...options,
-          language,
-          name
-        });
+        await run("app", language, name, options);
       });
 
     createCommand
@@ -121,20 +102,18 @@ export const create: Command = {
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (language, name, options) => {
-        await run("plugin", {
-          ...options,
-          language,
-          name
-        });
+        await run("plugin", language, name, options);
       });
   },
 };
 
 async function run(
   command: ProjectType,
-  options: CreateCommandOptions<SupportedLangs>
+  language: SupportedLangs,
+  name: string,
+  options: CreateCommandOptions
 ) {
-  const { language, name, outputDir, verbose, quiet } = options;
+  const { outputDir, verbose, quiet } = options;
   const logger = createLogger({ verbose, quiet });
 
   const projectDir = path.resolve(outputDir ? `${outputDir}/${name}` : name);
