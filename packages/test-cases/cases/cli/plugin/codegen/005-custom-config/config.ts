@@ -1,4 +1,4 @@
-import { CustomClientConfig } from "@polywrap/client-config-builder-js";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import { latestWrapManifestVersion } from "@polywrap/wrap-manifest-types-js";
 import { parseSchema } from "@polywrap/schema-parse";
@@ -37,7 +37,7 @@ const mockPlugin = () => {
   });
 };
 
-export function getCustomConfig(): Partial<CustomClientConfig<string>> {
+export function getCustomConfig(): Partial<ClientConfig<string>> {
   return {
     packages: [
       {

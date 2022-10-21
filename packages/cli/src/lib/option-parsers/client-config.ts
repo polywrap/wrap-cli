@@ -6,13 +6,13 @@ import { getTestEnvClientConfig } from "../test-env";
 import { Uri } from "@polywrap/core-js";
 import {
   ClientConfigBuilder,
-  CustomClientConfig,
+  ClientConfig,
 } from "@polywrap/client-config-builder-js";
 import path from "path";
 
 export async function parseClientConfigOption(
   clientConfig: string | undefined
-): Promise<Partial<CustomClientConfig<Uri>>> {
+): Promise<Partial<ClientConfig<Uri>>> {
   const builder = new ClientConfigBuilder().addDefaults();
 
   try {

@@ -5,12 +5,12 @@ import { ethereumPlugin, Connections } from "../..";
 import { providers } from "@polywrap/test-env-js";
 import {
   defaultIpfsProviders,
-  CustomClientConfig,
+  ClientConfig,
 } from "@polywrap/client-config-builder-js";
 
 export const getDefaultConfig = (
   connections: Connections
-): Partial<CustomClientConfig<Uri | string>> => {
+): Partial<ClientConfig<Uri | string>> => {
   return {
     envs: [
       {

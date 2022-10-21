@@ -1,4 +1,4 @@
-import { CustomClientConfig } from "../CustomClientConfig";
+import { ClientConfig } from "../ClientConfig";
 
 import { IUriPackage, Uri } from "@polywrap/core-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
@@ -15,7 +15,7 @@ import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 
-export const getDefaultConfig = (): CustomClientConfig<Uri> => {
+export const getDefaultConfig = (): ClientConfig<Uri> => {
   return {
     envs: [
       {

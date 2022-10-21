@@ -2,7 +2,7 @@
 import * as Schema from "../wrap";
 
 import { PolywrapClient, Uri } from "@polywrap/client-js";
-import { CustomClientConfig } from "@polywrap/client-config-builder-js";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -52,7 +52,7 @@ describe("Ethereum Plugin", () => {
   let ensAddress: string;
   let resolverAddress: string;
   let registrarAddress: string;
-  let defaultConfig: Partial<CustomClientConfig<Uri | string>>;
+  let defaultConfig: Partial<ClientConfig<Uri | string>>;
   let viewMethodsAddress: string;
   const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 
