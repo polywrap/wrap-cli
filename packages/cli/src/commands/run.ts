@@ -24,11 +24,10 @@ import yaml from "yaml";
 import fs from "fs";
 
 export interface RunCommandOptions extends BaseCommandOptions {
-  clientConfig: string;
+  clientConfig: string | false;
   manifestFile: string;
-  jobs?: string[];
-  validationScript?: string;
-  outputFile?: string;
+  jobs: string[] | false;
+  outputFile: string | false;
 };
 
 const defaultManifestStr = defaultWorkflowManifest.join(" | ");
@@ -60,22 +59,25 @@ export const run: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .action(async (options) => {
+      .action(async (options: Partial<RunCommandOptions>) => {
         await _run({
-          ...options,
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultWorkflowManifest
           ),
+          clientConfig: options.clientConfig || false,
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile)
-            : undefined,
+            : false,
+          jobs: options.jobs || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false
         });
       });
   },
 };
 
-const _run = async (options: RunCommandOptions) => {
+const _run = async (options: Required<RunCommandOptions>) => {
   const {
     manifestFile,
     clientConfig,
@@ -118,7 +120,7 @@ const _run = async (options: RunCommandOptions) => {
   };
 
   const jobRunner = new JobRunner(client, onExecution);
-  await jobRunner.run(workflow.jobs, jobs ?? Object.keys(workflow.jobs));
+  await jobRunner.run(workflow.jobs, jobs || Object.keys(workflow.jobs));
 
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);

@@ -10,11 +10,11 @@ const deprecatedDefaultManifests = [
 ];
 
 export function parseManifestFileOption(
-  manifestFile: string | undefined,
+  manifestFile: string | undefined | false,
   defaults: string[]
 ): string {
   const didUserProvideManifestFile =
-    manifestFile != undefined && !!manifestFile.length;
+    manifestFile && !!manifestFile.length;
 
   const manifestPaths = manifestFile ? [manifestFile as string] : defaults;
 

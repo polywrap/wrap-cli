@@ -32,7 +32,7 @@ type SupportedLangs =
   | SupportedPluginLangs;
 
 export interface CreateCommandOptions extends BaseCommandOptions {
-  outputDir?: string;
+  outputDir: string | false;
 };
 
 export const create: Command = {
@@ -59,8 +59,12 @@ export const create: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .action(async (language, name, options) => {
-        await run("wasm", language, name, options);
+      .action(async (language, name, options: Partial<CreateCommandOptions>) => {
+        await run("wasm", language, name, {
+          outputDir: options.outputDir || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
+        });
       });
 
     createCommand
@@ -80,8 +84,12 @@ export const create: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .action(async (language, name, options) => {
-        await run("app", language, name, options);
+      .action(async (language, name, options: Partial<CreateCommandOptions>) => {
+        await run("app", language, name, {
+          outputDir: options.outputDir || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
+        });
       });
 
     createCommand
@@ -101,8 +109,12 @@ export const create: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .action(async (language, name, options) => {
-        await run("plugin", language, name, options);
+      .action(async (language, name, options: Partial<CreateCommandOptions>) => {
+        await run("plugin", language, name, {
+          outputDir: options.outputDir || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
+        });
       });
   },
 };
@@ -111,7 +123,7 @@ async function run(
   command: ProjectType,
   language: SupportedLangs,
   name: string,
-  options: CreateCommandOptions
+  options: Required<CreateCommandOptions>
 ) {
   const { outputDir, verbose, quiet } = options;
   const logger = createLogger({ verbose, quiet });

@@ -31,8 +31,8 @@ export interface CodegenCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   codegenDir: string;
   publishDir: string;
-  script?: string;
-  clientConfig: string;
+  script: string | false;
+  clientConfig: string | false;
 };
 
 export const codegen: Command = {
@@ -69,22 +69,24 @@ export const codegen: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .action(async (options) => {
+      .action(async (options: Partial<CodegenCommandOptions>) => {
         await run({
-          ...options,
-          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
-          script: parseCodegenScriptOption(options.script),
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultProjectManifestFiles
           ),
+          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           publishDir: parseDirOption(options.publishDir, defaultPublishDir),
+          script: parseCodegenScriptOption(options.script),
+          clientConfig: options.clientConfig || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false
         });
       });
   },
 };
 
-async function run(options: CodegenCommandOptions) {
+async function run(options: Required<CodegenCommandOptions>) {
   const {
     manifestFile,
     codegenDir,

@@ -36,7 +36,7 @@ const pathStr = intlMsg.commands_build_options_o_path();
 export interface BuildCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputDir: string;
-  clientConfig: string;
+  clientConfig?: string | false;
   skipCodegen?: boolean;
   watch?: boolean;
   strategy: SupportedStrategies;
@@ -67,21 +67,24 @@ export const build: Command = {
       .option(`-n, --skip-codegen`, `${intlMsg.commands_build_options_n()}`)
       .option(
         `-s, --strategy <${strategyStr}>`,
-        `${intlMsg.commands_build_options_s()}`,
-        defaultStrategy
+        `${intlMsg.commands_build_options_s()}`
       )
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .action(async (options) => {
+      .action(async (options: Partial<BuildCommandOptions>) => {
         await run({
-          ...options,
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultPolywrapManifest
           ),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
-          strategy: options.strategy,
+          clientConfig: options.clientConfig || false,
+          skipCodegen: options.skipCodegen || false,
+          strategy: options.strategy || defaultStrategy,
+          watch: options.watch || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false
         });
       });
   },
@@ -122,7 +125,7 @@ function createBuildStrategy(
   }
 }
 
-async function run(options: BuildCommandOptions) {
+async function run(options: Required<BuildCommandOptions>) {
   const {
     watch,
     manifestFile,

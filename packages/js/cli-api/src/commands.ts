@@ -127,7 +127,7 @@ export const commands: CommandFns<CommandTypings> = {
 // x clean up templates
 // x remove argument-as-options
 // x make all options optional
-// - make all options required in run functions
+// x make all options required in run functions
 // - make all option structs serializable
 
 function toKebabCase(camelCase: string): string {

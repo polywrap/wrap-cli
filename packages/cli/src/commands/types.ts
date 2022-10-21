@@ -8,8 +8,8 @@ export interface Command {
 }
 
 export interface BaseCommandOptions {
-  verbose?: boolean;
-  quiet?: boolean;
+  verbose: boolean;
+  quiet: boolean;
 }
 
 export interface CommandTypes {

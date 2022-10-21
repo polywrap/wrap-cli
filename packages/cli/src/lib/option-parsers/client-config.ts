@@ -7,7 +7,7 @@ import { PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 
 export async function parseClientConfigOption(
-  clientConfig: string | undefined
+  clientConfig: string | undefined | false
 ): Promise<Partial<PolywrapClientConfig>> {
   let finalClientConfig: Partial<PolywrapClientConfig>;
 

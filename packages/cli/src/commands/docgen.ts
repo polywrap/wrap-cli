@@ -38,7 +38,7 @@ export enum DocgenActions {
 export interface DocgenCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   docgenDir: string;
-  clientConfig: string;
+  clientConfig: string | false;
   imports: boolean;
 };
 
@@ -91,20 +91,23 @@ export const docgen: Command = {
       .option(`-i, --imports`, `${intlMsg.commands_docgen_options_i()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .action(async (action, options) => {
+      .action(async (action, options: Partial<DocgenCommandOptions>) => {
         await run(action, {
-          ...options,
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultProjectManifestFiles
           ),
           docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
+          clientConfig: options.clientConfig || false,
+          imports: options.imports || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
         });
       });
   },
 };
 
-async function run(action: DocgenActions, options: DocgenCommandOptions) {
+async function run(action: DocgenActions, options: Required<DocgenCommandOptions>) {
   const {
     manifestFile,
     docgenDir,

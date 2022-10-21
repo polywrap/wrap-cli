@@ -22,7 +22,7 @@ const pathStr = intlMsg.commands_deploy_options_o_path();
 
 export interface DeployCommandOptions extends BaseCommandOptions {
   manifestFile: string;
-  outputFile?: string;
+  outputFile: string | false;
 };
 
 type ManifestJob = DeployManifest["jobs"][number];
@@ -46,19 +46,21 @@ export const deploy: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .action(async (options) => {
+      .action(async (options: Partial<DeployCommandOptions>) => {
         await run({
-          ...options,
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultPolywrapManifest
           ),
+          outputFile: options.outputFile || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false
         });
       });
   },
 };
 
-async function run(options: DeployCommandOptions): Promise<void> {
+async function run(options: Required<DeployCommandOptions>): Promise<void> {
   const { manifestFile, outputFile, verbose, quiet } = options;
   const logger = createLogger({ verbose, quiet });
 
