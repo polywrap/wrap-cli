@@ -1,4 +1,4 @@
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 import {
   intlMsg,
   JobResult,
@@ -18,19 +18,17 @@ import {
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
 
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import path from "path";
 import yaml from "yaml";
 import fs from "fs";
 
-export type RunCommandOptions = {
-  clientConfig: Partial<PolywrapClientConfig>;
+export interface RunCommandOptions extends BaseCommandOptions {
+  clientConfig: string;
   manifestFile: string;
   jobs?: string[];
   validationScript?: string;
   outputFile?: string;
-  verbose?: boolean;
-  quiet?: boolean;
 };
 
 const defaultManifestStr = defaultWorkflowManifest.join(" | ");
@@ -69,7 +67,6 @@ export const run: Command = {
             options.manifestFile,
             defaultWorkflowManifest
           ),
-          clientConfig: await parseClientConfigOption(options.clientConfig),
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile)
             : undefined,
@@ -88,7 +85,8 @@ const _run = async (options: RunCommandOptions) => {
     jobs,
   } = options;
   const logger = createLogger({ verbose, quiet });
-  const client = new PolywrapClient(clientConfig);
+  const config = await parseClientConfigOption(clientConfig)
+  const client = new PolywrapClient(config);
 
   const manifestPath = path.resolve(manifestFile);
   const workflow = await loadWorkflowManifest(manifestPath, logger);

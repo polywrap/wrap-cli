@@ -9,14 +9,14 @@ import {
   defaultProjectManifestFiles,
   getProjectFromManifest,
 } from "../lib";
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
 import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
 
@@ -29,20 +29,19 @@ const commandToPathMap: Record<string, string> = {
 const defaultDocgenDir = "./docs";
 const pathStr = intlMsg.commands_codegen_options_o_path();
 
-export type DocgenCommandOptions = {
-  manifestFile: string;
-  docgenDir: string;
-  clientConfig: Partial<PolywrapClientConfig>;
-  imports: boolean;
-  verbose?: boolean;
-  quiet?: boolean;
-};
-
 export enum DocgenActions {
   SCHEMA = "schema",
   DOCUSAURUS = "docusaurus",
   JSDOC = "jsdoc",
 }
+
+export interface DocgenCommandOptions extends BaseCommandOptions {
+  action: DocgenActions;
+  manifestFile: string;
+  docgenDir: string;
+  clientConfig: string;
+  imports: boolean;
+};
 
 const argumentsDescription = `
   ${chalk.bold(
@@ -94,21 +93,22 @@ export const docgen: Command = {
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (action, options) => {
-        await run(action, {
+        await run({
           ...options,
+          action,
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultProjectManifestFiles
           ),
           docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
-          clientConfig: await parseClientConfigOption(options.clientConfig),
         });
       });
   },
 };
 
-async function run(command: DocgenActions, options: DocgenCommandOptions) {
+async function run(options: DocgenCommandOptions) {
   const {
+    action,
     manifestFile,
     docgenDir,
     clientConfig,
@@ -133,9 +133,10 @@ async function run(command: DocgenActions, options: DocgenCommandOptions) {
   await project.validate();
 
   // Resolve custom script
-  const customScript = require.resolve(commandToPathMap[command]);
+  const customScript = require.resolve(commandToPathMap[action]);
 
-  const client = new PolywrapClient(clientConfig);
+  const config = await parseClientConfigOption(clientConfig);
+  const client = new PolywrapClient(config);
 
   const schemaComposer = new SchemaComposer({
     project,

@@ -1,21 +1,54 @@
 import { runCLI } from "./run-cli";
-import {
-  Commands,
-  CommandNames,
-  CommandOptions,
-  ActionCommandNames,
-} from "./utils";
-import { CreateCommandOptions, ManifestCommandOptions } from "./types";
 
-export const commands: Commands = {
-  build: simpleCommandExecutorFactory("build"),
-  codegen: simpleCommandExecutorFactory("codegen"),
-  create: createCommandExecutor,
-  deploy: simpleCommandExecutorFactory("deploy"),
-  docgen: actionCommandExecutorFactory("docgen"),
-  infra: actionCommandExecutorFactory("infra"),
-  manifest: manifestCommandExecutor,
-  run: simpleCommandExecutorFactory("run"),
+import {
+  CommandOptionMapping,
+  BaseCommandOptions,
+  CommandOptions,
+} from "polywrap";
+
+type CommandFn<
+  TOptions extends BaseCommandOptions
+> = (
+  options?: TOptions,
+  cwd?: string,
+  cli?: string
+) => ReturnType<typeof runCLI>;
+
+type CommandFns<
+  TCommands
+> = Required<{
+  [Command in keyof TCommands]:
+    TCommands[Command] extends BaseCommandOptions ?
+      CommandFn<TCommands[Command]> :
+        TCommands[Command] extends CommandOptionMapping ?
+          CommandFns<TCommands[Command]> : never;
+}>;
+
+function execCommandFn<
+  TOptions extends BaseCommandOptions,
+>(command: string): CommandFn<TOptions> {
+  return async (options?: TOptions, cwd?: string, cli?: string) => {
+    const args = [command, ...parseOptions(options)];
+    return await runCLI({ args, cwd, cli });
+  };
+}
+
+export const commands: CommandFns<CommandOptions> = {
+  build: execCommandFn<CommandOptions["build"]>("build"),
+  codegen: execCommandFn<CommandOptions["codegen"]>("codegen"),
+  create: {
+    app: execCommandFn<CommandOptions["create"]["app"]>("create app"),
+    plugin: execCommandFn<CommandOptions["create"]["plugin"]>("create plugin"),
+    wasm: execCommandFn<CommandOptions["create"]["wasm"]>("create wasm")
+  },
+  deploy: execCommandFn<CommandOptions["deploy"]>("deploy"),
+  docgen: execCommandFn<CommandOptions["docgen"]>("docgen"),
+  infra: execCommandFn<CommandOptions["infra"]>("infra"),
+  manifest: {
+    migrate: execCommandFn<CommandOptions["manifest"]["migrate"]>("manifest migrate"),
+    schema: execCommandFn<CommandOptions["manifest"]["schema"]>("manifest schema")
+  },
+  run: execCommandFn<CommandOptions["run"]>("run"),
 };
 
 function toKebabCase(camelCase: string): string {
@@ -29,8 +62,8 @@ function parseValue(value: string | string[] | boolean): string {
   return value.toString();
 }
 
-function parseOptions<Command extends CommandNames>(
-  options?: CommandOptions[Command]
+function parseOptions<TOptions extends BaseCommandOptions>(
+  options?: TOptions
 ): string[] {
   const parsed: string[] = [];
   if (options) {
@@ -41,59 +74,4 @@ function parseOptions<Command extends CommandNames>(
     }
   }
   return parsed;
-}
-
-function simpleCommandExecutorFactory<Command extends CommandNames>(
-  command: Command
-) {
-  return async (
-    options?: CommandOptions[Command],
-    cwd?: string,
-    cli?: string
-  ) => {
-    const args = [command, ...parseOptions(options)];
-    return await runCLI({ args, cwd, cli });
-  };
-}
-
-function actionCommandExecutorFactory<Command extends ActionCommandNames>(
-  command: Command
-) {
-  return async (
-    options: CommandOptions[Command],
-    cwd?: string,
-    cli?: string
-  ) => {
-    const { action, ...cmdOptions } = options;
-    const args = [command, action, ...parseOptions(cmdOptions)];
-    return await runCLI({ args, cwd, cli });
-  };
-}
-
-async function createCommandExecutor(
-  options: CreateCommandOptions,
-  cwd?: string,
-  cli?: string
-): Promise<{
-  exitCode: number;
-  stdout: string;
-  stderr: string;
-}> {
-  const { command, language, name, ...createOpts } = options;
-  const args = ["create", command, language, name, ...parseOptions(createOpts)];
-  return await runCLI({ args, cwd, cli });
-}
-
-async function manifestCommandExecutor(
-  options: ManifestCommandOptions,
-  cwd?: string,
-  cli?: string
-): Promise<{
-  exitCode: number;
-  stdout: string;
-  stderr: string;
-}> {
-  const { command, type, ...manifestOptions } = options;
-  const args = ["manifest", command, type, ...parseOptions(manifestOptions)];
-  return await runCLI({ args, cwd, cli });
 }

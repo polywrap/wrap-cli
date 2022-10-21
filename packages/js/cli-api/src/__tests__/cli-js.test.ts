@@ -1,4 +1,5 @@
-import { awaitResponse, Commands, InfraActions, runCLI } from "../../";
+import { awaitResponse, Commands, runCLI } from "../../";
+import { SupportedStrategies } from "polywrap";
 
 import path from "path";
 import fs from "fs";
@@ -26,7 +27,9 @@ describe("cli-js tests", () => {
     expect(fs.existsSync(buildDir)).toBeFalsy();
 
     // build
-    await Commands.build({ strategy: "image" }, wrapperPath);
+    await Commands.build({
+      strategy: SupportedStrategies.IMAGE
+    }, wrapperPath);
 
     // check for build dir and artifacts
     const wasmPath = path.join(buildDir, "wrap.wasm");

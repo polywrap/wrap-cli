@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import {
   defaultPolywrapManifest,
@@ -20,11 +20,9 @@ import { validate } from "jsonschema";
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_deploy_options_o_path();
 
-export type DeployCommandOptions = {
+export interface DeployCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputFile?: string;
-  verbose?: boolean;
-  quiet?: boolean;
 };
 
 type ManifestJob = DeployManifest["jobs"][number];
