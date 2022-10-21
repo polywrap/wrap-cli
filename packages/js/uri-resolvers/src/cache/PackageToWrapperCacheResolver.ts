@@ -4,7 +4,7 @@ import { UriResolver, UriResolutionResult, UriResolverLike } from "../helpers";
 import {
   IUriResolver,
   Uri,
-  Client,
+  CoreClient,
   IUriResolutionContext,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
@@ -41,7 +41,7 @@ export class PackageToWrapperCacheResolver<TError>
 
   async tryResolveUri(
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | Error>> {
     const wrapper = await this.cache.get(uri);

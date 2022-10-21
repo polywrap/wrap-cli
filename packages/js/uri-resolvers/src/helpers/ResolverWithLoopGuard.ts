@@ -6,7 +6,7 @@ import { UriResolver } from "./UriResolver";
 import {
   IUriResolver,
   Uri,
-  Client,
+  CoreClient,
   IUriResolutionContext,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
@@ -26,7 +26,7 @@ export class ResolverWithLoopGuard<TError = undefined>
 
   async tryResolveUri(
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
     if (resolutionContext.isResolving(uri)) {

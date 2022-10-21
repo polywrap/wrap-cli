@@ -2,7 +2,7 @@ import { getDefaultConfig } from "./bundles";
 import { CustomClientConfig } from "./CustomClientConfig";
 
 import {
-  ClientConfig,
+  CoreClientConfig,
   Uri,
   IUriResolver,
   IUriPackage,
@@ -359,7 +359,7 @@ export class ClientConfigBuilder {
   buildDefault(
     wrapperCache?: IWrapperCache,
     resolver?: IUriResolver<unknown>
-  ): ClientConfig<Uri> {
+  ): CoreClientConfig<Uri> {
     return {
       envs: this._config.envs,
       interfaces: this._config.interfaces,

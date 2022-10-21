@@ -3,7 +3,7 @@ import { Message } from "../../wrap";
 
 import WS from "jest-websocket-mock";
 import { PolywrapClient } from "@polywrap/client-js"
-import { Client } from "@polywrap/core-js";
+import { CoreClient } from "@polywrap/core-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { PluginPackage } from "@polywrap/plugin-js";
 
@@ -138,7 +138,7 @@ describe("WebSocket plugin", () => {
       setup();
 
       const callbackPlugin = PluginPackage.from(() => ({
-        callback(args: { data: string }, _client: Client): void {
+        callback(args: { data: string }, _client: CoreClient): void {
           msgs.push(args.data);
         },
       }));

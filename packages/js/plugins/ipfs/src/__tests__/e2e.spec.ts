@@ -6,17 +6,20 @@ import {
 } from "@polywrap/test-env-js";
 
 import { Ipfs_Module } from "../wrap";
-import { Client } from "@polywrap/core-js";
+import { CoreClient } from "@polywrap/core-js";
 import { ResultOk } from "@polywrap/result";
 import { PolywrapClient } from "@polywrap/client-js";
-import createIpfsClient, { IpfsClient, IpfsFileInfo } from "@polywrap/ipfs-http-client-lite";
+import createIpfsClient, {
+  IpfsClient,
+  IpfsFileInfo,
+} from "@polywrap/ipfs-http-client-lite";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { ipfsPlugin } from "..";
 
 jest.setTimeout(300000);
 
 describe("IPFS Plugin", () => {
-  let client: Client;
+  let client: CoreClient;
   let ipfs: IpfsClient;
 
   const sampleFileTextContents = "Hello World!";

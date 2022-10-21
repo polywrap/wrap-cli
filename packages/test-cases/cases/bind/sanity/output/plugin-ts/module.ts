@@ -3,7 +3,7 @@
 
 import * as Types from "./types";
 
-import { Client, MaybeAsync } from "@polywrap/core-js";
+import { CoreClient, MaybeAsync } from "@polywrap/core-js";
 import { PluginModule } from "@polywrap/plugin-js";
 
 export interface Args_moduleMethod {
@@ -38,30 +38,21 @@ export interface Args_if {
   if: Types._else;
 }
 
-export abstract class Module<
-  TConfig
-> extends PluginModule<
-  TConfig,
-  Types.Env
-> {
-
+export abstract class Module<TConfig> extends PluginModule<TConfig, Types.Env> {
   abstract moduleMethod(
     args: Args_moduleMethod,
-    client: Client
+    client: CoreClient
   ): MaybeAsync<Types.Int>;
 
   abstract objectMethod(
     args: Args_objectMethod,
-    client: Client
+    client: CoreClient
   ): MaybeAsync<Types.AnotherType | null>;
 
   abstract optionalEnvMethod(
     args: Args_optionalEnvMethod,
-    client: Client
+    client: CoreClient
   ): MaybeAsync<Types.AnotherType | null>;
 
-  abstract if(
-    args: Args_if,
-    client: Client
-  ): MaybeAsync<Types._else>;
+  abstract if(args: Args_if, client: CoreClient): MaybeAsync<Types._else>;
 }

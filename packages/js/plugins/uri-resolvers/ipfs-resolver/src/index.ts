@@ -2,7 +2,7 @@ import {
   Args_getFile,
   Args_tryResolveUri,
   Bytes,
-  Client,
+  CoreClient,
   Ipfs_Module,
   manifest,
   Module,
@@ -18,7 +18,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
   // uri-resolver.core.polywrap.eth
   public async tryResolveUri(
     args: Args_tryResolveUri,
-    _client: Client
+    _client: CoreClient
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
     if (args.authority !== "ipfs") {
       return null;
@@ -58,7 +58,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
 
   public async getFile(
     args: Args_getFile,
-    client: Client
+    client: CoreClient
   ): Promise<Bytes | null> {
     try {
       let provider: string | undefined = undefined;

@@ -1,5 +1,5 @@
 import {
-  Client,
+  CoreClient,
   Module,
   Args_tryResolveUri,
   Args_getFile,
@@ -38,7 +38,7 @@ export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
 
   async tryResolveUri(
     args: Args_tryResolveUri,
-    client: Client
+    client: CoreClient
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
     if (args.authority !== "ens") {
       return null;
@@ -63,11 +63,11 @@ export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
     return { uri: null, manifest: null };
   }
 
-  getFile(_args: Args_getFile, _client: Client): Bytes | null {
+  getFile(_args: Args_getFile, _client: CoreClient): Bytes | null {
     return null;
   }
 
-  async ensToCID(domain: string, client: Client): Promise<string> {
+  async ensToCID(domain: string, client: CoreClient): Promise<string> {
     const ensAbi = {
       resolver:
         "function resolver(bytes32 node) external view returns (address)",

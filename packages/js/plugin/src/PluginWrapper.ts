@@ -2,7 +2,7 @@ import { PluginModule } from "./PluginModule";
 
 import {
   Wrapper,
-  Client,
+  CoreClient,
   InvokeOptions,
   InvocableResult,
   Uri,
@@ -42,7 +42,7 @@ export class PluginWrapper implements Wrapper {
   @Tracer.traceMethod("PluginWrapper: invoke", TracingLevel.High)
   public async invoke(
     options: InvokeOptions<Uri>,
-    client: Client
+    client: CoreClient
   ): Promise<InvocableResult<unknown>> {
     Tracer.setAttribute(
       "label",

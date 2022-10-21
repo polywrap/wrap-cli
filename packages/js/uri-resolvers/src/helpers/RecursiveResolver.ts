@@ -7,7 +7,7 @@ import { Result } from "@polywrap/result";
 import {
   IUriResolver,
   Uri,
-  Client,
+  CoreClient,
   IUriResolutionContext,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
@@ -24,7 +24,7 @@ export class RecursiveResolver<TError = undefined>
 
   async tryResolveUri(
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
     if (resolutionContext.isResolving(uri)) {
@@ -56,7 +56,7 @@ export class RecursiveResolver<TError = undefined>
   private async tryResolveAgainIfRedirect(
     result: Result<UriPackageOrWrapper, TError | InfiniteLoopError>,
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
     if (result.ok && result.value.type === "uri") {

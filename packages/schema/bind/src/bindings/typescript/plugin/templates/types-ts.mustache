@@ -6,7 +6,7 @@ import * as Types from "./";
 
 // @ts-ignore
 import {
-  Client,{{#interfaceTypes.length}}
+  CoreClient,{{#interfaceTypes.length}}
   Result,{{/interfaceTypes.length}}
   InvokeResult
 } from "@polywrap/core-js";
@@ -112,7 +112,7 @@ export const {{type}} = {
   {{#methods}}
   {{name}}: async (
     args: {{parent.type}}_Args_{{name}},
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: "{{parent.uri}}",
@@ -137,7 +137,7 @@ export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   {{#methods}}
   public async {{name}} (
     args: {{parent.type}}_Args_{{name}},
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: this.uri,
@@ -163,7 +163,7 @@ export class {{#detectKeyword}}{{namespace}}{{/detectKeyword}} {
   {{#capabilities}}
   {{#getImplementations}}
   {{#enabled}}
-  public static getImplementations(client: Client): Result<string[], Error> {
+  public static getImplementations(client: CoreClient): Result<string[], Error> {
     return client.getImplementations(this.uri, {});
   }
   {{/enabled}}

@@ -3,7 +3,7 @@ import { loadResolverExtension } from "./ResolverExtensionLoader";
 
 import {
   Uri,
-  Client,
+  CoreClient,
   UriResolverInterface,
   IUriResolutionContext,
   UriPackageOrWrapper,
@@ -26,7 +26,7 @@ export class UriResolverWrapper extends ResolverWithHistory<unknown> {
 
   protected async _tryResolveUri(
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, unknown>> {
     const result = await tryResolveUriWithImplementation(
@@ -60,7 +60,7 @@ export class UriResolverWrapper extends ResolverWithHistory<unknown> {
 const tryResolveUriWithImplementation = async (
   uri: Uri,
   implementationUri: Uri,
-  client: Client,
+  client: CoreClient,
   resolutionContext: IUriResolutionContext
 ): Promise<
   Result<UriResolverInterface.MaybeUriOrManifest | undefined, unknown>

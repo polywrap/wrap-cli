@@ -4,7 +4,7 @@ import { PluginMethod } from "../PluginMethod";
 import { PluginModule } from "../PluginModule";
 import { GetPluginMethodsFunc } from "./GetPluginMethodsFunc";
 
-import { Client } from "@polywrap/core-js";
+import { CoreClient } from "@polywrap/core-js";
 import { Result, ResultOk } from "@polywrap/result";
 
 export class PluginModuleWithMethods<
@@ -20,7 +20,7 @@ export class PluginModuleWithMethods<
   >(
     method: string,
     args: TArgs,
-    client: Client
+    client: CoreClient
   ): Promise<Result<TResult, Error>> {
     const fn = this.getMethod<TArgs, TResult>(method);
 

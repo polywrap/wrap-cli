@@ -10,7 +10,7 @@ import {
 } from "./wrap";
 import { execSimple, execFallbacks } from "./utils/exec";
 
-import { Client } from "@polywrap/core-js";
+import { CoreClient } from "@polywrap/core-js";
 import createIpfsClient, { IpfsClient } from "@polywrap/ipfs-http-client-lite";
 import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
@@ -47,7 +47,7 @@ const getOptions = (
 export type NoConfig = Record<string, never>;
 
 export class IpfsPlugin extends Module<NoConfig> {
-  public async cat(args: Args_cat, _client: Client): Promise<Buffer> {
+  public async cat(args: Args_cat, _client: CoreClient): Promise<Buffer> {
     const options = getOptions(args.options, this.env);
 
     return await this._execWithOptions(
@@ -61,7 +61,7 @@ export class IpfsPlugin extends Module<NoConfig> {
 
   public async resolve(
     args: Args_resolve,
-    _client: Client
+    _client: CoreClient
   ): Promise<Ipfs_ResolveResult | null> {
     const options = getOptions(args.options, this.env);
 

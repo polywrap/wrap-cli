@@ -1,4 +1,4 @@
-import { Client } from "@polywrap/core-js";
+import { CoreClient } from "@polywrap/core-js";
 import { buildWrapper } from "@polywrap/test-env-js";
 import WS from "jest-websocket-mock";
 import { PluginPackage } from "@polywrap/plugin-js";
@@ -8,7 +8,7 @@ jest.setTimeout(360000);
 
 describe("e2e tests for WsPlugin", () => {
   describe("integration", () => {
-    let client: Client;
+    let client: CoreClient;
     let server: WS;
 
     const wrapperPath = `${__dirname}/integration`;
@@ -46,15 +46,17 @@ describe("e2e tests for WsPlugin", () => {
       let msgs: string[] = [];
 
       const memoryPlugin = PluginPackage.from(() => ({
-        callback(args: { data: string }, _client: Client): void {
+        callback(args: { data: string }, _client: CoreClient): void {
           msgs.push(args.data);
         },
       }));
 
-      client = getClient([{
-        uri: "wrap://ens/memory.polywrap.eth",
-        package: memoryPlugin,
-      }]);
+      client = getClient([
+        {
+          uri: "wrap://ens/memory.polywrap.eth",
+          package: memoryPlugin,
+        },
+      ]);
 
       await client.invoke<boolean>({
         uri,
@@ -83,11 +85,14 @@ describe("e2e tests for WsPlugin", () => {
       let value: Record<string, string> = {};
 
       const memoryPlugin = PluginPackage.from(() => ({
-        set(args: { key: string; value: string }, _client: Client): boolean {
+        set(
+          args: { key: string; value: string },
+          _client: CoreClient
+        ): boolean {
           value[args.key] = args.value;
           return true;
         },
-        get(args: { key: string }, _client: Client): string | null {
+        get(args: { key: string }, _client: CoreClient): string | null {
           return value[args.key] ?? null;
         },
       }));

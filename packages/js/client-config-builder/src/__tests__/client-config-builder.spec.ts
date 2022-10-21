@@ -1,6 +1,6 @@
 import { ClientConfigBuilder } from "../ClientConfigBuilder";
 import {
-  Client,
+  CoreClient,
   Env,
   InterfaceImplementations,
   Uri,
@@ -22,7 +22,7 @@ class NamedUriResolver implements IUriResolver {
   }
   tryResolveUri(
     uri: Uri,
-    client: Client
+    client: CoreClient
   ): Promise<Result<UriPackageOrWrapper>> {
     throw new Error("Method not implemented.");
   }
