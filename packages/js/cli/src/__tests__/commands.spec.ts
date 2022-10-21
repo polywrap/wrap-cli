@@ -91,6 +91,7 @@ const testData: CommandTestCaseData<CommandTypings> = {
         throw Error("This shouldn't happen");
       const outputDir = path.join(test.cwd, test.options?.codegenDir);
       expect(fs.existsSync(outputDir)).toBeTruthy();
+      clearDir(outputDir);
     }
   }],
   create: {
