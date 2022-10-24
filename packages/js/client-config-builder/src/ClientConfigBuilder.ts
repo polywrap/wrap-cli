@@ -1,8 +1,8 @@
 import { getDefaultConfig } from "./bundles";
-import { CustomClientConfig } from "./CustomClientConfig";
+import { ClientConfig } from "./ClientConfig";
 
 import {
-  ClientConfig,
+  CoreClientConfig,
   Uri,
   IUriResolver,
   IUriPackage,
@@ -22,7 +22,7 @@ import {
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 export class ClientConfigBuilder {
-  private _config: CustomClientConfig<Uri> = {
+  private _config: ClientConfig<Uri> = {
     envs: [],
     interfaces: [],
     redirects: [],
@@ -31,7 +31,7 @@ export class ClientConfigBuilder {
     resolvers: [],
   };
 
-  add(config: Partial<CustomClientConfig<Uri | string>>): ClientConfigBuilder {
+  add(config: Partial<ClientConfig<Uri | string>>): ClientConfigBuilder {
     if (config.envs) {
       this.addEnvs(config.envs);
     }
@@ -352,14 +352,14 @@ export class ClientConfigBuilder {
     return this;
   }
 
-  build(): CustomClientConfig<Uri> {
+  build(): ClientConfig<Uri> {
     return this._config;
   }
 
   buildDefault(
     wrapperCache?: IWrapperCache,
     resolver?: IUriResolver<unknown>
-  ): ClientConfig<Uri> {
+  ): CoreClientConfig<Uri> {
     return {
       envs: this._config.envs,
       interfaces: this._config.interfaces,

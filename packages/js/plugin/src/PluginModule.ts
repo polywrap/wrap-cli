@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { PluginMethod } from "./PluginMethod";
 
-import { Client } from "@polywrap/core-js";
+import { CoreClient } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export abstract class PluginModule<
@@ -33,7 +33,7 @@ export abstract class PluginModule<
   >(
     method: string,
     args: TArgs,
-    client: Client
+    client: CoreClient
   ): Promise<Result<TResult, Error>> {
     const fn = this.getMethod<TArgs, TResult>(method);
 

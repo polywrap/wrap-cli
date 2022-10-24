@@ -4,7 +4,7 @@ import { PolywrapClientConfig } from "./PolywrapClientConfig";
 
 import {
   Wrapper,
-  Client,
+  CoreClient,
   Env,
   GetFileOptions,
   GetImplementationsOptions,
@@ -38,7 +38,7 @@ import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
-export class PolywrapClient implements Client {
+export class PolywrapClient implements CoreClient {
   private _config: PolywrapCoreClientConfig<Uri>;
 
   /**

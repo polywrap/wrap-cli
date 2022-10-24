@@ -1,6 +1,6 @@
 import {
   Bytes,
-  Client,
+  CoreClient,
   FileSystem_Module,
   Args_getFile,
   Args_tryResolveUri,
@@ -17,7 +17,7 @@ type NoConfig = Record<string, never>;
 export class FileSystemResolverPlugin extends Module<NoConfig> {
   async tryResolveUri(
     args: Args_tryResolveUri,
-    _client: Client
+    _client: CoreClient
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
     if (args.authority !== "fs" && args.authority !== "file") {
       return null;
@@ -52,7 +52,10 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
     return { uri: null, manifest };
   }
 
-  async getFile(args: Args_getFile, _client: Client): Promise<Bytes | null> {
+  async getFile(
+    args: Args_getFile,
+    _client: CoreClient
+  ): Promise<Bytes | null> {
     try {
       const fileResult = await FileSystem_Module.readFile(
         { path: args.path },

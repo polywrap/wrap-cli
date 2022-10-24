@@ -1,7 +1,7 @@
 import { UriResolutionResult, UriResolverLike } from "../helpers";
 
 import {
-  Client,
+  CoreClient,
   IUriResolutionContext,
   IUriResolver,
   Uri,
@@ -12,8 +12,7 @@ import {
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 
-export class StaticResolver<TError = undefined>
-  implements IUriResolver<TError> {
+export class StaticResolver<TError = undefined> implements IUriResolver<TError> {
   constructor(public uriMap: Map<string, UriPackageOrWrapper>) {}
 
   static from<TError = undefined>(
@@ -71,7 +70,7 @@ export class StaticResolver<TError = undefined>
 
   async tryResolveUri(
     uri: Uri,
-    _: Client,
+    _: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError>> {
     const uriPackageOrWrapper = this.uriMap.get(uri.uri);

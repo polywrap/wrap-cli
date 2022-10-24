@@ -3,7 +3,7 @@
 
 import * as Types from "./types";
 
-import { Client, MaybeAsync } from "@polywrap/core-js";
+import { CoreClient, MaybeAsync } from "@polywrap/core-js";
 import { PluginModule } from "@polywrap/plugin-js";
 {{#moduleType}}
 {{#methods}}
@@ -27,7 +27,7 @@ export abstract class Module<
 
   abstract {{name}}(
     args: Args_{{name}},
-    client: Client
+    client: CoreClient
   ): MaybeAsync<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
   {{/methods}}
   {{/moduleType}}

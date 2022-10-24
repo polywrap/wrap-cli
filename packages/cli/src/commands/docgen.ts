@@ -20,7 +20,7 @@ import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { PolywrapClient, Uri } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
-import { CustomClientConfig } from "@polywrap/client-config-builder-js";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
 
 const commandToPathMap: Record<string, string> = {
   schema: schemaScriptPath,
@@ -36,7 +36,7 @@ const pathStr = intlMsg.commands_codegen_options_o_path();
 type DocgenCommandOptions = {
   manifestFile: string;
   docgenDir: string;
-  clientConfig: Partial<CustomClientConfig<Uri | string>>;
+  clientConfig: Partial<ClientConfig<Uri | string>>;
   imports: boolean;
   verbose?: boolean;
   quiet?: boolean;

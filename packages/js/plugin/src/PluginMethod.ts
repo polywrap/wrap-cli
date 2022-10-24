@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Client, MaybeAsync } from "@polywrap/core-js";
+import { CoreClient, MaybeAsync } from "@polywrap/core-js";
 
 /**
  * Invocable plugin method.
@@ -12,4 +12,4 @@ import { Client, MaybeAsync } from "@polywrap/core-js";
 export type PluginMethod<
   TArgs extends Record<string, unknown> = Record<string, unknown>,
   TResult = unknown
-> = (args: TArgs, client: Client) => MaybeAsync<TResult>;
+> = (args: TArgs, client: CoreClient) => MaybeAsync<TResult>;

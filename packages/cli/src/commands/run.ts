@@ -22,10 +22,10 @@ import { Uri } from "@polywrap/client-js";
 import path from "path";
 import yaml from "yaml";
 import fs from "fs";
-import { CustomClientConfig } from "@polywrap/client-config-builder-js";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
 
 type WorkflowCommandOptions = {
-  clientConfig: Partial<CustomClientConfig<Uri | string>>;
+  clientConfig: Partial<ClientConfig<Uri | string>>;
   manifest: string;
   jobs?: string[];
   validationScript?: string;

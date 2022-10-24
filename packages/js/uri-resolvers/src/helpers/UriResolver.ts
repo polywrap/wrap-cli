@@ -8,7 +8,7 @@ import { Result } from "@polywrap/result";
 import {
   IUriResolver,
   Uri,
-  Client,
+  CoreClient,
   IUriRedirect,
   IUriPackage,
   IUriWrapper,
@@ -30,7 +30,7 @@ export class UriResolver {
       return new UriResolverAggregator(
         resolverLike as (
           uri: Uri,
-          client: Client
+          client: CoreClient
         ) => Promise<Result<IUriResolver[], unknown>>,
         resolverName
       ) as IUriResolver<TError>;

@@ -6,7 +6,7 @@ import * as Types from "./";
 
 // @ts-ignore
 import {
-  Client,
+  CoreClient,
   InvokeResult
 } from "@polywrap/core-js";
 
@@ -346,311 +346,311 @@ interface Ethereum_Module_Args_sendRPC {
 export const Ethereum_Module = {
   callContractView: async (
     args: Ethereum_Module_Args_callContractView,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "callContractView",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   callContractStatic: async (
     args: Ethereum_Module_Args_callContractStatic,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_StaticTxResult>> => {
     return client.invoke<Types.Ethereum_StaticTxResult>({
       uri: "ens/ethereum.polywrap.eth",
       method: "callContractStatic",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   getBalance: async (
     args: Ethereum_Module_Args_getBalance,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getBalance",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   encodeParams: async (
     args: Ethereum_Module_Args_encodeParams,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "encodeParams",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   encodeFunction: async (
     args: Ethereum_Module_Args_encodeFunction,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "encodeFunction",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   solidityPack: async (
     args: Ethereum_Module_Args_solidityPack,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "solidityPack",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   solidityKeccak256: async (
     args: Ethereum_Module_Args_solidityKeccak256,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "solidityKeccak256",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   soliditySha256: async (
     args: Ethereum_Module_Args_soliditySha256,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "soliditySha256",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   getSignerAddress: async (
     args: Ethereum_Module_Args_getSignerAddress,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getSignerAddress",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   getSignerBalance: async (
     args: Ethereum_Module_Args_getSignerBalance,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getSignerBalance",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   getSignerTransactionCount: async (
     args: Ethereum_Module_Args_getSignerTransactionCount,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getSignerTransactionCount",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   getGasPrice: async (
     args: Ethereum_Module_Args_getGasPrice,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getGasPrice",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   estimateTransactionGas: async (
     args: Ethereum_Module_Args_estimateTransactionGas,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "estimateTransactionGas",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   estimateContractCallGas: async (
     args: Ethereum_Module_Args_estimateContractCallGas,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "estimateContractCallGas",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   checkAddress: async (
     args: Ethereum_Module_Args_checkAddress,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.Boolean>> => {
     return client.invoke<Types.Boolean>({
       uri: "ens/ethereum.polywrap.eth",
       method: "checkAddress",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   toWei: async (
     args: Ethereum_Module_Args_toWei,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "toWei",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   toEth: async (
     args: Ethereum_Module_Args_toEth,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "toEth",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   awaitTransaction: async (
     args: Ethereum_Module_Args_awaitTransaction,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_TxReceipt>> => {
     return client.invoke<Types.Ethereum_TxReceipt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "awaitTransaction",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   waitForEvent: async (
     args: Ethereum_Module_Args_waitForEvent,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_EventNotification>> => {
     return client.invoke<Types.Ethereum_EventNotification>({
       uri: "ens/ethereum.polywrap.eth",
       method: "waitForEvent",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   getNetwork: async (
     args: Ethereum_Module_Args_getNetwork,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_Network>> => {
     return client.invoke<Types.Ethereum_Network>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getNetwork",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   requestAccounts: async (
     args: Ethereum_Module_Args_requestAccounts,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Array<Types.String>>> => {
     return client.invoke<Array<Types.String>>({
       uri: "ens/ethereum.polywrap.eth",
       method: "requestAccounts",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   callContractMethod: async (
     args: Ethereum_Module_Args_callContractMethod,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_TxResponse>> => {
     return client.invoke<Types.Ethereum_TxResponse>({
       uri: "ens/ethereum.polywrap.eth",
       method: "callContractMethod",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   callContractMethodAndWait: async (
     args: Ethereum_Module_Args_callContractMethodAndWait,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_TxReceipt>> => {
     return client.invoke<Types.Ethereum_TxReceipt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "callContractMethodAndWait",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   sendTransaction: async (
     args: Ethereum_Module_Args_sendTransaction,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_TxResponse>> => {
     return client.invoke<Types.Ethereum_TxResponse>({
       uri: "ens/ethereum.polywrap.eth",
       method: "sendTransaction",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   sendTransactionAndWait: async (
     args: Ethereum_Module_Args_sendTransactionAndWait,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_TxReceipt>> => {
     return client.invoke<Types.Ethereum_TxReceipt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "sendTransactionAndWait",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   deployContract: async (
     args: Ethereum_Module_Args_deployContract,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "deployContract",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   signMessage: async (
     args: Ethereum_Module_Args_signMessage,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "signMessage",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   sendRPC: async (
     args: Ethereum_Module_Args_sendRPC,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.String | null>> => {
     return client.invoke<Types.String | null>({
       uri: "ens/ethereum.polywrap.eth",
       method: "sendRPC",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
-  }
-}
+  },
+};
 
 /// Imported Modules END ///

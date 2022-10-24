@@ -1,5 +1,5 @@
 import {
-  Client,
+  CoreClient,
   Module,
   Args_get,
   Args_post,
@@ -16,7 +16,7 @@ type NoConfig = Record<string, never>;
 export class HttpPlugin extends Module<NoConfig> {
   public async get(
     args: Args_get,
-    _client: Client
+    _client: CoreClient
   ): Promise<Http_Response | null> {
     const response = await axios.get<string>(
       args.url,
@@ -27,7 +27,7 @@ export class HttpPlugin extends Module<NoConfig> {
 
   public async post(
     args: Args_post,
-    _client: Client
+    _client: CoreClient
   ): Promise<Http_Response | null> {
     const response = await axios.post(
       args.url,

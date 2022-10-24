@@ -2,7 +2,7 @@ import {
   Args_getFile,
   Args_tryResolveUri,
   Bytes,
-  Client,
+  CoreClient,
   Http_Module,
   manifest,
   Module,
@@ -17,7 +17,7 @@ export class HttpResolverPlugin extends Module<NoConfig> {
   // uri-resolver.core.polywrap.eth
   public async tryResolveUri(
     args: Args_tryResolveUri,
-    _client: Client
+    _client: CoreClient
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
     if (args.authority !== "http" && args.authority !== "https") {
       return null;
@@ -55,7 +55,7 @@ export class HttpResolverPlugin extends Module<NoConfig> {
 
   public async getFile(
     args: Args_getFile,
-    client: Client
+    client: CoreClient
   ): Promise<Bytes | null> {
     try {
       const resolveResult = await Http_Module.get(

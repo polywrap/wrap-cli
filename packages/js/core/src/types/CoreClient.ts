@@ -6,14 +6,14 @@ import {
   Uri,
   InterfaceImplementations,
   Env,
-} from "./";
+} from ".";
 import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
-export interface ClientConfig<TUri extends Uri | string = string> {
+export interface CoreClientConfig<TUri extends Uri | string = string> {
   readonly redirects?: Readonly<IUriRedirect<TUri>[]>;
   readonly interfaces?: Readonly<InterfaceImplementations<TUri>[]>;
   readonly envs?: Readonly<Env<TUri>[]>;
@@ -33,12 +33,12 @@ export interface GetImplementationsOptions {
   applyRedirects?: boolean;
 }
 
-export interface Client
+export interface CoreClient
   extends Invoker,
     QueryHandler,
     SubscriptionHandler,
     UriResolverHandler<unknown> {
-  getConfig(): ClientConfig<Uri>;
+  getConfig(): CoreClientConfig<Uri>;
 
   getRedirects(): readonly IUriRedirect<Uri>[] | undefined;
 

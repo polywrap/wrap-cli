@@ -1,5 +1,5 @@
 export * from "./Wrapper";
-export * from "./Client";
+export * from "./CoreClient";
 export * from "./Invoke";
 export * from "./MaybeAsync";
 export * from "./Query";

@@ -1,4 +1,4 @@
-import { CustomClientConfig } from "@polywrap/client-config-builder-js";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
 import { Uri } from "@polywrap/core-js";
 
 export interface Step {
@@ -7,7 +7,7 @@ export interface Step {
   args?: {
     [k: string]: unknown;
   };
-  config?: CustomClientConfig<Uri | string>;
+  config?: ClientConfig<Uri | string>;
 }
 
 export enum Status {

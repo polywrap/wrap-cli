@@ -3,7 +3,7 @@ import * as Types from "./";
 
 // @ts-ignore
 import {
-  Client,
+  CoreClient,
   InvokeResult
 } from "@polywrap/core-js";
 
@@ -185,39 +185,39 @@ interface TestImport_Module_Args_returnsArrayOfEnums {
 export const TestImport_Module = {
   importedMethod: async (
     args: TestImport_Module_Args_importedMethod,
-    client: Client,
+    client: CoreClient,
     uri: string = "testimport.uri.eth"
   ): Promise<InvokeResult<Types.TestImport_Object | null>> => {
     return client.invoke<Types.TestImport_Object | null>({
       uri,
       method: "importedMethod",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   anotherMethod: async (
     args: TestImport_Module_Args_anotherMethod,
-    client: Client,
+    client: CoreClient,
     uri: string = "testimport.uri.eth"
   ): Promise<InvokeResult<Types.Int32>> => {
     return client.invoke<Types.Int32>({
       uri,
       method: "anotherMethod",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   },
 
   returnsArrayOfEnums: async (
     args: TestImport_Module_Args_returnsArrayOfEnums,
-    client: Client,
+    client: CoreClient,
     uri: string = "testimport.uri.eth"
   ): Promise<InvokeResult<Array<Types.TestImport_Enum_Return | null>>> => {
     return client.invoke<Array<Types.TestImport_Enum_Return | null>>({
       uri,
       method: "returnsArrayOfEnums",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
-  }
-}
+  },
+};
 
 /// Imported Modules END ///

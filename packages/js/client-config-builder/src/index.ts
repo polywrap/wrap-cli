@@ -1,3 +1,3 @@
 export * from "./ClientConfigBuilder";
-export * from "./CustomClientConfig";
+export * from "./ClientConfig";
 export * from "./bundles";
