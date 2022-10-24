@@ -17,9 +17,8 @@ export function getExecOptions(
       args?.disableParallelRequests ?? defaultOptions.disableParallelRequests,
     timeout: args?.timeout ?? defaultOptions.timeout,
     provider: args?.provider ?? defaultOptions.provider,
-    fallbackProviders:
-      args?.fallbackProviders ?
-        [...args.fallbackProviders, ...defaultOptions.fallbackProviders] :
-        defaultOptions.fallbackProviders,
+    fallbackProviders: args?.fallbackProviders
+      ? [...args.fallbackProviders, ...defaultOptions.fallbackProviders]
+      : defaultOptions.fallbackProviders,
   };
 }
