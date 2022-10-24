@@ -1118,7 +1118,7 @@ export const runComplexEnvs = async (
   });
 };
 
-export const runSubinvokeTest = async (client: PolywrapClient, uri: string) => {
+export const runSubinvokeTest = async (client: CoreClient, uri: string) => {
   {
     const response = await client.invoke({
       uri,

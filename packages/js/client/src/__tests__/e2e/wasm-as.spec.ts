@@ -49,7 +49,7 @@ describe("wasm-as test cases", () => {
     await buildWrapper(subwrapperPath);
     await buildWrapper(wrapperPath);
 
-    const client = await getClient({
+    const client = new PolywrapClient({
       redirects: [
         {
           from: "ens/add.eth",
