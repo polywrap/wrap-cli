@@ -650,7 +650,7 @@ export const Ethereum_Module = {
       method: "sendRPC",
       args: (args as unknown) as Record<string, unknown>,
     });
-  },
-};
+  }
+}
 
 /// Imported Modules END ///
