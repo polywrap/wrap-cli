@@ -121,9 +121,7 @@ export function validateEnvs<TUri extends Uri | string = string>(
   }
 }
 
-export function validateClientConfig(
-  config: Partial<ClientConfig>
-): void {
+export function validateClientConfig(config: Partial<ClientConfig>): void {
   if (!config || typeof config !== "object") {
     throw new Error(intlMsg.commands_run_error_clientConfigNotObject());
   }

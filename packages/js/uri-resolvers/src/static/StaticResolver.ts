@@ -12,7 +12,8 @@ import {
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 
-export class StaticResolver<TError = undefined> implements IUriResolver<TError> {
+export class StaticResolver<TError = undefined>
+  implements IUriResolver<TError> {
   constructor(public uriMap: Map<string, UriPackageOrWrapper>) {}
 
   static from<TError = undefined>(

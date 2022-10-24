@@ -15,7 +15,10 @@ import {
   UriResolutionResult,
 } from "@polywrap/uri-resolvers-js";
 
-export class ExtendableUriResolver extends UriResolverAggregatorBase<Error, Error> {
+export class ExtendableUriResolver extends UriResolverAggregatorBase<
+  Error,
+  Error
+> {
   private readonly resolverName: string;
 
   constructor(resolverName?: string) {
