@@ -7,7 +7,7 @@ export interface Step {
   args?: {
     [k: string]: unknown;
   };
-  config?: ClientConfig<Uri | string>;
+  config?: ClientConfig;
 }
 
 export enum Status {

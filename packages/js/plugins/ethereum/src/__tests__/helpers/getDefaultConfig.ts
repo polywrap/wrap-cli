@@ -1,4 +1,4 @@
-import { coreInterfaceUris, Uri } from "@polywrap/core-js";
+import { coreInterfaceUris } from "@polywrap/core-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ethereumPlugin, Connections } from "../..";
@@ -10,7 +10,7 @@ import {
 
 export const getDefaultConfig = (
   connections: Connections
-): Partial<ClientConfig<Uri | string>> => {
+): Partial<ClientConfig> => {
   return {
     envs: [
       {

@@ -8,7 +8,9 @@ import {
 } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 
-export type ClientConfig<TUri extends Uri | string> = {
+export interface ClientConfig<
+  TUri extends Uri | string = Uri | string
+> {
   readonly envs: Env<TUri>[];
   readonly interfaces: InterfaceImplementations<TUri>[];
   readonly redirects: IUriRedirect<TUri>[];

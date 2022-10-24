@@ -25,7 +25,7 @@ import {
 
 import path from "path";
 import readline from "readline";
-import { PolywrapClient, Uri } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { ClientConfig } from "@polywrap/client-config-builder-js";
 
@@ -38,7 +38,7 @@ const pathStr = intlMsg.commands_build_options_o_path();
 type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
-  clientConfig: Partial<ClientConfig<Uri | string>>;
+  clientConfig: Partial<ClientConfig>;
   codegen: boolean; // defaults to true
   watch?: boolean;
   strategy: SupportedStrategies;

@@ -13,7 +13,9 @@ import { UriResolverHandler } from "./UriResolver";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
-export interface CoreClientConfig<TUri extends Uri | string = string> {
+export interface CoreClientConfig<
+  TUri extends Uri | string = Uri | string
+> {
   readonly redirects?: Readonly<IUriRedirect<TUri>[]>;
   readonly interfaces?: Readonly<InterfaceImplementations<TUri>[]>;
   readonly envs?: Readonly<Env<TUri>[]>;

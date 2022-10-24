@@ -4,12 +4,11 @@ import { testCases } from "./jobrunner-test-cases";
 import { JobRunner } from "../../lib";
 import path from "path";
 import { ClientConfigBuilder, ClientConfig } from "@polywrap/client-config-builder-js";
-import { Uri } from "@polywrap/core-js";
 
 jest.setTimeout(200000);
 
 describe("workflow JobRunner", () => {
-  let defaultConfig: ClientConfig<Uri | string>;
+  let defaultConfig: ClientConfig;
 
   beforeAll(async () => {
     await buildWrapper(

@@ -31,7 +31,7 @@ export class ClientConfigBuilder {
     resolvers: [],
   };
 
-  add(config: Partial<ClientConfig<Uri | string>>): ClientConfigBuilder {
+  add(config: Partial<ClientConfig>): ClientConfigBuilder {
     if (config.envs) {
       this.addEnvs(config.envs);
     }

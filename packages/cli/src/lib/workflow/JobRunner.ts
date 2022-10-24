@@ -1,7 +1,7 @@
 import { JobResult, Status, Step } from "./types";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import { CoreClient, MaybeAsync, Uri } from "@polywrap/core-js";
+import { CoreClient, MaybeAsync } from "@polywrap/core-js";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
 import {
   ClientConfigBuilder,
@@ -13,7 +13,7 @@ export class JobRunner {
   private client: CoreClient;
 
   constructor(
-    private clientConfig: Partial<ClientConfig<Uri | string>>,
+    private clientConfig: Partial<ClientConfig>,
     private onExecution?: (id: string, JobResult: JobResult) => MaybeAsync<void>
   ) {
     this.jobOutput = new Map();
