@@ -1,22 +1,30 @@
 import { InfiniteLoopError } from "./InfiniteLoopError";
+import { UriResolverLike } from "./UriResolverLike";
+import { UriResolutionResult } from "./UriResolutionResult";
+import { UriResolver } from "./UriResolver";
 
+import { Result } from "@polywrap/result";
 import {
   IUriResolver,
   Uri,
-  Client,
+  CoreClient,
   IUriResolutionContext,
   UriPackageOrWrapper,
-  UriResolutionResult,
 } from "@polywrap/core-js";
-import { Result } from "@polywrap/result";
 
 export class RecursiveResolver<TError = undefined>
   implements IUriResolver<TError | InfiniteLoopError> {
   constructor(private resolver: IUriResolver<TError>) {}
 
+  static from<TResolverError = unknown>(
+    resolver: UriResolverLike
+  ): RecursiveResolver<TResolverError> {
+    return new RecursiveResolver(UriResolver.from<TResolverError>(resolver));
+  }
+
   async tryResolveUri(
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
     if (resolutionContext.isResolving(uri)) {
@@ -48,7 +56,7 @@ export class RecursiveResolver<TError = undefined>
   private async tryResolveAgainIfRedirect(
     result: Result<UriPackageOrWrapper, TError | InfiniteLoopError>,
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
     if (result.ok && result.value.type === "uri") {

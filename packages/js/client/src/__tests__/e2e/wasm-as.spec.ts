@@ -7,8 +7,8 @@ import {
   runCLI,
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
-import { getClient } from "../utils/getClient";
+import { getClientWithEnsAndIpfs } from "../helpers/getClientWithEnsAndIpfs";
+import { PolywrapClient } from "../../PolywrapClient";
 
 jest.setTimeout(300000);
 
@@ -27,11 +27,11 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    const client = await getClient({
-      plugins: [
+    const client = new PolywrapClient({
+      packages: [
         {
           uri: "wrap://ens/memory-storage.polywrap.eth",
-          plugin: makeMemoryStoragePlugin({}),
+          package: makeMemoryStoragePlugin({}),
         },
       ],
     });
@@ -49,7 +49,7 @@ describe("wasm-as test cases", () => {
     await buildWrapper(subwrapperPath);
     await buildWrapper(wrapperPath);
 
-    const client = await getClient({
+    const client = new PolywrapClient({
       redirects: [
         {
           from: "ens/add.eth",
@@ -67,7 +67,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runBigIntTypeTest(await getClient(), wrapperUri);
+    await TestCases.runBigIntTypeTest(new PolywrapClient(), wrapperUri);
   });
 
   it("bignumber-type", async () => {
@@ -76,7 +76,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runBigNumberTypeTest(await getClient(), wrapperUri);
+    await TestCases.runBigNumberTypeTest(new PolywrapClient(), wrapperUri);
   });
 
   it("bytes-type", async () => {
@@ -85,7 +85,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runBytesTypeTest(await getClient(), wrapperUri);
+    await TestCases.runBytesTypeTest(new PolywrapClient(), wrapperUri);
   });
 
   it("enum-types", async () => {
@@ -94,20 +94,20 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runEnumTypesTest(await getClient(), wrapperUri);
+    await TestCases.runEnumTypesTest(new PolywrapClient(), wrapperUri);
   });
 
-  it("map-type", async () => { 
+  it("map-type", async () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/map-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runMapTypeTest(await getClient(), wrapperUri);
+    await TestCases.runMapTypeTest(new PolywrapClient(), wrapperUri);
   });
 
   it("reserved-words", async () => {
-    const client = await getClient();
+    const client = new PolywrapClient();
 
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/reserved-words`;
     const wrapperUri = `fs/${wrapperPath}/build`;
@@ -142,7 +142,7 @@ describe("wasm-as test cases", () => {
     await buildWrapper(interfacePath);
     await buildWrapper(implementationPath);
 
-    const client = await getClient({
+    const client = new PolywrapClient({
       interfaces: [
         {
           interface: interfaceUri,
@@ -172,7 +172,7 @@ describe("wasm-as test cases", () => {
     await buildWrapper(implementationPath);
     await buildWrapper(aggregatorPath);
 
-    const client = await getClient({
+    const client = new PolywrapClient({
       interfaces: [
         {
           interface: interfaceUri,
@@ -203,7 +203,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(implementationPath);
 
-    const client = await getClient({
+    const client = new PolywrapClient({
       interfaces: [
         {
           interface: interfaceUri,
@@ -242,7 +242,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runInvalidTypesTest(await getClient(), wrapperUri);
+    await TestCases.runInvalidTypesTest(new PolywrapClient(), wrapperUri);
   });
 
   it("JSON-type", async () => {
@@ -251,7 +251,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runJsonTypeTest(await getClient(), wrapperUri);
+    await TestCases.runJsonTypeTest(new PolywrapClient(), wrapperUri);
   });
 
   it("large-types", async () => {
@@ -260,7 +260,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runLargeTypesTest(await getClient(), wrapperUri);
+    await TestCases.runLargeTypesTest(new PolywrapClient(), wrapperUri);
   });
 
   it("number-types under and overflows", async () => {
@@ -269,7 +269,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runNumberTypesTest(await getClient(), wrapperUri);
+    await TestCases.runNumberTypesTest(new PolywrapClient(), wrapperUri);
   });
 
   it("object-types", async () => {
@@ -278,7 +278,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runObjectTypesTest(await getClient(), wrapperUri);
+    await TestCases.runObjectTypesTest(new PolywrapClient(), wrapperUri);
   });
 
   it("simple-storage", async () => {
@@ -287,10 +287,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    await TestCases.runSimpleStorageTest(
-      await getClientWithEnsAndIpfs(),
-      wrapperUri
-    );
+    await TestCases.runSimpleStorageTest(getClientWithEnsAndIpfs(), wrapperUri);
   });
 
   it("simple env", async () => {
@@ -300,7 +297,7 @@ describe("wasm-as test cases", () => {
     await buildWrapper(wrapperPath);
 
     await TestCases.runSimpleEnvTest(
-      await getClient({
+      new PolywrapClient({
         envs: [
           {
             uri: wrapperUri,
@@ -326,7 +323,7 @@ describe("wasm-as test cases", () => {
     await buildWrapper(wrapperPath);
 
     await TestCases.runComplexEnvs(
-      await getClient({
+      new PolywrapClient({
         envs: [
           {
             uri: wrapperUri,

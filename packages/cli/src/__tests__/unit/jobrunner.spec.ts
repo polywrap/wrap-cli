@@ -3,26 +3,27 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { testCases } from "./jobrunner-test-cases";
 import { JobRunner } from "../../lib";
 import path from "path";
-import { PolywrapClient } from "@polywrap/client-js";
+import { ClientConfigBuilder, ClientConfig } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 
 describe("workflow JobRunner", () => {
-
-  let client: PolywrapClient;
+  let defaultConfig: ClientConfig;
 
   beforeAll(async () => {
     await buildWrapper(
       path.join(GetPathToTestWrappers(), "wasm-as", "simple-calculator")
     );
-    client = new PolywrapClient({});
+    defaultConfig = new ClientConfigBuilder().addDefaults().build();
   });
 
   for (const testCase of testCases) {
     it(testCase.name, async () => {
-      expect(client).toBeTruthy();
       const ids = Object.keys(testCase.workflow.jobs);
-      const jobRunner = new JobRunner(client, testCase.onExecution);
+      const jobRunner = new JobRunner(
+        defaultConfig,
+        testCase.onExecution
+      );
       await jobRunner.run(testCase.workflow.jobs, ids);
     });
   }

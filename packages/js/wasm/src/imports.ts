@@ -5,10 +5,10 @@ import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { State } from "./WasmWrapper";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { Client } from "@polywrap/core-js";
+import { CoreClient } from "@polywrap/core-js";
 
 export const createImports = (config: {
-  client: Client;
+  client: CoreClient;
   memory: WebAssembly.Memory;
   state: State;
   abort: (message: string) => never;

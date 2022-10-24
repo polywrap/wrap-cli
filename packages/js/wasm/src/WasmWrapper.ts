@@ -13,7 +13,7 @@ import {
   Wrapper,
   Uri,
   InvokeOptions,
-  Client,
+  CoreClient,
   InvocableResult,
   isBuffer,
   GetFileOptions,
@@ -139,7 +139,7 @@ export class WasmWrapper implements Wrapper {
   @Tracer.traceMethod("WasmWrapper: invoke", TracingLevel.High)
   public async invoke(
     options: InvokeOptions<Uri>,
-    client: Client
+    client: CoreClient
   ): Promise<InvocableResult<Uint8Array>> {
     Tracer.setAttribute(
       "label",
