@@ -137,6 +137,7 @@ describe("IPFS Plugin", () => {
     let result = await Promise.race([catPromise, racePromise]);
 
     expect(result).toBeTruthy();
+    expect(result.ok).toBeFalsy();
     result = result as { ok: false; error: Error | undefined };
     expect(result.error).toBeTruthy();
     expect(result.error?.stack).toMatch("Timeout has been reached");

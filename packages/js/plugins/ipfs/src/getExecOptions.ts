@@ -6,10 +6,10 @@ export function getExecOptions(
   env: Env
 ): ExecOptions {
   const defaultOptions: ExecOptions = {
-    disableParallelRequests: false,
-    timeout: 5000,
+    disableParallelRequests: env.disableParallelRequests ?? false,
+    timeout: env.timeout ?? 5000,
     provider: env.provider,
-    fallbackProviders: [],
+    fallbackProviders: env.fallbackProviders ?? [],
   };
 
   return {
@@ -18,6 +18,8 @@ export function getExecOptions(
     timeout: args?.timeout ?? defaultOptions.timeout,
     provider: args?.provider ?? defaultOptions.provider,
     fallbackProviders:
-      args?.fallbackProviders ?? defaultOptions.fallbackProviders,
+      args?.fallbackProviders ?
+        [...args.fallbackProviders, ...defaultOptions.fallbackProviders] :
+        defaultOptions.fallbackProviders,
   };
 }
