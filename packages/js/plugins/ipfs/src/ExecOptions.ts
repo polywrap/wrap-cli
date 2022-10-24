@@ -1,6 +1,6 @@
 export type ExecOptions = {
   timeout: number;
   provider: string;
-  fallbackProviders: [];
+  fallbackProviders: string[];
   disableParallelRequests: boolean;
 };

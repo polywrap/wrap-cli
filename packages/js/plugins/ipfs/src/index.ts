@@ -4,46 +4,15 @@ import {
   Args_addFile,
   Args_cat,
   Ipfs_ResolveResult,
-  Ipfs_Options,
   manifest,
-  Env,
 } from "./wrap";
 import { execSimple, execFallbacks } from "./utils/exec";
 import { ExecOptions } from "./ExecOptions";
+import { getExecOptions } from "./getExecOptions";
 
 import { Client } from "@polywrap/core-js";
 import createIpfsClient, { IpfsClient } from "@polywrap/ipfs-http-client-lite";
 import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
-
-const isNullOrUndefined = (arg: unknown) => {
-  return arg === undefined || arg === null;
-};
-
-const getExecOptions = (
-  args: Ipfs_Options | undefined | null,
-  env: Env
-): ExecOptions => {
-  const options = args || {};
-
-  if (isNullOrUndefined(options.disableParallelRequests)) {
-    options.disableParallelRequests = !!env.disableParallelRequests;
-  }
-
-  if (isNullOrUndefined(options.timeout)) {
-    // Default to a 5000ms timeout when none is provided
-    options.timeout = env.timeout ?? 5000;
-  }
-
-  if (isNullOrUndefined(options.provider)) {
-    options.provider = env.provider;
-  }
-
-  if (isNullOrUndefined(options.fallbackProviders)) {
-    options.fallbackProviders = env.fallbackProviders ?? [];
-  }
-
-  return options as ExecOptions;
-};
 
 export type NoConfig = Record<string, never>;
 
