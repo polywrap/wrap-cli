@@ -19,6 +19,10 @@ describe("interface-impls", () => {
             implementations: [implementation1Uri, implementation2Uri],
           },
         ],
+        resolver: UriResolver.from({
+          from: "uri/foo",
+          to: "uri/bar"
+        })
       },
       { noDefaults: true }
     );
@@ -144,8 +148,7 @@ describe("interface-impls", () => {
       ],
     });
 
-    const interfaces = client
-      .getInterfaces()
+    const interfaces = (client.getInterfaces() || [])
       .filter((x) => x.interface.uri === interfaceUri);
     expect(interfaces.length).toEqual(1);
 
@@ -175,8 +178,7 @@ describe("interface-impls", () => {
       ],
     });
 
-    const interfaces = client
-      .getInterfaces()
+    const interfaces = (client.getInterfaces() || [])
       .filter((x) => x.interface.uri === interfaceUri);
     expect(interfaces.length).toEqual(1);
 
@@ -186,7 +188,7 @@ describe("interface-impls", () => {
     const defaultClientConfig = builder.addDefaults().buildDefault();
 
     expect(implementationUris).toEqual([
-      ...defaultClientConfig.interfaces.find(
+      ...(defaultClientConfig.interfaces || []).find(
         (x) => x.interface.uri === interfaceUri
       )!.implementations,
       new Uri(implementationUri1),
