@@ -106,14 +106,14 @@ export const {{type}} = {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri,
       method: "{{name}}",
-      args: (args as unknown) as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   }{{^last}},{{/last}}
   {{^last}}
 
   {{/last}}
   {{/methods}}
-}
+};
 {{/importedModuleTypes}}
 
 /// Imported Modules END ///

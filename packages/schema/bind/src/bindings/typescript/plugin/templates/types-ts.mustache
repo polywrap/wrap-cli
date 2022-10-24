@@ -117,7 +117,7 @@ export const {{type}} = {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: "{{parent.uri}}",
       method: "{{name}}",
-      args: (args as unknown) as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   }{{^last}},{{/last}}
   {{^last}}
@@ -131,18 +131,17 @@ export const {{type}} = {
 export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   public static interfaceUri: string = "{{uri}}";
 
-  constructor(public uri: string) {
-  }
+  constructor(public uri: string) {}
 
   {{#methods}}
-  public async {{name}} (
+  public async {{name}}(
     args: {{parent.type}}_Args_{{name}},
     client: CoreClient
   ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: this.uri,
       method: "{{name}}",
-      args: (args as unknown) as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   }
   {{^last}}
@@ -163,7 +162,9 @@ export class {{#detectKeyword}}{{namespace}}{{/detectKeyword}} {
   {{#capabilities}}
   {{#getImplementations}}
   {{#enabled}}
-  public static getImplementations(client: CoreClient): Result<string[], Error> {
+  public static getImplementations(
+    client: CoreClient
+  ): Result<string[], Error> {
     return client.getImplementations(this.uri, {});
   }
   {{/enabled}}

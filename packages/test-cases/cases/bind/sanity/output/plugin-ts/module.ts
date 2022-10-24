@@ -54,5 +54,8 @@ export abstract class Module<TConfig> extends PluginModule<TConfig, Types.Env> {
     client: CoreClient
   ): MaybeAsync<Types.AnotherType | null>;
 
-  abstract if(args: Args_if, client: CoreClient): MaybeAsync<Types._else>;
+  abstract if(
+    args: Args_if,
+    client: CoreClient
+  ): MaybeAsync<Types._else>;
 }

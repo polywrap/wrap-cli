@@ -217,7 +217,7 @@ export const TestImport_Module = {
       method: "returnsArrayOfEnums",
       args: (args as unknown) as Record<string, unknown>,
     });
-  },
+  }
 };
 
 /// Imported Modules END ///

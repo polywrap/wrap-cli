@@ -5,7 +5,11 @@
 import * as Types from "./";
 
 // @ts-ignore
-import { CoreClient, Result, InvokeResult } from "@polywrap/core-js";
+import {
+  CoreClient,
+  Result,
+  InvokeResult
+} from "@polywrap/core-js";
 
 export type UInt = number;
 export type UInt8 = number;
