@@ -4,51 +4,21 @@ import {
   Args_addFile,
   Args_cat,
   Ipfs_ResolveResult,
-  Ipfs_Options,
   manifest,
-  Env,
 } from "./wrap";
 import { execSimple, execFallbacks } from "./utils/exec";
+import { ExecOptions } from "./ExecOptions";
+import { getExecOptions } from "./getExecOptions";
 
 import { CoreClient } from "@polywrap/core-js";
 import createIpfsClient, { IpfsClient } from "@polywrap/ipfs-http-client-lite";
 import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
-const isNullOrUndefined = (arg: unknown) => {
-  return arg === undefined || arg === null;
-};
-
-const getOptions = (
-  args: Ipfs_Options | undefined | null,
-  env: Env
-): Ipfs_Options => {
-  const options = args || {};
-
-  if (isNullOrUndefined(options.disableParallelRequests)) {
-    options.disableParallelRequests = env.disableParallelRequests;
-  }
-
-  if (isNullOrUndefined(options.timeout)) {
-    // Default to a 5000ms timeout when none is provided
-    options.timeout = env.timeout ?? 5000;
-  }
-
-  if (isNullOrUndefined(options.provider)) {
-    options.provider = env.provider;
-  }
-
-  if (isNullOrUndefined(options.fallbackProviders)) {
-    options.fallbackProviders = env.fallbackProviders;
-  }
-
-  return options;
-};
-
 export type NoConfig = Record<string, never>;
 
 export class IpfsPlugin extends Module<NoConfig> {
   public async cat(args: Args_cat, _client: CoreClient): Promise<Buffer> {
-    const options = getOptions(args.options, this.env);
+    const options = getExecOptions(args.options, this.env);
 
     return await this._execWithOptions(
       "cat",
@@ -63,7 +33,7 @@ export class IpfsPlugin extends Module<NoConfig> {
     args: Args_resolve,
     _client: CoreClient
   ): Promise<Ipfs_ResolveResult | null> {
-    const options = getOptions(args.options, this.env);
+    const options = getExecOptions(args.options, this.env);
 
     return await this._execWithOptions(
       "resolve",
@@ -79,7 +49,7 @@ export class IpfsPlugin extends Module<NoConfig> {
   }
 
   public async addFile(args: Args_addFile): Promise<string> {
-    const options = getOptions(null, this.env);
+    const options = getExecOptions(null, this.env);
 
     return await this._execWithOptions(
       "add",
@@ -105,50 +75,26 @@ export class IpfsPlugin extends Module<NoConfig> {
       provider: string,
       options: unknown
     ) => Promise<TReturn>,
-    options?: Ipfs_Options
+    options: ExecOptions
   ): Promise<TReturn> {
-    const defaultIpfsClient = createIpfsClient(this.env.provider);
+    const defaultIpfsClient = createIpfsClient(options.provider);
 
-    if (!options?.fallbackProviders) {
-      // Default behavior if no fallback providers are provided
-      // Note that options.timeout is already set by getOptions
+    if (options.fallbackProviders.length === 0) {
       return await execSimple(
         operation,
         defaultIpfsClient,
-        this.config.provider,
-        options?.timeout ?? 0,
+        options.provider,
+        options.timeout,
         func
       );
     }
 
-    const timeout = options.timeout || 0;
-
-    let providers = [this.env.provider, ...(this.env.fallbackProviders || [])];
-    let ipfs = defaultIpfsClient;
-    let defaultProvider = this.env.provider;
-
-    // Use the provider default override specified
-    if (options.provider) {
-      providers = [options.provider, ...providers];
-      ipfs = createIpfsClient(options.provider);
-      defaultProvider = options.provider;
-    }
-
-    // insert fallback providers before the env providers and fallbacks
-    if (options.fallbackProviders) {
-      providers = [
-        providers[0],
-        ...options.fallbackProviders,
-        ...providers.slice(1),
-      ];
-    }
-
     return await execFallbacks(
       operation,
-      ipfs,
-      defaultProvider,
-      providers,
-      timeout,
+      defaultIpfsClient,
+      options.provider,
+      [options.provider, ...options.fallbackProviders],
+      options.timeout,
       func,
       {
         parallel: !options.disableParallelRequests,
