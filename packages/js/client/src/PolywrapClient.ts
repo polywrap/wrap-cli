@@ -41,7 +41,6 @@ import { Result, ResultErr, ResultOk } from "@polywrap/result";
 import { compareSignatures } from "@polywrap/wrap-manifest-types-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
-
 export class PolywrapClient implements CoreClient {
   private _config: PolywrapCoreClientConfig<Uri>;
 

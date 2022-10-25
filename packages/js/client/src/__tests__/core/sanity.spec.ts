@@ -87,7 +87,7 @@ describe("sanity", () => {
     const fooUri = `fs/${fooPath}/build`;
     const greetingUri = `fs/${greetingPath}/build`;
     const modifiedFooUri = `fs/${modifiedFooPath}/build`;
-    
+
     const resolvers = [
       new LegacyRedirectsResolver(),
       new ExtendableUriResolver()
