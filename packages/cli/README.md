@@ -115,7 +115,6 @@ This command generates types and bindings for your project based on your project
 - `-s, --script <path>`
   Path to a custom generation script (JavaScript | TypeScript).
   This script is run in place of the standard codegen script if provided.
-  **TODO: Add details about the custom codegen script**
 
 - `-c, --client-config <config-path>`
   Use a custom Polywrap Client configuration.
