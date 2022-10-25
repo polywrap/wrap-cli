@@ -17,3 +17,7 @@ pub fn return_custom_map(args: ArgsReturnCustomMap) -> CustomMap {
 pub fn return_nested_map(args: ArgsReturnNestedMap) -> Map<String, Map<String, i32>> {
     args.foo
 }
+
+pub fn return_map_of_enum(args: ArgsReturnMapOfEnum) -> Map<String, MyEnum> {
+    args.map
+}

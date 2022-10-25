@@ -1,13 +1,17 @@
-import { ClientConfig } from "@polywrap/client-js";
+import { CoreClientConfig } from "@polywrap/client-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
-import { Connection, Connections, ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import {
+  Connection,
+  Connections,
+  ethereumPlugin,
+} from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 
 export function getPlugins(
   ethereum: string,
   ipfs: string,
   ensAddress: string
-): Partial<ClientConfig> {
+): Partial<CoreClientConfig> {
   return {
     redirects: [],
     plugins: [
@@ -25,7 +29,7 @@ export function getPlugins(
           connections: new Connections({
             networks: {
               testnet: new Connection({ provider: ethereum }),
-              mainnet: new Connection({ provider: "http://localhost:8546", }),
+              mainnet: new Connection({ provider: "http://localhost:8546" }),
             },
             defaultNetwork: "testnet",
           }),

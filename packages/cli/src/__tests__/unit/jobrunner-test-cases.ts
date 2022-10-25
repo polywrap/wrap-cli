@@ -1,5 +1,5 @@
 import { MaybeAsync } from "@polywrap/core-js";
-import { JobResult, JobStatus } from "../../lib";
+import { JobResult, Status } from "../../lib";
 import { PolywrapWorkflow } from "@polywrap/polywrap-manifest-types-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import path from "path";
@@ -40,7 +40,7 @@ export const testCases: WorkflowTestCase[] = [
     onExecution: (id: string, jobResult: JobResult) => {
       switch (id) {
         case "ops.0": {
-          expect(jobResult.status).toBe(JobStatus.SUCCEED);
+          expect(jobResult.status).toBe(Status.SUCCEED);
           expect(jobResult.error).toBeFalsy();
           expect(jobResult.data).toBe(20);
           break;
@@ -93,13 +93,13 @@ export const testCases: WorkflowTestCase[] = [
     onExecution: (id: string, jobResult: JobResult) => {
       switch (id) {
         case "ops.0": {
-          expect(jobResult.status).toBe(JobStatus.SUCCEED);
+          expect(jobResult.status).toBe(Status.SUCCEED);
           expect(jobResult.error).toBeFalsy();
           expect(jobResult.data).toBe(20);
           break;
         }
         case "ops.1": {
-          expect(jobResult.status).toBe(JobStatus.SUCCEED);
+          expect(jobResult.status).toBe(Status.SUCCEED);
           expect(jobResult.error).toBeFalsy();
           expect(jobResult.data).toBe(15);
           break;
@@ -171,19 +171,19 @@ export const testCases: WorkflowTestCase[] = [
     onExecution: (id: string, jobResult: JobResult) => {
       switch (id) {
         case "ops.0": {
-          expect(jobResult.status).toBe(JobStatus.SUCCEED);
+          expect(jobResult.status).toBe(Status.SUCCEED);
           expect(jobResult.error).toBeFalsy();
           expect(jobResult.data).toBe(20);
           break;
         }
         case "ops.1": {
-          expect(jobResult.status).toBe(JobStatus.SUCCEED);
+          expect(jobResult.status).toBe(Status.SUCCEED);
           expect(jobResult.error).toBeFalsy();
           expect(jobResult.data).toBe(15);
           break;
         }
         case "ops.subOps.0": {
-          expect(jobResult.status).toBe(JobStatus.SUCCEED);
+          expect(jobResult.status).toBe(Status.SUCCEED);
           expect(jobResult.error).toBeFalsy();
           expect(jobResult.data).toBe(5);
           break;

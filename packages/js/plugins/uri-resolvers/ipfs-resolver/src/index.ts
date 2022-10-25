@@ -2,14 +2,14 @@ import {
   Args_getFile,
   Args_tryResolveUri,
   Bytes,
-  Client,
+  CoreClient,
   Ipfs_Module,
   manifest,
   Module,
   UriResolver_MaybeUriOrManifest,
 } from "./wrap";
 
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 import isIpfs from "is-ipfs";
 
 type NoConfig = Record<string, never>;
@@ -18,7 +18,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
   // uri-resolver.core.polywrap.eth
   public async tryResolveUri(
     args: Args_tryResolveUri,
-    _client: Client
+    _client: CoreClient
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
     if (args.authority !== "ipfs") {
       return null;
@@ -58,7 +58,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
 
   public async getFile(
     args: Args_getFile,
-    client: Client
+    client: CoreClient
   ): Promise<Bytes | null> {
     try {
       let provider: string | undefined = undefined;
@@ -109,11 +109,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
   }
 }
 
-export const ipfsResolverPlugin: PluginFactory<NoConfig> = () => {
-  return {
-    factory: () => new IpfsResolverPlugin({}),
-    manifest,
-  };
-};
+export const ipfsResolverPlugin: PluginFactory<NoConfig> = () =>
+  new PluginPackage(new IpfsResolverPlugin({}), manifest);
 
 export const plugin = ipfsResolverPlugin;

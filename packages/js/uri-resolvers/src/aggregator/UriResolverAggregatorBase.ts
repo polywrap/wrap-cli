@@ -1,9 +1,10 @@
+import { UriResolutionResult } from "../helpers";
+
 import {
   IUriResolver,
   Uri,
-  Client,
+  CoreClient,
   IUriResolutionContext,
-  UriResolutionResult,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
@@ -14,13 +15,13 @@ export abstract class UriResolverAggregatorBase<
 > implements IUriResolver<TResolutionError | TGetResolversError> {
   abstract getUriResolvers(
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<IUriResolver<unknown>[], TGetResolversError>>;
 
   async tryResolveUri(
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<
     Result<UriPackageOrWrapper, TResolutionError | TGetResolversError>
@@ -52,7 +53,7 @@ export abstract class UriResolverAggregatorBase<
 
   protected async tryResolveUriWithResolvers(
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolvers: IUriResolver<unknown>[],
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TResolutionError>> {

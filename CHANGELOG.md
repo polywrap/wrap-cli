@@ -1,3 +1,11 @@
+# Polywrap Origin (0.9.3)
+## Bugs
+* [PR-1344](https://github.com/polywrap/toolchain/pull/1344) `@polywrap/cli`: Improve workflow validation.
+* [PR-1345](https://github.com/polywrap/toolchain/pull/1345) `@polywrap/cli`: The `ens-recursive-name-register` deploy step now properly registers ENS sub-domains recursively.
+* [PR-1342](https://github.com/polywrap/toolchain/pull/1342) `@polywrap/polywrap-manifest-schemas`: Accept @ character in folder paths.
+* [PR-1333](https://github.com/polywrap/toolchain/pull/1333) `@polywrap/client-js`: Added TsDoc comments to the `PolywrapClient` class.
+* [PR-1337](https://github.com/polywrap/toolchain/pull/1337) `@polywrap/schema-bind`: In Rust bindings, enum imports are now added in serialization modules when the enum is a subtype of an array (Vec) or map.
+
 # Polywrap Origin (0.9.2)
 ## Bugs
 * [PR-1327](https://github.com/polywrap/toolchain/pull/1327) `@polywrap/schema-bind`: Added missing serialization bindings for module method arguments & return values.

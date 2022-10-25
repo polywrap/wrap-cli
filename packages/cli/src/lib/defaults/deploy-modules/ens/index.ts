@@ -5,13 +5,13 @@ import { Deployer } from "../../../deploy";
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
-import { PolywrapClient } from "@polywrap/client-js";
 import {
-  ethereumPlugin,
   Connections,
   Connection,
+  ethereumPlugin,
 } from "@polywrap/ethereum-plugin-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
 const contentHash = require("content-hash");
 
@@ -59,10 +59,10 @@ class ENSPublisher implements Deployer {
           to: embeddedWrappers.sha3,
         },
       ],
-      plugins: [
+      packages: [
         {
           uri: ethereumPluginUri,
-          plugin: ethereumPlugin({
+          package: ethereumPlugin({
             connections: new Connections({
               networks: {
                 [network]: new Connection({

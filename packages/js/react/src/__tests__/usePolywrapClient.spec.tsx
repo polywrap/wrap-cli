@@ -6,25 +6,21 @@ import {
 } from "..";
 import { createPlugins, createEnvs } from "./config";
 
-import { Env, PluginRegistration } from "@polywrap/core-js";
+import { Env, IUriPackage, Uri } from "@polywrap/core-js";
 import {
   ensAddresses,
   providers,
   initTestEnvironment,
-  stopTestEnvironment
+  stopTestEnvironment,
 } from "@polywrap/test-env-js";
 
-import {
-  renderHook,
-  RenderHookOptions,
-  cleanup
-} from "@testing-library/react-hooks";
+import { renderHook, RenderHookOptions } from "@testing-library/react-hooks";
 
 jest.setTimeout(360000);
 
 describe("usePolywrapClient hook", () => {
   let envs: Env[];
-  let plugins: PluginRegistration<string>[];
+  let packages: IUriPackage<Uri | string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
@@ -32,38 +28,19 @@ describe("usePolywrapClient hook", () => {
 
     envs = createEnvs(providers.ipfs);
 
-    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum);
+    packages = createPlugins(ensAddresses.ensAddress, providers.ethereum);
 
     WrapperProvider = {
       wrapper: PolywrapProvider,
       initialProps: {
         envs,
-        plugins,
+        packages,
       },
     };
   });
 
   afterAll(async () => {
     await stopTestEnvironment();
-  });
-
-  function getClient(
-    options?: UsePolywrapClientProps
-  ) {
-    const hook = () => usePolywrapClient(options);
-
-    const { result: hookResult } = renderHook(hook, WrapperProvider);
-
-    const result = hookResult.current;
-    cleanup();
-    return result;
-  }
-
-  it("Should return client with plugins", async () => {
-    const client = getClient();
-
-    expect(client).toBeTruthy();
-    expect(client.getPlugins().length).toBeGreaterThan(0);
   });
 
   it("Should throw error because there's no provider with expected key ", async () => {
@@ -84,9 +61,9 @@ describe("usePolywrapClient hook", () => {
     createPolywrapProvider("other");
 
     const props: UsePolywrapClientProps = {
-      provider: "other"
+      provider: "other",
     };
-   
+
     const hook = () => usePolywrapClient(props);
 
     const { result } = renderHook(hook, WrapperProvider);

@@ -453,3 +453,107 @@ export function deserializeanotherMethodResult(buffer: ArrayBuffer): i32 {
 
   return res;
 }
+
+export class Args_returnsArrayOfEnums {
+  arg: string;
+}
+
+export function deserializereturnsArrayOfEnumsArgs(argsBuf: ArrayBuffer): Args_returnsArrayOfEnums {
+  const context: Context = new Context("Deserializing imported module-type: returnsArrayOfEnums Args");
+  const reader = new ReadDecoder(argsBuf, context);
+  let numFields = reader.readMapLength();
+
+  let _arg: string = "";
+  let _argSet: bool = false;
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    reader.context().push(field, "unknown", "searching for property type");
+    if (field == "arg") {
+      reader.context().push(field, "string", "type found, reading property");
+      _arg = reader.readString();
+      _argSet = true;
+      reader.context().pop();
+    }
+    reader.context().pop();
+  }
+
+  if (!_argSet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'arg: String'"));
+  }
+
+  return {
+    arg: _arg
+  };
+}
+
+export function serializereturnsArrayOfEnumsArgs(args: Args_returnsArrayOfEnums): ArrayBuffer {
+  const sizerContext: Context = new Context("Serializing (sizing) imported module-type: returnsArrayOfEnums Args");
+  const sizer = new WriteSizer(sizerContext);
+  writereturnsArrayOfEnumsArgs(sizer, args);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoderContext: Context = new Context("Serializing (encoding) imported module-type: returnsArrayOfEnums Args");
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
+  writereturnsArrayOfEnumsArgs(encoder, args);
+  return buffer;
+}
+
+export function writereturnsArrayOfEnumsArgs(
+  writer: Write,
+  args: Args_returnsArrayOfEnums
+): void {
+  writer.writeMapLength(1);
+  writer.context().push("arg", "string", "writing property");
+  writer.writeString("arg");
+  writer.writeString(args.arg);
+  writer.context().pop();
+}
+
+export function serializereturnsArrayOfEnumsResult(result: Array<Box<Types.TestImport_Enum_Return> | null>): ArrayBuffer {
+  const sizerContext: Context = new Context("Serializing (sizing) imported module-type: returnsArrayOfEnums Result");
+  const sizer = new WriteSizer(sizerContext);
+  writereturnsArrayOfEnumsResult(sizer, result);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoderContext: Context = new Context("Serializing (encoding) imported module-type: returnsArrayOfEnums Result");
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
+  writereturnsArrayOfEnumsResult(encoder, result);
+  return buffer;
+}
+
+export function writereturnsArrayOfEnumsResult(writer: Write, result: Array<Box<Types.TestImport_Enum_Return> | null>): void {
+  writer.context().push("returnsArrayOfEnums", "Array<Box<Types.TestImport_Enum_Return> | null>", "writing property");
+  writer.writeArray(result, (writer: Write, item: Box<Types.TestImport_Enum_Return> | null): void => {
+    writer.writeOptionalInt32(item);
+  });
+  writer.context().pop();
+}
+
+export function deserializereturnsArrayOfEnumsResult(buffer: ArrayBuffer): Array<Box<Types.TestImport_Enum_Return> | null> {
+  const context: Context = new Context("Deserializing imported module-type: returnsArrayOfEnums Result");
+  const reader = new ReadDecoder(buffer, context);
+
+  reader.context().push("returnsArrayOfEnums", "Array<Box<Types.TestImport_Enum_Return> | null>", "reading function output");
+  const res: Array<Box<Types.TestImport_Enum_Return> | null> = reader.readArray((reader: Read): Box<Types.TestImport_Enum_Return> | null => {
+    let value: Box<Types.TestImport_Enum_Return> | null;
+    if (!reader.isNextNil()) {
+      if (reader.isNextString()) {
+        value = Box.from(
+          Types.getTestImport_Enum_ReturnValue(reader.readString())
+        );
+      } else {
+        value = Box.from(
+          reader.readInt32()
+        );
+        Types.sanitizeTestImport_Enum_ReturnValue(value.unwrap());
+      }
+    } else {
+      value = null;
+    }
+    return value;
+  });
+  reader.context().pop();
+
+  return res;
+}

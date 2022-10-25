@@ -1,18 +1,23 @@
-import { JobResult, JobStatus, Step } from "./types";
+import { JobResult, Status, Step } from "./types";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import { MaybeAsync } from "@polywrap/core-js";
+import { CoreClient, MaybeAsync } from "@polywrap/core-js";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
-import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import {
+  ClientConfigBuilder,
+  ClientConfig,
+} from "@polywrap/client-config-builder-js";
 
 export class JobRunner {
   private jobOutput: Map<string, JobResult>;
+  private client: CoreClient;
 
   constructor(
-    private client: PolywrapClient,
+    private clientConfig: Partial<ClientConfig>,
     private onExecution?: (id: string, JobResult: JobResult) => MaybeAsync<void>
   ) {
     this.jobOutput = new Map();
+    this.client = new PolywrapClient(this.clientConfig);
   }
 
   async run(jobs: WorkflowJobs, ids: string[]): Promise<void> {
@@ -91,20 +96,20 @@ export class JobRunner {
     const accessors: string[] = reference
       .substring(dataOrErrorIdx + 1)
       .split(".");
-    if (refJobResult.status === JobStatus.SKIPPED) {
+    if (refJobResult.status === Status.SKIPPED) {
       throw new Error(
         `Tried to resolve reference to skipped job ${referenceId} for step ${absJobId}.${stepId}`
       );
     } else if (
       accessors[0] === "data" &&
-      refJobResult.status === JobStatus.FAILED
+      refJobResult.status === Status.FAILED
     ) {
       throw new Error(
         `Tried to resolve data of failed job ${referenceId} for step ${absJobId}.${stepId}`
       );
     } else if (
       accessors[0] === "error" &&
-      refJobResult.status === JobStatus.SUCCEED
+      refJobResult.status === Status.SUCCEED
     ) {
       throw new Error(
         `Tried to resolve error message of successful job ${referenceId} for step ${absJobId}.${stepId}`
@@ -169,7 +174,7 @@ export class JobRunner {
       } catch (e) {
         return {
           error: e,
-          status: JobStatus.SKIPPED,
+          status: Status.SKIPPED,
         };
       }
     }
@@ -178,7 +183,7 @@ export class JobRunner {
 
     if (step.config) {
       const finalConfig = new ClientConfigBuilder()
-        .add(this.client.getConfig())
+        .add(this.clientConfig)
         .add(step.config)
         .build();
 
@@ -192,9 +197,9 @@ export class JobRunner {
     });
 
     if (!invokeResult.ok) {
-      return { error: invokeResult.error, status: JobStatus.FAILED };
+      return { error: invokeResult.error, status: Status.FAILED };
     } else {
-      return { data: invokeResult.value, status: JobStatus.SUCCEED };
+      return { data: invokeResult.value, status: Status.SUCCEED };
     }
   }
 

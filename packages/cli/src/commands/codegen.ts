@@ -14,12 +14,14 @@ import {
   generateWrapFile,
   defaultProjectManifestFiles,
   defaultPolywrapManifest,
+  parseLogFileOption,
 } from "../lib";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import path from "path";
 import fs from "fs";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
 
 const defaultCodegenDir = "./src/wrap";
 const defaultPublishDir = "./build";
@@ -32,9 +34,10 @@ type CodegenCommandOptions = {
   codegenDir: string;
   publishDir: string;
   script?: string;
-  clientConfig: Partial<PolywrapClientConfig>;
+  clientConfig: Partial<ClientConfig>;
   verbose?: boolean;
   quiet?: boolean;
+  logFile?: string;
 };
 
 export const codegen: Command = {
@@ -71,6 +74,10 @@ export const codegen: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (options) => {
         await run({
           ...options,
@@ -82,6 +89,7 @@ export const codegen: Command = {
             defaultProjectManifestFiles
           ),
           publishDir: parseDirOption(options.publishDir, defaultPublishDir),
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
@@ -96,8 +104,9 @@ async function run(options: CodegenCommandOptions) {
     publishDir,
     verbose,
     quiet,
+    logFile,
   } = options;
-  const logger = createLogger({ verbose, quiet });
+  const logger = createLogger({ verbose, quiet, logFile });
 
   // Get Client
   const client = new PolywrapClient(clientConfig);

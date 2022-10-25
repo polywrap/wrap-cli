@@ -1,16 +1,10 @@
-import { coreInterfaceUris } from "@polywrap/core-js";
-import {
-  buildUriResolver, LegacyPluginsResolver, LegacyRedirectsResolver,
-  PackageToWrapperCacheResolver,
-  RecursiveResolver,
-  WrapperCache
-} from "@polywrap/uri-resolvers-js";
-import { Uri, PolywrapClient } from "../..";
-import { ClientConfigBuilder, defaultWrappers } from "@polywrap/client-config-builder-js";
-import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
+import {CoreClientConfig, coreInterfaceUris} from "@polywrap/core-js";
+import { ExtendableUriResolver, LegacyRedirectsResolver, PackageToWrapperCacheResolver, RecursiveResolver, Uri, WrapperCache } from "../..";
+import {ClientConfig, ClientConfigBuilder, defaultWrappers} from "@polywrap/client-config-builder-js";
+import { PolywrapClient } from "../../PolywrapClient";
 import { buildWrapper } from "@polywrap/test-env-js";
+import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
-import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 jest.setTimeout(200000);
 
@@ -33,66 +27,22 @@ describe("sanity", () => {
       },
     ]);
 
-    const expectedPlugins = [
-      new Uri("wrap://ens/ipfs.polywrap.eth"),
-      new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-      new Uri("wrap://ens/ethereum.polywrap.eth"),
-      new Uri("wrap://ens/http.polywrap.eth"),
-      new Uri("wrap://ens/http-resolver.polywrap.eth"),
-      new Uri("wrap://ens/js-logger.polywrap.eth"),
-      new Uri("wrap://ens/fs.polywrap.eth"),
-      new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-      new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-    ];
-    const actualPlugins = client.getPlugins().map(x => x.uri);
-    expect(expectedPlugins).toStrictEqual(actualPlugins);
-
-    expect(client.getInterfaces()).toStrictEqual([
-      {
-        interface: coreInterfaceUris.uriResolver,
-        implementations: [
-          new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-          new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-          new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-          new Uri("wrap://ens/http-resolver.polywrap.eth"),
-        ],
-      },
-      {
-        interface: coreInterfaceUris.logger,
-        implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
-      },
-    ]);
-  });
-
-  test("client noDefaults flag works as expected", async () => {
-    let client = new PolywrapClient();
-    expect(client.getPlugins().length !== 0).toBeTruthy();
-    expect(client.getUriResolver()).toBeTruthy();
-
-    client = new PolywrapClient({}, {});
-    expect(client.getPlugins().length !== 0).toBeTruthy();
-    expect(client.getUriResolver()).toBeTruthy();
-
-    client = new PolywrapClient({}, { noDefaults: false });
-    expect(client.getPlugins().length !== 0).toBeTruthy();
-    expect(client.getUriResolver()).toBeTruthy();
-
-    client = new PolywrapClient(
-      { resolver: buildUriResolver([]) },
-      { noDefaults: true }
-    );
-
-    expect(client.getPlugins().length === 0).toBeTruthy();
-    expect(client.getUriResolver()).toBeTruthy();
-
-    let message = "";
-    try {
-      client = new PolywrapClient({}, { noDefaults: true });
-    } catch (e) {
-      message = e.message;
-    }
-
-    expect(message).toBe("No URI resolver provided");
+    new Uri("wrap://ens/http-resolver.polywrap.eth"),
+      expect(client.getInterfaces()).toStrictEqual([
+        {
+          interface: coreInterfaceUris.uriResolver,
+          implementations: [
+            new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
+            new Uri("wrap://ens/ens-resolver.polywrap.eth"),
+            new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+            new Uri("wrap://ens/http-resolver.polywrap.eth"),
+          ],
+        },
+        {
+          interface: coreInterfaceUris.logger,
+          implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
+        },
+      ]);
   });
 
   test("redirect registration", () => {
@@ -137,20 +87,19 @@ describe("sanity", () => {
     const fooUri = `fs/${fooPath}/build`;
     const greetingUri = `fs/${greetingPath}/build`;
     const modifiedFooUri = `fs/${modifiedFooPath}/build`;
+    
+    const resolvers = [
+      new LegacyRedirectsResolver(),
+      new ExtendableUriResolver()
+    ]
 
+    let config = {
+      resolver: RecursiveResolver.from(
+        PackageToWrapperCacheResolver.from(resolvers, new WrapperCache())
+      )
+    }
     await buildWrapper(fooPath);
-
-    const builder = new ClientConfigBuilder();
-
-    builder.setResolver(new RecursiveResolver(
-      new PackageToWrapperCacheResolver(new WrapperCache(), [
-        new LegacyRedirectsResolver(),
-        new LegacyPluginsResolver(),
-        new ExtendableUriResolver()
-      ])
-    ));
-
-    let client = new PolywrapClient(builder.build(), { noDefaults: true });
+    let client = new PolywrapClient(config, { noDefaults: true });
     let result = await client.validate(fooUri, {});
 
     expect(result.ok).toBeFalsy();
@@ -158,24 +107,29 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
 
-    builder.add({
+
+    resolvers.unshift({
+      uri: "wrap://ens/fs-resolver.polywrap.eth",
+      package: fileSystemResolverPlugin({}),
+    })
+    resolvers.unshift({
+      uri: "wrap://ens/fs.polywrap.eth",
+      package: fileSystemPlugin({}),
+    })
+
+    config = {
       interfaces: [{
         interface: "wrap://ens/uri-resolver.core.polywrap.eth",
         implementations: [
           "wrap://ens/fs-resolver.polywrap.eth"
         ]
       }],
-      plugins: [{
-        uri: "wrap://ens/fs-resolver.polywrap.eth",
-        plugin: fileSystemResolverPlugin({}),
-      }, {
-        uri: "wrap://ens/fs.polywrap.eth",
-        plugin: fileSystemPlugin({}),
-      }]
-    })
-
-
-    client = new PolywrapClient(builder.build(), { noDefaults: true });
+      resolver: RecursiveResolver.from(
+        PackageToWrapperCacheResolver.from(resolvers, new WrapperCache())
+      )
+    };
+    
+    client = new PolywrapClient(config, { noDefaults: true });
     result = await client.validate(fooUri, {});
 
     expect(result.ok).toBeTruthy();
@@ -189,8 +143,16 @@ describe("sanity", () => {
     expect(resultError.message).toContain("Error resolving URI");
 
     await buildWrapper(greetingPath);
-    builder.addUriRedirect("ens/foo.eth", fooUri);
-    client = new PolywrapClient(builder.build(), { noDefaults: true });
+    config = {
+      ...config,
+      redirects: [
+        {
+          from: "ens/foo.eth",
+          to: fooUri
+        }
+      ]
+    };
+    client = new PolywrapClient(config, { noDefaults: true });
 
     result = await client.validate(greetingUri, {
       recursive: true
@@ -199,8 +161,16 @@ describe("sanity", () => {
     expect(result.ok).toBeTruthy()
 
     await buildWrapper(modifiedFooPath);
-    builder.addUriRedirect("ens/foo.eth", modifiedFooUri);
-    client = new PolywrapClient(builder.build(), { noDefaults: true });
+    config = {
+      ...config,
+      redirects: [
+        {
+          from: "ens/foo.eth",
+          to: modifiedFooUri
+        }
+      ]
+    };    
+    client = new PolywrapClient(config, { noDefaults: true });
 
     result = await client.validate(greetingUri, {
       abi: true

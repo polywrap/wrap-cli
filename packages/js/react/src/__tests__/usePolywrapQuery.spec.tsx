@@ -8,12 +8,13 @@ import {
 } from "../query"
 import { createPlugins, createEnvs } from "./config";
 
-import { Env, PluginRegistration } from "@polywrap/core-js";
+import { Env, IUriPackage, Uri } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
   ensAddresses,
-  providers, buildWrapper,
+  providers,
+  buildWrapper,
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 
@@ -21,16 +22,15 @@ import {
   renderHook,
   act,
   RenderHookOptions,
-  cleanup
+  cleanup,
 } from "@testing-library/react-hooks";
 
 jest.setTimeout(360000);
 
 describe("usePolywrapQuery hook", () => {
   let uri: string;
-  let envUri: string;
   let envs: Env[];
-  let plugins: PluginRegistration<string>[];
+  let packages: IUriPackage<Uri | string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
@@ -38,19 +38,18 @@ describe("usePolywrapQuery hook", () => {
 
     const simpleStoragePath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
     await buildWrapper(simpleStoragePath);
-    uri = `fs/${simpleStoragePath}/build`
+    uri = `fs/${simpleStoragePath}/build`;
 
     const simpleEnvPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`;
     await buildWrapper(simpleEnvPath);
-    envUri = `fs/${simpleEnvPath}/build`
 
     envs = createEnvs(providers.ipfs);
-    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum);
+    packages = createPlugins(ensAddresses.ensAddress, providers.ethereum);
     WrapperProvider = {
       wrapper: PolywrapProvider,
       initialProps: {
         envs,
-        plugins,
+        packages,
       },
     };
   });
@@ -75,10 +74,15 @@ describe("usePolywrapQuery hook", () => {
     return result;
   }
 
-  async function sendQueryWithExecVariables<TData extends Record<string, unknown>>(
-    options: UsePolywrapQueryProps
-  ) {
-    const hook = () => usePolywrapQuery<TData>({ uri: options.uri, query: options.query, provider: options.provider});
+  async function sendQueryWithExecVariables<
+    TData extends Record<string, unknown>
+  >(options: UsePolywrapQueryProps) {
+    const hook = () =>
+      usePolywrapQuery<TData>({
+        uri: options.uri,
+        query: options.query,
+        provider: options.provider,
+      });
 
     const { result: hookResult } = renderHook(hook, WrapperProvider);
 
@@ -104,7 +108,7 @@ describe("usePolywrapQuery hook", () => {
     };
 
     const { data } = await sendQuery<{
-      deployContract: string
+      deployContract: string;
     }>(deployQuery);
 
     const setStorageDataQuery: UsePolywrapQueryProps = {
@@ -141,7 +145,7 @@ describe("usePolywrapQuery hook", () => {
     };
 
     const { data: getDataData } = await sendQuery<{
-      getData: number
+      getData: number;
     }>(getStorageDataQuery);
     expect(getDataData?.getData).toBe(5);
   });
@@ -159,7 +163,7 @@ describe("usePolywrapQuery hook", () => {
     };
 
     const { data } = await sendQuery<{
-      deployContract: string
+      deployContract: string;
     }>(deployQuery);
 
     const setStorageDataQuery: UsePolywrapQueryProps = {
@@ -255,7 +259,7 @@ describe("usePolywrapQuery hook", () => {
     };
 
     const { data } = await sendQueryWithExecVariables<{
-      deployContract: string
+      deployContract: string;
     }>(deployQuery);
 
     const setStorageDataQuery: UsePolywrapQueryProps = {
@@ -294,7 +298,9 @@ describe("usePolywrapQuery hook", () => {
       `,
     };
 
-    const { data: getDataData } = await sendQueryWithExecVariables(getStorageDataQuery);
+    const { data: getDataData } = await sendQueryWithExecVariables(
+      getStorageDataQuery
+    );
     expect(getDataData?.getData).toBe(3);
   });
 });

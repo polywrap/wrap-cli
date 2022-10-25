@@ -3,7 +3,7 @@ import {
   intlMsg,
   JobResult,
   JobRunner,
-  JobStatus,
+  Status,
   loadValidationScript,
   loadWorkflowManifest,
   parseClientConfigOption,
@@ -11,26 +11,27 @@ import {
   printJobOutput,
   validateJobNames,
   validateOutput,
-  ValidationResult,
   WorkflowOutput,
   defaultWorkflowManifest,
   parseManifestFileOption,
+  parseLogFileOption,
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
 
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import yaml from "yaml";
 import fs from "fs";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
 
 type WorkflowCommandOptions = {
-  clientConfig: Partial<PolywrapClientConfig>;
+  clientConfig: Partial<ClientConfig>;
   manifest: string;
   jobs?: string[];
   validationScript?: string;
   outputFile?: string;
   verbose?: boolean;
   quiet?: boolean;
+  logFile?: string;
 };
 
 const defaultManifestStr = defaultWorkflowManifest.join(" | ");
@@ -62,6 +63,10 @@ export const run: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (options) => {
         await _run({
           ...options,
@@ -73,15 +78,23 @@ export const run: Command = {
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile)
             : undefined,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
 };
 
 const _run = async (options: WorkflowCommandOptions) => {
-  const { manifest, clientConfig, outputFile, verbose, quiet, jobs } = options;
-  const logger = createLogger({ verbose, quiet });
-  const client = new PolywrapClient(clientConfig);
+  const {
+    manifest,
+    clientConfig,
+    outputFile,
+    verbose,
+    quiet,
+    jobs,
+    logFile,
+  } = options;
+  const logger = createLogger({ verbose, quiet, logFile });
 
   const manifestPath = path.resolve(manifest);
   const workflow = await loadWorkflowManifest(manifestPath, logger);
@@ -94,37 +107,43 @@ const _run = async (options: WorkflowCommandOptions) => {
 
   const onExecution = (id: string, jobResult: JobResult) => {
     const { data, error, status } = jobResult;
+    const output: WorkflowOutput = {
+      id,
+      status,
+      data,
+      error,
+      validation: {
+        status: Status.SKIPPED,
+      },
+    };
 
-    if (error !== undefined) {
-      process.exit(1);
-    }
-
-    const output: WorkflowOutput = { id, status, data, error };
-    workflowOutput.push(output);
-
-    let validation: ValidationResult | undefined = undefined;
-    if (status === JobStatus.SUCCEED && validationScript) {
-      validation = validateOutput(output, validationScript, logger);
+    if (validationScript) {
+      validateOutput(output, validationScript, logger);
     }
 
     if (!quiet) {
-      printJobOutput(output, validation);
+      printJobOutput(output);
     }
+    workflowOutput.push(output);
   };
 
-  const jobRunner = new JobRunner(client, onExecution);
+  const jobRunner = new JobRunner(clientConfig, onExecution);
   await jobRunner.run(workflow.jobs, jobs ?? Object.keys(workflow.jobs));
 
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);
     if (!outputFileExt) throw new Error("Require output file extension");
+    const printableOutput = workflowOutput.map((o) => ({
+      ...o,
+      error: o.error?.message,
+    }));
     switch (outputFileExt) {
       case "yaml":
       case "yml":
-        fs.writeFileSync(outputFile, yaml.stringify(workflowOutput, null, 2));
+        fs.writeFileSync(outputFile, yaml.stringify(printableOutput, null, 2));
         break;
       case "json":
-        fs.writeFileSync(outputFile, JSON.stringify(workflowOutput, null, 2));
+        fs.writeFileSync(outputFile, JSON.stringify(printableOutput, null, 2));
         break;
       default:
         throw new Error(
