@@ -88,7 +88,7 @@ This outputs the project's ABI schema (Wasm and Interface) and binary package (W
   Available strategies:
   - `vm`: Uses Docker only for the source building part of the build process. At build time, it pulls a pre-built image with all necessary system dependencies, env vars and runtime; and it instantiates a Docker container with it. The Docker container instantiates bind-mounts (volumes) to copy the sources and dependencies from the host, build the sources inside the container, and copy the build artifacts back to the host machine. This approach ensures that the sources will be built in a reproducible environment but it doesn't use Docker for anything else and no image is built at runtime.
   - `image`: Implies building a Docker image at runtime, where dependencies are installed and sources are copied and built as Dockerfile instructions. On subsequent builds, Docker tries to reuse cached image layers and rebuild accordingly. This approach is notably slow but the complete process happens in Docker, and can be reproduced, examined and audited layer by layer (from dependency installation to build artifacts output).
-  - `local` - does not use Docker at all. It simply executes a .sh file that contains the necessary instructions to install dependencies and build sources. While this is the fastest way of building, it requires you, the user, to have all prerequisite system dependencies installed. In addition, given that sources are built on the host machine and not a reproducible docker environment, reproducibility isn't guaranteed.
+  - `local` - Does not use Docker at all. It simply executes a .sh file that contains the necessary instructions to install dependencies and build sources. While this is the fastest way of building, it requires you, the user, to have all prerequisite system dependencies installed. In addition, given that sources are built on the host machine and not a reproducible docker environment, reproducibility isn't guaranteed.
 
 - `-w, --watch`
   Watch the Project's files and automatically rebuild when a file is changed.
@@ -181,6 +181,14 @@ polywrap create plugin typescript my-plugin
 
 Deploy Polywrap projects.
 
+```bash
+polywrap deploy
+```
+
+`deploy` reads the Deploy manifest (`polywrap.deploy.yaml` by default) and executes the jobs and steps listed inside.
+
+For more information on the Deploy command and the Deploy manifest, see [Configure Polywrap deployment pipeline](https://docs.polywrap.io/quick-start/build-and-deploy-wasm-wrappers/deploy-pipeline).
+
 #### Options
 - `-m, --manifest-file <path>`
   Specify your project's manifest file.
@@ -188,9 +196,6 @@ Deploy Polywrap projects.
 
 - `-o, --output-file <path>`
   Output file path for the deploy result
-  
-**TODO: Extend documentation with examples, more information**
-
 
 ### `infra | i`
 
@@ -199,6 +204,10 @@ Modular Infrastructure-As-Code Orchestrator
 ```bash
 polywrap infra <action> [options]
 ```
+
+The `infra` command is used to set up infrastructure to test and deploy your wrappers locally.
+
+For more information on the `infra` command and how to create your own Infra modules, see [Configure Polywrap infrastructure pipeline](https://docs.polywrap.io/quick-start/test-wasm-wrappers/infra-pipeline)
 
 #### Arguments
 - `action` (required)
@@ -220,7 +229,21 @@ polywrap infra <action> [options]
 - `-o, --modules <module, module>`
   Use only specified modules
 
-**TODO: Extend documentation with examples, more information**
+#### Defaults
+
+Polywrap comes with a default `eth-ens-ipfs` module which can be used to test your wrappers locally:
+
+```
+polywrap infra up --modules=eth-ens-ipfs
+```
+
+The default infrastructure module defines a docker container with:
+
+- A test server at http://localhost:4040
+- A Ganache Ethereum test network at http://localhost:8545
+- An IPFS node at http://localhost:5001
+
+It also sets up ENS smart contracts at initialization, so you can build wrappers and deploy them to an ENS registry on your locally hosted testnet. The Ethereum address of the ENS registry is 0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab.
 
 ### `test | t`
 
