@@ -18,9 +18,10 @@ import {
 } from "../lib";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import path from "path";
 import fs from "fs";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
 
 const defaultCodegenDir = "./src/wrap";
 const defaultPublishDir = "./build";
@@ -33,7 +34,7 @@ type CodegenCommandOptions = {
   codegenDir: string;
   publishDir: string;
   script?: string;
-  clientConfig: Partial<PolywrapClientConfig>;
+  clientConfig: Partial<ClientConfig>;
   verbose?: boolean;
   quiet?: boolean;
   logFile?: string;

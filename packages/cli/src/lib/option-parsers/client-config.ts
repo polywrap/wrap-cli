@@ -3,16 +3,20 @@ import { intlMsg } from "../intl";
 import { importTypescriptModule } from "../system";
 import { getTestEnvClientConfig } from "../test-env";
 
-import { PolywrapClientConfig } from "@polywrap/client-js";
+import { Uri } from "@polywrap/core-js";
+import {
+  ClientConfigBuilder,
+  ClientConfig,
+} from "@polywrap/client-config-builder-js";
 import path from "path";
 
 export async function parseClientConfigOption(
   clientConfig: string | undefined
-): Promise<Partial<PolywrapClientConfig>> {
-  let finalClientConfig: Partial<PolywrapClientConfig>;
+): Promise<Partial<ClientConfig<Uri>>> {
+  const builder = new ClientConfigBuilder().addDefaults();
 
   try {
-    finalClientConfig = await getTestEnvClientConfig();
+    builder.add(getTestEnvClientConfig());
   } catch (e) {
     console.error(intlMsg.commands_test_error_noTestEnvFound());
     process.exit(1);
@@ -34,7 +38,7 @@ export async function parseClientConfigOption(
       process.exit(1);
     }
 
-    if (!configModule || !configModule.getClientConfig) {
+    if (!configModule || !configModule.getCustomConfig) {
       const configsModuleMissingExportMessage = intlMsg.commands_test_error_clientConfigModuleMissingExport(
         { module: configModule }
       );
@@ -42,15 +46,16 @@ export async function parseClientConfigOption(
       process.exit(1);
     }
 
-    finalClientConfig = await configModule.getClientConfig(finalClientConfig);
+    const customConfig = await configModule.getCustomConfig();
 
     try {
-      validateClientConfig(finalClientConfig);
+      validateClientConfig(customConfig);
+      return builder.add(customConfig).build();
     } catch (e) {
       console.error(e.message);
       process.exit(1);
     }
+  } else {
+    return builder.build();
   }
-
-  return finalClientConfig;
 }

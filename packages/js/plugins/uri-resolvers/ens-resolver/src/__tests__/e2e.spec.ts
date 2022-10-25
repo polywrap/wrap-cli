@@ -1,17 +1,13 @@
 import { PolywrapClient } from "@polywrap/client-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
   buildAndDeployWrapper,
-  ensAddresses,
   initTestEnvironment,
   providers,
   stopTestEnvironment,
 } from "@polywrap/test-env-js";
 
-import { ensResolverPlugin } from "..";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
+import { getClient } from "./helpers/getClient";
 
 jest.setTimeout(300000);
 
@@ -33,44 +29,7 @@ describe("ENS Resolver Plugin", () => {
 
     wrapperEnsDomain = ensDomain;
 
-    client = new PolywrapClient({
-      envs: [
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          env: {
-            provider: providers.ipfs,
-            fallbackProviders: defaultIpfsProviders
-          }
-        }
-      ],
-      plugins: [
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({}),
-        },
-        {
-          uri: "wrap://ens/ethereum.polywrap.eth",
-          plugin: ethereumPlugin({
-            connections: new Connections({
-              networks: {
-                testnet: new Connection({
-                  provider: providers.ethereum
-                }),
-              },
-              defaultNetwork: "testnet"
-            })
-          })
-        },
-        {
-          uri: "wrap://ens/ens-resolver.polywrap.eth",
-          plugin: ensResolverPlugin({
-            addresses: {
-              testnet: ensAddresses.ensAddress,
-            },
-          }),
-        },
-      ],
-    });
+    client = getClient();
   });
 
   afterAll(async () => {
@@ -89,7 +48,7 @@ describe("ENS Resolver Plugin", () => {
       fail("Expected response to be a wrapper");
     }
 
-    const manifest = await result.value.wrapper.getManifest({});
+    const manifest = await result.value.wrapper.getManifest();
 
     expect(manifest?.name).toBe("SimpleStorage");
   });

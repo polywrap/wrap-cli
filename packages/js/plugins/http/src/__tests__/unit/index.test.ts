@@ -1,5 +1,5 @@
 import { HttpPlugin } from "../..";
-import { Http_ResponseTypeEnum, Client } from "../../wrap";
+import { Http_ResponseTypeEnum, CoreClient } from "../../wrap";
 
 import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 
@@ -42,7 +42,7 @@ describe("test http plugin", () => {
             responseType: Http_ResponseTypeEnum.TEXT,
           },
         },
-        {} as Client
+        {} as CoreClient
       );
 
       expect(mockedAxios.get).lastCalledWith("/api/test", {
@@ -85,7 +85,7 @@ describe("test http plugin", () => {
             responseType: "BINARY",
           },
         },
-        {} as Client
+        {} as CoreClient
       );
 
       expect(mockedAxios.get).lastCalledWith("/api/test", {
@@ -138,7 +138,7 @@ describe("test http plugin", () => {
             responseType: "TEXT",
           },
         },
-        {} as Client
+        {} as CoreClient
       );
 
       expect(mockedAxios.post).lastCalledWith("/api/test", "{request: 1001}", {
@@ -182,7 +182,7 @@ describe("test http plugin", () => {
             responseType: "BINARY",
           },
         },
-        {} as Client
+        {} as CoreClient
       );
 
       expect(mockedAxios.post).lastCalledWith("/api/test", "{request: 1001}", {

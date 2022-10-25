@@ -6,11 +6,11 @@ export type UriValue = {
   uri: Uri;
 };
 
-export type UriPackageValue = IUriPackage & {
+export type UriPackageValue = IUriPackage<Uri> & {
   type: "package";
 };
 
-export type UriWrapperValue = IUriWrapper & {
+export type UriWrapperValue = IUriWrapper<Uri> & {
   type: "wrapper";
 };
 

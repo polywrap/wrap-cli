@@ -18,13 +18,13 @@ import {
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
 
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import yaml from "yaml";
 import fs from "fs";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
 
 type WorkflowCommandOptions = {
-  clientConfig: Partial<PolywrapClientConfig>;
+  clientConfig: Partial<ClientConfig>;
   manifest: string;
   jobs?: string[];
   validationScript?: string;
@@ -95,7 +95,6 @@ const _run = async (options: WorkflowCommandOptions) => {
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
-  const client = new PolywrapClient(clientConfig);
 
   const manifestPath = path.resolve(manifest);
   const workflow = await loadWorkflowManifest(manifestPath, logger);
@@ -128,7 +127,7 @@ const _run = async (options: WorkflowCommandOptions) => {
     workflowOutput.push(output);
   };
 
-  const jobRunner = new JobRunner(client, onExecution);
+  const jobRunner = new JobRunner(clientConfig, onExecution);
   await jobRunner.run(workflow.jobs, jobs ?? Object.keys(workflow.jobs));
 
   if (outputFile) {

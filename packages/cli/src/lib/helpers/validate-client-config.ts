@@ -3,16 +3,14 @@ import { intlMsg } from "../intl";
 import {
   Env,
   InterfaceImplementations,
-  PluginPackage,
-  PluginRegistration,
+  IUriRedirect,
   Uri,
-  UriRedirect,
-  PolywrapClientConfig,
 } from "@polywrap/client-js";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
 
-export function validateRedirects<
-  TUri extends PluginPackage<unknown> | Uri | string
->(redirects: readonly UriRedirect<TUri>[]): void {
+export function validateRedirects<TUri extends Uri | string>(
+  redirects: readonly IUriRedirect<TUri>[]
+): void {
   if (!Array.isArray(redirects)) {
     throw new Error(intlMsg.commands_test_error_redirectsExportNotArray());
   }
@@ -36,50 +34,6 @@ export function validateRedirects<
     } else if (typeof redirect.to !== "string") {
       throw new Error(
         intlMsg.commands_test_error_redirectsItemToNotStringOrObject({
-          index: i.toString(),
-        })
-      );
-    }
-  }
-}
-
-export function validatePlugins<TUri extends Uri | string = string>(
-  plugins: readonly PluginRegistration<TUri>[]
-): void {
-  if (!Array.isArray(plugins)) {
-    throw new Error(intlMsg.commands_test_error_pluginsExportNotArray());
-  }
-
-  // Ensure each plugin in the array is valid
-  for (let i = 0; i < plugins.length; ++i) {
-    const plugin = plugins[i];
-    if (typeof plugin !== "object") {
-      throw new Error(
-        intlMsg.commands_test_error_pluginsItemNotObject({
-          index: i.toString(),
-        })
-      );
-    } else if (typeof plugin.uri !== "string") {
-      throw new Error(
-        intlMsg.commands_test_error_pluginsItemUriNotString({
-          index: i.toString(),
-        })
-      );
-    } else if (typeof plugin.plugin !== "object") {
-      throw new Error(
-        intlMsg.commands_test_error_pluginsItemPluginNotObject({
-          index: i.toString(),
-        })
-      );
-    } else if (typeof plugin.plugin.factory !== "function") {
-      throw new Error(
-        intlMsg.commands_test_error_pluginsItemPluginFactoryNotFunction({
-          index: i.toString(),
-        })
-      );
-    } else if (typeof plugin.plugin.manifest !== "object") {
-      throw new Error(
-        intlMsg.commands_test_error_pluginsItemPluginManifestNotObject({
           index: i.toString(),
         })
       );
@@ -167,13 +121,10 @@ export function validateEnvs<TUri extends Uri | string = string>(
   }
 }
 
-export function validateClientConfig(
-  config: Partial<PolywrapClientConfig>
-): void {
+export function validateClientConfig(config: Partial<ClientConfig>): void {
   if (!config || typeof config !== "object") {
     throw new Error(intlMsg.commands_test_error_clientConfigNotObject());
   }
-  if (config.plugins) validatePlugins(config.plugins);
   if (config.envs) validateEnvs(config.envs);
   if (config.interfaces) validateInterfaces(config.interfaces);
   if (config.redirects) validateRedirects(config.redirects);

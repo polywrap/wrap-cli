@@ -1,36 +1,39 @@
-import { getDefaultClientConfig } from "./bundles";
+import { getDefaultConfig } from "./bundles";
+import { ClientConfig } from "./ClientConfig";
 
 import {
-  ClientConfig,
+  CoreClientConfig,
   Uri,
-  PluginPackage,
   IUriResolver,
+  IUriPackage,
+  IUriWrapper,
   Env,
-  InterfaceImplementations,
-  PluginRegistration,
-  UriRedirect,
+  IUriRedirect,
 } from "@polywrap/core-js";
-import { IWrapperCache } from "@polywrap/uri-resolvers-js";
+import {
+  IWrapperCache,
+  LegacyRedirectsResolver,
+  PackageToWrapperCacheResolver,
+  RecursiveResolver,
+  StaticResolver,
+  UriResolverLike,
+  WrapperCache,
+} from "@polywrap/uri-resolvers-js";
+import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 export class ClientConfigBuilder {
-  private _config: {
-    redirects: UriRedirect<Uri>[];
-    plugins: PluginRegistration<Uri>[];
-    interfaces: InterfaceImplementations<Uri>[];
-    envs: Env<Uri>[];
-    resolver?: IUriResolver<unknown>;
-  } = {
-    redirects: [],
-    plugins: [],
-    interfaces: [],
+  private _config: ClientConfig<Uri> = {
     envs: [],
+    interfaces: [],
+    redirects: [],
+    wrappers: [],
+    packages: [],
+    resolvers: [],
   };
 
-  add(config: Partial<ClientConfig<Uri | string>>): ClientConfigBuilder {
+  add(config: Partial<ClientConfig>): ClientConfigBuilder {
     if (config.envs) {
-      for (const env of config.envs) {
-        this.addEnv(env.uri, env.env);
-      }
+      this.addEnvs(config.envs);
     }
 
     if (config.interfaces) {
@@ -42,60 +45,106 @@ export class ClientConfigBuilder {
       }
     }
 
-    if (config.plugins) {
-      for (const plugin of config.plugins) {
-        this.addPlugin(plugin.uri, plugin.plugin);
-      }
-    }
-
     if (config.redirects) {
-      for (const redirect of config.redirects) {
-        this.addUriRedirect(redirect.from, redirect.to);
-      }
+      this.addRedirects(config.redirects);
     }
 
-    if (config.resolver) {
-      this.setResolver(config.resolver);
+    if (config.wrappers) {
+      this.addWrappers(config.wrappers);
+    }
+
+    if (config.packages) {
+      this.addPackages(config.packages);
+    }
+
+    if (config.resolvers) {
+      this.addResolvers(config.resolvers);
     }
 
     return this;
   }
 
-  addDefaults(wrapperCache?: IWrapperCache): ClientConfigBuilder {
-    return this.add(getDefaultClientConfig(wrapperCache));
+  addDefaults(): ClientConfigBuilder {
+    return this.add(getDefaultConfig());
   }
 
-  addPlugin<TPluginConfig>(
-    uri: Uri | string,
-    plugin: PluginPackage<TPluginConfig>
-  ): ClientConfigBuilder {
-    const pluginUri = Uri.from(uri);
+  addWrapper(uriWrapper: IUriWrapper<Uri | string>): ClientConfigBuilder {
+    const wrapperUri = Uri.from(uriWrapper.uri);
 
-    const existingRegistration = this._config.plugins.find((x) =>
-      Uri.equals(x.uri, pluginUri)
+    const existingRegistration = this._config.wrappers.find((x) =>
+      Uri.equals(x.uri, wrapperUri)
     );
 
     if (existingRegistration) {
-      existingRegistration.plugin = plugin;
+      existingRegistration.wrapper = uriWrapper.wrapper;
     } else {
-      this._config.plugins.push({
-        uri: pluginUri,
-        plugin: plugin,
+      this._config.wrappers.push({
+        uri: wrapperUri,
+        wrapper: uriWrapper.wrapper,
       });
     }
 
     return this;
   }
 
-  removePlugin(uri: Uri | string): ClientConfigBuilder {
-    const pluginUri = Uri.from(uri);
+  addWrappers(uriWrappers: IUriWrapper<Uri | string>[]): ClientConfigBuilder {
+    for (const uriWrapper of uriWrappers) {
+      this.addWrapper(uriWrapper);
+    }
 
-    const idx = this._config.plugins.findIndex((x) =>
-      Uri.equals(x.uri, pluginUri)
+    return this;
+  }
+
+  removeWrapper(uri: Uri | string): ClientConfigBuilder {
+    const wrapperUri = Uri.from(uri);
+
+    const idx = this._config.wrappers.findIndex((x) =>
+      Uri.equals(x.uri, wrapperUri)
     );
 
     if (idx > -1) {
-      this._config.plugins.splice(idx, 1);
+      this._config.wrappers.splice(idx, 1);
+    }
+
+    return this;
+  }
+
+  addPackage(uriPackage: IUriPackage<Uri | string>): ClientConfigBuilder {
+    const packageUri = Uri.from(uriPackage.uri);
+
+    const existingRegistration = this._config.packages.find((x) =>
+      Uri.equals(x.uri, packageUri)
+    );
+
+    if (existingRegistration) {
+      existingRegistration.package = uriPackage.package;
+    } else {
+      this._config.packages.push({
+        uri: packageUri,
+        package: uriPackage.package,
+      });
+    }
+
+    return this;
+  }
+
+  addPackages(uriPackages: IUriPackage<Uri | string>[]): ClientConfigBuilder {
+    for (const uriPackage of uriPackages) {
+      this.addPackage(uriPackage);
+    }
+
+    return this;
+  }
+
+  removePackage(uri: Uri | string): ClientConfigBuilder {
+    const packageUri = Uri.from(uri);
+
+    const idx = this._config.packages.findIndex((x) =>
+      Uri.equals(x.uri, packageUri)
+    );
+
+    if (idx > -1) {
+      this._config.packages.splice(idx, 1);
     }
 
     return this;
@@ -116,6 +165,14 @@ export class ClientConfigBuilder {
         uri: envUri,
         env: env,
       });
+    }
+
+    return this;
+  }
+
+  addEnvs(envs: Env<Uri | string>[]): ClientConfigBuilder {
+    for (const env of envs) {
+      this.addEnv(env.uri, env.env);
     }
 
     return this;
@@ -239,7 +296,7 @@ export class ClientConfigBuilder {
     return this;
   }
 
-  addUriRedirect(from: Uri | string, to: Uri | string): ClientConfigBuilder {
+  addRedirect(from: Uri | string, to: Uri | string): ClientConfigBuilder {
     const fromSanitized = Uri.from(from);
     const toSanitized = Uri.from(to);
 
@@ -259,6 +316,14 @@ export class ClientConfigBuilder {
     return this;
   }
 
+  addRedirects(redirects: IUriRedirect<Uri | string>[]): ClientConfigBuilder {
+    for (const redirect of redirects) {
+      this.addRedirect(redirect.from, redirect.to);
+    }
+
+    return this;
+  }
+
   removeUriRedirect(from: Uri | string): ClientConfigBuilder {
     const fromSanitized = Uri.from(from);
 
@@ -273,21 +338,48 @@ export class ClientConfigBuilder {
     return this;
   }
 
-  setResolver(resolver: IUriResolver<unknown>): ClientConfigBuilder {
-    this._config.resolver = resolver;
+  addResolver(resolver: UriResolverLike): ClientConfigBuilder {
+    this._config.resolvers.push(resolver);
+
+    return this;
+  }
+
+  addResolvers(resolvers: UriResolverLike[]): ClientConfigBuilder {
+    for (const resolver of resolvers) {
+      this.addResolver(resolver);
+    }
 
     return this;
   }
 
   build(): ClientConfig<Uri> {
-    if (!this._config.resolver) {
-      throw new Error("No URI resolver provided");
-    }
-
-    return this._config as ClientConfig<Uri>;
+    return this._config;
   }
 
-  buildPartial(): Partial<ClientConfig<Uri>> {
-    return this._config;
+  buildDefault(
+    wrapperCache?: IWrapperCache,
+    resolver?: IUriResolver<unknown>
+  ): CoreClientConfig<Uri> {
+    return {
+      envs: this._config.envs,
+      interfaces: this._config.interfaces,
+      redirects: this._config.redirects,
+      resolver:
+        resolver ??
+        RecursiveResolver.from(
+          PackageToWrapperCacheResolver.from(
+            [
+              new LegacyRedirectsResolver(),
+              StaticResolver.from([
+                ...this._config.wrappers,
+                ...this._config.packages,
+              ]),
+              ...this._config.resolvers,
+              new ExtendableUriResolver(),
+            ],
+            wrapperCache ?? new WrapperCache()
+          )
+        ),
+    };
   }
 }

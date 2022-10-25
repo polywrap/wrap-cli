@@ -29,11 +29,8 @@
     "@polywrap/ipfs-plugin-js": "0.9.3",
     "@polywrap/ipfs-resolver-plugin-js": "0.9.3",
     "@polywrap/logger-plugin-js": "0.9.3",
-    "@polywrap/tracing-js": "0.9.3",
     "@polywrap/uri-resolver-extensions-js": "0.9.3",
-    "@polywrap/uri-resolvers-js": "0.9.3",
-    "@polywrap/wasm-js": "0.9.3",
-    "@polywrap/wrap-manifest-types-js": "0.9.3"
+    "@polywrap/uri-resolvers-js": "0.9.3"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

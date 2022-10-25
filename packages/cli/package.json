@@ -47,7 +47,6 @@
     "@polywrap/ens-resolver-plugin-js": "0.9.3",
     "@polywrap/ethereum-plugin-js": "0.9.3",
     "@polywrap/ipfs-plugin-js": "0.9.3",
-    "@polywrap/msgpack-js": "0.9.3",
     "@polywrap/os-js": "0.9.3",
     "@polywrap/polywrap-manifest-types-js": "0.9.3",
     "@polywrap/schema-bind": "0.9.3",

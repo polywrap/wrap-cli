@@ -1,9 +1,9 @@
-import { httpPlugin } from "../..";
 import { Http_Response } from "../../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
 import { buildWrapper } from "@polywrap/test-env-js";
 import nock from "nock";
+import { getClient } from "../helpers/getClient";
 
 jest.setTimeout(360000);
 
@@ -20,14 +20,7 @@ describe("e2e tests for HttpPlugin", () => {
     const uri = `fs/${wrapperPath}/build`;
 
     beforeAll(async () => {
-      client = new PolywrapClient({
-        plugins: [
-          {
-            uri: "wrap://ens/http.polywrap.eth",
-            plugin: httpPlugin({}),
-          },
-        ],
-      });
+      client = getClient();
 
       await buildWrapper(wrapperPath);
     });

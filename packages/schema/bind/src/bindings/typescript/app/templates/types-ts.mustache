@@ -3,7 +3,7 @@ import * as Types from "./";
 
 // @ts-ignore
 import {
-  Client,
+  CoreClient,
   InvokeResult
 } from "@polywrap/core-js";
 
@@ -100,20 +100,20 @@ export const {{type}} = {
   {{#methods}}
   {{name}}: async (
     args: {{parent.type}}_Args_{{name}},
-    client: Client,
+    client: CoreClient,
     uri: string = "{{parent.uri}}"
   ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri,
       method: "{{name}}",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   }{{^last}},{{/last}}
   {{^last}}
 
   {{/last}}
   {{/methods}}
-}
+};
 {{/importedModuleTypes}}
 
 /// Imported Modules END ///
