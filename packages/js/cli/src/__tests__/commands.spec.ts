@@ -202,8 +202,8 @@ const testData: CommandTestCaseData<CommandTypings> = {
       }
     }]
   },
-  run: [{
-    cwd: path.join(GetPathToCliTestFiles(), "run/001-yaml-workflow"),
+  test: [{
+    cwd: path.join(GetPathToCliTestFiles(), "test/001-yaml-workflow"),
     before: async (test) => {
       if (!test.cwd)
         throw Error("This shouldn't happen");
