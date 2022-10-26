@@ -1,6 +1,6 @@
 import { getTestEnvProviders } from "./providers";
 
-import { PluginRegistration, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClientConfig } from "@polywrap/client-js";
 import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
@@ -10,12 +10,11 @@ import {
 } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensAddresses } from "@polywrap/test-env-js";
-import { Env } from "@polywrap/core-js";
 
-export async function getTestEnvClientConfig(): Promise<
-  Partial<PolywrapClientConfig>
-> {
-  const providers = await getTestEnvProviders();
+export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
+  // TODO: move this into its own package, since it's being used everywhere?
+  // maybe have it exported from test-env.
+  const providers = getTestEnvProviders();
   const ipfsProvider = providers.ipfsProvider;
   const ethProvider = providers.ethProvider;
 
@@ -25,47 +24,41 @@ export async function getTestEnvClientConfig(): Promise<
 
   const ensAddress = ensAddresses.ensAddress;
 
-  // TODO: move this into its own package, since it's being used everywhere?
-  // maybe have it exported from test-env.
-  const plugins: PluginRegistration[] = [
-    {
-      uri: "wrap://ens/ethereum.polywrap.eth",
-      plugin: ethereumPlugin({
-        connections: new Connections({
-          networks: {
-            testnet: new Connection({
-              provider: ethProvider,
-            }),
+  return {
+    envs: [
+      {
+        uri: "wrap://ens/ipfs.polywrap.eth",
+        env: {
+          provider: ipfsProvider,
+          fallbackProviders: defaultIpfsProviders,
+        },
+      },
+    ],
+    packages: [
+      {
+        uri: "wrap://ens/ethereum.polywrap.eth",
+        package: ethereumPlugin({
+          connections: new Connections({
+            networks: {
+              testnet: new Connection({
+                provider: ethProvider,
+              }),
+            },
+          }),
+        }),
+      },
+      {
+        uri: "wrap://ens/ipfs.polywrap.eth",
+        package: ipfsPlugin({}),
+      },
+      {
+        uri: "wrap://ens/ens-resolver.polywrap.eth",
+        package: ensResolverPlugin({
+          addresses: {
+            testnet: ensAddress,
           },
         }),
-      }),
-    },
-    {
-      uri: "wrap://ens/ipfs.polywrap.eth",
-      plugin: ipfsPlugin({}),
-    },
-    {
-      uri: "wrap://ens/ens-resolver.polywrap.eth",
-      plugin: ensResolverPlugin({
-        addresses: {
-          testnet: ensAddress,
-        },
-      }),
-    },
-  ];
-
-  const envs: Env[] = [
-    {
-      uri: "wrap://ens/ipfs.polywrap.eth",
-      env: {
-        provider: ipfsProvider,
-        fallbackProviders: defaultIpfsProviders,
       },
-    },
-  ];
-
-  return {
-    plugins,
-    envs,
+    ],
   };
 }

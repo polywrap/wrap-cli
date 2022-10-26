@@ -1,4 +1,5 @@
-import { ClientConfig, Uri } from "@polywrap/core-js";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
+import { Uri } from "@polywrap/core-js";
 
 export interface Step {
   uri: string | Uri;

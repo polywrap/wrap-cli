@@ -1,11 +1,16 @@
-import { usePolywrapQuery, PolywrapProvider, usePolywrapClient, createPolywrapProvider } from "@polywrap/react";
-import { PolywrapClientConfig } from "@polywrap/client-js";
+import {
+  usePolywrapQuery,
+  PolywrapProvider,
+  usePolywrapClient,
+  createPolywrapProvider,
+} from "@polywrap/react";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
+import { Env, IUriPackage, Uri } from "@polywrap/core-js";
 
 const SimpleStorage = ({ uri }: { uri: string }) => {
   const { execute: deployContract, data: deployData } = usePolywrapQuery<{
-    deployContract: string
+    deployContract: string;
   }>({
     uri,
     query: `mutation {
@@ -30,8 +35,8 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
     }`,
     variables: {
       value: 5,
-      address: deployData?.deployContract
-    }
+      address: deployData?.deployContract,
+    },
   });
 
   const { execute: getStorageData, data: currentStorage } = usePolywrapQuery({
@@ -75,14 +80,16 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
 const CustomProvider = createPolywrapProvider("custom");
 
 export const SimpleStorageContainer = ({
-  config,
+  envs,
+  packages,
   ensUri,
 }: {
-  config: Partial<PolywrapClientConfig>,
+  envs: Env[];
+  packages: IUriPackage<Uri | string>[];
   ensUri: string;
 }) => (
   <CustomProvider>
-    <PolywrapProvider config={config}>
+    <PolywrapProvider packages={packages} envs={envs}>
       <SimpleStorage uri={ensUri} />
     </PolywrapProvider>
   </CustomProvider>

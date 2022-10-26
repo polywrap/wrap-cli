@@ -1,5 +1,5 @@
 import {
-  Client,
+  CoreClient,
   Module,
   Args_callContractView,
   Args_callContractStatic,
@@ -45,7 +45,7 @@ import { Connections } from "./Connections";
 
 import { ethers } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 export * from "./Connection";
 export * from "./Connections";
@@ -64,7 +64,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   async callContractView(
     args: Args_callContractView,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     const abi = constructAbi(args.method);
@@ -76,7 +76,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   async callContractStatic(
     args: Args_callContractStatic,
-    _client: Client
+    _client: CoreClient
   ): Promise<StaticTxResult> {
     const connection = await this._getConnection(args.connection);
     const abi = constructAbi(args.method);
@@ -110,7 +110,10 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     }
   }
 
-  async getBalance(args: Args_getBalance, _client: Client): Promise<BigInt> {
+  async getBalance(
+    args: Args_getBalance,
+    _client: CoreClient
+  ): Promise<BigInt> {
     const connection = await this._getConnection(args.connection);
     return (
       await connection
@@ -121,14 +124,14 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   async encodeParams(
     args: Args_encodeParams,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     return defaultAbiCoder.encode(args.types, parseArgs(args.values));
   }
 
   async encodeFunction(
     args: Args_encodeFunction,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     const functionInterface = ethers.Contract.getInterface([args.method]);
     return functionInterface.encodeFunctionData(
@@ -139,28 +142,28 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   async solidityPack(
     args: Args_solidityPack,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     return ethers.utils.solidityPack(args.types, parseArgs(args.values));
   }
 
   async solidityKeccak256(
     args: Args_solidityKeccak256,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     return ethers.utils.solidityKeccak256(args.types, parseArgs(args.values));
   }
 
   async soliditySha256(
     args: Args_soliditySha256,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     return ethers.utils.soliditySha256(args.types, parseArgs(args.values));
   }
 
   async getSignerAddress(
     args: Args_getSignerAddress,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     return await connection.getSigner().getAddress();
@@ -168,7 +171,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   async getSignerBalance(
     args: Args_getSignerBalance,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     return (
@@ -178,7 +181,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   async getSignerTransactionCount(
     args: Args_getSignerTransactionCount,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     return (
@@ -188,14 +191,17 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     ).toString();
   }
 
-  async getGasPrice(args: Args_getGasPrice, _client: Client): Promise<string> {
+  async getGasPrice(
+    args: Args_getGasPrice,
+    _client: CoreClient
+  ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     return (await connection.getSigner().getGasPrice()).toString();
   }
 
   async estimateTransactionGas(
     args: Args_estimateTransactionGas,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     return (
@@ -205,7 +211,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   async estimateContractCallGas(
     args: Args_estimateContractCallGas,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     const abi = constructAbi(args.method);
@@ -227,7 +233,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   async checkAddress(
     args: Args_checkAddress,
-    _client: Client
+    _client: CoreClient
   ): Promise<boolean> {
     let address = args.address;
 
@@ -248,19 +254,19 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     }
   }
 
-  async toWei(args: Args_toWei, _client: Client): Promise<string> {
+  async toWei(args: Args_toWei, _client: CoreClient): Promise<string> {
     const weiAmount = ethers.utils.parseEther(args.eth);
     return weiAmount.toString();
   }
 
-  async toEth(args: Args_toEth, _client: Client): Promise<string> {
+  async toEth(args: Args_toEth, _client: CoreClient): Promise<string> {
     const etherAmount = ethers.utils.formatEther(args.wei);
     return etherAmount.toString();
   }
 
   async waitForEvent(
     args: Args_waitForEvent,
-    _client: Client
+    _client: CoreClient
   ): Promise<EventNotification> {
     const connection = await this._getConnection(args.connection);
     const abi = constructAbi(args.event);
@@ -293,7 +299,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   async awaitTransaction(
     args: Args_awaitTransaction,
-    _client: Client
+    _client: CoreClient
   ): Promise<TxReceipt> {
     const connection = await this._getConnection(args.connection);
     const provider = connection.getProvider();
@@ -307,7 +313,10 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     return Mapping.toTxReceipt(res);
   }
 
-  async getNetwork(args: Args_getNetwork, _client: Client): Promise<Network> {
+  async getNetwork(
+    args: Args_getNetwork,
+    _client: CoreClient
+  ): Promise<Network> {
     const connection = await this._getConnection(args.connection);
     const provider = connection.getProvider();
     const network = await provider.getNetwork();
@@ -320,7 +329,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   async requestAccounts(
     args: Args_requestAccounts,
-    _client: Client
+    _client: CoreClient
   ): Promise<string[]> {
     const connection = await this._getConnection(args.connection);
     const provider = connection.getProvider();
@@ -329,7 +338,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   public async callContractMethod(
     args: Args_callContractMethod,
-    _client: Client
+    _client: CoreClient
   ): Promise<TxResponse> {
     const res = await this._callContractMethod(args);
     return Mapping.toTxResponse(res);
@@ -337,7 +346,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   public async callContractMethodAndWait(
     args: Args_callContractMethodAndWait,
-    _client: Client
+    _client: CoreClient
   ): Promise<TxReceipt> {
     const response = await this._callContractMethod(args);
     const res = await response.wait();
@@ -346,7 +355,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   public async sendTransaction(
     args: Args_sendTransaction,
-    _client: Client
+    _client: CoreClient
   ): Promise<TxResponse> {
     const connection = await this._getConnection(args.connection);
     const signer = connection.getSigner();
@@ -356,7 +365,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   public async sendTransactionAndWait(
     args: Args_sendTransactionAndWait,
-    _client: Client
+    _client: CoreClient
   ): Promise<TxReceipt> {
     const connection = await this._getConnection(args.connection);
     const signer = connection.getSigner();
@@ -369,7 +378,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   public async deployContract(
     args: Args_deployContract,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     const signer = connection.getSigner();
@@ -382,13 +391,16 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
   public async signMessage(
     args: Args_signMessage,
-    _client: Client
+    _client: CoreClient
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     return await connection.getSigner().signMessage(args.message);
   }
 
-  public async sendRPC(args: Args_sendRPC, _client: Client): Promise<string> {
+  public async sendRPC(
+    args: Args_sendRPC,
+    _client: CoreClient
+  ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     const provider = connection.getProvider();
     const response = await provider.send(args.method, args.params);
@@ -423,11 +435,6 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
 export const ethereumPlugin: PluginFactory<EthereumPluginConfig> = (
   config: EthereumPluginConfig
-) => {
-  return {
-    factory: () => new EthereumPlugin(config),
-    manifest,
-  };
-};
+) => new PluginPackage(new EthereumPlugin(config), manifest);
 
 export const plugin = ethereumPlugin;

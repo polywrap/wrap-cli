@@ -1,17 +1,21 @@
-import { Env, PluginRegistration } from "@polywrap/core-js";
+import { Env, IUriPackage, Uri } from "@polywrap/core-js";
 import { plugin as ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
-import { Connection, Connections, plugin as ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import {
+  Connection,
+  Connections,
+  plugin as ethereumPlugin,
+} from "@polywrap/ethereum-plugin-js";
 import { plugin as ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 
 export function createPlugins(
   ensAddress: string,
   ethereumProvider: string
-): PluginRegistration[] {
+): IUriPackage<Uri | string>[] {
   return [
     {
       uri: "wrap://ens/ethereum.polywrap.eth",
-      plugin: ethereumPlugin({
+      package: ethereumPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({ provider: ethereumProvider }),
@@ -21,11 +25,11 @@ export function createPlugins(
     },
     {
       uri: "wrap://ens/ipfs.polywrap.eth",
-      plugin: ipfsPlugin({}),
+      package: ipfsPlugin({}),
     },
     {
       uri: "wrap://ens/ens-resolver.polywrap.eth",
-      plugin: ensResolverPlugin({
+      package: ensResolverPlugin({
         addresses: {
           testnet: ensAddress,
         },
@@ -41,7 +45,7 @@ export function createEnvs(ipfsProvider: string): Env[] {
       env: {
         provider: ipfsProvider,
         fallbackProviders: defaultIpfsProviders,
-      }
-    }
+      },
+    },
   ];
 }

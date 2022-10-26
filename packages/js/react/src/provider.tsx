@@ -15,9 +15,7 @@ interface PolywrapProviderMap {
 
 export const PROVIDERS: PolywrapProviderMap = {};
 
-interface PolywrapProviderProps {
-  config: Partial<PolywrapClientConfig>
-}
+interface PolywrapProviderProps extends Partial<PolywrapClientConfig> { }
 
 export type PolywrapProviderFC = React.FC<PolywrapProviderProps>;
 
@@ -35,21 +33,34 @@ export function createPolywrapProvider(
     ClientContext: React.createContext({} as PolywrapClient)
   };
 
-  return ({ config, children }) => {
-
+  return ({
+    envs,
+    redirects,
+    wrappers,
+    packages,
+    interfaces,
+    tracerConfig,
+    children,
+  }) => {
     const [clientCreated, setClientCreated] = React.useState(false);
 
     React.useEffect(() => {
-
       // If the client has already been set for this provider
       if (PROVIDERS[name].client) {
-        throw Error( 
+        throw Error(
           `Duplicate PolywrapProvider detected. Please use "createPolywrapProvider("provider-name")".`
         );
       }
 
       // Instantiate the client
-      PROVIDERS[name].client = new PolywrapClient(config);
+      PROVIDERS[name].client = new PolywrapClient({
+        redirects,
+        wrappers,
+        packages,
+        interfaces,
+        envs,
+        tracerConfig,
+      });
 
       setClientCreated(true);
 
@@ -57,7 +68,7 @@ export function createPolywrapProvider(
       // this provider is unmounted
       return function cleanup() {
         PROVIDERS[name].client = undefined;
-      }
+      };
     });
 
     // Get the provider's context

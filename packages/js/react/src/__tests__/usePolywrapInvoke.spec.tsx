@@ -6,11 +6,13 @@ import {
 import { UsePolywrapInvokeProps } from "../invoke";
 import { createPlugins, createEnvs } from "./config";
 
+import { Env, IUriPackage, Uri } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
   ensAddresses,
-  providers, buildWrapper,
+  providers,
+  buildWrapper,
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 
@@ -18,14 +20,15 @@ import {
   renderHook,
   act,
   RenderHookOptions,
-  cleanup
+  cleanup,
 } from "@testing-library/react-hooks";
-import { PolywrapClientConfig } from "@polywrap/client-js";
 
 jest.setTimeout(360000);
 
 describe("usePolywrapInvoke hook", () => {
   let uri: string;
+  let envs: Env[];
+  let packages: IUriPackage<Uri | string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
@@ -33,18 +36,16 @@ describe("usePolywrapInvoke hook", () => {
 
     const simpleStoragePath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
     await buildWrapper(simpleStoragePath);
-    uri = `fs/${simpleStoragePath}/build`
+    uri = `fs/${simpleStoragePath}/build`;
 
-    const simpleEnvPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`;
-    await buildWrapper(simpleEnvPath);
-
-    const config: Partial<PolywrapClientConfig> = {
-      envs: createEnvs(providers.ipfs),
-      plugins: createPlugins(ensAddresses.ensAddress, providers.ethereum),
-    }
+    envs = createEnvs(providers.ipfs);
+    packages = createPlugins(ensAddresses.ensAddress, providers.ethereum);
     WrapperProvider = {
       wrapper: PolywrapProvider,
-      initialProps: { config },
+      initialProps: {
+        envs,
+        packages,
+      },
     };
   });
 
@@ -52,9 +53,7 @@ describe("usePolywrapInvoke hook", () => {
     await stopTestEnvironment();
   });
 
-  async function sendQuery<TData>(
-    options: UsePolywrapInvokeProps
-  ) {
+  async function sendQuery<TData>(options: UsePolywrapInvokeProps) {
     const hook = () => usePolywrapInvoke<TData>(options);
 
     const { result: hookResult } = renderHook(hook, WrapperProvider);
@@ -71,11 +70,12 @@ describe("usePolywrapInvoke hook", () => {
   async function sendQueryWithExecVariables<TData>(
     options: UsePolywrapInvokeProps
   ) {
-    const hook = () => usePolywrapInvoke<TData>({
-      uri: options.uri,
-      method: options.method,
-      provider: options.provider
-    });
+    const hook = () =>
+      usePolywrapInvoke<TData>({
+        uri: options.uri,
+        method: options.method,
+        provider: options.provider,
+      });
 
     const { result: hookResult } = renderHook(hook, WrapperProvider);
 
@@ -128,7 +128,9 @@ describe("usePolywrapInvoke hook", () => {
       },
     };
 
-    const { data: getDataData } = await sendQuery<number>(getStorageDataInvocation);
+    const { data: getDataData } = await sendQuery<number>(
+      getStorageDataInvocation
+    );
     expect(getDataData).toBe(5);
   });
 
@@ -142,7 +144,8 @@ describe("usePolywrapInvoke hook", () => {
       },
     };
 
-    const getDataStorageHook = () => usePolywrapInvoke(getStorageDataInvocation);
+    const getDataStorageHook = () =>
+      usePolywrapInvoke(getStorageDataInvocation);
     const { result } = renderHook(getDataStorageHook);
 
     expect(result.error?.message).toMatch(
@@ -162,7 +165,8 @@ describe("usePolywrapInvoke hook", () => {
       },
     };
 
-    const getDataStorageHook = () => usePolywrapInvoke(getStorageDataInvocation);
+    const getDataStorageHook = () =>
+      usePolywrapInvoke(getStorageDataInvocation);
     const { result } = renderHook(getDataStorageHook, WrapperProvider);
 
     expect(result.error?.message).toMatch(
@@ -181,7 +185,9 @@ describe("usePolywrapInvoke hook", () => {
       },
     };
 
-    const { data: address } = await sendQueryWithExecVariables<string>(deployInvoke);
+    const { data: address } = await sendQueryWithExecVariables<string>(
+      deployInvoke
+    );
 
     const setStorageInvocation: UsePolywrapInvokeProps = {
       uri,
@@ -210,7 +216,9 @@ describe("usePolywrapInvoke hook", () => {
       },
     };
 
-    const { data: getDataData } = await sendQueryWithExecVariables<number>(getStorageDataInvocation);
+    const { data: getDataData } = await sendQueryWithExecVariables<number>(
+      getStorageDataInvocation
+    );
     expect(getDataData).toBe(3);
   });
 });

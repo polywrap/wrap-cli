@@ -1,5 +1,5 @@
 import {
-  Client,
+  CoreClient,
   combinePaths,
   InvokeOptions,
   InvokeResult,
@@ -14,7 +14,7 @@ export class UriResolverExtensionFileReader implements IFileReader {
   constructor(
     private readonly resolverExtensionUri: Uri,
     private readonly wrapperUri: Uri,
-    private readonly client: Client
+    private readonly client: CoreClient
   ) {}
 
   async readFile(filePath: string): Promise<Result<Uint8Array, Error>> {

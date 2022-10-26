@@ -1,0 +1,15 @@
+{
+  "name": "@polywrap/test-project",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "polywrap build"
+  },
+  "dependencies": {
+    "@polywrap/wasm-as": "0.9.3"
+  },
+  "devDependencies": {
+    "assemblyscript": "0.19.23"
+  }
+}

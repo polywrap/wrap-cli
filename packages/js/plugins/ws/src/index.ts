@@ -1,5 +1,5 @@
 import {
-  Client,
+  CoreClient,
   Module,
   Message,
   Callback,
@@ -14,7 +14,7 @@ import {
   manifest,
 } from "./wrap";
 
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 type NoConfig = Record<string, never>;
 
@@ -24,7 +24,7 @@ export class WsPlugin extends Module<NoConfig> {
   private _caches: Record<number, Message[]> = {};
   private _mutex = true;
 
-  public async open(args: Args_open, _client: Client): Promise<number> {
+  public async open(args: Args_open, _client: CoreClient): Promise<number> {
     const id = this._sockets.length;
     const socket = new WebSocket(args.url);
     this._sockets.push(socket);
@@ -40,7 +40,7 @@ export class WsPlugin extends Module<NoConfig> {
     });
   }
 
-  public async close(args: Args_close, _client: Client): Promise<boolean> {
+  public async close(args: Args_close, _client: CoreClient): Promise<boolean> {
     this._sockets[args.id].close();
     return await new Promise((resolve) => {
       this._sockets[args.id].onclose = () => {
@@ -49,12 +49,12 @@ export class WsPlugin extends Module<NoConfig> {
     });
   }
 
-  public send(args: Args_send, _client: Client): boolean {
+  public send(args: Args_send, _client: CoreClient): boolean {
     this._sockets[args.id].send(args.message);
     return true;
   }
 
-  public addCallback(args: Args_addCallback, _client: Client): boolean {
+  public addCallback(args: Args_addCallback, _client: CoreClient): boolean {
     const callbackId = this._callbackId(args.callback);
     this._callbacks[callbackId] = async (msg) => {
       await _client.invoke<{ callback: boolean }>({
@@ -70,7 +70,10 @@ export class WsPlugin extends Module<NoConfig> {
     return true;
   }
 
-  public removeCallback(args: Args_removeCallback, _client: Client): boolean {
+  public removeCallback(
+    args: Args_removeCallback,
+    _client: CoreClient
+  ): boolean {
     const callbackId = this._callbackId(args.callback);
     this._sockets[args.id].removeEventListener(
       "message",
@@ -79,7 +82,7 @@ export class WsPlugin extends Module<NoConfig> {
     return true;
   }
 
-  public addCache(args: Args_addCache, _client: Client): boolean {
+  public addCache(args: Args_addCache, _client: CoreClient): boolean {
     const callback = { uri: args.id.toString(), method: "cache" };
     const callbackId = this._callbackId(callback);
     this._caches[args.id] = [];
@@ -103,7 +106,7 @@ export class WsPlugin extends Module<NoConfig> {
     return true;
   }
 
-  public removeCache(args: Args_removeCache, _client: Client): boolean {
+  public removeCache(args: Args_removeCache, _client: CoreClient): boolean {
     const callback = { uri: args.id.toString(), method: "cache" };
     const callbackId = this._callbackId(callback);
     this._sockets[args.id].removeEventListener(
@@ -115,7 +118,7 @@ export class WsPlugin extends Module<NoConfig> {
 
   public async receive(
     args: Args_receive,
-    _client: Client
+    _client: CoreClient
   ): Promise<Message[]> {
     return await new Promise((resolve) => {
       let interval: ReturnType<typeof setInterval>;
@@ -153,11 +156,7 @@ export class WsPlugin extends Module<NoConfig> {
   }
 }
 
-export const wsPlugin: PluginFactory<NoConfig> = () => {
-  return {
-    factory: () => new WsPlugin({}),
-    manifest,
-  };
-};
+export const wsPlugin: PluginFactory<NoConfig> = () =>
+  new PluginPackage(new WsPlugin({}), manifest);
 
 export const plugin = wsPlugin;
