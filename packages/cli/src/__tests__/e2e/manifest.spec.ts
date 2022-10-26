@@ -51,7 +51,7 @@ Arguments:
                               \"infra\", \"meta\", \"workflow\", default: \"project\")
 
 Options:
-  -r, --raw                   Output raw JSON Schema (default: false)
+  -r, --raw                   Output raw JSON Schema
   -m, --manifest-file <path>  Path to the manifest file (default: polywrap.yaml
                               | polywrap.yml)
   -v, --verbose               Verbose output (default: false)

@@ -11,21 +11,21 @@ const HELP = `Usage: polywrap build|b [options]
 Build Polywrap Projects (type: interface, wasm)
 
 Options:
-  -m, --manifest-file <path>         Path to the Polywrap Build manifest file
-                                     (default: polywrap.yaml | polywrap.yml)
-  -o, --output-dir <path>            Output directory for build results
-                                     (default: ./build)
-  -c, --client-config <config-path>  Add custom configuration to the
-                                     PolywrapClient
-  -n, --no-codegen                   Skip code generation
-  -s, --strategy <strategy>          Strategy to use for building the wrapper
-                                     (default: "vm")
-  -w, --watch                        Automatically rebuild when changes are
-                                     made (default: false)
-  -v, --verbose                      Verbose output (default: false)
-  -q, --quiet                        Suppress output (default: false)
-  -l, --log-file [path]              Log file to save console output to
-  -h, --help                         display help for command
+  -m, --manifest-file <path>           Path to the Polywrap Build manifest file
+                                       (default: polywrap.yaml | polywrap.yml)
+  -o, --output-dir <path>              Output directory for build results
+                                       (default: ./build)
+  -c, --client-config <config-path>    Add custom configuration to the
+                                       PolywrapClient
+  -n, --no-codegen                     Skip code generation
+  -s, --strategy <vm | image | local>  Strategy to use for building the wrapper
+                                       (default: vm)
+  -w, --watch                          Automatically rebuild when changes are
+                                       made (default: false)
+  -v, --verbose                        Verbose output (default: false)
+  -q, --quiet                          Suppress output (default: false)
+  -l, --log-file [path]                Log file to save console output to
+  -h, --help                           display help for command
 `;
 
 jest.setTimeout(500000);

@@ -73,7 +73,7 @@ export const infra: Command = {
         })
       )
       .option(
-        `-o, --modules <${moduleNameStr}...>`,
+        `-o, --modules <${moduleNameStr},${moduleNameStr}>`,
         intlMsg.commands_infra_options_o()
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())

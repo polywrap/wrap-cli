@@ -30,7 +30,7 @@ import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
-const strategyStr = intlMsg.commands_build_options_s_strategy();
+const strategyStr = Object.values(SupportedStrategies).join(" | ");
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
 
@@ -68,7 +68,9 @@ export const build: Command = {
       .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_n()}`)
       .option(
         `-s, --strategy <${strategyStr}>`,
-        `${intlMsg.commands_build_options_s()}`
+        `${intlMsg.commands_build_options_s({
+          default: defaultStrategy
+        })}`
       )
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
