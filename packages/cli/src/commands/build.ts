@@ -38,7 +38,7 @@ export interface BuildCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputDir: string;
   clientConfig: string | false;
-  codegen: boolean;
+  noCodegen: boolean;
   watch: boolean;
   strategy: `${SupportedStrategies}`;
 };
@@ -85,7 +85,7 @@ export const build: Command = {
           ),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
           clientConfig: options.clientConfig || false,
-          codegen: options.codegen || true,
+          noCodegen: !options.codegen || false,
           strategy: options.strategy || defaultStrategy,
           watch: options.watch || false,
           verbose: options.verbose || false,
@@ -138,7 +138,7 @@ async function run(options: Required<BuildCommandOptions>) {
     outputDir,
     clientConfig,
     strategy,
-    codegen,
+    noCodegen,
     verbose,
     quiet,
     logFile,
@@ -167,9 +167,9 @@ async function run(options: Required<BuildCommandOptions>) {
   });
 
   const execute = async (): Promise<boolean> => {
-    const codeGenerator = codegen
-      ? new CodeGenerator({ project, schemaComposer })
-      : undefined;
+    const codeGenerator = noCodegen
+      ? undefined
+      : new CodeGenerator({ project, schemaComposer });
 
     const compiler = new Compiler({
       project,
