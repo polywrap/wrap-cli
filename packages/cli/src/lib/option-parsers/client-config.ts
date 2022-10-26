@@ -1,19 +1,17 @@
-import { validateClientConfig } from "../helpers";
 import { intlMsg } from "../intl";
 import { importTypescriptModule } from "../system";
 import { getTestEnvClientConfig } from "../test-env";
 
-import { Uri } from "@polywrap/core-js";
 import {
   ClientConfigBuilder,
-  ClientConfig,
 } from "@polywrap/client-config-builder-js";
 import path from "path";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 export async function parseClientConfigOption(
   clientConfig: string | undefined
-): Promise<Partial<ClientConfig<Uri>>> {
-  const builder = new ClientConfigBuilder().addDefaults();
+): Promise<IClientConfigBuilder> {
+  let builder = new ClientConfigBuilder().addDefaults();
 
   try {
     builder.add(getTestEnvClientConfig());
@@ -38,7 +36,7 @@ export async function parseClientConfigOption(
       process.exit(1);
     }
 
-    if (!configModule || !configModule.getCustomConfig) {
+    if (!configModule || !configModule.configure) {
       const configsModuleMissingExportMessage = intlMsg.commands_run_error_clientConfigModuleMissingExport(
         { module: configModule }
       );
@@ -46,16 +44,15 @@ export async function parseClientConfigOption(
       process.exit(1);
     }
 
-    const customConfig = await configModule.getCustomConfig();
+    builder = await configModule.configure(builder);
 
     try {
-      validateClientConfig(customConfig);
-      return builder.add(customConfig).build();
+      return builder;
     } catch (e) {
       console.error(e.message);
       process.exit(1);
     }
   } else {
-    return builder.build();
+    return builder;
   }
 }
