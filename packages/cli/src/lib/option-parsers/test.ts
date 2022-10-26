@@ -7,7 +7,7 @@ export function parseWorkflowScriptPathOption(script: string): string {
   const absPath = path.resolve(script);
   if (!fs.existsSync(absPath)) {
     throw new Error(
-      intlMsg.commands_run_error_noWorkflowScriptFound({ path: absPath })
+      intlMsg.commands_test_error_noWorkflowScriptFound({ path: absPath })
     );
   }
   return absPath;

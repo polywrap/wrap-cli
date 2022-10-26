@@ -157,7 +157,9 @@ async function run(options: DeployCommandOptions): Promise<void> {
         break;
       default:
         throw new Error(
-          intlMsg.commands_run_error_unsupportedOutputFileExt({ outputFileExt })
+          intlMsg.commands_test_error_unsupportedOutputFileExt({
+            outputFileExt,
+          })
         );
     }
   }

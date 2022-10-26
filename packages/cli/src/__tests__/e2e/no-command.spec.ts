@@ -14,7 +14,7 @@ Commands:
   create|c                     Create New Projects
   deploy|d [options]           Deploys Polywrap Projects
   infra|i [options] <action>   Modular Infrastructure-As-Code Orchestrator
-  run|r [options]              Runs Workflows
+  test|t [options]             Execute Tests
   docgen|o [options] <action>  Generate wrapper documentation
   manifest|m                   Inspect & Migrade Polywrap Manifests
   help [command]               display help for command
