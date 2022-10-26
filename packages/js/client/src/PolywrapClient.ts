@@ -715,7 +715,7 @@ export class PolywrapClient implements CoreClient {
       builder.add(config);
     }
 
-    const sanitizedConfig = builder.buildDefault(config?.wrapperCache);
+    const sanitizedConfig = builder.buildCoreConfig(config?.wrapperCache);
 
     return {
       ...sanitizedConfig,
