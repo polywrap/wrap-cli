@@ -19,7 +19,7 @@ const HELP = `Usage: polywrap infra|i <action> [options]
 Modular Infrastructure-As-Code Orchestrator
 
 Arguments:
-  action                         
+  action                       
     Infra allows you to execute the following commands:
     up      Start Polywrap infrastructure
     down    Stop Polywrap infrastructure
@@ -28,14 +28,14 @@ Arguments:
    (choices: "up", "down", "vars", "config")
 
 Options:
-  -m, --manifest-file  <path>    Path to the Polywrap Infra manifest file
-                                 (default: polywrap.infra.yaml |
-                                 polywrap.infra.yml)
-  -o, --modules <module,module>  Use only specified modules
-  -v, --verbose                  Verbose output (default: false)
-  -q, --quiet                    Suppress output (default: false)
-  -l, --log-file [path]          Log file to save console output to
-  -h, --help                     display help for command
+  -m, --manifest-file  <path>  Path to the Polywrap Infra manifest file
+                               (default: polywrap.infra.yaml |
+                               polywrap.infra.yml)
+  -o, --modules <module...>    Use only specified modules
+  -v, --verbose                Verbose output (default: false)
+  -q, --quiet                  Suppress output (default: false)
+  -l, --log-file [path]        Log file to save console output to
+  -h, --help                   display help for command
 `;
 
 const portInUse = (port: number) => {

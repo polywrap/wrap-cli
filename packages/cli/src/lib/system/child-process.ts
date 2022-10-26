@@ -8,7 +8,7 @@ export function runCommandSync(
   logger: Logger,
   env: Record<string, string> | undefined = undefined
 ): { stdout?: string; stderr?: SpawnSyncReturns<string> & Error } {
-  logger.info(`> ${command}`);
+  logger.info(`> ${command} ${args.join(" ")}`);
 
   try {
     const stdout = execFileSync(
@@ -37,7 +37,7 @@ export async function runCommand(
   cwd: string | undefined = undefined,
   redirectStderr = false
 ): Promise<{ stdout: string; stderr: string }> {
-  logger.info(`> ${command}`);
+  logger.info(`> ${command} ${args.join(" ")}`);
 
   return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
     const callback = (

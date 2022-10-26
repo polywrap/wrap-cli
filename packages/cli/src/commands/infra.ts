@@ -73,7 +73,7 @@ export const infra: Command = {
         })
       )
       .option(
-        `-o, --modules <${moduleNameStr},${moduleNameStr}>`,
+        `-o, --modules <${moduleNameStr}...>`,
         intlMsg.commands_infra_options_o()
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
@@ -111,6 +111,8 @@ async function run(
   const logger = createLogger({ verbose, quiet, logFile });
 
   const modulesArray: string[] = modules ? modules : [];
+
+  console.log(modulesArray);
 
   const manifest: string[] = manifestFile
     ? [manifestFile]
