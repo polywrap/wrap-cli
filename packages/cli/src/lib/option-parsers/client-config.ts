@@ -1,11 +1,8 @@
-
 import { intlMsg } from "../intl";
 import { importTypescriptModule } from "../system";
 import { getTestEnvClientConfig } from "../test-env";
 
-import {
-  ClientConfigBuilder,
-} from "@polywrap/client-config-builder-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import path from "path";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
