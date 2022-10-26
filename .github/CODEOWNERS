@@ -3,37 +3,61 @@
 
 # Wasm Runtime
 packages/wasm/as  @dOrgJelli @krisbitney @namesty @Niraj-Kamdar
+packages/wasm/rs  @namesty @dOrgJelli
+
+# Wrapper Test-Cases
+packages/test-cases/cases/wrappers/wasm-as @cbrzn @namesty @nerfZael @krisbitney @Niraj-Kamdar
+packages/test-cases/cases/wrappers/wasm-rs @cbrzn @namesty @nerfZael @krisbitney @Niraj-Kamdar
 
 # Schema
 packages/schema/parse    @dOrgJelli @namesty @nerfZael @Niraj-Kamdar
 packages/schema/compose  @dOrgJelli @namesty @nerfZael @Niraj-Kamdar
-packages/schema/bind     @dOrgJelli @krisbitney @nerfZael @Niraj-Kamdar
+packages/schema/bind     @dOrgJelli @krisbitney @nerfZael @Niraj-Kamdar @cbrzn
+
+# Schema Test-Cases
+packages/test-cases/cases/parse    @dOrgJelli @namesty @nerfZael @Niraj-Kamdar
+packages/test-cases/cases/compose  @dOrgJelli @namesty @nerfZael @Niraj-Kamdar
+packages/test-cases/cases/bind     @dOrgJelli @krisbitney @nerfZael @Niraj-Kamdar @cbrzn
 
 # Project Manifests
-packages/manifest-schemas/  @dOrgJelli
+packages/manifests/  @dOrgJelli @namesty @cbrzn @Niraj-Kamdar
 
 # CLI
 packages/js/cli @dOrgJelli @krisbitney @namesty @nerfZael @Niraj-Kamdar
 
-# Client Interfaces
-packages/interfaces  @dOrgJelli
+# CLI Test-Cases
+packages/test-cases/cases/cli @dOrgJelli @krisbitney @namesty @nerfZael @Niraj-Kamdar
+
+# Interfaces
+packages/interfaces  @dOrgJelli @krisbitney @cbrzn
 
 # JS Client
-packages/js/client    @dOrgJelli @krisbitney @namesty @nerfZael
-packages/js/react     @dOrgJelli @nerfZael
-packages/js/core      @dOrgJelli @krisbitney @namesty @nerfZael
-packages/js/os        @dOrgJelli
-packages/js/asyncify  @namesty @dOrgJelli
-packages/js/tracing   @dOrgJelli @Niraj-Kamdar
-packages/js/test-env  @dOrgJelli
+packages/js                          @dOrgJelli @nerfZael
+packages/js/asyncify                 @namesty @dOrgJelli
+packages/js/client                   @dOrgJelli @krisbitney @namesty @nerfZael
+packages/js/client-config-builder    @nerfZael
+packages/js/core                     @dOrgJelli @krisbitney @namesty @nerfZael
+packages/js/manifests                @dOrgJelli @namesty @nerfZael @pileks @Niraj-Kamdar
+packages/js/msgpack                  @dOrgJelli @Niraj-Kamdar
+packages/js/os                       @dOrgJelli
+packages/js/plugin                   @nerfZael @dOrgJelli
+packages/js/react                    @dOrgJelli @nerfZael
+packages/js/result                   @nerfZael
+packages/js/test-env                 @dOrgJelli @krisbitney @cbrzn @namesty
+packages/js/tracing                  @dOrgJelli @Niraj-Kamdar @fetsorn
+packages/js/uri-resolver-extensions  @nerfZael
+packages/js/uri-resolvers            @nerfZael
+packages/js/validation               @nerfZael @cbrzn
+packages/js/wasm                     @nerfZael @dOrgJelli
 
 # JS Plugins
-packages/js/plugins/ens         @dOrgJelli @krisbitney
-packages/js/plugins/ethereum    @dOrgJelli @krisbitney @namesty
-packages/js/plugins/filesystem  @krisbitney @dOrgJelli @Niraj-Kamdar
-packages/js/plugins/graph-node  @namesty
-packages/js/plugins/http        @dOrgJelli @ramilexe
-packages/js/plugins/ipfs        @dOrgJelli @krisbitney @nerfZael
-packages/js/plugins/logger      @dOrgJelli @nerfZael
-packgaes/js/plugins/sha3        @namesty @dOrgJelli @krisbitney
-packages/js/plugins/uts46       @namesty @dOrgJelli @krisbitney
+packages/js/plugins/ethereum     @dOrgJelli @krisbitney @namesty
+packages/js/plugins/file-system  @krisbitney @dOrgJelli @Niraj-Kamdar @cbrzn
+packages/js/plugins/http         @dOrgJelli @ramilexe @cbrzn @namesty @krisbitney
+packages/js/plugins/ipfs         @dOrgJelli @krisbitney @nerfZael
+packages/js/plugins/logger       @dOrgJelli @cbrzn @nerfZael
+packages/js/plugins/ws           @dOrgJelli @nerfZael @fetsorn
+packages/js/plugins/uri-resolvers/ens-resolver          @nerfZael @pileks @krisbitney @cbrzn @dOrgJelli
+packages/js/plugins/uri-resolvers/file-system-resolver  @pileks @dOrgJelli @nerfZael @cbrzn @krisbitney
+packages/js/plugins/uri-resolvers/http-resolver         @namesty @krisbitney @nerfZael
+packages/js/plugins/uri-resolvers/ipfs-resolver         @pileks @nerfZael @dOrgJelli @cbrzn
