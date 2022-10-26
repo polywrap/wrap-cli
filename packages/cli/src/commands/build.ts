@@ -161,11 +161,13 @@ async function run(options: BuildCommandOptions) {
 
   const manifest = await project.getManifest();
   const language = manifest.project.type;
-  
+
   const schemaComposer = new SchemaComposer({
     project,
     client,
   });
+
+  let execute: () => Promise<Boolean>;
 
   if (isPolywrapManifestLanguage(language)) {
     await validateManifestModules(manifest as PolywrapManifest);
@@ -176,7 +178,7 @@ async function run(options: BuildCommandOptions) {
       project as PolywrapProject
     );
 
-    const execute = async (): Promise<boolean> => {
+    execute = async (): Promise<boolean> => {
       const compiler = new Compiler({
         project: project as PolywrapProject,
         outputDir,
@@ -192,82 +194,87 @@ async function run(options: BuildCommandOptions) {
 
       return true;
     };
+  } else if (isPluginManifestLanguage(language)) {
+    execute = async (): Promise<boolean> => {
+      // Output the built manifest
+      const manifestPath = path.join(outputDir, "wrap.info");
 
-    if (!watch) {
-      const result = await execute();
-
-      if (!result) {
-        process.exit(1);
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir);
       }
-    } else {
-      // Execute
-      await execute();
 
-      const keyPressListener = () => {
-        // Watch for escape key presses
-        logger.info(
-          `${intlMsg.commands_build_keypressListener_watching()}: ${project.getManifestDir()}`
-        );
-        logger.info(intlMsg.commands_build_keypressListener_exit());
-        readline.emitKeypressEvents(process.stdin);
-        process.stdin.on("keypress", async (str, key) => {
-          if (
-            key.name == "escape" ||
-            key.name == "q" ||
-            (key.name == "c" && key.ctrl)
-          ) {
-            await watcher.stop();
-            process.kill(process.pid, "SIGINT");
-          }
-        });
+      await generateWrapFile(
+        await schemaComposer.getComposedAbis(),
+        await project.getName(),
+        "plugin",
+        manifestPath,
+        logger
+      );
 
-        if (process.stdin.setRawMode) {
-          process.stdin.setRawMode(true);
-        }
-
-        process.stdin.resume();
-      };
-
-      keyPressListener();
-
-      // Watch the directory
-      const watcher = new Watcher();
-
-      watcher.start(project.getManifestDir(), {
-        ignored: [outputDir + "/**", project.getManifestDir() + "/**/wrap/**"],
-        ignoreInitial: true,
-        execute: async (events: WatchEvent[]) => {
-          // Log all of the events encountered
-          for (const event of events) {
-            logger.info(`${watchEventName(event.type)}: ${event.path}`);
-          }
-
-          // Execute the build
-          await execute();
-
-          // Process key presses
-          keyPressListener();
-        },
-      });
-    }
-  } else if (isPluginManifestLanguage(language)){
-    // Output the built manifest
-    const manifestPath = path.join(outputDir, "wrap.info");
-
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir);
-    }
-
-    await generateWrapFile(
-      await schemaComposer.getComposedAbis(),
-      await project.getName(),
-      "plugin",
-      manifestPath,
-      logger
-    );
+      return true;
+    };
   } else {
     console.log("Unsupported project type!");
+    return;
   }
 
-  process.exit(0);
+  if (!watch) {
+    const result = await execute();
+
+    if (!result) {
+      process.exit(1);
+    }
+
+    process.exit(0);
+  } else {
+    // Execute
+    await execute();
+
+    const keyPressListener = () => {
+      // Watch for escape key presses
+      logger.info(
+        `${intlMsg.commands_build_keypressListener_watching()}: ${project.getManifestDir()}`
+      );
+      logger.info(intlMsg.commands_build_keypressListener_exit());
+      readline.emitKeypressEvents(process.stdin);
+      process.stdin.on("keypress", async (str, key) => {
+        if (
+          key.name == "escape" ||
+          key.name == "q" ||
+          (key.name == "c" && key.ctrl)
+        ) {
+          await watcher.stop();
+          process.kill(process.pid, "SIGINT");
+        }
+      });
+
+      if (process.stdin.setRawMode) {
+        process.stdin.setRawMode(true);
+      }
+
+      process.stdin.resume();
+    };
+
+    keyPressListener();
+
+    // Watch the directory
+    const watcher = new Watcher();
+
+    watcher.start(project.getManifestDir(), {
+      ignored: [outputDir + "/**", project.getManifestDir() + "/**/wrap/**"],
+      ignoreInitial: true,
+      execute: async (events: WatchEvent[]) => {
+        // Log all of the events encountered
+        for (const event of events) {
+          logger.info(`${watchEventName(event.type)}: ${event.path}`);
+        }
+
+        // Execute the build
+        await execute();
+
+        // Process key presses
+        keyPressListener();
+      },
+    });
+  }
 }
