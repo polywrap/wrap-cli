@@ -80,12 +80,12 @@ export type ManifestType = typeof manifestTypes[number];
 export interface ManifestSchemaCommandOptions extends BaseCommandOptions {
   raw: boolean;
   manifestFile: string | false;
-};
+}
 
 export interface ManifestMigrateCommandOptions extends BaseCommandOptions {
   manifestFile: string | false;
   format: string | false;
-};
+}
 
 export const manifest: Command = {
   setup: (program: Program) => {
@@ -107,10 +107,7 @@ export const manifest: Command = {
           .choices(manifestTypes)
           .default(manifestTypes[0])
       )
-      .option(
-        `-r, --raw`,
-        intlMsg.commands_manifest_command_s_option_r()
-      )
+      .option(`-r, --raw`, intlMsg.commands_manifest_command_s_option_r())
       .option(
         `-m, --manifest-file <${pathStr}>`,
         `${intlMsg.commands_manifest_options_m({

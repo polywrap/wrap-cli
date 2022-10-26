@@ -13,8 +13,7 @@ export function parseManifestFileOption(
   manifestFile: string | undefined | false,
   defaults: string[]
 ): string {
-  const didUserProvideManifestFile =
-    manifestFile && !!manifestFile.length;
+  const didUserProvideManifestFile = manifestFile && !!manifestFile.length;
 
   const manifestPaths = manifestFile ? [manifestFile as string] : defaults;
 

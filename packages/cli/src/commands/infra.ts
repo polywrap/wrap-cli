@@ -26,7 +26,7 @@ export enum InfraActions {
 export interface InfraCommandOptions extends BaseCommandOptions {
   manifestFile: string | false;
   modules: string[] | false;
-};
+}
 
 const DEFAULT_MODULES_PATH = path.join(
   __dirname,

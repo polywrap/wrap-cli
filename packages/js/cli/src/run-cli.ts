@@ -19,7 +19,7 @@ export const runCli = async (options: {
   stdout: string;
   stderr: string;
 }> => {
-  const config: CliConfig = options.config || { };
+  const config: CliConfig = options.config || {};
   const args = options.args;
 
   return new Promise((resolve, reject) => {

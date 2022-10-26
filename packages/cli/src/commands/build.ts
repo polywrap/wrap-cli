@@ -41,7 +41,7 @@ export interface BuildCommandOptions extends BaseCommandOptions {
   noCodegen: boolean;
   watch: boolean;
   strategy: `${SupportedStrategies}`;
-};
+}
 
 export const build: Command = {
   setup: (program: Program) => {

@@ -28,7 +28,7 @@ export interface TestCommandOptions extends BaseCommandOptions {
   jobs: string[] | false;
   validationScript: string | false;
   outputFile: string | false;
-};
+}
 
 const defaultManifestStr = defaultWorkflowManifest.join(" | ");
 const pathStr = intlMsg.commands_test_options_m_path();
@@ -94,7 +94,7 @@ const _run = async (options: Required<TestCommandOptions>) => {
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
-  const config = await parseClientConfigOption(clientConfig)
+  const config = await parseClientConfigOption(clientConfig);
 
   const manifestPath = path.resolve(manifestFile);
   const workflow = await loadWorkflowManifest(manifestPath, logger);

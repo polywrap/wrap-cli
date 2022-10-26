@@ -41,7 +41,7 @@ export interface DocgenCommandOptions extends BaseCommandOptions {
   docgenDir: string;
   clientConfig: string | false;
   imports: boolean;
-};
+}
 
 const argumentsDescription = `
   ${chalk.bold(
@@ -113,7 +113,10 @@ export const docgen: Command = {
   },
 };
 
-async function run(action: DocgenActions, options: Required<DocgenCommandOptions>) {
+async function run(
+  action: DocgenActions,
+  options: Required<DocgenCommandOptions>
+) {
   const {
     manifestFile,
     docgenDir,

@@ -10,10 +10,10 @@ export interface Command {
 type SerializableOption = string | number | boolean;
 
 export interface BaseCommandOptions {
+  [prop: string]: SerializableOption | SerializableOption[];
   verbose: boolean;
   quiet: boolean;
   logFile: string | false;
-  [prop: string]: SerializableOption | SerializableOption[];
 }
 
 export interface CommandTypes {
@@ -23,4 +23,4 @@ export interface CommandTypes {
 
 export type CommandTypeMapping = {
   [name: string]: BaseCommandOptions | CommandTypes | CommandTypeMapping;
-}
+};

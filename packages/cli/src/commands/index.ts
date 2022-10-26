@@ -14,59 +14,53 @@ import {
   CreateCommandOptions,
   SupportedAppLangs,
   SupportedPluginLangs,
-  SupportedWasmLangs
+  SupportedWasmLangs,
 } from "./create";
 import { DeployCommandOptions } from "./deploy";
-import {
-  DocgenCommandOptions,
-  DocgenActions
-} from "./docgen";
-import {
-  InfraCommandOptions,
-  InfraActions
-} from "./infra";
+import { DocgenCommandOptions, DocgenActions } from "./docgen";
+import { InfraCommandOptions, InfraActions } from "./infra";
 import {
   ManifestSchemaCommandOptions,
   ManifestMigrateCommandOptions,
-  ManifestType
+  ManifestType,
 } from "./manifest";
 import { TestCommandOptions } from "./test";
 
 export interface CommandTypings {
-  "build": BuildCommandOptions;
-  "codegen": CodegenCommandOptions;
-  "create": {
-    "app": {
+  build: BuildCommandOptions;
+  codegen: CodegenCommandOptions;
+  create: {
+    app: {
       options: CreateCommandOptions;
       arguments: [language: SupportedAppLangs, name: string];
     };
-    "plugin": {
+    plugin: {
       options: CreateCommandOptions;
       arguments: [language: SupportedPluginLangs, name: string];
     };
-    "wasm": {
+    wasm: {
       options: CreateCommandOptions;
       arguments: [language: SupportedWasmLangs, name: string];
     };
   };
-  "deploy": DeployCommandOptions;
-  "docgen": {
+  deploy: DeployCommandOptions;
+  docgen: {
     options: DocgenCommandOptions;
     arguments: [action: `${DocgenActions}`];
   };
-  "infra": {
+  infra: {
     options: InfraCommandOptions;
     arguments: [action: `${InfraActions}`];
   };
-  "manifest": {
-    "migrate": {
+  manifest: {
+    migrate: {
       options: ManifestMigrateCommandOptions;
       arguments: [type: ManifestType];
     };
-    "schema": {
+    schema: {
       options: ManifestSchemaCommandOptions;
       arguments: [type: ManifestType];
     };
   };
-  "test": TestCommandOptions;
+  test: TestCommandOptions;
 }

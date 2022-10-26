@@ -33,7 +33,7 @@ type SupportedLangs =
 
 export interface CreateCommandOptions extends BaseCommandOptions {
   outputDir: string | false;
-};
+}
 
 export const create: Command = {
   setup: (program: Program) => {
@@ -63,14 +63,16 @@ export const create: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (language, name, options: Partial<CreateCommandOptions>) => {
-        await run("wasm", language, name, {
-          outputDir: options.outputDir || false,
-          verbose: options.verbose || false,
-          quiet: options.quiet || false,
-          logFile: parseLogFileOption(options.logFile),
-        });
-      });
+      .action(
+        async (language, name, options: Partial<CreateCommandOptions>) => {
+          await run("wasm", language, name, {
+            outputDir: options.outputDir || false,
+            verbose: options.verbose || false,
+            quiet: options.quiet || false,
+            logFile: parseLogFileOption(options.logFile),
+          });
+        }
+      );
 
     createCommand
       .command("app")
@@ -93,14 +95,16 @@ export const create: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (language, name, options: Partial<CreateCommandOptions>) => {
-        await run("app", language, name, {
-          outputDir: options.outputDir || false,
-          verbose: options.verbose || false,
-          quiet: options.quiet || false,
-          logFile: parseLogFileOption(options.logFile),
-        });
-      });
+      .action(
+        async (language, name, options: Partial<CreateCommandOptions>) => {
+          await run("app", language, name, {
+            outputDir: options.outputDir || false,
+            verbose: options.verbose || false,
+            quiet: options.quiet || false,
+            logFile: parseLogFileOption(options.logFile),
+          });
+        }
+      );
 
     createCommand
       .command(`plugin`)
@@ -123,14 +127,16 @@ export const create: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (language, name, options: Partial<CreateCommandOptions>) => {
-        await run("plugin", language, name, {
-          outputDir: options.outputDir || false,
-          verbose: options.verbose || false,
-          quiet: options.quiet || false,
-          logFile: parseLogFileOption(options.logFile),
-        });
-      });
+      .action(
+        async (language, name, options: Partial<CreateCommandOptions>) => {
+          await run("plugin", language, name, {
+            outputDir: options.outputDir || false,
+            verbose: options.verbose || false,
+            quiet: options.quiet || false,
+            logFile: parseLogFileOption(options.logFile),
+          });
+        }
+      );
   },
 };
 

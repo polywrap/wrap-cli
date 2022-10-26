@@ -2,9 +2,7 @@ import { runCli, CliConfig } from "../run-cli";
 
 import { BaseCommandOptions } from "polywrap";
 
-export type CommandFn<
-  TOptions extends BaseCommandOptions
-> = (
+export type CommandFn<TOptions extends BaseCommandOptions> = (
   options?: Partial<TOptions>,
   config?: CliConfig
 ) => ReturnType<typeof runCli>;
@@ -20,40 +18,44 @@ export type CommandWithArgsFn<
   ]
 ) => ReturnType<typeof runCli>;
 
-export function execCommandFn<
-  TOptions extends BaseCommandOptions,
->(command: string): CommandFn<TOptions> {
+export function execCommandFn<TOptions extends BaseCommandOptions>(
+  command: string
+): CommandFn<TOptions> {
   return async (options?: Partial<TOptions>, config?: CliConfig) => {
-    const parsedArgs = [
-      ...command.split(" "),
-      ...parseOptions(options)
-    ];
+    const parsedArgs = [...command.split(" "), ...parseOptions(options)];
     return await runCli({
-      args: parsedArgs, config
+      args: parsedArgs,
+      config,
     });
   };
 }
 
 export function execCommandWithArgsFn<
   TTypes extends {
-    options: BaseCommandOptions,
-    arguments: unknown[]
+    options: BaseCommandOptions;
+    arguments: unknown[];
   },
   TArguments extends unknown[] = TTypes["arguments"],
   TOptions extends BaseCommandOptions = TTypes["options"]
 >(command: string): CommandWithArgsFn<TArguments, TOptions> {
-  return async (...args: [...targs: TArguments, options?: Partial<TOptions>, config?: CliConfig]) => {
+  return async (
+    ...args: [
+      ...targs: TArguments,
+      options?: Partial<TOptions>,
+      config?: CliConfig
+    ]
+  ) => {
     const commandArgs = [];
     let options = {};
     let optionsFound = false;
-    let config: CliConfig | undefined = { };
+    let config: CliConfig | undefined = {};
 
     // Iterate through the variadic arguments
     for (const arg of args) {
       if (!optionsFound) {
         if (typeof arg === "string") {
           commandArgs.push(arg);
-        } else if (arg === "object") {
+        } else if (typeof arg === "object") {
           options = arg as Record<string, unknown>;
           optionsFound = true;
         } else if (typeof arg === "undefined") {
@@ -72,12 +74,13 @@ export function execCommandWithArgsFn<
     const parsedArgs = [
       ...command.split(" "),
       ...commandArgs,
-      ...parseOptions(options)
+      ...parseOptions(options),
     ];
     return await runCli({
-      args: parsedArgs, config
+      args: parsedArgs,
+      config,
     });
-  }
+  };
 }
 
 function toKebabCase(camelCase: string): string {

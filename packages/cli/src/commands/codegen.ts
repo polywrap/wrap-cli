@@ -34,7 +34,7 @@ export interface CodegenCommandOptions extends BaseCommandOptions {
   publishDir: string;
   script: string | false;
   clientConfig: string | false;
-};
+}
 
 export const codegen: Command = {
   setup: (program: Program) => {

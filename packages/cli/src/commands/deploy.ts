@@ -24,7 +24,7 @@ const pathStr = intlMsg.commands_deploy_options_o_path();
 export interface DeployCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputFile: string | false;
-};
+}
 
 type ManifestJob = DeployManifest["jobs"][number];
 type ManifestStep = ManifestJob["steps"][number];
