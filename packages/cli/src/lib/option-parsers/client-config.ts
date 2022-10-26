@@ -1,3 +1,4 @@
+
 import { intlMsg } from "../intl";
 import { importTypescriptModule } from "../system";
 import { getTestEnvClientConfig } from "../test-env";
@@ -16,7 +17,7 @@ export async function parseClientConfigOption(
   try {
     builder.add(getTestEnvClientConfig());
   } catch (e) {
-    console.error(intlMsg.commands_run_error_noTestEnvFound());
+    console.error(intlMsg.commands_test_error_noTestEnvFound());
     process.exit(1);
   }
 
@@ -29,7 +30,7 @@ export async function parseClientConfigOption(
     } else if (configPath.endsWith(".ts")) {
       configModule = await importTypescriptModule(path.resolve(configPath));
     } else {
-      const configsModuleMissingExportMessage = intlMsg.commands_run_error_clientConfigInvalidFileExt(
+      const configsModuleMissingExportMessage = intlMsg.commands_test_error_clientConfigInvalidFileExt(
         { module: configPath }
       );
       console.error(configsModuleMissingExportMessage);
@@ -37,7 +38,7 @@ export async function parseClientConfigOption(
     }
 
     if (!configModule || !configModule.configure) {
-      const configsModuleMissingExportMessage = intlMsg.commands_run_error_clientConfigModuleMissingExport(
+      const configsModuleMissingExportMessage = intlMsg.commands_test_error_clientConfigModuleMissingExport(
         { module: configModule }
       );
       console.error(configsModuleMissingExportMessage);
