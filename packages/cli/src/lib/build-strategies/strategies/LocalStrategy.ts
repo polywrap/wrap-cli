@@ -30,20 +30,19 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
           intlMsg.lib_helpers_buildError(),
           intlMsg.lib_helpers_buildWarning(),
           async (logger) => {
-            return await 
+            return await runCommand(
+              "chmod",
+              ["+x", scriptPath],
+              logger,
+              undefined,
+              process.cwd()
+            ).then(() =>
               runCommand(
-                "chmod",
-                ["+x", scriptPath],
-                logger,
-                undefined,
-                process.cwd()
-              ).then(() =>
-                runCommand(
-                  scriptPath,
-                  [polywrapModuleDir, this.outputDir],
-                  logger
-                )
-              );
+                scriptPath,
+                [polywrapModuleDir, this.outputDir],
+                logger
+              )
+            );
           }
         );
       }

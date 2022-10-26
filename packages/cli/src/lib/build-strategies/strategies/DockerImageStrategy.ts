@@ -222,11 +222,7 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
         }
       }
       if (removeImage) {
-        await runCommand(
-          "docker",
-          ["rmi", imageName],
-          this.project.logger
-        );
+        await runCommand("docker", ["rmi", imageName], this.project.logger);
       }
     };
 
@@ -286,7 +282,18 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
         }
         await runCommand(
           "docker",
-          ["buildx", "build", "-f", dockerfile, "-t", imageName, rootDir, cacheFrom, cacheTo, "--output=type=docker"],
+          [
+            "buildx",
+            "build",
+            "-f",
+            dockerfile,
+            "-t",
+            imageName,
+            rootDir,
+            cacheFrom,
+            cacheTo,
+            "--output=type=docker",
+          ],
           this.project.logger,
           undefined,
           undefined,

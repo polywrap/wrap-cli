@@ -1,6 +1,11 @@
 import { Logger } from "../logging";
 
-import { execFile, ExecException, execFileSync, SpawnSyncReturns } from "child_process";
+import {
+  execFile,
+  ExecException,
+  execFileSync,
+  SpawnSyncReturns,
+} from "child_process";
 
 export function runCommandSync(
   command: string,
@@ -11,18 +16,14 @@ export function runCommandSync(
   logger.info(`> ${command} ${args.join(" ")}`);
 
   try {
-    const stdout = execFileSync(
-      command,
-      args,
-      {
-        cwd: __dirname,
-        env: {
-          ...process.env,
-          ...env,
-        },
-        encoding: "utf-8",
-      }
-    );
+    const stdout = execFileSync(command, args, {
+      cwd: __dirname,
+      env: {
+        ...process.env,
+        ...env,
+      },
+      encoding: "utf-8",
+    });
     return { stdout: stdout };
   } catch (e) {
     return { stderr: e };
