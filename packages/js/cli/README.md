@@ -10,7 +10,7 @@ It allows user execute Polywrap CLI commands programmatically, with simple and t
 
 Build a wrapper:
 ``` typescript
-import { Commands } from "@polywrap/cli-js;
+import { Commands } from "@polywrap/cli-js";
 
 async function main() {
   const wrapperPath = "/path/to/wrapper";
