@@ -13,6 +13,10 @@ import {
   parseClientConfigOption,
   parseManifestFileOption,
   parseLogFileOption,
+  getProjectFromManifest,
+  isPolywrapManifestLanguage,
+  isPluginManifestLanguage,
+  generateWrapFile,
 } from "../lib";
 import {
   DockerVMBuildStrategy,
@@ -22,6 +26,7 @@ import {
   LocalBuildStrategy,
 } from "../lib/build-strategies";
 
+import fs from "fs";
 import path from "path";
 import readline from "readline";
 import { PolywrapClient } from "@polywrap/client-js";
@@ -146,96 +151,122 @@ async function run(options: BuildCommandOptions) {
   // Get Client
   const client = new PolywrapClient(clientConfig);
 
-  const project = new PolywrapProject({
-    rootDir: path.dirname(manifestFile),
-    polywrapManifestPath: manifestFile,
-    logger,
-  });
+  const project = await getProjectFromManifest(manifestFile, logger);
+
+  if (!project) {
+    return;
+  }
+
   await project.validate();
 
-  const polywrapManifest = await project.getManifest();
-  await validateManifestModules(polywrapManifest);
-
-  const buildStrategy = createBuildStrategy(strategy, outputDir, project);
-
+  const manifest = await project.getManifest();
+  const language = manifest.project.type;
+  
   const schemaComposer = new SchemaComposer({
     project,
     client,
   });
 
-  const execute = async (): Promise<boolean> => {
-    const compiler = new Compiler({
-      project,
+  if (isPolywrapManifestLanguage(language)) {
+    await validateManifestModules(manifest as PolywrapManifest);
+
+    const buildStrategy = createBuildStrategy(
+      strategy,
       outputDir,
-      schemaComposer,
-      buildStrategy,
-    });
+      project as PolywrapProject
+    );
 
-    const result = await compiler.compile();
-
-    if (!result) {
-      return result;
-    }
-
-    return true;
-  };
-
-  if (!watch) {
-    const result = await execute();
-
-    if (!result) {
-      process.exit(1);
-    }
-  } else {
-    // Execute
-    await execute();
-
-    const keyPressListener = () => {
-      // Watch for escape key presses
-      logger.info(
-        `${intlMsg.commands_build_keypressListener_watching()}: ${project.getManifestDir()}`
-      );
-      logger.info(intlMsg.commands_build_keypressListener_exit());
-      readline.emitKeypressEvents(process.stdin);
-      process.stdin.on("keypress", async (str, key) => {
-        if (
-          key.name == "escape" ||
-          key.name == "q" ||
-          (key.name == "c" && key.ctrl)
-        ) {
-          await watcher.stop();
-          process.kill(process.pid, "SIGINT");
-        }
+    const execute = async (): Promise<boolean> => {
+      const compiler = new Compiler({
+        project: project as PolywrapProject,
+        outputDir,
+        schemaComposer,
+        buildStrategy,
       });
 
-      if (process.stdin.setRawMode) {
-        process.stdin.setRawMode(true);
+      const result = await compiler.compile();
+
+      if (!result) {
+        return result;
       }
 
-      process.stdin.resume();
+      return true;
     };
 
-    keyPressListener();
+    if (!watch) {
+      const result = await execute();
 
-    // Watch the directory
-    const watcher = new Watcher();
+      if (!result) {
+        process.exit(1);
+      }
+    } else {
+      // Execute
+      await execute();
 
-    watcher.start(project.getManifestDir(), {
-      ignored: [outputDir + "/**", project.getManifestDir() + "/**/wrap/**"],
-      ignoreInitial: true,
-      execute: async (events: WatchEvent[]) => {
-        // Log all of the events encountered
-        for (const event of events) {
-          logger.info(`${watchEventName(event.type)}: ${event.path}`);
+      const keyPressListener = () => {
+        // Watch for escape key presses
+        logger.info(
+          `${intlMsg.commands_build_keypressListener_watching()}: ${project.getManifestDir()}`
+        );
+        logger.info(intlMsg.commands_build_keypressListener_exit());
+        readline.emitKeypressEvents(process.stdin);
+        process.stdin.on("keypress", async (str, key) => {
+          if (
+            key.name == "escape" ||
+            key.name == "q" ||
+            (key.name == "c" && key.ctrl)
+          ) {
+            await watcher.stop();
+            process.kill(process.pid, "SIGINT");
+          }
+        });
+
+        if (process.stdin.setRawMode) {
+          process.stdin.setRawMode(true);
         }
 
-        // Execute the build
-        await execute();
+        process.stdin.resume();
+      };
 
-        // Process key presses
-        keyPressListener();
-      },
-    });
+      keyPressListener();
+
+      // Watch the directory
+      const watcher = new Watcher();
+
+      watcher.start(project.getManifestDir(), {
+        ignored: [outputDir + "/**", project.getManifestDir() + "/**/wrap/**"],
+        ignoreInitial: true,
+        execute: async (events: WatchEvent[]) => {
+          // Log all of the events encountered
+          for (const event of events) {
+            logger.info(`${watchEventName(event.type)}: ${event.path}`);
+          }
+
+          // Execute the build
+          await execute();
+
+          // Process key presses
+          keyPressListener();
+        },
+      });
+    }
+  } else if (isPluginManifestLanguage(language)){
+    // Output the built manifest
+    const manifestPath = path.join(outputDir, "wrap.info");
+
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir);
+    }
+
+    await generateWrapFile(
+      await schemaComposer.getComposedAbis(),
+      await project.getName(),
+      "plugin",
+      manifestPath,
+      logger
+    );
+  } else {
+    console.log("Unsupported project type!");
   }
 
   process.exit(0);

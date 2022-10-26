@@ -10,8 +10,6 @@ import {
   parseManifestFileOption,
   parseClientConfigOption,
   getProjectFromManifest,
-  isPluginManifestLanguage,
-  generateWrapFile,
   defaultProjectManifestFiles,
   defaultPolywrapManifest,
   parseLogFileOption,
@@ -19,12 +17,9 @@ import {
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import path from "path";
-import fs from "fs";
 import { ClientConfig } from "@polywrap/client-config-builder-js";
 
 const defaultCodegenDir = "./src/wrap";
-const defaultPublishDir = "./build";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
@@ -32,7 +27,6 @@ const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 type CodegenCommandOptions = {
   manifestFile: string;
   codegenDir: string;
-  publishDir: string;
   script?: string;
   clientConfig: Partial<ClientConfig>;
   verbose?: boolean;
@@ -59,12 +53,6 @@ export const codegen: Command = {
         })}`
       )
       .option(
-        `-p, --publish-dir <${pathStr}>`,
-        `${intlMsg.commands_codegen_options_publish({
-          default: defaultPublishDir,
-        })}`
-      )
-      .option(
         `-s, --script <${pathStr}>`,
         `${intlMsg.commands_codegen_options_s()}`
       )
@@ -88,7 +76,6 @@ export const codegen: Command = {
             options.manifestFile,
             defaultProjectManifestFiles
           ),
-          publishDir: parseDirOption(options.publishDir, defaultPublishDir),
           logFile: parseLogFileOption(options.logFile),
         });
       });
@@ -101,7 +88,6 @@ async function run(options: CodegenCommandOptions) {
     codegenDir,
     script,
     clientConfig,
-    publishDir,
     verbose,
     quiet,
     logFile,
@@ -116,8 +102,6 @@ async function run(options: CodegenCommandOptions) {
   if (!project) {
     return;
   }
-
-  const projectType = await project.getManifestLanguage();
 
   const schemaComposer = new SchemaComposer({
     project,
@@ -140,24 +124,6 @@ async function run(options: CodegenCommandOptions) {
       });
 
   const result = await codeGenerator.generate();
-
-  // HACK: Codegen outputs wrap.info into a build directory for plugins, needs to be moved into a build command?
-  if (isPluginManifestLanguage(projectType)) {
-    // Output the built manifest
-    const manifestPath = path.join(publishDir, "wrap.info");
-
-    if (!fs.existsSync(publishDir)) {
-      fs.mkdirSync(publishDir);
-    }
-
-    await generateWrapFile(
-      await schemaComposer.getComposedAbis(),
-      await project.getName(),
-      "plugin",
-      manifestPath,
-      logger
-    );
-  }
 
   if (result) {
     logger.info(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
