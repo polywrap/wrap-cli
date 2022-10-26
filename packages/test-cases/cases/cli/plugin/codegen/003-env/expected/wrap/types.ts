@@ -6,7 +6,7 @@ import * as Types from "./";
 
 // @ts-ignore
 import {
-  Client,
+  CoreClient,
   InvokeResult
 } from "@polywrap/core-js";
 

@@ -6,7 +6,7 @@ import * as Types from "./";
 
 // @ts-ignore
 import {
-  Client,
+  CoreClient,
   Result,
   InvokeResult
 } from "@polywrap/core-js";
@@ -199,39 +199,38 @@ interface TestImport_Module_Args_returnsArrayOfEnums {
 export class TestImport_Module {
   public static interfaceUri: string = "testimport.uri.eth";
 
-  constructor(public uri: string) {
-  }
+  constructor(public uri: string) {}
 
-  public async importedMethod (
+  public async importedMethod(
     args: TestImport_Module_Args_importedMethod,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.TestImport_Object | null>> {
     return client.invoke<Types.TestImport_Object | null>({
       uri: this.uri,
       method: "importedMethod",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   }
 
-  public async anotherMethod (
+  public async anotherMethod(
     args: TestImport_Module_Args_anotherMethod,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Types.Int32>> {
     return client.invoke<Types.Int32>({
       uri: this.uri,
       method: "anotherMethod",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   }
 
-  public async returnsArrayOfEnums (
+  public async returnsArrayOfEnums(
     args: TestImport_Module_Args_returnsArrayOfEnums,
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<Array<Types.TestImport_Enum_Return | null>>> {
     return client.invoke<Array<Types.TestImport_Enum_Return | null>>({
       uri: this.uri,
       method: "returnsArrayOfEnums",
-      args: args as unknown as Record<string, unknown>
+      args: (args as unknown) as Record<string, unknown>,
     });
   }
 }
@@ -241,7 +240,9 @@ export class TestImport_Module {
 export class TestImport {
   static uri: string = "testimport.uri.eth";
 
-  public static getImplementations(client: Client): Result<string[], Error> {
+  public static getImplementations(
+    client: CoreClient
+  ): Result<string[], Error> {
     return client.getImplementations(this.uri, {});
   }
 }

@@ -12,6 +12,7 @@ type SerializableOption = string | number | boolean;
 export interface BaseCommandOptions {
   verbose: boolean;
   quiet: boolean;
+  logFile: string | false;
   [prop: string]: SerializableOption | SerializableOption[];
 }
 

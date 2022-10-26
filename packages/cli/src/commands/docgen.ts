@@ -8,6 +8,7 @@ import {
   parseManifestFileOption,
   defaultProjectManifestFiles,
   getProjectFromManifest,
+  parseLogFileOption,
 } from "../lib";
 import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
@@ -91,6 +92,10 @@ export const docgen: Command = {
       .option(`-i, --imports`, `${intlMsg.commands_docgen_options_i()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (action, options: Partial<DocgenCommandOptions>) => {
         await run(action, {
           manifestFile: parseManifestFileOption(
@@ -102,6 +107,7 @@ export const docgen: Command = {
           imports: options.imports || false,
           verbose: options.verbose || false,
           quiet: options.quiet || false,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
@@ -115,8 +121,9 @@ async function run(action: DocgenActions, options: Required<DocgenCommandOptions
     imports,
     verbose,
     quiet,
+    logFile,
   } = options;
-  const logger = createLogger({ verbose, quiet });
+  const logger = createLogger({ verbose, quiet, logFile });
 
   let project = await getProjectFromManifest(manifestFile, logger);
 

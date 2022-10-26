@@ -12,6 +12,7 @@ import {
   parseDirOption,
   parseClientConfigOption,
   parseManifestFileOption,
+  parseLogFileOption,
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen";
 import {
@@ -72,6 +73,10 @@ export const build: Command = {
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (options: Partial<BuildCommandOptions>) => {
         await run({
           manifestFile: parseManifestFileOption(
@@ -84,7 +89,8 @@ export const build: Command = {
           strategy: options.strategy || defaultStrategy,
           watch: options.watch || false,
           verbose: options.verbose || false,
-          quiet: options.quiet || false
+          quiet: options.quiet || false,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
@@ -135,8 +141,9 @@ async function run(options: Required<BuildCommandOptions>) {
     skipCodegen,
     verbose,
     quiet,
+    logFile,
   } = options;
-  const logger = createLogger({ verbose, quiet });
+  const logger = createLogger({ verbose, quiet, logFile });
 
   // Get Client
   const config = await parseClientConfigOption(clientConfig);

@@ -2,14 +2,14 @@ import {
   Args_getFile,
   Args_tryResolveUri,
   Bytes,
-  Client,
+  CoreClient,
   Http_Module,
   manifest,
   Module,
   UriResolver_MaybeUriOrManifest,
 } from "./wrap";
 
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 type NoConfig = Record<string, never>;
 
@@ -17,7 +17,7 @@ export class HttpResolverPlugin extends Module<NoConfig> {
   // uri-resolver.core.polywrap.eth
   public async tryResolveUri(
     args: Args_tryResolveUri,
-    _client: Client
+    _client: CoreClient
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
     if (args.authority !== "http" && args.authority !== "https") {
       return null;
@@ -55,7 +55,7 @@ export class HttpResolverPlugin extends Module<NoConfig> {
 
   public async getFile(
     args: Args_getFile,
-    client: Client
+    client: CoreClient
   ): Promise<Bytes | null> {
     try {
       const resolveResult = await Http_Module.get(
@@ -84,11 +84,7 @@ export class HttpResolverPlugin extends Module<NoConfig> {
   }
 }
 
-export const httpResolverPlugin: PluginFactory<NoConfig> = () => {
-  return {
-    factory: () => new HttpResolverPlugin({}),
-    manifest,
-  };
-};
+export const httpResolverPlugin: PluginFactory<NoConfig> = () =>
+  new PluginPackage(new HttpResolverPlugin({}), manifest);
 
 export const plugin = httpResolverPlugin;

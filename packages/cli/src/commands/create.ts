@@ -1,6 +1,6 @@
 import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
-import { generateProjectTemplate, intlMsg } from "../lib";
+import { generateProjectTemplate, intlMsg, parseLogFileOption } from "../lib";
 
 import fse from "fs-extra";
 import path from "path";
@@ -59,11 +59,16 @@ export const create: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (language, name, options: Partial<CreateCommandOptions>) => {
         await run("wasm", language, name, {
           outputDir: options.outputDir || false,
           verbose: options.verbose || false,
           quiet: options.quiet || false,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
 
@@ -84,11 +89,16 @@ export const create: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (language, name, options: Partial<CreateCommandOptions>) => {
         await run("app", language, name, {
           outputDir: options.outputDir || false,
           verbose: options.verbose || false,
           quiet: options.quiet || false,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
 
@@ -109,11 +119,16 @@ export const create: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (language, name, options: Partial<CreateCommandOptions>) => {
         await run("plugin", language, name, {
           outputDir: options.outputDir || false,
           verbose: options.verbose || false,
           quiet: options.quiet || false,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
@@ -125,8 +140,8 @@ async function run(
   name: string,
   options: Required<CreateCommandOptions>
 ) {
-  const { outputDir, verbose, quiet } = options;
-  const logger = createLogger({ verbose, quiet });
+  const { outputDir, verbose, quiet, logFile } = options;
+  const logger = createLogger({ verbose, quiet, logFile });
 
   const projectDir = path.resolve(outputDir ? `${outputDir}/${name}` : name);
 

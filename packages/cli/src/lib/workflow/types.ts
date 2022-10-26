@@ -1,4 +1,5 @@
-import { ClientConfig, Uri } from "@polywrap/core-js";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
+import { Uri } from "@polywrap/core-js";
 
 export interface Step {
   uri: string | Uri;
@@ -9,7 +10,7 @@ export interface Step {
   config?: ClientConfig;
 }
 
-export enum JobStatus {
+export enum Status {
   SUCCEED = "SUCCEED",
   FAILED = "FAILED",
   SKIPPED = "SKIPPED",
@@ -18,14 +19,15 @@ export enum JobStatus {
 export interface JobResult<TData = unknown> {
   data?: TData;
   error?: Error;
-  status: JobStatus;
+  status: Status;
 }
 
 export interface WorkflowOutput<TData = unknown> extends JobResult<TData> {
   id: string;
+  validation: ValidationResult;
 }
 
 export interface ValidationResult {
-  status: JobStatus;
-  stderr?: string;
+  status: Status;
+  error?: string;
 }

@@ -16,6 +16,7 @@ import {
   CacheDirectory,
   defaultPolywrapManifest,
   Logger,
+  parseLogFileOption,
 } from "../lib";
 import {
   getYamlishSchemaForManifestJsonSchemaObject,
@@ -118,12 +119,17 @@ export const manifest: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (type, options: Partial<ManifestSchemaCommandOptions>) => {
         await runSchemaCommand(type, {
           raw: options.raw || false,
           manifestFile: options.manifestFile || false,
           verbose: options.verbose || false,
-          quiet: options.quiet || false
+          quiet: options.quiet || false,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
 
@@ -150,6 +156,10 @@ export const manifest: Command = {
         `-f, --format <${formatStr}>`,
         `${intlMsg.commands_manifest_options_f()}`
       )
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .action(async (type, options: Partial<ManifestMigrateCommandOptions>) => {
@@ -157,7 +167,8 @@ export const manifest: Command = {
           manifestFile: options.manifestFile || false,
           format: options.format || false,
           verbose: options.verbose || false,
-          quiet: options.quiet || false
+          quiet: options.quiet || false,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
@@ -167,8 +178,8 @@ export const runSchemaCommand = async (
   type: ManifestType,
   options: Required<ManifestSchemaCommandOptions>
 ): Promise<void> => {
-  const { verbose, quiet } = options;
-  const logger = createLogger({ verbose, quiet });
+  const { verbose, quiet, logFile } = options;
+  const logger = createLogger({ verbose, quiet, logFile });
   let manifestfile = "";
 
   switch (type) {
@@ -375,8 +386,8 @@ const runMigrateCommand = async (
   type: ManifestType,
   options: Required<ManifestMigrateCommandOptions>
 ) => {
-  const { verbose, quiet } = options;
-  const logger = createLogger({ verbose, quiet });
+  const { verbose, quiet, logFile } = options;
+  const logger = createLogger({ verbose, quiet, logFile });
   let manifestFile = "";
   let manifestString: string;
   let language: string | undefined;

@@ -1,5 +1,5 @@
 import {
-  Client,
+  CoreClient,
   Module,
   Args_get,
   Args_post,
@@ -9,14 +9,14 @@ import {
 import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
 
 import axios from "axios";
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 type NoConfig = Record<string, never>;
 
 export class HttpPlugin extends Module<NoConfig> {
   public async get(
     args: Args_get,
-    _client: Client
+    _client: CoreClient
   ): Promise<Http_Response | null> {
     const response = await axios.get<string>(
       args.url,
@@ -27,7 +27,7 @@ export class HttpPlugin extends Module<NoConfig> {
 
   public async post(
     args: Args_post,
-    _client: Client
+    _client: CoreClient
   ): Promise<Http_Response | null> {
     const response = await axios.post(
       args.url,
@@ -38,11 +38,7 @@ export class HttpPlugin extends Module<NoConfig> {
   }
 }
 
-export const httpPlugin: PluginFactory<NoConfig> = () => {
-  return {
-    factory: () => new HttpPlugin({}),
-    manifest,
-  };
-};
+export const httpPlugin: PluginFactory<NoConfig> = () =>
+  new PluginPackage(new HttpPlugin({}), manifest);
 
 export const plugin = httpPlugin;

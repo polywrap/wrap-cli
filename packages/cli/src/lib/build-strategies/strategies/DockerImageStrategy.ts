@@ -266,7 +266,10 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
         }
         await runCommand(
           `docker buildx build -f ${dockerfile} -t ${imageName} ${rootDir} ${cacheFrom} ${cacheTo} --output=type=docker`,
-          this.project.logger
+          this.project.logger,
+          undefined,
+          undefined,
+          true
         );
       } else {
         await runCommand(
@@ -277,7 +280,9 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
             : {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 DOCKER_BUILDKIT: "true",
-              }
+              },
+          undefined,
+          true
         );
       }
 

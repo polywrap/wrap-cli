@@ -5,7 +5,7 @@ export * from "./deploy";
 export * from "./docgen";
 export * from "./infra";
 export * from "./manifest";
-export * from "./run";
+export * from "./test";
 export * from "./types";
 
 import { BuildCommandOptions } from "./build";
@@ -30,7 +30,7 @@ import {
   ManifestMigrateCommandOptions,
   ManifestType
 } from "./manifest";
-import { RunCommandOptions } from "./run";
+import { TestCommandOptions } from "./test";
 
 export interface CommandTypings {
   "build": BuildCommandOptions;
@@ -68,5 +68,5 @@ export interface CommandTypings {
       arguments: [type: ManifestType];
     };
   };
-  "run": RunCommandOptions;
+  "test": TestCommandOptions;
 }

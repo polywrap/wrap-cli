@@ -39,5 +39,5 @@ export const commands: CommandFns<CommandTypings> = {
     migrate: execCommandWithArgsFn<CommandTypings["manifest"]["migrate"]>("manifest migrate"),
     schema: execCommandWithArgsFn<CommandTypings["manifest"]["schema"]>("manifest schema")
   },
-  run: execCommandFn<CommandTypings["run"]>("run"),
+  test: execCommandFn<CommandTypings["test"]>("test"),
 };

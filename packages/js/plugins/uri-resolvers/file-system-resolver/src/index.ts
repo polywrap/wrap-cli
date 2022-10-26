@@ -1,6 +1,6 @@
 import {
   Bytes,
-  Client,
+  CoreClient,
   FileSystem_Module,
   Args_getFile,
   Args_tryResolveUri,
@@ -9,7 +9,7 @@ import {
   manifest,
 } from "./wrap";
 
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 import path from "path";
 
 type NoConfig = Record<string, never>;
@@ -17,7 +17,7 @@ type NoConfig = Record<string, never>;
 export class FileSystemResolverPlugin extends Module<NoConfig> {
   async tryResolveUri(
     args: Args_tryResolveUri,
-    _client: Client
+    _client: CoreClient
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
     if (args.authority !== "fs" && args.authority !== "file") {
       return null;
@@ -52,7 +52,10 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
     return { uri: null, manifest };
   }
 
-  async getFile(args: Args_getFile, _client: Client): Promise<Bytes | null> {
+  async getFile(
+    args: Args_getFile,
+    _client: CoreClient
+  ): Promise<Bytes | null> {
     try {
       const fileResult = await FileSystem_Module.readFile(
         { path: args.path },
@@ -69,9 +72,5 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
   }
 }
 
-export const fileSystemResolverPlugin: PluginFactory<NoConfig> = () => {
-  return {
-    factory: () => new FileSystemResolverPlugin({}),
-    manifest,
-  };
-};
+export const fileSystemResolverPlugin: PluginFactory<NoConfig> = () =>
+  new PluginPackage(new FileSystemResolverPlugin({}), manifest);

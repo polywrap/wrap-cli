@@ -5,13 +5,13 @@ import { Deployer } from "../../../deploy";
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
-import { PolywrapClient } from "@polywrap/client-js";
 import {
   ethereumPlugin,
   Connections,
   Connection,
 } from "@polywrap/ethereum-plugin-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
 class ENSRecursiveNameRegisterPublisher implements Deployer {
   async execute(
@@ -30,7 +30,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
       );
     }
 
-    const ensDomain = uri.path;
+    let ensDomain = uri.path;
 
     const connectionProvider = new JsonRpcProvider(config.provider);
     const {
@@ -39,6 +39,10 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
     } = await connectionProvider.getNetwork();
 
     const network = chainIdNum === 1337 ? "testnet" : networkName;
+
+    if (ensDomain.startsWith(network)) {
+      ensDomain = ensDomain.split("/")[1];
+    }
 
     const signer = config.privateKey
       ? new Wallet(config.privateKey).connect(connectionProvider)
@@ -58,10 +62,10 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
           to: embeddedWrappers.sha3,
         },
       ],
-      plugins: [
+      packages: [
         {
           uri: ethereumPluginUri,
-          plugin: ethereumPlugin({
+          package: ethereumPlugin({
             connections: new Connections({
               networks: {
                 [network]: new Connection({

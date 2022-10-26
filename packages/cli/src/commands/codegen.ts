@@ -14,6 +14,7 @@ import {
   generateWrapFile,
   defaultProjectManifestFiles,
   defaultPolywrapManifest,
+  parseLogFileOption,
 } from "../lib";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
@@ -69,6 +70,10 @@ export const codegen: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (options: Partial<CodegenCommandOptions>) => {
         await run({
           manifestFile: parseManifestFileOption(
@@ -80,7 +85,8 @@ export const codegen: Command = {
           script: parseCodegenScriptOption(options.script),
           clientConfig: options.clientConfig || false,
           verbose: options.verbose || false,
-          quiet: options.quiet || false
+          quiet: options.quiet || false,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
@@ -95,8 +101,9 @@ async function run(options: Required<CodegenCommandOptions>) {
     publishDir,
     verbose,
     quiet,
+    logFile,
   } = options;
-  const logger = createLogger({ verbose, quiet });
+  const logger = createLogger({ verbose, quiet, logFile });
 
   // Get Client
   const config = await parseClientConfigOption(clientConfig);
