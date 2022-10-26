@@ -183,13 +183,14 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
         try {
           await runCommand(
-            `docker run --rm -v ${path.resolve(
-              this._volumePaths.project
-            )}:/project -v ${path.resolve(
-              this._volumePaths.linkedPackages
-            )}:/linked-packages ${cacheVolume} ${
-              CONFIGS[language].baseImage
-            }:latest /bin/bash --verbose /project/polywrap-build.sh`,
+            "docker",
+            [
+              "run", "--rm",
+              "-v", `${path.resolve(this._volumePaths.project)}:/project`,
+              "-v", `${path.resolve(this._volumePaths.linkedPackages)}:/linked-packages`,
+              cacheVolume, `${CONFIGS[language].baseImage}:latest`,
+              "/bin/bash", "--verbose", "/project/polywrap-build.sh"
+            ],
             this.project.logger,
             undefined,
             undefined,
@@ -202,13 +203,14 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
           }
 
           await runCommand(
-            `docker run --rm -v ${path.resolve(
-              this._volumePaths.project
-            )}:/project -v ${path.resolve(
-              this._volumePaths.linkedPackages
-            )}:/linked-packages ${
-              CONFIGS[language].baseImage
-            }:latest /bin/bash -c "chmod -R 777 /project && chmod -R 777 /linked-packages"`,
+            "docker",
+            [
+              "run", "--rm",
+              "-v", `${path.resolve(this._volumePaths.project)}:/project`,
+              "-v", `${path.resolve(this._volumePaths.linkedPackages)}:/linked-packages`,
+              `${CONFIGS[language].baseImage}:latest`,
+              "/bin/bash", "-c", '"chmod -R 777 /project && chmod -R 777 /linked-packages"'
+            ],
             this.project.logger
           );
         } catch (e) {

@@ -10,7 +10,7 @@ import os from "os";
 const TMPDIR = fs.mkdtempSync(path.join(os.tmpdir(), `polywrap-cli`));
 
 export function cueExists(logger: Logger): boolean {
-  const { stdout } = runCommandSync("cue version", logger);
+  const { stdout } = runCommandSync("cue", ["version"], logger);
   return stdout ? stdout.startsWith("cue version ") : false;
 }
 
@@ -38,7 +38,8 @@ export function validateOutput(
   );
 
   const { stderr } = runCommandSync(
-    `cue vet -d ${selector} ${validateScriptPath} ${jsonOutput}`,
+    "cue",
+    ["vet", "-d", selector, validateScriptPath, jsonOutput],
     logger
   );
 
