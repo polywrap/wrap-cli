@@ -38,7 +38,7 @@ export interface BuildCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputDir: string;
   clientConfig: string | false;
-  skipCodegen: boolean;
+  codegen: boolean;
   watch: boolean;
   strategy: `${SupportedStrategies}`;
 };
@@ -65,7 +65,7 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
-      .option(`-n, --skip-codegen`, `${intlMsg.commands_build_options_n()}`)
+      .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_n()}`)
       .option(
         `-s, --strategy <${strategyStr}>`,
         `${intlMsg.commands_build_options_s()}`
@@ -85,7 +85,7 @@ export const build: Command = {
           ),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
           clientConfig: options.clientConfig || false,
-          skipCodegen: options.skipCodegen || false,
+          codegen: options.codegen || true,
           strategy: options.strategy || defaultStrategy,
           watch: options.watch || false,
           verbose: options.verbose || false,
@@ -138,7 +138,7 @@ async function run(options: Required<BuildCommandOptions>) {
     outputDir,
     clientConfig,
     strategy,
-    skipCodegen,
+    codegen,
     verbose,
     quiet,
     logFile,
@@ -167,9 +167,9 @@ async function run(options: Required<BuildCommandOptions>) {
   });
 
   const execute = async (): Promise<boolean> => {
-    const codeGenerator = skipCodegen
-      ? undefined
-      : new CodeGenerator({ project, schemaComposer });
+    const codeGenerator = codegen
+      ? new CodeGenerator({ project, schemaComposer })
+      : undefined;
 
     const compiler = new Compiler({
       project,

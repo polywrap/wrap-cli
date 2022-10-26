@@ -17,7 +17,7 @@ Options:
                                      (default: ./build)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
-  -n, --skip-codegen                   Skip code generation
+  -n, --no-codegen                   Skip code generation
   -s, --strategy <strategy>          Strategy to use for building the wrapper
                                      (default: "vm")
   -w, --watch                        Automatically rebuild when changes are
