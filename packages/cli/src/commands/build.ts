@@ -14,7 +14,6 @@ import {
   parseManifestFileOption,
   parseLogFileOption,
 } from "../lib";
-import { CodeGenerator } from "../lib/codegen";
 import {
   DockerVMBuildStrategy,
   BuildStrategy,
@@ -39,7 +38,6 @@ type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
   clientConfig: Partial<ClientConfig>;
-  codegen: boolean; // defaults to true
   watch?: boolean;
   strategy: SupportedStrategies;
   verbose?: boolean;
@@ -69,7 +67,6 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
-      .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_n()}`)
       .option(
         `-s, --strategy <${strategyStr}>`,
         `${intlMsg.commands_build_options_s()}`,
@@ -140,7 +137,6 @@ async function run(options: BuildCommandOptions) {
     outputDir,
     clientConfig,
     strategy,
-    codegen,
     verbose,
     quiet,
     logFile,
@@ -168,16 +164,11 @@ async function run(options: BuildCommandOptions) {
   });
 
   const execute = async (): Promise<boolean> => {
-    const codeGenerator = codegen
-      ? new CodeGenerator({ project, schemaComposer })
-      : undefined;
-
     const compiler = new Compiler({
       project,
       outputDir,
       schemaComposer,
       buildStrategy,
-      codeGenerator,
     });
 
     const result = await compiler.compile();

@@ -13,7 +13,6 @@ import {
   logActivity,
 } from "./";
 import { BuildStrategy } from "./build-strategies/BuildStrategy";
-import { CodeGenerator } from "./codegen/CodeGenerator";
 
 import { WasmWrapper, WrapImports } from "@polywrap/wasm-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
@@ -24,7 +23,6 @@ import path from "path";
 export interface CompilerConfig {
   outputDir: string;
   project: PolywrapProject;
-  codeGenerator?: CodeGenerator;
   buildStrategy: BuildStrategy;
   schemaComposer: SchemaComposer;
 }
@@ -33,7 +31,7 @@ export class Compiler {
   constructor(private _config: CompilerConfig) {}
 
   public async compile(): Promise<boolean> {
-    const { project, codeGenerator } = this._config;
+    const { project } = this._config;
 
     const run = async (): Promise<void> => {
       // Init & clean output directory
@@ -43,11 +41,6 @@ export class Compiler {
       await this._outputWrapManifest();
 
       if (!(await this._isInterface())) {
-        // Generate the bindings
-        if (codeGenerator) {
-          await codeGenerator.generate();
-        }
-
         // Compile the Wrapper
         await this._buildModules();
       }
