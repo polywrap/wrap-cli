@@ -20,6 +20,7 @@ import {
   polywrapManifestLanguages,
   pluginManifestLanguages,
 } from "../lib";
+import { CodeGenerator } from "../lib/codegen";
 import {
   DockerVMBuildStrategy,
   BuildStrategy,
@@ -50,6 +51,7 @@ type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
   clientConfig: Partial<ClientConfig>;
+  codegen: boolean;
   watch?: boolean;
   strategy: SupportedStrategies;
   verbose?: boolean;
@@ -79,6 +81,7 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(`--codegen`, `${intlMsg.commands_build_options_codegen()}`)
       .option(
         `-s, --strategy <${strategyStr}>`,
         `${intlMsg.commands_build_options_s()}`,
@@ -149,6 +152,7 @@ async function run(options: BuildCommandOptions) {
     outputDir,
     clientConfig,
     strategy,
+    codegen,
     verbose,
     quiet,
     logFile,
@@ -186,6 +190,11 @@ async function run(options: BuildCommandOptions) {
         client,
       });
 
+      if (codegen) {
+        const codeGenerator = new CodeGenerator({ project, schemaComposer });
+        await codeGenerator?.generate();
+      }
+
       const compiler = new Compiler({
         project: project as PolywrapProject,
         outputDir,
@@ -212,6 +221,11 @@ async function run(options: BuildCommandOptions) {
       const manifestPath = path.join(outputDir, "wrap.info");
 
       try {
+        if (codegen) {
+          const codeGenerator = new CodeGenerator({ project, schemaComposer });
+          await codeGenerator?.generate();
+        }
+
         if (!fs.existsSync(outputDir)) {
           fs.mkdirSync(outputDir);
         }
