@@ -13,20 +13,24 @@ import {
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 export class ClientConfigBuilder extends BaseClientConfigBuilder {
+  constructor(
+    private readonly wrapperCache?: IWrapperCache,
+    private readonly resolver?: IUriResolver<unknown>
+  ) {
+    super();
+  }
+
   addDefaults(): ClientConfigBuilder {
     return this.add(getDefaultConfig());
   }
 
-  buildCoreConfig(
-    wrapperCache?: IWrapperCache,
-    resolver?: IUriResolver<unknown>
-  ): CoreClientConfig<Uri> {
+  buildCoreConfig(): CoreClientConfig<Uri> {
     return {
       envs: this.config.envs,
       interfaces: this.config.interfaces,
       redirects: this.config.redirects,
       resolver:
-        resolver ??
+        this.resolver ??
         RecursiveResolver.from(
           PackageToWrapperCacheResolver.from(
             [
@@ -38,7 +42,7 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
               ...this.config.resolvers,
               new ExtendableUriResolver(),
             ],
-            wrapperCache ?? new WrapperCache()
+            this.wrapperCache ?? new WrapperCache()
           )
         ),
     };

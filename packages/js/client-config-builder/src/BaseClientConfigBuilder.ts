@@ -5,13 +5,12 @@ import { ClientConfigBuilder } from "./ClientConfigBuilder";
 import {
   CoreClientConfig,
   Uri,
-  IUriResolver,
   IUriPackage,
   IUriWrapper,
   Env,
   IUriRedirect,
 } from "@polywrap/core-js";
-import { IWrapperCache, UriResolverLike } from "@polywrap/uri-resolvers-js";
+import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 
 export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
   protected config: ClientConfig<Uri> = {
@@ -24,10 +23,7 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
   };
 
   abstract addDefaults(): ClientConfigBuilder;
-  abstract buildCoreConfig(
-    wrapperCache?: IWrapperCache,
-    resolver?: IUriResolver<unknown>
-  ): CoreClientConfig<Uri>;
+  abstract buildCoreConfig(): CoreClientConfig<Uri>;
 
   add(config: Partial<ClientConfig>): ClientConfigBuilder {
     if (config.envs) {

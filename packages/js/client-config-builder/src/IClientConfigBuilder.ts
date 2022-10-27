@@ -1,50 +1,45 @@
 import { ClientConfig } from "./ClientConfig";
-import { ClientConfigBuilder } from "./ClientConfigBuilder";
 
 import {
   CoreClientConfig,
   Uri,
-  IUriResolver,
   IUriPackage,
   IUriWrapper,
   Env,
   IUriRedirect,
 } from "@polywrap/core-js";
-import { IWrapperCache, UriResolverLike } from "@polywrap/uri-resolvers-js";
+import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 
 export interface IClientConfigBuilder {
-  add(config: Partial<ClientConfig>): ClientConfigBuilder;
-  addDefaults(): ClientConfigBuilder;
-  addWrapper(uriWrapper: IUriWrapper<Uri | string>): ClientConfigBuilder;
-  addWrappers(uriWrappers: IUriWrapper<Uri | string>[]): ClientConfigBuilder;
-  removeWrapper(uri: Uri | string): ClientConfigBuilder;
-  addPackage(uriPackage: IUriPackage<Uri | string>): ClientConfigBuilder;
-  addPackages(uriPackages: IUriPackage<Uri | string>[]): ClientConfigBuilder;
-  removePackage(uri: Uri | string): ClientConfigBuilder;
-  addEnv(uri: Uri | string, env: Record<string, unknown>): ClientConfigBuilder;
-  addEnvs(envs: Env<Uri | string>[]): ClientConfigBuilder;
-  removeEnv(uri: Uri | string): ClientConfigBuilder;
-  setEnv(uri: Uri | string, env: Record<string, unknown>): ClientConfigBuilder;
+  build(): ClientConfig<Uri>;
+  buildCoreConfig(): CoreClientConfig<Uri>;
+  add(config: Partial<ClientConfig>): IClientConfigBuilder;
+  addDefaults(): IClientConfigBuilder;
+  addWrapper(uriWrapper: IUriWrapper<Uri | string>): IClientConfigBuilder;
+  addWrappers(uriWrappers: IUriWrapper<Uri | string>[]): IClientConfigBuilder;
+  removeWrapper(uri: Uri | string): IClientConfigBuilder;
+  addPackage(uriPackage: IUriPackage<Uri | string>): IClientConfigBuilder;
+  addPackages(uriPackages: IUriPackage<Uri | string>[]): IClientConfigBuilder;
+  removePackage(uri: Uri | string): IClientConfigBuilder;
+  addEnv(uri: Uri | string, env: Record<string, unknown>): IClientConfigBuilder;
+  addEnvs(envs: Env<Uri | string>[]): IClientConfigBuilder;
+  removeEnv(uri: Uri | string): IClientConfigBuilder;
+  setEnv(uri: Uri | string, env: Record<string, unknown>): IClientConfigBuilder;
   addInterfaceImplementation(
     interfaceUri: Uri | string,
     implementationUri: Uri | string
-  ): ClientConfigBuilder;
+  ): IClientConfigBuilder;
   addInterfaceImplementations(
     interfaceUri: Uri | string,
     implementationUris: Array<Uri | string>
-  ): ClientConfigBuilder;
+  ): IClientConfigBuilder;
   removeInterfaceImplementation(
     interfaceUri: Uri | string,
     implementationUri: Uri | string
-  ): ClientConfigBuilder;
-  addRedirect(from: Uri | string, to: Uri | string): ClientConfigBuilder;
-  addRedirects(redirects: IUriRedirect<Uri | string>[]): ClientConfigBuilder;
-  removeRedirect(from: Uri | string): ClientConfigBuilder;
-  addResolver(resolver: UriResolverLike): ClientConfigBuilder;
-  addResolvers(resolvers: UriResolverLike[]): ClientConfigBuilder;
-  build(): ClientConfig<Uri>;
-  buildCoreConfig(
-    wrapperCache?: IWrapperCache,
-    resolver?: IUriResolver<unknown>
-  ): CoreClientConfig<Uri>;
+  ): IClientConfigBuilder;
+  addRedirect(from: Uri | string, to: Uri | string): IClientConfigBuilder;
+  addRedirects(redirects: IUriRedirect<Uri | string>[]): IClientConfigBuilder;
+  removeRedirect(from: Uri | string): IClientConfigBuilder;
+  addResolver(resolver: UriResolverLike): IClientConfigBuilder;
+  addResolvers(resolvers: UriResolverLike[]): IClientConfigBuilder;
 }

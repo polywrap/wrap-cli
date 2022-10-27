@@ -707,7 +707,7 @@ export class PolywrapClient implements CoreClient {
   private buildConfigFromPolywrapClientConfig(
     config?: PolywrapClientConfig
   ): PolywrapCoreClientConfig<Uri> {
-    const builder = new ClientConfigBuilder();
+    const builder = new ClientConfigBuilder(config?.wrapperCache);
 
     builder.addDefaults();
 
@@ -715,7 +715,7 @@ export class PolywrapClient implements CoreClient {
       builder.add(config);
     }
 
-    const sanitizedConfig = builder.buildCoreConfig(config?.wrapperCache);
+    const sanitizedConfig = builder.buildCoreConfig();
 
     return {
       ...sanitizedConfig,
