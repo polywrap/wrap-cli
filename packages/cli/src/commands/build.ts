@@ -17,6 +17,8 @@ import {
   isPolywrapManifestLanguage,
   isPluginManifestLanguage,
   generateWrapFile,
+  polywrapManifestLanguages,
+  pluginManifestLanguages,
 } from "../lib";
 import {
   DockerVMBuildStrategy,
@@ -38,6 +40,11 @@ const defaultStrategy = SupportedStrategies.VM;
 const strategyStr = intlMsg.commands_build_options_s_strategy();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
+
+const supportedProjectTypes = [
+  ...Object.values(polywrapManifestLanguages),
+  ...Object.values(pluginManifestLanguages),
+];
 
 type BuildCommandOptions = {
   manifestFile: string;
@@ -162,12 +169,7 @@ async function run(options: BuildCommandOptions) {
   const manifest = await project.getManifest();
   const language = manifest.project.type;
 
-  const schemaComposer = new SchemaComposer({
-    project,
-    client,
-  });
-
-  let execute: () => Promise<Boolean>;
+  let execute: () => Promise<boolean>;
 
   if (isPolywrapManifestLanguage(language)) {
     await validateManifestModules(manifest as PolywrapManifest);
@@ -179,6 +181,11 @@ async function run(options: BuildCommandOptions) {
     );
 
     execute = async (): Promise<boolean> => {
+      const schemaComposer = new SchemaComposer({
+        project,
+        client,
+      });
+
       const compiler = new Compiler({
         project: project as PolywrapProject,
         outputDir,
@@ -196,25 +203,39 @@ async function run(options: BuildCommandOptions) {
     };
   } else if (isPluginManifestLanguage(language)) {
     execute = async (): Promise<boolean> => {
+      const schemaComposer = new SchemaComposer({
+        project,
+        client,
+      });
+
       // Output the built manifest
       const manifestPath = path.join(outputDir, "wrap.info");
 
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir);
-      }
+      try {
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir);
+        }
 
-      await generateWrapFile(
-        await schemaComposer.getComposedAbis(),
-        await project.getName(),
-        "plugin",
-        manifestPath,
-        logger
-      );
+        await generateWrapFile(
+          await schemaComposer.getComposedAbis(),
+          await project.getName(),
+          "plugin",
+          manifestPath,
+          logger
+        );
+      } catch (err) {
+        logger.error(err.message);
+        return false;
+      }
 
       return true;
     };
   } else {
-    console.log("Unsupported project type!");
+    logger.error(
+      intlMsg.commands_build_error_unsupportedProjectType({
+        supportedTypes: supportedProjectTypes.join(", "),
+      })
+    );
     return;
   }
 

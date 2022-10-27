@@ -7,6 +7,7 @@
   "commands_build_error_manifestPathMissing": "{option} option missing {argument} argument",
   "commands_build_error_manifestNotFound": "Manifest not found. Search paths used: {paths}",
   "commands_build_error_outputDirMissingPath": "{option} option missing {argument} argument",
+  "commands_build_error_unsupportedProjectType": "Unsupported project type. You can only build the following project types: {supportedTypes}",
   "commands_build_keypressListener_exit": "Exit: [CTRL + C], [ESC], or [Q]",
   "commands_build_keypressListener_watching": "Watching",
   "commands_build_options_h": "Show usage information",
