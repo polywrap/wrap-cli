@@ -35,7 +35,7 @@ packages/interfaces  @dOrgJelli @krisbitney @cbrzn
 packages/js                          @dOrgJelli @nerfZael
 packages/js/asyncify                 @namesty @dOrgJelli
 packages/js/client                   @dOrgJelli @krisbitney @namesty @nerfZael
-packages/js/client-config-builder    @nerfZael
+packages/js/client-config-builder    @pileks @nerfZael
 packages/js/core                     @dOrgJelli @krisbitney @namesty @nerfZael
 packages/js/manifests                @dOrgJelli @namesty @nerfZael @pileks @Niraj-Kamdar
 packages/js/msgpack                  @dOrgJelli @Niraj-Kamdar
