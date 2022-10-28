@@ -76,8 +76,6 @@ const config = {
   // customize URI resolution
   resolver: new RecursiveResolver(
     new PackageToWrapperCacheResolver(wrapperCache, [
-      new LegacyRedirectsResolver(),
-      new LegacyPluginsResolver(),
       new ExtendableUriResolver(),
     ])
   ),
