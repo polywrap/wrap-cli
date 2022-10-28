@@ -27,7 +27,6 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
     return {
       envs: this.config.envs,
       interfaces: this.config.interfaces,
-      redirects: this.config.redirects,
       resolver:
         this.resolver ??
         RecursiveResolver.from(

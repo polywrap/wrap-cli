@@ -11,7 +11,6 @@ export class CustomConfigBuilder extends BaseClientConfigBuilder {
     return {
       envs: this.config.envs,
       interfaces: this.config.interfaces,
-      redirects: this.config.redirects,
       resolver:
         RecursiveResolver.from(
           PackageToWrapperCacheResolver.from(
