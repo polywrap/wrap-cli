@@ -1122,10 +1122,10 @@ export const runSubinvokeTest = async (client: CoreClient, uri: string) => {
   {
     const response = await client.invoke({
       uri,
-      method: "add",
+      method: "addAndIncrement",
       args: {
         a: 1,
-        b: 2,
+        b: 1,
       },
     });
 
