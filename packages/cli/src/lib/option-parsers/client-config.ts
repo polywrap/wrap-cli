@@ -9,7 +9,7 @@ import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 export async function parseClientConfigOption(
   clientConfig: string | undefined
 ): Promise<IClientConfigBuilder> {
-  let builder = new ClientConfigBuilder().addDefaults();
+  const builder = new ClientConfigBuilder().addDefaults();
 
   try {
     builder.add(getTestEnvClientConfig());
