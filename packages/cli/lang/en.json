@@ -135,7 +135,7 @@
   "commands_test_error_validatorNotFound": "validate script not found at: {path}",
   "commands_test_error_outputFileMissing": "{option} option missing {argument} argument",
   "commands_test_error_clientConfigMissingPath": "{option} option missing {argument} argument",
-  "commands_test_error_clientConfigModuleMissingExport": "Custom client config module missing named export 'getClientConfig' at {module}",
+  "commands_test_error_clientConfigModuleMissingExport": "Custom client config module missing named export 'getCustomConfig' at {module}",
   "commands_test_error_clientConfigInvalidFileExt": "Custom client config file: {module} must be a JS/TS file",
   "commands_test_error_clientConfigNotObject": "Custom client config must be an object",
   "commands_test_error_redirectsExportNotArray": "Exported redirects must be an array",
