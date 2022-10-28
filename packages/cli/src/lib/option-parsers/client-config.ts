@@ -42,14 +42,7 @@ export async function parseClientConfigOption(
       process.exit(1);
     }
 
-    builder = await configModule.configure(builder);
-
-    try {
-      return builder;
-    } catch (e) {
-      console.error(e.message);
-      process.exit(1);
-    }
+    return await configModule.configure(builder);
   } else {
     return builder;
   }
