@@ -119,7 +119,7 @@ const mockPlugin = () => {
   );
 };
 
-export function configure(builder: IClientConfigBuilder): Partial<IClientConfigBuilder> {
+export function configure(builder: IClientConfigBuilder): IClientConfigBuilder {
   return builder.addPackage({
     uri: "wrap://ens/mock.eth",
     package: mockPlugin(),

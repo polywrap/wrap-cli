@@ -148,7 +148,7 @@ const mockPlugin = () => {
   );
 };
 
-export function configure(_: IClientConfigBuilder): Partial<IClientConfigBuilder> {
+export function configure(_: IClientConfigBuilder): IClientConfigBuilder {
   return new CustomConfigBuilder()
     .addDefaults()
     .addPackage({
