@@ -1,0 +1,142 @@
+{
+  "id": "BuildManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format"],
+  "properties": {
+    "format": {
+      "description": "Polywrap build manifest format version.",
+      "type": "string",
+      "enum": ["0.3.0"]
+    },
+    "strategies": {
+      "description": "Custom build image configurations.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "image": {
+          "$ref": "#/definitions/image"
+        },
+        "local": {
+          "$ref": "#/definitions/local"
+        },
+        "vm": {
+          "$ref": "#/definitions/vm"
+        }
+      }
+    },
+    "linked_packages": {
+      "description": "Locally linked packages into docker build image.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "Package name.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Path to linked package directory.",
+            "type": "string"
+          },
+          "filter": {
+            "description": "Ignore files matching this regex in linked package directory.",
+            "type": "string"
+          }
+        },
+        "required": ["name", "path"]
+      }
+    },
+    "config": {
+      "description": "General configurations.",
+      "type": "object"
+    }
+  },
+  "definitions": {
+    "image": {
+      "description": "Docker image strategy configuration",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Docker image name.",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+        },
+        "include": {
+          "description": "Additional files to include in build image.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dockerfile": {
+          "description": "Docker image file path.",
+          "type": "string",
+          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)*\\/Dockerfile(.mustache)?$"
+        },
+        "buildx": {
+          "description": "Configuration options for Docker Buildx, set to true for default value.",
+          "type": ["object", "boolean"],
+          "additionalProperties": false,
+          "properties": {
+            "cache": {
+              "description": "Path to cache directory, set to true for default value, set to false to disable caching.",
+              "type": ["string", "boolean"],
+              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
+            },
+            "remove_builder": {
+              "description": "Remove the builder instance.",
+              "type": "boolean"
+            }
+          }
+        },
+        "remove_image": {
+          "description": "Remove the image.",
+          "type": "boolean"
+        }
+      }
+    },
+    "vm": {
+      "description": "Docker VM strategy configuration",
+      "type": "object",
+      "properties": {
+        "include": {
+          "description": "Additional files to include in project directory volume.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "image": {
+          "type": ["string", "object"],
+          "description": "Docker image for the build VM",
+          "pattern": "^([a-zA-Z0-9\\-\\_]+\\/)?[a-zA-Z0-9\\-\\_]+:[a-zA-Z0-9\\-\\_\\.]+$",
+          "additionalProperties": false,
+          "properties": {
+            "dockerfile": {
+              "description": "Docker image file path.",
+              "type": "string",
+              "pattern": "^\\.?\\.?(\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)*\\/Dockerfile(.mustache)?$"
+            }
+          }
+        },
+        "build_script": {
+          "description": "Shell script containing all build commands.",
+          "type": "string"
+        }
+      }
+    },
+    "local": {
+      "description": "Local build strategy configuration",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "build_script": {
+          "description": "Shell script containing all build commands.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

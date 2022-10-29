@@ -1,0 +1,5 @@
+- apply manifest changes to code
+- - make sure all properties are being utilized
+- support mustache for all build types
+- - extra config props are automatically added to view
+- - could be better solution than env var (or could use env var in manifest)

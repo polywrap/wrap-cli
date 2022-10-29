@@ -4,24 +4,16 @@
       "properties": {
         "image": {
           "type": "object",
-          "required": ["node_version", "include"],
           "properties": {
             "node_version": {
               "description": "Docker image's node version.",
               "type": "string"
-            },
-            "include": {
-              "description": "Files to include in docker image.",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
             }
           }
-        }
+        },
+        "local": {},
+        "vm": { }
+      }
     }
-  },
-    "local": { },
-    "vm": { }
   }
 }

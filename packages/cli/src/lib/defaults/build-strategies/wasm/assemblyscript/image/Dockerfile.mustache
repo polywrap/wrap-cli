@@ -1,4 +1,9 @@
+{{#node_version}}
 FROM node:{{node_version}}-alpine as base
+{{/node_version}}
+{{^node_version}}
+FROM node:16.18.0-alpine as base
+{{/node_version}}
 
 RUN apk --no-cache --virtual build-dependencies add bash
 
