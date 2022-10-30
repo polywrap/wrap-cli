@@ -78,7 +78,6 @@ This outputs the project's ABI schema (Wasm and Interface) and binary package (W
 
 - `-c, --client-config <config-path>`
   Use a custom Polywrap Client configuration.
-  See [The `-c, --client-config` option](#the--c,---client-config-option) for details
 
 - `-n, --no-codegen`
   Don't perform codegen before building.
@@ -119,7 +118,6 @@ This command generates types and bindings for your project based on your project
 
 - `-c, --client-config <config-path>`
   Use a custom Polywrap Client configuration.
-  See [The `-c, --client-config` option](#the--c,---client-config-option) for details
 
 #### Special note
 
@@ -270,7 +268,6 @@ polywrap test [options]
 
 - `-c, --client-config <config-path>`
   Use a custom Polywrap Client configuration.
-  See [The `-c, --client-config` option](#the--c,---client-config-option) for details
 
 - `-o, --output-file <output-file-path>`
   Specify the output file path for the workflow result
@@ -428,7 +425,6 @@ polywrap docgen <action>
 
 - `-c, --client-config <config-path>`
   Use a custom Polywrap Client configuration.
-  See [The `-c, --client-config` option](#the--c,---client-config-option) for details
 
 - `-i, --imports`
   Generate docs for your project's dependencies as well.
