@@ -154,6 +154,10 @@ function resolveObjectOrEnumKind(
 
   const unresolved = property.unresolvedObjectOrEnum;
 
+  if (unresolved.type === "ExternalType") {
+    // console.log(JSON.stringify(abi));
+  }
+
   // Check to see if the type is a part of the custom types defined inside the schema (objects, enums, envs)
   let customType: GenericDefinition | undefined =
     abi.objectTypes &&

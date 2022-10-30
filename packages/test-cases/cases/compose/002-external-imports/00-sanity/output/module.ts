@@ -7,6 +7,10 @@ import {
   WrapAbi,
   createImportedModuleDefinition,
   createImportedEnvDefinition,
+  createMapPropertyDefinition,
+  createMapKeyDefinition,
+  createArrayDefinition,
+  createObjectRef,
 } from "@polywrap/schema-parse";
 
 export const abi: WrapAbi = {
@@ -47,6 +51,26 @@ export const abi: WrapAbi = {
               type: "String",
               required: true,
             }),
+            createMapPropertyDefinition({
+              name: "map",
+              type: "Map<String, [Namespace_ExternalType]>",
+              required: true,
+              key: createMapKeyDefinition({
+                name: "map",
+                required: true,
+                type: "String"
+              }),
+              value: createArrayDefinition({
+                name: "map",
+                type: "[Namespace_ExternalType]",
+                required: true,
+                item: createObjectRef({
+                  name: "map",
+                  type: "Namespace_ExternalType",
+                  required: true,
+                })
+              })
+            })
           ],
           env: {
             required: true
