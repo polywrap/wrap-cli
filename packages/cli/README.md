@@ -78,6 +78,7 @@ This outputs the project's ABI schema (Wasm and Interface) and binary package (W
 
 - `-c, --client-config <config-path>`
   Use a custom Polywrap Client configuration.
+  See [The `-c, --client-config` option](#the--c,---client-config-option) for details
 
 - `-n, --no-codegen`
   Don't perform codegen before building.
@@ -118,6 +119,7 @@ This command generates types and bindings for your project based on your project
 
 - `-c, --client-config <config-path>`
   Use a custom Polywrap Client configuration.
+  See [The `-c, --client-config` option](#the--c,---client-config-option) for details
 
 #### Special note
 
@@ -242,7 +244,13 @@ The default infrastructure module defines a docker container with:
 - A Ganache Ethereum test network at http://localhost:8545
 - An IPFS node at http://localhost:5001
 
-It also sets up ENS smart contracts at initialization, so you can build wrappers and deploy them to an ENS registry on your locally hosted testnet. The Ethereum address of the ENS registry is 0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab.
+It also sets up ENS smart contracts at initialization, so you can build wrappers and deploy them to an ENS registry on your locally hosted testnet.
+
+Addresses for the components of ENS:
+- Registry: `0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab`
+- Resolver: `0x5b1869D9A4C187F2EAa108f3062412ecf0526b24`
+- Registrar: `0xD833215cBcc3f914bD1C9ece3EE7BF8B14f841bb`
+- Reverse Registrar: `0xe982E462b094850F12AF94d21D470e21bE9D0E9C`
 
 ### `test | t`
 
@@ -252,7 +260,7 @@ The `test` command executes a series of Wrapper invocations called **steps** org
 All steps within a job are run in series, while jobs are run in parallel.
 
 ```bash
-polywrap run [options]
+polywrap test [options]
 ```
 
 #### Options
@@ -262,6 +270,7 @@ polywrap run [options]
 
 - `-c, --client-config <config-path>`
   Use a custom Polywrap Client configuration.
+  See [The `-c, --client-config` option](#the--c,---client-config-option) for details
 
 - `-o, --output-file <output-file-path>`
   Specify the output file path for the workflow result
@@ -419,6 +428,7 @@ polywrap docgen <action>
 
 - `-c, --client-config <config-path>`
   Use a custom Polywrap Client configuration.
+  See [The `-c, --client-config` option](#the--c,---client-config-option) for details
 
 - `-i, --imports`
   Generate docs for your project's dependencies as well.
@@ -490,6 +500,24 @@ polywrap manifest migrate
   # or
   polywrap m m -m custom-manifest.yaml
   ```
+
+### The `-c, --client-config` option
+
+The `build`, `codegen`, `docgen` and `test` commands allow the user to configure the Polywrap Client via the `-c, --client-config <config-path>` option.
+
+You can supply a path to a Javascript or Typescript module which exports a function named `getClientConfig`:
+
+```typescript
+// asynchronous option
+export async function getClientConfig(
+  defaultConfigs: Partial<PolywrapClientConfig>
+): Promise<Partial<PolywrapClientConfig>>
+
+// synchronous option
+export function getClientConfig(
+  defaultConfigs: Partial<PolywrapClientConfig>
+): Partial<PolywrapClientConfig>
+```
 
 ## Logging
 
