@@ -29,6 +29,7 @@ import {
   Args_sendTransaction,
   Args_sendTransactionAndWait,
   Args_signMessage,
+  Args_signMessageBytes,
   TxResponse,
   BigInt,
   StaticTxResult,
@@ -395,6 +396,13 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     return await connection.getSigner().signMessage(args.message);
+  }
+
+  public async signMessageBytes(args: Args_signMessageBytes,
+    _client: CoreClient
+    ): Promise<string> {
+    const connection = await this._getConnection(args.connection);
+    return await connection.getSigner().signMessage(args.bytes);
   }
 
   public async sendRPC(
