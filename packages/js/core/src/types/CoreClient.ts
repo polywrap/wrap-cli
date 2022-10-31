@@ -2,7 +2,6 @@ import {
   QueryHandler,
   Invoker,
   SubscriptionHandler,
-  IUriRedirect,
   Uri,
   InterfaceImplementations,
   Env,
@@ -14,7 +13,6 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
 export interface CoreClientConfig<TUri extends Uri | string = Uri | string> {
-  readonly redirects?: Readonly<IUriRedirect<TUri>[]>;
   readonly interfaces?: Readonly<InterfaceImplementations<TUri>[]>;
   readonly envs?: Readonly<Env<TUri>[]>;
   readonly resolver: Readonly<IUriResolver<unknown>>;
@@ -40,15 +38,13 @@ export interface CoreClient
     UriResolverHandler<unknown> {
   getConfig(): CoreClientConfig<Uri>;
 
-  getRedirects(): readonly IUriRedirect<Uri>[] | undefined;
-
   getInterfaces(): readonly InterfaceImplementations<Uri>[] | undefined;
 
   getEnvs(): readonly Env<Uri>[] | undefined;
 
   getEnvByUri<TUri extends Uri | string>(uri: TUri): Env<Uri> | undefined;
 
-  getUriResolver(): IUriResolver<unknown>;
+  getResolver(): IUriResolver<unknown>;
 
   getManifest<TUri extends Uri | string>(
     uri: TUri

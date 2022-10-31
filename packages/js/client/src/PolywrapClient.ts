@@ -108,16 +108,6 @@ export class PolywrapClient implements CoreClient {
   }
 
   /**
-   * returns all uri redirects from the configuration used to instantiate the client
-   *
-   * @returns an array of uri redirects
-   */
-  @Tracer.traceMethod("PolywrapClient: getRedirects")
-  public getRedirects(): readonly IUriRedirect<Uri>[] | undefined {
-    return this._config.redirects;
-  }
-
-  /**
    * returns all plugin registrations from the configuration used to instantiate the client
    *
    * @returns an array of plugin registrations
@@ -154,7 +144,7 @@ export class PolywrapClient implements CoreClient {
    * @returns an object that implements the IUriResolver interface
    */
   @Tracer.traceMethod("PolywrapClient: getUriResolver")
-  public getUriResolver(): IUriResolver<unknown> {
+  public getResolver(): IUriResolver<unknown> {
     return this._config.resolver;
   }
 
@@ -733,11 +723,6 @@ export class PolywrapClient implements CoreClient {
     config: PolywrapCoreClientConfig
   ): PolywrapCoreClientConfig<Uri> {
     return {
-      redirects:
-        config?.redirects?.map((x) => ({
-          from: Uri.from(x.from),
-          to: Uri.from(x.to),
-        })) ?? [],
       interfaces:
         config?.interfaces?.map((x) => ({
           interface: Uri.from(x.interface),
