@@ -1,9 +1,4 @@
-export enum LogLevel {
-  DEBUG,
-  INFO,
-  WARN,
-  ERROR,
-}
+import { LogLevel } from "@polywrap/logging-js";
 
 export abstract class Log {
   public readonly level: LogLevel;
