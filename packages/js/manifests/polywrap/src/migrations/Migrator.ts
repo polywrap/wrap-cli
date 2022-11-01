@@ -1,3 +1,4 @@
+import { ILogger } from "@polywrap/logging-js";
 import {
   AnyAppManifest,
   AnyBuildManifest,
@@ -22,5 +23,5 @@ type AnyManifest =
 export type Migrator = {
   from: string;
   to: string;
-  migrate: (manifest: AnyManifest) => AnyManifest;
+  migrate: (manifest: AnyManifest, logger?: ILogger) => AnyManifest;
 };

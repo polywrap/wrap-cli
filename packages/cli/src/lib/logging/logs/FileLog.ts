@@ -1,6 +1,7 @@
-import { Log, LogLevel } from "../Log";
+import { Log } from "../Log";
 
 import fs, { WriteStream } from "fs";
+import { LogLevel } from "@polywrap/logging-js";
 
 export class FileLog extends Log {
   private _logFileStream: WriteStream;

@@ -22,7 +22,7 @@ export async function loadAppManifest(
     }
 
     try {
-      const result = deserializeAppManifest(manifest);
+      const result = deserializeAppManifest(manifest, { logger: logger });
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
