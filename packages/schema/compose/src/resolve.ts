@@ -29,6 +29,10 @@ import {
   EnumRef,
   EnvDefinition,
   ImportedEnvDefinition,
+  MapDefinition,
+  ArrayDefinition,
+  PropertyDefinition,
+  MethodDefinition,
 } from "@polywrap/wrap-manifest-types-js";
 import {
   parseSchema,
@@ -56,6 +60,8 @@ import {
   createImportedEnvDefinition,
   visitImportedEnvDefinition,
   isImportedEnvType,
+  mapUtils,
+  ScalarType,
 } from "@polywrap/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -441,6 +447,95 @@ const extractObjectImportDependencies = (
 
 const namespaceTypes = (namespace: string): AbiTransforms => ({
   enter: {
+    PropertyDefinition: (def: PropertyDefinition & Namespaced) => {
+      if (def.__namespaced) {
+        return def;
+      }
+
+      return {
+        ...def,
+        type: mapUtils.appendNamespace(namespace, def.type),
+        __namespaced: true,
+      };
+    },
+    MethodDefinition: (def: MethodDefinition & Namespaced) => {
+      if (def.__namespaced) {
+        return def;
+      }
+
+      return {
+        ...def,
+        type: mapUtils.appendNamespace(namespace, def.type),
+        __namespaced: true,
+      };
+    },
+    MapDefinition: (def: MapDefinition & Namespaced) => {
+      if (def.__namespaced) {
+        return def;
+      }
+
+      return {
+        ...def,
+        type: mapUtils.appendNamespace(namespace, def.type),
+        __namespaced: true,
+      };
+    },
+    ArrayDefinition: (def: ArrayDefinition & Namespaced) => {
+      if (def.__namespaced) {
+        return def;
+      }
+
+      const _item = def.item && {
+        ...def.item,
+        type: mapUtils.appendNamespace(namespace, def.item.type),
+        __namespaced: true,
+      };
+
+      const _array = def.array && {
+        ...def.array,
+        type: mapUtils.appendNamespace(namespace, def.array.type),
+        __namespaced: true,
+      };
+
+      const _object = def.object && {
+        ...def.object,
+        type: mapUtils.appendNamespace(namespace, def.object.type),
+        __namespaced: true,
+      };
+
+      const _enum = def.enum && {
+        ...def.enum,
+        type: mapUtils.appendNamespace(namespace, def.enum.type),
+        __namespaced: true,
+      };
+
+      const _map = def.map && {
+        ...def.map,
+        type: mapUtils.appendNamespace(namespace, def.map.type),
+        __namespaced: true,
+      };
+
+      const _scalar = def.scalar && {
+        ...def.scalar,
+        type: mapUtils.appendNamespace(
+          namespace,
+          def.scalar.type
+        ) as ScalarType,
+        __namespaced: true,
+      };
+
+      return {
+        ...def,
+        item: _item,
+        array: _array,
+        object: _object,
+        enum: _enum,
+        map: _map,
+        scalar: _scalar,
+        type: mapUtils.appendNamespace(namespace, def.type),
+        __namespaced: true,
+      };
+    },
     ObjectRef: (def: ObjectRef & Namespaced) => {
       if (def.__namespaced) {
         return def;
