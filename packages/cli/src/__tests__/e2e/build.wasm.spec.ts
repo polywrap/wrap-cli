@@ -5,6 +5,7 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { testBuildOutput } from "./helpers/testBuildOutput";
 
 const HELP = `Usage: polywrap build|b [options]
 
@@ -17,7 +18,7 @@ Options:
                                      (default: ./build)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
-  -n, --no-codegen                   Skip code generation
+  --codegen                          Perform code generation before build
   -s, --strategy <strategy>          Strategy to use for building the wrapper
                                      (default: "vm")
   -w, --watch                        Automatically rebuild when changes are
@@ -83,26 +84,6 @@ describe("e2e tests for build command", () => {
     if (expected.files) {
       for (const file of expected.files) {
         expect(fs.existsSync(path.join(testCaseDir, file))).toBeTruthy();
-      }
-    }
-  };
-
-  const testBuildOutput = (testCaseDir: string, buildDir: string) => {
-    const expectedOutputFile = path.join(
-      testCaseDir,
-      "expected",
-      "output.json"
-    );
-    if (fs.existsSync(expectedOutputFile)) {
-      const expectedFiles = JSON.parse(
-        fs.readFileSync(expectedOutputFile, { encoding: "utf8" })
-      );
-
-      for (const file of expectedFiles) {
-        if (!fs.existsSync(path.join(buildDir, file))) {
-          expect(path.join(buildDir, file)).toBe("debug")
-        }
-        expect(fs.existsSync(path.join(buildDir, file))).toBeTruthy();
       }
     }
   };
@@ -231,7 +212,7 @@ describe("e2e tests for build command", () => {
   describe("Local strategy", () => {
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v", "-s", "local"],
+        args: ["build", "-v", "-s", "local", "--codegen"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
@@ -243,7 +224,7 @@ describe("e2e tests for build command", () => {
       expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
     });
   })
-
+  
   describe("test-cases", () => {
     for (let i = 0; i < testCases.length; i++) {
       const testCaseName = testCases[i];

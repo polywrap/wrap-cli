@@ -3,10 +3,10 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
 import { testCliOutput } from "./helpers/testCliOutput";
-import { testCodegenOutput } from "./helpers/testCodegenOutput";
+import { testBuildOutput } from "./helpers/testBuildOutput";
 
-describe("e2e tests for codegen command - plugin project", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin/codegen");
+describe("e2e tests for build command - plugin project", () => {
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin/build-cmd");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
@@ -19,7 +19,7 @@ describe("e2e tests for codegen command - plugin project", () => {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 
-      let codegenDir = path.join(testCaseDir, "src", "wrap");
+      let buildDir = path.join(testCaseDir, "build");
       let cmdArgs: string[] = [];
       let cmdFile = path.join(testCaseDir, "cmd.json");
       if (fs.existsSync(cmdFile)) {
@@ -28,18 +28,19 @@ describe("e2e tests for codegen command - plugin project", () => {
           cmdArgs.push(...cmdConfig.args);
         }
 
-        if (cmdConfig.codegenDir) {
-          codegenDir = path.join(testCaseDir, cmdConfig.codegenDir);
+        if (cmdConfig.buildDir) {
+          buildDir = path.join(testCaseDir, cmdConfig.buildDir);
         }
       }
 
       test(testCaseName, async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["codegen", ...cmdArgs],
+          args: ["build", ...cmdArgs],
           cwd: testCaseDir,
         });
+
         testCliOutput(testCaseDir, code, output, error);
-        testCodegenOutput(testCaseDir, codegenDir);
+        testBuildOutput(testCaseDir, buildDir);
       });
     }
   });
