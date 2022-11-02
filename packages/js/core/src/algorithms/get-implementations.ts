@@ -1,9 +1,9 @@
 import { Uri, InterfaceImplementations, CoreClient } from "../types";
+import { IUriResolutionContext } from "../uri-resolution";
+import { GetImplementationsError } from "./GetImplementationsError";
 
 import { Tracer } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
-import { IUriResolutionContext } from "../uri-resolution";
-import { GetImplementationsError } from "./GetImplementationsError";
 
 const applyRedirects = async (
   uri: Uri,
