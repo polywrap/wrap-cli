@@ -244,6 +244,11 @@ type Module {
         connection: Connection
     ): String!
 
+    signMessageBytes(
+        bytes: Bytes!
+        connection: Connection
+    ): String!
+
     sendRPC(
         method: String!
         params: [String!]!
