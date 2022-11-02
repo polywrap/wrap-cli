@@ -15,7 +15,6 @@ import {
   SubscribeOptions,
   Subscription,
   Uri,
-  IUriRedirect,
   createQueryDocument,
   getImplementations,
   parseQuery,
@@ -219,17 +218,18 @@ export class PolywrapClient implements CoreClient {
    * @returns a Result containing URI array if the request was successful
    */
   @Tracer.traceMethod("PolywrapClient: getImplementations")
-  public getImplementations<TUri extends Uri | string>(
+  public async getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions = {}
-  ): Result<TUri[], Error> {
+  ): Promise<Result<TUri[], Error>> {
     const isUriTypeString = typeof uri === "string";
     const applyRedirects = !!options.applyRedirects;
 
-    const getImplResult = getImplementations(
+    const getImplResult = await getImplementations(
       Uri.from(uri),
       this.getInterfaces() ?? [],
-      applyRedirects ? this.getRedirects() : undefined
+      applyRedirects ? this : undefined,
+      applyRedirects ? options.resolutionContext : undefined
     );
 
     if (!getImplResult.ok) {
@@ -596,7 +596,7 @@ export class PolywrapClient implements CoreClient {
   ): Promise<Result<UriPackageOrWrapper, unknown>> {
     const uri = Uri.from(options.uri);
 
-    const uriResolver = this.getUriResolver();
+    const uriResolver = this.getResolver();
 
     const resolutionContext =
       options.resolutionContext ?? new UriResolutionContext();

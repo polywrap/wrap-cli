@@ -4,12 +4,11 @@ import {
   Uri,
   CoreClient,
   IUriResolver,
-  getImplementations,
   coreInterfaceUris,
   IUriResolutionContext,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
-import { Result, ResultOk } from "@polywrap/result";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 import {
   UriResolverAggregatorBase,
   UriResolutionResult,
@@ -31,14 +30,15 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<IUriResolver<unknown>[], Error>> {
-    const getImplementationsResult = getImplementations(
+    const getImplementationsResult = await client.getImplementations(
       coreInterfaceUris.uriResolver,
-      client.getInterfaces() ?? [],
-      client.getRedirects() ?? []
+      {
+        resolutionContext,
+      }
     );
 
     if (!getImplementationsResult.ok) {
-      return getImplementationsResult;
+      return ResultErr(getImplementationsResult.error);
     }
 
     const uriResolverImpls = getImplementationsResult.value;

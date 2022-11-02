@@ -1,16 +1,32 @@
-import { Uri, IUriRedirect, InterfaceImplementations } from "../types";
-import { applyRedirects } from "./apply-redirects";
+import { Uri, InterfaceImplementations, CoreClient } from "../types";
 
 import { Tracer } from "@polywrap/tracing-js";
-import { Result, ResultOk } from "@polywrap/result";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
+import { IUriResolutionContext } from "../uri-resolution";
+import { GetImplementationsError } from "./GetImplementationsError";
+
+const applyRedirects = async (
+  uri: Uri,
+  client: CoreClient,
+  resolutionContext?: IUriResolutionContext
+): Promise<Result<Uri, unknown>> => {
+  const result = await client.tryResolveUri({ uri, resolutionContext });
+
+  if (!result.ok) {
+    return result;
+  }
+
+  return ResultOk(result.value.uri);
+};
 
 export const getImplementations = Tracer.traceFunc(
   "core: getImplementations",
-  (
+  async (
     wrapperInterfaceUri: Uri,
     interfaces: readonly InterfaceImplementations<Uri>[],
-    redirects?: readonly IUriRedirect<Uri>[]
-  ): Result<Uri[], Error> => {
+    client?: CoreClient,
+    resolutionContext?: IUriResolutionContext
+  ): Promise<Result<Uri[], GetImplementationsError>> => {
     const result: Uri[] = [];
 
     const addUniqueResult = (uri: Uri) => {
@@ -20,16 +36,17 @@ export const getImplementations = Tracer.traceFunc(
       }
     };
 
-    const addAllImplementationsFromImplementationsArray = (
+    const addAllImplementationsFromImplementationsArray = async (
       implementationsArray: readonly InterfaceImplementations<Uri>[],
       wrapperInterfaceUri: Uri
-    ): Result<undefined, Error> => {
+    ): Promise<Result<undefined, unknown>> => {
       for (const interfaceImplementations of implementationsArray) {
         let fullyResolvedUri: Uri;
-        if (redirects) {
-          const redirectsResult = applyRedirects(
+        if (client) {
+          const redirectsResult = await applyRedirects(
             interfaceImplementations.interface,
-            redirects
+            client,
+            resolutionContext
           );
           if (!redirectsResult.ok) {
             return redirectsResult;
@@ -50,19 +67,25 @@ export const getImplementations = Tracer.traceFunc(
 
     let finalUri = wrapperInterfaceUri;
 
-    if (redirects) {
-      const redirectsResult = applyRedirects(wrapperInterfaceUri, redirects);
+    if (client) {
+      const redirectsResult = await applyRedirects(
+        wrapperInterfaceUri,
+        client,
+        resolutionContext
+      );
       if (!redirectsResult.ok) {
-        return redirectsResult;
+        return ResultErr(new GetImplementationsError(redirectsResult.error));
       }
       finalUri = redirectsResult.value;
     }
 
-    const addAllImp = addAllImplementationsFromImplementationsArray(
+    const addAllImp = await addAllImplementationsFromImplementationsArray(
       interfaces,
       finalUri
     );
 
-    return addAllImp.ok ? ResultOk(result) : addAllImp;
+    return addAllImp.ok
+      ? ResultOk(result)
+      : ResultErr(new GetImplementationsError(addAllImp.error));
   }
 );

@@ -6,7 +6,7 @@ import {
   InterfaceImplementations,
   Env,
 } from ".";
-import { IUriResolver } from "../uri-resolution";
+import { IUriResolutionContext, IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -29,6 +29,7 @@ export interface GetFileOptions {
 
 export interface GetImplementationsOptions {
   applyRedirects?: boolean;
+  resolutionContext?: IUriResolutionContext;
 }
 
 export interface CoreClient
@@ -58,5 +59,5 @@ export interface CoreClient
   getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions
-  ): Result<TUri[], Error>;
+  ): Promise<Result<TUri[], Error>>;
 }
