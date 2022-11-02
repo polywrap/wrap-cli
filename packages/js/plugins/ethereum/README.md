@@ -1,89 +1,74 @@
 # @polywrap/ethereum-plugin-js
 
-Ethereum Plugin allows the Polywrap JS Client to interact with the [Ethereum blockchain](https://ethereum.org/).
+The Ethereum plugin wrapper allows the Polywrap JS Client to interact with any [EVM based blockchain](https://ethereum.org/).
 
 ## Usage
 
 ``` typescript
 import {
-  initTestEnvironment,
-  stopTestEnvironment,
-  buildWrapper,
-  ensAddresses,
-  providers
-} from "@polywrap/test-env-js";
-import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ensPlugin } from "@polywrap/ens-plugin-js";
+  ethereumPlugin,
+  Connections,
+  Connection
+} from "@polywrap/ethereum-plugin-js";
 
-// query a wrapper with an ENS path
-export async function foo({
+export async function main() {
 
-  // spin up docker containers with Ganache and IPFS.
-  await initTestEnvironment();
-
-  const ethereumPluginURI = "wrap://ens/ipfs.polywrap.eth"
+  const uri = "wrap://ens/ethereum.polywrap.eth"
 
   // initialize Ethereum Connections store
   const connections: Connections = new Connections({
     networks: {
-      testnet: new Connection({
-        provider: providers.ethereum,
+      mainnet: new Connection({
+        provider: "..."
       }),
+      matic: new Connection({
+        provider: window.ethereum
+      })
     },
-    defaultNetwork: "testnet",
+    defaultNetwork: "matic"
   });
 
-  // initialize the client with eth, ipfs, ens plugins
+  // initialize the client with the ethereum plugin
   client = new PolywrapClient({
     plugins: [
       {
-        uri: ethereumPluginURI,
-        plugin: ethereumPlugin({ connections }),
-      },
-      {
-        uri: "wrap://ens/ipfs.polywrap.eth",
-        plugin: ipfsPlugin({
-          provider: providers.ipfs,
-          fallbackProviders: defaultIpfsProviders,
-        }),
-      },
-      {
-        uri: "wrap://ens/ens.polywrap.eth",
-        plugin: ensPlugin({
-          query: {
-            addresses: {
-              testnet: ensAddresses.ensAddress,
-            },
-          },
-        }),
-      },
-    ],
+        uri: uri,
+        plugin: ethereumPlugin({ connections })
+      }
+    ]
   });
 
-  // now the client can query ethereum with the plugin URI
-  const signerAddressQuery = await client.invoke<string>({
-    ethereumPluginURI,
+  // now you can invoke the ethereum plugin by its URI
+  // NOTE: uses default network "matic"
+  const getSignerAddress = await client.invoke<string>({
+    uri,
     method: "getSignerAddress",
   });
-  const response = await client.invoke<string>({
-    ethereumPluginURI,
+
+  if (!getSignerAddress.ok) throw getSignerAddress.error;
+
+  const address = getSignerAddress.value;
+
+  // Get a balance from mainnet, by passing in the optional
+  // "connection" argument.
+  const getBalance = await client.invoke<string>({
+    uri,
     method: "getBalance",
-    input: {
-      address: signerAddressQuery.data,
+    args: {
+      address: "0x...",
+      connection: {
+        networkNameOrChainId: "mainnet"
+      }
     },
   });
 
-  // or instantiate the plugin
-  const plugin = ethereumPlugin({ connections });
+  if (!getBalance.ok) throw getBalance.error;
 
-  // and send invocations to ethereum
-  const signerAddressQuery' = plugin.getSignerAddress(client)
-  const response' = plugin.getBalance({address: signerAddressQuery.data}, client)
+  const balance = getBalance.value;
 
-  await stopTestEnvironment();
-})
-
+  console.log("Matic Signer: ", address);
+  console.log("Mainnet Balance: ", balance);
+}
 ```
 
 For more usage examples see `src/__tests__`.
