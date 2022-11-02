@@ -231,22 +231,21 @@ describe("e2e tests for build command", () => {
   describe("Local strategy", () => {
 
     // Local strategy runs `yarn` by default, so we need to ensure that we clean up lockfiles
-    beforeAll(async () => {
+    const cleanupYarnLockfiles = async () => {
       for (let i = 0; i < testCases.length; i++) {
         const yarnLockfile = path.join(getTestCaseDir(0), "yarn.lock");
         if(fs.existsSync(yarnLockfile)){
           await fs.promises.unlink(yarnLockfile);
         }
       }
+    };
+
+    beforeAll(async () => {
+      await cleanupYarnLockfiles();
     });
     
     afterAll(async () => {
-      for (let i = 0; i < testCases.length; i++) {
-        const yarnLockfile = path.join(getTestCaseDir(0), "yarn.lock");
-        if(fs.existsSync(yarnLockfile)){
-          await fs.promises.unlink(yarnLockfile);
-        }
-      }
+      await cleanupYarnLockfiles();
     });
 
     it("Builds for assemblyscript", async () => {
