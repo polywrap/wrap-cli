@@ -882,7 +882,6 @@ async function resolveExternalImports(
             properties: type.properties,
           };
         } else if (impObjIdx > -1) {
-          console.log("IMPORTED OBJECT");
           extTypes = extAbi.importedObjectTypes;
           visitorFunc = visitObjectDefinition;
           if (
