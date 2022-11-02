@@ -26,7 +26,7 @@ export async function loadPluginManifest(
     }
 
     try {
-      const result = deserializePluginManifest(manifest);
+      const result = deserializePluginManifest(manifest, { logger: logger });
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
