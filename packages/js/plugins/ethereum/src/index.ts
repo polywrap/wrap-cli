@@ -398,9 +398,10 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     return await connection.getSigner().signMessage(args.message);
   }
 
-  public async signMessageBytes(args: Args_signMessageBytes,
+  public async signMessageBytes(
+    args: Args_signMessageBytes,
     _client: CoreClient
-    ): Promise<string> {
+  ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     return await connection.getSigner().signMessage(args.bytes);
   }
