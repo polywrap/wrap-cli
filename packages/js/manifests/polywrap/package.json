@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@polywrap/polywrap-manifest-schemas": "0.9.3",
+    "@polywrap/logging-js": "0.9.3",
     "jsonschema": "1.4.0",
     "semver": "7.3.5",
     "yaml": "2.1.3"
