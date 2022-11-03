@@ -18,8 +18,7 @@ import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
 import { PolywrapClient } from "@polywrap/client-js";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
-
-const defaultCodegenDir = "./src/wrap";
+import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");

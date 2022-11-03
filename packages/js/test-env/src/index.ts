@@ -208,6 +208,20 @@ export async function buildWrapper(
   const manifestPath = manifestPathOverride
     ? path.join(wrapperAbsPath, manifestPathOverride)
     : `${wrapperAbsPath}/polywrap.yaml`;
+
+  const {
+    exitCode: codegenExitCode,
+    stdout: codegenStdout,
+    stderr: codegenStderr,
+  } = await runCLI({ args: ["codegen"], cwd: wrapperAbsPath });
+
+  if (codegenExitCode != 0) {
+    console.error(`polywrap exited with code: ${codegenExitCode}`);
+    console.log(`stderr:\n${codegenStdout}`);
+    console.log(`stdout:\n${codegenStderr}`);
+    throw Error("polywrap CLI failed");
+  }
+
   const {
     exitCode: buildExitCode,
     stdout: buildStdout,

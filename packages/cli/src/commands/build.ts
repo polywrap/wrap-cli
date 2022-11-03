@@ -35,6 +35,7 @@ import readline from "readline";
 import { PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
@@ -51,7 +52,8 @@ type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
   configBuilder: IClientConfigBuilder;
-  codegen: boolean; // defaults to true
+  codegen: boolean; // defaults to false
+  codegenDir: string;
   watch?: boolean;
   strategy: SupportedStrategies;
   verbose?: boolean;
@@ -83,6 +85,12 @@ export const build: Command = {
       )
       .option(`--codegen`, `${intlMsg.commands_build_options_codegen()}`)
       .option(
+        `--codegen-dir`,
+        `${intlMsg.commands_build_options_codegen_dir({
+          default: defaultCodegenDir,
+        })}`
+      )
+      .option(
         `-s, --strategy <${strategyStr}>`,
         `${intlMsg.commands_build_options_s()}`,
         defaultStrategy
@@ -103,6 +111,7 @@ export const build: Command = {
           ),
           configBuilder: await parseClientConfigOption(options.clientConfig),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
+          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           strategy: options.strategy,
           logFile: parseLogFileOption(options.logFile),
         });
@@ -153,6 +162,7 @@ async function run(options: BuildCommandOptions) {
     configBuilder,
     strategy,
     codegen,
+    codegenDir,
     verbose,
     quiet,
     logFile,
@@ -193,8 +203,12 @@ async function run(options: BuildCommandOptions) {
       });
 
       if (codegen) {
-        const codeGenerator = new CodeGenerator({ project, schemaComposer });
-        await codeGenerator?.generate();
+        const codeGenerator = new CodeGenerator({
+          project,
+          schemaComposer,
+          codegenDirAbs: codegenDir,
+        });
+        await codeGenerator.generate();
       }
 
       const compiler = new Compiler({
@@ -224,8 +238,12 @@ async function run(options: BuildCommandOptions) {
 
       try {
         if (codegen) {
-          const codeGenerator = new CodeGenerator({ project, schemaComposer });
-          await codeGenerator?.generate();
+          const codeGenerator = new CodeGenerator({
+            project,
+            schemaComposer,
+            codegenDirAbs: codegenDir,
+          });
+          await codeGenerator.generate();
         }
 
         if (!fs.existsSync(outputDir)) {

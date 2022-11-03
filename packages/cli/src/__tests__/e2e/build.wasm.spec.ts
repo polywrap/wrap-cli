@@ -19,6 +19,8 @@ Options:
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
   --codegen                          Perform code generation before build
+  --codegen-dir                      Codegen output directory (default:
+                                     ./src/wrap)
   -s, --strategy <strategy>          Strategy to use for building the wrapper
                                      (default: "vm")
   -w, --watch                        Automatically rebuild when changes are
