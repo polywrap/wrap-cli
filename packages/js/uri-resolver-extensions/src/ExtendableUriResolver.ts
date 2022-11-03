@@ -33,7 +33,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     const getImplementationsResult = await client.getImplementations(
       coreInterfaceUris.uriResolver,
       {
-        resolutionContext,
+        resolutionContext: resolutionContext.createSubContext(),
       }
     );
 
