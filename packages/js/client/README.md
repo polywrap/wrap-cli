@@ -206,7 +206,7 @@ getFile<TUri extends Uri | string>(uri: TUri, options: GetFileOptions): Promise<
  *  from the configuration used to instantiate the client
  *
  * @param uri - a wrap URI
- * @param options - { applyRedirects?: boolean }
+ * @param options - { applyResolution?: boolean }
  * @returns a Result containing URI array if the request was successful
  */
 getImplementations<TUri extends Uri | string>(uri: TUri, options?: GetImplementationsOptions): Result<TUri[], Error>;

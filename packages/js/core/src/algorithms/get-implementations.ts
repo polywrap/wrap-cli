@@ -5,7 +5,7 @@ import { GetImplementationsError } from "./GetImplementationsError";
 import { Tracer } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
-const applyRedirects = async (
+const applyResolution = async (
   uri: Uri,
   client: CoreClient,
   resolutionContext?: IUriResolutionContext
@@ -43,7 +43,7 @@ export const getImplementations = Tracer.traceFunc(
       for (const interfaceImplementations of implementationsArray) {
         let fullyResolvedUri: Uri;
         if (client) {
-          const redirectsResult = await applyRedirects(
+          const redirectsResult = await applyResolution(
             interfaceImplementations.interface,
             client,
             resolutionContext
@@ -68,7 +68,7 @@ export const getImplementations = Tracer.traceFunc(
     let finalUri = wrapperInterfaceUri;
 
     if (client) {
-      const redirectsResult = await applyRedirects(
+      const redirectsResult = await applyResolution(
         wrapperInterfaceUri,
         client,
         resolutionContext

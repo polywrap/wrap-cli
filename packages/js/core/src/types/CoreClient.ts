@@ -28,7 +28,7 @@ export interface GetFileOptions {
 }
 
 export interface GetImplementationsOptions {
-  applyRedirects?: boolean;
+  applyResolution?: boolean;
   resolutionContext?: IUriResolutionContext;
 }
 

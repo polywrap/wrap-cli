@@ -40,7 +40,7 @@ describe("interface-impls", () => {
     ]);
 
     const implementations = await client.getImplementations(interfaceUri, {
-      applyRedirects: false,
+      applyResolution: false,
     });
 
     if (!implementations.ok) fail(implementations.error);
@@ -98,13 +98,13 @@ describe("interface-impls", () => {
     );
 
     const implementations1 = await client.getImplementations(interface1Uri, {
-      applyRedirects: true,
+      applyResolution: true,
     });
     const implementations2 = await client.getImplementations(interface2Uri, {
-      applyRedirects: true,
+      applyResolution: true,
     });
     const implementations3 = await client.getImplementations(interface3Uri, {
-      applyRedirects: true,
+      applyResolution: true,
     });
 
     if (!implementations1.ok) fail(implementations1.error);
@@ -219,7 +219,7 @@ describe("interface-impls", () => {
 
     const getImplementationsResult = await client.getImplementations(
       new Uri(interfaceUri),
-      { applyRedirects: true }
+      { applyResolution: true }
     );
 
     if (!getImplementationsResult.ok) fail(getImplementationsResult.error);
@@ -251,7 +251,7 @@ describe("interface-impls", () => {
 
     const getImplementationsResult = await client.getImplementations(
       new Uri(interfaceUri),
-      { applyRedirects: true }
+      { applyResolution: true }
     );
 
     if (!getImplementationsResult.ok) fail(getImplementationsResult.error);
@@ -288,25 +288,25 @@ describe("interface-impls", () => {
     });
 
     let result = await client.getImplementations(oldInterfaceUri, {
-      applyRedirects: false,
+      applyResolution: false,
     });
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual([implementation1Uri]);
 
     result = await client.getImplementations(oldInterfaceUri, {
-      applyRedirects: true,
+      applyResolution: true,
     });
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual([implementation1Uri, implementation2Uri]);
 
     let result2 = await client.getImplementations(new Uri(oldInterfaceUri), {
-      applyRedirects: false,
+      applyResolution: false,
     });
     if (!result2.ok) fail(result2.error);
     expect(result2.value).toEqual([new Uri(implementation1Uri)]);
 
     result2 = await client.getImplementations(new Uri(oldInterfaceUri), {
-      applyRedirects: true,
+      applyResolution: true,
     });
     if (!result2.ok) fail(result2.error);
     expect(result2.value).toEqual([

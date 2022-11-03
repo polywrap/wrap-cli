@@ -214,7 +214,7 @@ export class PolywrapClient implements CoreClient {
    *  from the configuration used to instantiate the client
    *
    * @param uri - a wrap URI
-   * @param options - { applyRedirects?: boolean }
+   * @param options - { applyResolution?: boolean }
    * @returns a Result containing URI array if the request was successful
    */
   @Tracer.traceMethod("PolywrapClient: getImplementations")
@@ -223,13 +223,13 @@ export class PolywrapClient implements CoreClient {
     options: GetImplementationsOptions = {}
   ): Promise<Result<TUri[], Error>> {
     const isUriTypeString = typeof uri === "string";
-    const applyRedirects = !!options.applyRedirects;
+    const applyResolution = !!options.applyResolution;
 
     const getImplResult = await getImplementations(
       Uri.from(uri),
       this.getInterfaces() ?? [],
-      applyRedirects ? this : undefined,
-      applyRedirects ? options.resolutionContext : undefined
+      applyResolution ? this : undefined,
+      applyResolution ? options.resolutionContext : undefined
     );
 
     if (!getImplResult.ok) {
