@@ -22,3 +22,5 @@ export const extractors: SchemaExtractorBuilder[] = [
   getEnvVisitor,
   getImportedEnvTypesVisitor,
 ];
+
+export * as mapUtils from "./utils/map-utils";

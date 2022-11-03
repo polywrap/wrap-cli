@@ -65,7 +65,61 @@ export const abi: WrapAbi = {
               "required": true,
               "kind": 4
             }
-          }
+          },
+          {
+            "kind": 34,
+            "map":  {
+              "array":  {
+                "item":  {
+                  "kind": 8192,
+                  "name": "map",
+                  "required": true,
+                  "type": "ExternalType",
+                },
+                "kind": 18,
+                "name": "map",
+                "object":  {
+                  "kind": 8192,
+                  "name": "map",
+                  "required": true,
+                  "type": "ExternalType",
+                },
+                "required": true,
+                "type": "[ExternalType]",
+              },
+              "key":  {
+                "kind": 4,
+                "name": "map",
+                "required": true,
+                "type": "String",
+              },
+              "kind": 262146,
+              "name": "map",
+              "required": true,
+              "type": "Map<String, [ExternalType]>",
+              "value":  {
+                "item":  {
+                  "kind": 8192,
+                  "name": "map",
+                  "required": true,
+                  "type": "ExternalType",
+                },
+                "kind": 18,
+                "name": "map",
+                "object": {
+                  "kind": 8192,
+                  "name": "map",
+                  "required": true,
+                  "type": "ExternalType",
+                },
+                "required": true,
+                "type": "[ExternalType]",
+              },
+            },
+            "name": "map",
+            "required": true,
+            "type": "Map<String, [ExternalType]>",
+          },
         ],
         "return": {
           "type": "String",

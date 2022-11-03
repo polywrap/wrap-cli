@@ -108,6 +108,47 @@ const _toGraphQLType = (rootType: string, type: string): string => {
   }
 };
 
+const _appendNamespace = (
+  namespace: string,
+  rootType: string,
+  type: string
+): string => {
+  const parsedCurrentType = _parseCurrentType(rootType, type);
+  let { subType } = parsedCurrentType;
+  const { currentType } = parsedCurrentType;
+
+  if (!subType) {
+    return isScalarType(currentType)
+      ? currentType
+      : `${namespace}_${currentType}`;
+  }
+
+  switch (currentType) {
+    case "Array": {
+      if (subType.endsWith("!")) {
+        subType = subType.slice(0, -1);
+      }
+      return `[${_appendNamespace(namespace, rootType, subType)}]`;
+    }
+    case "Map": {
+      const firstDelimiter = subType.indexOf(",");
+
+      const keyType = subType.substring(0, firstDelimiter).trim();
+      const valType = subType.substring(firstDelimiter + 1).trim();
+
+      return `Map<${_appendNamespace(
+        namespace,
+        rootType,
+        keyType
+      )}, ${_appendNamespace(namespace, rootType, valType)}>`;
+    }
+    default:
+      throw new Error(
+        `Found unknown type ${currentType} while parsing ${rootType}`
+      );
+  }
+};
+
 const _parseMapType = (
   rootType: string,
   type: string,
@@ -188,4 +229,8 @@ export function parseMapType(type: string, name?: string): GenericDefinition {
 
 export function toGraphQLType(type: string): string {
   return _toGraphQLType(type, type);
+}
+
+export function appendNamespace(namespace: string, type: string): string {
+  return _appendNamespace(namespace, type, type);
 }

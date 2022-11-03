@@ -1,6 +1,7 @@
-import { Log, LogLevel } from "../Log";
+import { Log } from "../Log";
 
 import chalk from "chalk";
+import { LogLevel } from "@polywrap/logging-js";
 
 export class ConsoleLog extends Log {
   constructor(level: LogLevel) {

@@ -1,4 +1,6 @@
-import { Logger, LogLevel, ConsoleLog } from "../../lib";
+import { Logger, ConsoleLog } from "../../lib";
+
+import { LogLevel } from "@polywrap/logging-js";
 
 export function createLogger(flags: {
   verbose?: boolean;
