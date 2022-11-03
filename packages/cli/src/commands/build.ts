@@ -28,6 +28,7 @@ import {
   DockerImageBuildStrategy,
   LocalBuildStrategy,
 } from "../lib/build-strategies";
+import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 
 import fs from "fs";
 import path from "path";
@@ -35,7 +36,6 @@ import readline from "readline";
 import { PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
