@@ -588,7 +588,7 @@ describe("Client config builder", () => {
     const config = new ClientConfigBuilder()
       .addRedirect(from1, to1)
       .addRedirect(from2, to2)
-      .removeUriRedirect(from1)
+      .removeRedirect(from1)
       .build();
 
     expect(config.redirects).toHaveLength(1);

@@ -20,7 +20,7 @@ import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { PolywrapClient } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
-import { ClientConfig } from "@polywrap/client-config-builder-js";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 const commandToPathMap: Record<string, string> = {
   schema: schemaScriptPath,
@@ -36,7 +36,7 @@ const pathStr = intlMsg.commands_codegen_options_o_path();
 type DocgenCommandOptions = {
   manifestFile: string;
   docgenDir: string;
-  clientConfig: Partial<ClientConfig>;
+  configBuilder: IClientConfigBuilder;
   imports: boolean;
   verbose?: boolean;
   quiet?: boolean;
@@ -108,7 +108,7 @@ export const docgen: Command = {
             defaultProjectManifestFiles
           ),
           docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
-          clientConfig: await parseClientConfigOption(options.clientConfig),
+          configBuilder: await parseClientConfigOption(options.clientConfig),
           logFile: parseLogFileOption(options.logFile),
         });
       });
@@ -119,7 +119,7 @@ async function run(command: DocType, options: DocgenCommandOptions) {
   const {
     manifestFile,
     docgenDir,
-    clientConfig,
+    configBuilder,
     imports,
     verbose,
     quiet,
@@ -144,7 +144,9 @@ async function run(command: DocType, options: DocgenCommandOptions) {
   // Resolve custom script
   const customScript = require.resolve(commandToPathMap[command]);
 
-  const client = new PolywrapClient(clientConfig);
+  const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
+    noDefaults: true,
+  });
 
   const schemaComposer = new SchemaComposer({
     project,

@@ -6,8 +6,8 @@
 `nvm install && nvm use`  
 `yarn`  
 
-## Start Test Environment
-`yarn test:env:up`  
+## Build
+`yarn build`
 
 ## Build & Deploy Polywrap
 `yarn deploy` 

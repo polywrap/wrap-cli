@@ -1,10 +1,12 @@
-import { Log, LogLevel } from "./Log";
+import { Log } from "./Log";
+
+import { ILogger, LogLevel } from "@polywrap/logging-js";
 
 export interface Logs {
   [name: string]: Log;
 }
 
-export class Logger {
+export class Logger implements ILogger {
   private _logs: Logs;
 
   constructor(logs: Logs) {

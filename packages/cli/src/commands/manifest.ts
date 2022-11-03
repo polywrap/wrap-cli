@@ -527,7 +527,7 @@ const runMigrateCommand = async (
 
 function migrateManifestFile(
   manifestFile: string,
-  migrationFn: (input: string, to: string) => string,
+  migrationFn: (input: string, to: string, logger?: Logger) => string,
   to: string,
   logger: Logger
 ): void {
@@ -545,7 +545,7 @@ function migrateManifestFile(
     encoding: "utf-8",
   });
 
-  const outputManifestString = migrationFn(manifestString, to);
+  const outputManifestString = migrationFn(manifestString, to, logger);
 
   // Cache the old manifest file
   const cache = new CacheDirectory({

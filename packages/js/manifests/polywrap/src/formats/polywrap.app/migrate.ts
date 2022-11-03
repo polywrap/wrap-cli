@@ -11,10 +11,12 @@ import {
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
 import { migrators } from "./migrators";
+import { ILogger } from "@polywrap/logging-js";
 
 export function migrateAppManifest(
   manifest: AnyAppManifest,
-  to: AppManifestFormats
+  to: AppManifestFormats,
+  logger?: ILogger
 ): AppManifest {
   let from = manifest.format as AppManifestFormats;
 
@@ -36,7 +38,7 @@ export function migrateAppManifest(
   let newManifest = manifest;
 
   for(const migrator of migrationPath){
-    newManifest = migrator.migrate(newManifest) as AnyAppManifest;
+    newManifest = migrator.migrate(newManifest, logger) as AnyAppManifest;
   }
 
   return newManifest as AppManifest;

@@ -42,7 +42,7 @@ export async function loadPolywrapManifest(
     }
 
     try {
-      const result = deserializePolywrapManifest(manifest);
+      const result = deserializePolywrapManifest(manifest, { logger: logger });
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
@@ -102,6 +102,7 @@ export async function loadBuildManifest(
 
     return deserializeBuildManifest(manifest, {
       extSchema: extSchema,
+      logger: logger,
     });
   };
 
@@ -137,7 +138,7 @@ export async function loadDeployManifest(
     }
 
     try {
-      let result = deserializeDeployManifest(manifest);
+      let result = deserializeDeployManifest(manifest, { logger: logger });
       result = (loadEnvironmentVariables(
         (result as unknown) as Record<string, unknown>
       ) as unknown) as DeployManifest;
@@ -213,7 +214,7 @@ export async function loadMetaManifest(
     }
 
     try {
-      const result = deserializeMetaManifest(manifest);
+      const result = deserializeMetaManifest(manifest, { logger: logger });
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
@@ -252,7 +253,7 @@ export async function loadInfraManifest(
     }
 
     try {
-      let result = deserializeInfraManifest(manifest);
+      let result = deserializeInfraManifest(manifest, { logger: logger });
       result = (loadEnvironmentVariables(
         (result as unknown) as Record<string, unknown>
       ) as unknown) as InfraManifest;
@@ -294,7 +295,7 @@ export async function loadWorkflowManifest(
     }
 
     try {
-      const result = deserializePolywrapWorkflow(manifest);
+      const result = deserializePolywrapWorkflow(manifest, { logger: logger });
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);

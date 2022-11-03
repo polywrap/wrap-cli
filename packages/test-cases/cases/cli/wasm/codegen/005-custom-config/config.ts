@@ -1,4 +1,4 @@
-import { ClientConfig } from "@polywrap/client-config-builder-js";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { IWrapPackage } from "@polywrap/core-js";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import {
@@ -34,15 +34,11 @@ const mockPlugin = (): IWrapPackage => {
   });
 };
 
-export function getCustomConfig(): Partial<ClientConfig<string>> {
-  return {
-    packages: [
-      {
-        uri: "wrap://ens/mock.eth",
-        package: mockPlugin(),
-      },
-    ],
-  };
+export function configure(builder: IClientConfigBuilder): IClientConfigBuilder {
+  return builder.addPackage({
+    uri: "wrap://ens/mock.eth",
+    package: mockPlugin(),
+  });
 }
 
 const abi: WrapAbi = {

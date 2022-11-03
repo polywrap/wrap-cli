@@ -21,10 +21,10 @@ import { createLogger } from "./utils/createLogger";
 import path from "path";
 import yaml from "yaml";
 import fs from "fs";
-import { ClientConfig } from "@polywrap/client-config-builder-js";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 type WorkflowCommandOptions = {
-  clientConfig: Partial<ClientConfig>;
+  configBuilder: IClientConfigBuilder;
   manifest: string;
   jobs?: string[];
   validationScript?: string;
@@ -74,7 +74,7 @@ export const test: Command = {
             options.manifestFile,
             defaultWorkflowManifest
           ),
-          clientConfig: await parseClientConfigOption(options.clientConfig),
+          configBuilder: await parseClientConfigOption(options.clientConfig),
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile)
             : undefined,
@@ -87,7 +87,7 @@ export const test: Command = {
 const _run = async (options: WorkflowCommandOptions) => {
   const {
     manifest,
-    clientConfig,
+    configBuilder,
     outputFile,
     verbose,
     quiet,
@@ -127,7 +127,7 @@ const _run = async (options: WorkflowCommandOptions) => {
     workflowOutput.push(output);
   };
 
-  const jobRunner = new JobRunner(clientConfig, onExecution);
+  const jobRunner = new JobRunner(configBuilder, onExecution);
   await jobRunner.run(workflow.jobs, jobs ?? Object.keys(workflow.jobs));
 
   if (outputFile) {

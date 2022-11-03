@@ -17,7 +17,7 @@ import {
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import { ClientConfig } from "@polywrap/client-config-builder-js";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 const defaultCodegenDir = "./src/wrap";
 
@@ -28,7 +28,7 @@ type CodegenCommandOptions = {
   manifestFile: string;
   codegenDir: string;
   script?: string;
-  clientConfig: Partial<ClientConfig>;
+  configBuilder: IClientConfigBuilder;
   verbose?: boolean;
   quiet?: boolean;
   logFile?: string;
@@ -69,7 +69,7 @@ export const codegen: Command = {
       .action(async (options) => {
         await run({
           ...options,
-          clientConfig: await parseClientConfigOption(options.clientConfig),
+          configBuilder: await parseClientConfigOption(options.clientConfig),
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           script: parseCodegenScriptOption(options.script),
           manifestFile: parseManifestFileOption(
@@ -87,7 +87,7 @@ async function run(options: CodegenCommandOptions) {
     manifestFile,
     codegenDir,
     script,
-    clientConfig,
+    configBuilder,
     verbose,
     quiet,
     logFile,
@@ -95,7 +95,9 @@ async function run(options: CodegenCommandOptions) {
   const logger = createLogger({ verbose, quiet, logFile });
 
   // Get Client
-  const client = new PolywrapClient(clientConfig);
+  const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
+    noDefaults: true,
+  });
 
   const project = await getProjectFromManifest(manifestFile, logger);
 
