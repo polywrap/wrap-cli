@@ -2,7 +2,7 @@
   "name": "templates-wrapper-interface",
   "description": "Polywrap Interface Example",
   "private": true,
-  "version": "0.9.3",
+  "version": "0.9.4",
   "scripts": {
     "build": "npx polywrap build",
     "test:env:up": "npx polywrap infra up --modules=eth-ens-ipfs",
@@ -11,6 +11,6 @@
     "test": "yarn test:env:up && yarn deploy && yarn test:env:down"
   },
   "devDependencies": {
-    "polywrap": "0.9.3"
+    "polywrap": "0.9.4"
   }
 }
