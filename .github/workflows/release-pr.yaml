@@ -1,27 +1,20 @@
 name: Release-PR
 on:
-  issue_comment:
-    types: [created]
+  pull_request:
+    types: [closed]
 
 jobs:
   Pre-Check:
     if: |
-      github.event.issue.pull_request &&
-      startsWith(github.event.comment.body, '/workflows/release-pr') &&
-      github.event.comment.user.login != 'polywrap-build-bot'
+      github.event.pull_request.merged &&
+      endsWith(github.event.pull_request.title, '/workflows/release-pr') &&
+      github.event.pull_request.user.login != 'polywrap-build-bot'
     runs-on: ubuntu-18.04
     steps:
-      - name: Get Release Branch
-        run: |
-          releaseBranch="$(gh api /repos/polywrap/toolchain/pulls/${github.event.issue.number} --jq '.base.ref')"
-          echo 'RELEASE_BRANCH='$releaseBranch >> $GITHUB_ENV
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Checkout
         uses: actions/checkout@3.1.0
         with:
-          ref: $RELEASE_BRANCH
+          ref: ${{github.event.pull_request.base.ref}}
 
       - name: Commenter Is Publisher?
         run: |
@@ -32,7 +25,7 @@ jobs:
             echo IS_PUBLISHER=false >> $GITHUB_ENV
           fi
         env:
-          COMMENTER: ${{github.event.comment.user.login}}
+          COMMENTER: ${{github.pull_request.user.login}}
 
       - name: Commenter Is Not Publisher...
         if: ${{env.IS_PUBLISHER == 'false'}}
@@ -44,7 +37,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '${{github.event.comment.user.login}} is not a PUBLISHER. Please see the .github/PUBLISHERS file...'
+              body: '${{github.event.pull_request.user.login}} is not a PUBLISHER. Please see the .github/PUBLISHERS file...'
             })
 
       - name: Read VERSION into env.RELEASE_VERSION
@@ -88,17 +81,10 @@ jobs:
     needs: Pre-Check
     runs-on: ubuntu-18.04
     steps:
-      - name: Get Release Branch
-        run: |
-          releaseBranch="$(gh api /repos/polywrap/toolchain/pulls/${github.event.issue.number} --jq '.base.ref')"
-          echo 'RELEASE_BRANCH='$releaseBranch >> $GITHUB_ENV
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Checkout
         uses: actions/checkout@3.1.0
         with:
-          ref: $RELEASE_BRANCH
+          ref: ${{github.event.pull_request.base.ref}}
 
       - name: Set env.BOT to Build Bot's Username
         run: echo BOT=polywrap-build-bot >> $GITHUB_ENV
@@ -155,9 +141,9 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.POLYWRAP_BUILD_BOT_PAT }}
-          push-to-fork: ${{env.BOT}}/${{github.event.repository.name}}
+          push-to-fork: ${{env.BOT}}/${{github.event.pull_request.base.repo.name}}
           branch: release/origin-${{env.RELEASE_VERSION}}
-          base: $RELEASE_BRANCH
+          base: ${{github.event.pull_request.base.ref}}
           committer: GitHub <noreply@github.com>
           author: ${{env.BOT}} <${{env.BOT}}@users.noreply.github.com>
           commit-message: "${{env.RELEASE_VERSION}}"
