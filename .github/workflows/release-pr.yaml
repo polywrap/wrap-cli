@@ -11,10 +11,17 @@ jobs:
       github.event.comment.user.login != 'polywrap-build-bot'
     runs-on: ubuntu-18.04
     steps:
+      - name: Get Release Branch
+        run: |
+          releaseBranch="$(gh api /repos/polywrap/toolchain/pulls/${github.event.issue.number} --jq '.base.ref')"
+          echo 'RELEASE_BRANCH='$releaseBranch >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@3.1.0
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: $RELEASE_BRANCH
 
       - name: Commenter Is Publisher?
         run: |
@@ -81,10 +88,17 @@ jobs:
     needs: Pre-Check
     runs-on: ubuntu-18.04
     steps:
+      - name: Get Release Branch
+        run: |
+          releaseBranch="$(gh api /repos/polywrap/toolchain/pulls/${github.event.issue.number} --jq '.base.ref')"
+          echo 'RELEASE_BRANCH='$releaseBranch >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@3.1.0
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: $RELEASE_BRANCH
 
       - name: Set env.BOT to Build Bot's Username
         run: echo BOT=polywrap-build-bot >> $GITHUB_ENV
@@ -143,7 +157,7 @@ jobs:
           token: ${{ secrets.POLYWRAP_BUILD_BOT_PAT }}
           push-to-fork: ${{env.BOT}}/${{github.event.repository.name}}
           branch: release/origin-${{env.RELEASE_VERSION}}
-          base: ${{ github.event.pull_request.head.ref }}
+          base: $RELEASE_BRANCH
           committer: GitHub <noreply@github.com>
           author: ${{env.BOT}} <${{env.BOT}}@users.noreply.github.com>
           commit-message: "${{env.RELEASE_VERSION}}"
