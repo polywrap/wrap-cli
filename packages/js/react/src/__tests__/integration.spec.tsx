@@ -37,6 +37,7 @@ describe("Polywrap React Integration", () => {
       wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
+      codegen: true
     });
 
     ensUri = `ens/testnet/${wrapper.ensDomain}`;

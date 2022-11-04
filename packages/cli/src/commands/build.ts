@@ -208,7 +208,12 @@ async function run(options: BuildCommandOptions) {
           schemaComposer,
           codegenDirAbs: codegenDir,
         });
-        await codeGenerator.generate();
+        const codegenSuccess = await codeGenerator.generate();
+
+        if (!codegenSuccess) {
+          logger.error("Codegen failed before build!");
+          return false;
+        }
       }
 
       const compiler = new Compiler({
@@ -243,7 +248,12 @@ async function run(options: BuildCommandOptions) {
             schemaComposer,
             codegenDirAbs: codegenDir,
           });
-          await codeGenerator.generate();
+          const codegenSuccess = await codeGenerator.generate();
+
+          if (!codegenSuccess) {
+            logger.error("Codegen failed before build!");
+            return false;
+          }
         }
 
         if (!fs.existsSync(outputDir)) {

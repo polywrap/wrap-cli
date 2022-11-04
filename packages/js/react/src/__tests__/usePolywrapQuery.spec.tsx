@@ -37,11 +37,11 @@ describe("usePolywrapQuery hook", () => {
     await initTestEnvironment();
 
     const simpleStoragePath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
-    await buildWrapper(simpleStoragePath);
+    await buildWrapper(simpleStoragePath, undefined, true);
     uri = `fs/${simpleStoragePath}/build`;
 
     const simpleEnvPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`;
-    await buildWrapper(simpleEnvPath);
+    await buildWrapper(simpleEnvPath, undefined, true);
 
     envs = createEnvs(providers.ipfs);
     packages = createPlugins(ensAddresses.ensAddress, providers.ethereum);
