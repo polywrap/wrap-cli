@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/package-validation",
   "description": "Polywrap Package Validator",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,12 +19,12 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/schema-compose": "0.9.3",
-    "@polywrap/wrap-manifest-types-js": "0.9.3"
+    "@polywrap/schema-compose": "0.9.4",
+    "@polywrap/wrap-manifest-types-js": "0.9.4"
   },
   "devDependencies": {
-    "@polywrap/msgpack-js": "0.9.3",
-    "@polywrap/os-js": "0.9.3",
+    "@polywrap/msgpack-js": "0.9.4",
+    "@polywrap/os-js": "0.9.4",
     "@types/jest": "26.0.8",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
