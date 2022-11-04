@@ -16,18 +16,18 @@ jobs:
         with:
           ref: ${{github.event.pull_request.base.ref}}
 
-      - name: Commenter Is Publisher?
+      - name: Pull-Request Creator Is Publisher?
         run: |
-          exists=$(echo $(grep -Fxcs ${COMMENTER} .github/PUBLISHERS))
+          exists=$(echo $(grep -Fxcs ${CREATOR} .github/PUBLISHERS))
           if [ "$exists" == "1" ] ; then
             echo IS_PUBLISHER=true >> $GITHUB_ENV
           else
             echo IS_PUBLISHER=false >> $GITHUB_ENV
           fi
         env:
-          COMMENTER: ${{github.pull_request.user.login}}
+          CREATOR: ${{github.event.pull_request.user.login}}
 
-      - name: Commenter Is Not Publisher...
+      - name: Creator Is Not Publisher...
         if: ${{env.IS_PUBLISHER == 'false'}}
         uses: actions/github-script@0.8.0
         with:
