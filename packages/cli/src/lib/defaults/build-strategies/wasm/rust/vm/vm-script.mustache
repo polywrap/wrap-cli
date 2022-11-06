@@ -24,10 +24,7 @@ cargo build --manifest-path ./{{dir}}/Cargo.toml \
 rm -rf ./build
 mkdir ./build
 
-wasm-bindgen ./{{dir}}/target/wasm32-unknown-unknown/release/module.wasm --out-dir ./build --out-name bg_module.wasm
-
-wasm-snip ./build/bg_module.wasm -o ./build/snipped_module.wasm
-rm -rf ./build/bg_module.wasm
+wasm-snip ./{{dir}}/target/wasm32-unknown-unknown/release/module.wasm -o ./build/snipped_module.wasm
 
 wasm-opt --asyncify -Os ./build/snipped_module.wasm -o ./build/wrap.wasm
 rm -rf ./build/snipped_module.wasm

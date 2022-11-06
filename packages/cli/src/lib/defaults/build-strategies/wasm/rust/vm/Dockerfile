@@ -21,13 +21,9 @@ RUN cargo install -f toml-cli
 # Install wasm-snip
 RUN cargo install -f wasm-snip
 
-# Install wasm-bindgen
-RUN cargo install -f wasm-bindgen-cli
-
 # Install cargo-build-deps
 RUN cargo install -f cargo-build-deps
 
 ENV RUSTFLAGS="-C link-arg=-z -C link-arg=stack-size=65536 -C link-arg=--import-memory"
-ENV WASM_INTERFACE_TYPES=1
 
 WORKDIR /project
