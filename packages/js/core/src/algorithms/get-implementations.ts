@@ -1,23 +1,10 @@
 import { Uri, InterfaceImplementations, CoreClient } from "../types";
 import { IUriResolutionContext } from "../uri-resolution";
 import { GetImplementationsError } from "./GetImplementationsError";
+import { applyResolution } from "./applyResolution";
 
 import { Tracer } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
-
-const applyResolution = async (
-  uri: Uri,
-  client: CoreClient,
-  resolutionContext?: IUriResolutionContext
-): Promise<Result<Uri, unknown>> => {
-  const result = await client.tryResolveUri({ uri, resolutionContext });
-
-  if (!result.ok) {
-    return result;
-  }
-
-  return ResultOk(result.value.uri);
-};
 
 export const getImplementations = Tracer.traceFunc(
   "core: getImplementations",
