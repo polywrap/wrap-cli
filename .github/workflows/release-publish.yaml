@@ -13,12 +13,22 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Read VERSION into env.RELEASE_VERSION
         run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
+
+      - name: Is Pre-Release
+        run: |
+          STR='${RELEASE_VERSION}'
+          SUB='pre.'
+          if [[ "$STR" == *"$SUB"* ]]; then
+            echo PRE_RELEASE=true >> $GITHUB_ENV
+          else
+            echo PRE_RELEASE=false >> $GITHUB_ENV
+          fi
 
       - name: Set Git Identity
         run: |
@@ -54,7 +64,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        if: ${{env.TAG_EXISTS}} == 'false' && github.event.pull_request.merged == true
+        if: ${{env.PRE_RELEASE}} == 'false' && ${{env.TAG_EXISTS}} == 'false' && github.event.pull_request.merged == true
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -87,7 +97,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.base.ref }}
 
@@ -119,7 +129,12 @@ jobs:
 
       - name: Publish Node Packages To NPM
         if: ${{env.TAG_EXISTS}} == 'false'
-        run: yarn publish:npm
+        run: |
+          if [ "$PRE_RELEASE" -ne "true" ] ; then
+            yarn publish:npm
+          else
+            yarn publish:pre:npm
+          fi
         env:
           NPM_AUTH_TOKEN: ${{secrets.POLYWRAP_BUILD_BOT_NPM_PAT}}
 
@@ -143,7 +158,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.base.ref }}
 
