@@ -18,7 +18,7 @@ import {
 } from "../lib";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import { PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient, Uri } from "@polywrap/client-js";
 import path from "path";
 import fs from "fs";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
@@ -142,6 +142,74 @@ async function run(options: CodegenCommandOptions) {
       });
 
   const result = await codeGenerator.generate();
+
+  //
+  const abi = await schemaComposer.getComposedAbis();
+
+  if (abi.importedModuleTypes && abi.importedModuleTypes.length) {
+    logger.info("Caching imported modules...");
+    const importsDir = path.join("./.polywrap", "imports");
+
+    for (const module of abi.importedModuleTypes) {
+      const uri = Uri.from(module.uri);
+      const moduleSubDir = path.join(importsDir, uri.path);
+
+      const wrapperResult = await client.loadWrapper(uri);
+      if (wrapperResult.ok) {
+        const wrapper = wrapperResult.value;
+        const manifest = wrapper.getManifest();
+
+        // We can only generate wrap.info for plugins - maybe do this?
+        if (manifest.type === "plugin") {
+          logger.info(`Skipping caching of Plugin wrapper ${uri.uri}.`);
+          continue;
+        }
+
+        // Create dir if not exist
+        if (!fs.existsSync(moduleSubDir)) {
+          fs.mkdirSync(moduleSubDir, { recursive: true });
+        }
+
+        //wrap.info
+        const wrapInfoFileResult = await wrapper.getFile({ path: "wrap.info" });
+
+        if (wrapInfoFileResult.ok) {
+          const wrapInfoFileContents = wrapInfoFileResult.value;
+          const wrapInfoFilePath = path.join(moduleSubDir, "wrap.info");
+          fs.writeFileSync(wrapInfoFilePath, wrapInfoFileContents);
+        } else {
+          logger.error(wrapInfoFileResult.error?.message ?? "");
+        }
+
+        if (manifest.type === "wasm") {
+          //wrap.wasm
+          const wrapWasmFileResult = await wrapper.getFile({
+            path: "wrap.wasm",
+          });
+
+          if (wrapWasmFileResult.ok) {
+            const wrapWasmFileContents = wrapWasmFileResult.value;
+            const wrapWasmFilePath = path.join(moduleSubDir, "wrap.wasm");
+
+            fs.writeFileSync(wrapWasmFilePath, wrapWasmFileContents);
+          } else {
+            logger.error(wrapWasmFileResult.error?.message ?? "");
+          }
+        }
+
+        // //schema.graphql
+        // const abi = manifest.abi;
+        // const schema = renderSchema(abi, false);
+        // const schemaFile = path.join(moduleImportsDir, "schema.graphql");
+
+        // const dir = path.dirname(schemaFile);
+        // if (!fs.existsSync(dir)) {
+        //   fs.mkdirSync(dir, { recursive: true });
+        // }
+        // fs.writeFileSync(schemaFile, schema, { encoding: "utf-8" });
+      }
+    }
+  }
 
   // HACK: Codegen outputs wrap.info into a build directory for plugins, needs to be moved into a build command?
   if (isPluginManifestLanguage(projectType)) {
