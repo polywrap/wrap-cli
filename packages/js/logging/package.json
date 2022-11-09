@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/logging-js",
   "description": "Polywrap Core Logging Interface",
-  "version": "0.9.3",
+  "version": "0.10.0-pre.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -14,8 +14,6 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/"
-  },
-  "dependencies": {
   },
   "devDependencies": {
     "rimraf": "3.0.2",

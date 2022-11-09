@@ -1,33 +1,33 @@
 name: Release-PR
 on:
-  issue_comment:
-    types: [created]
+  pull_request:
+    types: [closed]
 
 jobs:
   Pre-Check:
     if: |
-      github.event.issue.pull_request &&
-      startsWith(github.event.comment.body, '/workflows/release-pr') &&
-      github.event.comment.user.login != 'polywrap-build-bot'
+      github.event.pull_request.merged &&
+      endsWith(github.event.pull_request.title, '/workflows/release-pr') &&
+      github.event.pull_request.user.login != 'polywrap-build-bot'
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{github.event.pull_request.base.ref}}
 
-      - name: Commenter Is Publisher?
+      - name: Pull-Request Creator Is Publisher?
         run: |
-          exists=$(echo $(grep -Fxcs ${COMMENTER} .github/PUBLISHERS))
+          exists=$(echo $(grep -Fxcs ${CREATOR} .github/PUBLISHERS))
           if [ "$exists" == "1" ] ; then
             echo IS_PUBLISHER=true >> $GITHUB_ENV
           else
             echo IS_PUBLISHER=false >> $GITHUB_ENV
           fi
         env:
-          COMMENTER: ${{github.event.comment.user.login}}
+          CREATOR: ${{github.event.pull_request.user.login}}
 
-      - name: Commenter Is Not Publisher...
+      - name: Creator Is Not Publisher...
         if: ${{env.IS_PUBLISHER == 'false'}}
         uses: actions/github-script@0.8.0
         with:
@@ -37,7 +37,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '${{github.event.comment.user.login}} is not a PUBLISHER. Please see the .github/PUBLISHERS file...'
+              body: '${{github.event.pull_request.user.login}} is not a PUBLISHER. Please see the .github/PUBLISHERS file...'
             })
 
       - name: Read VERSION into env.RELEASE_VERSION
@@ -82,9 +82,9 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{github.event.pull_request.base.ref}}
 
       - name: Set env.BOT to Build Bot's Username
         run: echo BOT=polywrap-build-bot >> $GITHUB_ENV
@@ -141,9 +141,9 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.POLYWRAP_BUILD_BOT_PAT }}
-          push-to-fork: ${{env.BOT}}/${{github.event.repository.name}}
+          push-to-fork: ${{env.BOT}}/${{github.event.pull_request.base.repo.name}}
           branch: release/origin-${{env.RELEASE_VERSION}}
-          base: ${{ github.event.pull_request.head.ref }}
+          base: ${{github.event.pull_request.base.ref}}
           committer: GitHub <noreply@github.com>
           author: ${{env.BOT}} <${{env.BOT}}@users.noreply.github.com>
           commit-message: "${{env.RELEASE_VERSION}}"
