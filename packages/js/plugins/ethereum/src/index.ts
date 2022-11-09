@@ -38,6 +38,7 @@ import {
   Network,
   Connection as SchemaConnection,
   manifest,
+  Args_signTypedData,
 } from "./wrap";
 import { Connection } from "./Connection";
 import * as Mapping from "./utils/mapping";
@@ -404,6 +405,20 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     return await connection.getSigner().signMessage(args.bytes);
+  }
+
+  public async signTypedData(
+    args: Args_signTypedData,
+    _client: CoreClient
+  ): Promise<string> {
+    const connection = await this._getConnection(args.connection);
+    const provider = connection.getProvider();
+    const signerAddress = await connection.getSigner().getAddress();
+    const response = await provider.send("eth_signTypedData", [
+      signerAddress,
+      JSON.parse(args.payload),
+    ]);
+    return response.toString();
   }
 
   public async sendRPC(
