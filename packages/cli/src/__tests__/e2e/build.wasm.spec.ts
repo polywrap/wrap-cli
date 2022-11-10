@@ -158,7 +158,7 @@ describe("e2e tests for build command", () => {
     );
     const testCaseDir = getTestCaseDir(0);
     const { exitCode: code, stdout: output } = await runCLI({
-      args: ["build", "-v", "--output-dir", outputDir],
+      args: ["build", "-v", "--output-dir", outputDir, "--codegen"],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -262,7 +262,7 @@ describe("e2e tests for build command", () => {
 
       test(testCaseName, async () => {
         let { exitCode, stdout, stderr } = await runCLI({
-          args: ["build", "-v", ...cmdArgs],
+          args: ["build", "-v", "--codegen", ...cmdArgs],
           cwd: testCaseDir,
           cli: polywrapCli,
         });
