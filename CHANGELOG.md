@@ -1,3 +1,21 @@
+## Features
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/core-js`:
+  * `GetImplementationsOptions` now accepts an optional resolution context, to be used to handle infinite recursion when a resolver uses `getImplementations`
+  * `GetImplementationsOptions` now accepts an optional `applyResolution`. This can be used to apply URI resolution to interfaces.
+## Breaking Changes 
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/client-config-builder-js`:
+  * Calling `buildCoreConfig` no longer returns a `CoreClientConfig` with redirects since redirects are no longer a part of `CoreClientConfig`.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/uri-resolvers-js`:
+  * `LegacyRedirectsResolver` has been removed.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/core-js`:
+  * `redirects` are no longer a part of `CoreClientConfig`.
+  * `getRedirects` are no longer a part of `CoreClient`.
+  * `getUriResolver` on `CoreClient` has been renamed to `getResolver`.
+  * `getImplementations` returns a promise now.
+  * `GetImplementationsOptions` no longer accepts `applyRedirects`. This has been replaces with `applyResolution`.
+  * `applyRedirects` helper function has been replaced with `applyResolution`.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/client-js`:
+  * `PolywrapClient` config when using `noDefaults: true` no longer accepts `redirects` (Since redirects have been removed from `CoreClientConfig`). 
 # Polywrap Origin (0.10.0-pre.0)
 ## Features
 * [PR-1236](https://github.com/polywrap/toolchain/pull/1236) `@polywrap/client-js`: Polywrap Client now re-exports the config builder and uri-resolvers (in addition to core) packages. This is done to improve dev exp and remove the need for users to import those package themselves.
