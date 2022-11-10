@@ -15,6 +15,7 @@ import {
   defaultProjectManifestFiles,
   defaultPolywrapManifest,
   parseLogFileOption,
+  Logger,
 } from "../lib";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
@@ -143,74 +144,6 @@ async function run(options: CodegenCommandOptions) {
 
   const result = await codeGenerator.generate();
 
-  //
-  const abi = await schemaComposer.getComposedAbis();
-
-  if (abi.importedModuleTypes && abi.importedModuleTypes.length) {
-    logger.info("Caching imported modules...");
-    const importsDir = path.join("./.polywrap", "imports");
-
-    for (const module of abi.importedModuleTypes) {
-      const uri = Uri.from(module.uri);
-      const moduleSubDir = path.join(importsDir, uri.path);
-
-      const wrapperResult = await client.loadWrapper(uri);
-      if (wrapperResult.ok) {
-        const wrapper = wrapperResult.value;
-        const manifest = wrapper.getManifest();
-
-        // We can only generate wrap.info for plugins - maybe do this?
-        if (manifest.type === "plugin") {
-          logger.info(`Skipping caching of Plugin wrapper ${uri.uri}.`);
-          continue;
-        }
-
-        // Create dir if not exist
-        if (!fs.existsSync(moduleSubDir)) {
-          fs.mkdirSync(moduleSubDir, { recursive: true });
-        }
-
-        //wrap.info
-        const wrapInfoFileResult = await wrapper.getFile({ path: "wrap.info" });
-
-        if (wrapInfoFileResult.ok) {
-          const wrapInfoFileContents = wrapInfoFileResult.value;
-          const wrapInfoFilePath = path.join(moduleSubDir, "wrap.info");
-          fs.writeFileSync(wrapInfoFilePath, wrapInfoFileContents);
-        } else {
-          logger.error(wrapInfoFileResult.error?.message ?? "");
-        }
-
-        if (manifest.type === "wasm") {
-          //wrap.wasm
-          const wrapWasmFileResult = await wrapper.getFile({
-            path: "wrap.wasm",
-          });
-
-          if (wrapWasmFileResult.ok) {
-            const wrapWasmFileContents = wrapWasmFileResult.value;
-            const wrapWasmFilePath = path.join(moduleSubDir, "wrap.wasm");
-
-            fs.writeFileSync(wrapWasmFilePath, wrapWasmFileContents);
-          } else {
-            logger.error(wrapWasmFileResult.error?.message ?? "");
-          }
-        }
-
-        // //schema.graphql
-        // const abi = manifest.abi;
-        // const schema = renderSchema(abi, false);
-        // const schemaFile = path.join(moduleImportsDir, "schema.graphql");
-
-        // const dir = path.dirname(schemaFile);
-        // if (!fs.existsSync(dir)) {
-        //   fs.mkdirSync(dir, { recursive: true });
-        // }
-        // fs.writeFileSync(schemaFile, schema, { encoding: "utf-8" });
-      }
-    }
-  }
-
   // HACK: Codegen outputs wrap.info into a build directory for plugins, needs to be moved into a build command?
   if (isPluginManifestLanguage(projectType)) {
     // Output the built manifest
@@ -229,10 +162,73 @@ async function run(options: CodegenCommandOptions) {
     );
   }
 
+  await generateProjectCache(schemaComposer, client, logger);
+
   if (result) {
     logger.info(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
     process.exit(0);
   } else {
     process.exit(1);
+  }
+}
+
+async function generateProjectCache(
+  schemaComposer: SchemaComposer,
+  client: PolywrapClient,
+  logger: Logger
+) {
+  const abi = await schemaComposer.getComposedAbis();
+
+  if (abi.importedModuleTypes && abi.importedModuleTypes.length) {
+    logger.info("Caching imported modules...");
+    const importsDir = path.join("./.polywrap", "imports");
+
+    for (const module of abi.importedModuleTypes) {
+      const uri = Uri.from(module.uri);
+      const moduleSubDir = path.join(importsDir, module.namespace);
+
+      logger.info(`Saving ${uri} files to ${moduleSubDir}`);
+
+      const wrapperManifestResult = await client.getManifest(uri);
+
+      if (wrapperManifestResult.ok) {
+        const manifest = wrapperManifestResult.value;
+
+        if (!fs.existsSync(moduleSubDir)) {
+          fs.mkdirSync(moduleSubDir, { recursive: true });
+        }
+
+        // Generate wrap.info
+        const wrapInfoFilePath = path.join(moduleSubDir, "wrap.info");
+        const abi = manifest.abi;
+
+        await generateWrapFile(
+          abi,
+          manifest.name,
+          manifest.type,
+          wrapInfoFilePath,
+          logger
+        );
+
+        // Extract wrap.wasm
+        if (manifest.type === "wasm") {
+          const wrapWasmFileResult = await client.getFile(uri, {
+            path: "wrap.wasm",
+          });
+
+          if (wrapWasmFileResult.ok) {
+            const wrapWasmFileContents = wrapWasmFileResult.value;
+            const wrapWasmFilePath = path.join(moduleSubDir, "wrap.wasm");
+
+            fs.writeFileSync(wrapWasmFilePath, wrapWasmFileContents);
+
+            logger.info(`${uri} WASM module saved to ${wrapWasmFilePath}`);
+          } else {
+            logger.error(`ERROR while downloading WASM module for ${uri}`);
+            logger.error(`${wrapWasmFileResult.error?.message}`);
+          }
+        }
+      }
+    }
   }
 }
