@@ -30,7 +30,6 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.0"
   },
   "devDependencies": {
-    "@polywrap/client-config-builder-js": "0.9.3",
     "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.0",
     "@polywrap/ethereum-plugin-js": "0.10.0-pre.0",
     "@polywrap/fs-plugin-js": "0.10.0-pre.0",

@@ -54,6 +54,8 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
           new Uri("wrap://ens/ens-resolver.polywrap.eth"),
           new Uri("wrap://ens/fs-resolver.polywrap.eth"),
           new Uri("wrap://ens/http-resolver.polywrap.eth"),
+          // ens-text-record-resolver
+          new Uri("wrap://ipfs/QmcmnqPaGvHm9zxjCa4kFMEJ3osjwYRCJp8q1AAZifBQ3c"),
         ],
       },
       {
