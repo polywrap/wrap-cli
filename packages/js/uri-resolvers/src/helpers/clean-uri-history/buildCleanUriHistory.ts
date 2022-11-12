@@ -54,8 +54,14 @@ export const buildCleanUriHistory = (
       if (typeof step.result.error === "string") {
         cleanHistory.push(
           step.description
-            ? `${step.sourceUri.uri} => ${step.description} => error ${step.result.error}`
+            ? `${step.sourceUri.uri} => ${step.description} => error (${step.result.error})`
             : `${step.sourceUri.uri} => error (${step.result.error})`
+        );
+      } else if (step.result.error instanceof Error) {
+        cleanHistory.push(
+          step.description
+            ? `${step.sourceUri.uri} => ${step.description} => error (${step.result.error.message})`
+            : `${step.sourceUri.uri} => error (${step.result.error.message})`
         );
       } else {
         cleanHistory.push(
