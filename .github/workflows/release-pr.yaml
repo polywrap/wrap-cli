@@ -28,7 +28,7 @@ jobs:
           CREATOR: ${{github.event.pull_request.user.login}}
 
       - name: Creator Is Not Publisher...
-        if: ${{env.IS_PUBLISHER == 'false'}}
+        if: env.IS_PUBLISHER == 'false'
         uses: actions/github-script@0.8.0
         with:
           github-token: ${{secrets.POLYWRAP_BUILD_BOT_PAT}}
@@ -59,7 +59,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release Already Exists...
-        if: ${{env.TAG_EXISTS == 'true'}}
+        if: env.TAG_EXISTS == 'true'
         uses: actions/github-script@0.8.0
         with:
           github-token: ${{secrets.POLYWRAP_BUILD_BOT_PAT}}
