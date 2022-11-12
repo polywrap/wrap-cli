@@ -62,7 +62,7 @@ export const buildCleanUriHistory = (
           step.description
             ? `${step.sourceUri.uri} => ${step.description} => error (${step.result.error.message})`
             : `${step.sourceUri.uri} => error (${step.result.error.message})`
-        )
+        );
       } else {
         cleanHistory.push(
           step.description
