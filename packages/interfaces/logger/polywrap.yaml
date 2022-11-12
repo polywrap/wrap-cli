@@ -1,6 +1,6 @@
 format: 0.2.0
 project:
-  name: Logger
+  name: logger-interface
   type: interface
 source:
   schema: ./src/schema.graphql
