@@ -2,17 +2,17 @@
   "name": "templates-app-typescript-node",
   "description": "Polywrap App TypeScript Node Template",
   "private": true,
-  "version": "0.10.0-pre.1",
+  "version": "0.10.0-pre.2",
   "scripts": {
     "build": "npx polywrap codegen",
     "test": "ts-node ./src/index.ts"
   },
   "dependencies": {
-    "@polywrap/client-js": "0.10.0-pre.1"
+    "@polywrap/client-js": "0.10.0-pre.2"
   },
   "devDependencies": {
     "@types/node": "12.12.26",
-    "polywrap": "0.10.0-pre.1",
+    "polywrap": "0.10.0-pre.2",
     "ts-node": "8.10.2",
     "typescript": "4.1.6"
   }
