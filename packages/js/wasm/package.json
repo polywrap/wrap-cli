@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/wasm-js",
   "description": "Polywrap WASM wrappers",
-  "version": "0.10.0-pre.1",
+  "version": "0.10.0-pre.2",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,12 +19,12 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/asyncify-js": "0.10.0-pre.1",
-    "@polywrap/core-js": "0.10.0-pre.1",
-    "@polywrap/msgpack-js": "0.10.0-pre.1",
-    "@polywrap/result": "0.10.0-pre.1",
-    "@polywrap/tracing-js": "0.10.0-pre.1",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.1"
+    "@polywrap/asyncify-js": "0.10.0-pre.2",
+    "@polywrap/core-js": "0.10.0-pre.2",
+    "@polywrap/msgpack-js": "0.10.0-pre.2",
+    "@polywrap/result": "0.10.0-pre.2",
+    "@polywrap/tracing-js": "0.10.0-pre.2",
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.2"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
