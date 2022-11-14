@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/react",
   "description": "Polywrap React Integration",
-  "version": "0.10.0-pre.0",
+  "version": "0.10.0-pre.3",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,16 +19,16 @@
     "test:watch": "yarn test --watch"
   },
   "dependencies": {
-    "@polywrap/client-js": "0.10.0-pre.0",
-    "@polywrap/core-js": "0.10.0-pre.0",
-    "@polywrap/tracing-js": "0.10.0-pre.0"
+    "@polywrap/client-js": "0.10.0-pre.3",
+    "@polywrap/core-js": "0.10.0-pre.3",
+    "@polywrap/tracing-js": "0.10.0-pre.3"
   },
   "devDependencies": {
-    "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.0",
-    "@polywrap/ethereum-plugin-js": "0.10.0-pre.0",
-    "@polywrap/ipfs-plugin-js": "0.10.0-pre.0",
-    "@polywrap/test-cases": "0.10.0-pre.0",
-    "@polywrap/test-env-js": "0.10.0-pre.0",
+    "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.3",
+    "@polywrap/ethereum-plugin-js": "0.10.0-pre.3",
+    "@polywrap/ipfs-plugin-js": "0.10.0-pre.3",
+    "@polywrap/test-cases": "0.10.0-pre.3",
+    "@polywrap/test-env-js": "0.10.0-pre.3",
     "@testing-library/react": "11.2.5",
     "@testing-library/react-hooks": "5.1.0",
     "@types/jest": "26.0.8",
@@ -37,7 +37,7 @@
     "@types/react-dom": "16.9.0",
     "jest": "26.6.3",
     "jest-environment-jsdom": "^26.0.1",
-    "polywrap": "0.10.0-pre.0",
+    "polywrap": "0.10.0-pre.3",
     "rimraf": "3.0.2",
     "typescript": "4.1.6"
   },

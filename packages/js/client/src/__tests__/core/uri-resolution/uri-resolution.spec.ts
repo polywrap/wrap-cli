@@ -107,9 +107,11 @@ function replaceAll(str: string, strToReplace: string, replaceStr: string) {
 
 describe("URI resolution", () => {
   beforeAll(async () => {
-    await buildWrapper(wrapperPath, undefined, true);
-    await buildWrapper(simpleFsResolverWrapperPath, undefined, true);
-    await buildWrapper(simpleRedirectResolverWrapperPath, undefined, true);
+    await Promise.all([
+      buildWrapper(wrapperPath, undefined, true),
+      buildWrapper(simpleFsResolverWrapperPath, undefined, true),
+      buildWrapper(simpleRedirectResolverWrapperPath, undefined, true)
+    ]);
   });
 
   it("sanity", async () => {
