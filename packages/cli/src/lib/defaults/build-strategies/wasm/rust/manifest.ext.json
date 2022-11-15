@@ -2,21 +2,10 @@
   "properties": {
     "strategies": {
       "properties": {
-        "image": {
-          "type": "object",
-          "properties": {
-            "include": {
-              "description": "Files to include in docker image.",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          }
-        }
+        "image": { },
+        "local": { },
+        "vm": { }
+      }
     }
-  },
-    "local": { },
-    "vm": { }
   }
 }

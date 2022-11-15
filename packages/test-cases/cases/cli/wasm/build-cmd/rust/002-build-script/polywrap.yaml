@@ -1,0 +1,9 @@
+format: 0.2.0
+project:
+  name: ObjectTypes
+  type: wasm/rust
+source:
+  schema: ./schema.graphql
+  module: ./Cargo.toml
+extensions:
+  build: ./polywrap.build.yaml
