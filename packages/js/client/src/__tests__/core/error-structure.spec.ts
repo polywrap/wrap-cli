@@ -24,9 +24,9 @@ describe("error structure", () => {
 
   beforeAll(async () => {
     await buildWrapper(simpleWrapperPath);
-    // await buildWrapper(badUtilWrapperPath);
-    // await buildWrapper(badMathWrapperPath);
-    // await buildWrapper(subinvokeErrorWrapperPath);
+    await buildWrapper(badUtilWrapperPath);
+    await buildWrapper(badMathWrapperPath);
+    await buildWrapper(subinvokeErrorWrapperPath);
 
     client = new PolywrapClient({
       redirects: [
