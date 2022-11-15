@@ -1,24 +1,20 @@
-import { validateClientConfig } from "../helpers";
 import { intlMsg } from "../intl";
 import { importTypescriptModule } from "../system";
 import { getTestEnvClientConfig } from "../test-env";
 
-import { Uri } from "@polywrap/core-js";
-import {
-  ClientConfigBuilder,
-  ClientConfig,
-} from "@polywrap/client-config-builder-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import path from "path";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 export async function parseClientConfigOption(
   clientConfig: string | undefined
-): Promise<Partial<ClientConfig<Uri>>> {
+): Promise<IClientConfigBuilder> {
   const builder = new ClientConfigBuilder().addDefaults();
 
   try {
     builder.add(getTestEnvClientConfig());
   } catch (e) {
-    console.error(intlMsg.commands_run_error_noTestEnvFound());
+    console.error(intlMsg.commands_test_error_noTestEnvFound());
     process.exit(1);
   }
 
@@ -31,31 +27,23 @@ export async function parseClientConfigOption(
     } else if (configPath.endsWith(".ts")) {
       configModule = await importTypescriptModule(path.resolve(configPath));
     } else {
-      const configsModuleMissingExportMessage = intlMsg.commands_run_error_clientConfigInvalidFileExt(
+      const configsModuleMissingExportMessage = intlMsg.commands_test_error_clientConfigInvalidFileExt(
         { module: configPath }
       );
       console.error(configsModuleMissingExportMessage);
       process.exit(1);
     }
 
-    if (!configModule || !configModule.getCustomConfig) {
-      const configsModuleMissingExportMessage = intlMsg.commands_run_error_clientConfigModuleMissingExport(
+    if (!configModule || !configModule.configure) {
+      const configsModuleMissingExportMessage = intlMsg.commands_test_error_clientConfigModuleMissingExport(
         { module: configModule }
       );
       console.error(configsModuleMissingExportMessage);
       process.exit(1);
     }
 
-    const customConfig = await configModule.getCustomConfig();
-
-    try {
-      validateClientConfig(customConfig);
-      return builder.add(customConfig).build();
-    } catch (e) {
-      console.error(e.message);
-      process.exit(1);
-    }
+    return await configModule.configure(builder);
   } else {
-    return builder.build();
+    return builder;
   }
 }

@@ -28,7 +28,7 @@ export function loadValidationScript(
 
   if (!fs.existsSync(cueFilepath)) {
     console.error(
-      intlMsg.commands_run_error_validatorNotFound({
+      intlMsg.commands_test_error_validatorNotFound({
         path: cueFilepath,
       })
     );

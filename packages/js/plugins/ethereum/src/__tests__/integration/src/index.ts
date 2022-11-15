@@ -32,6 +32,7 @@ import {
   Args_sendTransaction,
   Args_sendTransactionAndWait,
   Args_signMessage,
+  Args_signMessageBytes,
   Args_requestAccounts,
 } from "./wrap";
 import { BigInt } from "@polywrap/wasm-as";
@@ -290,6 +291,15 @@ export function signMessage(
 ): string {
   return Ethereum_Module.signMessage({
     message: args.message,
+    connection: args.connection
+  }).unwrap();
+}
+
+export function signMessageBytes(
+  args: Args_signMessageBytes
+): string {
+  return Ethereum_Module.signMessageBytes({
+    bytes: args.bytes,
     connection: args.connection
   }).unwrap();
 }

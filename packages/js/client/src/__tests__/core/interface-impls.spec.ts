@@ -6,7 +6,7 @@ import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
 jest.setTimeout(200000);
 
 describe("interface-impls", () => {
-  it("should register interface implementations successfully", () => {
+  it("should register interface implementations successfully", async () => {
     const interfaceUri = "wrap://ens/some-interface1.eth";
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
@@ -39,8 +39,8 @@ describe("interface-impls", () => {
       },
     ]);
 
-    const implementations = client.getImplementations(interfaceUri, {
-      applyRedirects: false,
+    const implementations = await client.getImplementations(interfaceUri, {
+      applyResolution: false,
     });
 
     if (!implementations.ok) fail(implementations.error);
@@ -62,7 +62,7 @@ describe("interface-impls", () => {
 
     const client = new PolywrapClient(
       {
-        redirects: [
+        resolver: UriResolver.from([
           {
             from: interface1Uri,
             to: interface2Uri,
@@ -75,8 +75,6 @@ describe("interface-impls", () => {
             from: implementation2Uri,
             to: implementation3Uri,
           },
-        ],
-        resolver: UriResolver.from([
           mockPluginRegistration(implementation4Uri),
         ]),
         interfaces: [
@@ -99,14 +97,14 @@ describe("interface-impls", () => {
       }
     );
 
-    const implementations1 = client.getImplementations(interface1Uri, {
-      applyRedirects: true,
+    const implementations1 = await client.getImplementations(interface1Uri, {
+      applyResolution: true,
     });
-    const implementations2 = client.getImplementations(interface2Uri, {
-      applyRedirects: true,
+    const implementations2 = await client.getImplementations(interface2Uri, {
+      applyResolution: true,
     });
-    const implementations3 = client.getImplementations(interface3Uri, {
-      applyRedirects: true,
+    const implementations3 = await client.getImplementations(interface3Uri, {
+      applyResolution: true,
     });
 
     if (!implementations1.ok) fail(implementations1.error);
@@ -185,7 +183,7 @@ describe("interface-impls", () => {
     const implementationUris = interfaces[0].implementations;
 
     const builder = new ClientConfigBuilder();
-    const defaultClientConfig = builder.addDefaults().buildDefault();
+    const defaultClientConfig = builder.addDefaults().buildCoreConfig();
 
     expect(implementationUris).toEqual([
       ...(defaultClientConfig.interfaces || []).find(
@@ -196,7 +194,7 @@ describe("interface-impls", () => {
     ]);
   });
 
-  test("get implementations - do not return plugins that are not explicitly registered", () => {
+  test("get implementations - do not return plugins that are not explicitly registered", async () => {
     const interfaceUri = "wrap://ens/some-interface.eth";
 
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
@@ -219,9 +217,9 @@ describe("interface-impls", () => {
       }
     );
 
-    const getImplementationsResult = client.getImplementations(
+    const getImplementationsResult = await client.getImplementations(
       new Uri(interfaceUri),
-      { applyRedirects: true }
+      { applyResolution: true }
     );
 
     if (!getImplementationsResult.ok) fail(getImplementationsResult.error);
@@ -230,7 +228,7 @@ describe("interface-impls", () => {
     ]);
   });
 
-  test("get implementations - return implementations for plugins which don't have interface stated in manifest", () => {
+  test("get implementations - return implementations for plugins which don't have interface stated in manifest", async () => {
     const interfaceUri = "wrap://ens/some-interface.eth";
 
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
@@ -251,9 +249,9 @@ describe("interface-impls", () => {
       { noDefaults: true }
     );
 
-    const getImplementationsResult = client.getImplementations(
+    const getImplementationsResult = await client.getImplementations(
       new Uri(interfaceUri),
-      { applyRedirects: true }
+      { applyResolution: true }
     );
 
     if (!getImplementationsResult.ok) fail(getImplementationsResult.error);
@@ -289,26 +287,26 @@ describe("interface-impls", () => {
       ],
     });
 
-    let result = client.getImplementations(oldInterfaceUri, {
-      applyRedirects: false,
+    let result = await client.getImplementations(oldInterfaceUri, {
+      applyResolution: false,
     });
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual([implementation1Uri]);
 
-    result = client.getImplementations(oldInterfaceUri, {
-      applyRedirects: true,
+    result = await client.getImplementations(oldInterfaceUri, {
+      applyResolution: true,
     });
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual([implementation1Uri, implementation2Uri]);
 
-    let result2 = client.getImplementations(new Uri(oldInterfaceUri), {
-      applyRedirects: false,
+    let result2 = await client.getImplementations(new Uri(oldInterfaceUri), {
+      applyResolution: false,
     });
     if (!result2.ok) fail(result2.error);
     expect(result2.value).toEqual([new Uri(implementation1Uri)]);
 
-    result2 = client.getImplementations(new Uri(oldInterfaceUri), {
-      applyRedirects: true,
+    result2 = await client.getImplementations(new Uri(oldInterfaceUri), {
+      applyResolution: true,
     });
     if (!result2.ok) fail(result2.error);
     expect(result2.value).toEqual([

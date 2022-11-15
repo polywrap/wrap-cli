@@ -21,10 +21,10 @@ import { createLogger } from "./utils/createLogger";
 import path from "path";
 import yaml from "yaml";
 import fs from "fs";
-import { ClientConfig } from "@polywrap/client-config-builder-js";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 type WorkflowCommandOptions = {
-  clientConfig: Partial<ClientConfig>;
+  configBuilder: IClientConfigBuilder;
   manifest: string;
   jobs?: string[];
   validationScript?: string;
@@ -35,17 +35,17 @@ type WorkflowCommandOptions = {
 };
 
 const defaultManifestStr = defaultWorkflowManifest.join(" | ");
-const pathStr = intlMsg.commands_run_options_m_path();
+const pathStr = intlMsg.commands_test_options_m_path();
 
-export const run: Command = {
+export const test: Command = {
   setup: (program: Program) => {
     program
-      .command("run")
-      .alias("r")
-      .description(intlMsg.commands_run_description())
+      .command("test")
+      .alias("t")
+      .description(intlMsg.commands_test_description())
       .option(
         `-m, --manifest-file  <${pathStr}>`,
-        intlMsg.commands_run_options_m({
+        intlMsg.commands_test_options_m({
           default: defaultManifestStr,
         })
       )
@@ -54,12 +54,12 @@ export const run: Command = {
         `${intlMsg.commands_common_options_config()}`
       )
       .option(
-        `-o, --output-file <${intlMsg.commands_run_options_outputFilePath()}>`,
-        `${intlMsg.commands_run_options_outputFile()}`
+        `-o, --output-file <${intlMsg.commands_test_options_outputFilePath()}>`,
+        `${intlMsg.commands_test_options_outputFile()}`
       )
       .option(
-        `-j, --jobs <${intlMsg.commands_run_options_jobIds()}...>`,
-        intlMsg.commands_run_options_jobs()
+        `-j, --jobs <${intlMsg.commands_test_options_jobIds()}...>`,
+        intlMsg.commands_test_options_jobs()
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
@@ -74,7 +74,7 @@ export const run: Command = {
             options.manifestFile,
             defaultWorkflowManifest
           ),
-          clientConfig: await parseClientConfigOption(options.clientConfig),
+          configBuilder: await parseClientConfigOption(options.clientConfig),
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile)
             : undefined,
@@ -87,7 +87,7 @@ export const run: Command = {
 const _run = async (options: WorkflowCommandOptions) => {
   const {
     manifest,
-    clientConfig,
+    configBuilder,
     outputFile,
     verbose,
     quiet,
@@ -127,7 +127,7 @@ const _run = async (options: WorkflowCommandOptions) => {
     workflowOutput.push(output);
   };
 
-  const jobRunner = new JobRunner(clientConfig, onExecution);
+  const jobRunner = new JobRunner(configBuilder, onExecution);
   await jobRunner.run(workflow.jobs, jobs ?? Object.keys(workflow.jobs));
 
   if (outputFile) {
@@ -147,7 +147,9 @@ const _run = async (options: WorkflowCommandOptions) => {
         break;
       default:
         throw new Error(
-          intlMsg.commands_run_error_unsupportedOutputFileExt({ outputFileExt })
+          intlMsg.commands_test_error_unsupportedOutputFileExt({
+            outputFileExt,
+          })
         );
     }
   }

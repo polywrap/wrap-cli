@@ -11,10 +11,12 @@ import {
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
 import { migrators } from "./migrators";
+import { ILogger } from "@polywrap/logging-js";
 
 export function migratePolywrapWorkflow(
   manifest: AnyPolywrapWorkflow,
-  to: PolywrapWorkflowFormats
+  to: PolywrapWorkflowFormats,
+  logger?: ILogger
 ): PolywrapWorkflow {
   let from = manifest.format as PolywrapWorkflowFormats;
 
@@ -36,7 +38,7 @@ export function migratePolywrapWorkflow(
   let newManifest = manifest;
 
   for(const migrator of migrationPath){
-    newManifest = migrator.migrate(newManifest) as AnyPolywrapWorkflow;
+    newManifest = migrator.migrate(newManifest, logger) as AnyPolywrapWorkflow;
   }
 
   return newManifest as PolywrapWorkflow;

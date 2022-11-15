@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig",
+  "compilerOptions": {
+    "outDir": "build",
+    "typeRoots": [
+      "./src/**/*.d.ts"
+    ]
+  },
+  "include": [
+    "./src/**/*.ts"
+  ],
+  "exclude": []
+}

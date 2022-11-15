@@ -33,6 +33,17 @@
             "wrap://ens/http-resolver.polywrap.eth => StaticResolver - Package (wrap://ens/http-resolver.polywrap.eth) => package (wrap://ens/http-resolver.polywrap.eth)"
           ]
         ],
+        "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => PackageToWrapperCacheResolver => wrapper (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+        [
+          "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => UriResolverAggregator => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+          [
+            "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ExtendableUriResolver => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+            [
+              "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
+              "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ResolverExtension (wrap://ens/ipfs-resolver.polywrap.eth) => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)"
+            ]
+          ]
+        ],
         "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
         [
           "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
@@ -67,10 +78,7 @@
   [
     "wrap://simple/$root-wrapper-dir/simple/build => UriResolverAggregator => uri (wrap://ens/redirect.eth)",
     [
-      "wrap://simple/$root-wrapper-dir/simple/build => LegacyRedirectsResolver => uri (wrap://ens/redirect.eth)",
-      [
-        "wrap://simple/$root-wrapper-dir/simple/build => Redirect (wrap://simple/$root-wrapper-dir/simple/build - wrap://ens/redirect.eth) => uri (wrap://ens/redirect.eth)"
-      ]
+      "wrap://simple/$root-wrapper-dir/simple/build => StaticResolver - Redirect (wrap://simple/$root-wrapper-dir/simple/build - wrap://ens/redirect.eth) => uri (wrap://ens/redirect.eth)"
     ]
   ]
 ]

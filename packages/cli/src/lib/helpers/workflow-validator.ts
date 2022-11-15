@@ -20,7 +20,7 @@ export function validateOutput(
   logger: Logger
 ): void {
   if (!cueExists(logger)) {
-    console.warn(intlMsg.commands_run_error_cueDoesNotExist());
+    console.warn(intlMsg.commands_test_error_cueDoesNotExist());
   }
 
   const { id, data, error } = output;

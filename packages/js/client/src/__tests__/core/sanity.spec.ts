@@ -1,7 +1,13 @@
-import {CoreClientConfig, coreInterfaceUris} from "@polywrap/core-js";
-import { ExtendableUriResolver, LegacyRedirectsResolver, PackageToWrapperCacheResolver, RecursiveResolver, Uri, WrapperCache } from "../..";
-import {ClientConfig, ClientConfigBuilder, defaultWrappers} from "@polywrap/client-config-builder-js";
-import { PolywrapClient } from "../../PolywrapClient";
+import {
+  ExtendableUriResolver,
+  PackageToWrapperCacheResolver,
+  RecursiveResolver,
+  Uri,
+  WrapperCache,
+  PolywrapClient
+} from "../..";
+
+import { coreInterfaceUris, IUriResolver } from "@polywrap/core-js";
 import { buildWrapper } from "@polywrap/test-env-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
@@ -12,21 +18,6 @@ describe("sanity", () => {
   test("default client config", () => {
     const client = new PolywrapClient();
 
-    expect(client.getRedirects()).toStrictEqual([
-      {
-        from: new Uri("wrap://ens/sha3.polywrap.eth"),
-        to: new Uri(defaultWrappers.sha3),
-      },
-      {
-        from: new Uri("wrap://ens/uts46.polywrap.eth"),
-        to: new Uri(defaultWrappers.uts46),
-      },
-      {
-        from: new Uri("wrap://ens/graph-node.polywrap.eth"),
-        to: new Uri(defaultWrappers.graphNode),
-      },
-    ]);
-
     new Uri("wrap://ens/http-resolver.polywrap.eth"),
       expect(client.getInterfaces()).toStrictEqual([
         {
@@ -36,6 +27,7 @@ describe("sanity", () => {
             new Uri("wrap://ens/ens-resolver.polywrap.eth"),
             new Uri("wrap://ens/fs-resolver.polywrap.eth"),
             new Uri("wrap://ens/http-resolver.polywrap.eth"),
+            new Uri("wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY"),
           ],
         },
         {
@@ -43,41 +35,6 @@ describe("sanity", () => {
           implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
         },
       ]);
-  });
-
-  test("redirect registration", () => {
-    const implementation1Uri = "wrap://ens/some-implementation1.eth";
-    const implementation2Uri = "wrap://ens/some-implementation2.eth";
-
-    const client = new PolywrapClient({
-      redirects: [
-        {
-          from: implementation1Uri,
-          to: implementation2Uri,
-        },
-      ],
-    });
-
-    const redirects = client.getRedirects();
-
-    expect(redirects).toEqual([
-      {
-        from: new Uri("wrap://ens/sha3.polywrap.eth"),
-        to: new Uri(defaultWrappers.sha3),
-      },
-      {
-        from: new Uri("wrap://ens/uts46.polywrap.eth"),
-        to: new Uri(defaultWrappers.uts46),
-      },
-      {
-        from: new Uri("wrap://ens/graph-node.polywrap.eth"),
-        to: new Uri(defaultWrappers.graphNode),
-      },
-      {
-        from: new Uri(implementation1Uri),
-        to: new Uri(implementation2Uri),
-      },
-    ]);
   });
 
   test("validate requested uri is available", async () => {
@@ -88,8 +45,7 @@ describe("sanity", () => {
     const greetingUri = `fs/${greetingPath}/build`;
     const modifiedFooUri = `fs/${modifiedFooPath}/build`;
 
-    const resolvers = [
-      new LegacyRedirectsResolver(),
+    const resolvers: IUriResolver<unknown>[] = [
       new ExtendableUriResolver()
     ]
 
@@ -106,7 +62,6 @@ describe("sanity", () => {
     let resultError = (result as { error: Error }).error;
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
-
 
     resolvers.unshift({
       uri: "wrap://ens/fs-resolver.polywrap.eth",

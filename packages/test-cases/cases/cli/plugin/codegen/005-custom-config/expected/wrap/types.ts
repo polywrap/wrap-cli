@@ -336,6 +336,12 @@ interface Ethereum_Module_Args_signMessage {
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
+interface Ethereum_Module_Args_signMessageBytes {
+  bytes: Types.Bytes;
+  connection?: Types.Ethereum_Connection | null;
+}
+
+/* URI: "ens/ethereum.polywrap.eth" */
 interface Ethereum_Module_Args_sendRPC {
   method: Types.String;
   params: Array<Types.String>;
@@ -637,6 +643,17 @@ export const Ethereum_Module = {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "signMessage",
+      args: (args as unknown) as Record<string, unknown>,
+    });
+  },
+
+  signMessageBytes: async (
+    args: Ethereum_Module_Args_signMessageBytes,
+    client: CoreClient
+  ): Promise<InvokeResult<Types.String>> => {
+    return client.invoke<Types.String>({
+      uri: "ens/ethereum.polywrap.eth",
+      method: "signMessageBytes",
       args: (args as unknown) as Record<string, unknown>,
     });
   },

@@ -1049,6 +1049,22 @@ describe("Ethereum Plugin", () => {
     );
   });
 
+  it("signMessageBytes", async () => {
+    const encoder = new TextEncoder();
+    const response = await client.invoke<string>({
+      uri,
+      method: "signMessageBytes",
+      args: {
+        bytes: encoder.encode("Hello World")
+      }
+    });
+
+    if (!response.ok) fail(response.error);
+    expect(response.value).toBe(
+      "0xa4708243bf782c6769ed04d83e7192dbcf4fc131aa54fde9d889d8633ae39dab03d7babd2392982dff6bc20177f7d887e27e50848c851320ee89c6c63d18ca761c"
+    );
+  });
+
   it("sendRPC", async () => {
     const res = await client.invoke<string | undefined>({
       uri,
