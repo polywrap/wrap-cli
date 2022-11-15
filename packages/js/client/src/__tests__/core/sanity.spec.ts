@@ -17,6 +17,7 @@ describe("sanity", () => {
             new Uri("wrap://ens/ens-resolver.polywrap.eth"),
             new Uri("wrap://ens/fs-resolver.polywrap.eth"),
             new Uri("wrap://ens/http-resolver.polywrap.eth"),
+            new Uri("wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY"),
           ],
         },
         {

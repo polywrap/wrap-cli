@@ -2,10 +2,10 @@
   "name": "@polywrap/test-cases",
   "description": "Reusable Polywrap Test Cases",
   "private": true,
-  "version": "0.10.0-pre.0",
+  "version": "0.10.0-pre.3",
   "license": "MIT",
   "main": "index.ts",
   "dependencies": {
-    "@polywrap/os-js": "0.10.0-pre.0"
+    "@polywrap/os-js": "0.10.0-pre.3"
   }
 }

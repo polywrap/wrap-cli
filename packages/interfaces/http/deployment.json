@@ -1,0 +1,13 @@
+[
+  {
+    "name": "ipfs_deploy",
+    "steps": [
+      {
+        "name": "ipfs_deploy",
+        "id": "ipfs_deploy.ipfs_deploy",
+        "input": "wrap://fs/./build",
+        "result": "wrap://ipfs/QmVTcwX6SoGuon4Qa4oK3uYTiTJxMB1eWtrKZfAof4Kd5r"
+      }
+    ]
+  }
+]
