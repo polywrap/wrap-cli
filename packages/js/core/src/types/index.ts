@@ -12,3 +12,4 @@ export * from "./IWrapPackage";
 export * from "./IUriRedirect";
 export * from "./IUriWrapper";
 export * from "./IUriPackage";
+export * from "./InvokeError";

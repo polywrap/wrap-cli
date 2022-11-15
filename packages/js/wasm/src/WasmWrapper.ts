@@ -4,7 +4,6 @@ import { createImports } from "./imports";
 import { IFileReader } from "./IFileReader";
 import { WRAP_MODULE_PATH } from "./constants";
 import { createWasmWrapper } from "./helpers/createWasmWrapper";
-import { InvokeError, InvokeErrorCode, WasmErrorSource } from "./InvokeError";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
@@ -19,6 +18,9 @@ import {
   isBuffer,
   Uri,
   Wrapper,
+  InvokeError,
+  InvokeErrorCode,
+  WasmErrorSource,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 

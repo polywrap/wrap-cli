@@ -3,10 +3,9 @@
 import { u32, WrapImports } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { State } from "./WasmWrapper";
-import { WasmErrorSource } from "./InvokeError";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { CoreClient } from "@polywrap/core-js";
+import { CoreClient, WasmErrorSource } from "@polywrap/core-js";
 
 export const createImports = (config: {
   client: CoreClient;
