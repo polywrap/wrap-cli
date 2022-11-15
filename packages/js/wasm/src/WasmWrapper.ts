@@ -4,20 +4,21 @@ import { createImports } from "./imports";
 import { IFileReader } from "./IFileReader";
 import { WRAP_MODULE_PATH } from "./constants";
 import { createWasmWrapper } from "./helpers/createWasmWrapper";
+import { InvokeError, InvokeErrorCode, WasmErrorSource } from "./InvokeError";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { Tracer, TracingLevel } from "@polywrap/tracing-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import {
-  Wrapper,
-  Uri,
-  InvokeOptions,
   CoreClient,
-  InvocableResult,
-  isBuffer,
   GetFileOptions,
   GetManifestOptions,
+  InvocableResult,
+  InvokeOptions,
+  isBuffer,
+  Uri,
+  Wrapper,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
@@ -172,12 +173,14 @@ export class WasmWrapper implements Wrapper {
         env: options.env ? msgpackEncode(options.env) : EMPTY_ENCODED_OBJECT,
       };
 
-      const abort = (message: string) => {
-        throw Error(
-          `WasmWrapper: Wasm module aborted execution.\nURI: ${options.uri.uri}\n` +
-            `Method: ${method}\n` +
-            `Args: ${JSON.stringify(args, null, 2)}\nMessage: ${message}.\n`
-        );
+      const abort = (message: string, source?: WasmErrorSource) => {
+        throw new InvokeError(message, {
+          code: InvokeErrorCode.ABORTED,
+          uri: options.uri.uri,
+          method,
+          args: JSON.stringify(args, null, 2),
+          source,
+        });
       };
 
       const memory = AsyncWasmInstance.createMemory({ module: wasm });
@@ -208,13 +211,13 @@ export class WasmWrapper implements Wrapper {
           encoded: true,
         };
       } else {
-        const error = Error(
-          `WasmWrapper: invocation exception encountered.\n` +
-            `uri: ${options.uri.uri}\n` +
-            `method: ${method}\n` +
-            `args: ${JSON.stringify(args, null, 2)}\n` +
-            `exception: ${invokeResult.error?.message}`
-        );
+        const error = new InvokeError(invokeResult.error?.message ?? "", {
+          code: InvokeErrorCode.RETURNED,
+          uri: options.uri.uri,
+          method,
+          args: JSON.stringify(args, null, 2),
+          cause: invokeResult.error,
+        });
         return ResultErr(error);
       }
     } catch (error) {

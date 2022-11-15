@@ -3,6 +3,7 @@
 import { u32, WrapImports } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { State } from "./WasmWrapper";
+import { WasmErrorSource } from "./InvokeError";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { CoreClient } from "@polywrap/core-js";
@@ -11,7 +12,7 @@ export const createImports = (config: {
   client: CoreClient;
   memory: WebAssembly.Memory;
   state: State;
-  abort: (message: string) => never;
+  abort: (message: string, source?: WasmErrorSource) => never;
 }): WrapImports => {
   const { memory, state, client, abort } = config;
 
@@ -212,9 +213,7 @@ export const createImports = (config: {
         const msg = readString(memory.buffer, msgPtr, msgLen);
         const file = readString(memory.buffer, filePtr, fileLen);
 
-        abort(
-          `__wrap_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`
-        );
+        abort(`__wrap_abort: ${msg}`, { file, line, col: column });
       },
       __wrap_debug_log: (ptr: u32, len: u32): void => {
         const msg = readString(memory.buffer, ptr, len);

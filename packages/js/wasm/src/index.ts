@@ -5,3 +5,4 @@ export { IFileReader } from "./IFileReader";
 export { InMemoryFileReader } from "./InMemoryFileReader";
 export { WrapImports } from "./types";
 export * from "./constants";
+export { InvokeError } from "./InvokeError";

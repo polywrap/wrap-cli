@@ -24,9 +24,9 @@ describe("error structure", () => {
 
   beforeAll(async () => {
     await buildWrapper(simpleWrapperPath);
-    await buildWrapper(badUtilWrapperPath);
-    await buildWrapper(badMathWrapperPath);
-    await buildWrapper(subinvokeErrorWrapperPath);
+    // await buildWrapper(badUtilWrapperPath);
+    // await buildWrapper(badMathWrapperPath);
+    // await buildWrapper(subinvokeErrorWrapperPath);
 
     client = new PolywrapClient({
       redirects: [
@@ -51,6 +51,8 @@ describe("error structure", () => {
       },
     });
 
+    console.log(result)
+
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual("test");
   });
@@ -64,8 +66,6 @@ describe("error structure", () => {
       },
     });
 
-    console.log(result);
-
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual("test");
   });
@@ -78,8 +78,6 @@ describe("error structure", () => {
         arg: "test",
       },
     });
-
-    console.log(result);
 
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual("test");
