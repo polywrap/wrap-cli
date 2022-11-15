@@ -1,23 +1,8 @@
+# Polywrap Origin (0.10.0-pre.0)
 ## Features
 * [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/core-js`:
   * `GetImplementationsOptions` now accepts an optional resolution context, to be used to handle infinite recursion when a resolver uses `getImplementations`
   * `GetImplementationsOptions` now accepts an optional `applyResolution`. This can be used to apply URI resolution to interfaces.
-## Breaking Changes 
-* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/client-config-builder-js`:
-  * Calling `buildCoreConfig` no longer returns a `CoreClientConfig` with redirects since redirects are no longer a part of `CoreClientConfig`.
-* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/uri-resolvers-js`:
-  * `LegacyRedirectsResolver` has been removed.
-* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/core-js`:
-  * `redirects` are no longer a part of `CoreClientConfig`.
-  * `getRedirects` are no longer a part of `CoreClient`.
-  * `getUriResolver` on `CoreClient` has been renamed to `getResolver`.
-  * `getImplementations` returns a promise now.
-  * `GetImplementationsOptions` no longer accepts `applyRedirects`. This has been replaces with `applyResolution`.
-  * `applyRedirects` helper function has been replaced with `applyResolution`.
-* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/client-js`:
-  * `PolywrapClient` config when using `noDefaults: true` no longer accepts `redirects` (Since redirects have been removed from `CoreClientConfig`). 
-# Polywrap Origin (0.10.0-pre.0)
-## Features
 * [PR-1236](https://github.com/polywrap/toolchain/pull/1236) `@polywrap/client-js`: Polywrap Client now re-exports the config builder and uri-resolvers (in addition to core) packages. This is done to improve dev exp and remove the need for users to import those package themselves.
   * For users who do not need those packages and are using noDefaults there will be a separate PR that refactor core client functionality into a core-client package that does not depend on the config builder and uri-resolvers packages, but has no defaults.
 * [PR-1236](https://github.com/polywrap/toolchain/pull/1236) `@polywrap/client-config-builder-js`:
@@ -31,7 +16,20 @@
 * [PR-1236] `@polywrap/schema-bind`: In `plugin-ts` bindings, the `PluginModule` type is now imported fron `@polywrap/plugin-js` instead of `@polywrap/core-js`.
 * [PR-1349](https://github.com/polywrap/toolchain/pull/1349) `polywrap` CLI: A `-l, --log-file [path]` option has been added to all commands. Its purpose is to configure a `Log file to save console output to`, useful in situations when the console log overflows.
 
-## Breaking Changes 
+## Breaking Changes
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/client-config-builder-js`:
+  * Calling `buildCoreConfig` no longer returns a `CoreClientConfig` with redirects since redirects are no longer a part of `CoreClientConfig`.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/uri-resolvers-js`:
+  * `LegacyRedirectsResolver` has been removed.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/core-js`:
+  * `redirects` are no longer a part of `CoreClientConfig`.
+  * `getRedirects` are no longer a part of `CoreClient`.
+  * `getUriResolver` on `CoreClient` has been renamed to `getResolver`.
+  * `getImplementations` returns a promise now.
+  * `GetImplementationsOptions` no longer accepts `applyRedirects`. This has been replaces with `applyResolution`.
+  * `applyRedirects` helper function has been replaced with `applyResolution`.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/client-js`:
+  * `PolywrapClient` config when using `noDefaults: true` no longer accepts `redirects` (Since redirects have been removed from `CoreClientConfig`).
 * [PR-1367](https://github.com/polywrap/toolchain/pull/1367) `polywrap` CLI: The JS/TS module passed into the `--client-config` option has a new entrypoint signature.
   * Instead of `getCustomConfig`, users should export the following `configure(builder: IClientConfigBuilder): IClientConfigBuilder`.
   * `IClientConfigBuilder` can be imported from the `@polywrap/client-config-builder-js` package.
