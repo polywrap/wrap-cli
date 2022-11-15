@@ -180,14 +180,19 @@ async function generateProjectCache(
   const abi = await schemaComposer.getComposedAbis();
 
   if (abi.importedModuleTypes && abi.importedModuleTypes.length) {
-    logger.info("Caching imported modules...");
+    logger.info(intlMsg.commands_codegen_cache_init());
     const importsDir = path.join("./.polywrap", "imports");
 
     for (const module of abi.importedModuleTypes) {
       const uri = Uri.from(module.uri);
       const moduleSubDir = path.join(importsDir, module.namespace);
 
-      logger.info(`Saving ${uri} files to ${moduleSubDir}`);
+      logger.info(
+        intlMsg.commands_codegen_cache_savingModule({
+          dir: moduleSubDir,
+          module: module.namespace,
+        })
+      );
 
       const wrapperManifestResult = await client.getManifest(uri);
 
@@ -222,9 +227,18 @@ async function generateProjectCache(
 
             fs.writeFileSync(wrapWasmFilePath, wrapWasmFileContents);
 
-            logger.info(`${uri} WASM module saved to ${wrapWasmFilePath}`);
+            logger.info(
+              intlMsg.commands_codegen_cache_moduleSaved({
+                module: module.namespace,
+                path: wrapWasmFilePath,
+              })
+            );
           } else {
-            logger.error(`ERROR while downloading WASM module for ${uri}`);
+            logger.error(
+              intlMsg.commands_codegen_cache_moduleSaveError({
+                module: module.namespace,
+              })
+            );
             logger.error(`${wrapWasmFileResult.error?.message}`);
           }
         }
