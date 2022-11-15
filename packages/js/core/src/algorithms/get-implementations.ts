@@ -1,4 +1,4 @@
-import { Uri, UriRedirect, InterfaceImplementations } from "../types";
+import { Uri, IUriRedirect, InterfaceImplementations } from "../types";
 import { applyRedirects } from "./apply-redirects";
 
 import { Tracer } from "@polywrap/tracing-js";
@@ -9,7 +9,7 @@ export const getImplementations = Tracer.traceFunc(
   (
     wrapperInterfaceUri: Uri,
     interfaces: readonly InterfaceImplementations<Uri>[],
-    redirects?: readonly UriRedirect<Uri>[]
+    redirects?: readonly IUriRedirect<Uri>[]
   ): Result<Uri[], Error> => {
     const result: Uri[] = [];
 

@@ -24,6 +24,7 @@ Options:
                                      made (default: false)
   -v, --verbose                      Verbose output (default: false)
   -q, --quiet                        Suppress output (default: false)
+  -l, --log-file [path]              Log file to save console output to
   -h, --help                         display help for command
 `;
 
@@ -190,6 +191,22 @@ describe("e2e tests for build command", () => {
     testBuildOutput(testCaseDir, outputDir);
   });
 
+  it("Should write log to file", async () => {
+    const testCaseDir = getTestCaseDir(0);
+    const logFilePath = "./log-file.txt";
+    const logFileAbsPath = path.join(testCaseDir, logFilePath);
+    const { exitCode: code } = await runCLI({
+      args: ["build", "-v", "-l", logFilePath],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(code).toEqual(0);
+    expect(fs.existsSync(logFileAbsPath)).toBeTruthy();
+    expect(fs.statSync(logFileAbsPath).size).toBeGreaterThan(0);
+    fs.unlinkSync(logFileAbsPath);
+  });
+
   describe("Image strategy", () => {
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
@@ -212,6 +229,25 @@ describe("e2e tests for build command", () => {
   })
 
   describe("Local strategy", () => {
+
+    // Local strategy runs `yarn` by default, so we need to ensure that we clean up lockfiles
+    const cleanupYarnLockfiles = async () => {
+      for (let i = 0; i < testCases.length; i++) {
+        const yarnLockfile = path.join(getTestCaseDir(0), "yarn.lock");
+        if(fs.existsSync(yarnLockfile)){
+          await fs.promises.unlink(yarnLockfile);
+        }
+      }
+    };
+
+    beforeAll(async () => {
+      await cleanupYarnLockfiles();
+    });
+    
+    afterAll(async () => {
+      await cleanupYarnLockfiles();
+    });
+
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
         args: ["build", "-v", "-s", "local"],

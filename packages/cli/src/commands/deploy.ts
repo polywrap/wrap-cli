@@ -9,6 +9,7 @@ import {
   PolywrapProject,
   DeployJob,
   DeployStep,
+  parseLogFileOption,
 } from "../lib";
 
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -25,6 +26,7 @@ type DeployCommandOptions = {
   outputFile?: string;
   verbose?: boolean;
   quiet?: boolean;
+  logFile?: string;
 };
 
 type ManifestJob = DeployManifest["jobs"][number];
@@ -48,6 +50,10 @@ export const deploy: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (options) => {
         await run({
           ...options,
@@ -55,14 +61,15 @@ export const deploy: Command = {
             options.manifestFile,
             defaultPolywrapManifest
           ),
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
 };
 
 async function run(options: DeployCommandOptions): Promise<void> {
-  const { manifestFile, outputFile, verbose, quiet } = options;
-  const logger = createLogger({ verbose, quiet });
+  const { manifestFile, outputFile, verbose, quiet, logFile } = options;
+  const logger = createLogger({ verbose, quiet, logFile });
 
   const project = new PolywrapProject({
     rootDir: nodePath.dirname(manifestFile),
@@ -150,7 +157,9 @@ async function run(options: DeployCommandOptions): Promise<void> {
         break;
       default:
         throw new Error(
-          intlMsg.commands_run_error_unsupportedOutputFileExt({ outputFileExt })
+          intlMsg.commands_test_error_unsupportedOutputFileExt({
+            outputFileExt,
+          })
         );
     }
   }

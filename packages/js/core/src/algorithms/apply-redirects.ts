@@ -1,11 +1,11 @@
-import { Uri, UriRedirect } from "../types";
+import { Uri, IUriRedirect } from "../types";
 
 import { Tracer } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export const applyRedirects = Tracer.traceFunc(
   "core: applyRedirects",
-  (uri: Uri, redirects: readonly UriRedirect<Uri>[]): Result<Uri, Error> => {
+  (uri: Uri, redirects: readonly IUriRedirect<Uri>[]): Result<Uri, Error> => {
     // Keep track of past redirects (from -> to) to find the final uri
     const redirectFromToMap: Record<string, Uri> = {};
 

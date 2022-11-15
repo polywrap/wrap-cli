@@ -1,7 +1,7 @@
-import { coreInterfaceUris, Uri, PluginModule, PolywrapClient } from "../..";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
-import { getClient } from "../utils/getClient";
+import { coreInterfaceUris, Uri, PolywrapClient } from "../..";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { UriResolver } from "@polywrap/uri-resolvers-js";
+import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
 
 jest.setTimeout(200000);
 
@@ -11,22 +11,25 @@ describe("interface-impls", () => {
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const client = new PolywrapClient({
-      interfaces: [
-        {
-          interface: interfaceUri,
-          implementations: [implementation1Uri, implementation2Uri],
-        },
-      ],
-    });
+    const client = new PolywrapClient(
+      {
+        interfaces: [
+          {
+            interface: interfaceUri,
+            implementations: [implementation1Uri, implementation2Uri],
+          },
+        ],
+        resolver: UriResolver.from({
+          from: "uri/foo",
+          to: "uri/bar"
+        })
+      },
+      { noDefaults: true }
+    );
 
     const interfaces = client.getInterfaces();
 
-    const builder = new ClientConfigBuilder();
-    const defaultClientConfig = builder.addDefaults().build();
-
     expect(interfaces).toEqual([
-      ...(defaultClientConfig.interfaces ?? []),
       {
         interface: new Uri(interfaceUri),
         implementations: [
@@ -36,10 +39,15 @@ describe("interface-impls", () => {
       },
     ]);
 
-    const implementations = client.getImplementations(interfaceUri);
+    const implementations = client.getImplementations(interfaceUri, {
+      applyRedirects: false,
+    });
 
     if (!implementations.ok) fail(implementations.error);
-    expect(implementations.value).toEqual([implementation1Uri, implementation2Uri]);
+    expect(implementations.value).toEqual([
+      implementation1Uri,
+      implementation2Uri,
+    ]);
   });
 
   it("should get all implementations of interface", async () => {
@@ -52,45 +60,44 @@ describe("interface-impls", () => {
     const implementation3Uri = "wrap://ens/some-implementation3.eth";
     const implementation4Uri = "wrap://ens/some-implementation4.eth";
 
-    const client = await getClient({
-      redirects: [
-        {
-          from: interface1Uri,
-          to: interface2Uri,
-        },
-        {
-          from: implementation1Uri,
-          to: implementation2Uri,
-        },
-        {
-          from: implementation2Uri,
-          to: implementation3Uri,
-        },
-      ],
-      plugins: [
-        {
-          uri: implementation4Uri,
-          plugin: {
-            factory: () => ({} as PluginModule<{}>),
-            manifest: {} as WrapManifest,
+    const client = new PolywrapClient(
+      {
+        redirects: [
+          {
+            from: interface1Uri,
+            to: interface2Uri,
           },
-        },
-      ],
-      interfaces: [
-        {
-          interface: interface1Uri,
-          implementations: [implementation1Uri, implementation2Uri],
-        },
-        {
-          interface: interface2Uri,
-          implementations: [implementation3Uri],
-        },
-        {
-          interface: interface3Uri,
-          implementations: [implementation3Uri, implementation4Uri],
-        },
-      ],
-    });
+          {
+            from: implementation1Uri,
+            to: implementation2Uri,
+          },
+          {
+            from: implementation2Uri,
+            to: implementation3Uri,
+          },
+        ],
+        resolver: UriResolver.from([
+          mockPluginRegistration(implementation4Uri),
+        ]),
+        interfaces: [
+          {
+            interface: interface1Uri,
+            implementations: [implementation1Uri, implementation2Uri],
+          },
+          {
+            interface: interface2Uri,
+            implementations: [implementation3Uri],
+          },
+          {
+            interface: interface3Uri,
+            implementations: [implementation3Uri, implementation4Uri],
+          },
+        ],
+      },
+      {
+        noDefaults: true,
+      }
+    );
 
     const implementations1 = client.getImplementations(interface1Uri, {
       applyRedirects: true,
@@ -117,85 +124,10 @@ describe("interface-impls", () => {
     ]);
 
     if (!implementations3.ok) fail(implementations3.error);
-    expect(implementations3.value).toEqual([implementation3Uri, implementation4Uri]);
-  });
-
-  it("should not register plugins with an interface uri (without default plugins)", () => {
-    const interface1Uri = "wrap://ens/some-interface1.eth";
-    const interface2Uri = "wrap://ens/some-interface2.eth";
-    const interface3Uri = "wrap://ens/some-interface3.eth";
-
-    const implementationUri = "wrap://ens/some-implementation.eth";
-
-    expect(() => {
-      new PolywrapClient({
-        plugins: [
-          {
-            uri: interface1Uri,
-            plugin: {
-              factory: () => ({} as PluginModule<{}>),
-              manifest: {} as WrapManifest,
-            },
-          },
-          {
-            uri: interface2Uri,
-            plugin: {
-              factory: () => ({} as PluginModule<{}>),
-              manifest: {} as WrapManifest,
-            },
-          },
-        ],
-        interfaces: [
-          {
-            interface: interface1Uri,
-            implementations: [implementationUri],
-          },
-          {
-            interface: interface2Uri,
-            implementations: [implementationUri],
-          },
-          {
-            interface: interface3Uri,
-            implementations: [implementationUri],
-          },
-        ],
-      });
-    }).toThrow(
-      `Plugins can't use interfaces for their URI. Invalid plugins: ${[
-        interface1Uri,
-        interface2Uri,
-      ]}`
-    );
-  });
-
-  it("should not register plugins with an interface uri (with default plugins)", async () => {
-    const interfaceUri = "wrap://ens/some-interface.eth";
-
-    const implementationUri = "wrap://ens/some-implementation.eth";
-
-    await expect(async () => {
-      await getClient({
-        plugins: [
-          {
-            uri: interfaceUri,
-            plugin: {
-              factory: () => ({} as PluginModule<{}>),
-              manifest: {} as WrapManifest,
-            },
-          },
-        ],
-        interfaces: [
-          {
-            interface: interfaceUri,
-            implementations: [implementationUri],
-          },
-        ],
-      });
-    }).rejects.toThrow(
-      `Plugins can't use interfaces for their URI. Invalid plugins: ${[
-        interfaceUri,
-      ]}`
-    );
+    expect(implementations3.value).toEqual([
+      implementation3Uri,
+      implementation4Uri,
+    ]);
   });
 
   it("should merge user-defined interface implementations with each other", async () => {
@@ -216,8 +148,7 @@ describe("interface-impls", () => {
       ],
     });
 
-    const interfaces = client
-      .getInterfaces()
+    const interfaces = (client.getInterfaces() || [])
       .filter((x) => x.interface.uri === interfaceUri);
     expect(interfaces.length).toEqual(1);
 
@@ -247,18 +178,17 @@ describe("interface-impls", () => {
       ],
     });
 
-    const interfaces = client
-      .getInterfaces()
+    const interfaces = (client.getInterfaces() || [])
       .filter((x) => x.interface.uri === interfaceUri);
     expect(interfaces.length).toEqual(1);
 
     const implementationUris = interfaces[0].implementations;
 
     const builder = new ClientConfigBuilder();
-    const defaultClientConfig = builder.addDefaults().build();
+    const defaultClientConfig = builder.addDefaults().buildCoreConfig();
 
     expect(implementationUris).toEqual([
-      ...defaultClientConfig.interfaces.find(
+      ...(defaultClientConfig.interfaces || []).find(
         (x) => x.interface.uri === interfaceUri
       )!.implementations,
       new Uri(implementationUri1),
@@ -272,23 +202,22 @@ describe("interface-impls", () => {
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const client = new PolywrapClient({
-      plugins: [
-        {
-          uri: implementation1Uri,
-          plugin: {
-            factory: () => ({} as PluginModule<{}>),
-            manifest: {} as WrapManifest,
+    const client = new PolywrapClient(
+      {
+        resolver: UriResolver.from([
+          mockPluginRegistration(implementation1Uri),
+        ]),
+        interfaces: [
+          {
+            interface: interfaceUri,
+            implementations: [implementation2Uri],
           },
-        },
-      ],
-      interfaces: [
-        {
-          interface: interfaceUri,
-          implementations: [implementation2Uri],
-        },
-      ],
-    });
+        ],
+      },
+      {
+        noDefaults: true,
+      }
+    );
 
     const getImplementationsResult = client.getImplementations(
       new Uri(interfaceUri),
@@ -296,7 +225,9 @@ describe("interface-impls", () => {
     );
 
     if (!getImplementationsResult.ok) fail(getImplementationsResult.error);
-    expect(getImplementationsResult.value).toEqual([new Uri(implementation2Uri)]);
+    expect(getImplementationsResult.value).toEqual([
+      new Uri(implementation2Uri),
+    ]);
   });
 
   test("get implementations - return implementations for plugins which don't have interface stated in manifest", () => {
@@ -305,23 +236,20 @@ describe("interface-impls", () => {
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const client = new PolywrapClient({
-      plugins: [
-        {
-          uri: implementation1Uri,
-          plugin: {
-            factory: () => ({} as PluginModule<{}>),
-            manifest: {} as WrapManifest,
+    const client = new PolywrapClient(
+      {
+        resolver: UriResolver.from([
+          mockPluginRegistration(implementation1Uri),
+        ]),
+        interfaces: [
+          {
+            interface: interfaceUri,
+            implementations: [implementation1Uri, implementation2Uri],
           },
-        },
-      ],
-      interfaces: [
-        {
-          interface: interfaceUri,
-          implementations: [implementation1Uri, implementation2Uri],
-        },
-      ],
-    });
+        ],
+      },
+      { noDefaults: true }
+    );
 
     const getImplementationsResult = client.getImplementations(
       new Uri(interfaceUri),
@@ -361,7 +289,9 @@ describe("interface-impls", () => {
       ],
     });
 
-    let result = client.getImplementations(oldInterfaceUri);
+    let result = client.getImplementations(oldInterfaceUri, {
+      applyRedirects: false,
+    });
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual([implementation1Uri]);
 
@@ -371,7 +301,9 @@ describe("interface-impls", () => {
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual([implementation1Uri, implementation2Uri]);
 
-    let result2 = client.getImplementations(new Uri(oldInterfaceUri));
+    let result2 = client.getImplementations(new Uri(oldInterfaceUri), {
+      applyRedirects: false,
+    });
     if (!result2.ok) fail(result2.error);
     expect(result2.value).toEqual([new Uri(implementation1Uri)]);
 

@@ -1,16 +1,25 @@
-import { Logger, LogLevel, ConsoleLog } from "../../lib";
+import { Logger, ConsoleLog, Logs, FileLog } from "../../lib";
 
-export function createLogger(flags: {
+import { LogLevel } from "@polywrap/logging-js";
+
+export function createLogger(options: {
   verbose?: boolean;
   quiet?: boolean;
+  logFile?: string;
 }): Logger {
-  const level = flags.quiet
+  const level = options.quiet
     ? LogLevel.ERROR
-    : flags.verbose
+    : options.verbose
     ? LogLevel.DEBUG
     : LogLevel.INFO;
 
-  return new Logger({
+  const logs: Logs = {
     console: new ConsoleLog(level),
-  });
+  };
+
+  if (options.logFile) {
+    logs["file"] = new FileLog(options.logFile, level);
+  }
+
+  return new Logger(logs);
 }

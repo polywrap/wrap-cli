@@ -14,12 +14,14 @@ import {
   generateWrapFile,
   defaultProjectManifestFiles,
   defaultPolywrapManifest,
+  parseLogFileOption,
 } from "../lib";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import path from "path";
 import fs from "fs";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 const defaultCodegenDir = "./src/wrap";
 const defaultPublishDir = "./build";
@@ -32,9 +34,10 @@ type CodegenCommandOptions = {
   codegenDir: string;
   publishDir: string;
   script?: string;
-  clientConfig: Partial<PolywrapClientConfig>;
+  configBuilder: IClientConfigBuilder;
   verbose?: boolean;
   quiet?: boolean;
+  logFile?: string;
 };
 
 export const codegen: Command = {
@@ -71,10 +74,14 @@ export const codegen: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (options) => {
         await run({
           ...options,
-          clientConfig: await parseClientConfigOption(options.clientConfig),
+          configBuilder: await parseClientConfigOption(options.clientConfig),
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           script: parseCodegenScriptOption(options.script),
           manifestFile: parseManifestFileOption(
@@ -82,6 +89,7 @@ export const codegen: Command = {
             defaultProjectManifestFiles
           ),
           publishDir: parseDirOption(options.publishDir, defaultPublishDir),
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
@@ -92,15 +100,18 @@ async function run(options: CodegenCommandOptions) {
     manifestFile,
     codegenDir,
     script,
-    clientConfig,
+    configBuilder,
     publishDir,
     verbose,
     quiet,
+    logFile,
   } = options;
-  const logger = createLogger({ verbose, quiet });
+  const logger = createLogger({ verbose, quiet, logFile });
 
   // Get Client
-  const client = new PolywrapClient(clientConfig);
+  const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
+    noDefaults: true,
+  });
 
   const project = await getProjectFromManifest(manifestFile, logger);
 

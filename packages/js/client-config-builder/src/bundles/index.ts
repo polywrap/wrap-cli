@@ -1,1 +1,1 @@
-export * from "./default-client-config";
+export * from "./getDefaultConfig";

@@ -2,16 +2,18 @@ import { UriResolverWrapper } from "./UriResolverWrapper";
 
 import {
   Uri,
-  Client,
+  CoreClient,
   IUriResolver,
   getImplementations,
   coreInterfaceUris,
   IUriResolutionContext,
   UriPackageOrWrapper,
-  UriResolutionResult,
 } from "@polywrap/core-js";
 import { Result, ResultOk } from "@polywrap/result";
-import { UriResolverAggregatorBase } from "@polywrap/uri-resolvers-js";
+import {
+  UriResolverAggregatorBase,
+  UriResolutionResult,
+} from "@polywrap/uri-resolvers-js";
 
 export class ExtendableUriResolver extends UriResolverAggregatorBase<
   Error,
@@ -26,13 +28,13 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
 
   async getUriResolvers(
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<IUriResolver<unknown>[], Error>> {
     const getImplementationsResult = getImplementations(
       coreInterfaceUris.uriResolver,
-      client.getInterfaces(),
-      client.getRedirects()
+      client.getInterfaces() ?? [],
+      client.getRedirects() ?? []
     );
 
     if (!getImplementationsResult.ok) {
@@ -50,7 +52,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
 
   async tryResolveUri(
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, Error>> {
     const result = await this.getUriResolvers(uri, client, resolutionContext);

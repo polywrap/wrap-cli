@@ -1,5 +1,5 @@
 import {
-  Client,
+  CoreClient,
   Module,
   Args_tryResolveUri,
   Args_getFile,
@@ -12,7 +12,7 @@ import {
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
 import { getAddress } from "@ethersproject/address";
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 export type Address = string;
 
@@ -38,7 +38,7 @@ export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
 
   async tryResolveUri(
     args: Args_tryResolveUri,
-    client: Client
+    client: CoreClient
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
     if (args.authority !== "ens") {
       return null;
@@ -63,11 +63,11 @@ export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
     return { uri: null, manifest: null };
   }
 
-  getFile(_args: Args_getFile, _client: Client): Bytes | null {
+  getFile(_args: Args_getFile, _client: CoreClient): Bytes | null {
     return null;
   }
 
-  async ensToCID(domain: string, client: Client): Promise<string> {
+  async ensToCID(domain: string, client: CoreClient): Promise<string> {
     const ensAbi = {
       resolver:
         "function resolver(bytes32 node) external view returns (address)",
@@ -201,11 +201,6 @@ export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
 
 export const ensResolverPlugin: PluginFactory<EnsResolverPluginConfig> = (
   config: EnsResolverPluginConfig
-) => {
-  return {
-    factory: () => new EnsResolverPlugin(config),
-    manifest,
-  };
-};
+) => new PluginPackage(new EnsResolverPlugin(config), manifest);
 
 export const plugin = ensResolverPlugin;

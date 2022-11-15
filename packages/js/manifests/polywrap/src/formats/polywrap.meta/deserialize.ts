@@ -46,8 +46,11 @@ export function deserializeMetaManifest(
   );
 
   if (versionCompare === -1) {
+    // Warn user to migrate their manifest
+    options?.logger?.warn(`MetaManifest is using an older version of the manifest format (${anyMetaManifest.format}). Please update your manifest to the latest version (${latestMetaManifestFormat}) by using the "polywrap manifest migrate <type>" command.`);
+
     // Upgrade
-    return migrateMetaManifest(anyMetaManifest, latestMetaManifestFormat);
+    return migrateMetaManifest(anyMetaManifest, latestMetaManifestFormat, options?.logger);
   } else if (versionCompare === 1) {
     // Downgrade
     throw Error(

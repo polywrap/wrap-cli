@@ -2,6 +2,8 @@ import { httpPlugin } from "../..";
 import { Http_Response } from "../../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
+import { UriResolver } from "@polywrap/uri-resolvers-js";
+
 import nock from "nock";
 
 jest.setTimeout(360000);
@@ -15,14 +17,15 @@ describe("e2e tests for HttpPlugin", () => {
   let polywrapClient: PolywrapClient;
 
   beforeEach(() => {
-    polywrapClient = new PolywrapClient({
-      plugins: [
-        {
+    polywrapClient = new PolywrapClient(
+      {
+        resolver: UriResolver.from({
           uri: "wrap://ens/http.polywrap.eth",
-          plugin: httpPlugin({}),
-        },
-      ],
-    });
+          package: httpPlugin({}),
+        }),
+      },
+      { noDefaults: true }
+    );
   });
 
   describe("get method", () => {
@@ -42,7 +45,7 @@ describe("e2e tests for HttpPlugin", () => {
           },
         },
       });
-      
+
       if (!response.ok) fail(response.error);
       expect(response.value).toBeDefined();
       expect(response.value?.status).toBe(200);
@@ -130,7 +133,7 @@ describe("e2e tests for HttpPlugin", () => {
         },
       });
 
-      response = response as { ok: false, error: Error | undefined };
+      response = response as { ok: false; error: Error | undefined };
       expect(response.error).toBeDefined();
       expect(response.ok).toBeFalsy();
     });
@@ -280,7 +283,7 @@ describe("e2e tests for HttpPlugin", () => {
         },
       });
 
-      response = response as { ok: false, error: Error | undefined };
+      response = response as { ok: false; error: Error | undefined };
       expect(response.error).toBeDefined();
       expect(response.ok).toBeFalsy();
     });

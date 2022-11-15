@@ -12,6 +12,7 @@ import {
   parseDirOption,
   parseClientConfigOption,
   parseManifestFileOption,
+  parseLogFileOption,
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen";
 import {
@@ -24,8 +25,9 @@ import {
 
 import path from "path";
 import readline from "readline";
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
@@ -36,12 +38,13 @@ const pathStr = intlMsg.commands_build_options_o_path();
 type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
-  clientConfig: Partial<PolywrapClientConfig>;
+  configBuilder: IClientConfigBuilder;
   codegen: boolean; // defaults to true
   watch?: boolean;
   strategy: SupportedStrategies;
   verbose?: boolean;
   quiet?: boolean;
+  logFile?: string;
 };
 
 export const build: Command = {
@@ -75,6 +78,10 @@ export const build: Command = {
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
       .action(async (options) => {
         await run({
           ...options,
@@ -82,9 +89,10 @@ export const build: Command = {
             options.manifestFile,
             defaultPolywrapManifest
           ),
-          clientConfig: await parseClientConfigOption(options.clientConfig),
+          configBuilder: await parseClientConfigOption(options.clientConfig),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
           strategy: options.strategy,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
@@ -130,16 +138,19 @@ async function run(options: BuildCommandOptions) {
     watch,
     manifestFile,
     outputDir,
-    clientConfig,
+    configBuilder,
     strategy,
     codegen,
     verbose,
     quiet,
+    logFile,
   } = options;
-  const logger = createLogger({ verbose, quiet });
+  const logger = createLogger({ verbose, quiet, logFile });
 
   // Get Client
-  const client = new PolywrapClient(clientConfig);
+  const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
+    noDefaults: true,
+  });
 
   const project = new PolywrapProject({
     rootDir: path.dirname(manifestFile),

@@ -4,16 +4,19 @@ import {
   Uri,
   coreInterfaceUris,
   IUriResolutionStep,
-  PluginModule,
   UriPackageOrWrapper,
   UriResolutionContext,
-  UriResolutionResult,
 } from "@polywrap/core-js";
-import { buildCleanUriHistory, getUriResolutionPath } from "@polywrap/uri-resolvers-js";
-import { getClient } from "../../utils/getClient";
+import {
+  buildCleanUriHistory,
+  UriResolver,
+  getUriResolutionPath,
+  UriResolutionResult,
+} from "@polywrap/uri-resolvers-js";
 import fs from "fs";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
+import { mockPluginRegistration } from "../../helpers/mockPluginRegistration";
+import { PolywrapClient } from "../../../PolywrapClient";
 
 jest.setTimeout(200000);
 
@@ -39,7 +42,7 @@ const expectResultWithHistory = async (
   if (historyFileName && uriHistory) {
     await expectHistory(uriHistory, historyFileName);
   }
-  
+
   expect(receivedResult).toEqual(expectedResult);
 };
 
@@ -104,15 +107,17 @@ function replaceAll(str: string, strToReplace: string, replaceStr: string) {
 
 describe("URI resolution", () => {
   beforeAll(async () => {
-    await buildWrapper(wrapperPath);
-    await buildWrapper(simpleFsResolverWrapperPath);
-    await buildWrapper(simpleRedirectResolverWrapperPath);
+    await Promise.all([
+      buildWrapper(wrapperPath),
+      buildWrapper(simpleFsResolverWrapperPath),
+      buildWrapper(simpleRedirectResolverWrapperPath)
+    ]);
   });
 
   it("sanity", async () => {
     const uri = new Uri("ens/uri.eth");
 
-    const client = await getClient();
+    const client = new PolywrapClient();
 
     const resolutionContext = new UriResolutionContext();
     const result = await client.tryResolveUri({ uri, resolutionContext });
@@ -130,7 +135,7 @@ describe("URI resolution", () => {
     const toUri1 = new Uri("ens/to1.eth");
     const toUri2 = new Uri("ens/to2.eth");
 
-    const client = await getClient({
+    const client = new PolywrapClient({
       redirects: [
         {
           from: fromUri.uri,
@@ -144,7 +149,10 @@ describe("URI resolution", () => {
     });
 
     const resolutionContext = new UriResolutionContext();
-    const response = await client.tryResolveUri({ uri: fromUri, resolutionContext });
+    const response = await client.tryResolveUri({
+      uri: fromUri,
+      resolutionContext,
+    });
 
     await expectResultWithHistory(
       response,
@@ -153,47 +161,40 @@ describe("URI resolution", () => {
       "can resolve redirects"
     );
 
-    expect([
+    expect(resolutionContext.getResolutionPath().map((x) => x.uri)).toEqual([
       "wrap://ens/from.eth",
       "wrap://ens/to1.eth",
-      "wrap://ens/to2.eth"
-    ]).toEqual(resolutionContext.getResolutionPath().map(x => x.uri));
+      "wrap://ens/to2.eth",
+    ]);
   });
 
   it("can resolve plugin", async () => {
     const pluginUri = new Uri("ens/plugin.eth");
 
-    const client = await getClient({
-      plugins: [
-        {
-          uri: pluginUri.uri,
-          plugin: {
-            factory: () => {
-              return ({} as unknown) as PluginModule<{}>;
-            },
-            manifest: { } as WrapManifest,
-          },
-        },
-      ],
+    const client = new PolywrapClient({
+      resolvers: [UriResolver.from(mockPluginRegistration(pluginUri))],
     });
 
     const resolutionContext = new UriResolutionContext();
-    const result = await client.tryResolveUri({ uri: pluginUri, resolutionContext });
+    const result = await client.tryResolveUri({
+      uri: pluginUri,
+      resolutionContext,
+    });
 
     await expectWrapperWithHistory(
-      result, 
-      pluginUri, 
-      getUriResolutionPath(resolutionContext.getHistory()), 
+      result,
+      pluginUri,
+      getUriResolutionPath(resolutionContext.getHistory()),
       "can resolve plugin"
     );
 
-    expect([
-      "wrap://ens/plugin.eth"
-    ]).toEqual(resolutionContext.getResolutionPath().map(x => x.uri));
+    expect(["wrap://ens/plugin.eth"]).toEqual(
+      resolutionContext.getResolutionPath().map((x) => x.uri)
+    );
   });
 
   it("can resolve a URI resolver extension wrapper", async () => {
-    const client = await getClient({
+    const client = new PolywrapClient({
       interfaces: [
         {
           interface: coreInterfaceUris.uriResolver.uri,
@@ -206,7 +207,10 @@ describe("URI resolution", () => {
     const redirectedUri = wrapperUri;
 
     const resolutionContext = new UriResolutionContext();
-    const response = await client.tryResolveUri({ uri: sourceUri, resolutionContext });
+    const response = await client.tryResolveUri({
+      uri: sourceUri,
+      resolutionContext,
+    });
 
     await expectWrapperWithHistory(
       response,
@@ -215,17 +219,19 @@ describe("URI resolution", () => {
       "can resolve a URI resolver extension wrapper"
     );
 
-    expect([
-      sourceUri.uri,
-      redirectedUri.uri,
-    ]).toEqual(resolutionContext.getResolutionPath().map(x => x.uri));
+    expect([sourceUri.uri, redirectedUri.uri]).toEqual(
+      resolutionContext.getResolutionPath().map((x) => x.uri)
+    );
   });
 
   it("can resolve cache", async () => {
-    const client = await getClient();
+    const client = new PolywrapClient();
 
     const resolutionContext1 = new UriResolutionContext();
-    const result1 = await client.tryResolveUri({ uri: wrapperUri, resolutionContext: resolutionContext1 });
+    const result1 = await client.tryResolveUri({
+      uri: wrapperUri,
+      resolutionContext: resolutionContext1,
+    });
 
     await expectWrapperWithHistory(
       result1,
@@ -233,12 +239,15 @@ describe("URI resolution", () => {
       getUriResolutionPath(resolutionContext1.getHistory()),
       "can resolve cache - 1"
     );
-    expect([
-      wrapperUri.uri,
-    ]).toEqual(resolutionContext1.getResolutionPath().map(x => x.uri));
+    expect([wrapperUri.uri]).toEqual(
+      resolutionContext1.getResolutionPath().map((x) => x.uri)
+    );
 
     const resolutionContext2 = new UriResolutionContext();
-    const result2 = await client.tryResolveUri({ uri: wrapperUri, resolutionContext: resolutionContext2 });
+    const result2 = await client.tryResolveUri({
+      uri: wrapperUri,
+      resolutionContext: resolutionContext2,
+    });
 
     await expectWrapperWithHistory(
       result2,
@@ -246,13 +255,13 @@ describe("URI resolution", () => {
       getUriResolutionPath(resolutionContext2.getHistory()),
       "can resolve cache - 2"
     );
-    expect([
-      wrapperUri.uri,
-    ]).toEqual(resolutionContext2.getResolutionPath().map(x => x.uri));
+    expect([wrapperUri.uri]).toEqual(
+      resolutionContext2.getResolutionPath().map((x) => x.uri)
+    );
   });
 
   it("can resolve previously cached URI after redirecting by a URI resolver extension", async () => {
-    const client = await getClient({
+    const client = new PolywrapClient({
       interfaces: [
         {
           interface: coreInterfaceUris.uriResolver.uri,
@@ -269,7 +278,10 @@ describe("URI resolution", () => {
     const finalUri = wrapperUri;
 
     const resolutionContext1 = new UriResolutionContext();
-    const result1 = await client.tryResolveUri({ uri: redirectedUri, resolutionContext: resolutionContext1 });
+    const result1 = await client.tryResolveUri({
+      uri: redirectedUri,
+      resolutionContext: resolutionContext1,
+    });
 
     await expectWrapperWithHistory(
       result1,
@@ -277,13 +289,15 @@ describe("URI resolution", () => {
       getUriResolutionPath(resolutionContext1.getHistory()),
       "can resolve previously cached URI after redirecting by a URI resolver extension - 1"
     );
-    expect([
-      redirectedUri.uri,
-      finalUri.uri
-    ]).toEqual(resolutionContext1.getResolutionPath().map(x => x.uri));
+    expect([redirectedUri.uri, finalUri.uri]).toEqual(
+      resolutionContext1.getResolutionPath().map((x) => x.uri)
+    );
 
     const resolutionContext2 = new UriResolutionContext();
-    const result2 = await client.tryResolveUri({ uri: sourceUri, resolutionContext: resolutionContext2 });
+    const result2 = await client.tryResolveUri({
+      uri: sourceUri,
+      resolutionContext: resolutionContext2,
+    });
 
     await expectWrapperWithHistory(
       result2,
@@ -291,10 +305,9 @@ describe("URI resolution", () => {
       getUriResolutionPath(resolutionContext2.getHistory()),
       "can resolve previously cached URI after redirecting by a URI resolver extension - 2"
     );
-    expect([
-      sourceUri.uri,
-      redirectedUri.uri,
-    ]).toEqual(resolutionContext2.getResolutionPath().map(x => x.uri));
+    expect([sourceUri.uri, redirectedUri.uri]).toEqual(
+      resolutionContext2.getResolutionPath().map((x) => x.uri)
+    );
   });
 
   it("restarts URI resolution after URI resolver extension redirect", async () => {
@@ -302,7 +315,7 @@ describe("URI resolution", () => {
     const sourceUri = new Uri(`simple-redirect/${wrapperPath}/build`);
     const resolverRedirectUri = new Uri(`simple/${wrapperPath}/build`);
     const finalRedirectedUri = new Uri(`ens/redirect.eth`);
-    const client = await getClient({
+    const client = new PolywrapClient({
       redirects: [
         {
           from: resolverRedirectUri.uri,
@@ -319,9 +332,12 @@ describe("URI resolution", () => {
         },
       ],
     });
-  
+
     const resolutionContext = new UriResolutionContext();
-    const result = await client.tryResolveUri({ uri: sourceUri, resolutionContext });
+    const result = await client.tryResolveUri({
+      uri: sourceUri,
+      resolutionContext,
+    });
     await expectResultWithHistory(
       result,
       UriResolutionResult.ok(finalRedirectedUri),
@@ -332,23 +348,25 @@ describe("URI resolution", () => {
       sourceUri.uri,
       resolverRedirectUri.uri,
       finalRedirectedUri.uri,
-    ]).toEqual(resolutionContext.getResolutionPath().map(x => x.uri));
+    ]).toEqual(resolutionContext.getResolutionPath().map((x) => x.uri));
   });
 
   it("can resolve uri with custom resolver", async () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const client = await getClient({
-      resolver: {
-        tryResolveUri: async (uri: Uri) => {
-          if (uri.uri === ensUri.uri) {
-            return UriResolutionResult.ok(redirectUri);
-          }
+    const client = new PolywrapClient({
+      resolvers: [
+        {
+          tryResolveUri: async (uri: Uri) => {
+            if (uri.uri === ensUri.uri) {
+              return UriResolutionResult.ok(redirectUri);
+            }
 
-          return UriResolutionResult.ok(uri);
+            return UriResolutionResult.ok(uri);
+          },
         },
-      },
+      ],
     });
 
     const result = await client.tryResolveUri({ uri: ensUri });
@@ -360,27 +378,29 @@ describe("URI resolution", () => {
     const fromUri = new Uri(`ens/from.eth`);
     const redirectUri = new Uri(`ens/to.eth`);
 
-    const client = await getClient({
-      resolver: {
-        tryResolveUri: async (uri: Uri) => {
-          if (uri.uri === fromUri.uri) {
-            return UriResolutionResult.ok(redirectUri);
-          }
+    const client = new PolywrapClient({
+      resolvers: [
+        {
+          tryResolveUri: async (uri: Uri) => {
+            if (uri.uri === fromUri.uri) {
+              return UriResolutionResult.ok(redirectUri);
+            }
 
-          return UriResolutionResult.ok(uri);
+            return UriResolutionResult.ok(uri);
+          },
         },
-      },
+      ],
     });
 
     const result = await client.tryResolveUri({
-      uri: fromUri
+      uri: fromUri,
     });
 
     expect(result).toEqual(UriResolutionResult.ok(redirectUri));
   });
 
   it("custom wrapper resolver does not cause infinite recursion when resolved at runtime", async () => {
-    const client = await getClient({
+    const client = new PolywrapClient({
       interfaces: [
         {
           interface: coreInterfaceUris.uriResolver.uri,
@@ -390,7 +410,10 @@ describe("URI resolution", () => {
     });
 
     const resolutionContext = new UriResolutionContext();
-    const result = await client.tryResolveUri({ uri: "ens/test.eth", resolutionContext });
+    const result = await client.tryResolveUri({
+      uri: "ens/test.eth",
+      resolutionContext,
+    });
 
     await expectResultWithHistory(
       result,
@@ -401,8 +424,8 @@ describe("URI resolution", () => {
       "custom wrapper resolver does not cause infinite recursion when resolved at runtime"
     );
 
-    expect([
-      "wrap://ens/test.eth"
-    ]).toEqual(resolutionContext.getResolutionPath().map(x => x.uri));
+    expect(["wrap://ens/test.eth"]).toEqual(
+      resolutionContext.getResolutionPath().map((x) => x.uri)
+    );
   });
 });

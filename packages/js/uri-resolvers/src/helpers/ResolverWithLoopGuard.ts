@@ -1,28 +1,32 @@
 import { InfiniteLoopError } from "./InfiniteLoopError";
-import { UriResolverLike } from "../helpers";
-import { buildUriResolver } from "../utils";
+import { UriResolverLike } from "./UriResolverLike";
+import { UriResolutionResult } from "./UriResolutionResult";
+import { UriResolver } from "./UriResolver";
 
-import { Result } from "@polywrap/result";
 import {
   IUriResolver,
   Uri,
-  Client,
+  CoreClient,
   IUriResolutionContext,
   UriPackageOrWrapper,
-  UriResolutionResult,
 } from "@polywrap/core-js";
+import { Result } from "@polywrap/result";
 
 export class ResolverWithLoopGuard<TError = undefined>
   implements IUriResolver<TError | InfiniteLoopError> {
-  private resolver: IUriResolver<TError>;
+  constructor(private resolver: IUriResolver<TError>) {}
 
-  constructor(resolver: UriResolverLike) {
-    this.resolver = buildUriResolver(resolver);
+  static from<TResolverError = unknown>(
+    resolver: UriResolverLike
+  ): ResolverWithLoopGuard<TResolverError> {
+    return new ResolverWithLoopGuard(
+      UriResolver.from<TResolverError>(resolver)
+    );
   }
 
   async tryResolveUri(
     uri: Uri,
-    client: Client,
+    client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
     if (resolutionContext.isResolving(uri)) {

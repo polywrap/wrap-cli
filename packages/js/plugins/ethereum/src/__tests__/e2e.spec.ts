@@ -1,10 +1,8 @@
-import { ethereumPlugin } from "..";
+
 import * as Schema from "../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import { ClientConfigBuilder, defaultIpfsProviders } from "@polywrap/client-config-builder-js";
-import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
+import { ClientConfig } from "@polywrap/client-config-builder-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -16,13 +14,14 @@ import {
   deployStorage,
   addPrimitiveToArrayStorage,
   addStructToStorage,
-  setPrimitiveToStorage
-} from './utils/storage';
+  setPrimitiveToStorage,
+} from "./utils/storage";
 
 import { ethers, Wallet } from "ethers";
 import { keccak256 } from "js-sha3";
 import { Connections } from "../Connections";
 import { Connection } from "../Connection";
+import { getDefaultConfig } from "./helpers/getDefaultConfig";
 
 const { hash: namehash } = require("eth-ens-namehash");
 const contracts = {
@@ -33,9 +32,12 @@ const contracts = {
   SimpleStorage: {
     abi: require("./contracts/SimpleStorage.ABI.json"),
     bytecode: `0x${require("./contracts/SimpleStorage.Bytecode.json").object}`,
-    abiSinglePrimitiveMethod: '[{"inputs":[],"name":"get","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]',
-    abiArrayPrimitivesMethod: '[{"inputs":[],"name":"getSimple","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"}]',
-    abiArrayStructsMethod: '[{"inputs":[],"name":"getJobs","outputs":[{"components":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"internalType":"struct SimpleStorage.Job[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"}]',
+    abiSinglePrimitiveMethod:
+      '[{"inputs":[],"name":"get","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]',
+    abiArrayPrimitivesMethod:
+      '[{"inputs":[],"name":"getSimple","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"}]',
+    abiArrayStructsMethod:
+      '[{"inputs":[],"name":"getJobs","outputs":[{"components":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"internalType":"struct SimpleStorage.Job[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"}]',
   },
   ViewMethods: {
     abi: require("./contracts/ViewMethods.ABI.json"),
@@ -50,6 +52,7 @@ describe("Ethereum Plugin", () => {
   let ensAddress: string;
   let resolverAddress: string;
   let registrarAddress: string;
+  let defaultConfig: Partial<ClientConfig>;
   let viewMethodsAddress: string;
   const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 
@@ -75,36 +78,8 @@ describe("Ethereum Plugin", () => {
       defaultNetwork: "testnet",
     });
 
-    client = new PolywrapClient({
-      envs: [
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          env: {
-            provider: providers.ipfs,
-            fallbackProviders: defaultIpfsProviders,
-          },
-        },
-      ],
-      plugins: [
-        {
-          uri: "wrap://ens/ethereum.polywrap.eth",
-          plugin: ethereumPlugin({ connections }),
-        },
-        {
-          uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({ }),
-        },
-        {
-          uri: "wrap://ens/ens-resolver.polywrap.eth",
-          plugin: ensResolverPlugin({
-            addresses: {
-              testnet: ensAddress,
-            },
-          }),
-        },
-      ],
-    });
-
+    defaultConfig = getDefaultConfig(connections);
+    client = new PolywrapClient(defaultConfig);
     await buildWrapper(wrapperPath);
 
     const response = await client.invoke<string>({
@@ -143,15 +118,22 @@ describe("Ethereum Plugin", () => {
   });
 
   it("callContractView (primitive value - string ABI)", async () => {
-    const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
-    await setPrimitiveToStorage(contracts.SimpleStorage.abi, storageAddress, "100");
+      const storageAddress = await deployStorage(
+        contracts.SimpleStorage.abi,
+        contracts.SimpleStorage.bytecode
+      );
+      await setPrimitiveToStorage(
+        contracts.SimpleStorage.abi,
+        storageAddress,
+        "100"
+      );
 
     const response = await client.invoke<string>({
       uri,
       method: "callContractView",
       args: {
         address: storageAddress,
-        method: 'function get() public view returns (uint256)',
+        method: "function get() public view returns (uint256)",
         args: [],
       },
     });
@@ -161,8 +143,15 @@ describe("Ethereum Plugin", () => {
   });
 
   it("callContractView (primitive value - JSON ABI)", async () => {
-    const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
-    await setPrimitiveToStorage(contracts.SimpleStorage.abi, storageAddress, "100");
+      const storageAddress = await deployStorage(
+        contracts.SimpleStorage.abi,
+        contracts.SimpleStorage.bytecode
+      );
+      await setPrimitiveToStorage(
+        contracts.SimpleStorage.abi,
+        storageAddress,
+        "100"
+      );
 
     const response = await client.invoke<string>({
       uri,
@@ -179,16 +168,27 @@ describe("Ethereum Plugin", () => {
   });
 
   it("callContractView (primitives array - string ABI)", async () => {
-    const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
-    await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "100");
-    await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "90");
+      const storageAddress = await deployStorage(
+        contracts.SimpleStorage.abi,
+        contracts.SimpleStorage.bytecode
+      );
+      await addPrimitiveToArrayStorage(
+        contracts.SimpleStorage.abi,
+        storageAddress,
+        "100"
+      );
+      await addPrimitiveToArrayStorage(
+        contracts.SimpleStorage.abi,
+        storageAddress,
+        "90"
+      );
 
     const response = await client.invoke<string>({
       uri,
       method: "callContractView",
       args: {
         address: storageAddress,
-        method: 'function getSimple() public view returns (uint256[] memory)',
+        method: "function getSimple() public view returns (uint256[] memory)",
         args: [],
       },
     });
@@ -196,7 +196,7 @@ describe("Ethereum Plugin", () => {
     if (!response.ok) fail(response.error);
 
     if (!response.value) {
-      throw new Error('Empty data on view call, expecting JSON');
+      throw new Error("Empty data on view call, expecting JSON");
     }
     const result = JSON.parse(response.value);
 
@@ -206,9 +206,20 @@ describe("Ethereum Plugin", () => {
   });
 
   it("callContractView (primitives array - JSON ABI)", async () => {
-    const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
-    await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "100");
-    await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "90");
+      const storageAddress = await deployStorage(
+        contracts.SimpleStorage.abi,
+        contracts.SimpleStorage.bytecode
+      );
+      await addPrimitiveToArrayStorage(
+        contracts.SimpleStorage.abi,
+        storageAddress,
+        "100"
+      );
+      await addPrimitiveToArrayStorage(
+        contracts.SimpleStorage.abi,
+        storageAddress,
+        "90"
+      );
 
     const response = await client.invoke<string>({
       uri,
@@ -223,7 +234,7 @@ describe("Ethereum Plugin", () => {
     if (!response.ok) fail(response.error);
 
     if (!response.value) {
-      throw new Error('Empty data on view call, expecting JSON');
+      throw new Error("Empty data on view call, expecting JSON");
     }
     const result = JSON.parse(response.value);
 
@@ -233,9 +244,20 @@ describe("Ethereum Plugin", () => {
   });
 
   it("callContractView (primitives array - non-array JSON ABI)", async () => {
-    const storageAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
-    await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "100");
-    await addPrimitiveToArrayStorage(contracts.SimpleStorage.abi, storageAddress, "90");
+      const storageAddress = await deployStorage(
+        contracts.SimpleStorage.abi,
+        contracts.SimpleStorage.bytecode
+      );
+      await addPrimitiveToArrayStorage(
+        contracts.SimpleStorage.abi,
+        storageAddress,
+        "100"
+      );
+      await addPrimitiveToArrayStorage(
+        contracts.SimpleStorage.abi,
+        storageAddress,
+        "90"
+      );
 
     const response = await client.invoke<string>({
       uri,
@@ -250,7 +272,7 @@ describe("Ethereum Plugin", () => {
     if (!response.ok) fail(response.error);
 
     if (!response.value) {
-      throw new Error('Empty data on view call, expecting JSON');
+      throw new Error("Empty data on view call, expecting JSON");
     }
     const result = JSON.parse(response.value);
 
@@ -260,7 +282,10 @@ describe("Ethereum Plugin", () => {
   });
 
   it("callContractView (struct array empty)", async () => {
-    const queueAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
+      const queueAddress = await deployStorage(
+        contracts.SimpleStorage.abi,
+        contracts.SimpleStorage.bytecode
+      );
 
     const response = await client.invoke<string>({
       uri,
@@ -273,12 +298,18 @@ describe("Ethereum Plugin", () => {
     });
 
     if (!response.ok) fail(response.error);
-    expect(response.value).toEqual('[]');
+    expect(response.value).toEqual("[]");
   });
 
   it("callContractView (struct array single element)", async () => {
-    const queueAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
-    await addStructToStorage(contracts.SimpleStorage.abi, queueAddress, [queueAddress, "100"]);
+      const queueAddress = await deployStorage(
+        contracts.SimpleStorage.abi,
+        contracts.SimpleStorage.bytecode
+      );
+      await addStructToStorage(contracts.SimpleStorage.abi, queueAddress, [
+        queueAddress,
+        "100",
+      ]);
 
     const response = await client.invoke<string>({
       uri,
@@ -293,15 +324,24 @@ describe("Ethereum Plugin", () => {
     if (!response.ok) fail(response.error);
 
     if (!response.value) {
-      throw new Error('Empty data on view call, expecting JSON');
+      throw new Error("Empty data on view call, expecting JSON");
     }
     expect(response.value).toEqual(`[["${queueAddress}","100"]]`)
   });
 
   it("callContractView (struct array multiple elements)", async () => {
-    const queueAddress = await deployStorage(contracts.SimpleStorage.abi, contracts.SimpleStorage.bytecode)
-    await addStructToStorage(contracts.SimpleStorage.abi, queueAddress, [queueAddress, "100"]);
-    await addStructToStorage(contracts.SimpleStorage.abi, queueAddress, [ensAddress, "99"]);
+      const queueAddress = await deployStorage(
+        contracts.SimpleStorage.abi,
+        contracts.SimpleStorage.bytecode
+      );
+      await addStructToStorage(contracts.SimpleStorage.abi, queueAddress, [
+        queueAddress,
+        "100",
+      ]);
+      await addStructToStorage(contracts.SimpleStorage.abi, queueAddress, [
+        ensAddress,
+        "99",
+      ]);
 
     const response = await client.invoke<string>({
       uri,
@@ -316,7 +356,7 @@ describe("Ethereum Plugin", () => {
     if (!response.ok) fail(response.error);
 
     if (!response.value) {
-      throw new Error('Empty data on view call, expecting JSON');
+      throw new Error("Empty data on view call, expecting JSON");
     }
     const result = JSON.parse(response.value);
 
@@ -707,28 +747,27 @@ describe("Ethereum Plugin", () => {
     const domain = "testwhatever10.eth";
     const newOwner = "0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0";
 
-    const listenerPromise = client.invoke<Schema.EventNotification>({
-        uri,
-        method: "waitForEvent",
-        args: {
-          address: ensAddress,
-          event: event,
-          args: [namehash(domain)],
-          timeout: 20000,
-        },
-      })
-      .then((result) => {
-        if (result.ok) return result.value
-        else fail(result.error)
-      })
-      .then((result: Schema.EventNotification) => {
-        expect(typeof result.data === "string").toBe(true);
-        expect(typeof result.address === "string").toBe(true);
-        expect(result.log).toBeDefined();
-        expect(typeof result.log.transactionHash === "string").toBe(
-          true
-        );
-      });
+      const listenerPromise = client
+        .invoke<Schema.EventNotification>({
+          uri,
+          method: "waitForEvent",
+          args: {
+            address: ensAddress,
+            event: event,
+            args: [namehash(domain)],
+            timeout: 20000,
+          },
+        })
+        .then((result) => {
+          if (result.ok) return result.value;
+          else fail(result.error);
+        })
+        .then((result: Schema.EventNotification) => {
+          expect(typeof result.data === "string").toBe(true);
+          expect(typeof result.address === "string").toBe(true);
+          expect(result.log).toBeDefined();
+          expect(typeof result.log.transactionHash === "string").toBe(true);
+        });
 
     await client.invoke<Schema.TxResponse>({
       uri,
@@ -770,16 +809,14 @@ describe("Ethereum Plugin", () => {
         },
       })
       .then((result) => {
-        if (result.ok) return result.value
-        else fail(result.error)
+          if (result.ok) return result.value;
+          else fail(result.error);
       })
       .then((result: Schema.EventNotification) => {
         expect(typeof result.data === "string").toBe(true);
         expect(typeof result.address === "string").toBe(true);
         expect(result.log).toBeDefined();
-        expect(typeof result.log.transactionHash === "string").toBe(
-          true
-        );
+        expect(typeof result.log.transactionHash === "string").toBe(true);
       });
 
     await client.invoke({
@@ -811,9 +848,9 @@ describe("Ethereum Plugin", () => {
       method: "getNetwork",
       args: {
         connection: {
-          networkNameOrChainId: "mainnet"
-        }
-      }
+          networkNameOrChainId: "mainnet",
+        },
+      },
     });
 
     if (!mainnetNetwork.ok) fail(mainnetNetwork.error);
@@ -830,9 +867,9 @@ describe("Ethereum Plugin", () => {
       method: "getNetwork",
       args: {
         connection: {
-          node: "https://polygon-rpc.com"
-        }
-      }
+          node: "https://polygon-rpc.com",
+        },
+      },
     });
 
     if (!polygonNetwork.ok) fail(polygonNetwork.error);
@@ -843,9 +880,7 @@ describe("Ethereum Plugin", () => {
   });
 
   it("getNetwork - mainnet with env", async () => {
-    const config = new ClientConfigBuilder()
-      .add(client.getConfig())
-      .add({
+      const mainnetClient = new PolywrapClient({
         envs: [
           {
             uri: "wrap://ens/ethereum.polywrap.eth",
@@ -856,11 +891,7 @@ describe("Ethereum Plugin", () => {
             },
           },
         ],
-      })
-      .build();
-    const mainnetClient = new PolywrapClient(
-      config
-    );
+      });
     const mainnetNetwork = await mainnetClient.invoke<Schema.Network>({
       uri,
       method: "getNetwork",
@@ -876,9 +907,7 @@ describe("Ethereum Plugin", () => {
   });
 
   it("getNetwork - polygon with env", async () => {
-    const config = new ClientConfigBuilder()
-      .add(client.getConfig())
-      .add({
+      const polygonClient = new PolywrapClient({
         envs: [
           {
             uri: "wrap://ens/ethereum.polywrap.eth",
@@ -889,11 +918,7 @@ describe("Ethereum Plugin", () => {
             },
           },
         ],
-      })
-      .build();
-    const polygonClient = new PolywrapClient(
-      config
-    );
+      });
     const polygonNetwork = await polygonClient.invoke<Schema.Network>({
       uri,
       method: "getNetwork",
@@ -909,11 +934,15 @@ describe("Ethereum Plugin", () => {
     let result = await client.invoke<string[]>({
       uri,
       method: "requestAccounts",
-    })
+    });
     result = result as { ok: false; error: Error | undefined };
     // eth_requestAccounts is not supported by Ganache
     // this RPC error indicates that the method call was attempted
-    expect(result.error?.message.indexOf("Method eth_requestAccounts not supported")).toBeGreaterThanOrEqual(0);
+      expect(
+        result.error?.message.indexOf(
+          "Method eth_requestAccounts not supported"
+        )
+      ).toBeGreaterThanOrEqual(0);
   });
 
   it("callContractMethod", async () => {
@@ -929,9 +958,9 @@ describe("Ethereum Plugin", () => {
           value: null,
           nonce: null,
           gasPrice: "50",
-          gasLimit: "200000"
-        }
-      }
+          gasLimit: "200000",
+        },
+      },
     });
 
     if (!response.ok) fail(response.error);
@@ -1020,13 +1049,30 @@ describe("Ethereum Plugin", () => {
     );
   });
 
+  it("signMessageBytes", async () => {
+    const encoder = new TextEncoder();
+    const response = await client.invoke<string>({
+      uri,
+      method: "signMessageBytes",
+      args: {
+        bytes: encoder.encode("Hello World")
+      }
+    });
+
+    if (!response.ok) fail(response.error);
+    expect(response.value).toBe(
+      "0xa4708243bf782c6769ed04d83e7192dbcf4fc131aa54fde9d889d8633ae39dab03d7babd2392982dff6bc20177f7d887e27e50848c851320ee89c6c63d18ca761c"
+    );
+  });
+
   it("sendRPC", async () => {
     const res = await client.invoke<string | undefined>({
       uri,
       method: "sendRPC",
       args: {
-        method: "eth_blockNumber", params: []
-      }
+        method: "eth_blockNumber",
+        params: [],
+      },
     });
 
     if (!res.ok) fail(res.error);
@@ -1039,8 +1085,8 @@ describe("Ethereum Plugin", () => {
       method: "deployContract",
       args: {
         abi: JSON.stringify(contracts.StructArg.abi),
-        bytecode: contracts.StructArg.bytecode
-      }
+        bytecode: contracts.StructArg.bytecode,
+      },
     });
 
     if (!response1.ok) fail(response1.error);
@@ -1060,15 +1106,13 @@ describe("Ethereum Plugin", () => {
       args: {
         address: address,
         method: "function method(tuple(string str, uint256 unsigned256, uint256[] unsigned256Array) _arg) returns (string, uint256)",
-        args: [structArg]
-      }
+        args: [structArg],
+      },
     });
 
     if (!response2.ok) fail(response2.error);
     expect(response2.value).toBeDefined();
-    expect(
-      response2.value?.transactionHash
-    ).toBeDefined();
+    expect(response2.value?.transactionHash).toBeDefined();
   });
 
   describe("ViewMethods", () => {
