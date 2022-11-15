@@ -15,7 +15,6 @@ import {
   SubscribeOptions,
   Subscription,
   Uri,
-  IUriRedirect,
   createQueryDocument,
   getImplementations,
   parseQuery,
@@ -108,16 +107,6 @@ export class PolywrapClient implements CoreClient {
   }
 
   /**
-   * returns all uri redirects from the configuration used to instantiate the client
-   *
-   * @returns an array of uri redirects
-   */
-  @Tracer.traceMethod("PolywrapClient: getRedirects")
-  public getRedirects(): readonly IUriRedirect<Uri>[] | undefined {
-    return this._config.redirects;
-  }
-
-  /**
    * returns all plugin registrations from the configuration used to instantiate the client
    *
    * @returns an array of plugin registrations
@@ -154,7 +143,7 @@ export class PolywrapClient implements CoreClient {
    * @returns an object that implements the IUriResolver interface
    */
   @Tracer.traceMethod("PolywrapClient: getUriResolver")
-  public getUriResolver(): IUriResolver<unknown> {
+  public getResolver(): IUriResolver<unknown> {
     return this._config.resolver;
   }
 
@@ -225,21 +214,22 @@ export class PolywrapClient implements CoreClient {
    *  from the configuration used to instantiate the client
    *
    * @param uri - a wrap URI
-   * @param options - { applyRedirects?: boolean }
+   * @param options - { applyResolution?: boolean }
    * @returns a Result containing URI array if the request was successful
    */
   @Tracer.traceMethod("PolywrapClient: getImplementations")
-  public getImplementations<TUri extends Uri | string>(
+  public async getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions = {}
-  ): Result<TUri[], Error> {
+  ): Promise<Result<TUri[], Error>> {
     const isUriTypeString = typeof uri === "string";
-    const applyRedirects = !!options.applyRedirects;
+    const applyResolution = !!options.applyResolution;
 
-    const getImplResult = getImplementations(
+    const getImplResult = await getImplementations(
       Uri.from(uri),
       this.getInterfaces() ?? [],
-      applyRedirects ? this.getRedirects() : undefined
+      applyResolution ? this : undefined,
+      applyResolution ? options.resolutionContext : undefined
     );
 
     if (!getImplResult.ok) {
@@ -606,7 +596,7 @@ export class PolywrapClient implements CoreClient {
   ): Promise<Result<UriPackageOrWrapper, unknown>> {
     const uri = Uri.from(options.uri);
 
-    const uriResolver = this.getUriResolver();
+    const uriResolver = this.getResolver();
 
     const resolutionContext =
       options.resolutionContext ?? new UriResolutionContext();
@@ -733,11 +723,6 @@ export class PolywrapClient implements CoreClient {
     config: PolywrapCoreClientConfig
   ): PolywrapCoreClientConfig<Uri> {
     return {
-      redirects:
-        config?.redirects?.map((x) => ({
-          from: Uri.from(x.from),
-          to: Uri.from(x.to),
-        })) ?? [],
       interfaces:
         config?.interfaces?.map((x) => ({
           interface: Uri.from(x.interface),

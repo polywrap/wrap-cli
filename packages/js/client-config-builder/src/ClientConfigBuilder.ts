@@ -4,7 +4,6 @@ import { BaseClientConfigBuilder } from "./BaseClientConfigBuilder";
 import { CoreClientConfig, Uri, IUriResolver } from "@polywrap/core-js";
 import {
   IWrapperCache,
-  LegacyRedirectsResolver,
   PackageToWrapperCacheResolver,
   RecursiveResolver,
   StaticResolver,
@@ -28,14 +27,13 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
     return {
       envs: this.config.envs,
       interfaces: this.config.interfaces,
-      redirects: this.config.redirects,
       resolver:
         this.resolver ??
         RecursiveResolver.from(
           PackageToWrapperCacheResolver.from(
             [
-              new LegacyRedirectsResolver(),
               StaticResolver.from([
+                ...this.config.redirects,
                 ...this.config.wrappers,
                 ...this.config.packages,
               ]),
