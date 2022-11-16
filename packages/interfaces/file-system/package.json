@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/file-system-interface",
   "description": "Polywrap Filesystem Interface",
-  "version": "0.10.0-pre.3",
+  "version": "0.10.0-pre.4",
   "scripts": {
     "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",
     "build:patch": "node ../../cli/bin/polywrap build",
@@ -11,7 +11,7 @@
     "deploy": "npx polywrap deploy"
   },
   "devDependencies": {
-    "polywrap": "0.10.0-pre.3"
+    "polywrap": "0.10.0-pre.4"
   },
   "publishConfig": {
     "access": "public"
