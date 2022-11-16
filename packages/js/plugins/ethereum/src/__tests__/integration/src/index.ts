@@ -307,7 +307,7 @@ export function signMessageBytes(
 
 export function signTypedData(
   args: Args_signTypedData
-): Promise<string> {
+): string | null {
   return Ethereum_Module.signTypedData({
     payload: args.payload,
     connection: args.connection
