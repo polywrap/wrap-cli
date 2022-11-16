@@ -156,6 +156,11 @@ type Module {
         connection: Ethereum_Connection
     ): String!
 
+    signTypedData(
+        payload: JSON!
+        connection: Connection
+    ): String
+
     sendRPC(
         method: String!
         params: [String!]!

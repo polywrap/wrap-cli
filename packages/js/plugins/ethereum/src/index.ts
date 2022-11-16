@@ -30,6 +30,7 @@ import {
   Args_sendTransactionAndWait,
   Args_signMessage,
   Args_signMessageBytes,
+  Args_signTypedData,
   TxResponse,
   BigInt,
   StaticTxResult,
@@ -38,7 +39,6 @@ import {
   Network,
   Connection as SchemaConnection,
   manifest,
-  Args_signTypedData,
 } from "./wrap";
 import { Connection } from "./Connection";
 import * as Mapping from "./utils/mapping";
