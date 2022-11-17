@@ -1,6 +1,6 @@
 {
-  "name": "@polywrap/client-js",
-  "description": "Polywrap Javascript Client",
+  "name": "@polywrap/core-client-js",
+  "description": "Polywrap Javascript Core Client",
   "version": "0.10.0-pre.4",
   "license": "MIT",
   "repository": {
@@ -20,30 +20,13 @@
     "test:watch": "jest --watch --passWithNoTests --verbose --detectOpenHandles"
   },
   "dependencies": {
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.4",
     "@polywrap/core-js": "0.10.0-pre.4",
-    "@polywrap/core-client-js": "0.10.0-pre.4",
     "@polywrap/msgpack-js": "0.10.0-pre.4",
     "@polywrap/result": "0.10.0-pre.4",
     "@polywrap/tracing-js": "0.10.0-pre.4",
-    "@polywrap/client-config-builder-js": "0.10.0-pre.4",
-    "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.4",
-    "@polywrap/uri-resolvers-js": "0.10.0-pre.4",
-    "@polywrap/plugin-js": "0.10.0-pre.4"
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.4"
   },
   "devDependencies": {
-    "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.4",
-    "@polywrap/ethereum-plugin-js": "0.10.0-pre.4",
-    "@polywrap/fs-plugin-js": "0.10.0-pre.4",
-    "@polywrap/fs-resolver-plugin-js": "0.10.0-pre.4",
-    "@polywrap/http-plugin-js": "0.10.0-pre.4",
-    "@polywrap/http-resolver-plugin-js": "0.10.0-pre.4",
-    "@polywrap/ipfs-plugin-js": "0.10.0-pre.4",
-    "@polywrap/ipfs-resolver-plugin-js": "0.10.0-pre.4",
-    "@polywrap/logger-plugin-js": "0.10.0-pre.4",
-    "@polywrap/plugin-js": "0.10.0-pre.4",
-    "@polywrap/test-cases": "0.10.0-pre.4",
-    "@polywrap/test-env-js": "0.10.0-pre.4",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "@types/uuid": "8.3.0",

@@ -1,5 +1,4 @@
-import { IUriResolutionContext } from "@polywrap/core-js";
-import { buildCleanUriHistory } from "@polywrap/uri-resolvers-js";
+import { IUriResolutionContext, buildCleanUriHistory } from "@polywrap/core-js";
 
 export class UriResolverError<
   TError extends unknown = undefined
