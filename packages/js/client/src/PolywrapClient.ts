@@ -1,6 +1,10 @@
 import { PolywrapClientConfig } from "./PolywrapClientConfig";
-import { PolywrapCoreClient, PolywrapCoreClientConfig } from "@polywrap/core-client-js";
 import { buildPolywrapCoreClientConfig } from "./buildPolywrapCoreClientConfig";
+
+import {
+  PolywrapCoreClient,
+  PolywrapCoreClientConfig,
+} from "@polywrap/core-client-js";
 
 export class PolywrapClient extends PolywrapCoreClient {
   /**

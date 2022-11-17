@@ -1,7 +1,8 @@
+import { PolywrapClientConfig } from "./PolywrapClientConfig";
+
 import { Uri } from "@polywrap/core-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { PolywrapCoreClientConfig } from "@polywrap/core-client-js";
-import { PolywrapClientConfig } from "./PolywrapClientConfig";
 
 export const buildPolywrapCoreClientConfig = (
   config?: PolywrapClientConfig
