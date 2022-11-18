@@ -1,0 +1,69 @@
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+use serde::{Serialize, Deserialize};
+use num_bigint::BigInt;
+use bigdecimal::BigDecimal as BigNumber;
+use serde_json as JSON;
+use std::collections::BTreeMap as Map;
+
+// OBJECT
+{{#objectTypes}}
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    {{#properties}}
+    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{/properties}}
+}
+{{/objectTypes}}
+
+// ENV
+{{#envType}}
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    {{#properties}}
+    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{/properties}}
+}
+{{/envType}}
+
+// ENUM
+{{#enumTypes}}
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
+pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    {{#constants}}
+    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}{{#detectKeyword}}{{.}}{{/detectKeyword}},
+    {{/constants}}
+    _MAX_
+}
+{{/enumTypes}}
+
+// Imported OBJECT
+{{#importedObjectTypes}}
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    {{#properties}}
+    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{/properties}}
+}
+{{/importedObjectTypes}}
+
+// Imported ENV
+{{#importedEnvType}}
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    {{#properties}}
+    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{/properties}}
+}
+{{/importedEnvType}}
+
+// Imported ENUM
+{{#importedEnumTypes}}
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
+pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    {{#constants}}
+    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}{{#detectKeyword}}{{.}}{{/detectKeyword}},
+    {{/constants}}
+    _MAX_
+}
+{{/importedEnumTypes}}
