@@ -5,13 +5,13 @@ import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { State } from "./WasmWrapper";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { CoreClient, WasmErrorSource } from "@polywrap/core-js";
+import { CoreClient, WrapErrorSource } from "@polywrap/core-js";
 
 export const createImports = (config: {
   client: CoreClient;
   memory: WebAssembly.Memory;
   state: State;
-  abort: (message: string, source?: WasmErrorSource) => never;
+  abort: (message: string, source?: WrapErrorSource) => never;
 }): WrapImports => {
   const { memory, state, client, abort } = config;
 

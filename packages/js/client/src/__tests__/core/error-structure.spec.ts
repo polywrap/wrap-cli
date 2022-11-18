@@ -1,4 +1,3 @@
-import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { Uri, PolywrapClient } from "../..";
 
@@ -23,10 +22,10 @@ describe("error structure", () => {
   let client: PolywrapClient;
 
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath);
-    await buildWrapper(badUtilWrapperPath);
-    await buildWrapper(badMathWrapperPath);
-    await buildWrapper(subinvokeErrorWrapperPath);
+    // await buildWrapper(simpleWrapperPath);
+    // await buildWrapper(badUtilWrapperPath);
+    // await buildWrapper(badMathWrapperPath);
+    // await buildWrapper(subinvokeErrorWrapperPath);
 
     client = new PolywrapClient({
       redirects: [
@@ -51,12 +50,11 @@ describe("error structure", () => {
       },
     });
 
-    console.log(result)
-
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual("test");
   });
 
+  // TODO: edit wasm "Context" and wasm bindings
   test("Invoke a wrapper with malformed arguments", async () => {
     const result = await client.invoke<string>({
       uri: simpleWrapperUri.uri,
@@ -70,6 +68,7 @@ describe("error structure", () => {
     expect(result.value).toEqual("test");
   });
 
+  // TODO: edit packages/wasm/as/assembly/invoke.ts
   test("Invoke a wrapper method that doesn't exist", async () => {
     const result = await client.invoke<string>({
       uri: simpleWrapperUri.uri,
@@ -97,7 +96,7 @@ describe("error structure", () => {
     expect(result.value).toEqual("test");
   });
 
-  test("Subinvoke error two layers deep", async () => {
+  test.only("Subinvoke error two layers deep", async () => {
     const result = await client.invoke<number>({
       uri: subinvokeErrorWrapperUri.uri,
       method: "throwsInTwoSubinvokeLayers",
@@ -107,7 +106,10 @@ describe("error structure", () => {
       },
     });
 
-    if (!result.ok) fail(result.error);
+    if (!result.ok) {
+      console.log(result.error);
+      fail(result.error);
+    }
     expect(result.value).toEqual(3);
   });
 

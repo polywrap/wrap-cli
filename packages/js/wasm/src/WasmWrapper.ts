@@ -18,9 +18,9 @@ import {
   isBuffer,
   Uri,
   Wrapper,
-  InvokeError,
-  InvokeErrorCode,
-  WasmErrorSource,
+  WrapError,
+  WrapErrorCode,
+  WrapErrorSource,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
@@ -154,7 +154,14 @@ export class WasmWrapper implements Wrapper {
       const args = options.args || {};
       const wasmResult = await this._getWasmModule();
       if (!wasmResult.ok) {
-        return wasmResult;
+        const error = new WrapError(wasmResult.error?.message, {
+          code: WrapErrorCode.WASM_NO_MODULE,
+          uri: options.uri.uri,
+          method,
+          args: JSON.stringify(args, null, 2),
+          cause: wasmResult.error,
+        });
+        return ResultErr(error);
       }
       const wasm = wasmResult.value;
 
@@ -175,13 +182,16 @@ export class WasmWrapper implements Wrapper {
         env: options.env ? msgpackEncode(options.env) : EMPTY_ENCODED_OBJECT,
       };
 
-      const abort = (message: string, source?: WasmErrorSource) => {
-        throw new InvokeError(message, {
-          code: InvokeErrorCode.ABORTED,
+      const abort = (message: string, source?: WrapErrorSource) => {
+        const cause = WrapError.parse(message);
+        const text = cause ? "SubInvocation exception encountered" : message;
+        throw new WrapError(text, {
+          code: WrapErrorCode.WASM_INVOKE_ABORTED,
           uri: options.uri.uri,
           method,
           args: JSON.stringify(args, null, 2),
           source,
+          cause,
         });
       };
 
@@ -213,8 +223,8 @@ export class WasmWrapper implements Wrapper {
           encoded: true,
         };
       } else {
-        const error = new InvokeError(invokeResult.error?.message ?? "", {
-          code: InvokeErrorCode.RETURNED,
+        const error = new WrapError(invokeResult.error?.message ?? "", {
+          code: WrapErrorCode.WASM_INVOKE_FAIL,
           uri: options.uri.uri,
           method,
           args: JSON.stringify(args, null, 2),

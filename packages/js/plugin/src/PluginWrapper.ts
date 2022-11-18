@@ -8,6 +8,8 @@ import {
   Uri,
   GetFileOptions,
   isBuffer,
+  WrapError,
+  WrapErrorCode,
 } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
@@ -53,7 +55,12 @@ export class PluginWrapper implements Wrapper {
     const args = options.args || {};
 
     if (!this.module.getMethod(method)) {
-      return ResultErr(Error(`PluginWrapper: method "${method}" not found.`));
+      const error = new WrapError(`Method "${method}" not found.`, {
+        code: WrapErrorCode.PLUGIN_METHOD_NOT_FOUND,
+        uri: options.uri.uri,
+        method,
+      });
+      return ResultErr(error);
     }
 
     // Set the module's environment
@@ -68,10 +75,16 @@ export class PluginWrapper implements Wrapper {
       Tracer.addEvent("msgpack-decoded", result);
 
       if (typeof result !== "object") {
-        const msgPackException = Error(
-          `PluginWrapper: decoded MsgPack args did not result in an object.\nResult: ${result}`
+        const error = new WrapError(
+          `Decoded MsgPack args did not result in an object.\nResult: ${result}`,
+          {
+            code: WrapErrorCode.PLUGIN_ARGS_MALFORMED,
+            uri: options.uri.uri,
+            method,
+            args: JSON.stringify(args),
+          }
         );
-        return ResultErr(msgPackException);
+        return ResultErr(error);
       }
 
       jsArgs = result as Record<string, unknown>;
@@ -92,14 +105,14 @@ export class PluginWrapper implements Wrapper {
         encoded: false,
       };
     } else {
-      const invocationException = Error(
-        `PluginWrapper: invocation exception encountered.\n` +
-          `uri: ${options.uri}\nmodule: ${module}\n` +
-          `method: ${method}\n` +
-          `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
-          `exception: ${result.error?.message}`
-      );
-      return ResultErr(invocationException);
+      const error = new WrapError(result.error?.message, {
+        code: WrapErrorCode.PLUGIN_INVOKE_FAIL,
+        uri: `${options.uri}; module: ${module}`,
+        method,
+        args: JSON.stringify(jsArgs, null, 2),
+        cause: result.error,
+      });
+      return ResultErr(error);
     }
   }
 }

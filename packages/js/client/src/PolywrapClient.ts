@@ -1,4 +1,3 @@
-import { UriResolverError } from "./UriResolverError";
 import { PolywrapCoreClientConfig } from "./PolywrapCoreClientConfig";
 import { PolywrapClientConfig } from "./PolywrapClientConfig";
 
@@ -27,6 +26,8 @@ import {
   getEnvFromUriHistory,
   QueryResult,
   InvokeResult,
+  WrapError,
+  WrapErrorCode,
 } from "@polywrap/core-js";
 import { buildCleanUriHistory } from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
@@ -182,7 +183,6 @@ export class PolywrapClient implements CoreClient {
    * returns a package's wrap manifest
    *
    * @param uri - a wrap URI
-   * @param options - { noValidate?: boolean }
    * @returns a Result containing the WrapManifest if the request was successful
    */
   @Tracer.traceMethod("PolywrapClient: getManifest")
@@ -298,7 +298,12 @@ export class PolywrapClient implements CoreClient {
       // Parse the query to understand what's being invoked
       const parseResult = parseQuery(uri, queryDocument, variables);
       if (!parseResult.ok) {
-        result = { errors: [parseResult.error as Error] };
+        const error = new WrapError(parseResult.error?.message, {
+          code: WrapErrorCode.QUERY_MALFORMED,
+          uri: uri.uri,
+          cause: parseResult.error,
+        });
+        result = { errors: [error] };
         break err;
       }
       const queryInvocations = parseResult.value;
@@ -328,13 +333,13 @@ export class PolywrapClient implements CoreClient {
 
       // Aggregate all invocation results
       const data: Record<string, unknown> = {};
-      const errors: Error[] = [];
+      const errors: WrapError[] = [];
 
       for (const invocation of invocationResults) {
         if (invocation.result.ok) {
           data[invocation.name] = invocation.result.value;
         } else {
-          errors.push(invocation.result.error as Error);
+          errors.push(invocation.result.error as WrapError);
         }
       }
 
@@ -343,10 +348,16 @@ export class PolywrapClient implements CoreClient {
         errors: errors.length === 0 ? undefined : errors,
       };
     } catch (error: unknown) {
+      const unknownQueryErrorToWrapError = (e: Error): WrapError =>
+        new WrapError((e as Error)?.message, {
+          code: WrapErrorCode.QUERY_FAIL,
+          uri: options.uri.toString(),
+          cause: e as Error,
+        });
       if (Array.isArray(error)) {
-        result = { errors: error };
+        result = { errors: error.map(unknownQueryErrorToWrapError) };
       } else {
-        result = { errors: [error as Error] };
+        result = { errors: [unknownQueryErrorToWrapError(error as Error)] };
       }
     }
 
@@ -646,7 +657,7 @@ export class PolywrapClient implements CoreClient {
     uri: Uri,
     resolutionContext?: IUriResolutionContext,
     options?: DeserializeManifestOptions
-  ): Promise<Result<Wrapper, Error>> {
+  ): Promise<Result<Wrapper, WrapError>> {
     Tracer.setAttribute("label", `Wrapper loaded: ${uri}`, TracingLevel.High);
 
     if (!resolutionContext) {
@@ -659,34 +670,43 @@ export class PolywrapClient implements CoreClient {
     });
 
     if (!result.ok) {
+      const history = buildCleanUriHistory(resolutionContext.getHistory());
+      const resolutionStack = `${JSON.stringify(history, null, 2)}`;
+
+      let error: WrapError;
       if (result.error) {
-        return ResultErr(new UriResolverError(result.error, resolutionContext));
-      } else {
-        return ResultErr(
-          Error(
-            `Error resolving URI "${
-              uri.uri
-            }"\nResolution Stack: ${JSON.stringify(
-              buildCleanUriHistory(resolutionContext.getHistory()),
-              null,
-              2
-            )}`
-          )
+        error = new WrapError(
+          "An internal resolver error occurred while resolving a URI",
+          {
+            code: WrapErrorCode.URI_RESOLVER_ERROR,
+            uri: uri.uri,
+            resolutionStack,
+            cause: result.error,
+          }
         );
+      } else {
+        error = new WrapError("Error resolving URI", {
+          code: WrapErrorCode.URI_RESOLUTION_ERROR,
+          uri: uri.uri,
+          resolutionStack,
+        });
       }
+
+      return ResultErr(error);
     }
 
     const uriPackageOrWrapper = result.value;
 
     if (uriPackageOrWrapper.type === "uri") {
-      const error = Error(
-        `Error resolving URI "${uri.uri}"\nURI not found ${
-          uriPackageOrWrapper.uri.uri
-        }\nResolution Stack: ${JSON.stringify(
-          buildCleanUriHistory(resolutionContext.getHistory()),
-          null,
-          2
-        )}`
+      const history = buildCleanUriHistory(resolutionContext.getHistory());
+      const resolutionStack = `${JSON.stringify(history, null, 2)}`;
+      const error = new WrapError(
+        `Unable to find URI ${uriPackageOrWrapper.uri.uri}.`,
+        {
+          code: WrapErrorCode.URI_NOT_FOUND,
+          uri: uri.uri,
+          resolutionStack,
+        }
       );
       return ResultErr(error);
     }
@@ -695,7 +715,12 @@ export class PolywrapClient implements CoreClient {
       const result = await uriPackageOrWrapper.package.createWrapper(options);
 
       if (!result.ok) {
-        return result;
+        const error = new WrapError(result.error?.message, {
+          code: WrapErrorCode.LOAD_WRAPPER_FAIL,
+          uri: uri.uri,
+          cause: result.error,
+        });
+        return ResultErr(error);
       }
 
       return ResultOk(result.value);
