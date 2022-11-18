@@ -1,3 +1,6 @@
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
 use std::sync::Arc;
 use polywrap_core::{error::Error, invoke::Invoker};
 use polywrap_plugin::module::PluginModule;
@@ -12,7 +15,7 @@ macro_rules! impl_plugin_module {
             $plugin_type,
             {{#moduleType}}
             {{#methods}}
-            ({{#toLower}}{{name}}{{/toLower}}, $crate::wrap::module::Args{{#toUpper}}{{name}}{{/toUpper}}),
+            ({{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, $crate::wrap::module::Args{{#toUpper}}{{name}}{{/toUpper}}),
             {{/methods}}
             {{/moduleType}}
         );
@@ -27,13 +30,13 @@ pub struct Args{{#toUpper}}{{name}}{{/toUpper}} {
     {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/arguments}}
 }
+
 {{/methods}}
 {{/moduleType}}
-
 pub trait Module: PluginModule {
   {{#moduleType}}
   {{#methods}}
-  fn {{#toLower}}{{name}}{{/toLower}}(&self, args: &Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, Error>;
+  fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(&mut self, args: &Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, Error>;
   {{^last}}
 
   {{/last}}
