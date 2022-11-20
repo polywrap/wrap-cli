@@ -8,7 +8,7 @@
     "lint": "eslint --color -c ../../../.eslintrc.js .",
     "test:env:up": "npx polywrap infra up --modules=eth-ens-ipfs",
     "test:env:down": "npx polywrap infra down --modules=eth-ens-ipfs",
-    "deploy": "npx polywrap deploy"
+    "deploy": "npx polywrap deploy -o ./deployment.json"
   },
   "devDependencies": {
     "polywrap": "0.10.0-pre.4"
