@@ -1,0 +1,17 @@
+1668982663369 INFO: 🔄 Manifest loaded from ./polywrap.yaml1668982663381 INFO: ✅ Manifest loaded from ./polywrap.yaml1668982663381 INFO: > docker version1668982663478 INFO: 🔄 Compile Polywrap1668982663482 INFO: 🔄 WRAP manifest written in ./build/wrap.info1668982663500 INFO: 🔄 Manifest written to ./build/wrap.info1668982663520 INFO: ✅ Manifest written to ./build/wrap.info1668982663520 INFO: ✅ WRAP manifest written in ./build/wrap.info1668982663521 INFO: 🔄 Generate types1668982663536 INFO: ✅ Generate types1668982663541 INFO: > docker stats --no-stream1668982664157 INFO: 🔄 Manifest loaded from ./polywrap.build.yaml1668982664161 INFO: ✅ Manifest loaded from ./polywrap.build.yaml1668982664209 INFO: > docker run --rm -v /Users/dorgjelli/Dev/Repos/toolchain-b/packages/test-cases/cases/cli/wasm/build-cmd/assemblyscript/015-resource-files/.polywrap/wasm/build/project:/project -v /Users/dorgjelli/Dev/Repos/toolchain-b/packages/test-cases/cases/cli/wasm/build-cmd/assemblyscript/015-resource-files/.polywrap/wasm/build/linked-packages:/linked-packages  polywrap/vm-base-as:latest /bin/bash --verbose /project/polywrap-build.sh1668982664762 INFO: set -e
+
+json -I -f package.json -e 'this.dependencies["@polywrap/wasm-as"]="../linked-packages/@polywrap/wasm-as"'
+1668982664841 INFO: json: updated "package.json" in-place
+1668982664849 INFO: yarn
+1668982665044 INFO: yarn install v1.22.15
+1668982665115 INFO: [1/4] Resolving packages...
+1668982665173 INFO: success Already up-to-date.
+1668982665184 INFO: Done in 0.15s.
+1668982665196 INFO: asc src/wrap/entry.ts \
+    --path ./node_modules \
+    --outFile ./build/wrap.wasm \
+    --use abort=src/wrap/entry/wrapAbort \
+    --optimize --importMemory \
+    --runtime stub \
+    --runPasses asyncify
+1668982682366 INFO: > docker run --rm -v /Users/dorgjelli/Dev/Repos/toolchain-b/packages/test-cases/cases/cli/wasm/build-cmd/assemblyscript/015-resource-files/.polywrap/wasm/build/project:/project -v /Users/dorgjelli/Dev/Repos/toolchain-b/packages/test-cases/cases/cli/wasm/build-cmd/assemblyscript/015-resource-files/.polywrap/wasm/build/linked-packages:/linked-packages polywrap/vm-base-as:latest /bin/bash -c "chmod -R 777 /project && chmod -R 777 /linked-packages"1668982684275 INFO: 🔄 Artifacts written to ./build1668982684277 INFO: ✅ Artifacts written to ./build1668982684297 INFO: 🔄 Copying resource: ./README.md1668982684298 ERROR: ❌ Failed to copy resource: ./README.md: Error: EISDIR: illegal operation on a directory, copyfile '/Users/dorgjelli/Dev/Repos/toolchain-b/packages/test-cases/cases/cli/wasm/build-cmd/assemblyscript/015-resource-files/README.md' -> '/Users/dorgjelli/Dev/Repos/toolchain-b/packages/test-cases/cases/cli/wasm/build-cmd/assemblyscript/015-resource-files/build'

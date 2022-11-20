@@ -6,7 +6,7 @@ import {
   generateWrapFile,
   intlMsg,
   outputManifest,
-  outputMetadata,
+  copyMetadata,
   PolywrapProject,
   resetDir,
   SchemaComposer,
@@ -48,12 +48,15 @@ export class Compiler {
           await codeGenerator.generate();
         }
 
-        // Compile the Wrapper
+        // Compile & Output: wrap.wasm
         await this._buildModules();
       }
 
-      // Output Polywrap Metadata
-      await this._outputPolywrapMetadata();
+      // Copy: Resource files
+      await this._copyResourceFiles();
+
+      // Copy: Polywrap Metadata
+      await this._copyPolywrapMetadata();
     };
 
     try {
@@ -127,16 +130,51 @@ export class Compiler {
     );
   }
 
-  private async _outputPolywrapMetadata(): Promise<void> {
+  private async _copyResourceFiles(): Promise<void> {
+    const { outputDir, project } = this._config;
+
+    const projectManifest = await project.getManifest();
+
+    if (!projectManifest || !projectManifest.resources) {
+      return Promise.resolve();
+    }
+
+    const logger = project.logger;
+
+    for (const resource of projectManifest.resources) {
+      const resourcePath = path.resolve(resource);
+
+      await logActivity(
+        logger,
+        intlMsg.lib_compiler_outputResourceText({ resource }),
+        intlMsg.lib_compiler_outputResourceError({ resource }),
+        intlMsg.lib_compiler_outputResourceWarning({ resource }),
+        async () => {
+          if (!fs.existsSync(resourcePath)) {
+            throw Error(`Resource can't be found.`);
+          }
+
+          const fileName = path.basename(resourcePath);
+          const outputPath = path.join(outputDir, fileName);
+
+          // NOTE: we assume single files, that have their directories flattened.
+          //       This could be updated to support directories and custom output paths.
+          await fs.promises.copyFile(resourcePath, outputPath);
+        }
+      );
+    }
+  }
+
+  private async _copyPolywrapMetadata(): Promise<void> {
     const { outputDir, project } = this._config;
 
     const projectMetaManifest = await project.getMetaManifest();
 
     if (!projectMetaManifest) {
-      return undefined;
+      return Promise.resolve();
     }
 
-    const builtMetaManifest = await outputMetadata(
+    const builtMetaManifest = await copyMetadata(
       projectMetaManifest,
       outputDir,
       project.getManifestDir(),

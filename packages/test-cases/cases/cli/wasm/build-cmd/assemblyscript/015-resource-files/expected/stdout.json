@@ -1,0 +1,8 @@
+{
+  "stdout": [
+    "Copying resource: ./README.md",
+    "Artifacts written to ./build",
+    "WRAP manifest written in ./build"
+  ],
+  "exitCode": 0
+}
