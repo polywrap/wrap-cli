@@ -1,6 +1,6 @@
 # Polywrap Origin (0.10.0-pre.4)
 ## Features
-* [PR-...](https://github.com/polywrap/toolchain/pull/...) `polywrap` CLI: Polywrap projects can now include a list of `resources:` that are included in the `polywrap.yaml` project manifest. Each resource is a path to a file. For example:
+* [PR-1430](https://github.com/polywrap/toolchain/pull/1430) `polywrap` CLI: Polywrap projects can now include a list of `resources:` that are included in the `polywrap.yaml` project manifest. Each resource is a path to a file. For example:
     ```yaml
     format: 0.3.0
     project:
@@ -11,7 +11,7 @@
       - ./README.md
       - ./resource.dat
     ```
-* [PR-...](https://github.com/polywrap/toolchain/pull/...) `@polywrap/polywrap-manifest-types-js`, `@polywrap/polywrap-manifest-schemas`: Added version `0.3.0` of the `PolywrapManifest`, which includes the new `resources: string[]` field, containing file paths.
+* [PR-1430](https://github.com/polywrap/toolchain/pull/1430) `@polywrap/polywrap-manifest-types-js`, `@polywrap/polywrap-manifest-schemas`: Added version `0.3.0` of the `PolywrapManifest`, which includes the new `resources: string[]` field, containing file paths.
 * [PR-1411](https://github.com/polywrap/toolchain/pull/1411) `@polywrap/client-config-builder-js`: The `ens-text-record-resolver` wrapper @ [`wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY`](https://wrappers.io/v/ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY) has been added to the default client config bundle. This resolver enables ENS, text-record based, WRAP URI resolution. The text-record's key must be prepended with the `wrap/...` identifier. For example, the URI `wrap://ens/domain.eth:foo` maps to `domain.eth`'s `wrap/foo` text record. The `wrap/foo` text-record's value must contain another valid WRAP URI. For examples, see [dev.polywrap.eth](https://app.ens.domains/name/dev.polywrap.eth/details).
 * [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/core-js`:
   * `GetImplementationsOptions` now accepts an optional resolution context, to be used to handle infinite recursion when a resolver uses `getImplementations`
