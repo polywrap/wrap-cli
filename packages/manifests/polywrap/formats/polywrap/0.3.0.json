@@ -53,12 +53,9 @@
       }
     },
     "resources": {
-      "description": "Project resource files.",
-      "type": "array",
-      "items": {
-        "type": "string",
-        "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
-      }
+      "description": "Project resources folder",
+      "type": "string",
+      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*\\/?$"
     },
     "extensions": {
       "description": "Project extension files (build, meta, deploy, infra).",

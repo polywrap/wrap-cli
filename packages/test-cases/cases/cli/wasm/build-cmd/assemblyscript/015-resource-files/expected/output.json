@@ -1,5 +1,6 @@
 [
   "wrap.wasm",
   "wrap.info",
-  "README.md"
+  "README.md",
+  "test/resource.txt"
 ]

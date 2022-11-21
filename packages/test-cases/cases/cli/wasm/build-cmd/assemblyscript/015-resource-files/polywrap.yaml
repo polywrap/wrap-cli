@@ -5,7 +5,6 @@ project:
 source:
   module: ./src/index.ts
   schema: ./src/schema.graphql
-resources:
-  - ./README.md
+resources: ./resources
 extensions:
   build: ./polywrap.build.yaml

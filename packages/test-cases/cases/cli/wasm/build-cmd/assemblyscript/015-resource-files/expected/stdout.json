@@ -1,6 +1,6 @@
 {
   "stdout": [
-    "Copying resource: ./README.md",
+    "Copying resources folder: ./resources",
     "Artifacts written to ./build",
     "WRAP manifest written in ./build"
   ],

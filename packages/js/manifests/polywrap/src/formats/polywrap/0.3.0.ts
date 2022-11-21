@@ -42,9 +42,9 @@ export interface PolywrapManifest {
     import_abis?: ImportAbis[];
   };
   /**
-   * Project resource files.
+   * Project resources folder
    */
-  resources?: string[];
+  resources?: string;
   /**
    * Project extension files (build, meta, deploy, infra).
    */
