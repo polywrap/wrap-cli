@@ -1,4 +1,4 @@
-# Polywrap Origin (0.10.0-pre.4)
+# Polywrap Origin (0.10.0-pre.5)
 ## Features
 * [PR-1430](https://github.com/polywrap/toolchain/pull/1430) `polywrap` CLI: Polywrap `wasm/` & `interface/` projects can now include a `resources:` directory, specified in the `polywrap.yaml` manifest. This resources directory will be copied into the `build/` folder upon runnin `polywrap build`. For example:
     ```yaml
