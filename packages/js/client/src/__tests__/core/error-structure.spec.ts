@@ -1,5 +1,6 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { Uri, PolywrapClient } from "../..";
+// import { buildWrapper } from "@polywrap/test-env-js";
 
 jest.setTimeout(360000);
 
@@ -15,7 +16,8 @@ const badMathWrapperUri = new Uri(`fs/${badMathWrapperPath}/build`);
 const badUtilWrapperPath = `${GetPathToTestWrappers()}/wasm-as/subinvoke-error/1-subinvoke`;
 const badUtilWrapperUri = new Uri(`fs/${badUtilWrapperPath}/build`);
 
-// const incompatibleVersionWrapperUri = new Uri("");
+const incompatibleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-deprecated`;
+const incompatibleWrapperUri = new Uri(`fs/${incompatibleWrapperPath}/build`);
 
 describe("error structure", () => {
 
@@ -54,7 +56,6 @@ describe("error structure", () => {
     expect(result.value).toEqual("test");
   });
 
-  // TODO: edit wasm "Context" and wasm bindings
   test("Invoke a wrapper with malformed arguments", async () => {
     const result = await client.invoke<string>({
       uri: simpleWrapperUri.uri,
@@ -68,7 +69,6 @@ describe("error structure", () => {
     expect(result.value).toEqual("test");
   });
 
-  // TODO: edit packages/wasm/as/assembly/invoke.ts
   test("Invoke a wrapper method that doesn't exist", async () => {
     const result = await client.invoke<string>({
       uri: simpleWrapperUri.uri,
@@ -96,7 +96,7 @@ describe("error structure", () => {
     expect(result.value).toEqual("test");
   });
 
-  test.only("Subinvoke error two layers deep", async () => {
+  test("Subinvoke error two layers deep", async () => {
     const result = await client.invoke<number>({
       uri: subinvokeErrorWrapperUri.uri,
       method: "throwsInTwoSubinvokeLayers",
@@ -107,24 +107,23 @@ describe("error structure", () => {
     });
 
     if (!result.ok) {
-      console.log(result.error);
       fail(result.error);
     }
     expect(result.value).toEqual(3);
   });
 
-  // test("Invoke a wrapper of incompatible version", async () => {
-  //   const result = await client.invoke<string>({
-  //     uri: incompatibleVersionWrapperUri.uri,
-  //     method: "simpleMethod",
-  //     args: {
-  //       arg: "test",
-  //     },
-  //   });
-  //
-  //   console.log(result)
-  //
-  //   if (!result.ok) fail(result.error);
-  //   expect(result.value).toEqual("test");
-  // });
+  test("Invoke a wrapper of incompatible version", async () => {
+    const result = await client.invoke<string>({
+      uri: incompatibleWrapperUri.uri,
+      method: "simpleMethod",
+      args: {
+        arg: "test",
+      },
+    });
+
+    console.log(result)
+
+    if (!result.ok) fail(result.error);
+    expect(result.value).toEqual("test");
+  });
 });

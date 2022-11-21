@@ -54,7 +54,6 @@ export class WrapError extends Error {
   readonly resolutionStack?: string;
   readonly cause?: unknown;
 
-  // TODO: KRIS - elements can be string literals for prod, but they are easier to read as regex literals
   static re = new RegExp(
     [
       // [A-z]+Error can be replaced with specific error names when finalized

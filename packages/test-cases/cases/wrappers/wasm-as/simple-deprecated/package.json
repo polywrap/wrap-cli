@@ -1,0 +1,17 @@
+{
+  "name": "test-case-simple",
+  "private": true,
+  "workspaces": {
+    "nohoist": [
+      "@polywrap/**",
+      "polywrap"
+    ]
+  },
+  "dependencies": {
+    "@polywrap/wasm-as": "0.0.1-prealpha.93",
+    "assemblyscript": "0.19.23"
+  },
+  "devDependencies": {
+    "polywrap": "0.0.1-prealpha.93"
+  }
+}
