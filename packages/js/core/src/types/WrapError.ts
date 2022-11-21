@@ -129,7 +129,7 @@ export class WrapError extends Error {
         }
       : undefined;
 
-    // message may be a stringified WrapError
+    // message may be a stringified WrapError due to current string-based error passing between client and wasm
     let cause: WrapError | undefined;
     if (this.re.test(message as string)) {
       cause = this.parse(message as string);
