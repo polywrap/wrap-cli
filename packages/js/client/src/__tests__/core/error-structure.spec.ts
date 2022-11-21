@@ -1,6 +1,6 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { Uri, PolywrapClient } from "../..";
-// import { buildWrapper } from "@polywrap/test-env-js";
+import { buildWrapper } from "@polywrap/test-env-js";
 
 jest.setTimeout(360000);
 
@@ -17,17 +17,17 @@ const badUtilWrapperPath = `${GetPathToTestWrappers()}/wasm-as/subinvoke-error/1
 const badUtilWrapperUri = new Uri(`fs/${badUtilWrapperPath}/build`);
 
 const incompatibleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-deprecated`;
-const incompatibleWrapperUri = new Uri(`fs/${incompatibleWrapperPath}/build`);
+const incompatibleWrapperUri = new Uri(`fs/${incompatibleWrapperPath}`);
 
 describe("error structure", () => {
 
   let client: PolywrapClient;
 
   beforeAll(async () => {
-    // await buildWrapper(simpleWrapperPath);
-    // await buildWrapper(badUtilWrapperPath);
-    // await buildWrapper(badMathWrapperPath);
-    // await buildWrapper(subinvokeErrorWrapperPath);
+    await buildWrapper(simpleWrapperPath);
+    await buildWrapper(badUtilWrapperPath);
+    await buildWrapper(badMathWrapperPath);
+    await buildWrapper(subinvokeErrorWrapperPath);
 
     client = new PolywrapClient({
       redirects: [

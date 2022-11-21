@@ -1,3 +1,0 @@
-type Module {
-  simpleMethod(arg: String!): String!
-}

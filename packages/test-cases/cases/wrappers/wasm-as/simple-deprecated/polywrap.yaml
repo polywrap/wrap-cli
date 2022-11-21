@@ -1,5 +1,0 @@
-format: 0.0.1-prealpha.9
-name: SimpleDeprecated
-language: wasm/assemblyscript
-schema: ./src/schema.graphql
-module: ./src/index.ts
