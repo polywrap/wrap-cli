@@ -6,7 +6,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface PolywrapManifest {
+export interface PluginManifest {
   /**
    * Polywrap manifest format version.
    */
@@ -31,7 +31,7 @@ export interface PolywrapManifest {
     /**
      * Path to the project's entry point.
      */
-    module?: string;
+    module: string;
     /**
      * Path to the project's graphql schema.
      */
@@ -41,10 +41,6 @@ export interface PolywrapManifest {
      */
     import_abis?: ImportAbis[];
   };
-  /**
-   * Project resources folder
-   */
-  resources?: string;
   /**
    * Project extension files (build, deploy, infra).
    */
@@ -62,7 +58,7 @@ export interface PolywrapManifest {
      */
     infra?: string;
   };
-  __type: "PolywrapManifest";
+  __type: "PluginManifest";
 }
 export interface ImportAbis {
   /**

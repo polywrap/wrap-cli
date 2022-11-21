@@ -5,8 +5,6 @@ import {
   displayPath,
   generateWrapFile,
   intlMsg,
-  outputManifest,
-  copyMetadata,
   PolywrapProject,
   resetDir,
   SchemaComposer,
@@ -55,9 +53,6 @@ export class Compiler {
 
       // Copy: Resources folder
       await this._copyResourcesFolder();
-
-      // Copy: Polywrap Metadata
-      await this._copyPolywrapMetadata();
     };
 
     try {
@@ -157,29 +152,6 @@ export class Compiler {
 
         await fse.copy(folderPath, outputDir, { recursive: true });
       }
-    );
-  }
-
-  private async _copyPolywrapMetadata(): Promise<void> {
-    const { outputDir, project } = this._config;
-
-    const projectMetaManifest = await project.getMetaManifest();
-
-    if (!projectMetaManifest) {
-      return Promise.resolve();
-    }
-
-    const builtMetaManifest = await copyMetadata(
-      projectMetaManifest,
-      outputDir,
-      project.getManifestDir(),
-      project.logger
-    );
-
-    await outputManifest(
-      builtMetaManifest,
-      path.join(outputDir, "polywrap.meta.json"),
-      project.logger
     );
   }
 

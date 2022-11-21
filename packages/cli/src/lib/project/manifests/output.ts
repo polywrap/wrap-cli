@@ -3,7 +3,6 @@ import { displayPath, Logger, logActivity, intlMsg } from "../../";
 import {
   BuildManifest,
   PolywrapManifest,
-  MetaManifest,
   PluginManifest,
 } from "@polywrap/polywrap-manifest-types-js";
 import { writeFileSync, normalizePath } from "@polywrap/os-js";
@@ -12,7 +11,7 @@ import path from "path";
 import fs from "fs";
 
 export async function outputManifest(
-  manifest: PolywrapManifest | BuildManifest | MetaManifest | PluginManifest,
+  manifest: PolywrapManifest | BuildManifest | PluginManifest,
   manifestPath: string,
   logger: Logger
 ): Promise<unknown> {

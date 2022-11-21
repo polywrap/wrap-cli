@@ -10,4 +10,3 @@ source:
       abi: ./plugin.wrap.info
 extensions:
   build: ./polywrap.build.yaml
-  meta: ./polywrap.meta.yaml
