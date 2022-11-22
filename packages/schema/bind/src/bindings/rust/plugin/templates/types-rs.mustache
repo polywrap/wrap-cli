@@ -6,17 +6,8 @@ use bigdecimal::BigDecimal as BigNumber;
 use serde_json as JSON;
 use std::collections::BTreeMap as Map;
 
-// OBJECT
-{{#objectTypes}}
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
-    {{#properties}}
-    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
-    {{/properties}}
-}
-{{/objectTypes}}
+/// Env START ///
 
-// ENV
 {{#envType}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
@@ -25,8 +16,22 @@ pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} 
     {{/properties}}
 }
 {{/envType}}
+/// Env END ///
 
-// ENUM
+/// Objects START ///
+
+{{#objectTypes}}
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    {{#properties}}
+    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{/properties}}
+}
+{{/objectTypes}}
+/// Objects END ///
+
+/// Enums START ///
+
 {{#enumTypes}}
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
@@ -36,8 +41,10 @@ pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     _MAX_
 }
 {{/enumTypes}}
+/// Enums END ///
 
-// Imported OBJECT
+/// Imported objects START ///
+
 {{#importedObjectTypes}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
@@ -46,8 +53,10 @@ pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} 
     {{/properties}}
 }
 {{/importedObjectTypes}}
+/// Imported objects END ///
 
-// Imported ENV
+/// Imported envs START ///
+
 {{#importedEnvType}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
@@ -56,8 +65,10 @@ pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} 
     {{/properties}}
 }
 {{/importedEnvType}}
+/// Imported envs END ///
 
-// Imported ENUM
+/// Imported enums START ///
+
 {{#importedEnumTypes}}
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
@@ -67,3 +78,68 @@ pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     _MAX_
 }
 {{/importedEnumTypes}}
+/// Imported enums END ///
+
+/// Imported Modules START ///
+
+{{#importedModuleTypes}}
+{{^isInterface}}
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {}
+
+impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    pub const URI: &'static str = "{{uri}}";
+
+    pub fn new() -> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {}
+    }
+
+    {{#methods}}
+    pub fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(args: &Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
+        let uri = {{#parent}}{{#toUpper}}{{type}}{{/toUpper}}{{/parent}}::URI;
+        let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(args).map_err(|e| e.to_string())?;
+        let result = subinvoke::wrap_subinvoke(
+            uri,
+            "{{name}}",
+            args,
+        )?;
+        deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice()).map_err(|e| e.to_string())
+    }
+    {{^last}}
+
+    {{/last}}
+    {{/methods}}
+}
+{{/isInterface}}
+{{#isInterface}}
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a> {
+    {{#isInterface}}uri: &'a str{{/isInterface}}
+}
+
+impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a> {
+    pub const INTERFACE_URI: &'static str = "{{uri}}";
+
+    pub fn new(uri: &'a str) -> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a> {
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} { uri: uri }
+    }
+
+    {{#methods}}
+    pub fn {{#toLower}}{{name}}{{/toLower}}(&self, args: &Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
+        let uri = self.uri;
+        let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(args).map_err(|e| e.to_string())?;
+        let result = subinvoke::wrap_subinvoke(
+            uri,
+            "{{name}}",
+            args,
+        )?;
+        deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice()).map_err(|e| e.to_string())
+    }
+    {{^last}}
+
+    {{/last}}
+    {{/methods}}
+}
+{{/isInterface}}
+{{/importedModuleTypes}}
+/// Imported Modules END ///

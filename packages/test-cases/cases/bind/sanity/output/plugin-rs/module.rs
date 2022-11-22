@@ -6,12 +6,12 @@ use polywrap_core::{error::Error, invoke::Invoker};
 use polywrap_plugin::module::PluginModule;
 use serde::{Serialize, Deserialize};
 use super::types::*;
-pub use polywrap_plugin::base_impl_plugin_traits;
+pub use polywrap_plugin::impl_plugin_traits;
 
 #[macro_export]
 macro_rules! impl_traits {
     ($plugin_type:ty) => {
-        $crate::wrap::module::base_impl_plugin_traits!(
+        $crate::wrap::module::impl_plugin_traits!(
             $plugin_type,
             (module_method, $crate::wrap::module::ArgsModuleMethod),
             (object_method, $crate::wrap::module::ArgsObjectMethod),

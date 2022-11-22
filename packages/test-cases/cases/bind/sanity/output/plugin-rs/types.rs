@@ -6,7 +6,18 @@ use bigdecimal::BigDecimal as BigNumber;
 use serde_json as JSON;
 use std::collections::BTreeMap as Map;
 
-// OBJECT
+/// Env START ///
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Env {
+    pub prop: String,
+    pub opt_prop: Option<String>,
+    pub opt_map: Option<Map<String, Option<i32>>>,
+}
+/// Env END ///
+
+/// Objects START ///
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CustomType {
     pub str: String,
@@ -68,16 +79,10 @@ pub struct Else {
     #[serde(rename = "else")]
     pub _else: String,
 }
+/// Objects END ///
 
-// ENV
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct Env {
-    pub prop: String,
-    pub opt_prop: Option<String>,
-    pub opt_map: Option<Map<String, Option<i32>>>,
-}
+/// Enums START ///
 
-// ENUM
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum CustomEnum {
     STRING,
@@ -90,8 +95,10 @@ pub enum While {
     _in,
     _MAX_
 }
+/// Enums END ///
 
-// Imported OBJECT
+/// Imported objects START ///
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportObject {
     pub object: TestImportAnotherObject,
@@ -107,10 +114,13 @@ pub struct TestImportObject {
 pub struct TestImportAnotherObject {
     pub prop: String,
 }
+/// Imported objects END ///
 
-// Imported ENV
+/// Imported envs START ///
+/// Imported envs END ///
 
-// Imported ENUM
+/// Imported enums START ///
+
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum TestImportEnum {
     STRING,
@@ -123,3 +133,4 @@ pub enum TestImportEnumReturn {
     BYTES,
     _MAX_
 }
+/// Imported enums END ///
