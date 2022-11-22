@@ -100,9 +100,8 @@ describe("e2e tests for build command", () => {
 
       for (const file of expectedFiles) {
         if (!fs.existsSync(path.join(buildDir, file))) {
-          expect(path.join(buildDir, file)).toBe("debug")
+          fail(`Did not find expected file: ${path.join(buildDir, file)}`);
         }
-        expect(fs.existsSync(path.join(buildDir, file))).toBeTruthy();
       }
     }
   };
