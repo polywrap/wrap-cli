@@ -1,12 +1,20 @@
-/// NOTE: This is an auto-generated file.
-///       All modifications will be overwritten.
+#![allow(unused_imports)]
+#![allow(non_camel_case_types)]
+
+// NOTE: This is an auto-generated file.
+//       All modifications will be overwritten.
 use serde::{Serialize, Deserialize};
 use num_bigint::BigInt;
 use bigdecimal::BigDecimal as BigNumber;
 use serde_json as JSON;
 use std::collections::BTreeMap as Map;
+{{#importedModuleTypes}}
+use std::sync::Arc;
+use polywrap_msgpack::{decode, serialize};
+use polywrap_core::{error::Error, invoke::{Invoker, InvokeArgs}, uri::Uri};
+{{/importedModuleTypes}}
 
-/// Env START ///
+// Env START //
 
 {{#envType}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -16,9 +24,9 @@ pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} 
     {{/properties}}
 }
 {{/envType}}
-/// Env END ///
+// Env END //
 
-/// Objects START ///
+// Objects START //
 
 {{#objectTypes}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -28,9 +36,9 @@ pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} 
     {{/properties}}
 }
 {{/objectTypes}}
-/// Objects END ///
+// Objects END //
 
-/// Enums START ///
+// Enums START //
 
 {{#enumTypes}}
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
@@ -41,9 +49,9 @@ pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     _MAX_
 }
 {{/enumTypes}}
-/// Enums END ///
+// Enums END //
 
-/// Imported objects START ///
+// Imported objects START //
 
 {{#importedObjectTypes}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -53,9 +61,9 @@ pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} 
     {{/properties}}
 }
 {{/importedObjectTypes}}
-/// Imported objects END ///
+// Imported objects END //
 
-/// Imported envs START ///
+// Imported envs START //
 
 {{#importedEnvType}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -65,9 +73,9 @@ pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} 
     {{/properties}}
 }
 {{/importedEnvType}}
-/// Imported envs END ///
+// Imported envs END //
 
-/// Imported enums START ///
+// Imported enums START //
 
 {{#importedEnumTypes}}
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
@@ -78,11 +86,21 @@ pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     _MAX_
 }
 {{/importedEnumTypes}}
-/// Imported enums END ///
+// Imported enums END //
 
-/// Imported Modules START ///
+// Imported Modules START //
 
 {{#importedModuleTypes}}
+{{#methods}}
+// URI: "{{parent.uri}}" //
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{parent.type}}_Args{{#toUpper}}{{name}}{{/toUpper}} {
+    {{#arguments}}
+    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{/arguments}}
+}
+
+{{/methods}}
 {{^isInterface}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {}
@@ -95,15 +113,20 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     }
 
     {{#methods}}
-    pub fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(args: &Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
+    pub async fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(args: &{{parent.type}}_Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
         let uri = {{#parent}}{{#toUpper}}{{type}}{{/toUpper}}{{/parent}}::URI;
-        let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(args).map_err(|e| e.to_string())?;
-        let result = subinvoke::wrap_subinvoke(
-            uri,
+        let serialized_args = InvokeArgs::UIntArray(serialize(args).unwrap());
+        let args = Some(&serialized_args);
+        let result = invoker.invoke(
+            &Uri::try_from(uri).unwrap(),
             "{{name}}",
             args,
-        )?;
-        deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice()).map_err(|e| e.to_string())
+            None,
+            None
+        ).await.map_err(|e| e.to_string())?;
+
+        Ok(Some(decode(result.as_slice())
+            .map_err(|e| Error::InvokeError(format!("Failed to decode result: {}", e))).unwrap()))
     }
     {{^last}}
 
@@ -125,15 +148,19 @@ impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a
     }
 
     {{#methods}}
-    pub fn {{#toLower}}{{name}}{{/toLower}}(&self, args: &Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
+    pub async fn {{#toLower}}{{name}}{{/toLower}}(&self, args: &{{parent.type}}_Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
         let uri = self.uri;
-        let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(args).map_err(|e| e.to_string())?;
-        let result = subinvoke::wrap_subinvoke(
+        let args = InvokeArgs::UIntArray(serialize(args).unwrap());
+        let result = invoker.invoke(
             uri,
             "{{name}}",
             args,
-        )?;
-        deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice()).map_err(|e| e.to_string())
+            None,
+            None
+        ).await?;
+
+        Ok(Some(decode(result.as_slice())
+            .map_err(|e| Error::InvokeError(format!("Failed to decode result: {}", e))).unwrap()))
     }
     {{^last}}
 
@@ -142,4 +169,4 @@ impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a
 }
 {{/isInterface}}
 {{/importedModuleTypes}}
-/// Imported Modules END ///
+// Imported Modules END //
