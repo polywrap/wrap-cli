@@ -134,11 +134,11 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
-  
+
   if (wrapperEnvs) {
     configBuilder.addEnvs(wrapperEnvs);
   }
-  
+
   let project = await getProjectFromManifest(manifestFile, logger);
 
   if (!project) {

@@ -104,7 +104,7 @@ const _run = async (options: WorkflowCommandOptions) => {
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
-  
+
   if (wrapperEnvs) {
     configBuilder.addEnvs(wrapperEnvs);
   }

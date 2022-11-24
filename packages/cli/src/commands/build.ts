@@ -13,7 +13,7 @@ import {
   parseClientConfigOption,
   parseManifestFileOption,
   parseLogFileOption,
-  parseWrapperEnvsOption
+  parseWrapperEnvsOption,
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen";
 import {
