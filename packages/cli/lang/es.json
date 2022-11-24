@@ -1,6 +1,8 @@
 {
   "commands_common_options_configPath": "config-path",
+  "commands_common_options_wrapperEnvsPath": "envs-path",
   "commands_common_options_config": "Add custom configuration to the PolywrapClient",
+  "commands_common_options_wrapperEnvs": "Path to a JSON file containing wrapper envs",
   "commands_common_options_verbose": "Verbose output (default: false)",
   "commands_common_options_quiet": "Suppress output (default: false)",
   "commands_build_description": "Build Polywrap Projects (type: interface, wasm)",

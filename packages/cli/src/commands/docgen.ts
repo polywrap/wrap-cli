@@ -9,6 +9,7 @@ import {
   defaultProjectManifestFiles,
   getProjectFromManifest,
   parseLogFileOption,
+  parseWrapperEnvsOption,
 } from "../lib";
 import { Command, Program } from "./types";
 import { createLogger } from "./utils/createLogger";
@@ -17,7 +18,7 @@ import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import { PolywrapClient } from "@polywrap/client-js";
+import { Env, PolywrapClient } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
@@ -37,6 +38,7 @@ type DocgenCommandOptions = {
   manifestFile: string;
   docgenDir: string;
   configBuilder: IClientConfigBuilder;
+  wrapperEnvs: Env[];
   imports: boolean;
   verbose?: boolean;
   quiet?: boolean;
@@ -93,6 +95,10 @@ export const docgen: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(
+        `--wrapper-envs <${intlMsg.commands_common_options_wrapperEnvsPath()}>`,
+        `${intlMsg.commands_common_options_wrapperEnvs()}`
+      )
       .option(`-i, --imports`, `${intlMsg.commands_docgen_options_i()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
@@ -109,6 +115,7 @@ export const docgen: Command = {
           ),
           docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
           configBuilder: await parseClientConfigOption(options.clientConfig),
+          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
           logFile: parseLogFileOption(options.logFile),
         });
       });
@@ -120,13 +127,18 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     manifestFile,
     docgenDir,
     configBuilder,
+    wrapperEnvs,
     imports,
     verbose,
     quiet,
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
-
+  
+  if (wrapperEnvs) {
+    configBuilder.addEnvs(wrapperEnvs);
+  }
+  
   let project = await getProjectFromManifest(manifestFile, logger);
 
   if (!project) {

@@ -438,6 +438,17 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
   private async _getConnection(
     connection?: SchemaConnection | null
   ): Promise<Connection> {
+    // When a `node` is not specified within `connection`, but an env variable defines a custom node with the same network name, use the envs node when getting connections
+    // This behavior is a consequence of how the ens-resolver uses the Ethereum plugin, always specifying the connection network name (e.g. mainnet)
+    if (
+      !connection?.node &&
+      this.env.connection &&
+      this.env.connection.networkNameOrChainId ===
+        connection?.networkNameOrChainId
+    ) {
+      return this._connections.getConnection(this.env.connection);
+    }
+
     return this._connections.getConnection(connection || this.env.connection);
   }
 }
