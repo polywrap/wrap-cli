@@ -47,8 +47,8 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
       },
       {
         from: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
-        to: new Uri("wrap://plugin/logger")
-      }
+        to: new Uri("wrap://plugin/logger"),
+      },
     ],
     interfaces: [
       {
