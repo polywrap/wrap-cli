@@ -45,6 +45,10 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         from: new Uri("wrap://ens/graph-node.polywrap.eth"),
         to: new Uri(defaultWrappers.graphNode),
       },
+      {
+        from: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
+        to: new Uri("wrap://plugin/logger")
+      }
     ],
     interfaces: [
       {
@@ -59,8 +63,8 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         ],
       },
       {
-        interface: new Uri("wrap://ens/logger.core.polywrap.eth"),
-        implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
+        interface: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
+        implementations: [new Uri("wrap://plugin/logger")],
       },
     ],
     packages: getDefaultPlugins(),
@@ -118,7 +122,7 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
       package: httpResolverPlugin({}),
     },
     {
-      uri: new Uri("wrap://ens/js-logger.polywrap.eth"),
+      uri: new Uri("wrap://plugin/logger"),
       package: loggerPlugin({}),
     },
     {
