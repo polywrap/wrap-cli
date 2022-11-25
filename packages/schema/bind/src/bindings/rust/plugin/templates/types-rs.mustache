@@ -94,7 +94,7 @@ pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
 {{#methods}}
 // URI: "{{parent.uri}}" //
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct {{parent.type}}_Args{{#toUpper}}{{name}}{{/toUpper}} {
+pub struct {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
     {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/arguments}}
@@ -113,7 +113,7 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     }
 
     {{#methods}}
-    pub async fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(args: &{{parent.type}}_Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
+    pub async fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(args: &{{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
         let uri = {{#parent}}{{#toUpper}}{{type}}{{/toUpper}}{{/parent}}::URI;
         let serialized_args = InvokeArgs::UIntArray(serialize(args).unwrap());
         let args = Some(&serialized_args);
@@ -125,8 +125,8 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
             None
         ).await.map_err(|e| e.to_string())?;
 
-        Ok(Some(decode(result.as_slice())
-            .map_err(|e| Error::InvokeError(format!("Failed to decode result: {}", e))).unwrap()))
+        Ok({{#return}}{{^required}}Some({{/required}}{{/return}}decode(result.as_slice())
+            .map_err(|e| Error::InvokeError(format!("Failed to decode result: {}", e))).unwrap(){{#return}}{{^required}}){{/required}}{{/return}})
     }
     {{^last}}
 
@@ -148,7 +148,8 @@ impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a
     }
 
     {{#methods}}
-    pub async fn {{#toLower}}{{name}}{{/toLower}}(&self, args: &{{parent.type}}_Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
+    pub async fn {{#toLower}}{{name}}{{/toLower}}(&self, args: &{{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
+        {{#return}}{{required}}{{/return}}
         let uri = self.uri;
         let args = InvokeArgs::UIntArray(serialize(args).unwrap());
         let result = invoker.invoke(
@@ -159,8 +160,8 @@ impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a
             None
         ).await?;
 
-        Ok(Some(decode(result.as_slice())
-            .map_err(|e| Error::InvokeError(format!("Failed to decode result: {}", e))).unwrap()))
+        Ok({{#return}}{{^required}}Some({{/required}}{{/return}}decode(result.as_slice())
+            .map_err(|e| Error::InvokeError(format!("Failed to decode result: {}", e))).unwrap(){{#return}}{{^required}}){{/required}}{{/return}})
     }
     {{^last}}
 

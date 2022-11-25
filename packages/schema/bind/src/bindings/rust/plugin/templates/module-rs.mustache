@@ -14,6 +14,7 @@ macro_rules! impl_traits {
     ($plugin_type:ty) => {
         $crate::wrap::module::impl_plugin_traits!(
             $plugin_type,
+            $crate::wrap::wrap_info::get_manifest(),
             {{#moduleType}}
             {{#methods}}
             ({{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, $crate::wrap::module::Args{{#toUpper}}{{name}}{{/toUpper}}),
