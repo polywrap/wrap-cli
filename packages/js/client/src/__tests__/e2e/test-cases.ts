@@ -291,8 +291,8 @@ export const runImplementationsTest = async (
   interfaceUri: string,
   implementationUri: string
 ) => {
-  const implResult = client.getImplementations(interfaceUri, {
-    applyRedirects: false,
+  const implResult = await client.getImplementations(interfaceUri, {
+    applyResolution: false,
   });
   if (!implResult.ok) fail(implResult.error);
   expect(implResult.value).toEqual([new Uri(implementationUri).uri]);
@@ -338,8 +338,8 @@ export const runGetImplementationsTest = async (
   implementationUri: string
 ) => {
   let implUri = new Uri(implementationUri);
-  const implResult = client.getImplementations(interfaceUri, {
-    applyRedirects: false,
+  const implResult = await client.getImplementations(interfaceUri, {
+    applyResolution: false,
   });
   if (!implResult.ok) fail(implResult.error);
   expect(implResult.value).toEqual([implUri.uri]);

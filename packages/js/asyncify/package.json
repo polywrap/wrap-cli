@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/asyncify-js",
   "description": "Async Wasm Imports Support Using Asyncify",
-  "version": "0.10.0-pre.0",
+  "version": "0.10.0-pre.5",
   "license": "MIT",
   "repository": {
     "type": "git",

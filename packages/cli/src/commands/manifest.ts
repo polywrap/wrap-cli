@@ -432,7 +432,7 @@ const runMigrateCommand = async (
         return migrateManifestFile(
           manifestFile,
           migrateAppProjectManifest,
-          options.format ?? latestPolywrapManifestFormat,
+          options.format ?? latestAppManifestFormat,
           logger
         );
       } else if (isPluginManifestLanguage(language)) {
@@ -444,7 +444,7 @@ const runMigrateCommand = async (
         return migrateManifestFile(
           manifestFile,
           migratePluginProjectManifest,
-          options.format ?? latestPolywrapManifestFormat,
+          options.format ?? latestPluginManifestFormat,
           logger
         );
       }

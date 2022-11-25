@@ -173,9 +173,12 @@ export const createImports = (config: {
       __wrap_invoke_error: (ptr: u32, len: u32): void => {
         state.invoke.error = readString(memory.buffer, ptr, len);
       },
-      __wrap_getImplementations: (uriPtr: u32, uriLen: u32): boolean => {
+      __wrap_getImplementations: async (
+        uriPtr: u32,
+        uriLen: u32
+      ): Promise<boolean> => {
         const uri = readString(memory.buffer, uriPtr, uriLen);
-        const result = client.getImplementations(uri, {});
+        const result = await client.getImplementations(uri, {});
         if (!result.ok) {
           abort(result.error?.message as string);
           return false;

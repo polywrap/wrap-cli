@@ -38,7 +38,7 @@ export interface WrapImports extends WebAssembly.Imports {
     __wrap_invoke_args: (methodPtr: u32, argsPtr: u32) => void;
     __wrap_invoke_result: (ptr: u32, len: u32) => void;
     __wrap_invoke_error: (ptr: u32, len: u32) => void;
-    __wrap_getImplementations: (uriPtr: u32, uriLen: u32) => boolean;
+    __wrap_getImplementations: (uriPtr: u32, uriLen: u32) => Promise<boolean>;
     __wrap_getImplementations_result_len: () => u32;
     __wrap_getImplementations_result: (ptr: u32) => void;
     __wrap_abort: (

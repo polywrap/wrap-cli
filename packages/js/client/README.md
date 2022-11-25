@@ -76,8 +76,6 @@ const config = {
   // customize URI resolution
   resolver: new RecursiveResolver(
     new PackageToWrapperCacheResolver(wrapperCache, [
-      new LegacyRedirectsResolver(),
-      new LegacyPluginsResolver(),
       new ExtendableUriResolver(),
     ])
   ),
@@ -119,7 +117,7 @@ constructor(config?: Partial<PolywrapClientConfig<string | Uri>>, options?: {
  *
  * @returns an immutable Polywrap client config
  */
-getConfig(): PolywrapClientConfig<Uri>;
+getConfig(): PolywrapCoreClientConfig<Uri>;
 ```
 
 ### setTracingEnabled
@@ -134,37 +132,6 @@ getConfig(): PolywrapClientConfig<Uri>;
  * @returns void
  */
 setTracingEnabled(tracerConfig?: Partial<TracerConfig>): void;
-```
-
-### getRedirects
-```ts
-/**
- * returns all uri redirects from the configuration used to instantiate the client
- *
- * @returns an array of uri redirects
- */
-getRedirects(): readonly UriRedirect<Uri>[];
-```
-
-### getPlugins
-```ts
-/**
- * returns all plugin registrations from the configuration used to instantiate the client
- *
- * @returns an array of plugin registrations
- */
-getPlugins(): readonly PluginRegistration<Uri>[];
-```
-
-### getPluginByUri
-```ts
-/**
- * returns a plugin package from the configuration used to instantiate the client
- *
- * @param uri - the uri used to register the plugin
- * @returns a plugin package, or undefined if a plugin is not found at the given uri
- */
-getPluginByUri<TUri extends Uri | string>(uri: TUri): PluginPackage<unknown> | undefined;
 ```
 
 ### getInterfaces
@@ -187,14 +154,14 @@ getInterfaces(): readonly InterfaceImplementations<Uri>[];
 getEnvs(): readonly Env<Uri>[];
 ```
 
-### getUriResolver
+### getResolver
 ```ts
 /**
  * returns the URI resolver from the configuration used to instantiate the client
  *
  * @returns an object that implements the IUriResolver interface
  */
-getUriResolver(): IUriResolver<unknown>;
+getResolver(): IUriResolver<unknown>;
 ```
 
 ### getEnvByUri
@@ -239,7 +206,7 @@ getFile<TUri extends Uri | string>(uri: TUri, options: GetFileOptions): Promise<
  *  from the configuration used to instantiate the client
  *
  * @param uri - a wrap URI
- * @param options - { applyRedirects?: boolean }
+ * @param options - { applyResolution?: boolean }
  * @returns a Result containing URI array if the request was successful
  */
 getImplementations<TUri extends Uri | string>(uri: TUri, options?: GetImplementationsOptions): Result<TUri[], Error>;

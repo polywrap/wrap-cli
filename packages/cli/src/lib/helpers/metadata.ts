@@ -6,7 +6,7 @@ import { MetaManifest } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
 import path from "path";
 
-export async function outputMetadata(
+export async function copyMetadata(
   metaManifest: MetaManifest,
   outputDir: string,
   rootDir: string,
