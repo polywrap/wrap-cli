@@ -1,16 +1,14 @@
 import {
-  ExtendableUriResolver,
-  PackageToWrapperCacheResolver,
-  RecursiveResolver,
   Uri,
-  WrapperCache,
-  PolywrapClient
+  PolywrapClient, PolywrapCoreClientConfig
 } from "../..";
+import fs from "fs";
 
-import { coreInterfaceUris, IUriResolver } from "@polywrap/core-js";
+import { coreInterfaceUris, IUriPackage, IUriRedirect } from "@polywrap/core-js";
 import { buildWrapper } from "@polywrap/test-env-js";
-import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
-import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
+import { ResultErr } from "@polywrap/result";
+import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
+import { WasmPackage } from "@polywrap/wasm-js";
 
 jest.setTimeout(200000);
 
@@ -41,50 +39,52 @@ describe("sanity", () => {
     const fooPath = `${__dirname}/../utils/validate/wrapper-a`;
     const greetingPath = `${__dirname}/../utils/validate/wrapper-b`;
     const modifiedFooPath = `${__dirname}/../utils/validate/wrapper-c`
-    const fooUri = `fs/${fooPath}/build`;
-    const greetingUri = `fs/${greetingPath}/build`;
-    const modifiedFooUri = `fs/${modifiedFooPath}/build`;
+    const fooUri = `ens/foo.eth`;
+    const greetingUri = `ens/greeting.eth`;
+    const modifiedFooUri = `ens/foo-modified.eth`;
 
-    const resolvers: IUriResolver<unknown>[] = [
-      new ExtendableUriResolver()
-    ]
+    const getPackage = async (name: string) => {
+      const manifest = await fs.promises.readFile(
+        `${__dirname}/../utils/validate/${name}/build/wrap.info`
+      );
 
-    let config = {
-      resolver: RecursiveResolver.from(
-        PackageToWrapperCacheResolver.from(resolvers, new WrapperCache())
-      )
+      const wasmModule = await fs.promises.readFile(
+        `${__dirname}/../utils/validate/${name}/build/wrap.wasm`
+      );
+      return WasmPackage.from(manifest, wasmModule)
     }
-    await buildWrapper(fooPath);
-    let client = new PolywrapClient(config, { noDefaults: true });
-    let result = await client.validate(fooUri, {});
 
+    let config: unknown = {
+      resolver: {
+        tryResolveUri: (_a: unknown, _b: unknown, _c: unknown) => {
+          return Promise.resolve(ResultErr())
+        }
+      },
+      interfaces: undefined,
+      envs: undefined
+    }
+
+    await buildWrapper(fooPath);
+    let client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
+    let result = await client.validate(fooUri, {});
     expect(result.ok).toBeFalsy();
     let resultError = (result as { error: Error }).error;
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
 
-    resolvers.unshift({
-      uri: "wrap://ens/fs-resolver.polywrap.eth",
-      package: fileSystemResolverPlugin({}),
-    })
-    resolvers.unshift({
-      uri: "wrap://ens/fs.polywrap.eth",
-      package: fileSystemPlugin({}),
-    })
+    let fooPackage: IUriPackage<string> = {
+      uri: fooUri,
+      package: await getPackage("wrapper-a")
+    }
+
+    let resolvers: UriResolverLike[] = [ fooPackage ]
+    let staticResolver = StaticResolver.from(resolvers)
 
     config = {
-      interfaces: [{
-        interface: "wrap://ens/uri-resolver.core.polywrap.eth",
-        implementations: [
-          "wrap://ens/fs-resolver.polywrap.eth"
-        ]
-      }],
-      resolver: RecursiveResolver.from(
-        PackageToWrapperCacheResolver.from(resolvers, new WrapperCache())
-      )
+      resolver: staticResolver
     };
     
-    client = new PolywrapClient(config, { noDefaults: true });
+    client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
     result = await client.validate(fooUri, {});
 
     expect(result.ok).toBeTruthy();
@@ -98,16 +98,16 @@ describe("sanity", () => {
     expect(resultError.message).toContain("Error resolving URI");
 
     await buildWrapper(greetingPath);
-    config = {
-      ...config,
-      redirects: [
-        {
-          from: "ens/foo.eth",
-          to: fooUri
-        }
-      ]
+
+    let modifiedFooWrapper: IUriPackage<string> = {
+      uri: greetingUri,
+      package: await getPackage("wrapper-b")
     };
-    client = new PolywrapClient(config, { noDefaults: true });
+    resolvers.push(modifiedFooWrapper);
+    staticResolver = StaticResolver.from(resolvers);
+
+    (config as Record<string, unknown>).resolver = staticResolver;
+    client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
 
     result = await client.validate(greetingUri, {
       recursive: true
@@ -116,16 +116,16 @@ describe("sanity", () => {
     expect(result.ok).toBeTruthy()
 
     await buildWrapper(modifiedFooPath);
-    config = {
-      ...config,
-      redirects: [
-        {
-          from: "ens/foo.eth",
-          to: modifiedFooUri
-        }
-      ]
-    };    
-    client = new PolywrapClient(config, { noDefaults: true });
+      let redirectUri: IUriRedirect<string> = {
+      from: fooUri,
+      to: modifiedFooUri
+    };
+    resolvers.push(redirectUri);
+
+    staticResolver = StaticResolver.from(resolvers);
+
+    (config as Record<string, unknown>).resolver = staticResolver;
+    client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
 
     result = await client.validate(greetingUri, {
       abi: true
