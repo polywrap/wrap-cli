@@ -1,3 +1,3 @@
 export * from "./formats";
 export * from "./types";
-export * from "./compare";
+export { default as compareSignature } from "./compareSignature"

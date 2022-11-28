@@ -37,7 +37,7 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
-import { compareSignatures } from "@polywrap/wrap-manifest-types-js";
+import { compareSignature } from "@polywrap/wrap-manifest-types-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 export class PolywrapClient implements CoreClient {
@@ -743,14 +743,18 @@ export class PolywrapClient implements CoreClient {
           ({ uri }) => importedModule.uri === uri
         );
 
-        const areEqual = compareSignatures(
-          importedMethods,
-          expectedMethods?.methods || []
-        );
+        const errorMessage = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
+        for (const [i, _] of Object.keys(importedMethods).entries()) {
+          const importedMethod = importedMethods[i];
 
-        if (!areEqual) {
-          const message = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
-          return ResultErr(new Error(message));
+          if (expectedMethods?.methods && expectedMethods?.methods.length < i) {
+            const expectedMethod = expectedMethods?.methods[i];
+            const areEqual = compareSignature(importedMethod, expectedMethod);
+
+            if (!areEqual) return ResultErr(new Error(errorMessage));
+          } else {
+            return ResultErr(new Error(errorMessage));
+          }
         }
       }
     }
