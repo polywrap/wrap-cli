@@ -90,6 +90,25 @@ describe("e2e tests for build command", () => {
     }
   };
 
+  const testBuildOutput = (testCaseDir: string, buildDir: string) => {
+    const expectedOutputFile = path.join(
+      testCaseDir,
+      "expected",
+      "output.json"
+    );
+    if (fs.existsSync(expectedOutputFile)) {
+      const expectedFiles = JSON.parse(
+        fs.readFileSync(expectedOutputFile, { encoding: "utf8" })
+      );
+
+      for (const file of expectedFiles) {
+        if (!fs.existsSync(path.join(buildDir, file))) {
+          fail(`Did not find expected file: ${path.join(buildDir, file)}`);
+        }
+      }
+    }
+  };
+
   it("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "--help"],

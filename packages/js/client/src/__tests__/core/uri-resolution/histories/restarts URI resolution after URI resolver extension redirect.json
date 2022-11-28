@@ -78,10 +78,7 @@
   [
     "wrap://simple/$root-wrapper-dir/simple/build => UriResolverAggregator => uri (wrap://ens/redirect.eth)",
     [
-      "wrap://simple/$root-wrapper-dir/simple/build => LegacyRedirectsResolver => uri (wrap://ens/redirect.eth)",
-      [
-        "wrap://simple/$root-wrapper-dir/simple/build => Redirect (wrap://simple/$root-wrapper-dir/simple/build - wrap://ens/redirect.eth) => uri (wrap://ens/redirect.eth)"
-      ]
+      "wrap://simple/$root-wrapper-dir/simple/build => StaticResolver - Redirect (wrap://simple/$root-wrapper-dir/simple/build - wrap://ens/redirect.eth) => uri (wrap://ens/redirect.eth)"
     ]
   ]
 ]

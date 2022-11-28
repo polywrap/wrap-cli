@@ -1,6 +1,20 @@
-# Polywrap Origin (0.10.0-pre.3)
+# Polywrap Origin (0.10.0-pre.5)
 ## Features
+* [PR-1430](https://github.com/polywrap/toolchain/pull/1430) `polywrap` CLI: Polywrap `wasm/` & `interface/` projects can now include a `resources:` directory, specified in the `polywrap.yaml` manifest. This resources directory will be copied into the `build/` folder upon runnin `polywrap build`. For example:
+    ```yaml
+    format: 0.3.0
+    project:
+      type: interface | wasm/...
+      ...
+    source:
+      ...
+    resources: ./resources
+    ```
+* [PR-1430](https://github.com/polywrap/toolchain/pull/1430) `@polywrap/polywrap-manifest-types-js`, `@polywrap/polywrap-manifest-schemas`: Added version `0.3.0` of the `PolywrapManifest`, which includes the new `resources: string` field, containing a directory path.
 * [PR-1411](https://github.com/polywrap/toolchain/pull/1411) `@polywrap/client-config-builder-js`: The `ens-text-record-resolver` wrapper @ [`wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY`](https://wrappers.io/v/ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY) has been added to the default client config bundle. This resolver enables ENS, text-record based, WRAP URI resolution. The text-record's key must be prepended with the `wrap/...` identifier. For example, the URI `wrap://ens/domain.eth:foo` maps to `domain.eth`'s `wrap/foo` text record. The `wrap/foo` text-record's value must contain another valid WRAP URI. For examples, see [dev.polywrap.eth](https://app.ens.domains/name/dev.polywrap.eth/details).
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/core-js`:
+  * `GetImplementationsOptions` now accepts an optional resolution context, to be used to handle infinite recursion when a resolver uses `getImplementations`
+  * `GetImplementationsOptions` now accepts an optional `applyResolution`. This can be used to apply URI resolution to interfaces.
 * [PR-1236](https://github.com/polywrap/toolchain/pull/1236) `@polywrap/client-js`: Polywrap Client now re-exports the config builder and uri-resolvers (in addition to core) packages. This is done to improve dev exp and remove the need for users to import those package themselves.
   * For users who do not need those packages and are using noDefaults there will be a separate PR that refactor core client functionality into a core-client package that does not depend on the config builder and uri-resolvers packages, but has no defaults.
 * [PR-1236](https://github.com/polywrap/toolchain/pull/1236) `@polywrap/client-config-builder-js`:
@@ -14,7 +28,20 @@
 * [PR-1236] `@polywrap/schema-bind`: In `plugin-ts` bindings, the `PluginModule` type is now imported fron `@polywrap/plugin-js` instead of `@polywrap/core-js`.
 * [PR-1349](https://github.com/polywrap/toolchain/pull/1349) `polywrap` CLI: A `-l, --log-file [path]` option has been added to all commands. Its purpose is to configure a `Log file to save console output to`, useful in situations when the console log overflows.
 
-## Breaking Changes 
+## Breaking Changes
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/client-config-builder-js`:
+  * Calling `buildCoreConfig` no longer returns a `CoreClientConfig` with redirects since redirects are no longer a part of `CoreClientConfig`.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/uri-resolvers-js`:
+  * `LegacyRedirectsResolver` has been removed.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/core-js`:
+  * `redirects` are no longer a part of `CoreClientConfig`.
+  * `getRedirects` are no longer a part of `CoreClient`.
+  * `getUriResolver` on `CoreClient` has been renamed to `getResolver`.
+  * `getImplementations` returns a promise now.
+  * `GetImplementationsOptions` no longer accepts `applyRedirects`. This has been replaces with `applyResolution`.
+  * `applyRedirects` helper function has been replaced with `applyResolution`.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/client-js`:
+  * `PolywrapClient` config when using `noDefaults: true` no longer accepts `redirects` (Since redirects have been removed from `CoreClientConfig`).
 * [PR-1367](https://github.com/polywrap/toolchain/pull/1367) `polywrap` CLI: The JS/TS module passed into the `--client-config` option has a new entrypoint signature.
   * Instead of `getCustomConfig`, users should export the following `configure(builder: IClientConfigBuilder): IClientConfigBuilder`.
   * `IClientConfigBuilder` can be imported from the `@polywrap/client-config-builder-js` package.
@@ -47,6 +74,7 @@
 * [PR-1373](https://github.com/polywrap/toolchain/pull/1373) `@polywrap/ethereum-plugin-js`: Added a `signMessageBytes` method.
 
 ## Bugs
+* [PR-1396](https://github.com/polywrap/toolchain/pull/1396) `polywrap` CLI: The rust build images have been updated to properly remove the needless inclusion of the `wasm-interface-types` custom section, as a result of running wasm-bindgen. More information can be found [here](https://github.com/polywrap/toolchain/issues/1420).
 * [PR-1336](https://github.com/polywrap/toolchain/pull/1336) `polywrap` CLI: Updated the CLI's README.
 * [PR-1379](https://github.com/polywrap/toolchain/pull/1379) `polywrap` CLI: Automatically upgrading manifests now emits a warning, suggesting users to upgrade their manifest.
 * [PR-1382](https://github.com/polywrap/toolchain/pull/1382) `polywrap` CLI: Invoke `asc` using `npx` to help with program resolution.
