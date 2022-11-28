@@ -2,7 +2,8 @@ import { fetchTestCases } from "./index";
 import {
   bindSchema,
   BindLanguage,
-  BindOutput, BindOptions
+  BindOutput,
+  BindOptions
 } from "../";
 
 import {

@@ -18,6 +18,7 @@
     "test": "jest --passWithNoTests --runInBand --verbose=true --detectOpenHandles --forceExit",
     "test:ci": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit",
     "test:rust": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit --config ./jest.rs.config.js",
+    "test:go": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit --config ./jest.go.config.js",
     "test:watch": "jest --watch --passWithNoTests --verbose --detectOpenHandles"
   },
   "dependencies": {

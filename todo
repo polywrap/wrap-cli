@@ -1,0 +1,6 @@
+- file names w/ '%'?
+- objectelse -> object_else.go? Same with enumwhile.go
+- create a template project
+- missing test-cases? (bignumber, large-types, reserved-words, simple-env-types, simple-storage)
+- finish the go-ci workflow
+- - setup submodule for wasm/go runtime

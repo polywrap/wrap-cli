@@ -11,3 +11,11 @@ RUN rm -rf ./build
 RUN mkdir ./build
 
 RUN wasm-snip -o ./build/wrap.wasm main.wasm -p syscall runtime.ticks fd_write
+
+## TODO:
+# - support polywrap_linked_packages
+# - see if we can install deps & build deps in seperate step above tinygo build
+# - have more sophisticated copying, and don't just copy everything
+# - move the rust's setup steps into a base image like is done here polywrap/polywrap-base-rust
+# - how does tinygo ensure the memory is imported?
+# - how does tinygo ensure asyncify is used?

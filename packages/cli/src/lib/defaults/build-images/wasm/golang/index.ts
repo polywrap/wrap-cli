@@ -5,9 +5,6 @@ import { resolvePathIfExists } from "../../../../system";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
 
-/** go.mod
- * module bla-bla
- */
 export function getCompilerOverrides(): CompilerOverrides {
   let golangModuleName = "";
   return {
