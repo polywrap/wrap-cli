@@ -4,6 +4,24 @@ import { parseWrapperEnvsOption } from "../../../lib";
 
 describe("unit tests for option-parsers", () => {
   describe("wrapper-envs", () => {
+    const sampleFileEnvs = [
+      {
+        uri: Uri.from("wrap://ens/hello-world.polywrap.eth"),
+        env: {
+          foo: "bar",
+        },
+      },
+      {
+        uri: Uri.from("ens/ethereum.polywrap.eth"),
+        env: {
+          connection: {
+            node: "https://mainnet.infura.io/v3/some_api_key",
+            networkNameOrChainId: "mainnet",
+          },
+        },
+      },
+    ];
+
     it("Should return undefined when no filename is provided", async () => {
       const envs = await parseWrapperEnvsOption(undefined);
 
@@ -24,28 +42,23 @@ describe("unit tests for option-parsers", () => {
     it("Should return envs for a valid json file", async () => {
       const wrapperEnvsFilePath = path.join(
         __dirname,
-        "./samples/wrapper-env.json"
+        "./samples/wrapper-envs.json"
       );
 
       const envs = await parseWrapperEnvsOption(wrapperEnvsFilePath);
 
-      expect(envs).toEqual([
-        {
-          uri: Uri.from("wrap://ens/hello-world.polywrap.eth"),
-          env: {
-            foo: "bar",
-          },
-        },
-        {
-          uri: Uri.from("ens/ethereum.polywrap.eth"),
-          env: {
-            connection: {
-              node: "https://mainnet.infura.io/v3/some_api_key",
-              networkNameOrChainId: "mainnet",
-            },
-          },
-        },
-      ]);
+      expect(envs).toEqual(sampleFileEnvs);
+    });
+
+    it("Should return envs for a valid yaml file", async () => {
+      const wrapperEnvsFilePath = path.join(
+        __dirname,
+        "./samples/wrapper-envs.yaml"
+      );
+
+      const envs = await parseWrapperEnvsOption(wrapperEnvsFilePath);
+
+      expect(envs).toEqual(sampleFileEnvs);
     });
   });
 });

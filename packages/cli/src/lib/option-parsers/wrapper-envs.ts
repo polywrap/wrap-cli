@@ -1,6 +1,9 @@
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { Env, Uri } from "@polywrap/core-js";
 import fs from "fs";
+import YAML from "yaml";
+
+type WrapperEnvs = Record<string, Record<string, unknown>>;
 
 export async function parseWrapperEnvsOption(
   wrapperEnvsPath: string | undefined
@@ -13,10 +16,17 @@ export async function parseWrapperEnvsOption(
     encoding: "utf-8",
   });
 
-  const envs = JSON.parse(envsFileContents) as Record<
-    string,
-    Record<string, unknown>
-  >;
+  let envs: WrapperEnvs;
+
+  try {
+    envs = JSON.parse(envsFileContents) as WrapperEnvs;
+  } catch (_) {
+    try {
+      envs = YAML.parse(envsFileContents) as WrapperEnvs;
+    } catch (_) {
+      throw new Error(`Unable to parse wrapper envs file: ${wrapperEnvsPath}`);
+    }
+  }
 
   const builder = new ClientConfigBuilder();
 
