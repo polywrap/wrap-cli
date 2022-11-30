@@ -1,3 +1,5 @@
+import { loadEnvironmentVariables } from "../system";
+
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { Env, Uri } from "@polywrap/core-js";
 import fs from "fs";
@@ -28,10 +30,15 @@ export async function parseWrapperEnvsOption(
     }
   }
 
+  const wrapperEnvs = loadEnvironmentVariables(envs) as Record<
+    string,
+    Record<string, unknown>
+  >;
+
   const builder = new ClientConfigBuilder();
 
-  for (const env in envs) {
-    builder.addEnv(env, envs[env]);
+  for (const env in wrapperEnvs) {
+    builder.addEnv(env, wrapperEnvs[env]);
   }
 
   return builder.buildCoreConfig().envs;
