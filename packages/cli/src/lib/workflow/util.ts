@@ -4,6 +4,7 @@ import { WorkflowOutput } from "./types";
 import path from "path";
 import fs from "fs";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
+import { typesHandler } from "../helpers";
 
 export const validateJobNames = (
   jobs: WorkflowJobs | undefined,
@@ -44,7 +45,7 @@ export function printJobOutput(output: WorkflowOutput): void {
   console.log(`Job status: ${output.status}`);
 
   if (output.data !== undefined) {
-    console.log(`Data: ${JSON.stringify(output.data, null, 2)}`);
+    console.log(`Data: ${JSON.stringify(output.data, typesHandler, 2)}`);
   }
 
   if (output.error) {

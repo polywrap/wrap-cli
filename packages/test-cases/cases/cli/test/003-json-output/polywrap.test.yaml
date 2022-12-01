@@ -31,3 +31,11 @@ jobs:
             args:
               x: "$cases.0.data"
               y: "$cases.0.data"
+      case3:
+        steps:
+          - uri: fs/../run-test-wrapper/build
+            method: returnMap
+            args:
+              map:
+                Hello: 1
+                Heyo: 50

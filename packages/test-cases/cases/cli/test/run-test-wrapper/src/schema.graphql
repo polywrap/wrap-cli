@@ -12,6 +12,10 @@ type Module {
   addFromEnv(
     x: Int32!
   ): Int32! @env(required: true)
+
+  returnMap(
+    map: Map! @annotate(type: "Map<String!, Int!>!")
+  ): Map! @annotate(type: "Map<String!, Int!>!")
 }
 
 type Num {
