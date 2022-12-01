@@ -1,10 +1,10 @@
 import { intlMsg } from "../intl";
 import { WorkflowOutput } from "./types";
+import { typesHandler } from "../helpers";
 
 import path from "path";
 import fs from "fs";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
-import { typesHandler } from "../helpers";
 
 export const validateJobNames = (
   jobs: WorkflowJobs | undefined,

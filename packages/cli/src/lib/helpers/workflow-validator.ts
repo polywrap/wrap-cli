@@ -53,15 +53,19 @@ export function validateOutput(
   );
   fs.writeFileSync(tempOutputPath, outputData);
 
-  const { stderr } = runCommandSync(
-    `cue vet -d ${selector} ${validateScriptPath} ${tempOutputPath}`,
-    logger
-  );
+  const validate = (args: string[]) => {
+    const [selector, scriptPath, tempOutput] = args;
+    return runCommandSync(
+      `cue vet -d ${selector} ${scriptPath} ${tempOutput}`,
+      logger
+    );
+  };
 
   if (fs.existsSync(tempOutputPath)) {
     fs.unlinkSync(tempOutputPath);
   }
 
+  const { stderr } = validate([selector, validateScriptPath, tempOutputPath]);
   if (!stderr) {
     output.validation = { status: Status.SUCCEED };
   } else {
