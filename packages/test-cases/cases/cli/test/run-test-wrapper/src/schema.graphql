@@ -14,8 +14,8 @@ type Module {
   ): Int32! @env(required: true)
 
   returnMap(
-    map: Map! @annotate(type: "Map<String!, Int!>!")
-  ): Map! @annotate(type: "Map<String!, Int!>!")
+    map: Map! @annotate(type: "Map<String!, Map<String!, Int!>!>!")
+  ): Map! @annotate(type: "Map<String!, Map<String!, Int!>!>!")
 }
 
 type Num {

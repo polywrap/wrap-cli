@@ -37,5 +37,6 @@ jobs:
             method: returnMap
             args:
               map:
-                Hello: 1
-                Heyo: 50
+                nested_map:
+                  Hello: 1
+                  Heyo: 50

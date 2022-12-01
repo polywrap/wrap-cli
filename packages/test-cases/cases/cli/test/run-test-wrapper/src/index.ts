@@ -19,6 +19,6 @@ export function addFromEnv(args: Args_addFromEnv, env: Env): i32 {
   return args.x + env.value;
 }
 
-export function returnMap(args: Args_returnMap): Map<string, i32> {
+export function returnMap(args: Args_returnMap): Map<string, Map<string, i32>> {
   return args.map;
 }
