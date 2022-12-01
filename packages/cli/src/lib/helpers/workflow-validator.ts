@@ -44,28 +44,20 @@ export function validateOutput(
   const stepId = id.substring(index + 1);
 
   const selector = `${jobId}.\\$${stepId}`;
-  const tempOutputPath = `${TMPDIR}/${id}.json`;
+  const jsonOutput = `${TMPDIR}/${id}.json`;
 
-  const outputData = JSON.stringify(
-    { data, error: error?.message },
-    typesHandler,
-    2
+  fs.writeFileSync(
+    jsonOutput,
+    JSON.stringify({ data, error: error?.message }, typesHandler, 2)
   );
-  fs.writeFileSync(tempOutputPath, outputData);
 
-  const validate = (args: string[]) => {
-    const [selector, scriptPath, tempOutput] = args;
-    return runCommandSync(
-      `cue vet -d ${selector} ${scriptPath} ${tempOutput}`,
-      logger
-    );
-  };
+  const args = [selector, validateScriptPath, jsonOutput];
+  const { stderr } = runCommandSync(`cue vet -d ${args.join(" ")}`, logger);
 
-  if (fs.existsSync(tempOutputPath)) {
-    fs.unlinkSync(tempOutputPath);
+  if (fs.existsSync(jsonOutput)) {
+    fs.unlinkSync(jsonOutput);
   }
 
-  const { stderr } = validate([selector, validateScriptPath, tempOutputPath]);
   if (!stderr) {
     output.validation = { status: Status.SUCCEED };
   } else {
