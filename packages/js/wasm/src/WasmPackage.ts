@@ -4,10 +4,6 @@ import { WasmWrapper } from "./WasmWrapper";
 import { WRAP_MODULE_PATH, WRAP_MANIFEST_PATH } from "./constants";
 import { createWasmPackage } from "./helpers/createWasmPackage";
 
-import {
-  deserializeWrapManifest,
-  WrapManifest,
-} from "@polywrap/wrap-manifest-types-js";
 import { GetManifestOptions, Wrapper } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
@@ -34,9 +30,7 @@ export class WasmPackage implements IWasmPackage {
     );
   }
 
-  async getManifest(
-    options?: GetManifestOptions
-  ): Promise<Result<WrapManifest, Error>> {
+  async getManifest(_?: GetManifestOptions): Promise<Result<unknown, Error>> {
     const result = await this.fileReader.readFile(WRAP_MANIFEST_PATH);
 
     if (!result.ok) {
@@ -44,7 +38,7 @@ export class WasmPackage implements IWasmPackage {
     }
 
     const wrapManifest = result.value;
-    return ResultOk(await deserializeWrapManifest(wrapManifest, options));
+    return ResultOk(wrapManifest);
   }
 
   async getWasmModule(): Promise<Result<Uint8Array, Error>> {

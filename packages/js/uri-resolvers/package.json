@@ -20,8 +20,7 @@
   },
   "dependencies": {
     "@polywrap/core-js": "0.10.0-pre.5",
-    "@polywrap/result": "0.10.0-pre.5",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.5"
+    "@polywrap/result": "0.10.0-pre.5"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

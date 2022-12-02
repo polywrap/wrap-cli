@@ -8,7 +8,6 @@ import {
   IUriResolutionContext,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
-import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
 export class PackageToWrapperCacheResolver<TError>
@@ -19,7 +18,7 @@ export class PackageToWrapperCacheResolver<TError>
     private resolverToCache: IUriResolver<TError>,
     private cache: IWrapperCache,
     private options?: {
-      deserializeManifestOptions?: DeserializeManifestOptions;
+      deserializeManifestOptions?: unknown;
       endOnRedirect?: boolean;
     }
   ) {}
@@ -28,7 +27,7 @@ export class PackageToWrapperCacheResolver<TError>
     resolver: UriResolverLike,
     cache: IWrapperCache,
     options?: {
-      deserializeManifestOptions?: DeserializeManifestOptions;
+      deserializeManifestOptions?: unknown;
       endOnRedirect?: boolean;
     }
   ): PackageToWrapperCacheResolver<TResolverError> {
@@ -37,6 +36,10 @@ export class PackageToWrapperCacheResolver<TError>
       cache,
       options
     );
+  }
+
+  getOptions(): unknown {
+    return this.options;
   }
 
   async tryResolveUri(
@@ -71,7 +74,7 @@ export class PackageToWrapperCacheResolver<TError>
         const resolutionPath: Uri[] = subContext.getResolutionPath();
 
         const createResult = await wrapPackage.createWrapper({
-          noValidate: this.options?.deserializeManifestOptions?.noValidate,
+          noValidate: true,
         });
 
         if (!createResult.ok) {
