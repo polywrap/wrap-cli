@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/core-client-js",
   "description": "Polywrap Javascript Core Client",
-  "version": "0.10.0-pre.4",
+  "version": "0.10.0-pre.5",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -16,11 +16,11 @@
     "lint": "eslint --color -c ../../../.eslintrc.js src/"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.10.0-pre.4",
-    "@polywrap/msgpack-js": "0.10.0-pre.4",
-    "@polywrap/result": "0.10.0-pre.4",
-    "@polywrap/tracing-js": "0.10.0-pre.4",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.4"
+    "@polywrap/core-js": "0.10.0-pre.5",
+    "@polywrap/msgpack-js": "0.10.0-pre.5",
+    "@polywrap/result": "0.10.0-pre.5",
+    "@polywrap/tracing-js": "0.10.0-pre.5",
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.5"
   },
   "devDependencies": {
     "@types/uuid": "8.3.0",

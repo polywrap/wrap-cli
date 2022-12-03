@@ -33,7 +33,7 @@ import {
   compareSignature,
   DeserializeManifestOptions,
   WrapManifest,
-  ImportedModuleDefinition
+  ImportedModuleDefinition,
 } from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
