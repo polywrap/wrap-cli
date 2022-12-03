@@ -4,7 +4,6 @@ import {
   AnyBuildManifest,
   AnyDeployManifest,
   AnyInfraManifest,
-  AnyMetaManifest,
   AnyPluginManifest,
   AnyPolywrapManifest,
   AnyPolywrapWorkflow,
@@ -17,7 +16,6 @@ type AnyManifest =
   | AnyInfraManifest
   | AnyDeployManifest
   | AnyBuildManifest
-  | AnyMetaManifest
   | AnyPolywrapWorkflow;
 
 export type Migrator = {

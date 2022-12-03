@@ -17,6 +17,8 @@ Options:
                                      (default: ./build)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
+  --wrapper-envs <envs-path>         Path to a JSON file containing wrapper
+                                     envs
   -n, --no-codegen                   Skip code generation
   -s, --strategy <strategy>          Strategy to use for building the wrapper
                                      (default: "vm")
@@ -100,9 +102,8 @@ describe("e2e tests for build command", () => {
 
       for (const file of expectedFiles) {
         if (!fs.existsSync(path.join(buildDir, file))) {
-          expect(path.join(buildDir, file)).toBe("debug")
+          fail(`Did not find expected file: ${path.join(buildDir, file)}`);
         }
-        expect(fs.existsSync(path.join(buildDir, file))).toBeTruthy();
       }
     }
   };

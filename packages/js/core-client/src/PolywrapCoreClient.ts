@@ -25,12 +25,15 @@ import {
   getEnvFromUriHistory,
   QueryResult,
   InvokeResult,
+  ValidateOptions,
   buildCleanUriHistory,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
+  compareSignature,
   DeserializeManifestOptions,
   WrapManifest,
+  ImportedModuleDefinition
 } from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
@@ -672,6 +675,88 @@ export class PolywrapCoreClient implements CoreClient {
     } else {
       return ResultOk(uriPackageOrWrapper.wrapper);
     }
+  }
+
+  @Tracer.traceMethod("PolywrapClient: validateConfig")
+  public async validate<TUri extends Uri | string>(
+    uri: TUri,
+    options: ValidateOptions
+  ): Promise<Result<true, Error>> {
+    const wrapper = await this.loadWrapper(Uri.from(uri));
+    if (!wrapper.ok) {
+      return ResultErr(new Error(wrapper.error?.message));
+    }
+
+    const { abi } = await wrapper.value.getManifest();
+    const importedModules: ImportedModuleDefinition[] =
+      abi.importedModuleTypes || [];
+
+    const importUri = (importedModuleType: ImportedModuleDefinition) => {
+      return this.tryResolveUri({ uri: importedModuleType.uri });
+    };
+    const resolvedModules = await Promise.all(importedModules.map(importUri));
+    const modulesNotFound = resolvedModules.filter(({ ok }) => !ok) as {
+      error: Error;
+    }[];
+
+    if (modulesNotFound.length) {
+      const missingModules = modulesNotFound.map(({ error }) => {
+        const uriIndex = error?.message.indexOf("\n");
+        return error?.message.substring(0, uriIndex);
+      });
+      const error = new Error(JSON.stringify(missingModules));
+      return ResultErr(error);
+    }
+
+    if (options.abi) {
+      for (const importedModule of importedModules) {
+        const importedModuleManifest = await this.getManifest(
+          importedModule.uri
+        );
+        if (!importedModuleManifest.ok) {
+          return ResultErr(importedModuleManifest.error);
+        }
+        const importedMethods =
+          importedModuleManifest.value.abi.moduleType?.methods || [];
+
+        const expectedMethods = importedModules.find(
+          ({ uri }) => importedModule.uri === uri
+        );
+
+        const errorMessage = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
+        for (const [i, _] of Object.keys(importedMethods).entries()) {
+          const importedMethod = importedMethods[i];
+
+          if (expectedMethods?.methods && expectedMethods?.methods.length < i) {
+            const expectedMethod = expectedMethods?.methods[i];
+            const areEqual = compareSignature(importedMethod, expectedMethod);
+
+            if (!areEqual) return ResultErr(new Error(errorMessage));
+          } else {
+            return ResultErr(new Error(errorMessage));
+          }
+        }
+      }
+    }
+
+    if (options.recursive) {
+      const validateImportedModules = importedModules.map(({ uri }) =>
+        this.validate(uri, options)
+      );
+      const resolverUris = await Promise.all(validateImportedModules);
+      const invalidUris = resolverUris.filter(({ ok }) => !ok) as {
+        error: Error;
+      }[];
+      if (invalidUris.length) {
+        const missingUris = invalidUris.map(({ error }) => {
+          const uriIndex = error?.message.indexOf("\n");
+          return error?.message.substring(0, uriIndex);
+        });
+        const error = new Error(JSON.stringify(missingUris));
+        return ResultErr(error);
+      }
+    }
+    return ResultOk(true);
   }
 
   private buildConfigFromPolywrapCoreClientConfig(
