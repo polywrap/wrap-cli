@@ -7,4 +7,3 @@ source:
   module: ./src/index.ts
 extensions:
   build: ./polywrap.build.yaml
-  meta: ./polywrap.meta.yaml
