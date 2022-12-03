@@ -7,7 +7,6 @@ import {
   InvocableResult,
 } from ".";
 
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
 /**
@@ -40,5 +39,5 @@ export interface Wrapper extends Invocable {
   /**
    * Get a manifest from the Wrapper package.
    */
-  getManifest(): WrapManifest;
+  getManifest(): unknown;
 }

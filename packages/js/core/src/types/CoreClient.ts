@@ -1,15 +1,7 @@
-import {
-  QueryHandler,
-  Invoker,
-  SubscriptionHandler,
-  Uri,
-  InterfaceImplementations,
-  Env,
-} from ".";
+import { QueryHandler, Invoker, Uri, InterfaceImplementations, Env } from ".";
 import { IUriResolutionContext, IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
 
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
 export interface CoreClientConfig<TUri extends Uri | string = Uri | string> {
@@ -35,7 +27,6 @@ export interface GetImplementationsOptions {
 export interface CoreClient
   extends Invoker,
     QueryHandler,
-    SubscriptionHandler,
     UriResolverHandler<unknown> {
   getConfig(): CoreClientConfig<Uri>;
 
@@ -49,7 +40,7 @@ export interface CoreClient
 
   getManifest<TUri extends Uri | string>(
     uri: TUri
-  ): Promise<Result<WrapManifest, Error>>;
+  ): Promise<Result<unknown, Error>>;
 
   getFile<TUri extends Uri | string>(
     uri: TUri,

@@ -4,7 +4,6 @@ import { GetPluginMethodsFunc, PluginModuleWithMethods } from "./utils";
 
 import { IWrapPackage, Wrapper } from "@polywrap/core-js";
 import { Result, ResultOk } from "@polywrap/result";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 export class PluginPackage<
   TConfig,
@@ -12,7 +11,7 @@ export class PluginPackage<
 > implements IWrapPackage {
   constructor(
     private pluginModule: PluginModule<TConfig, TEnv>,
-    private manifest: WrapManifest
+    private manifest: unknown
   ) {}
 
   static from<
@@ -20,11 +19,11 @@ export class PluginPackage<
     TEnv extends Record<string, unknown> = Record<string, unknown>
   >(
     pluginModule: PluginModule<TConfig>,
-    manifest?: WrapManifest
+    manifest?: unknown
   ): PluginPackage<TConfig, TEnv>;
   static from<TEnv extends Record<string, unknown> = Record<string, unknown>>(
     getPluginFuncs: GetPluginMethodsFunc<TEnv>,
-    manifest?: WrapManifest
+    manifest?: unknown
   ): PluginPackage<never, TEnv>;
   static from<
     TConfig,
@@ -33,24 +32,24 @@ export class PluginPackage<
     pluginModuleOrGetPluginFuncs:
       | PluginModule<TConfig>
       | GetPluginMethodsFunc<TEnv>,
-    manifest?: WrapManifest
+    manifest?: unknown
   ): PluginPackage<TConfig, TEnv> {
     if (typeof pluginModuleOrGetPluginFuncs === "function") {
       const getPluginFuncs = pluginModuleOrGetPluginFuncs as GetPluginMethodsFunc<TEnv>;
 
       return new PluginPackage<TConfig, TEnv>(
         new PluginModuleWithMethods<TEnv>(getPluginFuncs),
-        manifest || ({} as WrapManifest)
+        manifest || ({} as unknown)
       ) as PluginPackage<TConfig, TEnv>;
     } else {
       return new PluginPackage<TConfig, TEnv>(
         pluginModuleOrGetPluginFuncs as PluginModule<TConfig, TEnv>,
-        manifest || ({} as WrapManifest)
+        manifest || ({} as unknown)
       );
     }
   }
 
-  async getManifest(): Promise<Result<WrapManifest, Error>> {
+  async getManifest(): Promise<Result<unknown, Error>> {
     return ResultOk(this.manifest);
   }
 

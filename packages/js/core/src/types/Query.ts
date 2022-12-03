@@ -1,6 +1,5 @@
 import { Uri, InvokeOptions } from "./";
 
-import { Tracer } from "@polywrap/tracing-js";
 import { DocumentNode } from "graphql";
 import gql from "graphql-tag";
 
@@ -8,13 +7,9 @@ import gql from "graphql-tag";
 export type QueryDocument = DocumentNode;
 
 /** Create a GraphQL QueryDocument by parsing a string */
-export const createQueryDocument = Tracer.traceFunc(
-  "core: createQueryDocument",
-  (query: string): QueryDocument => {
-    return gql(query);
-  }
-);
-
+export const createQueryDocument = (query: string): QueryDocument => {
+  return gql(query);
+};
 /** Options required for an Wrapper query. */
 export interface QueryOptions<
   TVariables extends Record<string, unknown> = Record<string, unknown>,
