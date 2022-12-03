@@ -6,9 +6,9 @@ import {
   IUriResolutionStep,
   UriPackageOrWrapper,
   UriResolutionContext,
+  buildCleanUriHistory,
 } from "@polywrap/core-js";
 import {
-  buildCleanUriHistory,
   UriResolver,
   getUriResolutionPath,
   UriResolutionResult,

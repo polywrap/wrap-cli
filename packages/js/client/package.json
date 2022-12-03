@@ -20,14 +20,16 @@
     "test:watch": "jest --watch --passWithNoTests --verbose --detectOpenHandles"
   },
   "dependencies": {
-    "@polywrap/client-config-builder-js": "0.10.0-pre.5",
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.5",
     "@polywrap/core-js": "0.10.0-pre.5",
+    "@polywrap/core-client-js": "0.10.0-pre.5",
     "@polywrap/msgpack-js": "0.10.0-pre.5",
     "@polywrap/result": "0.10.0-pre.5",
     "@polywrap/tracing-js": "0.10.0-pre.5",
+    "@polywrap/client-config-builder-js": "0.10.0-pre.5",
     "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.5",
     "@polywrap/uri-resolvers-js": "0.10.0-pre.5",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.5"
+    "@polywrap/plugin-js": "0.10.0-pre.5"
   },
   "devDependencies": {
     "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.5",
@@ -50,7 +52,6 @@
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
     "ts-loader": "8.0.17",
-    "ts-morph": "10.0.1",
     "ts-node": "8.10.2",
     "typescript": "4.1.6",
     "yaml": "2.1.3"
