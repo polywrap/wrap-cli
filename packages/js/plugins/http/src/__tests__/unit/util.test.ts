@@ -1,9 +1,9 @@
-import { fromAxiosResponse, toAxiosRequestConfig } from "../../util";
+import { fromFetchResponse, toRequestConfig } from "../../util";
 import { Http_ResponseTypeEnum } from "../../wrap";
 
 describe("converting axios response", () => {
   test("response type: text", () => {
-    const response = fromAxiosResponse({
+    const response = fromFetchResponse({
       status: 200,
       statusText: "Ok",
       data: "body-content",
@@ -23,7 +23,7 @@ describe("converting axios response", () => {
   });
 
   test("response type: text; with header as a map", () => {
-    const response = fromAxiosResponse({
+    const response = fromFetchResponse({
       status: 200,
       statusText: "Ok",
       data: "body-content",
@@ -48,7 +48,7 @@ describe("converting axios response", () => {
   });
 
   test("response type: arraybuffer", () => {
-    const response = fromAxiosResponse({
+    const response = fromFetchResponse({
       status: 200,
       statusText: "Ok",
       data: Buffer.from("body-content"),
@@ -70,7 +70,7 @@ describe("converting axios response", () => {
 
 describe("creating axios config", () => {
   test("with headers", () => {
-    const config = toAxiosRequestConfig({
+    const config = toRequestConfig({
       headers: new Map([
         ["Accept", "application-json"],
         ["X-Header", "test-value"],
@@ -88,7 +88,7 @@ describe("creating axios config", () => {
   });
 
   test("with url params", () => {
-    const config = toAxiosRequestConfig({
+    const config = toRequestConfig({
       urlParams: new Map([["tag", "data"]]),
       responseType: Http_ResponseTypeEnum.BINARY,
       body: "body-content",

@@ -1,88 +1,52 @@
-import { Http_Request, Http_Response, Http_ResponseTypeEnum } from "./wrap";
+import {
+  Http_Response,
+  Http_ResponseType,
+  Http_ResponseTypeEnum,
+} from "./wrap";
 
-import { AxiosResponse, AxiosRequestConfig } from "axios";
+export async function fromFetchResponse(
+  fetchResponse: Response,
+  responseType?: Http_ResponseType | null
+): Promise<Http_Response> {
+  const headers = new Map<string, string>();
+  fetchResponse.headers.forEach((v, k) => headers.set(k, v));
 
-/**
- * Convert AxiosResponse<string> to Response
- *
- * @param axiosResponse
- */
-export function fromAxiosResponse(
-  axiosResponse: AxiosResponse<unknown>
-): Http_Response {
-  const responseHeaders = new Map<string, string>();
-  for (const key of Object.keys(axiosResponse.headers)) {
-    responseHeaders.set(
-      key,
-      Array.isArray(axiosResponse.headers[key])
-        ? axiosResponse.headers[key].join(" ")
-        : axiosResponse.headers[key]
-    );
-  }
-
-  const response = {
-    status: axiosResponse.status,
-    statusText: axiosResponse.statusText,
-    headers: responseHeaders,
+  const response: Http_Response = {
+    status: fetchResponse.status,
+    statusText: fetchResponse.statusText,
+    headers,
   };
 
   // encode bytes as base64 string if response is array buffer
-  if (axiosResponse.config.responseType == "arraybuffer") {
-    if (!Buffer.isBuffer(axiosResponse.data)) {
-      throw Error(
-        "HttpPlugin: Axios response data malformed, must be a buffer. Type: " +
-          typeof axiosResponse.data
-      );
-    }
-
+  if (
+    responseType === Http_ResponseTypeEnum.BINARY ||
+    responseType === Http_ResponseTypeEnum[Http_ResponseTypeEnum.BINARY]
+  ) {
+    const buffer = await fetchResponse.arrayBuffer();
     return {
       ...response,
-      body: Buffer.from(axiosResponse.data).toString("base64"),
+      body: Buffer.from(buffer).toString("base64"),
     };
   } else {
-    switch (typeof axiosResponse.data) {
-      case "string":
-      case "undefined":
-        return {
-          ...response,
-          body: axiosResponse.data,
-        };
-      default:
-        return {
-          ...response,
-          body: JSON.stringify(axiosResponse.data),
-        };
-    }
+    const text = await fetchResponse.text();
+    return {
+      ...response,
+      body: text,
+    };
   }
 }
 
-/**
- * Creates AxiosRequestConfig from Request
- *
- * @param request
- */
-export function toAxiosRequestConfig(
-  request: Http_Request
-): AxiosRequestConfig {
-  let responseType: "text" | "arraybuffer" = "text";
-
-  switch (request.responseType) {
-    case "BINARY":
-    case Http_ResponseTypeEnum.BINARY:
-      responseType = "arraybuffer";
+export function addParams(
+  url: string,
+  urlParams?: Map<string, string> | null
+): string {
+  if (!urlParams || urlParams.size == 0) {
+    return url;
   }
-
-  let config: AxiosRequestConfig = {
-    responseType,
-  };
-
-  if (request.urlParams) {
-    config = { ...config, params: Object.fromEntries(request.urlParams) };
-  }
-
-  if (request.headers) {
-    config = { ...config, headers: Object.fromEntries(request.headers) };
-  }
-
-  return config;
+  url += "?";
+  urlParams?.forEach((v, k) => {
+    url += k + "=" + v + "&";
+  });
+  url = url.substring(0, url.length - 1);
+  return url;
 }
