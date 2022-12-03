@@ -5,7 +5,7 @@ import { PluginManifest as NewManifest } from "../0.3.0";
 export function migrate(migrate: OldManifest, logger?: ILogger): NewManifest {
   if (migrate.extensions?.meta) {
     logger?.warn(
-      `The Polywarp Meta Manifests has been deprecated for plugin projects.`
+      `The Polywrap Meta Manifest has been deprecated for plugin projects.`
     );
   }
   return {
