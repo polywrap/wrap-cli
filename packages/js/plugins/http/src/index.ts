@@ -1,14 +1,14 @@
 import {
-  CoreClient,
-  Module,
   Args_get,
   Args_post,
+  CoreClient,
   Http_Response,
   manifest,
+  Module,
 } from "./wrap";
-import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
+import { addParams, fromFetchResponse } from "./util";
 
-import axios from "axios";
+import fetch from "isomorphic-unfetch";
 import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 type NoConfig = Record<string, never>;
@@ -18,23 +18,39 @@ export class HttpPlugin extends Module<NoConfig> {
     args: Args_get,
     _client: CoreClient
   ): Promise<Http_Response | null> {
-    const response = await axios.get<string>(
-      args.url,
-      args.request ? toAxiosRequestConfig(args.request) : undefined
-    );
-    return fromAxiosResponse(response);
+    const url = addParams(args.url, args.request?.urlParams);
+    const fetchResponse = await fetch(url, {
+      method: "GET",
+      headers: args.request?.headers
+        ? Object.fromEntries(args.request?.headers)
+        : undefined,
+    });
+    if (fetchResponse.status < 200 || fetchResponse.status >= 300) {
+      throw new Error(
+        `HTTP Error: Status: ${fetchResponse.status}; Message: ${fetchResponse.statusText}`
+      );
+    }
+    return await fromFetchResponse(fetchResponse, args.request?.responseType);
   }
 
   public async post(
     args: Args_post,
     _client: CoreClient
   ): Promise<Http_Response | null> {
-    const response = await axios.post(
-      args.url,
-      args.request ? args.request.body : undefined,
-      args.request ? toAxiosRequestConfig(args.request) : undefined
-    );
-    return fromAxiosResponse(response);
+    const url = addParams(args.url, args.request?.urlParams);
+    const fetchResponse = await fetch(url, {
+      method: "POST",
+      body: args.request?.body ?? undefined,
+      headers: args.request?.headers
+        ? Object.fromEntries(args.request?.headers)
+        : undefined,
+    });
+    if (fetchResponse.status < 200 || fetchResponse.status >= 300) {
+      throw new Error(
+        `HTTP Error: Status: ${fetchResponse.status}; Message: ${fetchResponse.statusText}`
+      );
+    }
+    return await fromFetchResponse(fetchResponse, args.request?.responseType);
   }
 }
 
