@@ -29,8 +29,8 @@ describe("sanity", () => {
           ],
         },
         {
-          interface: coreInterfaceUris.logger,
-          implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
+          interface: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
+          implementations: [new Uri("wrap://plugin/logger")],
         },
       ]);
   });

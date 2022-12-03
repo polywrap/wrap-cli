@@ -1,6 +1,6 @@
 ---
-id: Console_module
-title: Console Module
+id: Logger_module
+title: Logger Module
 sidebar_position: 1
 ---
 
@@ -8,7 +8,7 @@ sidebar_position: 1
 
 ```graphql
 log(
-  level: Console_Logger_LogLevel! 
+  level: Logger_Logger_LogLevel! 
   message: String! 
 ): Boolean!
 ```

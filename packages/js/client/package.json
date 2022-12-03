@@ -38,7 +38,6 @@
     "@polywrap/http-resolver-plugin-js": "0.10.0-pre.5",
     "@polywrap/ipfs-plugin-js": "0.10.0-pre.5",
     "@polywrap/ipfs-resolver-plugin-js": "0.10.0-pre.5",
-    "@polywrap/logger-plugin-js": "0.10.0-pre.5",
     "@polywrap/plugin-js": "0.10.0-pre.5",
     "@polywrap/test-cases": "0.10.0-pre.5",
     "@polywrap/test-env-js": "0.10.0-pre.5",
