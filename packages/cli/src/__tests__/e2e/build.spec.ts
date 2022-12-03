@@ -17,6 +17,8 @@ Options:
                                      (default: ./build)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
+  --wrapper-envs <envs-path>         Path to a JSON file containing wrapper
+                                     envs
   -n, --no-codegen                   Skip code generation
   -s, --strategy <strategy>          Strategy to use for building the wrapper
                                      (default: "vm")

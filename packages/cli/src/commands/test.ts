@@ -15,6 +15,7 @@ import {
   defaultWorkflowManifest,
   parseManifestFileOption,
   parseLogFileOption,
+  parseWrapperEnvsOption,
   typesHandler,
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
@@ -23,9 +24,11 @@ import path from "path";
 import yaml from "yaml";
 import fs from "fs";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { Env } from "@polywrap/core-js";
 
 type WorkflowCommandOptions = {
   configBuilder: IClientConfigBuilder;
+  wrapperEnvs: Env[];
   manifest: string;
   jobs?: string[];
   validationScript?: string;
@@ -55,6 +58,10 @@ export const test: Command = {
         `${intlMsg.commands_common_options_config()}`
       )
       .option(
+        `--wrapper-envs <${intlMsg.commands_common_options_wrapperEnvsPath()}>`,
+        `${intlMsg.commands_common_options_wrapperEnvs()}`
+      )
+      .option(
         `-o, --output-file <${intlMsg.commands_test_options_outputFilePath()}>`,
         `${intlMsg.commands_test_options_outputFile()}`
       )
@@ -76,6 +83,7 @@ export const test: Command = {
             defaultWorkflowManifest
           ),
           configBuilder: await parseClientConfigOption(options.clientConfig),
+          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile)
             : undefined,
@@ -89,6 +97,7 @@ const _run = async (options: WorkflowCommandOptions) => {
   const {
     manifest,
     configBuilder,
+    wrapperEnvs,
     outputFile,
     verbose,
     quiet,
@@ -96,6 +105,10 @@ const _run = async (options: WorkflowCommandOptions) => {
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
+
+  if (wrapperEnvs) {
+    configBuilder.addEnvs(wrapperEnvs);
+  }
 
   const manifestPath = path.resolve(manifest);
   const workflow = await loadWorkflowManifest(manifestPath, logger);

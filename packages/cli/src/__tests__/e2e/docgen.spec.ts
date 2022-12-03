@@ -26,6 +26,8 @@ Options:
                                      (default: ./docs)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
+  --wrapper-envs <envs-path>         Path to a JSON file containing wrapper
+                                     envs
   -i, --imports                      Also generate docs for dependencies
   -v, --verbose                      Verbose output (default: false)
   -q, --quiet                        Suppress output (default: false)
