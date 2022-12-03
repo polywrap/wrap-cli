@@ -1,5 +1,6 @@
 import { intlMsg } from "../intl";
 import { WorkflowOutput } from "./types";
+import { typesHandler } from "../helpers";
 
 import path from "path";
 import fs from "fs";
@@ -44,7 +45,7 @@ export function printJobOutput(output: WorkflowOutput): void {
   console.log(`Job status: ${output.status}`);
 
   if (output.data !== undefined) {
-    console.log(`Data: ${JSON.stringify(output.data, null, 2)}`);
+    console.log(`Data: ${JSON.stringify(output.data, typesHandler, 2)}`);
   }
 
   if (output.error) {

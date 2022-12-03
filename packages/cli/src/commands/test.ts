@@ -16,6 +16,7 @@ import {
   parseManifestFileOption,
   parseLogFileOption,
   parseWrapperEnvsOption,
+  typesHandler,
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
 
@@ -156,7 +157,10 @@ const _run = async (options: WorkflowCommandOptions) => {
         fs.writeFileSync(outputFile, yaml.stringify(printableOutput, null, 2));
         break;
       case "json":
-        fs.writeFileSync(outputFile, JSON.stringify(printableOutput, null, 2));
+        fs.writeFileSync(
+          outputFile,
+          JSON.stringify(printableOutput, typesHandler, 2)
+        );
         break;
       default:
         throw new Error(
