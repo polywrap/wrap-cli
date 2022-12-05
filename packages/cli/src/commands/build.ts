@@ -223,7 +223,7 @@ async function run(options: BuildCommandOptions) {
         const codegenSuccess = await codeGenerator.generate();
 
         if (!codegenSuccess) {
-          logger.error("Codegen failed before build!");
+          logger.error(intlMsg.commands_build_error_codegen_failed());
           return false;
         }
       }
@@ -263,7 +263,7 @@ async function run(options: BuildCommandOptions) {
           const codegenSuccess = await codeGenerator.generate();
 
           if (!codegenSuccess) {
-            logger.error("Codegen failed before build!");
+            logger.error(intlMsg.commands_build_error_codegen_failed());
             return false;
           }
         }
