@@ -7,7 +7,6 @@ import {
   loadBuildManifest,
   loadDeployManifest,
   loadDeployManifestExt,
-  loadMetaManifest,
   loadPolywrapManifest,
   PolywrapManifestLanguage,
   polywrapManifestLanguages,
@@ -20,7 +19,6 @@ import { createUUID } from "../helpers";
 import {
   BuildManifest,
   DeployManifest,
-  MetaManifest,
   PolywrapManifest,
 } from "@polywrap/polywrap-manifest-types-js";
 import { normalizePath } from "@polywrap/os-js";
@@ -36,7 +34,6 @@ export interface PolywrapProjectConfig extends ProjectConfig {
   polywrapManifestPath: string;
   buildManifestPath?: string;
   deployManifestPath?: string;
-  metaManifestPath?: string;
 }
 
 export interface BuildManifestConfig {
@@ -70,7 +67,6 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   private _polywrapManifest: PolywrapManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
   private _deployManifest: DeployManifest | undefined;
-  private _metaManifest: MetaManifest | undefined;
   private _defaultDeployModulesCached = false;
 
   constructor(protected _config: PolywrapProjectConfig) {
@@ -89,7 +85,6 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   public reset(): void {
     this._polywrapManifest = undefined;
     this._buildManifest = undefined;
-    this._metaManifest = undefined;
     this._deployManifest = undefined;
     this._defaultDeployModulesCached = false;
     this._cache.removeCacheDir(
@@ -408,50 +403,6 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     this._defaultDeployModulesCached = true;
   }
 
-  /// Polywrap Meta Manifest (polywrap.build.yaml)
-
-  public async getMetaManifestPath(): Promise<string | undefined> {
-    const polywrapManifest = await this.getManifest();
-
-    // If a custom meta manifest path is configured
-    if (this._config.metaManifestPath) {
-      return this._config.metaManifestPath;
-    }
-    // If the polywrap.yaml manifest specifies a custom meta manifest
-    else if (polywrapManifest.extensions?.meta) {
-      this._config.metaManifestPath = path.join(
-        this.getManifestDir(),
-        polywrapManifest.extensions.meta
-      );
-      return this._config.metaManifestPath;
-    }
-    // No meta manifest found
-    else {
-      return undefined;
-    }
-  }
-
-  public async getMetaManifestDir(): Promise<string | undefined> {
-    const manifestPath = await this.getMetaManifestPath();
-
-    if (manifestPath) {
-      return path.dirname(manifestPath);
-    } else {
-      return undefined;
-    }
-  }
-
-  public async getMetaManifest(): Promise<MetaManifest | undefined> {
-    if (!this._metaManifest) {
-      const manifestPath = await this.getMetaManifestPath();
-
-      if (manifestPath) {
-        this._metaManifest = await loadMetaManifest(manifestPath, this.logger);
-      }
-    }
-    return this._metaManifest;
-  }
-
   public async getManifestPaths(absolute = false): Promise<string[]> {
     const root = this.getManifestDir();
     const paths = [
@@ -465,14 +416,6 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     if (buildManifestPath) {
       paths.push(
         absolute ? buildManifestPath : path.relative(root, buildManifestPath)
-      );
-    }
-
-    const metaManifestPath = await this.getMetaManifestPath();
-
-    if (metaManifestPath) {
-      paths.push(
-        absolute ? metaManifestPath : path.relative(root, metaManifestPath)
       );
     }
 

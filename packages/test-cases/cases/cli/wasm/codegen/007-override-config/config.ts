@@ -1,4 +1,4 @@
-import { BaseClientConfigBuilder, getDefaultConfig, IClientConfigBuilder, CoreClientConfig, ExtendableUriResolver, LegacyRedirectsResolver, PackageToWrapperCacheResolver, RecursiveResolver, StaticResolver, Uri, WrapperCache } from "@polywrap/client-js";
+import { BaseClientConfigBuilder, getDefaultConfig, IClientConfigBuilder, CoreClientConfig, ExtendableUriResolver, PackageToWrapperCacheResolver, RecursiveResolver, StaticResolver, Uri, WrapperCache } from "@polywrap/client-js";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import { latestWrapManifestVersion } from "@polywrap/schema-parse";
 
@@ -11,13 +11,12 @@ export class CustomConfigBuilder extends BaseClientConfigBuilder {
     return {
       envs: this.config.envs,
       interfaces: this.config.interfaces,
-      redirects: this.config.redirects,
       resolver:
         RecursiveResolver.from(
           PackageToWrapperCacheResolver.from(
             [
-              new LegacyRedirectsResolver(),
               StaticResolver.from([
+                ...this.config.redirects,
                 ...this.config.wrappers,
                 ...this.config.packages,
               ]),
