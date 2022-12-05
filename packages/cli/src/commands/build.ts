@@ -19,6 +19,7 @@ import {
   generateWrapFile,
   polywrapManifestLanguages,
   pluginManifestLanguages,
+  parseWrapperEnvsOption,
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen";
 import {
@@ -33,7 +34,7 @@ import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 import fs from "fs";
 import path from "path";
 import readline from "readline";
-import { PolywrapClient } from "@polywrap/client-js";
+import { Env, PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
@@ -54,6 +55,7 @@ type BuildCommandOptions = {
   configBuilder: IClientConfigBuilder;
   codegen: boolean; // defaults to false
   codegenDir: string;
+  wrapperEnvs: Env[];
   watch?: boolean;
   strategy: SupportedStrategies;
   verbose?: boolean;
@@ -91,6 +93,10 @@ export const build: Command = {
         })}`
       )
       .option(
+        `--wrapper-envs <${intlMsg.commands_common_options_wrapperEnvsPath()}>`,
+        `${intlMsg.commands_common_options_wrapperEnvs()}`
+      )
+      .option(
         `-s, --strategy <${strategyStr}>`,
         `${intlMsg.commands_build_options_s()}`,
         defaultStrategy
@@ -110,6 +116,7 @@ export const build: Command = {
             defaultPolywrapManifest
           ),
           configBuilder: await parseClientConfigOption(options.clientConfig),
+          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           strategy: options.strategy,
@@ -160,6 +167,7 @@ async function run(options: BuildCommandOptions) {
     manifestFile,
     outputDir,
     configBuilder,
+    wrapperEnvs,
     strategy,
     codegen,
     codegenDir,
@@ -168,6 +176,10 @@ async function run(options: BuildCommandOptions) {
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
+
+  if (wrapperEnvs) {
+    configBuilder.addEnvs(wrapperEnvs);
+  }
 
   // Get Client
   const client = new PolywrapClient(configBuilder.buildCoreConfig(), {

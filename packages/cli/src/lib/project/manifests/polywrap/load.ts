@@ -10,11 +10,9 @@ import {
 import {
   PolywrapManifest,
   BuildManifest,
-  MetaManifest,
   DeployManifest,
   deserializePolywrapManifest,
   deserializeBuildManifest,
-  deserializeMetaManifest,
   deserializeDeployManifest,
   InfraManifest,
   deserializeInfraManifest,
@@ -193,42 +191,6 @@ export async function loadDeployManifestExt(
     }),
     async () => {
       return run();
-    }
-  );
-}
-
-export const defaultMetaManifest = ["polywrap.meta.yaml", "polywrap.meta.yml"];
-
-export async function loadMetaManifest(
-  manifestPath: string,
-  logger: Logger
-): Promise<MetaManifest> {
-  const run = (): Promise<MetaManifest> => {
-    const manifest = fs.readFileSync(manifestPath, "utf-8");
-
-    if (!manifest) {
-      const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
-        path: `${manifestPath}`,
-      });
-      throw Error(noLoadMessage);
-    }
-
-    try {
-      const result = deserializeMetaManifest(manifest, { logger: logger });
-      return Promise.resolve(result);
-    } catch (e) {
-      return Promise.reject(e);
-    }
-  };
-
-  manifestPath = displayPath(manifestPath);
-  return await logActivity<MetaManifest>(
-    logger,
-    intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
-    intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
-    intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
-    async () => {
-      return await run();
     }
   );
 }
