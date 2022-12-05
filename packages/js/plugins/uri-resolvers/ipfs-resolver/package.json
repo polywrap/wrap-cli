@@ -12,7 +12,8 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
+    "build": "rimraf ./build && yarn codegen && yarn build:patch && tsc --project tsconfig.build.json",
+    "build:patch": "node ../../../../../dependencies/node_modules/polywrap/bin/polywrap build || echo '`polywrap build` failed - see PR #1385 for details'",
     "codegen": "node ../../../../../dependencies/node_modules/polywrap/bin/polywrap codegen",
     "lint": "eslint --color -c ../../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
