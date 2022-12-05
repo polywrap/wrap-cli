@@ -5,4 +5,3 @@ schema: ./src/schema.graphql
 module: ./src/index.ts
 build: ./polywrap.build.yaml
 deploy: ./polywrap.deploy.yaml
-meta: ./polywrap.meta.yaml

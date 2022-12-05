@@ -10,4 +10,3 @@ source:
       abi: ../../../../../js/plugins/ethereum/build/wrap.info
 extensions:
   build: ./polywrap.build.yaml
-  meta: ./polywrap.meta.yaml

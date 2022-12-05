@@ -46,17 +46,13 @@ export interface PolywrapManifest {
    */
   resources?: string;
   /**
-   * Project extension files (build, meta, deploy, infra).
+   * Project extension files (build, deploy, infra).
    */
   extensions?: {
     /**
      * Path to the project build manifest file.
      */
     build?: string;
-    /**
-     * Path to project metadata manifest file.
-     */
-    meta?: string;
     /**
      * Path to project deploy manifest file.
      */

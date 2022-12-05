@@ -28,7 +28,7 @@
     "@polywrap/http-resolver-plugin-js": "0.10.0-pre.5",
     "@polywrap/ipfs-plugin-js": "0.10.0-pre.5",
     "@polywrap/ipfs-resolver-plugin-js": "0.10.0-pre.5",
-    "@polywrap/logger-plugin-js": "0.10.0-pre.5",
+    "@polywrap/logger-plugin-js": "0.10.0",
     "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.5",
     "@polywrap/uri-resolvers-js": "0.10.0-pre.5"
   },

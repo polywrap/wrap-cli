@@ -16,10 +16,12 @@ import {
   defaultPolywrapManifest,
   parseLogFileOption,
   Logger,
+  parseWrapperEnvsOption,
 } from "../lib";
+
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import { PolywrapClient, Uri } from "@polywrap/client-js";
+import { Env, PolywrapClient, Uri } from "@polywrap/client-js";
 import path from "path";
 import fs from "fs";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
@@ -36,6 +38,7 @@ type CodegenCommandOptions = {
   publishDir: string;
   script?: string;
   configBuilder: IClientConfigBuilder;
+  wrapperEnvs: Env[];
   verbose?: boolean;
   quiet?: boolean;
   logFile?: string;
@@ -73,6 +76,10 @@ export const codegen: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(
+        `--wrapper-envs <${intlMsg.commands_common_options_wrapperEnvsPath()}>`,
+        `${intlMsg.commands_common_options_wrapperEnvs()}`
+      )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .option(
@@ -83,6 +90,7 @@ export const codegen: Command = {
         await run({
           ...options,
           configBuilder: await parseClientConfigOption(options.clientConfig),
+          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           script: parseCodegenScriptOption(options.script),
           manifestFile: parseManifestFileOption(
@@ -102,12 +110,17 @@ async function run(options: CodegenCommandOptions) {
     codegenDir,
     script,
     configBuilder,
+    wrapperEnvs,
     publishDir,
     verbose,
     quiet,
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
+
+  if (wrapperEnvs) {
+    configBuilder.addEnvs(wrapperEnvs);
+  }
 
   // Get Client
   const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
