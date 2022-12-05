@@ -17,6 +17,8 @@ import {
   parseLogFileOption,
   Logger,
   parseWrapperEnvsOption,
+  Project,
+  AnyProjectManifest,
 } from "../lib";
 
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
@@ -175,7 +177,7 @@ async function run(options: CodegenCommandOptions) {
     );
   }
 
-  await generateProjectCache(schemaComposer, client, logger);
+  await generateProjectCache(project, client, logger);
 
   if (result) {
     logger.info(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
@@ -186,10 +188,15 @@ async function run(options: CodegenCommandOptions) {
 }
 
 async function generateProjectCache(
-  schemaComposer: SchemaComposer,
+  project: Project<AnyProjectManifest>,
   client: PolywrapClient,
   logger: Logger
 ) {
+  const schemaComposer = new SchemaComposer({
+    client: client,
+    project: project,
+  });
+
   const abi = await schemaComposer.getComposedAbis();
 
   if (abi.importedModuleTypes && abi.importedModuleTypes.length) {
