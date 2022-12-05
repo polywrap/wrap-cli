@@ -21,6 +21,8 @@ Options:
   --codegen                          Perform code generation before build
   --codegen-dir                      Codegen output directory (default:
                                      ./src/wrap)
+  --wrapper-envs <envs-path>         Path to a JSON file containing wrapper
+                                     envs
   -s, --strategy <strategy>          Strategy to use for building the wrapper
                                      (default: "vm")
   -w, --watch                        Automatically rebuild when changes are

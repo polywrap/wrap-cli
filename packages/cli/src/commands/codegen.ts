@@ -19,8 +19,6 @@ import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 
 import { Env, PolywrapClient } from "@polywrap/client-js";
-import path from "path";
-import fs from "fs";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
@@ -97,7 +95,6 @@ async function run(options: CodegenCommandOptions) {
     script,
     configBuilder,
     wrapperEnvs,
-    publishDir,
     verbose,
     quiet,
     logFile,
