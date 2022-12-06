@@ -223,12 +223,11 @@ export class WasmWrapper implements Wrapper {
           encoded: true,
         };
       } else {
-        const error = new WrapError(invokeResult.error?.message ?? "", {
+        const error = new WrapError(invokeResult.error, {
           code: WrapErrorCode.WASM_INVOKE_FAIL,
           uri: options.uri.uri,
           method,
           args: JSON.stringify(args, null, 2),
-          cause: invokeResult.error,
         });
         return ResultErr(error);
       }
@@ -242,7 +241,7 @@ export class WasmWrapper implements Wrapper {
     state: State,
     result: boolean,
     abort: (message: string) => never
-  ): Result<Uint8Array, Error> {
+  ): Result<Uint8Array, string> {
     if (result) {
       if (!state.invoke.result) {
         abort("Invoke result is missing.");
@@ -254,7 +253,7 @@ export class WasmWrapper implements Wrapper {
         abort("Invoke error is missing.");
       }
 
-      return ResultErr(Error(state.invoke.error));
+      return ResultErr(state.invoke.error);
     }
   }
 
