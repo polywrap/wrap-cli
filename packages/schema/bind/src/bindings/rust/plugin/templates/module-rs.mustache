@@ -2,7 +2,8 @@
 ///       All modifications will be overwritten.
 
 use std::sync::Arc;
-use polywrap_core::{error::Error, invoke::Invoker};
+use polywrap_core::invoke::Invoker;
+use polywrap_plugin::error::PluginError;
 use polywrap_plugin::module::PluginModule;
 use serde::{Serialize, Deserialize};
 use super::types::*;
@@ -39,7 +40,7 @@ pub struct Args{{#toUpper}}{{name}}{{/toUpper}} {
 pub trait Module: PluginModule {
   {{#moduleType}}
   {{#methods}}
-  async fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(&mut self, args: &Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, Error>;
+  async fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(&mut self, args: &Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, PluginError>;
   {{^last}}
 
   {{/last}}
