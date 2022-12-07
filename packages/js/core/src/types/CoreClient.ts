@@ -32,6 +32,11 @@ export interface GetImplementationsOptions {
   resolutionContext?: IUriResolutionContext;
 }
 
+export interface ValidateOptions {
+  abi?: boolean;
+  recursive?: boolean;
+}
+
 export interface CoreClient
   extends Invoker,
     QueryHandler,
@@ -60,4 +65,9 @@ export interface CoreClient
     uri: TUri,
     options: GetImplementationsOptions
   ): Promise<Result<TUri[], Error>>;
+
+  validate<TUri extends Uri | string>(
+    uri: TUri,
+    options?: ValidateOptions
+  ): Promise<Result<true, Error>>;
 }

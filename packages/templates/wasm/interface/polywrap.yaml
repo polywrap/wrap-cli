@@ -5,5 +5,4 @@ project:
 source:
   schema: ./schema.graphql
 extensions:
-  meta: ./polywrap.meta.yaml
   deploy: ./polywrap.deploy.yaml
