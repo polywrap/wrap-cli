@@ -154,12 +154,11 @@ export class WasmWrapper implements Wrapper {
       const args = options.args || {};
       const wasmResult = await this._getWasmModule();
       if (!wasmResult.ok) {
-        const error = new WrapError(wasmResult.error?.message, {
-          code: WrapErrorCode.WASM_NO_MODULE,
+        const error = new WrapError(wasmResult.error, {
+          code: WrapErrorCode.WASM_MODULE_NOT_FOUND,
           uri: options.uri.uri,
           method,
           args: JSON.stringify(args, null, 2),
-          cause: wasmResult.error,
         });
         return ResultErr(error);
       }
@@ -215,7 +214,7 @@ export class WasmWrapper implements Wrapper {
         state.env.byteLength
       );
 
-      const invokeResult = this._processInvokeResult(state, result, abort);
+      const invokeResult = this._processInvokeResult(state, result);
 
       if (invokeResult.ok) {
         return {
@@ -239,18 +238,17 @@ export class WasmWrapper implements Wrapper {
   @Tracer.traceMethod("WasmWrapper: _processInvokeResult")
   private _processInvokeResult(
     state: State,
-    result: boolean,
-    abort: (message: string) => never
+    result: boolean
   ): Result<Uint8Array, string> {
     if (result) {
       if (!state.invoke.result) {
-        abort("Invoke result is missing.");
+        return ResultErr("Invoke result is missing.");
       }
 
       return ResultOk(state.invoke.result);
     } else {
       if (!state.invoke.error) {
-        abort("Invoke error is missing.");
+        return ResultErr("Invoke error is missing.");
       }
 
       return ResultErr(state.invoke.error);
@@ -258,12 +256,12 @@ export class WasmWrapper implements Wrapper {
   }
 
   @Tracer.traceMethod("WasmWrapper: getWasmModule")
-  private async _getWasmModule(): Promise<Result<Uint8Array, Error>> {
+  private async _getWasmModule(): Promise<Result<Uint8Array, string>> {
     if (this._wasmModule === undefined) {
       const result = await this._fileReader.readFile(WRAP_MODULE_PATH);
 
       if (!result.ok) {
-        return ResultErr(Error(`Wrapper does not contain a wasm module`));
+        return ResultErr("Wrapper does not contain a wasm module");
       }
 
       this._wasmModule = result.value;

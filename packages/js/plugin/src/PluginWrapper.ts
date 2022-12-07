@@ -105,13 +105,16 @@ export class PluginWrapper implements Wrapper {
         encoded: false,
       };
     } else {
-      const error = new WrapError(result.error?.message, {
-        code: WrapErrorCode.PLUGIN_INVOKE_FAIL,
-        uri: `${options.uri}; module: ${module}`,
-        method,
-        args: JSON.stringify(jsArgs, null, 2),
-        cause: result.error,
-      });
+      const error = new WrapError(
+        `Failed to invoke method "${method}" in module: ${this.module}`,
+        {
+          code: WrapErrorCode.PLUGIN_INVOKE_FAIL,
+          uri: options.uri.toString(),
+          method,
+          args: JSON.stringify(jsArgs, null, 2),
+          cause: result.error,
+        }
+      );
       return ResultErr(error);
     }
   }
