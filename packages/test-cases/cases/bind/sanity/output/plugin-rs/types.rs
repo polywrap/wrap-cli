@@ -1,3 +1,6 @@
+#![allow(unused_imports)]
+#![allow(non_camel_case_types)]
+
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 use serde::{Serialize, Deserialize};
@@ -5,6 +8,10 @@ use num_bigint::BigInt;
 use bigdecimal::BigDecimal as BigNumber;
 use serde_json as JSON;
 use std::collections::BTreeMap as Map;
+use std::sync::Arc;
+use polywrap_msgpack::{decode, serialize};
+use polywrap_core::{invoke::{Invoker, InvokeArgs}, uri::Uri};
+use polywrap_plugin::error::PluginError;
 
 /// Env START ///
 
@@ -117,6 +124,7 @@ pub struct TestImportAnotherObject {
 /// Imported objects END ///
 
 /// Imported envs START ///
+
 /// Imported envs END ///
 
 /// Imported enums START ///
@@ -134,3 +142,109 @@ pub enum TestImportEnumReturn {
     _MAX_
 }
 /// Imported enums END ///
+
+/// Imported Modules START ///
+
+/// URI: "testimport.uri.eth" ///
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct TestImportModuleArgsImportedMethod {
+    pub str: String,
+    pub opt_str: Option<String>,
+    pub u: u32,
+    pub opt_u: Option<u32>,
+    pub u_array_array: Vec<Option<Vec<Option<u32>>>>,
+    pub object: TestImportObject,
+    pub opt_object: Option<TestImportObject>,
+    pub object_array: Vec<TestImportObject>,
+    pub opt_object_array: Option<Vec<Option<TestImportObject>>>,
+    pub en: TestImportEnum,
+    pub opt_enum: Option<TestImportEnum>,
+    pub enum_array: Vec<TestImportEnum>,
+    pub opt_enum_array: Option<Vec<Option<TestImportEnum>>>,
+}
+
+/// URI: "testimport.uri.eth" ///
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct TestImportModuleArgsAnotherMethod {
+    pub arg: Vec<String>,
+}
+
+/// URI: "testimport.uri.eth" ///
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct TestImportModuleArgsReturnsArrayOfEnums {
+    pub arg: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct TestImportModule<'a> {
+    uri: &'a str
+}
+
+impl<'a> TestImportModule<'a> {
+    pub const INTERFACE_URI: &'static str = "testimport.uri.eth";
+
+    pub fn new(uri: &'a str) -> TestImportModule<'a> {
+        TestImportModule { uri: uri }
+    }
+
+    pub async fn imported_method(&self, args: &TestImportModuleArgsImportedMethod) -> Result<Option<TestImportObject>, PluginError> {
+        let uri = self.uri;
+        let serialized_args = InvokeArgs::UIntArray(serialize(args.clone()).unwrap());
+        let result = invoker.invoke(
+            uri,
+            "importedMethod",
+            serialized_args,
+            None,
+            None
+        .await
+        .map_err(|e| PluginError::SubinvocationError {
+            uri: uri.to_string(),
+            method: "importedMethod".to_string(),
+            args: serde_json::to_string(&args).unwrap(),
+            exception: e.to_string(),
+        })?;
+
+        Ok(Some(decode(result.as_slice())?))
+    }
+
+    pub async fn another_method(&self, args: &TestImportModuleArgsAnotherMethod) -> Result<i32, PluginError> {
+        let uri = self.uri;
+        let serialized_args = InvokeArgs::UIntArray(serialize(args.clone()).unwrap());
+        let result = invoker.invoke(
+            uri,
+            "anotherMethod",
+            serialized_args,
+            None,
+            None
+        .await
+        .map_err(|e| PluginError::SubinvocationError {
+            uri: uri.to_string(),
+            method: "anotherMethod".to_string(),
+            args: serde_json::to_string(&args).unwrap(),
+            exception: e.to_string(),
+        })?;
+
+        Ok(decode(result.as_slice())?)
+    }
+
+    pub async fn returns_array_of_enums(&self, args: &TestImportModuleArgsReturnsArrayOfEnums) -> Result<Vec<Option<TestImportEnumReturn>>, PluginError> {
+        let uri = self.uri;
+        let serialized_args = InvokeArgs::UIntArray(serialize(args.clone()).unwrap());
+        let result = invoker.invoke(
+            uri,
+            "returnsArrayOfEnums",
+            serialized_args,
+            None,
+            None
+        .await
+        .map_err(|e| PluginError::SubinvocationError {
+            uri: uri.to_string(),
+            method: "returnsArrayOfEnums".to_string(),
+            args: serde_json::to_string(&args).unwrap(),
+            exception: e.to_string(),
+        })?;
+
+        Ok(decode(result.as_slice())?)
+    }
+}
+/// Imported Modules END ///

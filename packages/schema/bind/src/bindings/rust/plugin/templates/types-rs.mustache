@@ -1,8 +1,8 @@
 #![allow(unused_imports)]
 #![allow(non_camel_case_types)]
 
-// NOTE: This is an auto-generated file.
-//       All modifications will be overwritten.
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
 use serde::{Serialize, Deserialize};
 use num_bigint::BigInt;
 use bigdecimal::BigDecimal as BigNumber;
@@ -15,7 +15,7 @@ use polywrap_core::{invoke::{Invoker, InvokeArgs}, uri::Uri};
 use polywrap_plugin::error::PluginError;
 {{/importedModuleTypes}}
 
-// Env START //
+/// Env START ///
 
 {{#envType}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -25,9 +25,9 @@ pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} 
     {{/properties}}
 }
 {{/envType}}
-// Env END //
+/// Env END ///
 
-// Objects START //
+/// Objects START ///
 
 {{#objectTypes}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -37,9 +37,9 @@ pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} 
     {{/properties}}
 }
 {{/objectTypes}}
-// Objects END //
+/// Objects END ///
 
-// Enums START //
+/// Enums START ///
 
 {{#enumTypes}}
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
@@ -50,9 +50,9 @@ pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     _MAX_
 }
 {{/enumTypes}}
-// Enums END //
+/// Enums END ///
 
-// Imported objects START //
+/// Imported objects START ///
 
 {{#importedObjectTypes}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -62,9 +62,9 @@ pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} 
     {{/properties}}
 }
 {{/importedObjectTypes}}
-// Imported objects END //
+/// Imported objects END ///
 
-// Imported envs START //
+/// Imported envs START ///
 
 {{#importedEnvType}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -74,9 +74,9 @@ pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} 
     {{/properties}}
 }
 {{/importedEnvType}}
-// Imported envs END //
+/// Imported envs END ///
 
-// Imported enums START //
+/// Imported enums START ///
 
 {{#importedEnumTypes}}
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
@@ -87,13 +87,13 @@ pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     _MAX_
 }
 {{/importedEnumTypes}}
-// Imported enums END //
+/// Imported enums END ///
 
-// Imported Modules START //
+/// Imported Modules START ///
 
 {{#importedModuleTypes}}
 {{#methods}}
-// URI: "{{parent.uri}}" //
+/// URI: "{{parent.uri}}" ///
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
@@ -157,7 +157,6 @@ impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a
 
     {{#methods}}
     pub async fn {{#toLower}}{{name}}{{/toLower}}(&self, args: &{{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, PluginError> {
-        {{#return}}{{required}}{{/return}}
         let uri = self.uri;
         let serialized_args = InvokeArgs::UIntArray(serialize(args.clone()).unwrap());
         let result = invoker.invoke(
@@ -183,4 +182,4 @@ impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a
 }
 {{/isInterface}}
 {{/importedModuleTypes}}
-// Imported Modules END //
+/// Imported Modules END ///
