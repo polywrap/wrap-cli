@@ -1,31 +1,48 @@
-export type WrapErrorSource = Readonly<{
-  file?: string;
-  line?: number;
-  col?: number;
-}>;
+import { CleanResolutionStep } from "../algorithms";
 
-// 0-49 -> Internal
-// 50-99 -> URI Resolution
-// 100-150 -> Wasm wrapper invocation
-// 150-199 -> Wasm wrapper sub-invocation
-// 200-255 -> Plugin invocation & sub-invocation
+/**
+Wrap error codes provide additional context to WrapErrors.
+
+Error code naming convention (approximate):
+    type of handler
+    type of functionality
+    piece of functionality
+    ==> handler_typeFn_pieceFn
+
+Error code map:
+  0-24 -> Client
+  25-49 -> URI resolution
+  50-74 -> Wasm wrapper invocation & sub-invocation
+  75-99 -> Plugin invocation & sub-invocation
+  100-255 -> Unallocated
+ */
 export enum WrapErrorCode {
   UNKNOWN,
-  LOAD_WRAPPER_FAIL,
-  QUERY_MALFORMED = 48,
-  QUERY_FAIL,
-  URI_RESOLUTION_ERROR = 50,
-  URI_RESOLVER_ERROR,
+  CLIENT_LOAD_WRAPPER,
+  CLIENT_GET_FILE,
+  CLIENT_GET_IMPLEMENTATIONS,
+  CLIENT_VALIDATE_RESOLUTION,
+  CLIENT_VALIDATE_ABI,
+  CLIENT_VALIDATE_RECURSIVE,
+  CLIENT_QUERY_MALFORMED,
+  CLIENT_QUERY_FAIL,
+  URI_RESOLUTION = 25,
+  URI_RESOLVER,
   URI_NOT_FOUND,
-  WASM_INVOKE_ABORTED = 100,
+  WASM_INVOKE_ABORTED = 50,
   WASM_INVOKE_FAIL,
-  WASM_NO_MODULE,
-  WASM_METHOD_NOT_FOUND,
-  PLUGIN_INVOKE_ABORTED = 200,
-  PLUGIN_INVOKE_FAIL,
+  WASM_MODULE_NOT_FOUND,
+  WASM_METHOD_NOT_FOUND, // not yet used
+  PLUGIN_INVOKE_FAIL = 75,
   PLUGIN_METHOD_NOT_FOUND,
   PLUGIN_ARGS_MALFORMED,
 }
+
+export type WrapErrorSource = Readonly<{
+  file?: string;
+  row?: number;
+  col?: number;
+}>;
 
 export interface WrapErrorOptions {
   code: WrapErrorCode;
@@ -33,8 +50,9 @@ export interface WrapErrorOptions {
   method?: string;
   args?: string;
   source?: WrapErrorSource;
-  resolutionStack?: string;
+  resolutionStack?: CleanResolutionStep;
   cause?: unknown;
+  stack?: string;
 }
 
 type RegExpGroups<T extends string> =
@@ -51,7 +69,7 @@ export class WrapError extends Error {
   readonly method?: string;
   readonly args?: string;
   readonly source?: WrapErrorSource;
-  readonly resolutionStack?: string;
+  readonly resolutionStack?: CleanResolutionStep;
   readonly cause?: unknown;
 
   static re = new RegExp(
@@ -65,7 +83,7 @@ export class WrapError extends Error {
       /(?:\r\n|\r|\n)uri: (?<uri>wrap:\/\/[A-z0-9_-]+\/.+)/.source,
       /(?:(?:\r\n|\r|\n)method: (?<method>([A-z_]{1}[A-z0-9_]*)))?/.source,
       /(?:(?:\r\n|\r|\n)args: (?<args>\{(?:.|\r\n|\r|\n)+} ))?/.source,
-      /(?:(?:\r\n|\r|\n)source: \{ file: "(?<file>.+)", row: (?<line>[0-9]+), col: (?<col>[0-9]+) })?/
+      /(?:(?:\r\n|\r|\n)source: \{ file: "(?<file>.+)", row: (?<row>[0-9]+), col: (?<col>[0-9]+) })?/
         .source,
       /(?:(?:\r\n|\r|\n)uriResolutionStack: (?<resolutionStack>\[(?:.|\r\n|\r|\n)+]))?/
         .source,
@@ -85,6 +103,7 @@ export class WrapError extends Error {
     this.source = options.source;
     this.resolutionStack = options.resolutionStack;
     this.cause = options.cause;
+    this.stack = options.stack;
     Object.setPrototypeOf(this, WrapError.prototype);
   }
 
@@ -96,7 +115,7 @@ export class WrapError extends Error {
       | "method"
       | "args"
       | "file"
-      | "line"
+      | "row"
       | "col"
       | "resolutionStack"
       | "cause"
@@ -111,9 +130,9 @@ export class WrapError extends Error {
       method,
       args,
       file,
-      line,
+      row,
       col,
-      resolutionStack,
+      resolutionStack: resolutionStackStr,
       cause: causeStr,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     } = result.groups!;
@@ -124,9 +143,13 @@ export class WrapError extends Error {
     const source: WrapErrorSource | undefined = file
       ? {
           file,
-          line: line ? parseInt(line) : undefined,
+          row: row ? parseInt(row) : undefined,
           col: col ? parseInt(col) : undefined,
         }
+      : undefined;
+
+    const resolutionStack = resolutionStackStr
+      ? JSON.parse(resolutionStackStr)
       : undefined;
 
     // message may be a stringified WrapError due to current string-based error passing between client and wasm
@@ -139,10 +162,10 @@ export class WrapError extends Error {
       code,
       uri: uri as string,
       method,
-      args,
+      args: args?.trim(),
       source,
       resolutionStack,
-      cause: cause ?? causeStr,
+      cause: cause ?? causeStr, // TODO: is it possible that 'cause' information is lost here?
     });
   }
 
@@ -159,10 +182,10 @@ export class WrapError extends Error {
     const maybeArgs = args ? `args: ${args} ` : "";
     // source is uses () instead of {} to facilitate regex
     const maybeSource = source
-      ? `source: { file: "${source?.file}", row: ${source?.line}, col: ${source?.col} }`
+      ? `source: { file: "${source?.file}", row: ${source?.row}, col: ${source?.col} }`
       : "";
     const maybeResolutionStack = resolutionStack
-      ? `uriResolutionStack: ${resolutionStack}`
+      ? `uriResolutionStack: ${JSON.stringify(resolutionStack, null, 2)}`
       : "";
 
     const errorCause = WrapError.stringifyCause(cause);
@@ -210,30 +233,40 @@ export class WrapError extends Error {
   }
 
   private static codeToName(code: WrapErrorCode): string {
-    if (code < 50) {
+    if (code < 25) {
       return "WrapError";
-    } else if (code < 100) {
+    } else if (code < 50) {
       return "UriResolutionError";
-    } else if (code < 150) {
+    } else if (code < 75) {
       return "InvokeError";
-    } else if (code < 200) {
-      return "SubInvokeError";
-    } else {
+    } else if (code < 100) {
       return "PluginError";
+    } else {
+      return "WrapError";
     }
   }
 
   private static metaMessage(code: WrapErrorCode): string {
     switch (code) {
-      case WrapErrorCode.LOAD_WRAPPER_FAIL:
+      case WrapErrorCode.CLIENT_LOAD_WRAPPER:
         return "Failed to create Wrapper from WrapPackage.";
-      case WrapErrorCode.QUERY_MALFORMED:
+      case WrapErrorCode.CLIENT_GET_FILE:
+        return "An error occurred while retrieving a file.";
+      case WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS:
+        return "An error occurred while retrieving interface implementations.";
+      case WrapErrorCode.CLIENT_VALIDATE_RESOLUTION:
+        return "An URI resolution error occurred while validating a WRAP URI.";
+      case WrapErrorCode.CLIENT_VALIDATE_ABI:
+        return "An error occurred while validating a WRAP URI against its ABI.";
+      case WrapErrorCode.CLIENT_VALIDATE_RECURSIVE:
+        return "An error occurred while recursively validating a WRAP URI.";
+      case WrapErrorCode.CLIENT_QUERY_MALFORMED:
         return "Failed to parse GraphQL query.";
-      case WrapErrorCode.QUERY_FAIL:
+      case WrapErrorCode.CLIENT_QUERY_FAIL:
         return "Unknown query exception encountered.";
-      case WrapErrorCode.URI_RESOLUTION_ERROR:
+      case WrapErrorCode.URI_RESOLUTION:
         return "Unable to resolve URI.";
-      case WrapErrorCode.URI_RESOLVER_ERROR:
+      case WrapErrorCode.URI_RESOLVER:
         return "An internal resolver error occurred while resolving a URI.";
       case WrapErrorCode.URI_NOT_FOUND:
         return "URI not found.";
@@ -241,14 +274,14 @@ export class WrapError extends Error {
         return "Wasm module aborted execution.";
       case WrapErrorCode.WASM_INVOKE_FAIL:
         return "Invocation exception encountered.";
-      case WrapErrorCode.WASM_NO_MODULE:
-        return "Wrapper does not contain a wasm module.";
+      case WrapErrorCode.WASM_MODULE_NOT_FOUND:
+        return "Wrapper does not contain a Wasm module.";
       case WrapErrorCode.WASM_METHOD_NOT_FOUND:
-        return "Could not find invoke function.";
+        return "Could not find method in Wasm module.";
       case WrapErrorCode.PLUGIN_METHOD_NOT_FOUND:
-        return "Method not found.";
+        return "Method not found in plugin module.";
       case WrapErrorCode.PLUGIN_ARGS_MALFORMED:
-        return "Malformed args.";
+        return "Malformed arguments passed to plugin.";
       case WrapErrorCode.PLUGIN_INVOKE_FAIL:
         return "Invocation exception encountered.";
       default:

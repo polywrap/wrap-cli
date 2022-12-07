@@ -215,7 +215,7 @@ export const createImports = (config: {
         const msg = readString(memory.buffer, msgPtr, msgLen);
         const file = readString(memory.buffer, filePtr, fileLen);
 
-        abort(`__wrap_abort: ${msg}`, { file, line, col: column });
+        abort(`__wrap_abort: ${msg}`, { file, row: line, col: column });
       },
       __wrap_debug_log: (ptr: u32, len: u32): void => {
         const msg = readString(memory.buffer, ptr, len);
