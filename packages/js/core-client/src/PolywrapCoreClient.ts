@@ -656,15 +656,12 @@ export class PolywrapCoreClient implements CoreClient {
 
       let error: WrapError;
       if (result.error) {
-        error = new WrapError(
-          "An internal resolver error occurred while resolving a URI",
-          {
-            code: WrapErrorCode.URI_RESOLVER,
-            uri: uri.uri,
-            resolutionStack: history,
-            cause: result.error,
-          }
-        );
+        error = new WrapError("A URI Resolver returned an error.", {
+          code: WrapErrorCode.URI_RESOLVER,
+          uri: uri.uri,
+          resolutionStack: history,
+          cause: result.error,
+        });
       } else {
         error = new WrapError("Error resolving URI", {
           code: WrapErrorCode.URI_RESOLUTION,

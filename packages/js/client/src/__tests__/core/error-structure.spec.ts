@@ -190,7 +190,13 @@ describe("error structure", () => {
       },
     });
 
-    if (!result.ok) fail(result.error);
-    expect(result.value).toEqual("test");
+    expect(result.ok).toBeFalsy();
+    if (result.ok) throw Error("should never happen");
+
+    expect(result.error?.name).toEqual("UriResolutionError");
+    expect(result.error?.code).toEqual(WrapErrorCode.URI_RESOLVER);
+    expect(result.error?.uri.endsWith("monorepo/packages/test-cases/cases/wrappers/wasm-as/simple-deprecated")).toBeTruthy();
+    expect(result.error?.resolutionStack).toBeDefined();
+    expect(`${result.error?.cause}`).toContain(`Unrecognized WrapManifest schema version "0.0.1"`);
   });
 });
