@@ -52,6 +52,7 @@ export interface WrapErrorOptions {
   source?: WrapErrorSource;
   resolutionStack?: CleanResolutionStep;
   cause?: unknown;
+  prev?: Error;
   stack?: string;
 }
 
@@ -64,22 +65,23 @@ type RegExpGroups<T extends string> =
 export class WrapError extends Error {
   readonly name: string;
   readonly code: WrapErrorCode;
-  readonly text: string;
+  readonly reason: string;
   readonly uri: string;
   readonly method?: string;
   readonly args?: string;
   readonly source?: WrapErrorSource;
   readonly resolutionStack?: CleanResolutionStep;
   readonly cause?: unknown;
+  readonly prev?: Error;
 
-  static re = new RegExp(
+  private static re = new RegExp(
     [
       // [A-z]+Error can be replaced with specific error names when finalized
       /^(?:[A-z_: ]*; )?[A-z]+Error: [\w ]+\./.source,
       // there is some padding added to the number of words expected in an error code
       /(?:\r\n|\r|\n)code: (?<code>1?[0-9]{1,2}|2[0-4][0-9]|25[0-5]) (?:[A-Z]+ ?){1,5}/
         .source,
-      /(?:\r\n|\r|\n)message: (?<message>(?:.|\r\n|\r|\n)*)/.source,
+      /(?:\r\n|\r|\n)reason: (?<reason>(?:.|\r\n|\r|\n)*)/.source,
       /(?:\r\n|\r|\n)uri: (?<uri>wrap:\/\/[A-z0-9_-]+\/.+)/.source,
       /(?:(?:\r\n|\r|\n)method: (?<method>([A-z_]{1}[A-z0-9_]*)))?/.source,
       /(?:(?:\r\n|\r|\n)args: (?<args>\{(?:.|\r\n|\r|\n)+} ))?/.source,
@@ -87,16 +89,16 @@ export class WrapError extends Error {
         .source,
       /(?:(?:\r\n|\r|\n)uriResolutionStack: (?<resolutionStack>\[(?:.|\r\n|\r|\n)+]))?/
         .source,
-      /(?:(?:\r\n|\r|\n){2}Another exception was encountered during execution:(?:\r\n|\r|\n)(?<cause>(?:.|\r\n|\r|\n)+))?$/
+      /(?:(?:\r\n|\r|\n){2}This exception was caused by the following exception:(?:\r\n|\r|\n)(?<cause>(?:.|\r\n|\r|\n)+))?$/
         .source,
     ].join("")
   );
 
-  constructor(text = "Encountered an exception.", options: WrapErrorOptions) {
-    super(WrapError.stringify(text, options));
+  constructor(reason = "Encountered an exception.", options: WrapErrorOptions) {
+    super(WrapError.stringify(reason, options));
     this.name = WrapError.codeToName(options.code);
     this.code = options.code;
-    this.text = text;
+    this.reason = reason;
     this.uri = options.uri;
     this.method = options.method;
     this.args = options.args;
@@ -104,13 +106,50 @@ export class WrapError extends Error {
     this.resolutionStack = options.resolutionStack;
     this.cause = options.cause;
     this.stack = options.stack;
+    this.prev = options.prev;
     Object.setPrototypeOf(this, WrapError.prototype);
   }
 
   static parse(error: string): WrapError | undefined {
+    const errorStrings = error.split(
+      "\n\nAnother exception was encountered during execution:\n"
+    );
+
+    // case: single WrapError
+    if (errorStrings.length === 1) {
+      const args = WrapError._parse(error);
+      return args ? new WrapError(args.reason, args.options) : undefined;
+    }
+
+    // case: stack of WrapErrors stringified
+    const errArgs = errorStrings.map(WrapError._parse);
+
+    // iterate through args to assign `cause` and `prev`
+    let curr: WrapError | undefined = undefined;
+    for (let i = errArgs.length - 1; i >= 0; i--) {
+      const currArgs = errArgs[i];
+      if (!currArgs) {
+        throw new Error("Failed to parse WrapError");
+      }
+      curr = new WrapError(currArgs.reason, {
+        ...currArgs.options,
+        prev: curr,
+      });
+    }
+    return curr;
+  }
+
+  toString(): string {
+    return `${this.name}: ${this.message}`;
+  }
+
+  // parse a single WrapError, where the 'prev' property is undefined
+  private static _parse(
+    error: string
+  ): { reason: string; options: WrapErrorOptions } | undefined {
     const result: RegExpGroups<
       | "code"
-      | "message"
+      | "reason"
       | "uri"
       | "method"
       | "args"
@@ -119,13 +158,13 @@ export class WrapError extends Error {
       | "col"
       | "resolutionStack"
       | "cause"
-    > = this.re.exec(error);
+    > = WrapError.re.exec(error);
     if (!result) {
       return undefined;
     }
     const {
       code: codeStr,
-      message,
+      reason,
       uri,
       method,
       args,
@@ -133,7 +172,7 @@ export class WrapError extends Error {
       row,
       col,
       resolutionStack: resolutionStackStr,
-      cause: causeStr,
+      cause,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     } = result.groups!;
 
@@ -152,29 +191,31 @@ export class WrapError extends Error {
       ? JSON.parse(resolutionStackStr)
       : undefined;
 
-    // message may be a stringified WrapError due to current string-based error passing between client and wasm
-    let cause: WrapError | undefined;
-    if (this.re.test(message as string)) {
-      cause = this.parse(message as string);
-    }
+    return {
+      reason: reason as string,
+      options: {
+        code,
+        uri: uri as string,
+        method,
+        args: args?.trim(),
+        source,
+        resolutionStack,
+        cause,
+      },
+    };
+  }
 
-    return new WrapError(message, {
+  private static stringify(reason: string, options: WrapErrorOptions) {
+    const {
       code,
-      uri: uri as string,
+      uri,
       method,
-      args: args?.trim(),
+      args,
       source,
       resolutionStack,
-      cause: cause ?? causeStr, // TODO: is it possible that 'cause' information is lost here?
-    });
-  }
-
-  toString(): string {
-    return `${this.name}: ${this.message}`;
-  }
-
-  private static stringify(text: string, options: WrapErrorOptions) {
-    const { code, uri, method, args, source, resolutionStack, cause } = options;
+      cause,
+      prev,
+    } = options;
     const formattedCode = `${code} ${WrapErrorCode[code].replace(/_/g, " ")}`;
 
     // Some items are not always present
@@ -190,19 +231,24 @@ export class WrapError extends Error {
 
     const errorCause = WrapError.stringifyCause(cause);
     const maybeCause = errorCause
-      ? `\nAnother exception was encountered during execution:\n${errorCause}`
+      ? `\nThis exception was caused by the following exception:\n${errorCause}`
+      : "";
+
+    const maybeDelim = prev
+      ? `\nAnother exception was encountered during execution:\n${prev}`
       : "";
 
     return [
       WrapError.metaMessage(code),
       `code: ${formattedCode}`,
-      `message: ${text}`,
+      `reason: ${reason}`,
       `uri: ${uri}`,
       maybeMethod,
       maybeArgs,
       maybeSource,
       maybeResolutionStack,
       maybeCause,
+      maybeDelim,
     ]
       .filter((it) => !!it)
       .join("\n");

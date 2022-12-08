@@ -801,7 +801,7 @@ export class PolywrapCoreClient implements CoreClient {
       if (invalidUris.length) {
         let message = "The following URIs failed validation:";
         for (const { error } of invalidUris) {
-          message += `\n${error.uri} -> ${error.text}`;
+          message += `\n${error.uri} -> ${error.reason}`;
         }
         const error = new WrapError(message, {
           code: WrapErrorCode.CLIENT_VALIDATE_RECURSIVE,

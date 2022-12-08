@@ -182,15 +182,15 @@ export class WasmWrapper implements Wrapper {
       };
 
       const abort = (message: string, source?: WrapErrorSource) => {
-        const cause = WrapError.parse(message);
-        const text = cause ? "SubInvocation exception encountered" : message;
+        const prev = WrapError.parse(message);
+        const text = prev ? "SubInvocation exception encountered" : message;
         throw new WrapError(text, {
           code: WrapErrorCode.WASM_INVOKE_ABORTED,
           uri: options.uri.uri,
           method,
           args: JSON.stringify(args, null, 2),
           source,
-          cause,
+          prev,
         });
       };
 
