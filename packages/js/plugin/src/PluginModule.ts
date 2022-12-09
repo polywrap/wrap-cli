@@ -47,9 +47,12 @@ export abstract class PluginModule<
       );
     }
 
-    const data = await fn(args, client);
-
-    return ResultOk(data);
+    try {
+      const data = await fn(args, client);
+      return ResultOk(data);
+    } catch (e) {
+      return ResultErr(e);
+    }
   }
 
   public getMethod<

@@ -5,7 +5,7 @@ import { PluginModule } from "../PluginModule";
 import { GetPluginMethodsFunc } from "./GetPluginMethodsFunc";
 
 import { CoreClient } from "@polywrap/core-js";
-import { Result, ResultOk } from "@polywrap/result";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class PluginModuleWithMethods<
   TEnv extends Record<string, unknown> = Record<string, unknown>
@@ -25,16 +25,21 @@ export class PluginModuleWithMethods<
     const fn = this.getMethod<TArgs, TResult>(method);
 
     if (!fn) {
-      throw Error(`Plugin missing method "${method}"`);
+      return ResultErr(Error(`Plugin missing method "${method}"`));
     }
 
     if (typeof fn !== "function") {
-      throw Error(`Plugin method "${method}" must be of type 'function'`);
+      return ResultErr(
+        Error(`Plugin method "${method}" must be of type 'function'`)
+      );
     }
 
-    const data = await fn(args, client);
-
-    return ResultOk(data);
+    try {
+      const data = await fn(args, client);
+      return ResultOk(data);
+    } catch (e) {
+      return ResultErr(e);
+    }
   }
 
   getMethod<

@@ -55,7 +55,7 @@ export class PluginWrapper implements Wrapper {
     const args = options.args || {};
 
     if (!this.module.getMethod(method)) {
-      const error = new WrapError(`Method "${method}" not found.`, {
+      const error = new WrapError(`Plugin missing method "${method}"`, {
         code: WrapErrorCode.PLUGIN_METHOD_NOT_FOUND,
         uri: options.uri.uri,
         method,
@@ -105,16 +105,14 @@ export class PluginWrapper implements Wrapper {
         encoded: false,
       };
     } else {
-      const error = new WrapError(
-        `Failed to invoke method "${method}" in module: ${this.module}`,
-        {
-          code: WrapErrorCode.PLUGIN_INVOKE_FAIL,
-          uri: options.uri.toString(),
-          method,
-          args: JSON.stringify(jsArgs, null, 2),
-          cause: result.error,
-        }
-      );
+      const reason = `Failed to invoke method "${method}" in module: ${this.module}`;
+      const error = new WrapError(reason, {
+        code: WrapErrorCode.PLUGIN_INVOKE_FAIL,
+        uri: options.uri.toString(),
+        method,
+        args: JSON.stringify(jsArgs, null, 2),
+        cause: result.error,
+      });
       return ResultErr(error);
     }
   }

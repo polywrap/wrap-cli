@@ -46,8 +46,7 @@ export class WasmPackage implements IWasmPackage {
     const wrapManifest = result.value;
 
     try {
-      const deserialized = await deserializeWrapManifest(wrapManifest, options);
-      return ResultOk(deserialized);
+      return ResultOk(await deserializeWrapManifest(wrapManifest, options));
     } catch (e) {
       return ResultErr(e);
     }
