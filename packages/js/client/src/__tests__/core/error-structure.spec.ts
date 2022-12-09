@@ -1,6 +1,6 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { Uri, PolywrapClient } from "../..";
-import { buildWrapper } from "@polywrap/test-env-js";
+// import { buildWrapper } from "@polywrap/test-env-js";
 import { WrapError, WrapErrorCode } from "@polywrap/core-js";
 
 jest.setTimeout(360000);
@@ -25,10 +25,10 @@ describe("error structure", () => {
   let client: PolywrapClient;
 
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath);
-    await buildWrapper(badUtilWrapperPath);
-    await buildWrapper(badMathWrapperPath);
-    await buildWrapper(subinvokeErrorWrapperPath);
+    // await buildWrapper(simpleWrapperPath);
+    // await buildWrapper(badUtilWrapperPath);
+    // await buildWrapper(badMathWrapperPath);
+    // await buildWrapper(subinvokeErrorWrapperPath);
 
     client = new PolywrapClient({
       redirects: [
@@ -59,7 +59,7 @@ describe("error structure", () => {
     expect(result.error?.name).toEqual("UriResolutionError");
     expect(result.error?.code).toEqual(WrapErrorCode.URI_NOT_FOUND);
     expect(result.error?.reason.startsWith("Unable to find URI ")).toBeTruthy();
-    expect(result.error?.uri.endsWith("monorepo/packages/test-cases/cases/wrappers/wasm-as/simple/build-not-found")).toBeTruthy();
+    expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/simple/build-not-found")).toBeTruthy();
     expect(result.error?.resolutionStack).toBeTruthy();
   });
 
@@ -78,7 +78,7 @@ describe("error structure", () => {
     expect(result.error?.name).toEqual("InvokeError");
     expect(result.error?.code).toEqual(WrapErrorCode.WASM_INVOKE_ABORTED);
     expect(result.error?.reason.startsWith("__wrap_abort:")).toBeTruthy();
-    expect(result.error?.uri.endsWith("monorepo/packages/test-cases/cases/wrappers/wasm-as/simple/build")).toBeTruthy();
+    expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/simple/build")).toBeTruthy();
     expect(result.error?.method).toEqual("simpleMethod");
     expect(result.error?.args).toEqual("{\n  \"arg\": 3\n}");
     expect(result.error?.source).toEqual({ file: "~lib/@polywrap/wasm-as/msgpack/ReadDecoder.ts", row: 167, col: 5 });
@@ -99,7 +99,7 @@ describe("error structure", () => {
     expect(result.error?.name).toEqual("InvokeError");
     expect(result.error?.code).toEqual(WrapErrorCode.WASM_INVOKE_FAIL);
     expect(result.error?.reason.startsWith("Could not find invoke function")).toBeTruthy();
-    expect(result.error?.uri.endsWith("monorepo/packages/test-cases/cases/wrappers/wasm-as/simple/build")).toBeTruthy();
+    expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/simple/build")).toBeTruthy();
     expect(result.error?.method).toEqual("complexMethod");
     expect(result.error?.args).toEqual("{\n  \"arg\": \"test\"\n}");
     expect(result.error?.toString().split("51").length).toEqual(2);
@@ -122,7 +122,7 @@ describe("error structure", () => {
     expect(result.error?.name).toEqual("InvokeError");
     expect(result.error?.code).toEqual(WrapErrorCode.WASM_INVOKE_ABORTED);
     expect(result.error?.reason.startsWith("SubInvocation exception encountered")).toBeTruthy();
-    expect(result.error?.uri.endsWith("monorepo/packages/test-cases/cases/wrappers/wasm-as/subinvoke-error/invoke/build")).toBeTruthy();
+    expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/subinvoke-error/invoke/build")).toBeTruthy();
     expect(result.error?.method).toEqual("subWrapperNotFound");
     expect(result.error?.args).toEqual("{\n  \"a\": 1,\n  \"b\": 1\n}");
     expect(result.error?.source).toEqual({ file: "~lib/@polywrap/wasm-as/containers/Result.ts", row: 171, col: 13 });
@@ -152,7 +152,7 @@ describe("error structure", () => {
     expect(result.error?.name).toEqual("InvokeError");
     expect(result.error?.code).toEqual(WrapErrorCode.WASM_INVOKE_ABORTED);
     expect(result.error?.reason.startsWith("SubInvocation exception encountered")).toBeTruthy();
-    expect(result.error?.uri.endsWith("monorepo/packages/test-cases/cases/wrappers/wasm-as/subinvoke-error/invoke/build")).toBeTruthy();
+    expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/subinvoke-error/invoke/build")).toBeTruthy();
     expect(result.error?.method).toEqual("throwsInTwoSubinvokeLayers");
     expect(result.error?.args).toEqual(`{
   "a": 1,
@@ -195,7 +195,7 @@ describe("error structure", () => {
 
     expect(result.error?.name).toEqual("UriResolutionError");
     expect(result.error?.code).toEqual(WrapErrorCode.URI_RESOLVER);
-    expect(result.error?.uri.endsWith("monorepo/packages/test-cases/cases/wrappers/wasm-as/simple-deprecated")).toBeTruthy();
+    expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/simple-deprecated")).toBeTruthy();
     expect(result.error?.resolutionStack).toBeDefined();
     expect(`${result.error?.cause}`).toContain(`Unrecognized WrapManifest schema version "0.0.1"`);
   });

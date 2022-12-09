@@ -70,7 +70,7 @@ describe("sanity", () => {
     expect(result.ok).toBeFalsy();
     let resultError = (result as { error: Error }).error;
     expect(resultError).toBeTruthy();
-    expect(resultError.message).toContain("URI not found");
+    expect(resultError.message).toContain("Unable to resolve URI");
 
     let fooPackage: IUriPackage<string> = {
       uri: fooUri,
