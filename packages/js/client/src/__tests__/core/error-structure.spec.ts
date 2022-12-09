@@ -1,6 +1,6 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { Uri, PolywrapClient } from "../..";
-// import { buildWrapper } from "@polywrap/test-env-js";
+import { buildWrapper } from "@polywrap/test-env-js";
 import { WrapError, WrapErrorCode } from "@polywrap/core-js";
 
 jest.setTimeout(360000);
@@ -25,10 +25,10 @@ describe("error structure", () => {
   let client: PolywrapClient;
 
   beforeAll(async () => {
-    // await buildWrapper(simpleWrapperPath);
-    // await buildWrapper(badUtilWrapperPath);
-    // await buildWrapper(badMathWrapperPath);
-    // await buildWrapper(subinvokeErrorWrapperPath);
+    await buildWrapper(simpleWrapperPath);
+    await buildWrapper(badUtilWrapperPath);
+    await buildWrapper(badMathWrapperPath);
+    await buildWrapper(subinvokeErrorWrapperPath);
 
     client = new PolywrapClient({
       redirects: [
