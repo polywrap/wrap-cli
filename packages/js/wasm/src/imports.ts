@@ -5,13 +5,17 @@ import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { State } from "./WasmWrapper";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { CoreClient, WrapErrorSource } from "@polywrap/core-js";
+import { CoreClient, WrapErrorCode, WrapErrorSource } from "@polywrap/core-js";
 
 export const createImports = (config: {
   client: CoreClient;
   memory: WebAssembly.Memory;
   state: State;
-  abort: (message: string, source?: WrapErrorSource) => never;
+  abort: (
+    message: string,
+    code?: WrapErrorCode,
+    source?: WrapErrorSource
+  ) => never;
 }): WrapImports => {
   const { memory, state, client, abort } = config;
 
@@ -51,7 +55,10 @@ export const createImports = (config: {
       // Give WASM the size of the result
       __wrap_subinvoke_result_len: (): u32 => {
         if (!state.subinvoke.result) {
-          abort("__wrap_subinvoke_result_len: subinvoke.result is not set");
+          abort(
+            "__wrap_subinvoke_result_len: subinvoke.result is not set",
+            WrapErrorCode.WASM_STATE_ERROR
+          );
           return 0;
         }
         return state.subinvoke.result.byteLength;
@@ -59,7 +66,10 @@ export const createImports = (config: {
       // Copy the subinvoke result into WASM
       __wrap_subinvoke_result: (ptr: u32): void => {
         if (!state.subinvoke.result) {
-          abort("__wrap_subinvoke_result: subinvoke.result is not set");
+          abort(
+            "__wrap_subinvoke_result: subinvoke.result is not set",
+            WrapErrorCode.WASM_STATE_ERROR
+          );
           return;
         }
         writeBytes(state.subinvoke.result, memory.buffer, ptr);
@@ -67,7 +77,10 @@ export const createImports = (config: {
       // Give WASM the size of the error
       __wrap_subinvoke_error_len: (): u32 => {
         if (!state.subinvoke.error) {
-          abort("__wrap_subinvoke_error_len: subinvoke.error is not set");
+          abort(
+            "__wrap_subinvoke_error_len: subinvoke.error is not set",
+            WrapErrorCode.WASM_STATE_ERROR
+          );
           return 0;
         }
         return state.subinvoke.error.length;
@@ -75,7 +88,10 @@ export const createImports = (config: {
       // Copy the subinvoke error into WASM
       __wrap_subinvoke_error: (ptr: u32): void => {
         if (!state.subinvoke.error) {
-          abort("__wrap_subinvoke_error: subinvoke.error is not set");
+          abort(
+            "__wrap_subinvoke_error: subinvoke.error is not set",
+            WrapErrorCode.WASM_STATE_ERROR
+          );
           return;
         }
         writeString(state.subinvoke.error, memory.buffer, ptr);
@@ -117,7 +133,8 @@ export const createImports = (config: {
       __wrap_subinvokeImplementation_result_len: (): u32 => {
         if (!state.subinvokeImplementation.result) {
           abort(
-            "__wrap_subinvokeImplementation_result_len: subinvokeImplementation.result is not set"
+            "__wrap_subinvokeImplementation_result_len: subinvokeImplementation.result is not set",
+            WrapErrorCode.WASM_STATE_ERROR
           );
           return 0;
         }
@@ -135,7 +152,8 @@ export const createImports = (config: {
       __wrap_subinvokeImplementation_error_len: (): u32 => {
         if (!state.subinvokeImplementation.error) {
           abort(
-            "__wrap_subinvokeImplementation_error_len: subinvokeImplementation.error is not set"
+            "__wrap_subinvokeImplementation_error_len: subinvokeImplementation.error is not set",
+            WrapErrorCode.WASM_STATE_ERROR
           );
           return 0;
         }
@@ -144,7 +162,8 @@ export const createImports = (config: {
       __wrap_subinvokeImplementation_error: (ptr: u32): void => {
         if (!state.subinvokeImplementation.error) {
           abort(
-            "__wrap_subinvokeImplementation_error: subinvokeImplementation.error is not set"
+            "__wrap_subinvokeImplementation_error: subinvokeImplementation.error is not set",
+            WrapErrorCode.WASM_STATE_ERROR
           );
           return;
         }
@@ -153,11 +172,17 @@ export const createImports = (config: {
       // Copy the invocation's method & args into WASM
       __wrap_invoke_args: (methodPtr: u32, argsPtr: u32): void => {
         if (!state.method) {
-          abort("__wrap_invoke_args: method is not set");
+          abort(
+            "__wrap_invoke_args: method is not set",
+            WrapErrorCode.WASM_STATE_ERROR
+          );
           return;
         }
         if (!state.args) {
-          abort("__wrap_invoke_args: args is not set");
+          abort(
+            "__wrap_invoke_args: args is not set",
+            WrapErrorCode.WASM_STATE_ERROR
+          );
           return;
         }
         writeString(state.method, memory.buffer, methodPtr);
@@ -189,14 +214,20 @@ export const createImports = (config: {
       },
       __wrap_getImplementations_result_len: (): u32 => {
         if (!state.getImplementationsResult) {
-          abort("__wrap_getImplementations_result_len: result is not set");
+          abort(
+            "__wrap_getImplementations_result_len: result is not set",
+            WrapErrorCode.WASM_STATE_ERROR
+          );
           return 0;
         }
         return state.getImplementationsResult.byteLength;
       },
       __wrap_getImplementations_result: (ptr: u32): void => {
         if (!state.getImplementationsResult) {
-          abort("__wrap_getImplementations_result: result is not set");
+          abort(
+            "__wrap_getImplementations_result: result is not set",
+            WrapErrorCode.WASM_STATE_ERROR
+          );
           return;
         }
         writeBytes(state.getImplementationsResult, memory.buffer, ptr);
@@ -215,7 +246,21 @@ export const createImports = (config: {
         const msg = readString(memory.buffer, msgPtr, msgLen);
         const file = readString(memory.buffer, filePtr, fileLen);
 
-        abort(`__wrap_abort: ${msg}`, { file, row: line, col: column });
+        let code = WrapErrorCode.WASM_INVOKE_ABORTED;
+
+        // check if error was thrown in bindings
+        if (
+          file.startsWith("~lib/@polywrap/wasm-as/msgpack/") ||
+          file.startsWith("src/wrap/")
+        ) {
+          code = WrapErrorCode.WASM_SERIALIZATION_ERROR;
+        }
+
+        abort(`__wrap_abort: ${msg}`, code, {
+          file,
+          row: line,
+          col: column,
+        });
       },
       __wrap_debug_log: (ptr: u32, len: u32): void => {
         const msg = readString(memory.buffer, ptr, len);

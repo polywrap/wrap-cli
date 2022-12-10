@@ -181,11 +181,15 @@ export class WasmWrapper implements Wrapper {
         env: options.env ? msgpackEncode(options.env) : EMPTY_ENCODED_OBJECT,
       };
 
-      const abort = (message: string, source?: WrapErrorSource) => {
+      const abort = (
+        message: string,
+        code: WrapErrorCode = WrapErrorCode.WASM_INVOKE_ABORTED,
+        source?: WrapErrorSource
+      ) => {
         const prev = WrapError.parse(message);
         const text = prev ? "SubInvocation exception encountered" : message;
         throw new WrapError(text, {
-          code: WrapErrorCode.WASM_INVOKE_ABORTED,
+          code,
           uri: options.uri.uri,
           method,
           args: JSON.stringify(args, null, 2),

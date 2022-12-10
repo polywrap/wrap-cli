@@ -30,9 +30,11 @@ export enum WrapErrorCode {
   URI_RESOLVER,
   URI_NOT_FOUND,
   WASM_INVOKE_ABORTED = 50,
+  WASM_SUBINVOKE_ABORTED = 51,
   WASM_INVOKE_FAIL,
   WASM_MODULE_NOT_FOUND,
-  WASM_METHOD_NOT_FOUND, // not yet used
+  WASM_STATE_ERROR,
+  WASM_SERIALIZATION_ERROR,
   PLUGIN_INVOKE_FAIL = 75,
   PLUGIN_METHOD_NOT_FOUND,
   PLUGIN_ARGS_MALFORMED,
@@ -111,11 +113,10 @@ export class WrapError extends Error {
   }
 
   static parse(error: string): WrapError | undefined {
-    const errorStrings = error.split(
-      "\n\nAnother exception was encountered during execution:\n"
-    );
+    const delim = "\n\nAnother exception was encountered during execution:\n";
+    const errorStrings = error.split(delim);
 
-    // case: single WrapError
+    // case: single WrapError or not a WrapError
     if (errorStrings.length === 1) {
       const args = WrapError._parse(error);
       return args ? new WrapError(args.reason, args.options) : undefined;
@@ -129,6 +130,7 @@ export class WrapError extends Error {
     for (let i = errArgs.length - 1; i >= 0; i--) {
       const currArgs = errArgs[i];
       if (!currArgs) {
+        // should only happen if a user includes the delimiter in their error message
         throw new Error("Failed to parse WrapError");
       }
       curr = new WrapError(currArgs.reason, {
@@ -318,12 +320,16 @@ export class WrapError extends Error {
         return "URI not found.";
       case WrapErrorCode.WASM_INVOKE_ABORTED:
         return "Wasm module aborted execution.";
+      case WrapErrorCode.WASM_SUBINVOKE_ABORTED:
+        return "Wasm module aborted execution during a subinvocation.";
       case WrapErrorCode.WASM_INVOKE_FAIL:
         return "Invocation exception encountered.";
       case WrapErrorCode.WASM_MODULE_NOT_FOUND:
         return "Wrapper does not contain a Wasm module.";
-      case WrapErrorCode.WASM_METHOD_NOT_FOUND:
-        return "Could not find method in Wasm module.";
+      case WrapErrorCode.WASM_STATE_ERROR:
+        return "Invocation state is missing.";
+      case WrapErrorCode.WASM_SERIALIZATION_ERROR:
+        return "An exception was encountered while deserializing arguments or serializing results.";
       case WrapErrorCode.PLUGIN_METHOD_NOT_FOUND:
         return "Method not found in plugin module.";
       case WrapErrorCode.PLUGIN_ARGS_MALFORMED:

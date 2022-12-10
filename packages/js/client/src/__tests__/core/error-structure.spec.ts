@@ -1,10 +1,12 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { Uri, PolywrapClient } from "../..";
-// import { buildWrapper } from "@polywrap/test-env-js";
+import { buildWrapper } from "@polywrap/test-env-js";
 import { WrapError, WrapErrorCode } from "@polywrap/core-js";
 
-jest.setTimeout(360000);
+jest.setTimeout(660000);
 
+
+// AS
 const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 const simpleWrapperUri = new Uri(`fs/${simpleWrapperPath}/build`);
 
@@ -20,15 +22,20 @@ const badUtilWrapperUri = new Uri(`fs/${badUtilWrapperPath}/build`);
 const incompatibleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-deprecated`;
 const incompatibleWrapperUri = new Uri(`fs/${incompatibleWrapperPath}`);
 
+// RS
+const invalidTypesWrapperPath = `${GetPathToTestWrappers()}/wasm-rs/invalid-types`;
+const invalidTypesWrapperUri = new Uri(`fs/${invalidTypesWrapperPath}/build`);
+
 describe("error structure", () => {
 
   let client: PolywrapClient;
 
   beforeAll(async () => {
-    // await buildWrapper(simpleWrapperPath);
-    // await buildWrapper(badUtilWrapperPath);
-    // await buildWrapper(badMathWrapperPath);
-    // await buildWrapper(subinvokeErrorWrapperPath);
+    await buildWrapper(simpleWrapperPath);
+    await buildWrapper(badUtilWrapperPath);
+    await buildWrapper(badMathWrapperPath);
+    await buildWrapper(subinvokeErrorWrapperPath);
+    await buildWrapper(invalidTypesWrapperPath);
 
     client = new PolywrapClient({
       redirects: [
@@ -63,7 +70,7 @@ describe("error structure", () => {
     expect(result.error?.resolutionStack).toBeTruthy();
   });
 
-  test("Invoke a wrapper with malformed arguments", async () => {
+  test("Invoke a wrapper with malformed arguments - as", async () => {
     const result = await client.invoke<string>({
       uri: simpleWrapperUri.uri,
       method: "simpleMethod",
@@ -76,13 +83,35 @@ describe("error structure", () => {
     if (result.ok) throw Error("should never happen");
 
     expect(result.error?.name).toEqual("InvokeError");
-    expect(result.error?.code).toEqual(WrapErrorCode.WASM_INVOKE_ABORTED);
+    expect(result.error?.code).toEqual(WrapErrorCode.WASM_SERIALIZATION_ERROR);
     expect(result.error?.reason.startsWith("__wrap_abort:")).toBeTruthy();
     expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/simple/build")).toBeTruthy();
     expect(result.error?.method).toEqual("simpleMethod");
     expect(result.error?.args).toEqual("{\n  \"arg\": 3\n}");
     expect(result.error?.source).toEqual({ file: "~lib/@polywrap/wasm-as/msgpack/ReadDecoder.ts", row: 167, col: 5 });
   });
+
+  test("Invoke a wrapper with malformed arguments - rs", async () => {
+    const result = await client.invoke<string>({
+      uri: invalidTypesWrapperUri.uri,
+      method: "boolMethod",
+      args: {
+        arg: 3,
+      },
+    });
+
+    expect(result.ok).toBeFalsy();
+    if (result.ok) throw Error("should never happen");
+
+    expect(result.error?.name).toEqual("InvokeError");
+    expect(result.error?.code).toEqual(WrapErrorCode.WASM_SERIALIZATION_ERROR);
+    expect(result.error?.reason.startsWith("__wrap_abort:")).toBeTruthy();
+    expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-rs/invalid-types/build")).toBeTruthy();
+    expect(result.error?.method).toEqual("boolMethod");
+    expect(result.error?.args).toEqual("{\n  \"arg\": 3\n}");
+    expect(result.error?.source).toEqual({ file: "src/wrap/module/wrapped.rs", row: 38, col: 13 });
+  });
+
 
   test("Invoke a wrapper method that doesn't exist", async () => {
     const result = await client.invoke<string>({
@@ -102,7 +131,7 @@ describe("error structure", () => {
     expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/simple/build")).toBeTruthy();
     expect(result.error?.method).toEqual("complexMethod");
     expect(result.error?.args).toEqual("{\n  \"arg\": \"test\"\n}");
-    expect(result.error?.toString().split("51").length).toEqual(2);
+    expect(result.error?.toString().split("52").length).toEqual(2);
     expect(result.error?.prev).toBeUndefined();
   });
 
