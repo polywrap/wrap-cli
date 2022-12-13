@@ -27,14 +27,14 @@ use crate::TestImportEnumReturn;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportModule {
-    uri: String;
+    uri: String
 }
 
 impl TestImportModule {
     pub const INTERFACE_URI: &'static str = "testimport.uri.eth";
 
     pub fn new(uri: String) -> TestImportModule {
-        TestImportModule { uri: uri }
+        TestImportModule { uri }
     }
 
     pub fn imported_method(&self, args: &ArgsImportedMethod) -> Result<Option<TestImportObject>, String> {

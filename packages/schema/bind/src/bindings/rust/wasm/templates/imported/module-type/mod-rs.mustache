@@ -56,14 +56,14 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
 {{#isInterface}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
-    {{#isInterface}}uri: String;{{/isInterface}}
+    {{#isInterface}}uri: String{{/isInterface}}
 }
 
 impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     pub const INTERFACE_URI: &'static str = "{{uri}}";
 
     pub fn new(uri: String) -> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
-        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} { uri: uri }
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} { uri }
     }
 
     {{#methods}}
@@ -71,8 +71,8 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
         let ref uri = self.uri;
         let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(args).map_err(|e| e.to_string())?;
         let result = subinvoke::wrap_subinvoke(
-            uri,
-            "{{name}}".as_str(),
+            uri.as_str(),
+            "{{name}}",
             args,
         )?;
         deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice()).map_err(|e| e.to_string())
