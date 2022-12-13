@@ -13,8 +13,7 @@ pub fn module_method(args: ArgsModuleMethod) -> ImplementationType {
 
 pub fn abstract_module_method(args: ArgsAbstractModuleMethod) -> String {
     let impls = Interface::get_implementations();
-    let uri: String = impls[0].to_owned();
-    let module = InterfaceModule::new(&uri);
+    let module = InterfaceModule::new(impls[0].clone());
     let method_args = interface_module::serialization::ArgsAbstractModuleMethod {
         arg: interface_argument::InterfaceArgument {
             str: args.arg.str
