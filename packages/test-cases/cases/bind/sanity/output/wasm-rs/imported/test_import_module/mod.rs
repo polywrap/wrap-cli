@@ -26,22 +26,22 @@ use crate::TestImportEnum;
 use crate::TestImportEnumReturn;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct TestImportModule<'a> {
-    uri: &'a str
+pub struct TestImportModule {
+    uri: String
 }
 
-impl<'a> TestImportModule<'a> {
+impl TestImportModule {
     pub const INTERFACE_URI: &'static str = "testimport.uri.eth";
 
-    pub fn new(uri: &'a str) -> TestImportModule<'a> {
-        TestImportModule { uri: uri }
+    pub fn new(uri: String) -> TestImportModule {
+        TestImportModule { uri }
     }
 
     pub fn imported_method(&self, args: &ArgsImportedMethod) -> Result<Option<TestImportObject>, String> {
-        let uri = self.uri;
+        let ref uri = self.uri;
         let args = serialize_imported_method_args(args).map_err(|e| e.to_string())?;
         let result = subinvoke::wrap_subinvoke(
-            uri,
+            uri.as_str(),
             "importedMethod",
             args,
         )?;
@@ -49,10 +49,10 @@ impl<'a> TestImportModule<'a> {
     }
 
     pub fn another_method(&self, args: &ArgsAnotherMethod) -> Result<i32, String> {
-        let uri = self.uri;
+        let ref uri = self.uri;
         let args = serialize_another_method_args(args).map_err(|e| e.to_string())?;
         let result = subinvoke::wrap_subinvoke(
-            uri,
+            uri.as_str(),
             "anotherMethod",
             args,
         )?;
@@ -60,10 +60,10 @@ impl<'a> TestImportModule<'a> {
     }
 
     pub fn returns_array_of_enums(&self, args: &ArgsReturnsArrayOfEnums) -> Result<Vec<Option<TestImportEnumReturn>>, String> {
-        let uri = self.uri;
+        let ref uri = self.uri;
         let args = serialize_returns_array_of_enums_args(args).map_err(|e| e.to_string())?;
         let result = subinvoke::wrap_subinvoke(
-            uri,
+            uri.as_str(),
             "returnsArrayOfEnums",
             args,
         )?;
