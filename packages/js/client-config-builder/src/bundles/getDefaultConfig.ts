@@ -4,10 +4,10 @@ import { IUriPackage, Uri } from "@polywrap/core-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import {
-  ethereumPlugin,
+  ethereumProviderPlugin,
   Connection,
   Connections,
-} from "@polywrap/ethereum-plugin-js";
+} from "ethereum-provider-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { httpResolverPlugin } from "@polywrap/http-resolver-plugin-js";
@@ -49,6 +49,10 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         from: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
         to: new Uri("wrap://plugin/logger"),
       },
+      {
+        from: new Uri("wrap://ens/ethereum.polywrap.eth"),
+        to: new Uri(defaultWrappers.ethereum),
+      },
     ],
     interfaces: [
       {
@@ -66,6 +70,10 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         interface: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
         implementations: [new Uri("wrap://plugin/logger")],
       },
+      {
+        interface: new Uri(defaultWrappers.ethereumProviderInterface),
+        implementations: [new Uri("wrap://plugin/ethereum-provider")],
+      },
     ],
     packages: getDefaultPlugins(),
     wrappers: [],
@@ -82,6 +90,9 @@ export const defaultWrappers = {
   sha3: "wrap://ens/goerli/sha3.wrappers.eth",
   uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
+  ethereum: "wrap://ens/goerli/ethereum.wrappers.eth:wrap@0.10.0",
+  ethereumProviderInterface:
+    "wrap://ens/goerli/ethereum.wrappers.eth:provider@0.10.0",
 };
 
 export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
@@ -97,8 +108,8 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
       package: ensResolverPlugin({}),
     },
     {
-      uri: new Uri("wrap://ens/ethereum.polywrap.eth"),
-      package: ethereumPlugin({
+      uri: new Uri("wrap://plugin/ethereum-provider"),
+      package: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
             mainnet: new Connection({
