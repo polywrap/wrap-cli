@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.5",
-    "@polywrap/ethereum-plugin-js": "0.10.0-pre.5",
+    "ethereum-provider-js": "0.1.1",
     "@polywrap/ipfs-plugin-js": "0.10.0-pre.5",
     "@polywrap/test-cases": "0.10.0-pre.5",
     "@polywrap/test-env-js": "0.10.0-pre.5",

@@ -28,9 +28,10 @@
   },
   "devDependencies": {
     "@polywrap/client-js": "0.10.0-pre.5",
-    "@polywrap/ethereum-plugin-js": "0.10.0-pre.5",
+    "ethereum-provider-js": "0.1.1",
     "@polywrap/ipfs-plugin-js": "0.10.0-pre.5",
     "@polywrap/ipfs-resolver-plugin-js": "0.10.0-pre.5",
+    "@polywrap/client-config-builder-js": "0.10.0-pre.5",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "jest": "26.6.3",

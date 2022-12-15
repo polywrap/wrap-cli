@@ -6,7 +6,7 @@ import {
 } from "@polywrap/react";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
-import { Env, IUriPackage, Uri } from "@polywrap/core-js";
+import { Env, InterfaceImplementations, IUriPackage, IUriRedirect, Uri } from "@polywrap/core-js";
 
 const SimpleStorage = ({ uri }: { uri: string }) => {
   const { execute: deployContract, data: deployData } = usePolywrapQuery<{
@@ -82,14 +82,22 @@ const CustomProvider = createPolywrapProvider("custom");
 export const SimpleStorageContainer = ({
   envs,
   packages,
+  interfaces,
+  redirects,
   ensUri,
 }: {
   envs: Env[];
   packages: IUriPackage<Uri | string>[];
+  interfaces: InterfaceImplementations<Uri | string>[];
+  redirects: IUriRedirect<Uri | string>[];
   ensUri: string;
 }) => (
   <CustomProvider>
-    <PolywrapProvider packages={packages} envs={envs}>
+    <PolywrapProvider
+      packages={packages}
+      envs={envs}
+      interfaces={interfaces}
+      redirects={redirects}>
       <SimpleStorage uri={ensUri} />
     </PolywrapProvider>
   </CustomProvider>

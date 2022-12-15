@@ -3,8 +3,8 @@ import { ensAddresses, providers } from "@polywrap/test-env-js";
 import {
   Connection,
   Connections,
-  ethereumPlugin,
-} from "@polywrap/ethereum-plugin-js";
+  ethereumProviderPlugin,
+} from "ethereum-provider-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
@@ -12,10 +12,11 @@ import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import {
   PackageToWrapperCacheResolver,
-  RecursiveResolver,
+  RecursiveResolver, RedirectResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
+import { defaultWrappers } from "@polywrap/client-config-builder-js";
 
 export const getClientWithEnsAndIpfs = () => {
   const connections: Connections = new Connections({
@@ -45,13 +46,21 @@ export const getClientWithEnsAndIpfs = () => {
             "wrap://ens/fs-resolver.polywrap.eth",
           ],
         },
+        {
+          interface: defaultWrappers.ethereumProviderInterface,
+          implementations: ["wrap://plugin/ethereum-provider"],
+        },
       ],
-      resolver: RecursiveResolver.from(
+      resolver: RecursiveResolver.from([
+        new RedirectResolver(
+          "wrap://ens/ethereum.polywrap.eth",
+          defaultWrappers.ethereum
+        ),
         PackageToWrapperCacheResolver.from(
           [
             {
-              uri: "wrap://ens/ethereum.polywrap.eth",
-              package: ethereumPlugin({ connections }),
+              uri: "wrap://plugin/ethereum-provider",
+              package: ethereumProviderPlugin({ connections }),
             },
             {
               uri: "wrap://ens/ens-resolver.polywrap.eth",
@@ -80,7 +89,7 @@ export const getClientWithEnsAndIpfs = () => {
             new ExtendableUriResolver(),
           ],
           new WrapperCache()
-        )
+        )]
       ),
     },
     {

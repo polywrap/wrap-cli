@@ -6,9 +6,9 @@ import {
 import {
   UsePolywrapQueryProps
 } from "../query"
-import { createPlugins, createEnvs } from "./config";
+import { createPlugins, createEnvs, createInterfaces, createRedirects } from "./config";
 
-import { Env, IUriPackage, Uri } from "@polywrap/core-js";
+import { Env, InterfaceImplementations, IUriPackage, IUriRedirect, Uri } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -31,6 +31,8 @@ describe("usePolywrapQuery hook", () => {
   let uri: string;
   let envs: Env[];
   let packages: IUriPackage<Uri | string>[];
+  let interfaces: InterfaceImplementations<Uri | string>[];
+  let redirects: IUriRedirect<Uri | string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
@@ -45,11 +47,16 @@ describe("usePolywrapQuery hook", () => {
 
     envs = createEnvs(providers.ipfs);
     packages = createPlugins(ensAddresses.ensAddress, providers.ethereum);
+    interfaces = createInterfaces();
+    redirects = createRedirects();
+
     WrapperProvider = {
       wrapper: PolywrapProvider,
       initialProps: {
         envs,
         packages,
+        interfaces,
+        redirects,
       },
     };
   });

@@ -3,18 +3,20 @@ import { ensAddresses, providers } from "@polywrap/test-env-js";
 import {
   Connection,
   Connections,
-  ethereumPlugin,
-} from "@polywrap/ethereum-plugin-js";
+  ethereumProviderPlugin,
+} from "ethereum-provider-js";
 import {
   RecursiveResolver,
   PackageToWrapperCacheResolver,
   WrapperCache,
+  RedirectResolver,
 } from "@polywrap/uri-resolvers-js";
 import { coreInterfaceUris } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
+import { defaultWrappers } from "@polywrap/client-config-builder-js";
 
 export const getClient = () => {
   return new PolywrapClient(
@@ -28,9 +30,18 @@ export const getClient = () => {
             "wrap://ens/fs-resolver.polywrap.eth",
           ],
         },
+        {
+          interface: defaultWrappers.ethereumProviderInterface,
+          implementations: ["wrap://plugin/ethereum-provider"],
+        },
       ],
       resolver: RecursiveResolver.from(
-        PackageToWrapperCacheResolver.from(
+        [
+          new RedirectResolver(
+            "wrap://ens/ethereum.polywrap.eth",
+            defaultWrappers.ethereum
+          ),
+          PackageToWrapperCacheResolver.from(
           [
             {
               uri: "wrap://ens/ipfs-resolver.polywrap.eth",
@@ -41,8 +52,8 @@ export const getClient = () => {
               package: ipfsPlugin({}),
             },
             {
-              uri: "wrap://ens/ethereum.polywrap.eth",
-              package: ethereumPlugin({
+              uri: "wrap://plugin/ethereum-provider",
+              package: ethereumProviderPlugin({
                 connections: new Connections({
                   networks: {
                     testnet: new Connection({
@@ -65,6 +76,7 @@ export const getClient = () => {
           ],
           new WrapperCache()
         )
+        ]
       ),
     },
     { noDefaults: true }

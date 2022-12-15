@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Deployer } from "../../../deploy";
+import { invokeWithTimeout } from "../../../helpers/invokeWithTImeout";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
@@ -8,10 +9,11 @@ import { Uri } from "@polywrap/core-js";
 import {
   Connections,
   Connection,
-  ethereumPlugin,
-} from "@polywrap/ethereum-plugin-js";
+  ethereumProviderPlugin,
+} from "ethereum-provider-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
 import { PolywrapClient } from "@polywrap/client-js";
+import { defaultWrappers } from "@polywrap/client-config-builder-js";
 
 const contentHash = require("content-hash");
 
@@ -45,7 +47,7 @@ class ENSPublisher implements Deployer {
       ? new Wallet(config.privateKey).connect(connectionProvider)
       : undefined;
 
-    const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
+    const ethereumWrapperUri = "wrap://ens/ethereum.polywrap.eth";
     const ensWrapperUri = embeddedWrappers.ens;
 
     const client = new PolywrapClient({
@@ -58,11 +60,15 @@ class ENSPublisher implements Deployer {
           from: "wrap://ens/sha3.polywrap.eth",
           to: embeddedWrappers.sha3,
         },
+        {
+          from: ethereumWrapperUri,
+          to: defaultWrappers.ethereum,
+        },
       ],
       packages: [
         {
-          uri: ethereumPluginUri,
-          package: ethereumPlugin({
+          uri: "wrap://plugin/ethereum-provider",
+          package: ethereumProviderPlugin({
             connections: new Connections({
               networks: {
                 [network]: new Connection({
@@ -73,6 +79,12 @@ class ENSPublisher implements Deployer {
               defaultNetwork: network,
             }),
           }),
+        },
+      ],
+      interfaces: [
+        {
+          interface: defaultWrappers.ethereumProviderInterface,
+          implementations: ["wrap://plugin/ethereum-provider"],
         },
       ],
     });
@@ -116,18 +128,22 @@ class ENSPublisher implements Deployer {
       throw new Error(`Could not set contentHash for '${config.domainName}'`);
     }
 
-    await client.invoke({
-      method: "awaitTransaction",
-      uri: ethereumPluginUri,
-      args: {
-        txHash: setContenthashData.value.hash,
-        confirmations: 1,
-        timeout: 15000,
-        connection: {
-          networkNameOrChainId: network,
+    const txResult = await invokeWithTimeout(
+      client,
+      {
+        method: "awaitTransaction",
+        uri: ethereumWrapperUri,
+        args: {
+          txHash: setContenthashData.value.hash,
+          connection: {
+            networkNameOrChainId: network,
+          },
         },
       },
-    });
+      15000
+    );
+
+    if (!txResult.ok) throw txResult.error;
 
     return new Uri(`ens/${network}/${config.domainName}`);
   }

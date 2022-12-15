@@ -1,13 +1,16 @@
 import { getTestEnvProviders } from "./providers";
 
 import { PolywrapClientConfig } from "@polywrap/client-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
+import {
+  defaultIpfsProviders,
+  defaultWrappers,
+} from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
-  ethereumPlugin,
+  ethereumProviderPlugin,
   Connections,
   Connection,
-} from "@polywrap/ethereum-plugin-js";
+} from "ethereum-provider-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensAddresses } from "@polywrap/test-env-js";
 
@@ -36,8 +39,8 @@ export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
     ],
     packages: [
       {
-        uri: "wrap://ens/ethereum.polywrap.eth",
-        package: ethereumPlugin({
+        uri: "wrap://plugin/ethereum-provider",
+        package: ethereumProviderPlugin({
           connections: new Connections({
             networks: {
               testnet: new Connection({
@@ -58,6 +61,18 @@ export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
             testnet: ensAddress,
           },
         }),
+      },
+    ],
+    redirects: [
+      {
+        from: "wrap://ens/ethereum.polywrap.eth",
+        to: defaultWrappers.ethereum,
+      },
+    ],
+    interfaces: [
+      {
+        interface: defaultWrappers.ethereumProviderInterface,
+        implementations: ["wrap://plugin/ethereum-provider"],
       },
     ],
   };
