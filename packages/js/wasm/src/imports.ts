@@ -2,7 +2,7 @@
 
 import { u32, WrapImports } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./buffer";
-import { State, WasmWrapper } from "./WasmWrapper";
+import { State } from "./WasmWrapper";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { CoreClient } from "@polywrap/core-js";
@@ -38,7 +38,6 @@ export const createImports = (config: {
           method: method,
           args: new Uint8Array(args),
           encodeResult: true,
-          callerId: wrapper.id
         });
 
         if (result.ok) {
