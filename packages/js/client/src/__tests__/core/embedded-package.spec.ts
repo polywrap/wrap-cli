@@ -5,8 +5,8 @@ import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { InMemoryFileReader, WasmPackage } from "@polywrap/wasm-js";
 import { IWrapPackage, Uri } from "@polywrap/core-js";
-import { PolywrapCoreClient } from "../PolywrapCoreClient";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
+import { PolywrapClient } from "../../PolywrapClient";
 
 jest.setTimeout(200000);
 
@@ -24,13 +24,13 @@ describe("Embedded package", () => {
 
     let wrapPackage = WasmPackage.from(manifestBuffer, wasmModuleBuffer);
 
-    const client = new PolywrapCoreClient({
-      resolver: UriResolver.from([
+    const client = new PolywrapClient({
+      packages: [
         {
           uri: simpleWrapperUri,
           package: wrapPackage
         }
-      ])
+      ]
     });
 
     const result = await client.invoke<string>({
@@ -135,13 +135,13 @@ describe("Embedded package", () => {
 });
 
 const testEmbeddedPackageWithFile = async (wrapPackage: IWrapPackage, filePath: string, fileText: string) => {
-  const client = new PolywrapCoreClient({
-    resolver: UriResolver.from([
+  const client = new PolywrapClient({
+    packages: [
       {
         uri: simpleWrapperUri,
         package: wrapPackage
       }
-    ])
+    ]
   });
 
   const expectedManifest = 
