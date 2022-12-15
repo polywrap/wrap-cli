@@ -3,7 +3,6 @@ import {
   PackageToWrapperCacheResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
-import { coreInterfaceUris } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
@@ -14,7 +13,7 @@ export const getClient = () => {
     {
       interfaces: [
         {
-          interface: coreInterfaceUris.uriResolver,
+          interface: ExtendableUriResolver.interfaceUri,
           implementations: ["wrap://ens/http-uri-resolver.polywrap.eth"],
         },
       ],

@@ -1,4 +1,4 @@
-import { coreInterfaceUris, Uri, PolywrapClient } from "../..";
+import { ExtendableUriResolver, Uri, PolywrapClient } from "../..";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
@@ -159,7 +159,7 @@ describe("interface-impls", () => {
   });
 
   it("should merge user-defined interface implementations with defaults", async () => {
-    const interfaceUri = coreInterfaceUris.uriResolver.uri;
+    const interfaceUri = ExtendableUriResolver.interfaceUri.uri;
     const implementationUri1 = "wrap://ens/implementation1.eth";
     const implementationUri2 = "wrap://ens/implementation2.eth";
 

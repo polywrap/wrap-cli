@@ -4,7 +4,6 @@ import {
   WrapperCache,
   StaticResolver,
 } from "@polywrap/uri-resolvers-js";
-import { coreInterfaceUris } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
@@ -16,7 +15,7 @@ export const getClient = () => {
     {
       interfaces: [
         {
-          interface: coreInterfaceUris.uriResolver,
+          interface: ExtendableUriResolver.interfaceUri,
           implementations: ["wrap://ens/fs-resolver.polywrap.eth"],
         },
       ],

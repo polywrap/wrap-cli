@@ -1,10 +1,12 @@
 import {
   Uri,
-  PolywrapClient, PolywrapCoreClientConfig
+  PolywrapClient,
+  PolywrapCoreClientConfig,
+  ExtendableUriResolver
 } from "../..";
 import fs from "fs";
 
-import { coreInterfaceUris, IUriPackage, IUriRedirect } from "@polywrap/core-js";
+import { IUriPackage, IUriRedirect } from "@polywrap/core-js";
 import { buildWrapper } from "@polywrap/test-env-js";
 import { ResultErr } from "@polywrap/result";
 import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
@@ -20,7 +22,7 @@ describe("sanity", () => {
     new Uri("wrap://ens/http-resolver.polywrap.eth"),
       expect(client.getInterfaces()).toStrictEqual([
         {
-          interface: coreInterfaceUris.uriResolver,
+          interface: ExtendableUriResolver.interfaceUri,
           implementations: [
             new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
             new Uri("wrap://ens/ens-resolver.polywrap.eth"),
