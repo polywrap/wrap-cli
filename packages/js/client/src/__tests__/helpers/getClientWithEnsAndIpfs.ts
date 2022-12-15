@@ -38,7 +38,7 @@ export const getClientWithEnsAndIpfs = () => {
       ],
       interfaces: [
         {
-          interface: ExtendableUriResolver.InterfaceUri,
+          interface: ExtendableUriResolver.interfaceUri,
           implementations: [
             "wrap://ens/ipfs-resolver.polywrap.eth",
             "wrap://ens/ens-resolver.polywrap.eth",

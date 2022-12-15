@@ -159,7 +159,7 @@ describe("interface-impls", () => {
   });
 
   it("should merge user-defined interface implementations with defaults", async () => {
-    const interfaceUri = ExtendableUriResolver.InterfaceUri.uri;
+    const interfaceUri = ExtendableUriResolver.interfaceUri.uri;
     const implementationUri1 = "wrap://ens/implementation1.eth";
     const implementationUri2 = "wrap://ens/implementation2.eth";
 

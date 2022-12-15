@@ -17,14 +17,16 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
   Error,
   Error
 > {
-  public static InterfaceUri: Uri = new Uri("wrap://ens/uri-resolver.core.polywrap.eth");
+  public static interfaceUri: Uri = new Uri(
+    "wrap://ens/uri-resolver.core.polywrap.eth"
+  );
 
   public readonly extInterfaceUri: Uri;
   private readonly _resolverName: string;
 
   constructor(
-    extInterfaceUri: Uri = ExtendableUriResolver.InterfaceUri,
-    resolverName: string = "ExtendableUriResolver"
+    extInterfaceUri: Uri = ExtendableUriResolver.interfaceUri,
+    resolverName = "ExtendableUriResolver"
   ) {
     super();
     this.extInterfaceUri = extInterfaceUri;

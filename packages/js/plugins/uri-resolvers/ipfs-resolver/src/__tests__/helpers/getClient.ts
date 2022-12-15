@@ -26,7 +26,7 @@ export const getClient = (env: Record<string, unknown>) => {
       ],
       interfaces: [
         {
-          interface: ExtendableUriResolver.InterfaceUri,
+          interface: ExtendableUriResolver.interfaceUri,
           implementations: ["wrap://ens/ipfs-resolver.polywrap.eth"],
         },
       ],

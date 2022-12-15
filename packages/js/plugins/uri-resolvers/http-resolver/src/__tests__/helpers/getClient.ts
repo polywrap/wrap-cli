@@ -13,7 +13,7 @@ export const getClient = () => {
     {
       interfaces: [
         {
-          interface: ExtendableUriResolver.InterfaceUri,
+          interface: ExtendableUriResolver.interfaceUri,
           implementations: ["wrap://ens/http-uri-resolver.polywrap.eth"],
         },
       ],
