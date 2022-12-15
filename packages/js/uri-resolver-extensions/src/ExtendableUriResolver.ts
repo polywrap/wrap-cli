@@ -4,7 +4,6 @@ import {
   Uri,
   CoreClient,
   IUriResolver,
-  coreInterfaceUris,
   IUriResolutionContext,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
@@ -18,11 +17,18 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
   Error,
   Error
 > {
-  private readonly resolverName: string;
+  public static InterfaceUri: Uri = new Uri("wrap://ens/uri-resolver.core.polywrap.eth");
 
-  constructor(resolverName?: string) {
+  public readonly extInterfaceUri: Uri;
+  private readonly _resolverName: string;
+
+  constructor(
+    extInterfaceUri: Uri = ExtendableUriResolver.InterfaceUri,
+    resolverName: string = "ExtendableUriResolver"
+  ) {
     super();
-    this.resolverName = resolverName ?? "ExtendableUriResolver";
+    this.extInterfaceUri = extInterfaceUri;
+    this._resolverName = resolverName;
   }
 
   async getUriResolvers(
@@ -31,7 +37,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     resolutionContext: IUriResolutionContext
   ): Promise<Result<IUriResolver<unknown>[], Error>> {
     const getImplementationsResult = await client.getImplementations(
-      coreInterfaceUris.uriResolver,
+      this.extInterfaceUri,
       {
         resolutionContext: resolutionContext.createSubContext(),
       }
@@ -73,5 +79,5 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     );
   }
 
-  protected getStepDescription = (): string => `${this.resolverName}`;
+  protected getStepDescription = (): string => `${this._resolverName}`;
 }

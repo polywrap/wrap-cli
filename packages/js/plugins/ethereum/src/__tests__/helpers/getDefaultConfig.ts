@@ -1,4 +1,4 @@
-import { coreInterfaceUris } from "@polywrap/core-js";
+import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ethereumPlugin, Connections } from "../..";
@@ -23,7 +23,7 @@ export const getDefaultConfig = (
     ],
     interfaces: [
       {
-        interface: coreInterfaceUris.uriResolver,
+        interface: ExtendableUriResolver.InterfaceUri,
         implementations: ["wrap://ens/fs-resolver.polywrap.eth"],
       },
     ],
