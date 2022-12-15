@@ -9,6 +9,7 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { ResultErr } from "@polywrap/result";
 import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
 import { WasmPackage } from "@polywrap/wasm-js";
+import { defaultWrappers } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 
@@ -31,6 +32,10 @@ describe("sanity", () => {
         {
           interface: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
           implementations: [new Uri("wrap://plugin/logger")],
+        },
+        {
+          interface: new Uri(defaultWrappers.concurrentInterface),
+          implementations: [new Uri("wrap://plugin/concurrent")],
         },
       ]);
   });

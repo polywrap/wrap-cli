@@ -6013,6 +6013,14 @@ concat-stream@^2.0.0:
     readable-stream "^3.0.2"
     typedarray "^0.0.6"
 
+concurrent-plugin-js@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/concurrent-plugin-js/-/concurrent-plugin-js-0.1.1.tgz#565a11f8ef57192f27f2f2cf53a2c25cc76bd9a2"
+  integrity sha512-pjOwIYBFAeTSkh0KPwuJr09eZjo/wkazovaFBA/Zg7O17j1jBm6jm34B3JcG71K4Lr/VLYlt901cu29ROsS+7Q==
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.5"
+    "@polywrap/msgpack-js" "0.10.0-pre.5"
+
 config-chain@^1.1.12:
   version "1.1.13"
   resolved "https://registry.yarnpkg.com/config-chain/-/config-chain-1.1.13.tgz#fad0795aa6a6cdaff9ed1b68e9dff94372c232f4"
