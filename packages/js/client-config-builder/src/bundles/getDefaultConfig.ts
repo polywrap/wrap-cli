@@ -90,9 +90,9 @@ export const defaultWrappers = {
   sha3: "wrap://ens/goerli/sha3.wrappers.eth",
   uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
-  ethereum: "wrap://ens/goerli/ethereum.wrappers.eth:wrap@0.10.0",
+  ethereum: "wrap://ens/goerli/ethereum.wrappers.eth:wrap", // points to :wrap@0.10.0
   ethereumProviderInterface:
-    "wrap://ens/goerli/ethereum.wrappers.eth:provider@0.10.0",
+    "wrap://ens/goerli/ethereum.wrappers.eth:iprovider", // points to :iprovider@0.10.0
 };
 
 export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
