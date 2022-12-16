@@ -4,6 +4,7 @@ import { BindLanguage } from "@polywrap/schema-bind";
 
 export const pluginManifestLanguages = {
   "plugin/typescript": "plugin/typescript",
+  "plugin/rust": "plugin/rust",
 };
 
 export type PluginManifestLanguages = typeof pluginManifestLanguages;
@@ -22,6 +23,8 @@ export function pluginManifestLanguageToBindLanguage(
   switch (manifestLanguage) {
     case "plugin/typescript":
       return "plugin-ts";
+    case "plugin/rust":
+      return "plugin-rs";
     default:
       throw Error(
         intlMsg.lib_language_unsupportedManifestLanguage({

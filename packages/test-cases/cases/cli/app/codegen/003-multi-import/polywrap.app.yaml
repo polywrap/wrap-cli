@@ -7,5 +7,3 @@ source:
   import_abis:
       - uri: "wrap://ens/ethereum.polywrap.eth"
         abi: "./../../../../../../js/plugins/ethereum/build/wrap.info"
-      - uri: "wrap://ipfs/QmVGwj3FtvhiErJ1wWbmRuHpvEQ3t1BPNESvEiMJM57p2y"
-        abi: "./../../../../../../js/plugins/logger/build/wrap.info"

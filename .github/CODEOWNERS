@@ -55,7 +55,6 @@ packages/js/plugins/ethereum     @dOrgJelli @krisbitney @namesty
 packages/js/plugins/file-system  @krisbitney @dOrgJelli @Niraj-Kamdar @cbrzn
 packages/js/plugins/http         @dOrgJelli @ramilexe @cbrzn @namesty @krisbitney
 packages/js/plugins/ipfs         @dOrgJelli @krisbitney @nerfZael
-packages/js/plugins/logger       @dOrgJelli @cbrzn @nerfZael
 packages/js/plugins/ws           @dOrgJelli @nerfZael @fetsorn
 packages/js/plugins/uri-resolvers/ens-resolver          @nerfZael @pileks @krisbitney @cbrzn @dOrgJelli
 packages/js/plugins/uri-resolvers/file-system-resolver  @pileks @dOrgJelli @nerfZael @cbrzn @krisbitney

@@ -2,7 +2,7 @@
   "name": "ws-js-plugin-integration-test",
   "description": "WS JS Plugin Integration Test",
   "private": true,
-  "version": "0.9.3",
+  "version": "0.10.0-pre.5",
   "scripts": {
     "build": "yarn build:polywrap",
     "build:polywrap": "npx polywrap build",
@@ -12,7 +12,7 @@
     "deploy:polywrap": "npx polywrap build --ipfs http://localhost:5001 --test-ens simplestorage.eth"
   },
   "dependencies": {
-    "@polywrap/wasm-as": "0.9.3",
+    "@polywrap/wasm-as": "0.10.0-pre.5",
     "assemblyscript": "0.19.23"
   }
 }

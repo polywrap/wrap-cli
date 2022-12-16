@@ -14,6 +14,7 @@ import { httpResolverPlugin } from "@polywrap/http-resolver-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
+import { concurrentPromisePlugin } from "concurrent-plugin-js";
 
 export const getDefaultConfig = (): ClientConfig<Uri> => {
   return {
@@ -45,6 +46,10 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         from: new Uri("wrap://ens/graph-node.polywrap.eth"),
         to: new Uri(defaultWrappers.graphNode),
       },
+      {
+        from: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
+        to: new Uri("wrap://plugin/logger"),
+      },
     ],
     interfaces: [
       {
@@ -54,11 +59,17 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
           new Uri("wrap://ens/ens-resolver.polywrap.eth"),
           new Uri("wrap://ens/fs-resolver.polywrap.eth"),
           new Uri("wrap://ens/http-resolver.polywrap.eth"),
+          // ens-text-record-resolver
+          new Uri("wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY"),
         ],
       },
       {
-        interface: new Uri("wrap://ens/logger.core.polywrap.eth"),
-        implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
+        interface: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
+        implementations: [new Uri("wrap://plugin/logger")],
+      },
+      {
+        interface: new Uri(defaultWrappers.concurrentInterface),
+        implementations: [new Uri("wrap://plugin/concurrent")],
       },
     ],
     packages: getDefaultPlugins(),
@@ -76,6 +87,7 @@ export const defaultWrappers = {
   sha3: "wrap://ens/goerli/sha3.wrappers.eth",
   uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
+  concurrentInterface: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
 };
 
 export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
@@ -116,7 +128,7 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
       package: httpResolverPlugin({}),
     },
     {
-      uri: new Uri("wrap://ens/js-logger.polywrap.eth"),
+      uri: new Uri("wrap://plugin/logger"),
       package: loggerPlugin({}),
     },
     {
@@ -130,6 +142,10 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
     {
       uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
       package: ipfsResolverPlugin({}),
+    },
+    {
+      uri: new Uri("wrap://plugin/concurrent"),
+      package: concurrentPromisePlugin({}),
     },
   ];
 };

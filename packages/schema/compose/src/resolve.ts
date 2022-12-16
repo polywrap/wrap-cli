@@ -572,7 +572,7 @@ function resolveInterfaces(
   implementationsWithInterfaces: ImplementationWithInterfaces[]
 ): string {
   const removeComments = (body: string) => {
-    const bodyWithoutComments = body.replace(/"""[^"]*"""\s*/g, "");
+    const bodyWithoutComments = body.replace(/"""[^]*?"""\s*/g, "");
     return bodyWithoutComments;
   };
 
@@ -595,7 +595,8 @@ function resolveInterfaces(
     `type\\s+(${TYPE_NAME_REGEX})[^{]+{([^}]*)}`,
     "g"
   );
-  const typeMatches = [...schema.matchAll(typeCapture)];
+  const sanitizedSchema = removeComments(schema);
+  const typeMatches = [...sanitizedSchema.matchAll(typeCapture)];
 
   for (const interfaceName of allInterfaces) {
     const match = typeMatches.find((x) => x[1] === interfaceName);

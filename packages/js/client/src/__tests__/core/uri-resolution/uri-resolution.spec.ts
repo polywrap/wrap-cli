@@ -2,13 +2,12 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
   Uri,
-  coreInterfaceUris,
   IUriResolutionStep,
   UriPackageOrWrapper,
   UriResolutionContext,
+  buildCleanUriHistory,
 } from "@polywrap/core-js";
 import {
-  buildCleanUriHistory,
   UriResolver,
   getUriResolutionPath,
   UriResolutionResult,
@@ -16,7 +15,7 @@ import {
 import fs from "fs";
 import { Result } from "@polywrap/result";
 import { mockPluginRegistration } from "../../helpers/mockPluginRegistration";
-import { PolywrapClient } from "../../../PolywrapClient";
+import { PolywrapClient, ExtendableUriResolver } from "../../../";
 
 jest.setTimeout(200000);
 
@@ -107,9 +106,11 @@ function replaceAll(str: string, strToReplace: string, replaceStr: string) {
 
 describe("URI resolution", () => {
   beforeAll(async () => {
-    await buildWrapper(wrapperPath);
-    await buildWrapper(simpleFsResolverWrapperPath);
-    await buildWrapper(simpleRedirectResolverWrapperPath);
+    await Promise.all([
+      buildWrapper(wrapperPath),
+      buildWrapper(simpleFsResolverWrapperPath),
+      buildWrapper(simpleRedirectResolverWrapperPath)
+    ]);
   });
 
   it("sanity", async () => {
@@ -195,8 +196,8 @@ describe("URI resolution", () => {
     const client = new PolywrapClient({
       interfaces: [
         {
-          interface: coreInterfaceUris.uriResolver.uri,
-          implementations: [simpleFsResolverWrapperUri.uri],
+          interface: ExtendableUriResolver.extensionInterfaceUri,
+          implementations: [simpleFsResolverWrapperUri],
         },
       ],
     });
@@ -262,10 +263,10 @@ describe("URI resolution", () => {
     const client = new PolywrapClient({
       interfaces: [
         {
-          interface: coreInterfaceUris.uriResolver.uri,
+          interface: ExtendableUriResolver.extInterfaceUri,
           implementations: [
-            simpleFsResolverWrapperUri.uri,
-            simpleRedirectResolverWrapperUri.uri,
+            simpleFsResolverWrapperUri,
+            simpleRedirectResolverWrapperUri,
           ],
         },
       ],
@@ -322,10 +323,10 @@ describe("URI resolution", () => {
       ],
       interfaces: [
         {
-          interface: coreInterfaceUris.uriResolver.uri,
+          interface: ExtendableUriResolver.extInterfaceUri,
           implementations: [
-            simpleFsResolverWrapperUri.uri,
-            simpleRedirectResolverWrapperUri.uri,
+            simpleFsResolverWrapperUri,
+            simpleRedirectResolverWrapperUri,
           ],
         },
       ],
@@ -401,7 +402,7 @@ describe("URI resolution", () => {
     const client = new PolywrapClient({
       interfaces: [
         {
-          interface: coreInterfaceUris.uriResolver.uri,
+          interface: ExtendableUriResolver.extInterfaceUri.uri,
           implementations: ["ens/undefined-resolver.eth"],
         },
       ],

@@ -25,12 +25,13 @@
     "clean": "npx rimraf ./**/node_modules ./**/yarn.lock ./**/build ./**/coverage ./**/.polywrap",
     "dependencies:install": "cd dependencies && yarn",
     "preinstall": "yarn dependencies:install",
-    "build": "yarn build:core && yarn build:interfaces && yarn link:schema && yarn build:plugins && yarn build:resolver:plugins && yarn build:config && yarn build:client && yarn build:test-env && yarn build:cli",
-    "build:core": "lerna run build --no-private --ignore @polywrap/*-plugin-js --ignore @polywrap/client-config-builder-js --ignore polywrap --ignore @polywrap/client-js --ignore @polywrap/react --ignore @polywrap/test-env-js --ignore @polywrap/*-interface",
+    "build": "yarn build:core && yarn build:interfaces && yarn link:schema && yarn build:plugins && yarn build:resolver:plugins && yarn build:config && yarn build:core:client && yarn build:client && yarn build:test-env && yarn build:cli",
+    "build:core": "lerna run build --no-private --ignore @polywrap/*-plugin-js --ignore @polywrap/client-config-builder-js --ignore polywrap --ignore @polywrap/core-client-js --ignore @polywrap/client-js --ignore @polywrap/react --ignore @polywrap/test-env-js --ignore @polywrap/*-interface",
     "build:interfaces": "lerna run build --scope @polywrap/*-interface",
     "build:plugins": "lerna run build --scope @polywrap/*-plugin-js --ignore @polywrap/*-resolver-plugin-js",
     "build:resolver:plugins": "lerna run build --scope @polywrap/*-resolver-plugin-js",
     "build:config": "lerna run build --scope @polywrap/client-config-builder-js",
+    "build:core:client": "lerna run build --scope @polywrap/core-client-js",
     "build:client": "lerna run build --scope @polywrap/client-js --scope @polywrap/react",
     "build:test-env": "lerna run build --scope @polywrap/test-env-js",
     "build:cli": "lerna run build --scope polywrap",
@@ -53,7 +54,8 @@
     "test:cli": "lerna run test:ci --no-private --scope polywrap --concurrency 1",
     "version:apply": "lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
     "postversion:apply": "git add . && git commit -m \"build(release): migrate to `cat ./VERSION`\"",
-    "publish:npm": "lerna exec --no-private --concurrency 1 -- yarn publish --access public --non-interactive --verbose"
+    "publish:npm": "lerna exec --no-private --concurrency 1 -- yarn publish --access public --non-interactive --verbose",
+    "publish:pre:npm": "lerna exec --no-private --concurrency 1 -- yarn publish --access public --non-interactive --verbose --tag pre"
   },
   "devDependencies": {
     "@types/prettier": "2.6.0",

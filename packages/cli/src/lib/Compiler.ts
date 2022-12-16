@@ -5,8 +5,6 @@ import {
   displayPath,
   generateWrapFile,
   intlMsg,
-  outputManifest,
-  outputMetadata,
   PolywrapProject,
   resetDir,
   SchemaComposer,
@@ -19,6 +17,7 @@ import { WasmWrapper, WrapImports } from "@polywrap/wasm-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath } from "@polywrap/os-js";
 import fs from "fs";
+import fse from "fs-extra";
 import path from "path";
 
 export interface CompilerConfig {
@@ -48,12 +47,12 @@ export class Compiler {
           await codeGenerator.generate();
         }
 
-        // Compile the Wrapper
+        // Compile & Output: wrap.wasm
         await this._buildModules();
       }
 
-      // Output Polywrap Metadata
-      await this._outputPolywrapMetadata();
+      // Copy: Resources folder
+      await this._copyResourcesFolder();
     };
 
     try {
@@ -127,26 +126,32 @@ export class Compiler {
     );
   }
 
-  private async _outputPolywrapMetadata(): Promise<void> {
+  private async _copyResourcesFolder(): Promise<void> {
     const { outputDir, project } = this._config;
 
-    const projectMetaManifest = await project.getMetaManifest();
+    const projectManifest = await project.getManifest();
 
-    if (!projectMetaManifest) {
-      return undefined;
+    if (!projectManifest || !projectManifest.resources) {
+      return Promise.resolve();
     }
 
-    const builtMetaManifest = await outputMetadata(
-      projectMetaManifest,
-      outputDir,
-      project.getManifestDir(),
-      project.logger
-    );
+    const logger = project.logger;
 
-    await outputManifest(
-      builtMetaManifest,
-      path.join(outputDir, "polywrap.meta.json"),
-      project.logger
+    const folder = projectManifest.resources;
+    const folderPath = path.resolve(projectManifest.resources);
+
+    await logActivity(
+      logger,
+      intlMsg.lib_compiler_copyResourcesFolderText({ folder }),
+      intlMsg.lib_compiler_copyResourcesFolderError({ folder }),
+      intlMsg.lib_compiler_copyResourcesFolderWarning({ folder }),
+      async () => {
+        if (!fs.existsSync(folderPath)) {
+          throw Error(`Resource can't be found.`);
+        }
+
+        await fse.copy(folderPath, outputDir, { recursive: true });
+      }
     );
   }
 
