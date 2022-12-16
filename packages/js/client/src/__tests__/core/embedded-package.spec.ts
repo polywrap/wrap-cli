@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { InMemoryFileReader, WasmPackage } from "@polywrap/wasm-js";
 import { IWrapPackage, Uri } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
