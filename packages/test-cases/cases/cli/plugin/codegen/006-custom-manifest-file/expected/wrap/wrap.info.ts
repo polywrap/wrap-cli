@@ -1578,6 +1578,46 @@ export const manifest: WrapManifest = {
           "arguments": [
             {
               "kind": 34,
+              "name": "payload",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "payload",
+                "required": true,
+                "type": "JSON"
+              },
+              "type": "JSON"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "signTypedData",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "signTypedData",
+            "scalar": {
+              "kind": 4,
+              "name": "signTypedData",
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
               "name": "method",
               "required": true,
               "scalar": {
