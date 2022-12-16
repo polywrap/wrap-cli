@@ -8,13 +8,22 @@ import * as Types from "./types";
 import { CoreClient, MaybeAsync } from "@polywrap/core-js";
 import { PluginModule } from "@polywrap/plugin-js";
 
-export interface Args_method {
-  str: Types.String;
+export interface Args_methodA {
+  arg: Types.String;
 }
 
-export abstract class Module<TConfig> extends PluginModule<TConfig, Types.Env> {
-  abstract method(
-    args: Args_method,
+export interface Args_methodB {
+  arg: Types.Bytes;
+}
+
+export abstract class Module<TConfig> extends PluginModule<TConfig> {
+  abstract methodA(
+    args: Args_methodA,
     client: CoreClient
   ): MaybeAsync<Types.String>;
+
+  abstract methodB(
+    args: Args_methodB,
+    client: CoreClient
+  ): MaybeAsync<Types.Boolean>;
 }

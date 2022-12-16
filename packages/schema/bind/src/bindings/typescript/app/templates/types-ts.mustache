@@ -88,7 +88,7 @@ export type {{#detectKeyword}}{{type}}{{/detectKeyword}} = {{type}}Enum | {{type
 {{#methods}}
 
 /* URI: "{{parent.uri}}" */
-interface {{parent.type}}_Args_{{name}} {
+export interface {{parent.type}}_Args_{{name}} {
   {{#arguments}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
