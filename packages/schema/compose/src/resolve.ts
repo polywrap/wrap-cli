@@ -5,10 +5,7 @@
 import {
   ExternalImport,
   LocalImport,
-  AbiResolvers,
   SYNTAX_REFERENCE,
-  AbiResolver,
-  SchemaResolver,
 } from "./types";
 import { parseExternalImports, parseLocalImports, parseUse } from "./parse";
 import { renderSchema } from "./render";
@@ -64,6 +61,9 @@ type ImplementationWithInterfaces = {
 };
 
 const TYPE_NAME_REGEX = `[a-zA-Z0-9_]+`;
+
+type UriStr = string;
+type SchemaPath = string;
 
 export async function resolveUseStatements(
   schema: string,
@@ -130,7 +130,8 @@ export async function resolveUseStatements(
 export async function resolveImportsAndParseSchemas(
   schema: string,
   schemaPath: string,
-  resolvers: AbiResolvers,
+  importSchemas: Map<string, string>,
+  importsAbis: Map<string, WrapAbi>,
   noValidate = false
 ): Promise<WrapAbi> {
   const importKeywordCapture = /^(?:#|""")*import\s/gm;
@@ -181,15 +182,15 @@ export async function resolveImportsAndParseSchemas(
 
   const externalImports = await resolveExternalImports(
     externalImportsToResolve,
-    resolvers.external,
+    importsAbis,
     subAbi
   );
 
   await resolveLocalImports(
     localImportsToResolve,
-    resolvers.local,
+    importSchemas,
     subAbi,
-    resolvers
+    importsAbis
   );
   const capabilitiesByModule = await resolveUseStatements(
     schema,
@@ -645,7 +646,7 @@ function resolveInterfaces(
 
 async function resolveExternalImports(
   importsToResolve: ExternalImport[],
-  resolveAbi: AbiResolver,
+  externalAbisMap: Map<UriStr, WrapAbi>,
   abi: WrapAbi
 ): Promise<string[]> {
   // Keep track of all imported object type names
@@ -655,7 +656,8 @@ async function resolveExternalImports(
     const { uri, namespace, importedTypes } = importToResolve;
 
     // Resolve the schema
-    const extAbi = await resolveAbi(uri);
+    // const extAbi = await resolveAbi(uri);
+    const extAbi = externalAbisMap.get(uri)
 
     if (!extAbi) {
       throw Error(`Unable to resolve abi at "${uri}"`);
@@ -962,15 +964,15 @@ async function resolveExternalImports(
 
 async function resolveLocalImports(
   importsToResolve: LocalImport[],
-  resolveSchema: SchemaResolver,
+  importSchemas: Map<SchemaPath, string>,
   abi: WrapAbi,
-  resolvers: AbiResolvers
+  importAbis: Map<UriStr, WrapAbi>
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {
     const { importedTypes, path } = importToResolve;
 
     // Resolve the schema
-    let schema = await resolveSchema(path);
+    let schema = importSchemas.get(path);
 
     if (!schema) {
       throw Error(`Unable to resolve schema at "${path}"`);
@@ -985,7 +987,8 @@ async function resolveLocalImports(
     const localAbi = await resolveImportsAndParseSchemas(
       schema,
       path,
-      resolvers,
+      importSchemas,
+      importAbis,
       true
     );
 
