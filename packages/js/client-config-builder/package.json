@@ -30,7 +30,8 @@
     "@polywrap/ipfs-resolver-plugin-js": "0.10.0-pre.5",
     "@polywrap/logger-plugin-js": "0.10.0",
     "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.5",
-    "@polywrap/uri-resolvers-js": "0.10.0-pre.5"
+    "@polywrap/uri-resolvers-js": "0.10.0-pre.5",
+    "concurrent-plugin-js": "0.1.1"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

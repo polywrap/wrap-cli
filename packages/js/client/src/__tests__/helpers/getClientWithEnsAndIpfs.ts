@@ -1,4 +1,4 @@
-import { coreInterfaceUris, PolywrapClient } from "../..";
+import { PolywrapClient } from "../..";
 import { ensAddresses, providers } from "@polywrap/test-env-js";
 import {
   Connection,
@@ -39,7 +39,7 @@ export const getClientWithEnsAndIpfs = () => {
       ],
       interfaces: [
         {
-          interface: coreInterfaceUris.uriResolver,
+          interface: ExtendableUriResolver.extInterfaceUri,
           implementations: [
             "wrap://ens/ipfs-resolver.polywrap.eth",
             "wrap://ens/ens-resolver.polywrap.eth",
