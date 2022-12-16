@@ -1,0 +1,3 @@
+#import { Module } into Interface from "my/import"
+
+type Module implements Interface_Module { }
