@@ -196,8 +196,8 @@ describe("URI resolution", () => {
     const client = new PolywrapClient({
       interfaces: [
         {
-          interface: ExtendableUriResolver.interfaceUri.uri,
-          implementations: [simpleFsResolverWrapperUri.uri],
+          interface: ExtendableUriResolver.extensionInterfaceUri,
+          implementations: [simpleFsResolverWrapperUri],
         },
       ],
     });
@@ -263,10 +263,10 @@ describe("URI resolution", () => {
     const client = new PolywrapClient({
       interfaces: [
         {
-          interface: ExtendableUriResolver.interfaceUri.uri,
+          interface: ExtendableUriResolver.extInterfaceUri,
           implementations: [
-            simpleFsResolverWrapperUri.uri,
-            simpleRedirectResolverWrapperUri.uri,
+            simpleFsResolverWrapperUri,
+            simpleRedirectResolverWrapperUri,
           ],
         },
       ],
@@ -323,10 +323,10 @@ describe("URI resolution", () => {
       ],
       interfaces: [
         {
-          interface: ExtendableUriResolver.interfaceUri.uri,
+          interface: ExtendableUriResolver.extInterfaceUri,
           implementations: [
-            simpleFsResolverWrapperUri.uri,
-            simpleRedirectResolverWrapperUri.uri,
+            simpleFsResolverWrapperUri,
+            simpleRedirectResolverWrapperUri,
           ],
         },
       ],
@@ -402,7 +402,7 @@ describe("URI resolution", () => {
     const client = new PolywrapClient({
       interfaces: [
         {
-          interface: ExtendableUriResolver.interfaceUri.uri,
+          interface: ExtendableUriResolver.extInterfaceUri.uri,
           implementations: ["ens/undefined-resolver.eth"],
         },
       ],
