@@ -17,8 +17,7 @@
     "test": "jest --passWithNoTests --runInBand --verbose=true --detectOpenHandles --forceExit",
     "test:ci": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit",
     "test:rust": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit --config ./jest.rs.config.js",
-    "test:watch": "jest --watch --passWithNoTests --verbose --detectOpenHandles",
-    "test:errors": "yarn test src/__tests__/core/error-structure.spec.ts"
+    "test:watch": "jest --watch --passWithNoTests --verbose --detectOpenHandles"
   },
   "dependencies": {
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.5",

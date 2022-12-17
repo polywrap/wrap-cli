@@ -24,8 +24,6 @@ export enum WrapErrorCode {
   CLIENT_VALIDATE_RESOLUTION,
   CLIENT_VALIDATE_ABI,
   CLIENT_VALIDATE_RECURSIVE,
-  CLIENT_QUERY_MALFORMED,
-  CLIENT_QUERY_FAIL,
   URI_RESOLUTION = 25,
   URI_RESOLVER,
   URI_NOT_FOUND,
@@ -308,10 +306,6 @@ export class WrapError extends Error {
         return "An error occurred while validating a WRAP URI against its ABI.";
       case WrapErrorCode.CLIENT_VALIDATE_RECURSIVE:
         return "An error occurred while recursively validating a WRAP URI.";
-      case WrapErrorCode.CLIENT_QUERY_MALFORMED:
-        return "Failed to parse GraphQL query.";
-      case WrapErrorCode.CLIENT_QUERY_FAIL:
-        return "Unknown query exception encountered.";
       case WrapErrorCode.URI_RESOLUTION:
         return "Unable to resolve URI.";
       case WrapErrorCode.URI_RESOLVER:

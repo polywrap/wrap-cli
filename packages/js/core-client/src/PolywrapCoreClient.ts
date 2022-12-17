@@ -281,7 +281,7 @@ export class PolywrapCoreClient implements CoreClient {
       const parseResult = parseQuery(uri, queryDocument, variables);
       if (!parseResult.ok) {
         const error = new WrapError(parseResult.error?.message, {
-          code: WrapErrorCode.CLIENT_QUERY_MALFORMED,
+          code: WrapErrorCode.WASM_INVOKE_FAIL,
           uri: uri.uri,
           cause: parseResult.error,
         });
@@ -332,7 +332,7 @@ export class PolywrapCoreClient implements CoreClient {
     } catch (error: unknown) {
       const unknownQueryErrorToWrapError = (e: Error): WrapError =>
         new WrapError((e as Error)?.message, {
-          code: WrapErrorCode.CLIENT_QUERY_FAIL,
+          code: WrapErrorCode.WASM_INVOKE_FAIL,
           uri: options.uri.toString(),
           cause: e as Error,
         });
