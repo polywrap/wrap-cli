@@ -64,7 +64,7 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
           new Uri("wrap://ens/fs-resolver.polywrap.eth"),
           new Uri("wrap://ens/http-resolver.polywrap.eth"),
           // ens-text-record-resolver
-          new Uri("wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY"),
+          new Uri(defaultWrappers.ensTextRecordResolver),
         ],
       },
       {
@@ -96,9 +96,11 @@ export const defaultWrappers = {
   uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
   concurrentInterface: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
-  ethereum: "wrap://ens/goerli/ethereum.wrappers.eth:wrap", // points to :wrap@0.10.0
+  ethereum: "wrap://ens/goerli/ethereum.wrappers.eth:pkg@latest",
   ethereumProviderInterface:
-    "wrap://ens/goerli/ethereum.wrappers.eth:iprovider", // points to :iprovider@0.10.0
+    "wrap://ens/goerli/ethereum.wrappers.eth:iprovider@latest",
+  ensTextRecordResolver:
+    "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
 };
 
 export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
