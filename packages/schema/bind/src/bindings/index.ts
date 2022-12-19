@@ -18,6 +18,8 @@ export function getGenerateBindingFn(
       return Rust.Wasm.generateBinding;
     case "plugin-ts":
       return TypeScript.Plugin.generateBinding;
+    case "plugin-rs":
+      return Rust.Plugin.generateBinding;
     case "app-ts":
       return TypeScript.App.generateBinding;
     default:

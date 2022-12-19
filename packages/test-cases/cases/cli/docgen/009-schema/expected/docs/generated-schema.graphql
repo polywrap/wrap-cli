@@ -255,6 +255,11 @@ type Ethereum_Module @imported(
     connection: Ethereum_Connection
   ): String!
 
+  signTypedData(
+    payload: JSON!
+    connection: Ethereum_Connection
+  ): String
+
   sendRPC(
     method: String!
     params: [String!]!

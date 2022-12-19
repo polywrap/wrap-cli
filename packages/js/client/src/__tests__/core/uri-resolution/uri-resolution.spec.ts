@@ -196,7 +196,7 @@ describe("URI resolution", () => {
     const client = new PolywrapClient({
       interfaces: [
         {
-          interface: ExtendableUriResolver.extensionInterfaceUri,
+          interface: ExtendableUriResolver.extInterfaceUri,
           implementations: [simpleFsResolverWrapperUri],
         },
       ],
