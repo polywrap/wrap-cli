@@ -1,6 +1,6 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { Uri, PolywrapClient } from "../..";
-import { buildWrapper } from "@polywrap/test-env-js";
+// import { buildWrapper } from "@polywrap/test-env-js";
 import { WrapError, WrapErrorCode } from "@polywrap/core-js";
 
 jest.setTimeout(660000);
@@ -31,11 +31,11 @@ describe("error structure", () => {
   let client: PolywrapClient;
 
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath);
-    await buildWrapper(badUtilWrapperPath);
-    await buildWrapper(badMathWrapperPath);
-    await buildWrapper(subinvokeErrorWrapperPath);
-    await buildWrapper(invalidTypesWrapperPath);
+    // await buildWrapper(simpleWrapperPath);
+    // await buildWrapper(badUtilWrapperPath);
+    // await buildWrapper(badMathWrapperPath);
+    // await buildWrapper(subinvokeErrorWrapperPath);
+    // await buildWrapper(invalidTypesWrapperPath);
 
     client = new PolywrapClient({
       redirects: [
@@ -70,7 +70,7 @@ describe("error structure", () => {
     expect(result.error?.resolutionStack).toBeTruthy();
   });
 
-  test("Invoke a wrapper with malformed arguments - as", async () => {
+  test.only("Invoke a wrapper with malformed arguments - as", async () => {
     const result = await client.invoke<string>({
       uri: simpleWrapperUri.uri,
       method: "simpleMethod",
@@ -82,8 +82,10 @@ describe("error structure", () => {
     expect(result.ok).toBeFalsy();
     if (result.ok) throw Error("should never happen");
 
+    console.log(result.error?.toString());
+
     expect(result.error?.name).toEqual("InvokeError");
-    expect(result.error?.code).toEqual(WrapErrorCode.WASM_SERIALIZATION_ERROR);
+    expect(result.error?.code).toEqual(WrapErrorCode.WASM_INVOKE_ABORTED);
     expect(result.error?.reason.startsWith("__wrap_abort:")).toBeTruthy();
     expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/simple/build")).toBeTruthy();
     expect(result.error?.method).toEqual("simpleMethod");
@@ -91,7 +93,7 @@ describe("error structure", () => {
     expect(result.error?.source).toEqual({ file: "~lib/@polywrap/wasm-as/msgpack/ReadDecoder.ts", row: 167, col: 5 });
   });
 
-  test("Invoke a wrapper with malformed arguments - rs", async () => {
+  test.only("Invoke a wrapper with malformed arguments - rs", async () => {
     const result = await client.invoke<string>({
       uri: invalidTypesWrapperUri.uri,
       method: "boolMethod",
@@ -103,8 +105,10 @@ describe("error structure", () => {
     expect(result.ok).toBeFalsy();
     if (result.ok) throw Error("should never happen");
 
+    console.log(result.error?.toString());
+
     expect(result.error?.name).toEqual("InvokeError");
-    expect(result.error?.code).toEqual(WrapErrorCode.WASM_SERIALIZATION_ERROR);
+    expect(result.error?.code).toEqual(WrapErrorCode.WASM_INVOKE_ABORTED);
     expect(result.error?.reason.startsWith("__wrap_abort:")).toBeTruthy();
     expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-rs/invalid-types/build")).toBeTruthy();
     expect(result.error?.method).toEqual("boolMethod");

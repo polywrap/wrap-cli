@@ -32,7 +32,6 @@ export enum WrapErrorCode {
   WASM_INVOKE_FAIL,
   WASM_MODULE_NOT_FOUND,
   WASM_STATE_ERROR,
-  WASM_SERIALIZATION_ERROR,
   PLUGIN_INVOKE_FAIL = 75,
   PLUGIN_METHOD_NOT_FOUND,
   PLUGIN_ARGS_MALFORMED,
@@ -322,8 +321,6 @@ export class WrapError extends Error {
         return "Wrapper does not contain a Wasm module.";
       case WrapErrorCode.WASM_STATE_ERROR:
         return "Invocation state is missing.";
-      case WrapErrorCode.WASM_SERIALIZATION_ERROR:
-        return "An exception was encountered while deserializing arguments or serializing results.";
       case WrapErrorCode.PLUGIN_METHOD_NOT_FOUND:
         return "Method not found in plugin module.";
       case WrapErrorCode.PLUGIN_ARGS_MALFORMED:

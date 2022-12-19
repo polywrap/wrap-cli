@@ -246,17 +246,7 @@ export const createImports = (config: {
         const msg = readString(memory.buffer, msgPtr, msgLen);
         const file = readString(memory.buffer, filePtr, fileLen);
 
-        let code = WrapErrorCode.WASM_INVOKE_ABORTED;
-
-        // check if error was thrown in bindings
-        if (
-          file.startsWith("~lib/@polywrap/wasm-as/msgpack/") ||
-          file.startsWith("src/wrap/")
-        ) {
-          code = WrapErrorCode.WASM_SERIALIZATION_ERROR;
-        }
-
-        abort(`__wrap_abort: ${msg}`, code, {
+        abort(`__wrap_abort: ${msg}`, WrapErrorCode.WASM_INVOKE_ABORTED, {
           file,
           row: line,
           col: column,
