@@ -179,22 +179,18 @@ jobs:
           override: true
 
       - name: Build RS crates
-        if: env.TAG_EXISTS == 'false'
         working-directory: ./packages/wasm/rs
         run: cargo build --release
 
       - name: Verify & Generate RS Documentation
-        if: env.TAG_EXISTS == 'false'
         working-directory: ./packages/wasm/rs
         run: cargo doc --no-deps
 
       - name: Upload Rust Crates To Crates.io
-        if: env.TAG_EXISTS == 'false'
         working-directory: ./packages/wasm/rs
         run: cargo publish --token ${{secrets.POLYWRAP_BUILD_BOT_CRATES_PAT}}
 
       - uses: actions/github-script@0.8.0
-        if: env.TAG_EXISTS == 'false'
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
