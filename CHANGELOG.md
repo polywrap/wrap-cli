@@ -1,5 +1,7 @@
 # Polywrap Origin (0.10.0-pre.6)
 ## Features
+* [PR-1428](https://github.com/polywrap/toolchain/pull/1428) `polywrap` CLI, `@polywrap/schema-bind`:
+  * Add bindings for `plugin/rust` projects.
 * [PR-1340](https://github.com/polywrap/toolchain/pull/1340) `@polywrap/client-js`:
   * Added a `validate(uri, options)` method to the `PolywrapClient` class, allowing users to guarantee the client can communicate with the provided wrapper located at the provided URI.
 * [PR-1437](https://github.com/polywrap/toolchain/pull/1437) `polywrap` CLI:
