@@ -90,17 +90,6 @@ export class PolywrapCoreClient implements CoreClient {
   }
 
   /**
-   * returns all plugin registrations from the configuration used to instantiate the client
-   *
-   * @returns an array of plugin registrations
-   */
-  /**
-   * returns a plugin package from the configuration used to instantiate the client
-   *
-   * @param uri - the uri used to register the plugin
-   * @returns a plugin package, or undefined if a plugin is not found at the given uri
-   */
-  /**
    * returns all interfaces from the configuration used to instantiate the client
    *
    * @returns an array of interfaces and their registered implementations
@@ -154,7 +143,6 @@ export class PolywrapCoreClient implements CoreClient {
    * returns a package's wrap manifest
    *
    * @param uri - a wrap URI
-   * @param options - { noValidate?: boolean }
    * @returns a Result containing the WrapManifest if the request was successful
    */
   @Tracer.traceMethod("PolywrapClient: getManifest")
@@ -612,7 +600,7 @@ export class PolywrapCoreClient implements CoreClient {
    * @param uri: the Uri to resolve
    * @param resolutionContext? a resolution context
    * @param options - { noValidate?: boolean }
-   * @returns A Promise with a Result containing either a wrapper if successful
+   * @returns A Promise with a Result containing a Wrapper or Error
    */
   @Tracer.traceMethod("PolywrapClient: loadWrapper", TracingLevel.High)
   public async loadWrapper(
@@ -677,6 +665,14 @@ export class PolywrapCoreClient implements CoreClient {
     }
   }
 
+  /**
+   * Validate a wrapper, given a URI.
+   * Optionally, validate the full ABI and/or recursively validate imports.
+   *
+   * @param uri: the Uri to resolve
+   * @param options - { abi?: boolean; recursive?: boolean }
+   * @returns A Promise with a Result containing a boolean or Error
+   */
   @Tracer.traceMethod("PolywrapClient: validateConfig")
   public async validate<TUri extends Uri | string>(
     uri: TUri,
