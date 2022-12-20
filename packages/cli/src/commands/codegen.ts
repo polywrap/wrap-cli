@@ -22,7 +22,7 @@ import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { Env, PolywrapClient } from "@polywrap/client-js";
 import path from "path";
 import fs from "fs";
-import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { Uri } from "@polywrap/core-js";
 
 const defaultCodegenDir = "./src/wrap";
 const defaultPublishDir = "./build";
@@ -35,8 +35,8 @@ export interface CodegenCommandOptions extends BaseCommandOptions {
   codegenDir: string;
   publishDir: string;
   script: string | false;
-  configBuilder: IClientConfigBuilder;
-  wrapperEnvs: Env[];
+  clientConfig: string | false;
+  wrapperEnvs: string | false;
 }
 
 export const codegen: Command = {
@@ -84,8 +84,8 @@ export const codegen: Command = {
       .action(async (options: Partial<CodegenCommandOptions>) => {
         await run({
           ...options,
-          configBuilder: await parseClientConfigOption(options.clientConfig),
-          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
+          clientConfig: options.clientConfig || false,
+          wrapperEnvs: options.wrapperEnvs || false,
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           script: parseCodegenScriptOption(options.script),
           manifestFile: parseManifestFileOption(
@@ -104,10 +104,10 @@ export const codegen: Command = {
 async function run(options: Required<CodegenCommandOptions>) {
   const {
     manifestFile,
+    clientConfig,
+    wrapperEnvs,
     codegenDir,
     script,
-    configBuilder,
-    wrapperEnvs,
     publishDir,
     verbose,
     quiet,
@@ -115,8 +115,11 @@ async function run(options: Required<CodegenCommandOptions>) {
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
-  if (wrapperEnvs) {
-    configBuilder.addEnvs(wrapperEnvs);
+  const envs = await parseWrapperEnvsOption(wrapperEnvs);
+  const configBuilder = await parseClientConfigOption(clientConfig);
+
+  if (envs) {
+    configBuilder.addEnvs(envs as Env<Uri>[]);
   }
 
   // Get Client

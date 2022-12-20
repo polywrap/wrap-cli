@@ -28,7 +28,7 @@ import path from "path";
 import readline from "readline";
 import { Env, PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { Uri } from "@polywrap/core-js";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
@@ -39,11 +39,11 @@ const pathStr = intlMsg.commands_build_options_o_path();
 export interface BuildCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputDir: string;
-  configBuilder: IClientConfigBuilder;
-  wrapperEnvs: Env[];
+  clientConfig: string | false;
+  wrapperEnvs: string | false;
   noCodegen: boolean;
   watch: boolean;
-  strategy: SupportedStrategies;
+  strategy: `${SupportedStrategies}`;
 }
 
 export const build: Command = {
@@ -92,8 +92,8 @@ export const build: Command = {
             options.manifestFile,
             defaultPolywrapManifest
           ),
-          configBuilder: await parseClientConfigOption(options.clientConfig),
-          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
+          clientConfig: options.clientConfig || false,
+          wrapperEnvs: options.wrapperEnvs || false,
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
           noCodegen: !options.codegen || false,
           strategy: options.strategy || defaultStrategy,
@@ -145,9 +145,9 @@ async function run(options: Required<BuildCommandOptions>) {
   const {
     watch,
     manifestFile,
-    outputDir,
-    configBuilder,
+    clientConfig,
     wrapperEnvs,
+    outputDir,
     strategy,
     noCodegen,
     verbose,
@@ -156,8 +156,11 @@ async function run(options: Required<BuildCommandOptions>) {
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
-  if (wrapperEnvs) {
-    configBuilder.addEnvs(wrapperEnvs);
+  const envs = await parseWrapperEnvsOption(wrapperEnvs);
+  const configBuilder = await parseClientConfigOption(clientConfig);
+
+  if (envs) {
+    configBuilder.addEnvs(envs as Env<Uri>[]);
   }
 
   // Get Client
