@@ -1,5 +1,11 @@
-# Polywrap Origin (0.10.0-pre.5)
+# Polywrap Origin (0.10.0-pre.6)
 ## Features
+* [PR-1428](https://github.com/polywrap/toolchain/pull/1428) `polywrap` CLI, `@polywrap/schema-bind`:
+  * Add bindings for `plugin/rust` projects.
+* [PR-1340](https://github.com/polywrap/toolchain/pull/1340) `@polywrap/client-js`:
+  * Added a `validate(uri, options)` method to the `PolywrapClient` class, allowing users to guarantee the client can communicate with the provided wrapper located at the provided URI.
+* [PR-1437](https://github.com/polywrap/toolchain/pull/1437) `polywrap` CLI:
+  * Enable users to customize the CLI's internal client's wrapper environment via a `--wrapper-envs` option, added to the `build`, `codegen`, `docgen`, and `test` commands.
 * [PR-1436](https://github.com/polywrap/toolchain/pull/1436) `@polywrap/client-config-builder-js`:
   * The default client config now uses the `wrap://ens/wrappers.polywrap.eth:logger@1.0.0` interface, and adds the `@polywrap/logger-plugin-js` package @ `wrap://plugin/logger` as an implementation.
 * [PR-1430](https://github.com/polywrap/toolchain/pull/1430) `polywrap` CLI:
@@ -38,6 +44,8 @@
   * A `-l, --log-file [path]` option has been added to all commands. Its purpose is to configure a `Log file to save console output to`, useful in situations when the console log overflows.
 
 ## Breaking Changes
+* [PR-1432](https://github.com/polywrap/toolchain/pull/1432) `polywrap` CLI:
+  * Remove the `polywrap.meta.yaml` manifest.
 * [PR-1436](https://github.com/polywrap/toolchain/pull/1436) `@polywrap/client-config-builder-js`:
   * Default client config no longer uses the `wrap://ens/logger.core.polywrap.eth` interface URI, or `wrap://ens/js-logger.polywrap.eth` plugin URI.
 * [PR-1369](https://github.com/polywrap/toolchain/pull/1369) `@polywrap/client-config-builder-js`:
@@ -91,6 +99,12 @@
   * Added a `signMessageBytes` method.
 
 ## Bugs
+* [PR-1444](https://github.com/polywrap/toolchain/pull/1444) `@polywrap/schema-bind`:
+  * The `plugin/typescript` and `app/typescript` bindings now properly export all interfaces.
+* [PR-1443](https://github.com/polywrap/toolchain/pull/1443) `@polywrap/schema-bind`:
+  * The `wasm/rust` bindings now use `String` instead of `str` within imported interface module typings.
+* [PR-1438](https://github.com/polywrap/toolchain/pull/1438) `polywrap` CLI:
+  * Properly handle map types when running workflows using the `test` command.
 * [PR-1396](https://github.com/polywrap/toolchain/pull/1396) `polywrap` CLI:
   * The rust build images have been updated to properly remove the needless inclusion of the `wasm-interface-types` custom section, as a result of running wasm-bindgen. More information can be found [here](https://github.com/polywrap/toolchain/issues/1420).
 * [PR-1336](https://github.com/polywrap/toolchain/pull/1336) `polywrap` CLI:
