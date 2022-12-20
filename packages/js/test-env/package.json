@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/test-env-js",
   "description": "Polywrap Test Helpers",
-  "version": "0.10.0-pre.5",
+  "version": "0.10.0-pre.6",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -17,8 +17,8 @@
     "copy:wrappers": "copyfiles ./src/wrappers/**/**/* ./build/wrappers/ -u 2"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.10.0-pre.5",
-    "@polywrap/polywrap-manifest-types-js": "0.10.0-pre.5",
+    "@polywrap/core-js": "0.10.0-pre.6",
+    "@polywrap/polywrap-manifest-types-js": "0.10.0-pre.6",
     "axios": "0.21.2",
     "spawn-command": "0.0.2-1",
     "yaml": "2.1.3"
