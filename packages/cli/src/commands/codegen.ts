@@ -113,7 +113,12 @@ async function run(options: CodegenCommandOptions) {
   const project = await getProjectFromManifest(manifestFile, logger);
 
   if (!project) {
-    return;
+    logger.error(
+      `${intlMsg.commands_codegen_project_load_error({
+        manifestPath: manifestFile,
+      })}`
+    );
+    process.exit(1);
   }
 
   const schemaComposer = new SchemaComposer({

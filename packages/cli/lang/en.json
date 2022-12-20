@@ -90,6 +90,7 @@
   "commands_codegen_options_o": "Output directory for custom generated types (default: 'types/')",
   "commands_codegen_options_o_path": "path",
   "commands_codegen_success": "Types were generated successfully",
+  "commands_codegen_project_load_error": "Failed to load project! Please make sure {manifestPath} is a valid Project manifest!",
   "commands_codegen_options_publish": "Output path for the built schema and manifest (default: {default})",
   "commands_docgen_description": "Generate wrapper documentation",
   "commands_docgen_success": "Docs were generated successfully",
