@@ -14,6 +14,20 @@ export function cueExists(logger: Logger): boolean {
   return stdout ? stdout.startsWith("cue version ") : false;
 }
 
+export const typesHandler = (_: unknown, value: unknown): unknown => {
+  if (value instanceof Map) {
+    return Array.from(value).reduce(
+      (obj: Record<string, unknown>, [key, value]) => {
+        obj[key] = value;
+        return obj;
+      },
+      {}
+    );
+  }
+
+  return value;
+};
+
 export function validateOutput(
   output: WorkflowOutput,
   validateScriptPath: string,
@@ -34,7 +48,7 @@ export function validateOutput(
 
   fs.writeFileSync(
     jsonOutput,
-    JSON.stringify({ data, error: error?.message }, null, 2)
+    JSON.stringify({ data, error: error?.message }, typesHandler, 2)
   );
 
   const { stderr } = runCommandSync(

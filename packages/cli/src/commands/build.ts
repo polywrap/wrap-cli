@@ -13,6 +13,7 @@ import {
   parseClientConfigOption,
   parseManifestFileOption,
   parseLogFileOption,
+  parseWrapperEnvsOption,
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen";
 import {
@@ -25,8 +26,9 @@ import {
 
 import path from "path";
 import readline from "readline";
-import { PolywrapClient } from "@polywrap/client-js";
+import { Env, PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
@@ -37,10 +39,11 @@ const pathStr = intlMsg.commands_build_options_o_path();
 export interface BuildCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputDir: string;
-  clientConfig: string | false;
+  configBuilder: IClientConfigBuilder;
+  wrapperEnvs: Env[];
   noCodegen: boolean;
   watch: boolean;
-  strategy: `${SupportedStrategies}`;
+  strategy: SupportedStrategies;
 }
 
 export const build: Command = {
@@ -65,6 +68,10 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(
+        `--wrapper-envs <${intlMsg.commands_common_options_wrapperEnvsPath()}>`,
+        `${intlMsg.commands_common_options_wrapperEnvs()}`
+      )
       .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_n()}`)
       .option(
         `-s, --strategy <${strategyStr}>`,
@@ -85,8 +92,9 @@ export const build: Command = {
             options.manifestFile,
             defaultPolywrapManifest
           ),
+          configBuilder: await parseClientConfigOption(options.clientConfig),
+          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
-          clientConfig: options.clientConfig || false,
           noCodegen: !options.codegen || false,
           strategy: options.strategy || defaultStrategy,
           watch: options.watch || false,
@@ -138,7 +146,8 @@ async function run(options: Required<BuildCommandOptions>) {
     watch,
     manifestFile,
     outputDir,
-    clientConfig,
+    configBuilder,
+    wrapperEnvs,
     strategy,
     noCodegen,
     verbose,
@@ -147,9 +156,14 @@ async function run(options: Required<BuildCommandOptions>) {
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
+  if (wrapperEnvs) {
+    configBuilder.addEnvs(wrapperEnvs);
+  }
+
   // Get Client
-  const config = await parseClientConfigOption(clientConfig);
-  const client = new PolywrapClient(config);
+  const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
+    noDefaults: true,
+  });
 
   const project = new PolywrapProject({
     rootDir: path.dirname(manifestFile),

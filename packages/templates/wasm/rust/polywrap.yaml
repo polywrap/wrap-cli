@@ -7,5 +7,4 @@ source:
   schema: ./src/schema.graphql
 extensions:
   build: ./polywrap.build.yaml
-  meta: ./polywrap.meta.yaml
   deploy: ./polywrap.deploy.yaml

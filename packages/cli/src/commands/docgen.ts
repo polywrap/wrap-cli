@@ -9,6 +9,7 @@ import {
   defaultProjectManifestFiles,
   getProjectFromManifest,
   parseLogFileOption,
+  parseWrapperEnvsOption,
 } from "../lib";
 import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
@@ -17,9 +18,10 @@ import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import { PolywrapClient } from "@polywrap/client-js";
+import { Env, PolywrapClient } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 const commandToPathMap: Record<string, string> = {
   schema: schemaScriptPath,
@@ -39,7 +41,8 @@ export enum DocgenActions {
 export interface DocgenCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   docgenDir: string;
-  clientConfig: string | false;
+  configBuilder: IClientConfigBuilder;
+  wrapperEnvs: Env[];
   imports: boolean;
 }
 
@@ -89,6 +92,10 @@ export const docgen: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(
+        `--wrapper-envs <${intlMsg.commands_common_options_wrapperEnvsPath()}>`,
+        `${intlMsg.commands_common_options_wrapperEnvs()}`
+      )
       .option(`-i, --imports`, `${intlMsg.commands_docgen_options_i()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
@@ -103,7 +110,8 @@ export const docgen: Command = {
             defaultProjectManifestFiles
           ),
           docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
-          clientConfig: options.clientConfig || false,
+          configBuilder: await parseClientConfigOption(options.clientConfig),
+          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
           imports: options.imports || false,
           verbose: options.verbose || false,
           quiet: options.quiet || false,
@@ -120,13 +128,18 @@ async function run(
   const {
     manifestFile,
     docgenDir,
-    clientConfig,
+    configBuilder,
+    wrapperEnvs,
     imports,
     verbose,
     quiet,
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
+
+  if (wrapperEnvs) {
+    configBuilder.addEnvs(wrapperEnvs);
+  }
 
   let project = await getProjectFromManifest(manifestFile, logger);
 
@@ -145,8 +158,9 @@ async function run(
   // Resolve custom script
   const customScript = require.resolve(commandToPathMap[action]);
 
-  const config = await parseClientConfigOption(clientConfig);
-  const client = new PolywrapClient(config);
+  const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
+    noDefaults: true,
+  });
 
   const schemaComposer = new SchemaComposer({
     project,

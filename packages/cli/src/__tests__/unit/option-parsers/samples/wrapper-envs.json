@@ -1,0 +1,11 @@
+{
+  "ens/hello-world.polywrap.eth": {
+    "foo": "bar"
+  },
+  "ens/ethereum.polywrap.eth": {
+    "connection": {
+      "node": "https://mainnet.infura.io/v3/some_api_key",
+      "networkNameOrChainId": "mainnet"
+    }
+  }
+}

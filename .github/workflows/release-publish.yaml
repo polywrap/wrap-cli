@@ -13,20 +13,22 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Read VERSION into env.RELEASE_VERSION
         run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
 
-      - name: Set Git Identity
+      - name: Is Pre-Release
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{github.repository}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STR="${RELEASE_VERSION}"
+          SUB='pre.'
+          if [[ "$STR" == *"$SUB"* ]]; then
+            echo PRE_RELEASE=true >> $GITHUB_ENV
+          else
+            echo PRE_RELEASE=false >> $GITHUB_ENV
+          fi
 
       - name: Check If Tag Exists
         id: tag_check
@@ -43,8 +45,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set Git Identity
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{github.repository}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Git Tag
-        if: ${{env.TAG_EXISTS}} == 'false'
+        if: env.TAG_EXISTS == 'false'
         uses: azu/action-package-version-to-git-tag@v1
         with:
           version: ${{ env.RELEASE_VERSION }}
@@ -54,7 +64,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        if: ${{env.TAG_EXISTS}} == 'false' && github.event.pull_request.merged == true
+        if: env.PRE_RELEASE == 'false' && env.TAG_EXISTS == 'false' && github.event.pull_request.merged == true
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -68,7 +78,7 @@ jobs:
           prerelease: false
 
       - uses: actions/github-script@0.8.0
-        if: ${{env.TAG_EXISTS}} == 'false'
+        if: env.TAG_EXISTS == 'false'
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -87,7 +97,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.base.ref }}
 
@@ -97,34 +107,46 @@ jobs:
       - name: Read .nvmrc into env.NVMRC
         run: echo NVMRC=$(cat .nvmrc) >> $GITHUB_ENV
 
+      - name: Is Pre-Release
+        run: |
+          STR="${RELEASE_VERSION}"
+          SUB='pre.'
+          if [[ "$STR" == *"$SUB"* ]]; then
+            echo PRE_RELEASE=true >> $GITHUB_ENV
+          else
+            echo PRE_RELEASE=false >> $GITHUB_ENV
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
           node-version: '${{env.NVMRC}}'
 
       - name: Auth into NPM
-        if: ${{env.TAG_EXISTS}} == 'false'
         run: |
           npm config set registry https://registry.npmjs.org/
           npm config set //registry.npmjs.org/:_authToken=${{secrets.POLYWRAP_BUILD_BOT_NPM_PAT}}
           echo $(npm whoami --registry https://registry.npmjs.org/)
 
       - name: Install JS dependencies
-        if: ${{env.TAG_EXISTS}} == 'false'
         run: yarn install --nonInteractive --frozen-lockfile
 
       - name: Build JS packages
-        if: ${{env.TAG_EXISTS}} == 'false'
         run: yarn build
 
-      - name: Publish Node Packages To NPM
-        if: ${{env.TAG_EXISTS}} == 'false'
+      - name: Publish Node Packages To NPM (Latest)
+        if: env.PRE_RELEASE == 'false'
         run: yarn publish:npm
         env:
           NPM_AUTH_TOKEN: ${{secrets.POLYWRAP_BUILD_BOT_NPM_PAT}}
 
+      - name: Publish Node Packages To NPM (Pre-Release)
+        if: env.PRE_RELEASE == 'true'
+        run: yarn publish:pre:npm
+        env:
+          NPM_AUTH_TOKEN: ${{secrets.POLYWRAP_BUILD_BOT_NPM_PAT}}
+
       - uses: actions/github-script@0.8.0
-        if: ${{env.TAG_EXISTS}} == 'false'
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -143,12 +165,27 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Read VERSION into env.RELEASE_VERSION
         run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
+
+      - name: Check If Tag Exists
+        id: tag_check
+        shell: bash -ex {0}
+        run: |
+          GET_API_URL="https://api.github.com/repos/${{github.repository}}/git/ref/tags/${{env.RELEASE_VERSION}}"
+          http_status_code=$(curl -LI $GET_API_URL -o /dev/null -w '%{http_code}\n' -s \
+            -H "Authorization: token ${GITHUB_TOKEN}")
+          if [ "$http_status_code" -ne "404" ] ; then
+            echo TAG_EXISTS=true >> $GITHUB_ENV
+          else
+            echo TAG_EXISTS=false >> $GITHUB_ENV
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -157,22 +194,22 @@ jobs:
           override: true
 
       - name: Build RS crates
-        if: ${{env.TAG_EXISTS}} == 'false'
+        if: env.TAG_EXISTS == 'false'
         working-directory: ./packages/wasm/rs
         run: cargo build --release
 
       - name: Verify & Generate RS Documentation
-        if: ${{env.TAG_EXISTS}} == 'false'
+        if: env.TAG_EXISTS == 'false'
         working-directory: ./packages/wasm/rs
         run: cargo doc --no-deps
 
       - name: Upload Rust Crates To Crates.io
-        if: ${{env.TAG_EXISTS}} == 'false'
+        if: env.TAG_EXISTS == 'false'
         working-directory: ./packages/wasm/rs
         run: cargo publish --token ${{secrets.POLYWRAP_BUILD_BOT_CRATES_PAT}}
 
       - uses: actions/github-script@0.8.0
-        if: ${{env.TAG_EXISTS}} == 'false'
+        if: env.TAG_EXISTS == 'false'
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |

@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/http-resolver-plugin-js",
   "description": "Polywrap HTTP Javascript Plugin",
-  "version": "0.9.3",
+  "version": "0.10.0-pre.6",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -21,13 +21,13 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.9.3",
-    "@polywrap/plugin-js": "0.9.3",
+    "@polywrap/core-js": "0.10.0-pre.6",
+    "@polywrap/plugin-js": "0.10.0-pre.6",
     "abort-controller": "3.0.0"
   },
   "devDependencies": {
-    "@polywrap/http-plugin-js": "0.9.3",
-    "@polywrap/test-env-js": "0.9.3",
+    "@polywrap/http-plugin-js": "0.10.0-pre.6",
+    "@polywrap/test-env-js": "0.10.0-pre.6",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "abort-controller": "3.0.0",

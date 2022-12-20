@@ -17,9 +17,11 @@ Options:
                                        (default: ./build)
   -c, --client-config <config-path>    Add custom configuration to the
                                        PolywrapClient
+  --wrapper-envs <envs-path>           Path to a JSON file containing wrapper
+                                       envs
   -n, --no-codegen                     Skip code generation
   -s, --strategy <vm | image | local>  Strategy to use for building the wrapper
-                                       (default: vm)
+                                       (default: "vm")
   -w, --watch                          Automatically rebuild when changes are
                                        made (default: false)
   -v, --verbose                        Verbose output (default: false)
@@ -100,9 +102,8 @@ describe("e2e tests for build command", () => {
 
       for (const file of expectedFiles) {
         if (!fs.existsSync(path.join(buildDir, file))) {
-          expect(path.join(buildDir, file)).toBe("debug")
+          fail(`Did not find expected file: ${path.join(buildDir, file)}`);
         }
-        expect(fs.existsSync(path.join(buildDir, file))).toBeTruthy();
       }
     }
   };
@@ -229,6 +230,25 @@ describe("e2e tests for build command", () => {
   })
 
   describe("Local strategy", () => {
+
+    // Local strategy runs `yarn` by default, so we need to ensure that we clean up lockfiles
+    const cleanupYarnLockfiles = async () => {
+      for (let i = 0; i < testCases.length; i++) {
+        const yarnLockfile = path.join(getTestCaseDir(0), "yarn.lock");
+        if(fs.existsSync(yarnLockfile)){
+          await fs.promises.unlink(yarnLockfile);
+        }
+      }
+    };
+
+    beforeAll(async () => {
+      await cleanupYarnLockfiles();
+    });
+
+    afterAll(async () => {
+      await cleanupYarnLockfiles();
+    });
+
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
         args: ["build", "-v", "-s", "local"],

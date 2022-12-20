@@ -15,12 +15,14 @@ import {
   defaultProjectManifestFiles,
   defaultPolywrapManifest,
   parseLogFileOption,
+  parseWrapperEnvsOption,
 } from "../lib";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import { PolywrapClient } from "@polywrap/client-js";
+import { Env, PolywrapClient } from "@polywrap/client-js";
 import path from "path";
 import fs from "fs";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 const defaultCodegenDir = "./src/wrap";
 const defaultPublishDir = "./build";
@@ -33,7 +35,8 @@ export interface CodegenCommandOptions extends BaseCommandOptions {
   codegenDir: string;
   publishDir: string;
   script: string | false;
-  clientConfig: string | false;
+  configBuilder: IClientConfigBuilder;
+  wrapperEnvs: Env[];
 }
 
 export const codegen: Command = {
@@ -68,6 +71,10 @@ export const codegen: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(
+        `--wrapper-envs <${intlMsg.commands_common_options_wrapperEnvsPath()}>`,
+        `${intlMsg.commands_common_options_wrapperEnvs()}`
+      )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .option(
@@ -76,14 +83,16 @@ export const codegen: Command = {
       )
       .action(async (options: Partial<CodegenCommandOptions>) => {
         await run({
+          ...options,
+          configBuilder: await parseClientConfigOption(options.clientConfig),
+          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
+          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
+          script: parseCodegenScriptOption(options.script),
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultProjectManifestFiles
           ),
-          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           publishDir: parseDirOption(options.publishDir, defaultPublishDir),
-          script: parseCodegenScriptOption(options.script),
-          clientConfig: options.clientConfig || false,
           verbose: options.verbose || false,
           quiet: options.quiet || false,
           logFile: parseLogFileOption(options.logFile),
@@ -97,7 +106,8 @@ async function run(options: Required<CodegenCommandOptions>) {
     manifestFile,
     codegenDir,
     script,
-    clientConfig,
+    configBuilder,
+    wrapperEnvs,
     publishDir,
     verbose,
     quiet,
@@ -105,9 +115,14 @@ async function run(options: Required<CodegenCommandOptions>) {
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
+  if (wrapperEnvs) {
+    configBuilder.addEnvs(wrapperEnvs);
+  }
+
   // Get Client
-  const config = await parseClientConfigOption(clientConfig);
-  const client = new PolywrapClient(config);
+  const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
+    noDefaults: true,
+  });
 
   const project = await getProjectFromManifest(manifestFile, logger);
 

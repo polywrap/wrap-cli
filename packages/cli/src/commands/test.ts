@@ -15,14 +15,20 @@ import {
   defaultWorkflowManifest,
   parseManifestFileOption,
   parseLogFileOption,
+  parseWrapperEnvsOption,
+  typesHandler,
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
 
 import path from "path";
 import yaml from "yaml";
 import fs from "fs";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { Env } from "@polywrap/core-js";
 
 export interface TestCommandOptions extends BaseCommandOptions {
+  configBuilder: IClientConfigBuilder;
+  wrapperEnvs: Env[];
   clientConfig: string | false;
   manifestFile: string;
   jobs: string[] | false;
@@ -50,6 +56,10 @@ export const test: Command = {
         `${intlMsg.commands_common_options_config()}`
       )
       .option(
+        `--wrapper-envs <${intlMsg.commands_common_options_wrapperEnvsPath()}>`,
+        `${intlMsg.commands_common_options_wrapperEnvs()}`
+      )
+      .option(
         `-o, --output-file <${intlMsg.commands_test_options_outputFilePath()}>`,
         `${intlMsg.commands_test_options_outputFile()}`
       )
@@ -69,7 +79,8 @@ export const test: Command = {
             options.manifestFile,
             defaultWorkflowManifest
           ),
-          clientConfig: options.clientConfig || false,
+          configBuilder: await parseClientConfigOption(options.clientConfig),
+          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile)
             : false,
@@ -86,7 +97,8 @@ export const test: Command = {
 const _run = async (options: Required<TestCommandOptions>) => {
   const {
     manifestFile,
-    clientConfig,
+    configBuilder,
+    wrapperEnvs,
     outputFile,
     jobs,
     verbose,
@@ -94,7 +106,10 @@ const _run = async (options: Required<TestCommandOptions>) => {
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
-  const config = await parseClientConfigOption(clientConfig);
+
+  if (wrapperEnvs) {
+    configBuilder.addEnvs(wrapperEnvs);
+  }
 
   const manifestPath = path.resolve(manifestFile);
   const workflow = await loadWorkflowManifest(manifestPath, logger);
@@ -127,7 +142,7 @@ const _run = async (options: Required<TestCommandOptions>) => {
     workflowOutput.push(output);
   };
 
-  const jobRunner = new JobRunner(config, onExecution);
+  const jobRunner = new JobRunner(configBuilder, onExecution);
   await jobRunner.run(workflow.jobs, jobs || Object.keys(workflow.jobs));
 
   if (outputFile) {
@@ -143,7 +158,10 @@ const _run = async (options: Required<TestCommandOptions>) => {
         fs.writeFileSync(outputFile, yaml.stringify(printableOutput, null, 2));
         break;
       case "json":
-        fs.writeFileSync(outputFile, JSON.stringify(printableOutput, null, 2));
+        fs.writeFileSync(
+          outputFile,
+          JSON.stringify(printableOutput, typesHandler, 2)
+        );
         break;
       default:
         throw new Error(

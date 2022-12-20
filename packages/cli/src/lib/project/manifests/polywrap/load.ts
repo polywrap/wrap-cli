@@ -10,11 +10,9 @@ import {
 import {
   PolywrapManifest,
   BuildManifest,
-  MetaManifest,
   DeployManifest,
   deserializePolywrapManifest,
   deserializeBuildManifest,
-  deserializeMetaManifest,
   deserializeDeployManifest,
   InfraManifest,
   deserializeInfraManifest,
@@ -42,7 +40,7 @@ export async function loadPolywrapManifest(
     }
 
     try {
-      const result = deserializePolywrapManifest(manifest);
+      const result = deserializePolywrapManifest(manifest, { logger: logger });
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
@@ -102,6 +100,7 @@ export async function loadBuildManifest(
 
     return deserializeBuildManifest(manifest, {
       extSchema: extSchema,
+      logger: logger,
     });
   };
 
@@ -137,7 +136,7 @@ export async function loadDeployManifest(
     }
 
     try {
-      let result = deserializeDeployManifest(manifest);
+      let result = deserializeDeployManifest(manifest, { logger: logger });
       result = (loadEnvironmentVariables(
         (result as unknown) as Record<string, unknown>
       ) as unknown) as DeployManifest;
@@ -196,42 +195,6 @@ export async function loadDeployManifestExt(
   );
 }
 
-export const defaultMetaManifest = ["polywrap.meta.yaml", "polywrap.meta.yml"];
-
-export async function loadMetaManifest(
-  manifestPath: string,
-  logger: Logger
-): Promise<MetaManifest> {
-  const run = (): Promise<MetaManifest> => {
-    const manifest = fs.readFileSync(manifestPath, "utf-8");
-
-    if (!manifest) {
-      const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
-        path: `${manifestPath}`,
-      });
-      throw Error(noLoadMessage);
-    }
-
-    try {
-      const result = deserializeMetaManifest(manifest);
-      return Promise.resolve(result);
-    } catch (e) {
-      return Promise.reject(e);
-    }
-  };
-
-  manifestPath = displayPath(manifestPath);
-  return await logActivity<MetaManifest>(
-    logger,
-    intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
-    intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
-    intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
-    async () => {
-      return await run();
-    }
-  );
-}
-
 export const defaultInfraManifest = [
   "polywrap.infra.yaml",
   "polywrap.infra.yml",
@@ -252,7 +215,7 @@ export async function loadInfraManifest(
     }
 
     try {
-      let result = deserializeInfraManifest(manifest);
+      let result = deserializeInfraManifest(manifest, { logger: logger });
       result = (loadEnvironmentVariables(
         (result as unknown) as Record<string, unknown>
       ) as unknown) as InfraManifest;
@@ -294,7 +257,7 @@ export async function loadWorkflowManifest(
     }
 
     try {
-      const result = deserializePolywrapWorkflow(manifest);
+      const result = deserializePolywrapWorkflow(manifest, { logger: logger });
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);

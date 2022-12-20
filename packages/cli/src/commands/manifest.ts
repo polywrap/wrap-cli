@@ -4,7 +4,6 @@ import {
   defaultBuildManifest,
   defaultDeployManifest,
   defaultInfraManifest,
-  defaultMetaManifest,
   defaultWorkflowManifest,
   getProjectManifestLanguage,
   intlMsg,
@@ -24,7 +23,6 @@ import {
   migrateBuildExtensionManifest,
   migrateDeployExtensionManifest,
   migrateInfraExtensionManifest,
-  migrateMetaExtensionManifest,
   migratePluginProjectManifest,
   migratePolywrapProjectManifest,
   migrateWorkflow,
@@ -41,8 +39,6 @@ import {
   DeployManifestSchemaFiles,
   InfraManifestFormats,
   InfraManifestSchemaFiles,
-  MetaManifestFormats,
-  MetaManifestSchemaFiles,
   PluginManifestFormats,
   PluginManifestSchemaFiles,
   PolywrapManifestFormats,
@@ -53,7 +49,6 @@ import {
   latestBuildManifestFormat,
   latestDeployManifestFormat,
   latestInfraManifestFormat,
-  latestMetaManifestFormat,
   latestPluginManifestFormat,
   latestPolywrapManifestFormat,
   latestPolywrapWorkflowFormat,
@@ -72,7 +67,6 @@ const manifestTypes = [
   "build",
   "deploy",
   "infra",
-  "meta",
   "workflow",
 ] as const;
 export type ManifestType = typeof manifestTypes[number];
@@ -194,13 +188,6 @@ export const runSchemaCommand = async (
       );
       break;
 
-    case "meta":
-      manifestfile = parseManifestFileOption(
-        options.manifestFile,
-        defaultMetaManifest
-      );
-      break;
-
     case "deploy":
       manifestfile = parseManifestFileOption(
         options.manifestFile,
@@ -300,20 +287,6 @@ export const runSchemaCommand = async (
       manifestSchemaFile = path.join(
         schemasPackageDir,
         BuildManifestSchemaFiles[manifestVersion ?? latestBuildManifestFormat]
-      );
-      break;
-
-    case "meta":
-      maybeFailOnUnsupportedManifestFormat(
-        manifestVersion,
-        Object.values(MetaManifestFormats),
-        manifestfile,
-        logger
-      );
-
-      manifestSchemaFile = path.join(
-        schemasPackageDir,
-        MetaManifestSchemaFiles[manifestVersion ?? latestMetaManifestFormat]
       );
       break;
 
@@ -428,7 +401,7 @@ const runMigrateCommand = async (
         return migrateManifestFile(
           manifestFile,
           migrateAppProjectManifest,
-          options.format || latestPolywrapManifestFormat,
+          options.format || latestAppManifestFormat,
           logger
         );
       } else if (isPluginManifestLanguage(language)) {
@@ -440,7 +413,7 @@ const runMigrateCommand = async (
         return migrateManifestFile(
           manifestFile,
           migratePluginProjectManifest,
-          options.format || latestPolywrapManifestFormat,
+          options.format || latestPluginManifestFormat,
           logger
         );
       }
@@ -459,20 +432,6 @@ const runMigrateCommand = async (
         parseManifestFileOption(options.manifestFile, defaultBuildManifest),
         migrateBuildExtensionManifest,
         options.format || latestBuildManifestFormat,
-        logger
-      );
-      break;
-
-    case "meta":
-      maybeFailOnUnsupportedTargetFormat(
-        options.format,
-        Object.values(MetaManifestFormats),
-        logger
-      );
-      migrateManifestFile(
-        parseManifestFileOption(options.manifestFile, defaultMetaManifest),
-        migrateMetaExtensionManifest,
-        options.format || latestMetaManifestFormat,
         logger
       );
       break;
@@ -523,7 +482,7 @@ const runMigrateCommand = async (
 
 function migrateManifestFile(
   manifestFile: string,
-  migrationFn: (input: string, to: string) => string,
+  migrationFn: (input: string, to: string, logger?: Logger) => string,
   to: string,
   logger: Logger
 ): void {
@@ -541,7 +500,7 @@ function migrateManifestFile(
     encoding: "utf-8",
   });
 
-  const outputManifestString = migrationFn(manifestString, to);
+  const outputManifestString = migrationFn(manifestString, to, logger);
 
   // Cache the old manifest file
   const cache = new CacheDirectory({
