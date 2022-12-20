@@ -56,7 +56,7 @@ export class PluginWrapper implements Wrapper {
 
     if (!this.module.getMethod(method)) {
       const error = new WrapError(`Plugin missing method "${method}"`, {
-        code: WrapErrorCode.PLUGIN_METHOD_NOT_FOUND,
+        code: WrapErrorCode.WRAPPER_METHOD_NOT_FOUND,
         uri: options.uri.uri,
         method,
       });
@@ -78,7 +78,7 @@ export class PluginWrapper implements Wrapper {
         const error = new WrapError(
           `Decoded MsgPack args did not result in an object.\nResult: ${result}`,
           {
-            code: WrapErrorCode.PLUGIN_ARGS_MALFORMED,
+            code: WrapErrorCode.WRAPPER_ARGS_MALFORMED,
             uri: options.uri.uri,
             method,
             args: JSON.stringify(args),
@@ -107,7 +107,7 @@ export class PluginWrapper implements Wrapper {
     } else {
       const reason = `Failed to invoke method "${method}" in module: ${this.module}`;
       const error = new WrapError(reason, {
-        code: WrapErrorCode.PLUGIN_INVOKE_FAIL,
+        code: WrapErrorCode.WRAPPER_INVOKE_FAIL,
         uri: options.uri.toString(),
         method,
         args: JSON.stringify(jsArgs, null, 2),

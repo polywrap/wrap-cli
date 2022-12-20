@@ -5,7 +5,6 @@ import { WrapError, WrapErrorCode } from "@polywrap/core-js";
 
 jest.setTimeout(660000);
 
-
 // AS
 const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 const simpleWrapperUri = new Uri(`fs/${simpleWrapperPath}/build`);
@@ -83,7 +82,7 @@ describe("error structure", () => {
     if (result.ok) throw Error("should never happen");
 
     expect(result.error?.name).toEqual("InvokeError");
-    expect(result.error?.code).toEqual(WrapErrorCode.WASM_INVOKE_ABORTED);
+    expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
     expect(result.error?.reason.startsWith("__wrap_abort:")).toBeTruthy();
     expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/simple/build")).toBeTruthy();
     expect(result.error?.method).toEqual("simpleMethod");
@@ -104,7 +103,7 @@ describe("error structure", () => {
     if (result.ok) throw Error("should never happen");
 
     expect(result.error?.name).toEqual("InvokeError");
-    expect(result.error?.code).toEqual(WrapErrorCode.WASM_INVOKE_ABORTED);
+    expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
     expect(result.error?.reason.startsWith("__wrap_abort:")).toBeTruthy();
     expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-rs/invalid-types/build")).toBeTruthy();
     expect(result.error?.method).toEqual("boolMethod");
@@ -126,7 +125,7 @@ describe("error structure", () => {
     if (result.ok) throw Error("should never happen");
 
     expect(result.error?.name).toEqual("InvokeError");
-    expect(result.error?.code).toEqual(WrapErrorCode.WASM_INVOKE_FAIL);
+    expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_FAIL);
     expect(result.error?.reason.startsWith("Could not find invoke function")).toBeTruthy();
     expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/simple/build")).toBeTruthy();
     expect(result.error?.method).toEqual("complexMethod");
@@ -149,7 +148,7 @@ describe("error structure", () => {
     if (result.ok) throw Error("should never happen");
 
     expect(result.error?.name).toEqual("InvokeError");
-    expect(result.error?.code).toEqual(WrapErrorCode.WASM_INVOKE_ABORTED);
+    expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
     expect(result.error?.reason.startsWith("SubInvocation exception encountered")).toBeTruthy();
     expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/subinvoke-error/invoke/build")).toBeTruthy();
     expect(result.error?.method).toEqual("subWrapperNotFound");
@@ -179,7 +178,7 @@ describe("error structure", () => {
     if (result.ok) throw Error("should never happen");
 
     expect(result.error?.name).toEqual("InvokeError");
-    expect(result.error?.code).toEqual(WrapErrorCode.WASM_INVOKE_ABORTED);
+    expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
     expect(result.error?.reason.startsWith("SubInvocation exception encountered")).toBeTruthy();
     expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/subinvoke-error/invoke/build")).toBeTruthy();
     expect(result.error?.method).toEqual("throwsInTwoSubinvokeLayers");
@@ -192,7 +191,7 @@ describe("error structure", () => {
     expect(result.error?.prev instanceof WrapError).toBeTruthy();
     const prev = result.error?.prev as WrapError;
     expect(prev.name).toEqual("InvokeError");
-    expect(prev.code).toEqual(WrapErrorCode.WASM_INVOKE_ABORTED);
+    expect(prev.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
     expect(prev.reason.startsWith("SubInvocation exception encountered")).toBeTruthy();
     expect(prev.uri).toEqual("wrap://ens/bad-math.eth");
     expect(prev.method).toEqual("subInvokeWillThrow");
@@ -202,7 +201,7 @@ describe("error structure", () => {
     expect(prev.prev instanceof WrapError).toBeTruthy();
     const prevOfPrev = prev.prev as WrapError;
     expect(prevOfPrev.name).toEqual("InvokeError");
-    expect(prevOfPrev.code).toEqual(WrapErrorCode.WASM_INVOKE_ABORTED);
+    expect(prevOfPrev.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
     expect(prevOfPrev.reason).toEqual("__wrap_abort: I threw an error!");
     expect(prevOfPrev.uri.endsWith("wrap://ens/bad-util.eth")).toBeTruthy();
     expect(prevOfPrev.method).toEqual("iThrow");

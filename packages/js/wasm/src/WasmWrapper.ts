@@ -4,6 +4,7 @@ import { createImports } from "./imports";
 import { IFileReader } from "./IFileReader";
 import { WRAP_MODULE_PATH } from "./constants";
 import { createWasmWrapper } from "./helpers/createWasmWrapper";
+import { parseWrapError, ErrorSource } from "./helpers/wrapErrorUtils";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
@@ -20,7 +21,6 @@ import {
   Wrapper,
   WrapError,
   WrapErrorCode,
-  WrapErrorSource,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
@@ -155,7 +155,7 @@ export class WasmWrapper implements Wrapper {
       const wasmResult = await this._getWasmModule();
       if (!wasmResult.ok) {
         const error = new WrapError(wasmResult.error, {
-          code: WrapErrorCode.WASM_MODULE_NOT_FOUND,
+          code: WrapErrorCode.WRAPPER_READ_FAIL,
           uri: options.uri.uri,
           method,
           args: JSON.stringify(args, null, 2),
@@ -183,10 +183,10 @@ export class WasmWrapper implements Wrapper {
 
       const abort = (
         message: string,
-        code: WrapErrorCode = WrapErrorCode.WASM_INVOKE_ABORTED,
-        source?: WrapErrorSource
+        code: WrapErrorCode = WrapErrorCode.WRAPPER_INVOKE_ABORTED,
+        source?: ErrorSource
       ) => {
-        const prev = WrapError.parse(message);
+        const prev = parseWrapError(message);
         const text = prev ? "SubInvocation exception encountered" : message;
         throw new WrapError(text, {
           code,
@@ -227,7 +227,7 @@ export class WasmWrapper implements Wrapper {
         };
       } else {
         const error = new WrapError(invokeResult.error, {
-          code: WrapErrorCode.WASM_INVOKE_FAIL,
+          code: WrapErrorCode.WRAPPER_INVOKE_FAIL,
           uri: options.uri.uri,
           method,
           args: JSON.stringify(args, null, 2),
