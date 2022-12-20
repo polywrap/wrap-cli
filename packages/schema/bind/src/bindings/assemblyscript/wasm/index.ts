@@ -136,12 +136,15 @@ export const generateBinding: GenerateBindingFn = (
 
   // Generate module type folders
   if (abi.moduleType) {
+    const moduleType = abi.envType
+      ? { ...abi.moduleType, hasEnv: true }
+      : abi.moduleType;
     output.entries.push({
       type: "Directory",
       name: abi.moduleType.type,
       data: renderTemplates(
         templatePath("module-type"),
-        abi.moduleType,
+        moduleType,
         subTemplates
       ),
     });

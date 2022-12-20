@@ -1,6 +1,7 @@
 import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
 import Mustache from "mustache";
 import path from "path";
+// import fs from "fs";
 
 export function renderTemplates(
   templateDirAbs: string,
@@ -25,6 +26,7 @@ export function renderTemplates(
 
           // If the file isn't empty, add it to the output
           if (data) {
+            // fs.writeFileSync(path.join("/Users/niraj/Documents/projects/polywrap/monorepo/packages/schema/bind/src/bindings/assemblyscript/wasm/templates/amodule-type", name.replace("-", ".")), data);
             output.push({
               type: "File",
               name: name.replace("-", "."),

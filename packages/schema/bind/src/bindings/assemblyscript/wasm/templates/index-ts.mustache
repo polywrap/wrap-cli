@@ -16,6 +16,9 @@ export {
 };
 {{/methods.length}}
 {{/moduleType}}
+{{#moduleType}}
+export { IModule } from "./Module";
+{{/moduleType}}
 {{#objectTypes}}
 export { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./{{type}}";
 {{/objectTypes}}
