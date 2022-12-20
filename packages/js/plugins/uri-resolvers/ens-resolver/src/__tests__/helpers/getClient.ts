@@ -10,7 +10,6 @@ import {
   PackageToWrapperCacheResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
-import { coreInterfaceUris } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
@@ -21,7 +20,7 @@ export const getClient = () => {
     {
       interfaces: [
         {
-          interface: coreInterfaceUris.uriResolver,
+          interface: ExtendableUriResolver.extInterfaceUri,
           implementations: [
             "wrap://ens/ipfs-resolver.polywrap.eth",
             "wrap://ens/ens-resolver.polywrap.eth",

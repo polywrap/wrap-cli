@@ -1,4 +1,4 @@
-import { coreInterfaceUris, Uri, PolywrapClient } from "../..";
+import { ExtendableUriResolver, Uri, PolywrapClient } from "../..";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
@@ -159,7 +159,7 @@ describe("interface-impls", () => {
   });
 
   it("should merge user-defined interface implementations with defaults", async () => {
-    const interfaceUri = coreInterfaceUris.uriResolver.uri;
+    const interfaceUri = ExtendableUriResolver.extInterfaceUri;
     const implementationUri1 = "wrap://ens/implementation1.eth";
     const implementationUri2 = "wrap://ens/implementation2.eth";
 
@@ -177,7 +177,7 @@ describe("interface-impls", () => {
     });
 
     const interfaces = (client.getInterfaces() || [])
-      .filter((x) => x.interface.uri === interfaceUri);
+      .filter((x) => x.interface.uri === interfaceUri.uri);
     expect(interfaces.length).toEqual(1);
 
     const implementationUris = interfaces[0].implementations;
@@ -187,7 +187,7 @@ describe("interface-impls", () => {
 
     expect(implementationUris).toEqual([
       ...(defaultClientConfig.interfaces || []).find(
-        (x) => x.interface.uri === interfaceUri
+        (x) => x.interface.uri === interfaceUri.uri
       )!.implementations,
       new Uri(implementationUri1),
       new Uri(implementationUri2),

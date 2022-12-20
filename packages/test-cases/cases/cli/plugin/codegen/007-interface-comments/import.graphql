@@ -1,0 +1,20 @@
+type Module {
+  """
+  Attempt to resolve a wrapper from its URI.
+    @param authority - URI authority (ex: "file")
+    @param path - URI path (ex: "/path/to/wrapper")
+  """
+  methodA(
+    arg: String!
+  ): String!
+
+  """
+  Attempt to read a file. For example:
+  {
+    path: "/path/to/wrapper/wrap.wasm"
+  }
+  """
+  methodB(
+    arg: Bytes!
+  ): Boolean!
+}
