@@ -4,18 +4,21 @@ import {
   _else,
   _while,
   _Box,
-  getwhileKey
+  getwhileKey,
+  IModule
 } from "./wrap";
 
-export function _if(args: Args__if): _else {
-  return {
-    _else: args._if._else
-  };
-}
+export class Module extends IModule {
+  _if(args: Args__if): _else {
+    return {
+      _else: args._if._else
+    };
+  }
 
-export function _for(args: Args__for): _Box {
-  const value: _while = args._in;
-  return {
-    box: getwhileKey(value)
-  };
+  _for(args: Args__for): _Box {
+    const value: _while = args._in;
+    return {
+      box: getwhileKey(value)
+    };
+  }
 }

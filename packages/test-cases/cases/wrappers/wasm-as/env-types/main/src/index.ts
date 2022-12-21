@@ -5,6 +5,7 @@ import {
   Args_methodRequireEnv,
   Args_methodOptionalEnv,
   CompoundEnv,
+  IModule,
 } from "./wrap";
 
 function createEnv(env: Env): Env {
@@ -24,23 +25,25 @@ function createEnv(env: Env): Env {
   };
 }
 
-export function methodNoEnv(args: Args_methodNoEnv): string {
-  return args.arg;
-}
+export class Module extends IModule {
+  methodNoEnv(args: Args_methodNoEnv): string {
+    return args.arg;
+  }
 
-export function methodRequireEnv(_: Args_methodRequireEnv, env: Env): Env {
-  return createEnv(env);
-}
+  methodRequireEnv(args: Args_methodRequireEnv): Env {
+    return createEnv(this.env);
+  }
 
-export function methodOptionalEnv(_: Args_methodOptionalEnv, env: Env | null): Env | null {
-  return env ? createEnv(env as Env) : null;
-}
+  methodOptionalEnv(args: Args_methodOptionalEnv): Env | null {
+    return this.env ? createEnv(this.env as Env) : null;
+  }
 
-export function subinvokeEnvMethod(_: Args_methodRequireEnv, env: Env): CompoundEnv {
-  const externalEnv = ExternalEnvApi_Module.externalEnvMethod({}).unwrap()
+  subinvokeEnvMethod(args: Args_methodRequireEnv): CompoundEnv {
+    const externalEnv = ExternalEnvApi_Module.externalEnvMethod({}).unwrap()
   
-  return {
-    local: env,
-    external: externalEnv
-  };
+    return {
+      local: this.env,
+      external: externalEnv
+    };
+  }
 }

@@ -1,6 +1,19 @@
 import * as Types from "..";
 
 import {
+  Read,
+  ReadDecoder,
+  Write,
+  WriteSizer,
+  WriteEncoder,
+  Box,
+  BigInt,
+  BigNumber,
+  JSON,
+  Context
+} from "@polywrap/wasm-as";
+
+import {
   deserializemoduleMethodArgs,
   serializemoduleMethodResult,
   deserializeobjectMethodArgs,

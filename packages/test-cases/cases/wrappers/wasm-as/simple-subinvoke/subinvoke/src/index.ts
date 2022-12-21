@@ -1,5 +1,7 @@
-import { Args_add } from "./wrap";
+import { Args_add, IModule } from "./wrap";
 
-export function add(args: Args_add): i32 {
-  return args.a + args.b 
+export class Module extends IModule {
+  add(args: Args_add): i32 {
+    return args.a + args.b;
+  }
 }
