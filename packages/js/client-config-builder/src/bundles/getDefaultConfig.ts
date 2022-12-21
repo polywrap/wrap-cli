@@ -1,6 +1,6 @@
 import { ClientConfig } from "../ClientConfig";
 
-import { IUriPackage, Uri } from "@polywrap/core-js";
+import { IUriPackage, Uri, IWrapPackage } from "@polywrap/core-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import {
@@ -14,6 +14,7 @@ import { httpResolverPlugin } from "@polywrap/http-resolver-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
+import { concurrentPromisePlugin } from "concurrent-plugin-js";
 
 export const getDefaultConfig = (): ClientConfig<Uri> => {
   return {
@@ -66,6 +67,10 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         interface: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
         implementations: [new Uri("wrap://plugin/logger")],
       },
+      {
+        interface: new Uri(defaultWrappers.concurrentInterface),
+        implementations: [new Uri("wrap://plugin/concurrent")],
+      },
     ],
     packages: getDefaultPlugins(),
     wrappers: [],
@@ -82,6 +87,7 @@ export const defaultWrappers = {
   sha3: "wrap://ens/goerli/sha3.wrappers.eth",
   uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
+  concurrentInterface: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
 };
 
 export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
@@ -123,7 +129,8 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
     },
     {
       uri: new Uri("wrap://plugin/logger"),
-      package: loggerPlugin({}),
+      // TODO: remove this once types are updated
+      package: loggerPlugin({}) as IWrapPackage,
     },
     {
       uri: new Uri("wrap://ens/fs.polywrap.eth"),
@@ -136,6 +143,10 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
     {
       uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
       package: ipfsResolverPlugin({}),
+    },
+    {
+      uri: new Uri("wrap://plugin/concurrent"),
+      package: concurrentPromisePlugin({}),
     },
   ];
 };

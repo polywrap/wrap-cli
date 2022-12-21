@@ -1,0 +1,10 @@
+format: 0.2.0
+project:
+  name: Test
+  type: plugin/typescript
+source:
+  schema: ./schema.graphql
+  module: ./src/index.ts
+  import_abis:
+    - uri: "my/import"
+      abi: ./import.graphql

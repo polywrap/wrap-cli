@@ -30,6 +30,7 @@ import {
   Args_sendTransactionAndWait,
   Args_signMessage,
   Args_signMessageBytes,
+  Args_signTypedData,
   TxResponse,
   BigInt,
   StaticTxResult,
@@ -406,6 +407,20 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     return await connection.getSigner().signMessage(args.bytes);
   }
 
+  public async signTypedData(
+    args: Args_signTypedData,
+    _client: CoreClient
+  ): Promise<string> {
+    const connection = await this._getConnection(args.connection);
+    const provider = connection.getProvider();
+    const signerAddress = await connection.getSigner().getAddress();
+    const response = await provider.send("eth_signTypedData", [
+      signerAddress,
+      JSON.parse(args.payload),
+    ]);
+    return response.toString();
+  }
+
   public async sendRPC(
     args: Args_sendRPC,
     _client: CoreClient
@@ -442,14 +457,14 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     // This behavior is a consequence of how the ens-resolver uses the Ethereum plugin, always specifying the connection network name (e.g. mainnet)
     if (
       !connection?.node &&
-      this.env.connection &&
-      this.env.connection.networkNameOrChainId ===
+      this.env?.connection &&
+      this.env?.connection.networkNameOrChainId ===
         connection?.networkNameOrChainId
     ) {
-      return this._connections.getConnection(this.env.connection);
+      return this._connections.getConnection(this.env?.connection);
     }
 
-    return this._connections.getConnection(connection || this.env.connection);
+    return this._connections.getConnection(connection || this.env?.connection);
   }
 }
 

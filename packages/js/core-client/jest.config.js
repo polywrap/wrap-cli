@@ -1,10 +1,11 @@
 module.exports = {
   collectCoverage: true,
-  preset: "ts-jest",
+  preset: 'ts-jest',
+  testEnvironment: 'node',
   testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
   globals: {
-    "ts-jest": {
-      diagnostics: false,
-    },
-  },
+    'ts-jest': {
+      diagnostics: false
+    }
+  }
 };

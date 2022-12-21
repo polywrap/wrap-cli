@@ -226,6 +226,15 @@ signMessageBytes(
 ): String!
 ```
 
+### signTypedData 
+
+```graphql
+signTypedData(
+  payload: JSON! 
+  connection: Ethereum_Connection 
+): String
+```
+
 ### solidityKeccak256 
 
 ```graphql

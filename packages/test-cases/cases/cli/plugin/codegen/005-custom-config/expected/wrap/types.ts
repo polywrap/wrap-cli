@@ -159,7 +159,7 @@ export interface Ethereum_Access {
 /// Imported Modules START ///
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_callContractView {
+export interface Ethereum_Module_Args_callContractView {
   address: Types.String;
   method: Types.String;
   args?: Array<Types.String> | null;
@@ -167,7 +167,7 @@ interface Ethereum_Module_Args_callContractView {
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_callContractStatic {
+export interface Ethereum_Module_Args_callContractStatic {
   address: Types.String;
   method: Types.String;
   args?: Array<Types.String> | null;
@@ -176,72 +176,72 @@ interface Ethereum_Module_Args_callContractStatic {
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_getBalance {
+export interface Ethereum_Module_Args_getBalance {
   address: Types.String;
   blockTag?: Types.BigInt | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_encodeParams {
+export interface Ethereum_Module_Args_encodeParams {
   types: Array<Types.String>;
   values: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_encodeFunction {
+export interface Ethereum_Module_Args_encodeFunction {
   method: Types.String;
   args?: Array<Types.String> | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_solidityPack {
+export interface Ethereum_Module_Args_solidityPack {
   types: Array<Types.String>;
   values: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_solidityKeccak256 {
+export interface Ethereum_Module_Args_solidityKeccak256 {
   types: Array<Types.String>;
   values: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_soliditySha256 {
+export interface Ethereum_Module_Args_soliditySha256 {
   types: Array<Types.String>;
   values: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_getSignerAddress {
+export interface Ethereum_Module_Args_getSignerAddress {
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_getSignerBalance {
+export interface Ethereum_Module_Args_getSignerBalance {
   blockTag?: Types.BigInt | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_getSignerTransactionCount {
+export interface Ethereum_Module_Args_getSignerTransactionCount {
   blockTag?: Types.BigInt | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_getGasPrice {
+export interface Ethereum_Module_Args_getGasPrice {
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_estimateTransactionGas {
+export interface Ethereum_Module_Args_estimateTransactionGas {
   tx: Types.Ethereum_TxRequest;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_estimateContractCallGas {
+export interface Ethereum_Module_Args_estimateContractCallGas {
   address: Types.String;
   method: Types.String;
   args?: Array<Types.String> | null;
@@ -250,22 +250,22 @@ interface Ethereum_Module_Args_estimateContractCallGas {
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_checkAddress {
+export interface Ethereum_Module_Args_checkAddress {
   address: Types.String;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_toWei {
+export interface Ethereum_Module_Args_toWei {
   eth: Types.String;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_toEth {
+export interface Ethereum_Module_Args_toEth {
   wei: Types.BigInt;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_awaitTransaction {
+export interface Ethereum_Module_Args_awaitTransaction {
   txHash: Types.String;
   confirmations: Types.UInt32;
   timeout: Types.UInt32;
@@ -273,7 +273,7 @@ interface Ethereum_Module_Args_awaitTransaction {
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_waitForEvent {
+export interface Ethereum_Module_Args_waitForEvent {
   address: Types.String;
   event: Types.String;
   args?: Array<Types.String> | null;
@@ -282,17 +282,17 @@ interface Ethereum_Module_Args_waitForEvent {
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_getNetwork {
+export interface Ethereum_Module_Args_getNetwork {
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_requestAccounts {
+export interface Ethereum_Module_Args_requestAccounts {
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_callContractMethod {
+export interface Ethereum_Module_Args_callContractMethod {
   address: Types.String;
   method: Types.String;
   args?: Array<Types.String> | null;
@@ -301,7 +301,7 @@ interface Ethereum_Module_Args_callContractMethod {
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_callContractMethodAndWait {
+export interface Ethereum_Module_Args_callContractMethodAndWait {
   address: Types.String;
   method: Types.String;
   args?: Array<Types.String> | null;
@@ -310,19 +310,19 @@ interface Ethereum_Module_Args_callContractMethodAndWait {
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_sendTransaction {
+export interface Ethereum_Module_Args_sendTransaction {
   tx: Types.Ethereum_TxRequest;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_sendTransactionAndWait {
+export interface Ethereum_Module_Args_sendTransactionAndWait {
   tx: Types.Ethereum_TxRequest;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_deployContract {
+export interface Ethereum_Module_Args_deployContract {
   abi: Types.String;
   bytecode: Types.String;
   args?: Array<Types.String> | null;
@@ -330,19 +330,25 @@ interface Ethereum_Module_Args_deployContract {
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_signMessage {
+export interface Ethereum_Module_Args_signMessage {
   message: Types.String;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_signMessageBytes {
+export interface Ethereum_Module_Args_signMessageBytes {
   bytes: Types.Bytes;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Args_sendRPC {
+export interface Ethereum_Module_Args_signTypedData {
+  payload: Types.Json;
+  connection?: Types.Ethereum_Connection | null;
+}
+
+/* URI: "ens/ethereum.polywrap.eth" */
+export interface Ethereum_Module_Args_sendRPC {
   method: Types.String;
   params: Array<Types.String>;
   connection?: Types.Ethereum_Connection | null;
@@ -654,6 +660,17 @@ export const Ethereum_Module = {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "signMessageBytes",
+      args: (args as unknown) as Record<string, unknown>,
+    });
+  },
+
+  signTypedData: async (
+    args: Ethereum_Module_Args_signTypedData,
+    client: CoreClient
+  ): Promise<InvokeResult<Types.String | null>> => {
+    return client.invoke<Types.String | null>({
+      uri: "ens/ethereum.polywrap.eth",
+      method: "signTypedData",
       args: (args as unknown) as Record<string, unknown>,
     });
   },

@@ -169,7 +169,7 @@ export type TestImport_Enum_Return = TestImport_Enum_ReturnEnum | TestImport_Enu
 /// Imported Modules START ///
 
 /* URI: "testimport.uri.eth" */
-interface TestImport_Module_Args_importedMethod {
+export interface TestImport_Module_Args_importedMethod {
   str: Types.String;
   optStr?: Types.String | null;
   u: Types.UInt;
@@ -186,12 +186,12 @@ interface TestImport_Module_Args_importedMethod {
 }
 
 /* URI: "testimport.uri.eth" */
-interface TestImport_Module_Args_anotherMethod {
+export interface TestImport_Module_Args_anotherMethod {
   arg: Array<Types.String>;
 }
 
 /* URI: "testimport.uri.eth" */
-interface TestImport_Module_Args_returnsArrayOfEnums {
+export interface TestImport_Module_Args_returnsArrayOfEnums {
   arg: Types.String;
 }
 

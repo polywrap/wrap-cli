@@ -84,5 +84,9 @@ export function toAxiosRequestConfig(
     config = { ...config, headers: Object.fromEntries(request.headers) };
   }
 
+  if (request.timeout) {
+    config.timeout = request.timeout;
+  }
+
   return config;
 }
