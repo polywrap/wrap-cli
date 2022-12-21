@@ -1,9 +1,4 @@
-import {
-  Invoker,
-  Uri,
-  InterfaceImplementations,
-  Env,
-} from ".";
+import { Invoker, Uri, InterfaceImplementations, Env } from ".";
 import { IUriResolutionContext, IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
 
@@ -35,9 +30,7 @@ export interface ValidateOptions {
   recursive?: boolean;
 }
 
-export interface CoreClient
-  extends Invoker,
-    UriResolverHandler<unknown> {
+export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
   getConfig(): CoreClientConfig<Uri>;
 
   getInterfaces(): readonly InterfaceImplementations<Uri>[] | undefined;
