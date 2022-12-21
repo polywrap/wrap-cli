@@ -1,6 +1,5 @@
 import {
   Invoker,
-  SubscriptionHandler,
   Uri,
   InterfaceImplementations,
   Env,
@@ -38,7 +37,6 @@ export interface ValidateOptions {
 
 export interface CoreClient
   extends Invoker,
-    SubscriptionHandler,
     UriResolverHandler<unknown> {
   getConfig(): CoreClientConfig<Uri>;
 

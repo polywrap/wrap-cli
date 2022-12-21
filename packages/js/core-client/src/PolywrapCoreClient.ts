@@ -10,8 +10,6 @@ import {
   InterfaceImplementations,
   InvokeOptions,
   InvokerOptions,
-  SubscribeOptions,
-  Subscription,
   Uri,
   getImplementations,
   TryResolveUriOptions,
@@ -350,117 +348,6 @@ export class PolywrapCoreClient implements CoreClient {
     } catch (error) {
       return ResultErr(error);
     }
-  }
-
-  /**
-   * Invoke a wrapper at a regular frequency (within ~16ms)
-   *
-   * @param options - {
-   *   // The Wrapper's URI
-   *   uri: TUri;
-   *
-   *   // Method to be executed.
-   *   method: string;
-   *
-   *   //Arguments for the method, structured as a map, removing the chance of incorrectly ordering arguments.
-   *    args?: Record<string, unknown> | Uint8Array;
-   *
-   *   // Env variables for the wrapper invocation.
-   *    env?: Record<string, unknown>;
-   *
-   *   resolutionContext?: IUriResolutionContext;
-   *
-   *   // if true, return value is a msgpack-encoded byte array
-   *   encodeResult?: boolean;
-   *
-   *   // the frequency at which to perform the invocation
-   *   frequency?: {
-   *     ms?: number;
-   *     sec?: number;
-   *     min?: number;
-   *     hours?: number;
-   *   }
-   * }
-   *
-   * @returns A Promise with a Result containing the return value or an error
-   */
-  @Tracer.traceMethod("PolywrapClient: subscribe")
-  public subscribe<TData = unknown, TUri extends Uri | string = string>(
-    options: SubscribeOptions<TUri>
-  ): Subscription<TData> {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const thisClient: PolywrapCoreClient = this;
-
-    const typedOptions: SubscribeOptions<Uri> = {
-      ...options,
-      uri: Uri.from(options.uri),
-    };
-    const { uri, method, args, frequency: freq } = typedOptions;
-
-    // calculate interval between invokes, in milliseconds, 1 min default value
-    /* eslint-disable prettier/prettier */
-    let frequency: number;
-    if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
-      frequency =
-        (freq.ms ?? 0) +
-        ((freq.hours ?? 0) * 3600 + (freq.min ?? 0) * 60 + (freq.sec ?? 0)) *
-          1000;
-    } else {
-      frequency = 60000;
-    }
-    /* eslint-enable  prettier/prettier */
-
-    const subscription: Subscription<TData> = {
-      frequency: frequency,
-      isActive: false,
-      stop(): void {
-        subscription.isActive = false;
-      },
-      async *[Symbol.asyncIterator](): AsyncGenerator<InvokeResult<TData>> {
-        let timeout: NodeJS.Timeout | undefined = undefined;
-        subscription.isActive = true;
-
-        try {
-          let readyVals = 0;
-          let sleep: ((value?: unknown) => void) | undefined;
-
-          timeout = setInterval(() => {
-            readyVals++;
-            if (sleep) {
-              sleep();
-              sleep = undefined;
-            }
-          }, frequency);
-
-          while (subscription.isActive) {
-            if (readyVals === 0) {
-              await new Promise((r) => (sleep = r));
-            }
-
-            for (; readyVals > 0; readyVals--) {
-              if (!subscription.isActive) {
-                break;
-              }
-
-              const result = await thisClient.invoke<TData, Uri>({
-                uri: uri,
-                method: method,
-                args: args,
-              });
-
-              yield result;
-            }
-          }
-        } finally {
-          if (timeout) {
-            clearInterval(timeout);
-          }
-          subscription.isActive = false;
-        }
-      },
-    };
-
-    return subscription;
   }
 
   /**
