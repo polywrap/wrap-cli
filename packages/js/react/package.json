@@ -42,7 +42,7 @@
     "typescript": "4.1.6"
   },
   "peerDependencies": {
-    "react": ">=16.9.x"
+    "react": "16.9.0"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {
