@@ -43,7 +43,7 @@ export const getImplementations = Tracer.traceFunc(
           if (!redirectsResult.ok) {
             const error = new WrapError("Failed to resolve redirects", {
               uri: interfaceImplementations.interface.uri,
-              code: WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS,
+              code: WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS_ERROR,
               cause: redirectsResult.error,
             });
             return ResultErr(error);
@@ -73,7 +73,7 @@ export const getImplementations = Tracer.traceFunc(
       if (!redirectsResult.ok) {
         const error = new WrapError("Failed to resolve redirects", {
           uri: wrapperInterfaceUri.uri,
-          code: WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS,
+          code: WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS_ERROR,
           cause: redirectsResult.error,
         });
         return ResultErr(error);

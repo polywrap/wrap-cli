@@ -4,7 +4,6 @@ import { createImports } from "./imports";
 import { IFileReader } from "./IFileReader";
 import { WRAP_MODULE_PATH } from "./constants";
 import { createWasmWrapper } from "./helpers/createWasmWrapper";
-import { parseWrapError, ErrorSource } from "./helpers/wrapErrorUtils";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
@@ -184,9 +183,13 @@ export class WasmWrapper implements Wrapper {
       const abort = (
         message: string,
         code: WrapErrorCode = WrapErrorCode.WRAPPER_INVOKE_ABORTED,
-        source?: ErrorSource
+        source?: {
+          file?: string;
+          row?: number;
+          col?: number;
+        }
       ) => {
-        const prev = parseWrapError(message);
+        const prev = WrapError.parse(message);
         const text = prev ? "SubInvocation exception encountered" : message;
         throw new WrapError(text, {
           code,

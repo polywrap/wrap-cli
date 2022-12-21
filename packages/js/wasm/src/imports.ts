@@ -3,7 +3,6 @@
 import { u32, WrapImports } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { State } from "./WasmWrapper";
-import { ErrorSource } from "./helpers/wrapErrorUtils";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { CoreClient, WrapErrorCode } from "@polywrap/core-js";
@@ -12,7 +11,15 @@ export const createImports = (config: {
   client: CoreClient;
   memory: WebAssembly.Memory;
   state: State;
-  abort: (message: string, code?: WrapErrorCode, source?: ErrorSource) => never;
+  abort: (
+    message: string,
+    code?: WrapErrorCode,
+    source?: {
+      file?: string;
+      row?: number;
+      col?: number;
+    }
+  ) => never;
 }): WrapImports => {
   const { memory, state, client, abort } = config;
 
@@ -54,7 +61,7 @@ export const createImports = (config: {
         if (!state.subinvoke.result) {
           abort(
             "__wrap_subinvoke_result_len: subinvoke.result is not set",
-            WrapErrorCode.WRAPPER_STATE_ERROR
+            WrapErrorCode.WRAPPER_INTERNAL_ERROR
           );
           return 0;
         }
@@ -65,7 +72,7 @@ export const createImports = (config: {
         if (!state.subinvoke.result) {
           abort(
             "__wrap_subinvoke_result: subinvoke.result is not set",
-            WrapErrorCode.WRAPPER_STATE_ERROR
+            WrapErrorCode.WRAPPER_INTERNAL_ERROR
           );
           return;
         }
@@ -76,7 +83,7 @@ export const createImports = (config: {
         if (!state.subinvoke.error) {
           abort(
             "__wrap_subinvoke_error_len: subinvoke.error is not set",
-            WrapErrorCode.WRAPPER_STATE_ERROR
+            WrapErrorCode.WRAPPER_INTERNAL_ERROR
           );
           return 0;
         }
@@ -87,7 +94,7 @@ export const createImports = (config: {
         if (!state.subinvoke.error) {
           abort(
             "__wrap_subinvoke_error: subinvoke.error is not set",
-            WrapErrorCode.WRAPPER_STATE_ERROR
+            WrapErrorCode.WRAPPER_INTERNAL_ERROR
           );
           return;
         }
@@ -131,7 +138,7 @@ export const createImports = (config: {
         if (!state.subinvokeImplementation.result) {
           abort(
             "__wrap_subinvokeImplementation_result_len: subinvokeImplementation.result is not set",
-            WrapErrorCode.WRAPPER_STATE_ERROR
+            WrapErrorCode.WRAPPER_INTERNAL_ERROR
           );
           return 0;
         }
@@ -150,7 +157,7 @@ export const createImports = (config: {
         if (!state.subinvokeImplementation.error) {
           abort(
             "__wrap_subinvokeImplementation_error_len: subinvokeImplementation.error is not set",
-            WrapErrorCode.WRAPPER_STATE_ERROR
+            WrapErrorCode.WRAPPER_INTERNAL_ERROR
           );
           return 0;
         }
@@ -160,7 +167,7 @@ export const createImports = (config: {
         if (!state.subinvokeImplementation.error) {
           abort(
             "__wrap_subinvokeImplementation_error: subinvokeImplementation.error is not set",
-            WrapErrorCode.WRAPPER_STATE_ERROR
+            WrapErrorCode.WRAPPER_INTERNAL_ERROR
           );
           return;
         }
@@ -171,14 +178,14 @@ export const createImports = (config: {
         if (!state.method) {
           abort(
             "__wrap_invoke_args: method is not set",
-            WrapErrorCode.WRAPPER_STATE_ERROR
+            WrapErrorCode.WRAPPER_INTERNAL_ERROR
           );
           return;
         }
         if (!state.args) {
           abort(
             "__wrap_invoke_args: args is not set",
-            WrapErrorCode.WRAPPER_STATE_ERROR
+            WrapErrorCode.WRAPPER_INTERNAL_ERROR
           );
           return;
         }
@@ -213,7 +220,7 @@ export const createImports = (config: {
         if (!state.getImplementationsResult) {
           abort(
             "__wrap_getImplementations_result_len: result is not set",
-            WrapErrorCode.WRAPPER_STATE_ERROR
+            WrapErrorCode.WRAPPER_INTERNAL_ERROR
           );
           return 0;
         }
@@ -223,7 +230,7 @@ export const createImports = (config: {
         if (!state.getImplementationsResult) {
           abort(
             "__wrap_getImplementations_result: result is not set",
-            WrapErrorCode.WRAPPER_STATE_ERROR
+            WrapErrorCode.WRAPPER_INTERNAL_ERROR
           );
           return;
         }

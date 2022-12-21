@@ -192,7 +192,7 @@ export class PolywrapCoreClient implements CoreClient {
     const result = await wrapper.getFile(options);
     if (!result.ok) {
       const error = new WrapError(result.error?.message, {
-        code: WrapErrorCode.CLIENT_GET_FILE,
+        code: WrapErrorCode.CLIENT_GET_FILE_ERROR,
         uri: uri.toString(),
         stack: result.error?.stack,
       });
@@ -331,7 +331,7 @@ export class PolywrapCoreClient implements CoreClient {
       };
     } catch (error: unknown) {
       const unknownQueryErrorToWrapError = (e: Error): WrapError =>
-        new WrapError((e as Error)?.message, {
+        new WrapError(e?.message ?? "client.query: no error message found", {
           code: WrapErrorCode.WRAPPER_INVOKE_FAIL,
           uri: options.uri.toString(),
           cause: e as Error,
@@ -691,7 +691,7 @@ export class PolywrapCoreClient implements CoreClient {
 
       if (!result.ok) {
         const error = new WrapError(result.error?.message, {
-          code: WrapErrorCode.CLIENT_LOAD_WRAPPER,
+          code: WrapErrorCode.CLIENT_LOAD_WRAPPER_ERROR,
           uri: uri.uri,
           cause: result.error,
         });
@@ -738,7 +738,7 @@ export class PolywrapCoreClient implements CoreClient {
     if (modulesNotFound.length) {
       const message = `The following URIs could not be resolved: ${modulesNotFound}`;
       const error = new WrapError(message, {
-        code: WrapErrorCode.CLIENT_VALIDATE_RESOLUTION,
+        code: WrapErrorCode.CLIENT_VALIDATE_RESOLUTION_FAIL,
         uri: uri.toString(),
       });
       return ResultErr(error);
@@ -769,7 +769,7 @@ export class PolywrapCoreClient implements CoreClient {
             if (!areEqual) {
               const message = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
               const error = new WrapError(message, {
-                code: WrapErrorCode.CLIENT_VALIDATE_ABI,
+                code: WrapErrorCode.CLIENT_VALIDATE_ABI_FAIL,
                 uri: uri.toString(),
               });
               return ResultErr(error);
@@ -777,7 +777,7 @@ export class PolywrapCoreClient implements CoreClient {
           } else {
             const message = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
             const error = new WrapError(message, {
-              code: WrapErrorCode.CLIENT_VALIDATE_ABI,
+              code: WrapErrorCode.CLIENT_VALIDATE_ABI_FAIL,
               uri: uri.toString(),
             });
             return ResultErr(error);
@@ -801,7 +801,7 @@ export class PolywrapCoreClient implements CoreClient {
           message += `\n${error.uri} -> ${error.reason}`;
         }
         const error = new WrapError(message, {
-          code: WrapErrorCode.CLIENT_VALIDATE_RECURSIVE,
+          code: WrapErrorCode.CLIENT_VALIDATE_RECURSIVE_FAIL,
           uri: uri.toString(),
         });
         return ResultErr(error);

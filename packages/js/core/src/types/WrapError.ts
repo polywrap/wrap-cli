@@ -16,12 +16,13 @@ Error code map:
   75-255 -> Unallocated
  */
 export enum WrapErrorCode {
-  CLIENT_LOAD_WRAPPER,
-  CLIENT_GET_FILE,
-  CLIENT_GET_IMPLEMENTATIONS,
-  CLIENT_VALIDATE_RESOLUTION,
-  CLIENT_VALIDATE_ABI,
-  CLIENT_VALIDATE_RECURSIVE,
+  UNKNOWN,
+  CLIENT_LOAD_WRAPPER_ERROR,
+  CLIENT_GET_FILE_ERROR,
+  CLIENT_GET_IMPLEMENTATIONS_ERROR,
+  CLIENT_VALIDATE_RESOLUTION_FAIL,
+  CLIENT_VALIDATE_ABI_FAIL,
+  CLIENT_VALIDATE_RECURSIVE_FAIL,
   URI_RESOLUTION = 25,
   URI_RESOLVER,
   URI_NOT_FOUND,
@@ -29,7 +30,7 @@ export enum WrapErrorCode {
   WRAPPER_SUBINVOKE_ABORTED,
   WRAPPER_INVOKE_FAIL,
   WRAPPER_READ_FAIL,
-  WRAPPER_STATE_ERROR,
+  WRAPPER_INTERNAL_ERROR,
   WRAPPER_METHOD_NOT_FOUND,
   WRAPPER_ARGS_MALFORMED,
 }
@@ -39,16 +40,24 @@ export interface WrapErrorOptions {
   uri: string;
   method?: string;
   args?: string;
-  source?: {
-    file?: string;
-    row?: number;
-    col?: number;
-  };
+  source?: ErrorSource;
   resolutionStack?: CleanResolutionStep;
   cause?: unknown;
   prev?: Error;
   stack?: string;
 }
+
+type ErrorSource = Readonly<{
+  file?: string;
+  row?: number;
+  col?: number;
+}>;
+
+type RegExpGroups<T extends string> =
+  | (RegExpExecArray & {
+      groups?: { [name in T]: string | undefined } | { [key: string]: string };
+    })
+  | null;
 
 export class WrapError extends Error {
   readonly name: string;
@@ -57,11 +66,7 @@ export class WrapError extends Error {
   readonly uri: string;
   readonly method?: string;
   readonly args?: string;
-  readonly source?: Readonly<{
-    file?: string;
-    row?: number;
-    col?: number;
-  }>;
+  readonly source?: ErrorSource;
   readonly resolutionStack?: CleanResolutionStep;
   readonly cause?: unknown;
   readonly prev?: Error;
@@ -82,8 +87,119 @@ export class WrapError extends Error {
     Object.setPrototypeOf(this, WrapError.prototype);
   }
 
+  private static re = new RegExp(
+    [
+      // [A-z]+Error can be replaced with specific error names when finalized
+      /^(?:[A-z_: ]*; )?[A-z]+Error: [\w ]+\./.source,
+      // there is some padding added to the number of words expected in an error code
+      /(?:\r\n|\r|\n)code: (?<code>1?[0-9]{1,2}|2[0-4][0-9]|25[0-5]) (?:[A-Z]+ ?){1,5}/
+        .source,
+      /(?:\r\n|\r|\n)reason: (?<reason>(?:.|\r\n|\r|\n)*)/.source,
+      /(?:\r\n|\r|\n)uri: (?<uri>wrap:\/\/[A-z0-9_-]+\/.+)/.source,
+      /(?:(?:\r\n|\r|\n)method: (?<method>([A-z_]{1}[A-z0-9_]*)))?/.source,
+      /(?:(?:\r\n|\r|\n)args: (?<args>\{(?:.|\r\n|\r|\n)+} ))?/.source,
+      /(?:(?:\r\n|\r|\n)source: \{ file: "(?<file>.+)", row: (?<row>[0-9]+), col: (?<col>[0-9]+) })?/
+        .source,
+      /(?:(?:\r\n|\r|\n)uriResolutionStack: (?<resolutionStack>\[(?:.|\r\n|\r|\n)+]))?/
+        .source,
+      /(?:(?:\r\n|\r|\n){2}This exception was caused by the following exception:(?:\r\n|\r|\n)(?<cause>(?:.|\r\n|\r|\n)+))?$/
+        .source,
+    ].join("")
+  );
+
+  static parse(error: string): WrapError | undefined {
+    const delim = "\n\nAnother exception was encountered during execution:\n";
+    const errorStrings = error.split(delim);
+
+    // case: single WrapError or not a WrapError
+    if (errorStrings.length === 1) {
+      const args = WrapError._parse(error);
+      return args ? new WrapError(args.reason, args.options) : undefined;
+    }
+
+    // case: stack of WrapErrors stringified
+    const errArgs = errorStrings.map(WrapError._parse);
+
+    // iterate through args to assign `cause` and `prev`
+    let curr: WrapError | undefined = undefined;
+    for (let i = errArgs.length - 1; i >= 0; i--) {
+      const currArgs = errArgs[i];
+      if (!currArgs) {
+        // should only happen if a user includes the delimiter in their error message
+        throw new Error("Failed to parse WrapError");
+      }
+      curr = new WrapError(currArgs.reason, {
+        ...currArgs.options,
+        prev: curr,
+      });
+    }
+    return curr;
+  }
+
   toString(): string {
     return `${this.name}: ${this.message}`;
+  }
+
+  // parse a single WrapError, where the 'prev' property is undefined
+  private static _parse(
+    error: string
+  ): { reason: string; options: WrapErrorOptions } | undefined {
+    const result: RegExpGroups<
+      | "code"
+      | "reason"
+      | "uri"
+      | "method"
+      | "args"
+      | "file"
+      | "row"
+      | "col"
+      | "resolutionStack"
+      | "cause"
+    > = WrapError.re.exec(error);
+    if (!result) {
+      return undefined;
+    }
+    const {
+      code: codeStr,
+      reason,
+      uri,
+      method,
+      args,
+      file,
+      row,
+      col,
+      resolutionStack: resolutionStackStr,
+      cause,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    } = result.groups!;
+
+    const code = parseInt(codeStr as string);
+
+    // replace parens () with brackets {}
+    const source: ErrorSource | undefined = file
+      ? {
+          file,
+          row: row ? parseInt(row) : undefined,
+          col: col ? parseInt(col) : undefined,
+        }
+      : undefined;
+
+    const resolutionStack = resolutionStackStr
+      ? JSON.parse(resolutionStackStr)
+      : undefined;
+
+    return {
+      reason: reason as string,
+      options: {
+        code,
+        uri: uri as string,
+        method,
+        args: args?.trim(),
+        source,
+        resolutionStack,
+        cause,
+      },
+    };
   }
 
   private static stringify(reason: string, options: WrapErrorOptions) {
@@ -173,17 +289,17 @@ export class WrapError extends Error {
 
   private static metaMessage(code: WrapErrorCode): string {
     switch (code) {
-      case WrapErrorCode.CLIENT_LOAD_WRAPPER:
+      case WrapErrorCode.CLIENT_LOAD_WRAPPER_ERROR:
         return "Failed to create Wrapper from WrapPackage.";
-      case WrapErrorCode.CLIENT_GET_FILE:
+      case WrapErrorCode.CLIENT_GET_FILE_ERROR:
         return "An error occurred while retrieving a file.";
-      case WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS:
+      case WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS_ERROR:
         return "An error occurred while retrieving interface implementations.";
-      case WrapErrorCode.CLIENT_VALIDATE_RESOLUTION:
+      case WrapErrorCode.CLIENT_VALIDATE_RESOLUTION_FAIL:
         return "An URI resolution error occurred while validating a WRAP URI.";
-      case WrapErrorCode.CLIENT_VALIDATE_ABI:
+      case WrapErrorCode.CLIENT_VALIDATE_ABI_FAIL:
         return "An error occurred while validating a WRAP URI against its ABI.";
-      case WrapErrorCode.CLIENT_VALIDATE_RECURSIVE:
+      case WrapErrorCode.CLIENT_VALIDATE_RECURSIVE_FAIL:
         return "An error occurred while recursively validating a WRAP URI.";
       case WrapErrorCode.URI_RESOLUTION:
         return "Unable to resolve URI.";
@@ -199,8 +315,8 @@ export class WrapError extends Error {
         return "Invocation exception encountered.";
       case WrapErrorCode.WRAPPER_READ_FAIL:
         return "Wrapper does not contain a module, or module could not be read.";
-      case WrapErrorCode.WRAPPER_STATE_ERROR:
-        return "Invocation state is missing.";
+      case WrapErrorCode.WRAPPER_INTERNAL_ERROR:
+        return "An internal error occurred.";
       case WrapErrorCode.WRAPPER_METHOD_NOT_FOUND:
         return "Method not found in wrapper module.";
       case WrapErrorCode.WRAPPER_ARGS_MALFORMED:
