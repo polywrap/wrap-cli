@@ -1,9 +1,4 @@
-import {
-  wrap_invoke_args,
-  wrap_invoke,
-  wrap_abort,
-  InvokeArgs
-} from "@polywrap/wasm-as";
+import { wrap_abort } from "@polywrap/wasm-as";
 
 import { Module } from "../index";
 

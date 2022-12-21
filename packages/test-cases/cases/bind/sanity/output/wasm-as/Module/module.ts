@@ -13,13 +13,14 @@ import {
 
 import {
   wrap_invoke_args,
-  wrap_invoke,
+  wrap_invoke_result,
+  wrap_invoke_error,
   wrap_load_env,
   InvokeArgs,
 } from "@polywrap/wasm-as";
 
 export abstract class IModule {
-  private _env: Types.Env;
+  private _env: Types.Env | undefined;
 
   abstract moduleMethod(
     args: Types.Args_moduleMethod
@@ -38,6 +39,9 @@ export abstract class IModule {
   ): Types._else;
 
   public get env(): Types.Env {
+    if (this._env === undefined) {
+      throw new Error("Environment is not set, and it is required by this module");
+    }
     return this._env;
   }
 
@@ -52,19 +56,30 @@ export abstract class IModule {
     );
 
     if (args.method == "moduleMethod") {
-      return wrap_invoke(args, env_size, this.moduleMethodWrapped);
+      const result = this.moduleMethodWrapped(args.args, env_size);
+      wrap_invoke_result(result);
+      return true;
     }
     else if (args.method == "objectMethod") {
-      return wrap_invoke(args, env_size, this.objectMethodWrapped);
+      const result = this.objectMethodWrapped(args.args, env_size);
+      wrap_invoke_result(result);
+      return true;
     }
     else if (args.method == "optionalEnvMethod") {
-      return wrap_invoke(args, env_size, this.optionalEnvMethodWrapped);
+      const result = this.optionalEnvMethodWrapped(args.args, env_size);
+      wrap_invoke_result(result);
+      return true;
     }
     else if (args.method == "if") {
-      return wrap_invoke(args, env_size, this.ifWrapped);
+      const result = this.ifWrapped(args.args, env_size);
+      wrap_invoke_result(result);
+      return true;
     }
     else {
-      return wrap_invoke(args, env_size, null);
+      wrap_invoke_error(
+        `Could not find invoke function "${args.method}"`
+      );
+      return false;
     }
   }
 

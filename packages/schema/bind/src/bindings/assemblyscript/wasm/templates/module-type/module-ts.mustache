@@ -1,5 +1,7 @@
 import * as Types from "..";
 
+{{> serialization_imports}}
+
 import {
 {{#methods}}
   deserialize{{name}}Args,
@@ -9,8 +11,8 @@ import {
 
 import {
   wrap_invoke_args,
-  __wrap_invoke_result,
-  __wrap_invoke_error,
+  wrap_invoke_result,
+  wrap_invoke_error,
   wrap_load_env,
   InvokeArgs,
 } from "@polywrap/wasm-as";
@@ -26,6 +28,9 @@ export abstract class IModule {
   {{/methods}}
   {{#hasEnv}}
   public get env(): Types.Env {
+    if (this._env === undefined) {
+      throw new Error("Environment is not set, and it is required by this module");
+    }
     return this._env;
   }
 
@@ -43,20 +48,13 @@ export abstract class IModule {
     {{#methods}}
     {{^first}}else {{/first}}if (args.method == "{{name}}") {
       const result = this.{{name}}Wrapped(args.args, env_size);
-      __wrap_invoke_result(
-        changetype<u32>(result),
-        result.byteLength
-      );
+      wrap_invoke_result(result);
       return true;
     }
     {{/methods}}
     else {
-      const message = String.UTF8.encode(
+      wrap_invoke_error(
         `Could not find invoke function "${args.method}"`
-      );
-      __wrap_invoke_error(
-        changetype<u32>(message),
-        message.byteLength
       );
       return false;
     }
