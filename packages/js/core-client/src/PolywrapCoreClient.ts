@@ -10,20 +10,16 @@ import {
   InterfaceImplementations,
   InvokeOptions,
   InvokerOptions,
-  QueryOptions,
   SubscribeOptions,
   Subscription,
   Uri,
-  createQueryDocument,
   getImplementations,
-  parseQuery,
   TryResolveUriOptions,
   IUriResolver,
   IUriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionContext,
   getEnvFromUriHistory,
-  QueryResult,
   InvokeResult,
   ValidateOptions,
   buildCleanUriHistory,
@@ -224,106 +220,6 @@ export class PolywrapCoreClient implements CoreClient {
       : (getImplResult.value as TUri[]);
 
     return ResultOk(uris);
-  }
-
-  /**
-   * Invoke a wrapper using GraphQL query syntax
-   *
-   * @remarks
-   * This method behaves similar to the invoke method and allows parallel requests,
-   * but the syntax is more verbose. If the query is successful, data will be returned
-   * and the `error` value of the returned object will be undefined. If the query fails,
-   * the data property will be undefined and the error property will be populated.
-   *
-   * @param options - {
-   *   // The Wrapper's URI
-   *   uri: TUri;
-   *
-   *   // The GraphQL query to parse and execute, leading to one or more Wrapper invocations.
-   *   query: string | QueryDocument;
-   *
-   *   // Variables referenced within the query string via GraphQL's '$variable' syntax.
-   *   variables?: TVariables;
-   * }
-   *
-   * @returns A Promise containing an object with either the data or an error
-   */
-  @Tracer.traceMethod("PolywrapClient: query", TracingLevel.High)
-  public async query<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>,
-    TUri extends Uri | string = string
-  >(options: QueryOptions<TVariables, TUri>): Promise<QueryResult<TData>> {
-    let result: QueryResult<TData>;
-
-    err: try {
-      const typedOptions: QueryOptions<TVariables, Uri> = {
-        ...options,
-        uri: Uri.from(options.uri),
-      };
-
-      const { uri, query, variables } = typedOptions;
-
-      // Convert the query string into a query document
-      const queryDocument =
-        typeof query === "string" ? createQueryDocument(query) : query;
-
-      // Parse the query to understand what's being invoked
-      const parseResult = parseQuery(uri, queryDocument, variables);
-      if (!parseResult.ok) {
-        result = { errors: [parseResult.error as Error] };
-        break err;
-      }
-      const queryInvocations = parseResult.value;
-
-      // Execute all invocations in parallel
-      const parallelInvocations: Promise<{
-        name: string;
-        result: InvokeResult<unknown>;
-      }>[] = [];
-
-      for (const invocationName of Object.keys(queryInvocations)) {
-        parallelInvocations.push(
-          this.invoke({
-            ...queryInvocations[invocationName],
-            uri: queryInvocations[invocationName].uri,
-          }).then((result) => ({
-            name: invocationName,
-            result,
-          }))
-        );
-      }
-
-      // Await the invocations
-      const invocationResults = await Promise.all(parallelInvocations);
-
-      Tracer.addEvent("invocationResults", invocationResults);
-
-      // Aggregate all invocation results
-      const data: Record<string, unknown> = {};
-      const errors: Error[] = [];
-
-      for (const invocation of invocationResults) {
-        if (invocation.result.ok) {
-          data[invocation.name] = invocation.result.value;
-        } else {
-          errors.push(invocation.result.error as Error);
-        }
-      }
-
-      result = {
-        data: data as TData,
-        errors: errors.length === 0 ? undefined : errors,
-      };
-    } catch (error: unknown) {
-      if (Array.isArray(error)) {
-        result = { errors: error };
-      } else {
-        result = { errors: [error as Error] };
-      }
-    }
-
-    return result;
   }
 
   /**
