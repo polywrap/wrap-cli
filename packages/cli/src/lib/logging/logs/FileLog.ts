@@ -12,8 +12,10 @@ export class FileLog extends Log {
     this._createWriteStream();
   }
 
-  public end(): void {
-    this._logFileStream.end();
+  public async end(): Promise<void> {
+    return new Promise((resolve) => {
+      this._logFileStream.end(resolve);
+    });
   }
 
   public log(message: string, level: LogLevel): void {
@@ -38,7 +40,7 @@ export class FileLog extends Log {
         break;
     }
 
-    this._logFileStream.write(prefix + message);
+    this._logFileStream.write(prefix + message + "\n");
   }
 
   private _createWriteStream() {
