@@ -13,13 +13,13 @@ import { PolywrapClient } from "../../PolywrapClient";
 jest.setTimeout(300000);
 
 describe("wasm-as test cases", () => {
-  // beforeAll(async () => {
-  //   await initTestEnvironment();
-  // });
+  beforeAll(async () => {
+    await initTestEnvironment();
+  });
 
-  // afterAll(async () => {
-  //   await stopTestEnvironment();
-  // });
+  afterAll(async () => {
+    await stopTestEnvironment();
+  });
 
   it("asyncify", async () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/asyncify`;
@@ -65,7 +65,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/bigint-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    // await buildWrapper(wrapperPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runBigIntTypeTest(new PolywrapClient(), wrapperUri);
   });
