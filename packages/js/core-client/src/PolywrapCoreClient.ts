@@ -10,20 +10,14 @@ import {
   InterfaceImplementations,
   InvokeOptions,
   InvokerOptions,
-  QueryOptions,
-  SubscribeOptions,
-  Subscription,
   Uri,
-  createQueryDocument,
   getImplementations,
-  parseQuery,
   TryResolveUriOptions,
   IUriResolver,
   IUriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionContext,
   getEnvFromUriHistory,
-  QueryResult,
   InvokeResult,
   ValidateOptions,
   buildCleanUriHistory,
@@ -215,106 +209,6 @@ export class PolywrapCoreClient implements CoreClient {
   }
 
   /**
-   * Invoke a wrapper using GraphQL query syntax
-   *
-   * @remarks
-   * This method behaves similar to the invoke method and allows parallel requests,
-   * but the syntax is more verbose. If the query is successful, data will be returned
-   * and the `error` value of the returned object will be undefined. If the query fails,
-   * the data property will be undefined and the error property will be populated.
-   *
-   * @param options - {
-   *   // The Wrapper's URI
-   *   uri: TUri;
-   *
-   *   // The GraphQL query to parse and execute, leading to one or more Wrapper invocations.
-   *   query: string | QueryDocument;
-   *
-   *   // Variables referenced within the query string via GraphQL's '$variable' syntax.
-   *   variables?: TVariables;
-   * }
-   *
-   * @returns A Promise containing an object with either the data or an error
-   */
-  @Tracer.traceMethod("PolywrapClient: query", TracingLevel.High)
-  public async query<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>,
-    TUri extends Uri | string = string
-  >(options: QueryOptions<TVariables, TUri>): Promise<QueryResult<TData>> {
-    let result: QueryResult<TData>;
-
-    err: try {
-      const typedOptions: QueryOptions<TVariables, Uri> = {
-        ...options,
-        uri: Uri.from(options.uri),
-      };
-
-      const { uri, query, variables } = typedOptions;
-
-      // Convert the query string into a query document
-      const queryDocument =
-        typeof query === "string" ? createQueryDocument(query) : query;
-
-      // Parse the query to understand what's being invoked
-      const parseResult = parseQuery(uri, queryDocument, variables);
-      if (!parseResult.ok) {
-        result = { errors: [parseResult.error as Error] };
-        break err;
-      }
-      const queryInvocations = parseResult.value;
-
-      // Execute all invocations in parallel
-      const parallelInvocations: Promise<{
-        name: string;
-        result: InvokeResult<unknown>;
-      }>[] = [];
-
-      for (const invocationName of Object.keys(queryInvocations)) {
-        parallelInvocations.push(
-          this.invoke({
-            ...queryInvocations[invocationName],
-            uri: queryInvocations[invocationName].uri,
-          }).then((result) => ({
-            name: invocationName,
-            result,
-          }))
-        );
-      }
-
-      // Await the invocations
-      const invocationResults = await Promise.all(parallelInvocations);
-
-      Tracer.addEvent("invocationResults", invocationResults);
-
-      // Aggregate all invocation results
-      const data: Record<string, unknown> = {};
-      const errors: Error[] = [];
-
-      for (const invocation of invocationResults) {
-        if (invocation.result.ok) {
-          data[invocation.name] = invocation.result.value;
-        } else {
-          errors.push(invocation.result.error as Error);
-        }
-      }
-
-      result = {
-        data: data as TData,
-        errors: errors.length === 0 ? undefined : errors,
-      };
-    } catch (error: unknown) {
-      if (Array.isArray(error)) {
-        result = { errors: error };
-      } else {
-        result = { errors: [error as Error] };
-      }
-    }
-
-    return result;
-  }
-
-  /**
    * Invoke a wrapper using standard syntax and an instance of the wrapper
    *
    * @param options - {
@@ -442,117 +336,6 @@ export class PolywrapCoreClient implements CoreClient {
     } catch (error) {
       return ResultErr(error);
     }
-  }
-
-  /**
-   * Invoke a wrapper at a regular frequency (within ~16ms)
-   *
-   * @param options - {
-   *   // The Wrapper's URI
-   *   uri: TUri;
-   *
-   *   // Method to be executed.
-   *   method: string;
-   *
-   *   //Arguments for the method, structured as a map, removing the chance of incorrectly ordering arguments.
-   *    args?: Record<string, unknown> | Uint8Array;
-   *
-   *   // Env variables for the wrapper invocation.
-   *    env?: Record<string, unknown>;
-   *
-   *   resolutionContext?: IUriResolutionContext;
-   *
-   *   // if true, return value is a msgpack-encoded byte array
-   *   encodeResult?: boolean;
-   *
-   *   // the frequency at which to perform the invocation
-   *   frequency?: {
-   *     ms?: number;
-   *     sec?: number;
-   *     min?: number;
-   *     hours?: number;
-   *   }
-   * }
-   *
-   * @returns A Promise with a Result containing the return value or an error
-   */
-  @Tracer.traceMethod("PolywrapClient: subscribe")
-  public subscribe<TData = unknown, TUri extends Uri | string = string>(
-    options: SubscribeOptions<TUri>
-  ): Subscription<TData> {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const thisClient: PolywrapCoreClient = this;
-
-    const typedOptions: SubscribeOptions<Uri> = {
-      ...options,
-      uri: Uri.from(options.uri),
-    };
-    const { uri, method, args, frequency: freq } = typedOptions;
-
-    // calculate interval between invokes, in milliseconds, 1 min default value
-    /* eslint-disable prettier/prettier */
-    let frequency: number;
-    if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
-      frequency =
-        (freq.ms ?? 0) +
-        ((freq.hours ?? 0) * 3600 + (freq.min ?? 0) * 60 + (freq.sec ?? 0)) *
-          1000;
-    } else {
-      frequency = 60000;
-    }
-    /* eslint-enable  prettier/prettier */
-
-    const subscription: Subscription<TData> = {
-      frequency: frequency,
-      isActive: false,
-      stop(): void {
-        subscription.isActive = false;
-      },
-      async *[Symbol.asyncIterator](): AsyncGenerator<InvokeResult<TData>> {
-        let timeout: NodeJS.Timeout | undefined = undefined;
-        subscription.isActive = true;
-
-        try {
-          let readyVals = 0;
-          let sleep: ((value?: unknown) => void) | undefined;
-
-          timeout = setInterval(() => {
-            readyVals++;
-            if (sleep) {
-              sleep();
-              sleep = undefined;
-            }
-          }, frequency);
-
-          while (subscription.isActive) {
-            if (readyVals === 0) {
-              await new Promise((r) => (sleep = r));
-            }
-
-            for (; readyVals > 0; readyVals--) {
-              if (!subscription.isActive) {
-                break;
-              }
-
-              const result = await thisClient.invoke<TData, Uri>({
-                uri: uri,
-                method: method,
-                args: args,
-              });
-
-              yield result;
-            }
-          }
-        } finally {
-          if (timeout) {
-            clearInterval(timeout);
-          }
-          subscription.isActive = false;
-        }
-      },
-    };
-
-    return subscription;
   }
 
   /**
