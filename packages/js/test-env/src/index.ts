@@ -215,6 +215,8 @@ export async function buildWrapper(
   } = await runCLI({
     args: [
       "build",
+      "-s",
+      "image",
       "--manifest-file",
       manifestPath,
       "--output-dir",
