@@ -1,9 +1,11 @@
-import { Args_deployContract, Args_method, Mock_Module } from "./wrap";
+import { Args_deployContract, Args_method, Mock_Module, IModule } from "./wrap";
 
-export function method(args: Args_method): string {
-  return args.arg;
-}
+export class Module extends IModule {
+  method(args: Args_method): string {
+    return args.arg;
+  }
 
-export function deployContract(_: Args_deployContract): string {
-  return Mock_Module.deployContract({}).unwrap();
+  deployContract(_: Args_deployContract): string {
+    return Mock_Module.deployContract({}).unwrap();
+  }
 }

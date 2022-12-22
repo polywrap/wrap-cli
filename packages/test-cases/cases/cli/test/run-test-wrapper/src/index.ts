@@ -4,21 +4,24 @@ import {
   Args_addFromEnv,
   Args_returnMap,
   Num,
-  Env
+  Env,
+  IModule,
 } from "./wrap";
 
-export function add(args: Args_add): i32 {
-  return args.x + args.y;
-}
+export class Module extends IModule {
+  add(args: Args_add): i32 {
+    return args.x + args.y;
+  }
 
-export function addInBox(args: Args_addInBox): Num {
-  return { value: args.x + args.y };
-}
+  addInBox(args: Args_addInBox): Num {
+    return { value: args.x + args.y };
+  }
 
-export function addFromEnv(args: Args_addFromEnv, env: Env): i32 {
-  return args.x + env.value;
-}
+  addFromEnv(args: Args_addFromEnv): i32 {
+    return args.x + this.env.value;
+  }
 
-export function returnMap(args: Args_returnMap): Map<string, Map<string, i32>> {
-  return args.map;
+  returnMap(args: Args_returnMap): Map<string, Map<string, i32>> {
+    return args.map;
+  }
 }

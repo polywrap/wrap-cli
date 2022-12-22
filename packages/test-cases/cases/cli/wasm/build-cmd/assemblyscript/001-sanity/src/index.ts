@@ -1,5 +1,7 @@
-import { Args_method } from "./wrap";
+import { Args_method, IModule } from "./wrap";
 
-export function method(args: Args_method): string {
-  return args.arg;
+export class Module extends IModule {
+  method(args: Args_method): string {
+    return args.arg;
+  }
 }
