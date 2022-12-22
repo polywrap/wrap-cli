@@ -1,0 +1,47 @@
+{{#methods.length}}
+import { wrap_load_env } from "@polywrap/wasm-as";
+import {
+  {{#methods}}
+  deserialize{{name}}Args,
+  serialize{{name}}Result{{^last}},{{/last}}
+  {{/methods}}
+} from "./serialization";
+{{/methods.length}}
+import { IModule } from "./module";
+import * as Types from "..";
+
+{{#methods}}
+export function {{name}}Wrapped(module: IModule, argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
+  {{#env}}
+  {{#required}}
+  if (env_size == 0) {
+    throw new Error("Environment is not set, and it is required by method 'objectMethod'")
+  }
+  
+  const envBuf = wrap_load_env(env_size);
+  module.setEnv(Types.Env.fromBuffer(envBuf));
+  {{/required}}
+  {{^required}}
+  if (env_size > 0) {
+    const envBuf = wrap_load_env(env_size);
+    module.setEnv(Types.Env.fromBuffer(envBuf));
+  }
+  {{/required}}
+  {{/env}}
+  {{#arguments.length}}
+  const args = deserialize{{name}}Args(argsBuf);
+  {{/arguments.length}}
+
+  const result = module.{{#detectKeyword}}{{name}}{{/detectKeyword}}({{#arguments.length}}
+    {
+      {{#arguments}}
+      {{#detectKeyword}}{{name}}{{/detectKeyword}}: args.{{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
+      {{/arguments}}
+    }{{/arguments.length}}{{^arguments.length}}{}{{/arguments.length}}
+  );
+  return serialize{{name}}Result(result);
+}
+{{^last}}
+
+{{/last}}
+{{/methods}}

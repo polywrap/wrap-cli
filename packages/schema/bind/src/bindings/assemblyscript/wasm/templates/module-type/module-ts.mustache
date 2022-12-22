@@ -19,7 +19,6 @@ import {
 
 export abstract class IModule {
   {{#hasEnv}}private _env: Types.Env | null = null;{{/hasEnv}}
-
   {{#methods}}
   abstract {{#detectKeyword}}{{name}}{{/detectKeyword}}(
     args: Types.Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}
@@ -38,61 +37,4 @@ export abstract class IModule {
     this._env = env;
   }
   {{/hasEnv}}
-
-  public _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): bool {
-    const args: InvokeArgs = wrap_invoke_args(
-      method_size,
-      args_size
-    );
-
-    {{#methods}}
-    {{^first}}else {{/first}}if (args.method == "{{name}}") {
-      const result = this.{{name}}Wrapped(args.args, env_size);
-      wrap_invoke_result(result);
-      return true;
-    }
-    {{/methods}}
-    else {
-      wrap_invoke_error(
-        `Could not find invoke function "${args.method}"`
-      );
-      return false;
-    }
-  }
-
-  {{#methods}}
-  private {{name}}Wrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
-    {{#env}}
-    {{#required}}
-    if (env_size == 0) {
-      throw new Error("Environment is not set, and it is required by method '{{name}}'")
-    }
-    
-    const envBuf = wrap_load_env(env_size);
-    this.setEnv(Types.Env.fromBuffer(envBuf));
-    {{/required}}
-    {{^required}}
-    if (env_size > 0) {
-      const envBuf = wrap_load_env(env_size);
-      this.setEnv(Types.Env.fromBuffer(envBuf));
-    }
-    {{/required}}
-    {{/env}}
-    {{#arguments.length}}
-    const args = deserialize{{name}}Args(argsBuf);
-    {{/arguments.length}}
-
-    const result = this.{{#detectKeyword}}{{name}}{{/detectKeyword}}({{#arguments.length}}
-      {
-        {{#arguments}}
-        {{#detectKeyword}}{{name}}{{/detectKeyword}}: args.{{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
-        {{/arguments}}
-      }{{/arguments.length}}{{^arguments.length}}{}{{/arguments.length}}
-    );
-    return serialize{{name}}Result(result);
-  }
-  {{^last}}
-
-  {{/last}}
-  {{/methods}}
 }
