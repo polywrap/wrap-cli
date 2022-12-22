@@ -35,6 +35,7 @@ export * from "./toGraphQLType";
 export * from "./moduleCapabilities";
 export * from "./hasImports";
 export * from "./addAnnotations";
+export * from "./moduleHasEnv";
 
 export interface AbiTransforms {
   enter?: AbiTransformer;

@@ -8,6 +8,7 @@ import {
   addFirstLast,
   extendType,
   toPrefixedGraphQLType,
+  moduleHasEnv,
 } from "@polywrap/schema-parse";
 import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
 import path from "path";
@@ -136,15 +137,12 @@ export const generateBinding: GenerateBindingFn = (
 
   // Generate module type folders
   if (abi.moduleType) {
-    const moduleType = abi.envType
-      ? { ...abi.moduleType, hasEnv: true }
-      : abi.moduleType;
     output.entries.push({
       type: "Directory",
       name: abi.moduleType.type,
       data: renderTemplates(
         templatePath("module-type"),
-        moduleType,
+        abi.moduleType,
         subTemplates
       ),
     });
@@ -189,6 +187,7 @@ function applyTransforms(abi: WrapAbi): WrapAbi {
     extendType(Functions),
     addFirstLast,
     toPrefixedGraphQLType,
+    moduleHasEnv,
   ];
 
   for (const transform of transforms) {
