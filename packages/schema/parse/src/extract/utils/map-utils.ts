@@ -1,191 +1,156 @@
 import {
-  createArrayDefinition,
-  createMapDefinition,
-  createMapKeyDefinition,
-  createScalarDefinition,
-  createUnresolvedObjectOrEnumRef,
-  isMapKeyType,
   isScalarType,
 } from "../..";
 
-import {
-  GenericDefinition,
-  MapKeyDefinition,
-  ScalarDefinition,
-} from "@polywrap/wrap-manifest-types-js";
+import { Reference, SUPPORTED_MAP_KEYS, SUPPORTED_SCALARS } from "../../definitions";
 
-type CurrentAbi = {
-  currentType: string;
-  subType: string | undefined;
-  required: boolean | undefined;
-};
 
 // TODO: Make sure map also works for imported types and modules
 
-const _parseCurrentType = (rootType: string, type: string): CurrentAbi => {
-  let required = undefined;
-  if (type.startsWith("[")) {
-    const closeSquareBracketIdx = type.lastIndexOf("]");
-    if (type[closeSquareBracketIdx + 1] === "!") {
-      required = true;
-    }
+export const parseMapReference = (typeName: string, enumDefs: string[]): Reference => {
+  if (isArray(typeName)) {
+    const closeSquareBracketIdx = typeName.lastIndexOf("]");
+    const required = typeName[closeSquareBracketIdx + 1] === "!"
     return {
-      currentType: "Array",
-      subType: type.substring(1, closeSquareBracketIdx),
-      required: required,
+      kind: "Array",
+      required,
+      definition: {
+        items: parseMapReference(typeName.substring(1, closeSquareBracketIdx), enumDefs),
+        kind: "Array",
+        name: ""
+      }
     };
-  }
+  } else if (isMap(typeName)) {
+    const openAngleBracketIdx = typeName.indexOf("<");
+    const closeAngleBracketIdx = typeName.lastIndexOf(">");
 
-  let hasSubType = true;
-  const openAngleBracketIdx = type.indexOf("<");
-  const closeAngleBracketIdx = type.lastIndexOf(">");
-
-  if (
-    (openAngleBracketIdx === -1 && closeAngleBracketIdx !== -1) ||
-    (openAngleBracketIdx !== -1 && closeAngleBracketIdx === -1)
-  ) {
-    throw new Error(`Invalid map value type: ${rootType}`);
-  }
-
-  if (openAngleBracketIdx === -1 && closeAngleBracketIdx === -1) {
-    if (type === "Array" || type === "Map") {
-      throw new Error(`Invalid map value type: ${rootType}`);
+    if (
+      closeAngleBracketIdx === -1
+    ) {
+      throw new Error(`Invalid map value type: ${typeName}`);
     }
-    if (type.endsWith("!")) {
-      required = true;
+
+    const required = typeName.endsWith("!");
+    const subtype = typeName.substring(openAngleBracketIdx + 1, closeAngleBracketIdx);
+
+    const firstDelimiter = subtype.indexOf(",");
+
+    const _keyType = subtype.substring(0, firstDelimiter).trim();
+    const valType = subtype.substring(firstDelimiter + 1).trim();
+
+    if (!_keyType || !valType) {
+      throw new Error(`Invalid map value type: ${typeName}`);
     }
-    hasSubType = false;
-  }
 
-  if (type[closeAngleBracketIdx + 1] === "!") {
-    required = true;
-  }
+    // TODO: Is there a better way to enforce this -> Map key should always be required
+    // TODO: Should we throw an error if it's not?
+    const keyRequired = true;
+    const keyType = _keyType.endsWith("!") ? _keyType.slice(0, -1) : _keyType;
 
-  return {
-    currentType: hasSubType
-      ? type.substring(0, openAngleBracketIdx)
-      : required
-      ? type.substring(0, type.length - 1)
-      : type,
-    subType: hasSubType
-      ? type.substring(openAngleBracketIdx + 1, closeAngleBracketIdx)
-      : undefined,
-    required: required,
-  };
-};
-
-const _toGraphQLType = (rootType: string, type: string): string => {
-  const parsedCurrentType = _parseCurrentType(rootType, type);
-  let { subType } = parsedCurrentType;
-  const { currentType } = parsedCurrentType;
-
-  if (!subType) {
-    return currentType;
-  }
-
-  switch (currentType) {
-    case "Array": {
-      if (subType.endsWith("!")) {
-        subType = subType.slice(0, -1);
-      }
-      return `[${_toGraphQLType(rootType, subType)}]`;
-    }
-    case "Map": {
-      const firstDelimiter = subType.indexOf(",");
-
-      const keyType = subType.substring(0, firstDelimiter).trim();
-      const valType = subType.substring(firstDelimiter + 1).trim();
-
-      return `Map<${_toGraphQLType(rootType, keyType)}, ${_toGraphQLType(
-        rootType,
-        valType
-      )}>`;
-    }
-    default:
+    if (!isMapKey(keyType)) {
       throw new Error(
-        `Found unknown type ${currentType} while parsing ${rootType}`
+        `Found invalid map key type: ${keyType} while parsing ${typeName}`
       );
-  }
-};
-
-const _parseMapType = (
-  rootType: string,
-  type: string,
-  name?: string
-): GenericDefinition => {
-  const { currentType, subType, required } = _parseCurrentType(rootType, type);
-
-  if (!subType) {
-    if (isScalarType(currentType)) {
-      return createScalarDefinition({
-        name: name,
-        type: currentType as ScalarDefinition["type"],
-        required: required,
-      });
     }
 
-    return createUnresolvedObjectOrEnumRef({
-      name: name,
-      type: currentType,
-      required: required,
-    });
-  }
-
-  switch (currentType) {
-    case "Array": {
-      return createArrayDefinition({
-        name: name,
-        type: _toGraphQLType(rootType, type),
-        item: _parseMapType(rootType, subType, name),
-        required: required,
-      });
+    return {
+      kind: "Map",
+      definition: {
+        name: "",
+        kind: "Map",
+        //TODO: validate possible keys
+        keys: {
+          kind: "Scalar",
+          type: keyType as typeof SUPPORTED_SCALARS[number],
+          required: keyRequired
+        },
+        values: parseMapReference(valType, enumDefs)
+      },
+      required,
     }
-    case "Map": {
-      const firstDelimiter = subType.indexOf(",");
+  } else if (isScalarType(typeName)) {
+    const required = typeName.endsWith("!");
+    const subtype = required ? typeName.substring(0, typeName.length - 1) : typeName
 
-      const _keyType = subType.substring(0, firstDelimiter).trim();
-      const valType = subType.substring(firstDelimiter + 1).trim();
-
-      if (!_keyType || !valType) {
-        throw new Error(`Invalid map value type: ${rootType}`);
-      }
-
-      // TODO: Is there a better way to enforce this -> Map key should always be required
-      // TODO: Should we throw an error if it's not?
-      const keyRequired = true;
-      const keyType = _keyType.endsWith("!") ? _keyType.slice(0, -1) : _keyType;
-
-      if (!isMapKeyType(keyType)) {
-        throw new Error(
-          `Found invalid map key type: ${keyType} while parsing ${rootType}`
-        );
-      }
-
-      return createMapDefinition({
-        type: _toGraphQLType(rootType, type),
-        name: name,
-        key: createMapKeyDefinition({
-          name: name,
-          type: keyType as MapKeyDefinition["type"],
-          required: keyRequired,
-        }),
-        value: _parseMapType(rootType, valType, name),
-        required: required,
-      });
+    return {
+      kind: "Scalar",
+      type: subtype as typeof SUPPORTED_SCALARS[number],
+      required
     }
-    default:
-      throw new Error(`Invalid map value type: ${type}`);
+  } else if (isEnum(typeName, enumDefs)) {
+    const required = typeName.endsWith("!");
+
+    return {
+      type: enumDefs.find(e => e === typeName) as string,
+      kind: "Enum",
+      required
+    }
+  } else {
+    const required = typeName.endsWith("!");
+
+    return {
+      type: typeName,
+      kind: "Object",
+      required
+    }
   }
-};
-
-export function parseCurrentType(type: string): CurrentAbi {
-  return _parseCurrentType(type, type);
+  // TODO: is this case necessary?
+  // else {
+  //   throw new Error(`Unrecognized reference type '${typeName}'`)
+  // }
 }
 
-export function parseMapType(type: string, name?: string): GenericDefinition {
-  return _parseMapType(type, type, name);
+const isMap = (typeName: string): boolean => {
+  //TODO: would this be the right condition?
+  return typeName.startsWith("Map<")
 }
 
-export function toGraphQLType(type: string): string {
-  return _toGraphQLType(type, type);
+const isEnum = (typeName: string, enumDefs: string[]): boolean => {
+  return !!enumDefs.find(o => o === typeName);
 }
+
+const isMapKey = (typeName: string): boolean => {
+  return SUPPORTED_MAP_KEYS.includes(typeName as typeof SUPPORTED_MAP_KEYS[number]);
+}
+
+const isArray = (typeName: string): boolean => {
+  return typeName.startsWith("[")
+}
+
+// const _toGraphQLType = (rootType: string, type: string): string => {
+//   const parsedCurrentType = _parseCurrentType(rootType, type);
+//   let { subType } = parsedCurrentType;
+//   const { currentType } = parsedCurrentType;
+
+//   if (!subType) {
+//     return currentType;
+//   }
+
+//   switch (currentType) {
+//     case "Array": {
+//       if (subType.endsWith("!")) {
+//         subType = subType.slice(0, -1);
+//       }
+//       return `[${_toGraphQLType(rootType, subType)}]`;
+//     }
+//     case "Map": {
+//       const firstDelimiter = subType.indexOf(",");
+
+//       const keyType = subType.substring(0, firstDelimiter).trim();
+//       const valType = subType.substring(firstDelimiter + 1).trim();
+
+//       return `Map<${_toGraphQLType(rootType, keyType)}, ${_toGraphQLType(
+//         rootType,
+//         valType
+//       )}>`;
+//     }
+//     default:
+//       throw new Error(
+//         `Found unknown type ${currentType} while parsing ${rootType}`
+//       );
+//   }
+// };
+
+// export function toGraphQLType(type: string): string {
+//   return _toGraphQLType(type, type);
+// }

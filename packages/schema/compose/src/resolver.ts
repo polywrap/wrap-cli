@@ -1,4 +1,4 @@
-import { createImportedEnumDefinition, createImportedEnvDefinition, createImportedModuleDefinition, createImportedObjectDefinition, visitEnumDefinition, visitEnvDefinition, visitModuleDefinition, visitObjectDefinition } from "@polywrap/schema-parse";
+import { createImportedEnumDefinition, createImportedEnvDefinition, createImportedModuleDefinition, createImportedObjectDefinition, DefinitionKind, visitEnumDefinition, visitEnvDefinition, visitModuleDefinition, visitObjectDefinition } from "@polywrap/schema-parse";
 import { EnumDefinition, EnvDefinition, GenericDefinition, ImportedEnumDefinition, ImportedEnvDefinition, ImportedModuleDefinition, ImportedObjectDefinition, ModuleDefinition, ObjectDefinition, WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 type UriStr = string;
@@ -6,13 +6,12 @@ interface ImportStatement {
     typeNames: string[]
 }
 
-interface ExternalImportStatement extends ImportStatement {
-    uri: UriStr;
-    namespace: string;
-}
+type ExternalImportStatement = ImportStatement & Namespaced
 
 interface Namespaced {
     __namespaced?: boolean;
+    uri: UriStr;
+    namespace: string;
 }
 
 type ResolvedType = (ImportedModuleDefinition | ImportedObjectDefinition | ImportedEnumDefinition | ImportedEnvDefinition) & Namespaced;
@@ -136,7 +135,7 @@ export abstract class ImportsResolver<TImportStatement extends ImportStatement> 
                         }),
                         properties: extDefWithKind.extDefinition.properties,
                     },
-                      
+
                     visitor: visitObjectDefinition
                 };
             case "Enum":
@@ -196,19 +195,45 @@ export abstract class ImportsResolver<TImportStatement extends ImportStatement> 
 }
 
 export class ExternalImportsResolver extends ImportsResolver<ExternalImportStatement> {
-    protected extractDependencyTypes(importAbi: WrapAbi, importType: string): ResolvedType[] {
-        
-        const extDefWithKind = this.determineKind(importAbi, importType);
+    protected extractDependencyTypes(importAbi: WrapAbi, genericDefinition: GenericDefinition): GenericDefinition[] {
 
-        switch(extDefWithKind.kind) {
-            case "Object":
-            case "ImportedObject":
-                extDefWithKind.extDefinition.properties?.map(({ type, scalar }) => {
-                    if (scalar) {
-                        
-                    }
-                    this.extractDependencyTypes(importAbi, type)
+        switch (genericDefinition.kind) {
+            case DefinitionKind.Scalar:
+                return [];
+            case DefinitionKind.ObjectRef:
+                return []
+            case DefinitionKind.EnumRef:
+                return [genericDefinition];
+            case DefinitionKind.Object:
+            case DefinitionKind.ImportedObject:
+                return [genericDefinition, ...(genericDefinition as ObjectDefinition).properties?.map(p => this.extractDependencyTypes(importAbi, p))]
+        }
+    }
+
+    protected extractDeps(resolvedType: ResolvedType, extracted: ResolvedType[] = []) {
+        switch (resolvedType.kind) {
+            case DefinitionKind.Scalar:
+                return []
+            case DefinitionKind.Object:
+            case DefinitionKind.ImportedObject:
+                const abi = this.importAbis.get(resolvedType.uri);
+
+                (resolvedType as ObjectDefinition).properties?.forEach(property => {
+
                 })
+
+                const objectDef = abi?.objectTypes?.find(obj => obj.type === resolvedType.nativeType);
+                objectDef?.properties?.forEach(property => {
+
+                })
+
+                if 
+
+                const importObjectDef = abi?.importedObjectTypes?.find(obj => obj.type === resolvedType.nativeType)
+
+                if (importObjectDef) {
+                    this.extractDeps(importObjectDef)
+                }
         }
     }
 

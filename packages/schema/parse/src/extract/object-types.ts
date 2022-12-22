@@ -1,28 +1,68 @@
 import {
-  createObjectDefinition,
-  createInterfaceImplementedDefinition,
   isEnvType,
   isModuleType,
 } from "..";
-import {
-  extractFieldDefinition,
-  extractListType,
-  extractNamedType,
-  State,
-} from "./utils/object-types-utils";
 
 import {
   ObjectTypeDefinitionNode,
-  NonNullTypeNode,
-  NamedTypeNode,
-  ListTypeNode,
   FieldDefinitionNode,
   DirectiveNode,
   ASTVisitor,
+  StringValueNode,
+  TypeNode,
 } from "graphql";
-import { ObjectDefinition, WrapAbi } from "@polywrap/wrap-manifest-types-js";
+import { ObjectDefinition, Abi as WrapAbi, ObjectProperty, Reference, EnumDefinition } from "../definitions";
+import { parseMapReference } from "./utils/map-utils";
 
-const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
+const extractObjectProperty = (node: FieldDefinitionNode, enumDefs: string[]): ObjectProperty => {
+  const extractType = (node: TypeNode, required = false): Reference => {
+    switch (node.kind) {
+      case "NonNullType":
+        return extractType(node.type, true)
+      case "ListType":
+        return {
+          kind: "Array",
+          required,
+          definition: {
+            kind: "Array",
+            items: extractType(node.type),
+            name: "",
+          }
+        }
+      case "NamedType":
+        return {
+          required,
+          kind: enumDefs.includes(node.name.value) ? "Enum" : "Object",
+          type: node.name.value
+        }
+    }
+  }
+
+  if (node.directives) {
+    for (const dir of node.directives) {
+      if (dir.name.value === "annotate") {
+        const typeName = (dir.arguments?.find((arg) => arg.name.value === "type")
+          ?.value as StringValueNode).value;
+        if (!typeName) {
+          throw new Error(
+            `Annotate directive: ${node.name.value} has invalid arguments`
+          );
+        }
+        return {
+          name: node.name.value,
+          type: parseMapReference(typeName, enumDefs)
+        }
+      }
+    }
+  }
+
+  return {
+    name: node.name.value,
+    type: extractType(node.type)
+  }
+}
+
+const visitorEnter = (objectTypes: ObjectDefinition[], enumDefs: EnumDefinition[]) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const typeName = node.name.value;
 
@@ -41,50 +81,25 @@ const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
       return;
     }
 
-    const interfaces = node.interfaces?.map((x) =>
-      createInterfaceImplementedDefinition({ type: x.name.value })
-    );
+    // TODO: restore interfaces support
+    // const interfaces = node.interfaces?.map((x) =>
+    //   createInterfaceImplementedDefinition({ type: x.name.value })
+    // );
 
     // Create a new TypeDefinition
-    const type = createObjectDefinition({
-      type: typeName,
-      interfaces: interfaces?.length ? interfaces : undefined,
+    const type = {
+      kind: "Object" as const,
       comment: node.description?.value,
-    });
+      name: typeName,
+      properties: node.fields?.map(fieldNode => extractObjectProperty(fieldNode, enumDefs.map(e => e.name))) ?? []
+    };
     objectTypes.push(type);
-    state.currentType = type;
-  },
-  NonNullType: (_node: NonNullTypeNode) => {
-    state.nonNullType = true;
-  },
-  NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state);
-  },
-  ListType: (_node: ListTypeNode) => {
-    extractListType(state);
-  },
-  FieldDefinition: (node: FieldDefinitionNode) => {
-    extractFieldDefinition(node, state);
-  },
-});
-
-const visitorLeave = (state: State) => ({
-  ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
-    state.currentType = undefined;
-  },
-  FieldDefinition: (_node: FieldDefinitionNode) => {
-    state.currentProperty = undefined;
-  },
-  NonNullType: (_node: NonNullTypeNode) => {
-    state.nonNullType = undefined;
   },
 });
 
 export const getObjectTypesVisitor = (abi: WrapAbi): ASTVisitor => {
-  const state: State = {};
-
   return {
-    enter: visitorEnter(abi.objectTypes || [], state),
-    leave: visitorLeave(state),
+    // TODO: Ensure enums were extracted previously
+    enter: visitorEnter(abi.objectTypes || [], abi.enumTypes),
   };
 };
