@@ -222,7 +222,7 @@ describe("error structure", () => {
     if (result.ok) throw Error("should never happen");
 
     expect(result.error?.name).toEqual("UriResolutionError");
-    expect(result.error?.code).toEqual(WrapErrorCode.URI_RESOLVER);
+    expect(result.error?.code).toEqual(WrapErrorCode.URI_RESOLVER_ERROR);
     expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/simple-deprecated")).toBeTruthy();
     expect(result.error?.resolutionStack).toBeDefined();
     expect(`${result.error?.cause}`).toContain(`Unrecognized WrapManifest schema version "0.0.1"`);

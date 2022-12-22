@@ -429,14 +429,14 @@ export class PolywrapCoreClient implements CoreClient {
       let error: WrapError;
       if (result.error) {
         error = new WrapError("A URI Resolver returned an error.", {
-          code: WrapErrorCode.URI_RESOLVER,
+          code: WrapErrorCode.URI_RESOLVER_ERROR,
           uri: uri.uri,
           resolutionStack: history,
           cause: result.error,
         });
       } else {
         error = new WrapError("Error resolving URI", {
-          code: WrapErrorCode.URI_RESOLUTION,
+          code: WrapErrorCode.URI_RESOLUTION_ERROR,
           uri: uri.uri,
           resolutionStack: history,
         });
