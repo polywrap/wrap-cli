@@ -6,6 +6,7 @@ import {
 } from "../..";
 import fs from "fs";
 
+import { GetPathToValidateTestFiles } from "@polywrap/test-cases";
 import { IUriPackage, IUriRedirect } from "@polywrap/core-js";
 import { buildWrapper } from "@polywrap/test-env-js";
 import { ResultErr } from "@polywrap/result";
@@ -16,6 +17,8 @@ import { defaultWrappers } from "@polywrap/client-config-builder-js";
 jest.setTimeout(200000);
 
 describe("sanity", () => {
+  const validateTestsPath = GetPathToValidateTestFiles();
+
   test("default client config", () => {
     const client = new PolywrapClient();
 
@@ -43,20 +46,20 @@ describe("sanity", () => {
   });
 
   test("validate requested uri is available", async () => {
-    const fooPath = `${__dirname}/../utils/validate/wrapper-a`;
-    const greetingPath = `${__dirname}/../utils/validate/wrapper-b`;
-    const modifiedFooPath = `${__dirname}/../utils/validate/wrapper-c`
+    const fooPath = `${validateTestsPath}/wrapper-a`;
+    const greetingPath = `${validateTestsPath}/wrapper-b`;
+    const modifiedFooPath = `${validateTestsPath}/wrapper-c`
     const fooUri = `ens/foo.eth`;
     const greetingUri = `ens/greeting.eth`;
     const modifiedFooUri = `ens/foo-modified.eth`;
 
     const getPackage = async (name: string) => {
       const manifest = await fs.promises.readFile(
-        `${__dirname}/../utils/validate/${name}/build/wrap.info`
+        `${validateTestsPath}/${name}/build/wrap.info`
       );
 
       const wasmModule = await fs.promises.readFile(
-        `${__dirname}/../utils/validate/${name}/build/wrap.wasm`
+        `${validateTestsPath}/${name}/build/wrap.wasm`
       );
       return WasmPackage.from(manifest, wasmModule)
     }

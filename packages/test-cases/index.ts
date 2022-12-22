@@ -8,6 +8,7 @@ export const GetPathToComposeTestFiles = () => `${__dirname}/cases/compose`
 export const GetPathToParseTestFiles = () => `${__dirname}/cases/parse`
 export const GetPathToTestWrappers = () => `${__dirname}/cases/wrappers`
 export const GetPathToCliTestFiles = () => `${__dirname}/cases/cli`;
+export const GetPathToValidateTestFiles = () => `${__dirname}/cases/validate`;
 
 export function readFileIfExists(
   file: string,
