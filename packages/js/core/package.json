@@ -21,9 +21,7 @@
   "dependencies": {
     "@polywrap/result": "0.10.0-pre.6",
     "@polywrap/tracing-js": "0.10.0-pre.6",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.6",
-    "graphql": "15.5.0",
-    "graphql-tag": "2.10.4"
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.6"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

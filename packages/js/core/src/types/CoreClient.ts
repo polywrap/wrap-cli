@@ -1,7 +1,5 @@
 import {
-  QueryHandler,
   Invoker,
-  SubscriptionHandler,
   Uri,
   InterfaceImplementations,
   Env,
@@ -38,11 +36,7 @@ export interface ValidateOptions {
   recursive?: boolean;
 }
 
-export interface CoreClient
-  extends Invoker,
-    QueryHandler,
-    SubscriptionHandler,
-    UriResolverHandler<unknown> {
+export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
   getConfig(): CoreClientConfig<Uri>;
 
   getInterfaces(): readonly InterfaceImplementations<Uri>[] | undefined;
