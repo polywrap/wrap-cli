@@ -39,7 +39,7 @@ export class Module extends IModule {
     };
   }
 
-  method3(args: Args_method3): (Output | null)[] {
+  method3(args: Args_method3): Array<Output | null> {
     return [
       null,
       {

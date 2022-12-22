@@ -4,6 +4,7 @@ import {
   Args_methodNoEnv,
   Args_methodRequireEnv,
   Args_methodOptionalEnv,
+  Args_subinvokeEnvMethod,
   CompoundEnv,
   IModule,
 } from "./wrap";
@@ -38,7 +39,7 @@ export class Module extends IModule {
     return this.env ? createEnv(this.env as Env) : null;
   }
 
-  subinvokeEnvMethod(args: Args_methodRequireEnv): CompoundEnv {
+  subinvokeEnvMethod(args: Args_subinvokeEnvMethod): CompoundEnv {
     const externalEnv = ExternalEnvApi_Module.externalEnvMethod({}).unwrap()
   
     return {

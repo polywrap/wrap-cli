@@ -18,7 +18,7 @@ import {
 } from "@polywrap/wasm-as";
 
 export abstract class IModule {
-  {{#hasEnv}}private _env: Types.Env | undefined;{{/hasEnv}}
+  {{#hasEnv}}private _env: Types.Env | null = null;{{/hasEnv}}
 
   {{#methods}}
   abstract {{#detectKeyword}}{{name}}{{/detectKeyword}}(
@@ -28,10 +28,10 @@ export abstract class IModule {
   {{/methods}}
   {{#hasEnv}}
   public get env(): Types.Env {
-    if (this._env === undefined) {
+    if (this._env === null) {
       throw new Error("Environment is not set, and it is required by this module");
     }
-    return this._env;
+    return this._env as Types.Env;
   }
 
   public setEnv(env: Types.Env): void {
