@@ -301,9 +301,9 @@ export class WrapError extends Error {
         return "An error occurred while validating a WRAP URI against its ABI.";
       case WrapErrorCode.CLIENT_VALIDATE_RECURSIVE_FAIL:
         return "An error occurred while recursively validating a WRAP URI.";
-      case WrapErrorCode.URI_RESOLUTION:
+      case WrapErrorCode.URI_RESOLUTION_ERROR:
         return "Unable to resolve URI.";
-      case WrapErrorCode.URI_RESOLVER:
+      case WrapErrorCode.URI_RESOLVER_ERROR:
         return "An internal resolver error occurred while resolving a URI.";
       case WrapErrorCode.URI_NOT_FOUND:
         return "URI not found.";
