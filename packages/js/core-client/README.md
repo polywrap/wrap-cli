@@ -5,7 +5,7 @@
 
 <br/>
 <br/>
-The Polywrap JavaScript core client.
+The Polywrap JavaScript core client invokes functions of wrappers and plugins. It's designed to run in any environment that can execute JavaScript (think websites, node scripts, etc.). It has TypeScript support.
 
 ## Installation
 

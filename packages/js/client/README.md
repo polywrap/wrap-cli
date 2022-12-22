@@ -5,8 +5,6 @@
 
 <br/>
 <br/>
-The Polywrap JavaScript client invokes functions of wrappers and plugins. It's designed to run in any environment that can execute JavaScript (think websites, node scripts, etc.). It has TypeScript support.
-
 The Polywrap client extends the PolywrapCoreClient to provide UX features, such as an additional constructor and additional configuration options.
 
 ## Installation
@@ -28,7 +26,7 @@ const client = new PolywrapClient();
 
 ```ts
 await client.invoke({
-  uri: "ens/rinkeby/helloworld.dev.polywrap.eth",
+  uri: "ens/helloworld.dev.polywrap.eth",
   method: "logMessage",
   args: {
     message: "Hello World!"
@@ -40,7 +38,7 @@ await client.invoke({
 
 ```ts
 const config = {
-  // redirect queries from one uri to another
+  // redirect invocations from one uri to another
   redirects: [
     {
       from: "wrap://ens/from.eth",
