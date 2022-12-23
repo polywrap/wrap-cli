@@ -1,0 +1,49 @@
+{{#moduleType}}
+{{#hasEnv}}
+use crate::Env;
+{{/hasEnv}}
+use crate::{
+    {{#methods}}
+    Args{{#toUpper}}{{name}}{{/toUpper}},
+    {{/methods}}
+};
+{{#propertyDeps.length}}
+{{#propertyDeps}}
+{{^isEnum}}
+use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
+{{/isEnum}}
+{{#isEnum}}
+use crate::{
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}},
+    get_{{#toLower}}{{type}}{{/toLower}}_value,
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value
+};
+{{/isEnum}}
+{{/propertyDeps}}
+{{/propertyDeps.length}}
+
+pub struct Module {
+  {{#hasEnv}}env: Option<Env> = None;{{/hasEnv}}
+}
+
+pub trait IModule {
+  fn new() -> Module {
+    Module {
+      {{#hasEnv}}env: None,{{/hasEnv}}
+    }
+  }
+
+  {{#hasEnv}}
+  pub fn set_env(&mut self, env: Env) {
+    self.env = Some(env);
+  }
+
+  {{/hasEnv}}
+  {{#methods}}
+  fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(&self, args: Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String>;
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+}
+{{/moduleType}}
