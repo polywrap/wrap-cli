@@ -1,11 +1,14 @@
 pub mod wrap;
 pub use wrap::*;
+pub use wrap::module::{IModule, Module};
 
-pub fn log_message(args: ArgsLogMessage) -> bool {
-    let message = args.message.as_str();
-
-    println!("{}", message);
-    print!("{}", message);
-
-    true
+impl IModule for Module {
+    fn log_message(&self, args: ArgsLogMessage) -> Result<bool, String> {
+        let message = args.message.as_str();
+    
+        println!("{}", message);
+        print!("{}", message);
+    
+        Ok(true)
+    }
 }
