@@ -222,6 +222,8 @@ const keywords = {
   __visit: "__visit",
   __newBuffer: "__newBuffer",
   __newArray: "__newArray",
+  // polywrap bindings
+  env: "env",
 };
 
 export type Keywords = typeof keywords;

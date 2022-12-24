@@ -33,7 +33,19 @@ import {
 } from "@polywrap/wasm-as";
 
 export abstract class IModule {
-  private _env: Types.Env | null = null;
+  private __env__: Types.Env | null = null;
+
+  public get env(): Types.Env {
+    if (this.__env__ === null) {
+      throw new Error("Environment is not set, and it is required by this module");
+    }
+    return this.__env__ as Types.Env;
+  }
+
+  public __setEnv__(env: Types.Env): void {
+    this.__env__ = env;
+  }
+
   abstract moduleMethod(
     args: Types.Args_moduleMethod
   ): i32;
@@ -49,15 +61,4 @@ export abstract class IModule {
   abstract _if(
     args: Types.Args__if
   ): Types._else;
-
-  public get env(): Types.Env {
-    if (this._env === null) {
-      throw new Error("Environment is not set, and it is required by this module");
-    }
-    return this._env as Types.Env;
-  }
-
-  public setEnv(env: Types.Env): void {
-    this._env = env;
-  }
 }

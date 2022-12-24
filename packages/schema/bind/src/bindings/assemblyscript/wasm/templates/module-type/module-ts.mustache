@@ -18,23 +18,26 @@ import {
 } from "@polywrap/wasm-as";
 
 export abstract class IModule {
-  {{#hasEnv}}private _env: Types.Env | null = null;{{/hasEnv}}
+  {{#hasEnv}}private __env__: Types.Env | null = null;
+
+  public get env(): Types.Env {
+    if (this.__env__ === null) {
+      throw new Error("Environment is not set, and it is required by this module");
+    }
+    return this.__env__ as Types.Env;
+  }
+
+  public __setEnv__(env: Types.Env): void {
+    this.__env__ = env;
+  }
+  {{/hasEnv}}
+
   {{#methods}}
   abstract {{#detectKeyword}}{{name}}{{/detectKeyword}}(
     args: Types.Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}
   ): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}};
+  {{^last}}
 
+  {{/last}}
   {{/methods}}
-  {{#hasEnv}}
-  public get env(): Types.Env {
-    if (this._env === null) {
-      throw new Error("Environment is not set, and it is required by this module");
-    }
-    return this._env as Types.Env;
-  }
-
-  public setEnv(env: Types.Env): void {
-    this._env = env;
-  }
-  {{/hasEnv}}
 }
