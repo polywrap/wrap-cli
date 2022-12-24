@@ -39,7 +39,7 @@ export function objectMethodWrapped(module: IModule, argsBuf: ArrayBuffer, env_s
   }
   
   const envBuf = wrap_load_env(env_size);
-  module.setEnv(Types.Env.fromBuffer(envBuf));
+  module.__setEnv__(Types.Env.fromBuffer(envBuf));
   const args = deserializeobjectMethodArgs(argsBuf);
 
   const result = module.objectMethod(
@@ -56,7 +56,7 @@ export function objectMethodWrapped(module: IModule, argsBuf: ArrayBuffer, env_s
 export function optionalEnvMethodWrapped(module: IModule, argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
   if (env_size > 0) {
     const envBuf = wrap_load_env(env_size);
-    module.setEnv(Types.Env.fromBuffer(envBuf));
+    module.__setEnv__(Types.Env.fromBuffer(envBuf));
   }
   const args = deserializeoptionalEnvMethodArgs(argsBuf);
 
