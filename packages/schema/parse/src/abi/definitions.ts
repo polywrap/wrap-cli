@@ -305,6 +305,11 @@ export function createObjectPropertyDefinition(
 export function createMethodDefinition(
   args: Omit<Omit<MethodDefinition, "kind">, "type">
 ): MethodDefinition {
+  if (args.name?.startsWith("__") && args.name?.endsWith("__")) {
+    throw new Error(
+      "Dunder methods (Methods starting and ending with __) are reserved methods"
+    );
+  }
   return {
     ...args,
     ...createGenericDefinition({
