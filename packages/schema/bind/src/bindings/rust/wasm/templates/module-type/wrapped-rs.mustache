@@ -12,16 +12,15 @@ use crate::{
     {{/methods}}
 };
 {{/methods.length}}
-{{/moduleType}}
 
-{{#envType}}
-use crate::Env;
-{{/envType}}
 use crate::module::{IModule, Module};
+{{#hasEnv}}
+use crate::Env;
+use crate::module::EnvTrait;
+{{/hasEnv}}
 
-{{#moduleType}}
 {{#methods}}
-pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped<Module: IModule>(module: &mut Module, args: &[u8], env_size: u32) -> Vec<u8> {
+pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(module: &mut Module, args: &[u8], env_size: u32) -> Vec<u8> {
     {{#env}}
     {{#required}}
     if env_size == 0 {
@@ -29,13 +28,13 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped<Module: IModule>(module: &mut Mo
     }
 
     let env_buf = wrap_load_env(env_size);
-    module.set_env(Env::from_buffer(&env_buf).unwrap());
+    module.__set_env__(Env::from_buffer(&env_buf).unwrap());
 
     {{/required}}
     {{^required}}
     if env_size > 0 {
       let env_buf = wrap_load_env(env_size);
-      module.set_env(Env::from_buffer(&env_buf).unwrap());
+      module.__set_env__(Env::from_buffer(&env_buf).unwrap());
     }
 
     {{/required}}

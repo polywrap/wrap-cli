@@ -1,13 +1,17 @@
 {{#moduleType}}
-{{#hasEnv}}
-use crate::Env;
-{{/hasEnv}}
 use crate::{
     {{#methods}}
     Args{{#toUpper}}{{name}}{{/toUpper}},
     {{/methods}}
 };
+use polywrap_wasm_rs::{
+    BigInt,
+    BigNumber,
+    Map,
+    JSON,
+};
 {{#propertyDeps.length}}
+
 {{#propertyDeps}}
 {{^isEnum}}
 use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
@@ -15,30 +19,21 @@ use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeywor
 {{#isEnum}}
 use crate::{
     {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}},
-    get_{{#toLower}}{{type}}{{/toLower}}_value,
-    sanitize_{{#toLower}}{{type}}{{/toLower}}_value
 };
 {{/isEnum}}
 {{/propertyDeps}}
 {{/propertyDeps.length}}
 
 pub struct Module {
-  {{#hasEnv}}env: Option<Env> = None;{{/hasEnv}}
+  {{#hasEnv}}pub env: Option<Env>,{{/hasEnv}}
 }
+{{#hasEnv}}
+pub trait EnvTrait {
+  fn __set_env__(&mut self, env: Env) -> ();
+}
+{{/hasEnv}}
 
 pub trait IModule {
-  fn new() -> Module {
-    Module {
-      {{#hasEnv}}env: None,{{/hasEnv}}
-    }
-  }
-
-  {{#hasEnv}}
-  pub fn set_env(&mut self, env: Env) {
-    self.env = Some(env);
-  }
-
-  {{/hasEnv}}
   {{#methods}}
   fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(&self, args: Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String>;
   {{^last}}
@@ -46,4 +41,20 @@ pub trait IModule {
   {{/last}}
   {{/methods}}
 }
+
+impl Module {
+  pub fn __new__() -> Module {
+    Module {
+      {{#hasEnv}}env: None,{{/hasEnv}}
+    }
+  }
+}
+
+{{#hasEnv}}
+impl EnvTrait for Module {
+  fn __set_env__(&mut self, env: Env) -> () {
+    self.env = Some(env);
+  }
+}
+{{/hasEnv}}
 {{/moduleType}}

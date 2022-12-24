@@ -1,43 +1,50 @@
 pub mod wrap;
+use wrap::module::{EnvTrait, IModule, Module};
 pub use wrap::*;
 
-fn create_env(env: Env) -> Env {
-  Env {
-    str: env.str,
-    opt_str: env.opt_str,
-    opt_filled_str: env.opt_filled_str,
-    number: env.number,
-    opt_number: env.opt_number,
-    bool: env.bool,
-    opt_bool: env.opt_bool,
-    en: env.en,
-    opt_enum: env.opt_enum,
-    object: env.object,
-    opt_object: env.opt_object,
-    array: env.array,
-  }
+fn create_env(env: Option<Env>) -> Result<Env, String> {
+    match env {
+        Some(e) => Ok(Env {
+            str: e.str,
+            opt_str: e.opt_str,
+            opt_filled_str: e.opt_filled_str,
+            number: e.number,
+            opt_number: e.opt_number,
+            bool: e.bool,
+            opt_bool: e.opt_bool,
+            en: e.en,
+            opt_enum: e.opt_enum,
+            object: e.object,
+            opt_object: e.opt_object,
+            array: e.array,
+        }),
+        None => Err("Env not set!".to_string()),
+    }
 }
 
-pub fn method_no_env(args: ArgsMethodNoEnv) -> String {
-  args.arg
-}
+impl IModule for Module {
+    fn method_no_env(&self, args: ArgsMethodNoEnv) -> Result<String, String> {
+        Ok(args.arg)
+    }
 
-pub fn method_require_env(_: ArgsMethodRequireEnv, env: Env) -> Env {
-  create_env(env)
-}
+    fn method_require_env(&self, _: ArgsMethodRequireEnv) -> Result<Env, String> {
+        create_env(self.env.clone())
+    }
 
-pub fn method_optional_env(args: ArgsMethodOptionalEnv, env: Option<Env>) -> Option<Env> {
-  match env {
-    Some(e) => Some(create_env(e)),
-    None => None
-  }
-}
+    fn method_optional_env(&self, _: ArgsMethodOptionalEnv) -> Result<Option<Env>, String> {
+        Ok(self.env.clone())
+    }
 
-pub fn subinvoke_env_method(args: ArgsSubinvokeEnvMethod, env: Env) -> CompoundEnv {
-  let external_env: ExternalEnvApiEnv = ExternalEnvApiModule::external_env_method(&(imported::ArgsExternalEnvMethod {})).unwrap();
-  
-  return CompoundEnv {
-    local: env,
-    external: external_env
-  };
+    fn subinvoke_env_method(&self, _: ArgsSubinvokeEnvMethod) -> Result<CompoundEnv, String> {
+        match self.env.clone() {
+            Some(env) => match ExternalEnvApiModule::external_env_method(&(imported::ArgsExternalEnvMethod {})) {
+                Ok(external_env) => Ok(CompoundEnv {
+                    local: env,
+                    external: external_env,
+                }),
+                Err(e) => Err(e),
+            }
+            None => Err("Env not set!".to_string()),
+        }
+    }
 }

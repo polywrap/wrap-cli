@@ -1,6 +1,9 @@
 pub mod wrap;
 pub use wrap::*;
+use wrap::module::{IModule, Module};
 
-pub fn method(args: ArgsMethod) -> LargeCollection {
-    args.large_collection
+impl IModule for Module {
+    fn method(&self, args: ArgsMethod) -> Result<LargeCollection, String> {
+        Ok(args.large_collection)
+    }
 }

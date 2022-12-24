@@ -1,6 +1,9 @@
 pub mod wrap;
 pub use wrap::*;
+use wrap::module::{IModule, Module};
 
-pub fn get_env(_: ArgsGetEnv, env: Option<Env>) -> Option<Env> {
-  env
+impl IModule for Module {
+  fn get_env(&self, _: ArgsGetEnv) -> Result<Option<Env>, String> {
+    Ok(self.env.clone())
+  }
 }

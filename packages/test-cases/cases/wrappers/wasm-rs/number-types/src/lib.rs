@@ -1,26 +1,29 @@
 pub mod wrap;
 pub use wrap::*;
+use wrap::module::{IModule, Module};
 
-pub fn i8_method(args: ArgsI8Method) -> i8 {
-    args.first + args.second
-}
-
-pub fn u8_method(args: ArgsU8Method) -> u8 {
-    args.first + args.second
-}
-
-pub fn i16_method(args: ArgsI16Method) -> i16 {
-    args.first + args.second
-}
-
-pub fn u16_method(args: ArgsU16Method) -> u16 {
-    args.first + args.second
-}
-
-pub fn i32_method(args: ArgsI32Method) -> i32 {
-    args.first + args.second
-}
-
-pub fn u32_method(args: ArgsU32Method) -> u32 {
-    args.first + args.second
+impl IModule for Module {
+    fn i8_method(&self, args: ArgsI8Method) -> Result<i8, String> {
+        Ok(args.first + args.second)
+    }
+    
+    fn u8_method(&self, args: ArgsU8Method) -> Result<u8, String> {
+        Ok(args.first + args.second)
+    }
+    
+    fn i16_method(&self, args: ArgsI16Method) -> Result<i16, String> {
+        Ok(args.first + args.second)
+    }
+    
+    fn u16_method(&self, args: ArgsU16Method) -> Result<u16, String> {
+        Ok(args.first + args.second)
+    }
+    
+    fn i32_method(&self, args: ArgsI32Method) -> Result<i32, String> {
+        Ok(args.first + args.second)
+    }
+    
+    fn u32_method(&self, args: ArgsU32Method) -> Result<u32, String> {
+        Ok(args.first + args.second)
+    }    
 }
