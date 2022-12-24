@@ -9,19 +9,40 @@ use polywrap_wasm_rs::{
     invoke,
     InvokeArgs,
 };
+use crate::module::Module;
 
 #[no_mangle]
 pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32, env_size: u32) -> bool {
     // Ensure the abort handler is properly setup
     abort::wrap_abort_setup();
 
+    let mut module = Module::__new__();
     let args: InvokeArgs = invoke::wrap_invoke_args(method_size, args_size);
 
     match args.method.as_str() {
-        "moduleMethod" => invoke::wrap_invoke(args, env_size, Some(module_method_wrapped)),
-        "objectMethod" => invoke::wrap_invoke(args, env_size, Some(object_method_wrapped)),
-        "optionalEnvMethod" => invoke::wrap_invoke(args, env_size, Some(optional_env_method_wrapped)),
-        "if" => invoke::wrap_invoke(args, env_size, Some(if_wrapped)),
-        _ => invoke::wrap_invoke(args, env_size, None),
+        "moduleMethod" => {
+            let result = module_method_wrapped(&mut module, args.args.as_slice(), env_size);
+            invoke::wrap_invoke_result(result);
+            true
+        }
+        "objectMethod" => {
+            let result = object_method_wrapped(&mut module, args.args.as_slice(), env_size);
+            invoke::wrap_invoke_result(result);
+            true
+        }
+        "optionalEnvMethod" => {
+            let result = optional_env_method_wrapped(&mut module, args.args.as_slice(), env_size);
+            invoke::wrap_invoke_result(result);
+            true
+        }
+        "if" => {
+            let result = if_wrapped(&mut module, args.args.as_slice(), env_size);
+            invoke::wrap_invoke_result(result);
+            true
+        }
+        _ => {
+            invoke::wrap_invoke_error(format!("Could not find invoke function {}", args.method));
+            false
+        }
     }
 }

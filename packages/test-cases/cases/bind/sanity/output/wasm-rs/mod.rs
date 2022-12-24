@@ -21,8 +21,8 @@ pub use _while::{
     sanitize_while_value,
     While
 };
-pub mod env;
-pub use env::Env;
+pub mod _env;
+pub use _env::Env;
 pub mod imported;
 pub use imported::test_import_object::TestImportObject;
 pub use imported::test_import_another_object::TestImportAnotherObject;
