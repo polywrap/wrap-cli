@@ -14,7 +14,7 @@ import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 type NoConfig = Record<string, never>;
 
 export class HttpResolverPlugin extends Module<NoConfig> {
-  // uri-resolver.core.polywrap.eth
+  // wrappers.polywrap.eth:uri-resolver-ext@1.0.0
   public async tryResolveUri(
     args: Args_tryResolveUri,
     _client: CoreClient

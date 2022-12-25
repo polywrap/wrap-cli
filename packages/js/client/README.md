@@ -55,7 +55,7 @@ const config = {
   // declare interface implementations
   interfaces: [
     {
-      interface: "wrap://ens/uri-resolver.core.polywrap.eth",
+      interface: "wrap://ens/wrappers.polywrap.eth:uri-resolver-ext@1.0.0",
       implementations: [
         "wrap://ens/ipfs-resolver.polywrap.eth",
       ],

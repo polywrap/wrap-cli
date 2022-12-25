@@ -40,7 +40,7 @@ export async function foo({
     ],
     interfaces: [
       {
-        interface: new Uri("wrap://ens/uri-resolver.core.polywrap.eth"),
+        interface: new Uri("wrap://ens/wrappers.polywrap.eth:uri-resolver-ext@1.0.0"),
         implementations: [
           new Uri("wrap://ens/http-resolver.polywrap.eth"),
         ],

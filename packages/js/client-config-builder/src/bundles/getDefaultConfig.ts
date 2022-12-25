@@ -1,6 +1,7 @@
 import { ClientConfig } from "../ClientConfig";
 
 import { IUriPackage, Uri } from "@polywrap/core-js";
+import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import {
@@ -53,7 +54,7 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
     ],
     interfaces: [
       {
-        interface: new Uri("wrap://ens/uri-resolver.core.polywrap.eth"),
+        interface: ExtendableUriResolver.interfaceUri,
         implementations: [
           new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
           new Uri("wrap://ens/ens-resolver.polywrap.eth"),

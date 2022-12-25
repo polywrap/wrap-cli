@@ -18,7 +18,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
   Error
 > {
   public static interfaceUri: Uri = new Uri(
-    "wrap://ens/uri-resolver.core.polywrap.eth"
+    "wrap://ens/wrappers.polywrap.eth:uri-resolver-ext@1.0.0"
   );
 
   public readonly extInterfaceUri: Uri;
