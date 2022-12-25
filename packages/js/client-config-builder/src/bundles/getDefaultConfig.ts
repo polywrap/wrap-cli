@@ -1,6 +1,6 @@
 import { ClientConfig } from "../ClientConfig";
 
-import { IUriPackage, Uri } from "@polywrap/core-js";
+import { IUriPackage, Uri, IWrapPackage } from "@polywrap/core-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
@@ -130,7 +130,8 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
     },
     {
       uri: new Uri("wrap://plugin/logger"),
-      package: loggerPlugin({}),
+      // TODO: remove this once types are updated
+      package: loggerPlugin({}) as IWrapPackage,
     },
     {
       uri: new Uri("wrap://ens/fs.polywrap.eth"),

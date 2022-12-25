@@ -172,21 +172,6 @@ jobs:
       - name: Read VERSION into env.RELEASE_VERSION
         run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
 
-      - name: Check If Tag Exists
-        id: tag_check
-        shell: bash -ex {0}
-        run: |
-          GET_API_URL="https://api.github.com/repos/${{github.repository}}/git/ref/tags/${{env.RELEASE_VERSION}}"
-          http_status_code=$(curl -LI $GET_API_URL -o /dev/null -w '%{http_code}\n' -s \
-            -H "Authorization: token ${GITHUB_TOKEN}")
-          if [ "$http_status_code" -ne "404" ] ; then
-            echo TAG_EXISTS=true >> $GITHUB_ENV
-          else
-            echo TAG_EXISTS=false >> $GITHUB_ENV
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -194,22 +179,18 @@ jobs:
           override: true
 
       - name: Build RS crates
-        if: env.TAG_EXISTS == 'false'
         working-directory: ./packages/wasm/rs
         run: cargo build --release
 
       - name: Verify & Generate RS Documentation
-        if: env.TAG_EXISTS == 'false'
         working-directory: ./packages/wasm/rs
         run: cargo doc --no-deps
 
       - name: Upload Rust Crates To Crates.io
-        if: env.TAG_EXISTS == 'false'
         working-directory: ./packages/wasm/rs
         run: cargo publish --token ${{secrets.POLYWRAP_BUILD_BOT_CRATES_PAT}}
 
       - uses: actions/github-script@0.8.0
-        if: env.TAG_EXISTS == 'false'
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |

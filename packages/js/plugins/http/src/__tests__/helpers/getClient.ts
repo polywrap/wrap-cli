@@ -15,7 +15,7 @@ export const getClient = () => {
     {
       interfaces: [
         {
-          interface: ExtendableUriResolver.interfaceUri,
+          interface: ExtendableUriResolver.extInterfaceUri,
           implementations: ["wrap://ens/fs-resolver.polywrap.eth"],
         },
       ],

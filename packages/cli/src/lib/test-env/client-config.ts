@@ -43,6 +43,14 @@ export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
               testnet: new Connection({
                 provider: ethProvider,
               }),
+              mainnet: new Connection({
+                provider:
+                  "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+              }),
+              goerli: new Connection({
+                provider:
+                  "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+              }),
             },
           }),
         }),
