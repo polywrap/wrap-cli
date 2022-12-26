@@ -17,14 +17,5 @@ export const buildPolywrapCoreClientConfig = (
 
   const sanitizedConfig = builder.buildCoreConfig();
 
-  return {
-    ...sanitizedConfig,
-    tracerConfig: {
-      consoleEnabled: !!config?.tracerConfig?.consoleEnabled,
-      consoleDetailed: config?.tracerConfig?.consoleDetailed,
-      httpEnabled: !!config?.tracerConfig?.httpEnabled,
-      httpUrl: config?.tracerConfig?.httpUrl,
-      tracingLevel: config?.tracerConfig?.tracingLevel,
-    },
-  };
+  return sanitizedConfig;
 };

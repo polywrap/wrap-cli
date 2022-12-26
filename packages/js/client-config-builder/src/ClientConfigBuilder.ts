@@ -1,7 +1,8 @@
 import { getDefaultConfig } from "./bundles";
 import { BaseClientConfigBuilder } from "./BaseClientConfigBuilder";
+import { IClientConfigBuilder } from "./IClientConfigBuilder";
 
-import { CoreClientConfig, Uri, IUriResolver } from "@polywrap/core-js";
+import { CoreClientConfig, IUriResolver } from "@polywrap/core-js";
 import {
   IWrapperCache,
   PackageToWrapperCacheResolver,
@@ -19,25 +20,27 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
     super();
   }
 
-  addDefaults(): ClientConfigBuilder {
+  addDefaults(): IClientConfigBuilder {
     return this.add(getDefaultConfig());
   }
 
-  buildCoreConfig(): CoreClientConfig<Uri> {
+  buildCoreConfig(): CoreClientConfig {
+    const clientConfig = this.build();
+
     return {
-      envs: this.config.envs,
-      interfaces: this.config.interfaces,
+      envs: clientConfig.envs,
+      interfaces: clientConfig.interfaces,
       resolver:
         this.resolver ??
         RecursiveResolver.from(
           PackageToWrapperCacheResolver.from(
             [
               StaticResolver.from([
-                ...this.config.redirects,
-                ...this.config.wrappers,
-                ...this.config.packages,
+                ...clientConfig.redirects,
+                ...clientConfig.wrappers,
+                ...clientConfig.packages,
               ]),
-              ...this.config.resolvers,
+              ...this._config.resolvers,
               new ExtendableUriResolver(),
             ],
             this.wrapperCache ?? new WrapperCache()

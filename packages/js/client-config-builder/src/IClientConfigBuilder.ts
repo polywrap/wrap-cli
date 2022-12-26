@@ -1,45 +1,43 @@
+import { BuilderConfig } from "./BuilderConfig";
 import { ClientConfig } from "./ClientConfig";
 
-import {
-  CoreClientConfig,
-  Uri,
-  IUriPackage,
-  IUriWrapper,
-  Env,
-  IUriRedirect,
-} from "@polywrap/core-js";
+import { CoreClientConfig, Wrapper, IWrapPackage } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 
+export type TUri = string;
+export type TEnv = Record<string, unknown>;
+
 export interface IClientConfigBuilder {
-  build(): ClientConfig<Uri>;
-  buildCoreConfig(): CoreClientConfig<Uri>;
-  add(config: Partial<ClientConfig>): IClientConfigBuilder;
+  config: BuilderConfig;
+  build(): ClientConfig;
+  buildCoreConfig(): CoreClientConfig;
+  add(config: Partial<BuilderConfig>): IClientConfigBuilder;
   addDefaults(): IClientConfigBuilder;
-  addWrapper(uriWrapper: IUriWrapper<Uri | string>): IClientConfigBuilder;
-  addWrappers(uriWrappers: IUriWrapper<Uri | string>[]): IClientConfigBuilder;
-  removeWrapper(uri: Uri | string): IClientConfigBuilder;
-  addPackage(uriPackage: IUriPackage<Uri | string>): IClientConfigBuilder;
-  addPackages(uriPackages: IUriPackage<Uri | string>[]): IClientConfigBuilder;
-  removePackage(uri: Uri | string): IClientConfigBuilder;
-  addEnv(uri: Uri | string, env: Record<string, unknown>): IClientConfigBuilder;
-  addEnvs(envs: Env<Uri | string>[]): IClientConfigBuilder;
-  removeEnv(uri: Uri | string): IClientConfigBuilder;
-  setEnv(uri: Uri | string, env: Record<string, unknown>): IClientConfigBuilder;
+  addWrapper(uri: TUri, wrapper: Wrapper): IClientConfigBuilder;
+  addWrappers(uriWrappers: Record<TUri, Wrapper>): IClientConfigBuilder;
+  removeWrapper(uri: TUri): IClientConfigBuilder;
+  addPackage(uri: TUri, wrapPackage: IWrapPackage): IClientConfigBuilder;
+  addPackages(uriPackages: Record<TUri, IWrapPackage>): IClientConfigBuilder;
+  removePackage(uri: TUri): IClientConfigBuilder;
+  addEnv(uri: TUri, env: TEnv): IClientConfigBuilder;
+  addEnvs(uriEnvs: Record<string, TEnv>): IClientConfigBuilder;
+  removeEnv(uri: TUri): IClientConfigBuilder;
+  setEnv(uri: TUri, env: TEnv): IClientConfigBuilder;
   addInterfaceImplementation(
-    interfaceUri: Uri | string,
-    implementationUri: Uri | string
+    interfaceUri: TUri,
+    implementationUri: TUri
   ): IClientConfigBuilder;
   addInterfaceImplementations(
-    interfaceUri: Uri | string,
-    implementationUris: Array<Uri | string>
+    interfaceUri: TUri,
+    implementationUris: Array<TUri>
   ): IClientConfigBuilder;
   removeInterfaceImplementation(
-    interfaceUri: Uri | string,
-    implementationUri: Uri | string
+    interfaceUri: TUri,
+    implementationUri: TUri
   ): IClientConfigBuilder;
-  addRedirect(from: Uri | string, to: Uri | string): IClientConfigBuilder;
-  addRedirects(redirects: IUriRedirect<Uri | string>[]): IClientConfigBuilder;
-  removeRedirect(from: Uri | string): IClientConfigBuilder;
+  addRedirect(from: TUri, to: TUri): IClientConfigBuilder;
+  addRedirects(redirects: Record<TUri, TUri>): IClientConfigBuilder;
+  removeRedirect(from: TUri): IClientConfigBuilder;
   addResolver(resolver: UriResolverLike): IClientConfigBuilder;
   addResolvers(resolvers: UriResolverLike[]): IClientConfigBuilder;
 }

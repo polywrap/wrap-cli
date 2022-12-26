@@ -1,6 +1,7 @@
-import { ClientConfig } from "../ClientConfig";
+import { BuilderConfig } from "../BuilderConfig";
+import { TUri } from "../IClientConfigBuilder";
 
-import { IUriPackage, Uri, IWrapPackage } from "@polywrap/core-js";
+import { IWrapPackage } from "@polywrap/core-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import {
@@ -16,68 +17,6 @@ import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
 
-export const getDefaultConfig = (): ClientConfig<Uri> => {
-  return {
-    envs: [
-      {
-        uri: new Uri(defaultWrappers.graphNode),
-        env: {
-          provider: "https://api.thegraph.com",
-        },
-      },
-      {
-        uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
-        env: {
-          provider: defaultIpfsProviders[0],
-          fallbackProviders: defaultIpfsProviders.slice(1),
-        },
-      },
-    ],
-    redirects: [
-      {
-        from: new Uri("wrap://ens/sha3.polywrap.eth"),
-        to: new Uri(defaultWrappers.sha3),
-      },
-      {
-        from: new Uri("wrap://ens/uts46.polywrap.eth"),
-        to: new Uri(defaultWrappers.uts46),
-      },
-      {
-        from: new Uri("wrap://ens/graph-node.polywrap.eth"),
-        to: new Uri(defaultWrappers.graphNode),
-      },
-      {
-        from: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
-        to: new Uri("wrap://plugin/logger"),
-      },
-    ],
-    interfaces: [
-      {
-        interface: new Uri("wrap://ens/uri-resolver.core.polywrap.eth"),
-        implementations: [
-          new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-          new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-          new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-          new Uri("wrap://ens/http-resolver.polywrap.eth"),
-          // ens-text-record-resolver
-          new Uri("wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY"),
-        ],
-      },
-      {
-        interface: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
-        implementations: [new Uri("wrap://plugin/logger")],
-      },
-      {
-        interface: new Uri(defaultWrappers.concurrentInterface),
-        implementations: [new Uri("wrap://plugin/concurrent")],
-      },
-    ],
-    packages: getDefaultPlugins(),
-    wrappers: [],
-    resolvers: [],
-  };
-};
-
 export const defaultIpfsProviders = [
   "https://ipfs.wrappers.io",
   "https://ipfs.io",
@@ -90,63 +29,55 @@ export const defaultWrappers = {
   concurrentInterface: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
 };
 
-export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
-  return [
+export const getDefaultPlugins = (): Record<TUri, IWrapPackage> => {
+  return {
     // IPFS is required for downloading Polywrap packages
-    {
-      uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
-      package: ipfsPlugin({}),
-    },
+    "wrap://ens/ipfs.polywrap.eth": ipfsPlugin({}),
     // ENS is required for resolving domain to IPFS hashes
-    {
-      uri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-      package: ensResolverPlugin({}),
-    },
-    {
-      uri: new Uri("wrap://ens/ethereum.polywrap.eth"),
-      package: ethereumPlugin({
-        connections: new Connections({
-          networks: {
-            mainnet: new Connection({
-              provider:
-                "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-            }),
-            goerli: new Connection({
-              provider:
-                "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-            }),
-          },
-        }),
+    "wrap://ens/ens-resolver.polywrap.eth": ensResolverPlugin({}),
+    // Ethereum is required for resolving domain to Ethereum addresses
+    "wrap://ens/ethereum.polywrap.eth": ethereumPlugin({
+      connections: new Connections({
+        networks: {
+          mainnet: new Connection({
+            provider:
+              "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+          }),
+          goerli: new Connection({
+            provider:
+              "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+          }),
+        },
       }),
-    },
-    {
-      uri: new Uri("wrap://ens/http.polywrap.eth"),
-      package: httpPlugin({}),
-    },
-    {
-      uri: new Uri("wrap://ens/http-resolver.polywrap.eth"),
-      package: httpResolverPlugin({}),
-    },
-    {
-      uri: new Uri("wrap://plugin/logger"),
-      // TODO: remove this once types are updated
-      package: loggerPlugin({}) as IWrapPackage,
-    },
-    {
-      uri: new Uri("wrap://ens/fs.polywrap.eth"),
-      package: fileSystemPlugin({}),
-    },
-    {
-      uri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-      package: fileSystemResolverPlugin({}),
-    },
-    {
-      uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-      package: ipfsResolverPlugin({}),
-    },
-    {
-      uri: new Uri("wrap://plugin/concurrent"),
-      package: concurrentPromisePlugin({}),
-    },
-  ];
+    }),
+    "wrap://ens/http.polywrap.eth": httpPlugin({}),
+    "wrap://ens/http-resolver.polywrap.eth": httpResolverPlugin({}),
+    "wrap://plugin/logger": loggerPlugin({}) as IWrapPackage,
+    "wrap://ens/fs.polywrap.eth": fileSystemPlugin({}),
+    "wrap://ens/fs-resolver.polywrap.eth": fileSystemResolverPlugin({}),
+    "wrap://ens/ipfs-resolver.polywrap.eth": ipfsResolverPlugin({}),
+    "wrap://plugin/concurrent": concurrentPromisePlugin({}),
+  };
 };
+
+export const getDefaultConfig = (): BuilderConfig => ({
+  redirects: {
+    "wrap://ens/sha3.polywrap.eth": defaultWrappers.sha3,
+    "wrap://ens/uts46.polywrap.eth": defaultWrappers.uts46,
+    "wrap://ens/graph-node.polywrap.eth": defaultWrappers.graphNode,
+    "wrap://ens/wrappers.polywrap.eth:logger@1.0.0": "wrap://plugin/logger",
+  },
+  envs: {
+    [defaultWrappers.graphNode]: {
+      provider: "https://api.thegraph.com",
+    },
+    "wrap://ens/ipfs.polywrap.eth": {
+      provider: defaultIpfsProviders[0],
+      fallbackProviders: defaultIpfsProviders.slice(1),
+    },
+  },
+  packages: getDefaultPlugins(),
+  wrappers: {},
+  interfaces: {},
+  resolvers: [],
+});

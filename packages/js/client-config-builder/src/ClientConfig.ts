@@ -1,5 +1,4 @@
 import {
-  Uri,
   Env,
   InterfaceImplementations,
   IUriRedirect,
@@ -8,11 +7,11 @@ import {
 } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 
-export interface ClientConfig<TUri extends Uri | string = Uri | string> {
-  readonly envs: Env<TUri>[];
-  readonly interfaces: InterfaceImplementations<TUri>[];
-  readonly redirects: IUriRedirect<TUri>[];
-  readonly wrappers: IUriWrapper<TUri>[];
-  readonly packages: IUriPackage<TUri>[];
+export interface ClientConfig {
+  readonly envs: Env[];
+  readonly interfaces: InterfaceImplementations[];
+  readonly redirects: IUriRedirect[];
+  readonly wrappers: IUriWrapper[];
+  readonly packages: IUriPackage[];
   readonly resolvers: UriResolverLike[];
 }
