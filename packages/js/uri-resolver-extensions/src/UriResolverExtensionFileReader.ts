@@ -21,14 +21,13 @@ export class UriResolverExtensionFileReader implements IFileReader {
     const path = combinePaths(this.wrapperUri.path, filePath);
     const result = await UriResolverInterface.module.getFile(
       {
-        invoke: <TData = unknown, TUri extends Uri | string = string>(
-          options: InvokeOptions<TUri>
+        invoke: <TData = unknown>(
+          options: InvokeOptions
+        ): Promise<InvokeResult<TData>> => this.client.invoke<TData>(options),
+        invokeWrapper: <TData = unknown>(
+          options: InvokeOptions & { wrapper: Wrapper }
         ): Promise<InvokeResult<TData>> =>
-          this.client.invoke<TData, TUri>(options),
-        invokeWrapper: <TData = unknown, TUri extends Uri | string = string>(
-          options: InvokeOptions<TUri> & { wrapper: Wrapper }
-        ): Promise<InvokeResult<TData>> =>
-          this.client.invokeWrapper<TData, TUri>(options),
+          this.client.invokeWrapper<TData>(options),
       },
       this.resolverExtensionUri,
       path

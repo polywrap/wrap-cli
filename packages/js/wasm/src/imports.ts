@@ -5,7 +5,7 @@ import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { State } from "./WasmWrapper";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { CoreClient } from "@polywrap/core-js";
+import { CoreClient, Uri } from "@polywrap/core-js";
 
 export const createImports = (config: {
   client: CoreClient;
@@ -34,7 +34,7 @@ export const createImports = (config: {
         const args = readBytes(memory.buffer, argsPtr, argsLen);
 
         const result = await client.invoke<Uint8Array>({
-          uri: uri,
+          uri: Uri.from(uri),
           method: method,
           args: new Uint8Array(args),
           encodeResult: true,
@@ -100,7 +100,7 @@ export const createImports = (config: {
         state.subinvokeImplementation.args = [implUri, method, args];
 
         const result = await client.invoke<Uint8Array>({
-          uri: implUri,
+          uri: Uri.from(implUri),
           method: method,
           args: new Uint8Array(args),
           encodeResult: true,
@@ -178,7 +178,7 @@ export const createImports = (config: {
         uriLen: u32
       ): Promise<boolean> => {
         const uri = readString(memory.buffer, uriPtr, uriLen);
-        const result = await client.getImplementations(uri, {});
+        const result = await client.getImplementations(Uri.from(uri), {});
         if (!result.ok) {
           abort(result.error?.message as string);
           return false;

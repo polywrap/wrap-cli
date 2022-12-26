@@ -22,7 +22,6 @@
     "@polywrap/core-js": "0.10.0-pre.6",
     "@polywrap/msgpack-js": "0.10.0-pre.6",
     "@polywrap/result": "0.10.0-pre.6",
-    "@polywrap/tracing-js": "0.10.0-pre.6",
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.6"
   },
   "devDependencies": {

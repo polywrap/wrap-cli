@@ -4,15 +4,15 @@ import { IUriResolutionContext, UriPackageOrWrapper } from "../uri-resolution";
 import { Result } from "@polywrap/result";
 
 /** Options required for an URI resolution. */
-export interface TryResolveUriOptions<TUri extends Uri | string> {
+export interface TryResolveUriOptions {
   /** The Wrapper's URI */
-  uri: TUri;
+  uri: Uri;
 
   resolutionContext?: IUriResolutionContext;
 }
 
 export interface UriResolverHandler<TError = undefined> {
-  tryResolveUri<TUri extends Uri | string>(
-    options?: TryResolveUriOptions<TUri>
+  tryResolveUri(
+    options?: TryResolveUriOptions
   ): Promise<Result<UriPackageOrWrapper, TError>>;
 }

@@ -1,5 +1,4 @@
 import {
-  Uri,
   GetFileOptions,
   InvokeOptions,
   Invocable,
@@ -25,7 +24,7 @@ export interface Wrapper extends Invocable {
    * This client will be used for any sub-invokes that occur.
    */
   invoke(
-    options: InvokeOptions<Uri>,
+    options: InvokeOptions,
     invoker: Invoker
   ): Promise<InvocableResult<unknown>>;
 

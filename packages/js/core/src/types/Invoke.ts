@@ -4,9 +4,9 @@ import { IUriResolutionContext } from "../uri-resolution";
 import { Result } from "@polywrap/result";
 
 /** Options required for an Wrapper invocation. */
-export interface InvokeOptions<TUri extends Uri | string = string> {
+export interface InvokeOptions {
   /** The Wrapper's URI */
-  uri: TUri;
+  uri: Uri;
 
   /** Method to be executed. */
   method: string;
@@ -32,17 +32,16 @@ export interface InvokeOptions<TUri extends Uri | string = string> {
  */
 export type InvokeResult<TData = unknown> = Result<TData, Error>;
 
-export interface InvokerOptions<TUri extends Uri | string = string>
-  extends InvokeOptions<TUri> {
+export interface InvokerOptions extends InvokeOptions {
   encodeResult?: boolean;
 }
 
 export interface Invoker {
-  invokeWrapper<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokerOptions<TUri> & { wrapper: Wrapper }
+  invokeWrapper<TData = unknown>(
+    options: InvokerOptions & { wrapper: Wrapper }
   ): Promise<InvokeResult<TData>>;
-  invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokerOptions<TUri>
+  invoke<TData = unknown>(
+    options: InvokerOptions
   ): Promise<InvokeResult<TData>>;
 }
 
@@ -52,7 +51,7 @@ export type InvocableResult<TData = unknown> = InvokeResult<TData> & {
 
 export interface Invocable {
   invoke(
-    options: InvokeOptions<Uri>,
+    options: InvokeOptions,
     invoker: Invoker
   ): Promise<InvocableResult<unknown>>;
 }

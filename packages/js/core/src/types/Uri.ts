@@ -1,4 +1,3 @@
-import { Tracer } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 /** URI configuration */
@@ -62,15 +61,6 @@ export class Uri {
     return result.ok;
   }
 
-  public toString(): string {
-    return this._config.uri;
-  }
-
-  public toJSON(): string {
-    return this._config.uri;
-  }
-
-  @Tracer.traceMethod("Uri: parseUri")
   public static parseUri(uri: string): Result<UriConfig, Error> {
     if (!uri) {
       return ResultErr(Error("The provided URI is empty"));
@@ -125,7 +115,6 @@ export class Uri {
     });
   }
 
-  @Tracer.traceMethod("Uri: from")
   public static from(uri: Uri | string): Uri {
     if (typeof uri === "string") {
       return new Uri(uri);
@@ -134,5 +123,13 @@ export class Uri {
     } else {
       throw Error(`Unknown uri type, cannot convert. ${JSON.stringify(uri)}`);
     }
+  }
+
+  public toString(): string {
+    return this._config.uri;
+  }
+
+  public toJSON(): string {
+    return this._config.uri;
   }
 }

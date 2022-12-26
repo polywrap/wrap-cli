@@ -5,9 +5,9 @@ import { UriResolverHandler } from "./UriResolver";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
-export interface CoreClientConfig<TUri extends Uri | string = Uri | string> {
-  readonly interfaces?: Readonly<InterfaceImplementations<TUri>[]>;
-  readonly envs?: Readonly<Env<TUri>[]>;
+export interface CoreClientConfig {
+  readonly interfaces?: Readonly<InterfaceImplementations[]>;
+  readonly envs?: Readonly<Env[]>;
   readonly resolver: Readonly<IUriResolver<unknown>>;
 }
 
@@ -31,32 +31,27 @@ export interface ValidateOptions {
 }
 
 export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
-  getConfig(): CoreClientConfig<Uri>;
+  getConfig(): CoreClientConfig;
 
-  getInterfaces(): readonly InterfaceImplementations<Uri>[] | undefined;
+  getInterfaces(): readonly InterfaceImplementations[] | undefined;
 
-  getEnvs(): readonly Env<Uri>[] | undefined;
+  getEnvs(): readonly Env[] | undefined;
 
-  getEnvByUri<TUri extends Uri | string>(uri: TUri): Env<Uri> | undefined;
+  getEnvByUri(uri: Uri): Env | undefined;
 
   getResolver(): IUriResolver<unknown>;
 
-  getManifest<TUri extends Uri | string>(
-    uri: TUri
-  ): Promise<Result<WrapManifest, Error>>;
+  getManifest(uri: Uri): Promise<Result<WrapManifest, Error>>;
 
-  getFile<TUri extends Uri | string>(
-    uri: TUri,
+  getFile(
+    uri: Uri,
     options: GetFileOptions
   ): Promise<Result<string | Uint8Array, Error>>;
 
-  getImplementations<TUri extends Uri | string>(
-    uri: TUri,
+  getImplementations(
+    uri: Uri,
     options: GetImplementationsOptions
-  ): Promise<Result<TUri[], Error>>;
+  ): Promise<Result<Uri[], Error>>;
 
-  validate<TUri extends Uri | string>(
-    uri: TUri,
-    options?: ValidateOptions
-  ): Promise<Result<true, Error>>;
+  validate(uri: Uri, options?: ValidateOptions): Promise<Result<true, Error>>;
 }

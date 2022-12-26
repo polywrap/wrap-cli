@@ -1,6 +1,6 @@
 import { Uri, Wrapper } from ".";
 
-export interface IUriWrapper<TUri extends Uri | string> {
-  uri: TUri;
+export interface IUriWrapper {
+  uri: Uri;
   wrapper: Wrapper;
 }

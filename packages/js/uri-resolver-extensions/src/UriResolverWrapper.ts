@@ -83,7 +83,7 @@ const tryResolveUriWithImplementation = async (
   const invokeResult = await client.invokeWrapper<UriResolverInterface.MaybeUriOrManifest>(
     {
       wrapper: extensionWrapper,
-      uri: implementationUri.uri,
+      uri: implementationUri,
       method: "tryResolveUri",
       args: {
         authority: uri.authority,

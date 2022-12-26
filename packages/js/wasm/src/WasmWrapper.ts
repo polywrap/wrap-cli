@@ -7,11 +7,9 @@ import { createWasmWrapper } from "./helpers/createWasmWrapper";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { Tracer, TracingLevel } from "@polywrap/tracing-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import {
   Wrapper,
-  Uri,
   InvokeOptions,
   CoreClient,
   InvocableResult,
@@ -53,14 +51,7 @@ export class WasmWrapper implements Wrapper {
   constructor(
     private _manifest: WrapManifest,
     private _fileReader: IFileReader
-  ) {
-    Tracer.startSpan("WasmWrapper: constructor");
-    Tracer.setAttribute("args", {
-      manifest: this._manifest,
-      fileReader: this._fileReader,
-    });
-    Tracer.endSpan();
-  }
+  ) {}
 
   static async from(
     manifestBuffer: Uint8Array,
@@ -99,7 +90,6 @@ export class WasmWrapper implements Wrapper {
     );
   }
 
-  @Tracer.traceMethod("WasmWrapper: getFile")
   public async getFile(
     options: GetFileOptions
   ): Promise<Result<Uint8Array | string, Error>> {
@@ -131,21 +121,14 @@ export class WasmWrapper implements Wrapper {
     return ResultOk(data);
   }
 
-  @Tracer.traceMethod("WasmWrapper: getManifest")
   public getManifest(): WrapManifest {
     return this._manifest;
   }
 
-  @Tracer.traceMethod("WasmWrapper: invoke", TracingLevel.High)
   public async invoke(
-    options: InvokeOptions<Uri>,
+    options: InvokeOptions,
     client: CoreClient
   ): Promise<InvocableResult<Uint8Array>> {
-    Tracer.setAttribute(
-      "label",
-      `WASM Wrapper invoked: ${options.uri.uri}, with method ${options.method}`,
-      TracingLevel.High
-    );
     try {
       const { method } = options;
       const args = options.args || {};
@@ -222,7 +205,6 @@ export class WasmWrapper implements Wrapper {
     }
   }
 
-  @Tracer.traceMethod("WasmWrapper: _processInvokeResult")
   private _processInvokeResult(
     state: State,
     result: boolean,
@@ -243,7 +225,6 @@ export class WasmWrapper implements Wrapper {
     }
   }
 
-  @Tracer.traceMethod("WasmWrapper: getWasmModule")
   private async _getWasmModule(): Promise<Result<Uint8Array, Error>> {
     if (this._wasmModule === undefined) {
       const result = await this._fileReader.readFile(WRAP_MODULE_PATH);
