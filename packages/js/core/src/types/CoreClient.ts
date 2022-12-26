@@ -52,6 +52,4 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
     uri: Uri,
     options: GetImplementationsOptions
   ): Promise<Result<Uri[], Error>>;
-
-  validate(uri: Uri, options?: ValidateOptions): Promise<Result<true, Error>>;
 }
