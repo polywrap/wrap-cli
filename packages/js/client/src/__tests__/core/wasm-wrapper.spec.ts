@@ -2,9 +2,8 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
-import { Uri, Subscription, PolywrapClient, IWrapPackage } from "../..";
+import { Uri, PolywrapClient, IWrapPackage } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
-import { makeMemoryStoragePlugin } from "../e2e/memory-storage";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { ErrResult } from "../utils/resultTypes";
@@ -16,15 +15,9 @@ jest.setTimeout(200000);
 const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 const simpleWrapperUri = new Uri(`fs/${simpleWrapperPath}/build`);
 
-const memoryStoragePluginUri = "wrap://ens/memory-storage.polywrap.eth";
-
-const simpleMemoryWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-memory`;
-const simpleMemoryWrapperUri = new Uri(`fs/${simpleMemoryWrapperPath}/build`);
-
 describe("wasm-wrapper", () => {
   beforeAll(async () => {
     await buildWrapper(simpleWrapperPath, undefined, true);
-    await buildWrapper(simpleMemoryWrapperPath, undefined, true);
   });
 
   const mockPlugin = (): IWrapPackage => {
@@ -228,105 +221,5 @@ describe("wasm-wrapper", () => {
     expect(pluginGetFileResult.error?.message).toContain(
       "client.getFile(...) is not implemented for Plugins."
     );
-  });
-
-  test("subscribe", async () => {
-    const client = new PolywrapClient({
-      resolvers: [
-        {
-          uri: memoryStoragePluginUri,
-          package: makeMemoryStoragePlugin({}),
-        },
-      ],
-    });
-
-    // test subscription
-    let expectedResults: number[] = [];
-    let results: number[] = [];
-    let value = 0;
-
-    const setter = setInterval(async () => {
-      expectedResults.push(value);
-
-      await client.invoke({
-        uri: simpleMemoryWrapperUri.uri,
-        method: "setData",
-        args: {
-          value: value++,
-        },
-      });
-    }, 500);
-
-    const getSubscription: Subscription<number> = client.subscribe<number>({
-      uri: simpleMemoryWrapperUri.uri,
-      method: "getData",
-      frequency: { ms: 650 },
-    });
-
-    for await (let result of getSubscription) {
-      if (!result.ok) fail(result.error);
-      const val = result.value;
-
-      if (val !== undefined) {
-        results.push(val);
-        if (results.length >= 2) {
-          break;
-        }
-      }
-    }
-    clearInterval(setter);
-
-    expect(results).toStrictEqual(expectedResults);
-  });
-
-  test("subscription early stop", async () => {
-    const client = new PolywrapClient({
-      resolvers: [
-        {
-          uri: memoryStoragePluginUri,
-          package: makeMemoryStoragePlugin({}),
-        },
-      ],
-    });
-
-    // test subscription
-    let results: number[] = [];
-    let value = 0;
-
-    const setter = setInterval(async () => {
-      await client.invoke({
-        uri: simpleMemoryWrapperUri.uri,
-        method: "setData",
-        args: {
-          value: value++,
-        },
-      });
-    }, 500);
-
-    const getSubscription: Subscription<number> = client.subscribe<number>({
-      uri: simpleMemoryWrapperUri.uri,
-      method: "getData",
-      frequency: { ms: 550 },
-    });
-
-    new Promise(async () => {
-      for await (let result of getSubscription) {
-        if (!result.ok) fail(result.error);
-        const val = result.value;
-
-        if (val !== undefined) {
-          results.push(val);
-          if (val >= 2) {
-            break;
-          }
-        }
-      }
-    });
-    await new Promise((r) => setTimeout(r, 1000));
-    getSubscription.stop();
-    clearInterval(setter);
-
-    expect(results).toContain(0);
-    expect(results).not.toContain(2);
   });
 });
