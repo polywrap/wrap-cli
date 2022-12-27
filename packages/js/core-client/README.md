@@ -5,7 +5,7 @@
 
 <br/>
 <br/>
-The Polywrap JavaScript core client invokes functions of wrappers and plugins. It's designed to run in any environment that can execute JavaScript (think websites, node scripts, etc.). It has TypeScript support.
+The Polywrap JavaScript core client invokes wrapper functions. It's designed to run in any environment that can execute JavaScript (think websites, node scripts, etc.). It has TypeScript support.
 
 ## Installation
 
@@ -117,7 +117,7 @@ constructor(config: PolywrapCoreClientConfig);
 /**
  * Returns the configuration used to instantiate the client
  *
- * @returns an immutable Polywrap client config
+ * @returns an immutable Polywrap core client config
  */
 getConfig(): PolywrapCoreClientConfig<Uri>;
 ```
@@ -217,37 +217,10 @@ getFile<TUri extends Uri | string>(uri: TUri, options: GetFileOptions): Promise<
  *  from the configuration used to instantiate the client
  *
  * @param uri - a wrap URI
- * @param options - { applyResolution?: boolean }
+ * @param options - { applyResolution?: boolean; resolutionContext?: IUriResolutionContext }
  * @returns a Result containing URI array if the request was successful
  */
 getImplementations<TUri extends Uri | string>(uri: TUri, options?: GetImplementationsOptions): Promise<Result<TUri[], Error>>;
-```
-
-### query
-```ts
-/**
- * Invoke a wrapper using GraphQL query syntax
- *
- * @remarks
- * This method behaves similar to the invoke method and allows parallel requests,
- * but the syntax is more verbose. If the query is successful, data will be returned
- * and the `error` value of the returned object will be undefined. If the query fails,
- * the data property will be undefined and the error property will be populated.
- *
- * @param options - {
- *   // The Wrapper's URI
- *   uri: TUri;
- *
- *   // The GraphQL query to parse and execute, leading to one or more Wrapper invocations.
- *   query: string | QueryDocument;
- *
- *   // Variables referenced within the query string via GraphQL's '$variable' syntax.
- *   variables?: TVariables;
- * }
- *
- * @returns A Promise containing an object with either the data or an error
- */
-query<TData extends Record<string, unknown> = Record<string, unknown>, TVariables extends Record<string, unknown> = Record<string, unknown>, TUri extends Uri | string = string>(options: QueryOptions<TVariables, TUri>): Promise<QueryResult<TData>>;
 ```
 
 ### invokeWrapper
@@ -309,43 +282,6 @@ invokeWrapper<TData = unknown, TUri extends Uri | string = string>(options: Invo
  * @returns A Promise with a Result containing the return value or an error
  */
 invoke<TData = unknown, TUri extends Uri | string = string>(options: InvokerOptions<TUri>): Promise<InvokeResult<TData>>;
-```
-
-### subscribe
-```ts
-/**
- * Invoke a wrapper at a regular frequency (within ~16ms)
- *
- * @param options - {
- *   // The Wrapper's URI
- *   uri: TUri;
- *
- *   // Method to be executed.
- *   method: string;
- *
- *   //Arguments for the method, structured as a map, removing the chance of incorrectly ordering arguments.
- *    args?: Record<string, unknown> | Uint8Array;
- *
- *   // Env variables for the wrapper invocation.
- *    env?: Record<string, unknown>;
- *
- *   resolutionContext?: IUriResolutionContext;
- *
- *   // if true, return value is a msgpack-encoded byte array
- *   encodeResult?: boolean;
- *
- *   // the frequency at which to perform the invocation
- *   frequency?: {
- *     ms?: number;
- *     sec?: number;
- *     min?: number;
- *     hours?: number;
- *   }
- * }
- *
- * @returns A Promise with a Result containing the return value or an error
- */
-subscribe<TData = unknown, TUri extends Uri | string = string>(options: SubscribeOptions<TUri>): Subscription<TData>;
 ```
 
 ### tryResolveUri

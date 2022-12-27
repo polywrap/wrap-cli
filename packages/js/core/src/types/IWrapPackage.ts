@@ -1,10 +1,15 @@
-import { Wrapper, GetManifestOptions } from ".";
+import { Wrapper } from ".";
 
 import {
   DeserializeManifestOptions,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
+
+/** Options for IWrapPackage's getManifest method */
+export interface GetManifestOptions {
+  noValidate?: boolean;
+}
 
 export interface IWrapPackage {
   getManifest(

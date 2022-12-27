@@ -179,7 +179,7 @@ export class PolywrapCoreClient implements CoreClient {
    *  from the configuration used to instantiate the client
    *
    * @param uri - a wrap URI
-   * @param options - { applyResolution?: boolean }
+   * @param options - { applyResolution?: boolean; resolutionContext?: IUriResolutionContext }
    * @returns a Result containing URI array if the request was successful
    */
   @Tracer.traceMethod("PolywrapClient: getImplementations")
