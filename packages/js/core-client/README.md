@@ -27,7 +27,7 @@ const client = new PolywrapCoreClient(config);
 
 ```ts
 await client.invoke({
-  uri: "ens/rinkeby/helloworld.dev.polywrap.eth",
+  uri: "ens/helloworld.dev.polywrap.eth",
   method: "logMessage",
   args: {
     message: "Hello World!"
