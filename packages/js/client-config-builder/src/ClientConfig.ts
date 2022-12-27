@@ -13,25 +13,32 @@ import { UriResolverLike } from "@polywrap/uri-resolvers-js";
  *
  * @remarks
  * The PolywrapClient converts the ClientConfig to a CoreClientConfig.
- * A UriResolverLike can be any one of:
- *     IUriResolver<unknown>
- *   | IUriRedirect<Uri | string>
- *   | IUriPackage<Uri | string>
- *   | IUriWrapper<Uri | string>
- *   | UriResolverLike[];
- *
- * @property envs - set environmental variables for a wrapper
- * @property interfaces - register interface implementations
- * @property redirects - redirect invocations from one uri to another
- * @property wrappers - add embedded wrappers
- * @property packages - add and configure embedded packages
- * @property resolvers - customize URI resolution
  */
 export interface ClientConfig<TUri extends Uri | string = Uri | string> {
+  /** set environmental variables for a wrapper */
   readonly envs: Env<TUri>[];
+
+  /** redirect invocations from one uri to another */
   readonly interfaces: InterfaceImplementations<TUri>[];
+
+  /** register interface implementations */
   readonly redirects: IUriRedirect<TUri>[];
+
+  /** add embedded wrappers */
   readonly wrappers: IUriWrapper<TUri>[];
+
+  /** add and configure embedded packages */
   readonly packages: IUriPackage<TUri>[];
+
+  /** customize URI resolution
+   *
+   * @remarks
+   * A UriResolverLike can be any one of:
+   *     IUriResolver<unknown>
+   *   | IUriRedirect<Uri | string>
+   *   | IUriPackage<Uri | string>
+   *   | IUriWrapper<Uri | string>
+   *   | UriResolverLike[]
+   *   */
   readonly resolvers: UriResolverLike[];
 }

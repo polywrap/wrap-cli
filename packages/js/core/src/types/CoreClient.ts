@@ -5,9 +5,15 @@ import { UriResolverHandler } from "./UriResolver";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
+/** Core Client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors */
 export interface CoreClientConfig<TUri extends Uri | string = Uri | string> {
+  /** set environmental variables for a wrapper */
   readonly interfaces?: Readonly<InterfaceImplementations<TUri>[]>;
+
+  /** register interface implementations */
   readonly envs?: Readonly<Env<TUri>[]>;
+
+  /** configure URI resolution for redirects, packages, and wrappers */
   readonly resolver: Readonly<IUriResolver<unknown>>;
 }
 
