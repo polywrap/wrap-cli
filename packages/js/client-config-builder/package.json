@@ -16,9 +16,11 @@
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose"
+    "test:watch": "jest --watch --passWithNoTests --verbose",
+    "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
+    "doc-snippets": "^0.4.0-pre.1",
     "@polywrap/core-js": "0.10.0-pre.6",
     "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.6",
     "@polywrap/ethereum-plugin-js": "0.10.0-pre.6",
@@ -45,5 +47,21 @@
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {
     "access": "public"
+  },
+  "doc-snippets": {
+    "extract": {
+      "include": "./**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}",
+      "ignore": [
+        "./**/node_modules/**",
+        "./**/.polywrap/**",
+        "./**/__tests__/**"
+      ],
+      "dir": "./src"
+    },
+    "inject": {
+      "dir": "./readme",
+      "include": "./README.md"
+    },
+    "outputDir": "./"
   }
 }

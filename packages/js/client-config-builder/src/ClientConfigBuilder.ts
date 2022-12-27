@@ -12,6 +12,7 @@ import {
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 export class ClientConfigBuilder extends BaseClientConfigBuilder {
+  // $start: ClientConfigBuilder-constructor
   /**
    * Instantiate a ClientConfigBuilder
    *
@@ -22,6 +23,7 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
     private readonly wrapperCache?: IWrapperCache,
     private readonly resolver?: IUriResolver<unknown>
   ) {
+    // $end
     super();
   }
 

@@ -8,6 +8,7 @@ import {
 } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 
+// $start: ClientConfig
 /**
  * Client configuration that can be passed to the PolywrapClient
  *
@@ -42,3 +43,4 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    *   */
   readonly resolvers: UriResolverLike[];
 }
+// $end
