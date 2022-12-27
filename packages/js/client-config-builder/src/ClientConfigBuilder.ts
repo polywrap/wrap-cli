@@ -12,6 +12,12 @@ import {
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 export class ClientConfigBuilder extends BaseClientConfigBuilder {
+  /**
+   * Instantiate a ClientConfigBuilder
+   *
+   * @param wrapperCache?: a wrapper cache to be used in place of the default wrapper cache
+   * @param resolver?: a uri resolver to be used in place of any added redirects, wrappers, packages, and resolvers when building a CoreClientConfig
+   */
   constructor(
     private readonly wrapperCache?: IWrapperCache,
     private readonly resolver?: IUriResolver<unknown>
