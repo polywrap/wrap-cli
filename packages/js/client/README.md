@@ -107,37 +107,13 @@ const altClient = new PolywrapClient(config, { noDefaults: true });
 ## Types
 
 ```ts
-/**
- * Client configuration that can be passed to the PolywrapClient.
- *
- * @remarks
- * Extends ClientConfig from @polywrap/client-config-builder-js.
- * The PolywrapClient converts the PolywrapClientConfig to a CoreClientConfig.
- */
-export interface PolywrapClientConfig<TUri extends Uri | string = Uri | string>
-  extends ClientConfig<TUri> {
-  /** a wrapper cache to be used in place of the default wrapper cache */
-  readonly wrapperCache?: IWrapperCache;
-
-  /** configuration for opentelemetry tracing to aid in debugging */
-  readonly tracerConfig?: Readonly<Partial<TracerConfig>>;
-}
+// $snippet: PolywrapClientConfig
 ```
 
 ## PolywrapClient
 
 ### Constructor
 ```ts
-/**
- * Instantiate a PolywrapClient
- *
- * @param config - a whole or partial client configuration
- * @param options - { noDefaults?: boolean }
- */
-constructor(config?: Partial<PolywrapClientConfig>, options?: {
-  noDefaults?: false;
-});
-constructor(config: PolywrapCoreClientConfig, options: {
-  noDefaults: true;
-});
+// $snippet: PolywrapClient-constructor
+  )
 ```

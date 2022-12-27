@@ -3,6 +3,7 @@ import { IWrapperCache } from "@polywrap/uri-resolvers-js";
 import { TracerConfig } from "@polywrap/tracing-js";
 import { ClientConfig } from "@polywrap/client-config-builder-js";
 
+// $start: PolywrapClientConfig
 /**
  * Client configuration that can be passed to the PolywrapClient.
  *
@@ -18,3 +19,4 @@ export interface PolywrapClientConfig<TUri extends Uri | string = Uri | string>
   /** configuration for opentelemetry tracing to aid in debugging */
   readonly tracerConfig?: Readonly<Partial<TracerConfig>>;
 }
+// $end
