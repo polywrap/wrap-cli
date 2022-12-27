@@ -1,6 +1,7 @@
 import { CoreClientConfig, Uri } from "@polywrap/core-js";
 import { TracerConfig } from "@polywrap/tracing-js";
 
+// $start: PolywrapCoreClientConfig
 /**
  * Core Client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors.
  *
@@ -14,3 +15,4 @@ export interface PolywrapCoreClientConfig<
   /** configuration for opentelemetry tracing to aid in debugging */
   readonly tracerConfig?: Readonly<Partial<TracerConfig>>;
 }
+// $end

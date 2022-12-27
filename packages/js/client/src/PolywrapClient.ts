@@ -25,8 +25,8 @@ export class PolywrapClient extends PolywrapCoreClient {
       | undefined
       | PolywrapCoreClientConfig,
     options?: { noDefaults?: boolean }
-    // $end
   ) {
+    // $end
     super(
       !options?.noDefaults
         ? buildPolywrapCoreClientConfig(

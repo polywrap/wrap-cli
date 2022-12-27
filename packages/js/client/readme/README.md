@@ -115,5 +115,4 @@ $snippet: PolywrapClientConfig
 ### Constructor
 ```ts
 $snippet: PolywrapClient-constructor
-  )
 ```

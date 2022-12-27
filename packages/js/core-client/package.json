@@ -14,7 +14,8 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
-    "test": "jest --passWithNoTests --runInBand --verbose=true --detectOpenHandles --forceExit"
+    "test": "jest --passWithNoTests --runInBand --verbose=true --detectOpenHandles --forceExit",
+    "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
     "@polywrap/core-js": "0.10.0-pre.6",
@@ -24,6 +25,7 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.6"
   },
   "devDependencies": {
+    "doc-snippets": "^0.4.0-pre.1",
     "@polywrap/uri-resolvers-js": "0.10.0-pre.6",
     "@types/jest": "26.0.8",
     "@types/uuid": "8.3.0",
@@ -37,5 +39,21 @@
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {
     "access": "public"
+  },
+  "doc-snippets": {
+    "extract": {
+      "include": "./**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}",
+      "ignore": [
+        "./**/node_modules/**",
+        "./**/.polywrap/**",
+        "./**/__tests__/**"
+      ],
+      "dir": "./src"
+    },
+    "inject": {
+      "dir": "./readme",
+      "include": "./README.md"
+    },
+    "outputDir": "./"
   }
 }
