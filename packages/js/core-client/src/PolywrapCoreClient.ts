@@ -380,8 +380,8 @@ export class PolywrapCoreClient implements CoreClient {
    * Unlike other methods, `loadWrapper` does not accept a string URI.
    * You can create a Uri (from the `@polywrap/core-js` package) using `Uri.from("wrap://...")`
    *
-   * @param uri: the Uri to resolve
-   * @param resolutionContext? a resolution context
+   * @param uri - the Uri to resolve
+   * @param resolutionContext? - a resolution context
    * @param options - { noValidate?: boolean }
    * @returns A Promise with a Result containing a Wrapper or Error
    */
@@ -452,7 +452,7 @@ export class PolywrapCoreClient implements CoreClient {
    * Validate a wrapper, given a URI.
    * Optionally, validate the full ABI and/or recursively validate imports.
    *
-   * @param uri: the Uri to resolve
+   * @param uri - the Uri to resolve
    * @param options - { abi?: boolean; recursive?: boolean }
    * @returns A Promise with a Result containing a boolean or Error
    */
