@@ -1,10 +1,4 @@
-import {
-  Invoker,
-  Uri,
-  InterfaceImplementations,
-  Env,
-  WrapError,
-} from ".";
+import { Invoker, Uri, InterfaceImplementations, Env, WrapError } from ".";
 import { IUriResolutionContext, IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
 
