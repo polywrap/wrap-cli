@@ -19,10 +19,10 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
   /** set environmental variables for a wrapper */
   readonly envs: Env<TUri>[];
 
-  /** redirect invocations from one uri to another */
+  /** register interface implementations */
   readonly interfaces: InterfaceImplementations<TUri>[];
 
-  /** register interface implementations */
+  /** redirect invocations from one uri to another */
   readonly redirects: IUriRedirect<TUri>[];
 
   /** add embedded wrappers */

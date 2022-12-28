@@ -5,6 +5,8 @@ import { UriResolverHandler } from "./UriResolver";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
+// $start: CoreClient.ts
+
 /** Core Client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors */
 export interface CoreClientConfig<TUri extends Uri | string = Uri | string> {
   /** set environmental variables for a wrapper */
@@ -44,7 +46,7 @@ export interface ValidateOptions {
   recursive?: boolean;
 }
 
-/** CoreClient invokes wrapper functions, and interacts with wrap packages. */
+/** CoreClient invokes wrappers and interacts with wrap packages. */
 export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
   /**
    * Returns the configuration used to instantiate the client
@@ -130,3 +132,5 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
     options?: ValidateOptions
   ): Promise<Result<true, Error>>;
 }
+
+// $end

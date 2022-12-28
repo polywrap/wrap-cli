@@ -230,7 +230,7 @@ export class PolywrapCoreClient implements CoreClient {
 
   // $start: PolywrapCoreClient-invokeWrapper
   /**
-   * Invoke a wrapper using standard syntax and an instance of the wrapper
+   * Invoke a wrapper using an instance of the wrapper.
    *
    * @param options - {
    *   // The Wrapper's URI
@@ -239,18 +239,21 @@ export class PolywrapCoreClient implements CoreClient {
    *   // Method to be executed.
    *   method: string;
    *
-   *   //Arguments for the method, structured as a map, removing the chance of incorrectly ordering arguments.
+   *   //Arguments for the method, structured as a map, removing the chance of incorrectly ordered arguments.
    *    args?: Record<string, unknown> | Uint8Array;
    *
    *   // Env variables for the wrapper invocation.
    *    env?: Record<string, unknown>;
    *
+   *   // A Uri resolution context
    *   resolutionContext?: IUriResolutionContext;
    *
    *   // if true, return value is a msgpack-encoded byte array
    *   encodeResult?: boolean;
-   * }
    *
+   *   // The wrapper to invoke
+   *   wrapper: Wrapper
+   * }
    * @returns A Promise with a Result containing the return value or an error
    */
   @Tracer.traceMethod("PolywrapClient: invokeWrapper")
@@ -292,7 +295,9 @@ export class PolywrapCoreClient implements CoreClient {
 
   // $start: PolywrapCoreClient-invoke
   /**
-   * Invoke a wrapper using standard syntax.
+   * Invoke a wrapper.
+   *
+   * @remarks
    * Unlike `invokeWrapper`, this method automatically retrieves and caches the wrapper.
    *
    * @param options - {
@@ -302,18 +307,18 @@ export class PolywrapCoreClient implements CoreClient {
    *   // Method to be executed.
    *   method: string;
    *
-   *   //Arguments for the method, structured as a map, removing the chance of incorrectly ordering arguments.
+   *   //Arguments for the method, structured as a map, removing the chance of incorrectly ordered arguments.
    *    args?: Record<string, unknown> | Uint8Array;
    *
    *   // Env variables for the wrapper invocation.
    *    env?: Record<string, unknown>;
    *
+   *   // A Uri resolution context
    *   resolutionContext?: IUriResolutionContext;
    *
    *   // if true, return value is a msgpack-encoded byte array
    *   encodeResult?: boolean;
    * }
-   *
    * @returns A Promise with a Result containing the return value or an error
    */
   @Tracer.traceMethod("PolywrapClient: invoke")

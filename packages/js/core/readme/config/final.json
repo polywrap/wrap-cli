@@ -1,0 +1,21 @@
+{
+  "doc-snippets": {
+    "extract": {
+      "include": [
+        "./src/**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}",
+        "./readme/sub-sections/injected/**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}"
+      ],
+      "ignore": [
+        "./**/node_modules/**",
+        "./**/.polywrap/**",
+        "./**/__tests__/**"
+      ],
+      "dir": "./"
+    },
+    "inject": {
+      "dir": "./readme",
+      "include": "./README.md"
+    },
+    "outputDir": "./"
+  }
+}

@@ -2,10 +2,18 @@ import { Uri } from ".";
 
 import { Tracer } from "@polywrap/tracing-js";
 
+// $start: InterfaceImplementations.ts
+
+/** An interface and a list of wrappers that implement the interface */
 export interface InterfaceImplementations<TUri extends Uri | string = string> {
+  /** Uri of interface */
   interface: TUri;
+
+  /** Uris of implementations */
   implementations: TUri[];
 }
+
+// $end
 
 export const sanitizeInterfaceImplementations = Tracer.traceFunc(
   "core: sanitizeInterfaceImplementations",
