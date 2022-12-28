@@ -496,7 +496,7 @@ export interface TryResolveUriOptions<TUri extends Uri | string> {
   resolutionContext?: IUriResolutionContext;
 }
 
-/** An entity capable of resolving a WRAP URI  */
+/** An entity capable of resolving a wrap URI, typically by using an IUriResolver implementation */
 export interface UriResolverHandler<TError = undefined> {
   /**
    * Resolve a URI to a wrap package, a wrapper, or a uri
@@ -549,3 +549,203 @@ export interface Wrapper extends Invocable {
 
 ```
 
+## UriResolverInterface
+
+### MaybeUriOrManifest
+```ts
+/** Contains either a Uri, a manifest, or neither */
+export interface MaybeUriOrManifest {
+  /** wrap URI */
+  uri?: string;
+
+  /** Serialized wrap manifest */
+  manifest?: Uint8Array;
+}
+```
+
+### Module
+
+#### tryResolveUri
+```ts
+  /**
+   * Use an invoker to try to resolve a URI using a wrapper that implements the UriResolver interface
+   *
+   * @param invoker - invokes the wrapper with the resolution URI as an argument
+   * @param wrapper - URI for wrapper that implements the UriResolver interface
+   * @param uri - the URI to resolve
+   */
+  tryResolveUri: Tracer.traceFunc(
+    "core: uri-resolver: tryResolveUri",
+    async (
+      invoker: Invoker,
+      wrapper: Uri,
+      uri: Uri
+    ): Promise<Result<MaybeUriOrManifest, Error>> => {
+```
+
+#### getFile
+```ts
+  /**
+   * Use an invoker to fetch a file using a wrapper that implements the UriResolver interface
+   *
+   * @param invoker - invokes the wrapper with the filepath as an argument
+   * @param wrapper - URI for wrapper that implements the UriResolver interface
+   * @param path - a filepath, the format of which depends on the UriResolver
+   */
+  getFile: Tracer.traceFunc(
+    "core: uri-resolver: getFile",
+    async (
+      invoker: Invoker,
+      wrapper: Uri,
+      path: string
+    ): Promise<Result<Uint8Array | undefined, Error>> => {
+```
+
+## Uri Resolution
+
+### IUriResolutionContext
+
+```ts
+/** Track and output URI resolution state, path, and history */
+export interface IUriResolutionContext {
+  /**
+   * Check if a URI is in the process of being resolved
+   *
+   * @param uri - URI to check
+   * @return true if URI resolution is in process, false otherwise
+   */
+  isResolving(uri: Uri): boolean;
+
+  /**
+   * Start resolving a URI
+   *
+   * @param uri - Uri to resolve
+   */
+  startResolving(uri: Uri): void;
+
+  /**
+   * Stop resolving a URI
+   *
+   * @param uri - Uri being resolved
+   */
+  stopResolving(uri: Uri): void;
+
+  /**
+   * Push a step onto the resolution history stack
+   *
+   * @param step - A completed resolution step
+   */
+  trackStep<TError>(step: IUriResolutionStep<TError>): void;
+
+  /** @return history of all URI resolution steps completed */
+  getHistory(): IUriResolutionStep<unknown>[];
+
+  /** @return current URI resolution path */
+  getResolutionPath(): Uri[];
+
+  /**
+   * Create a new resolution context using the current URI resolution path
+   *
+   * @return a UriResolutionContext
+   */
+  createSubHistoryContext(): IUriResolutionContext;
+
+  /**
+   * Create a new resolution context using the current URI resolution history
+   *
+   * @return a UriResolutionContext
+   */
+  createSubContext(): IUriResolutionContext;
+}
+```
+
+### IUriResolutionStep
+
+```ts
+/** A step in the URI resolution algorithm */
+export interface IUriResolutionStep<TError = undefined> {
+  /** The current URI being resolved */
+  sourceUri: Uri;
+
+  /** The resolution result for the current URI */
+  result: Result<UriPackageOrWrapper, TError>;
+
+  /** A text/visual description of this URI step */
+  description?: string;
+
+  /** History of sub-steps that exist within the context of this URI resolution step */
+  subHistory?: IUriResolutionStep<TError>[];
+}
+```
+
+### IUriResolver
+
+```ts
+/** Defines entity capable of resolving a wrap URI */
+export interface IUriResolver<TError = undefined> {
+  /**
+   * Resolve a URI to a wrap package, a wrapper, or a uri
+   *
+   * @param uri - the URI to resolve
+   * @param client - a CoreClient instance that may be used to invoke a wrapper that implements the UriResolver interface
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
+  tryResolveUri(
+    uri: Uri,
+    client: CoreClient,
+    resolutionContext: IUriResolutionContext
+  ): Promise<Result<UriPackageOrWrapper, TError>>;
+}
+```
+
+### UriPackageOrWrapper
+
+```ts
+
+/** Indicates that a URI resolved to a Uri */
+export type UriValue = {
+  type: "uri";
+  uri: Uri;
+};
+
+/** Indicates that a URI resolved to a wrap package */
+export type UriPackageValue = IUriPackage<Uri> & {
+  type: "package";
+};
+
+/** Indicates that a URI resolved to a wrapper */
+export type UriWrapperValue = IUriWrapper<Uri> & {
+  type: "wrapper";
+};
+
+/** indicates that a URI resolved to either a wrap package, a wrapper, or a URI */
+export type UriPackageOrWrapper = UriValue | UriPackageValue | UriWrapperValue;
+
+```
+
+### UriResolutionContext
+
+```ts
+/** An implementation of the IUriResolutionContext interface */
+export class UriResolutionContext implements IUriResolutionContext {
+```
+
+#### constructor
+
+```ts
+  /** Construct a UriResolutionContext */
+  constructor();
+  constructor(
+    resolvingUriMap: Map<string, boolean>,
+    resolutionPath: Set<string>
+  );
+  constructor(
+    resolvingUriMap: Map<string, boolean>,
+    history: IUriResolutionStep<unknown>[]
+  );
+  constructor(
+    resolvingUriMap?: Map<string, boolean>,
+    resolutionPathOrHistory?: Set<string> | IUriResolutionStep<unknown>[]
+  ) {
+```

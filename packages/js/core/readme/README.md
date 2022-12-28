@@ -74,3 +74,10 @@ $snippet: UriResolver.ts
 $snippet: Wrapper.ts
 ```
 
+## UriResolverInterface
+
+$snippet: UriResolverInterface
+
+## Uri Resolution
+
+$snippet: uri-resolution.md

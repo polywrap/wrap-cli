@@ -14,7 +14,7 @@ export interface TryResolveUriOptions<TUri extends Uri | string> {
   resolutionContext?: IUriResolutionContext;
 }
 
-/** An entity capable of resolving a WRAP URI  */
+/** An entity capable of resolving a wrap URI, typically by using an IUriResolver implementation */
 export interface UriResolverHandler<TError = undefined> {
   /**
    * Resolve a URI to a wrap package, a wrapper, or a uri
