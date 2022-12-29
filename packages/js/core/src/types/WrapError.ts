@@ -84,6 +84,7 @@ export class WrapError extends Error {
     this.stack = options.stack;
     this.prev = options.prev;
     Object.setPrototypeOf(this, WrapError.prototype);
+    Error.captureStackTrace(this, this.constructor);
   }
 
   private static re = new RegExp(
