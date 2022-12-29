@@ -77,7 +77,7 @@ describe("sanity", () => {
     expect(result.ok).toBeFalsy();
     let resultError = (result as { error: Error }).error;
     expect(resultError).toBeTruthy();
-    expect(resultError.message).toContain("Unable to resolve URI");
+    expect(resultError.message).toContain("Error resolving URI");
 
     let fooPackage: IUriPackage<string> = {
       uri: fooUri,
@@ -102,7 +102,7 @@ describe("sanity", () => {
     resultError = (result as { error: Error }).error;
     expect(result.ok).toBeFalsy();
     expect(resultError).toBeTruthy();
-    expect(resultError.message).toContain("URI not found");
+    expect(resultError.message).toContain("Unable to find URI");
 
     await buildWrapper(greetingPath);
 
