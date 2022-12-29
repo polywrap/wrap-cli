@@ -1,6 +1,6 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { Uri, PolywrapClient } from "../..";
-// import { buildWrapper } from "@polywrap/test-env-js";
+import { buildWrapper } from "@polywrap/test-env-js";
 import { WrapError, WrapErrorCode } from "@polywrap/core-js";
 import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
 
@@ -31,11 +31,11 @@ describe("Error structure", () => {
   let client: PolywrapClient;
 
   beforeAll(async () => {
-    // await buildWrapper(simpleWrapperPath);
-    // await buildWrapper(badUtilWrapperPath);
-    // await buildWrapper(badMathWrapperPath);
-    // await buildWrapper(subinvokeErrorWrapperPath);
-    // await buildWrapper(invalidTypesWrapperPath);
+    await buildWrapper(simpleWrapperPath);
+    await buildWrapper(badUtilWrapperPath);
+    await buildWrapper(badMathWrapperPath);
+    await buildWrapper(subinvokeErrorWrapperPath);
+    await buildWrapper(invalidTypesWrapperPath);
 
     client = new PolywrapClient({
       packages: [mockPluginRegistration("plugin/mock")],
