@@ -89,12 +89,13 @@ export class WrapError extends Error {
 
   private static re = new RegExp(
     [
-      /^(?:[A-z_: ]*; )?WrapError: (?<reason>(?:.|\r|\n)*)/.source,
+      /^(?:[A-Za-z_: ]*; )?WrapError: (?<reason>(?:.|\r|\n)*)/.source,
       // there is some padding added to the number of words expected in an error code
       /(?:\r\n|\r|\n)code: (?<code>1?[0-9]{1,2}|2[0-4][0-9]|25[0-5]) (?:[A-Z]+ ?){1,5}/
         .source,
-      /(?:\r\n|\r|\n)uri: (?<uri>wrap:\/\/[A-z0-9_-]+\/.+)/.source,
-      /(?:(?:\r\n|\r|\n)method: (?<method>([A-z_]{1}[A-z0-9_]*)))?/.source,
+      /(?:\r\n|\r|\n)uri: (?<uri>wrap:\/\/[A-Za-z0-9_-]+\/.+)/.source,
+      /(?:(?:\r\n|\r|\n)method: (?<method>([A-Za-z_]{1}[A-Za-z0-9_]*)))?/
+        .source,
       /(?:(?:\r\n|\r|\n)args: (?<args>\{(?:.|\r|\n)+} ))?/.source,
       /(?:(?:\r\n|\r|\n)source: \{ file: "(?<file>.+)", row: (?<row>[0-9]+), col: (?<col>[0-9]+) })?/
         .source,
