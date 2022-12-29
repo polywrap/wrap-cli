@@ -60,7 +60,7 @@ type RegExpGroups<T extends string> =
   | null;
 
 export class WrapError extends Error {
-  readonly name: string;
+  readonly name: string = "WrapError";
   readonly code: WrapErrorCode;
   readonly reason: string;
   readonly uri: string;
@@ -73,7 +73,6 @@ export class WrapError extends Error {
 
   constructor(reason = "Encountered an exception.", options: WrapErrorOptions) {
     super(WrapError.stringify(reason, options));
-    this.name = WrapError.codeToName(options.code);
     this.code = options.code;
     this.reason = reason;
     this.uri = options.uri;
@@ -89,12 +88,10 @@ export class WrapError extends Error {
 
   private static re = new RegExp(
     [
-      // [A-z]+Error can be replaced with specific error names when finalized
-      /^(?:[A-z_: ]*; )?[A-z]+Error: [\w ]+\./.source,
+      /^(?:[A-z_: ]*; )?WrapError: (?<reason>(?:.|\r\n|\r|\n)*)/.source,
       // there is some padding added to the number of words expected in an error code
       /(?:\r\n|\r|\n)code: (?<code>1?[0-9]{1,2}|2[0-4][0-9]|25[0-5]) (?:[A-Z]+ ?){1,5}/
         .source,
-      /(?:\r\n|\r|\n)reason: (?<reason>(?:.|\r\n|\r|\n)*)/.source,
       /(?:\r\n|\r|\n)uri: (?<uri>wrap:\/\/[A-z0-9_-]+\/.+)/.source,
       /(?:(?:\r\n|\r|\n)method: (?<method>([A-z_]{1}[A-z0-9_]*)))?/.source,
       /(?:(?:\r\n|\r|\n)args: (?<args>\{(?:.|\r\n|\r|\n)+} ))?/.source,
@@ -236,9 +233,8 @@ export class WrapError extends Error {
       : "";
 
     return [
-      WrapError.metaMessage(code),
+      `${reason}`,
       `code: ${formattedCode}`,
-      `reason: ${reason}`,
       `uri: ${uri}`,
       maybeMethod,
       maybeArgs,
@@ -272,57 +268,6 @@ export class WrapError extends Error {
       return cause.toString();
     } else {
       return `${cause}`;
-    }
-  }
-
-  private static codeToName(code: WrapErrorCode): string {
-    if (code < 25) {
-      return "ClientError";
-    } else if (code < 50) {
-      return "UriResolutionError";
-    } else if (code < 75) {
-      return "InvokeError";
-    } else {
-      return "WrapError";
-    }
-  }
-
-  private static metaMessage(code: WrapErrorCode): string {
-    switch (code) {
-      case WrapErrorCode.CLIENT_LOAD_WRAPPER_ERROR:
-        return "Failed to create Wrapper from WrapPackage.";
-      case WrapErrorCode.CLIENT_GET_FILE_ERROR:
-        return "An error occurred while retrieving a file.";
-      case WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS_ERROR:
-        return "An error occurred while retrieving interface implementations.";
-      case WrapErrorCode.CLIENT_VALIDATE_RESOLUTION_FAIL:
-        return "An URI resolution error occurred while validating a WRAP URI.";
-      case WrapErrorCode.CLIENT_VALIDATE_ABI_FAIL:
-        return "An error occurred while validating a WRAP URI against its ABI.";
-      case WrapErrorCode.CLIENT_VALIDATE_RECURSIVE_FAIL:
-        return "An error occurred while recursively validating a WRAP URI.";
-      case WrapErrorCode.URI_RESOLUTION_ERROR:
-        return "Unable to resolve URI.";
-      case WrapErrorCode.URI_RESOLVER_ERROR:
-        return "An internal resolver error occurred while resolving a URI.";
-      case WrapErrorCode.URI_NOT_FOUND:
-        return "URI not found.";
-      case WrapErrorCode.WRAPPER_INVOKE_ABORTED:
-        return "Wrapper aborted execution.";
-      case WrapErrorCode.WRAPPER_SUBINVOKE_ABORTED:
-        return "Wrapper aborted execution during a subinvocation.";
-      case WrapErrorCode.WRAPPER_INVOKE_FAIL:
-        return "Invocation exception encountered.";
-      case WrapErrorCode.WRAPPER_READ_FAIL:
-        return "Wrapper does not contain a module, or module could not be read.";
-      case WrapErrorCode.WRAPPER_INTERNAL_ERROR:
-        return "An internal error occurred.";
-      case WrapErrorCode.WRAPPER_METHOD_NOT_FOUND:
-        return "Method not found in wrapper module.";
-      case WrapErrorCode.WRAPPER_ARGS_MALFORMED:
-        return "Malformed arguments passed to wrapper.";
-      default:
-        return "Unknown exception.";
     }
   }
 }
