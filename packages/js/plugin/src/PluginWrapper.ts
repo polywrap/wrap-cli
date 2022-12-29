@@ -1,4 +1,5 @@
 import { PluginModule } from "./PluginModule";
+import { getErrorSource } from "./utils/getErrorSource";
 
 import {
   Wrapper,
@@ -105,13 +106,17 @@ export class PluginWrapper implements Wrapper {
         encoded: false,
       };
     } else {
-      const reason = `Failed to invoke method "${method}" in module: ${this.module}`;
+      const code =
+        (result.error as { code?: WrapErrorCode })?.code ??
+        WrapErrorCode.WRAPPER_INVOKE_FAIL;
+      const reason =
+        result.error?.message ?? `Failed to invoke method "${method}"`;
       const error = new WrapError(reason, {
-        code: WrapErrorCode.WRAPPER_INVOKE_FAIL,
+        code,
         uri: options.uri.toString(),
         method,
         args: JSON.stringify(jsArgs, null, 2),
-        cause: result.error,
+        source: getErrorSource(result.error),
       });
       return ResultErr(error);
     }

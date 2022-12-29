@@ -188,7 +188,6 @@ export class PolywrapCoreClient implements CoreClient {
       const error = new WrapError(result.error?.message, {
         code: WrapErrorCode.CLIENT_GET_FILE_ERROR,
         uri: uri.toString(),
-        stack: result.error?.stack,
       });
       return ResultErr(error);
     }

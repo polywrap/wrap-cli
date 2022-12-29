@@ -4,7 +4,7 @@ import { PluginMethod } from "../PluginMethod";
 import { PluginModule } from "../PluginModule";
 import { GetPluginMethodsFunc } from "./GetPluginMethodsFunc";
 
-import { CoreClient } from "@polywrap/core-js";
+import { CoreClient, WrapErrorCode } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class PluginModuleWithMethods<
@@ -38,6 +38,7 @@ export class PluginModuleWithMethods<
       const data = await fn(args, client);
       return ResultOk(data);
     } catch (e) {
+      e.code = WrapErrorCode.WRAPPER_INVOKE_ABORTED;
       return ResultErr(e);
     }
   }
@@ -50,6 +51,6 @@ export class PluginModuleWithMethods<
       this
     )[method] as PluginMethod<TArgs, TResult>;
 
-    return fn.bind(this);
+    return fn?.bind(this);
   }
 }

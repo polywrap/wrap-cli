@@ -20,6 +20,7 @@ import {
   Wrapper,
   WrapError,
   WrapErrorCode,
+  ErrorSource,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
@@ -183,11 +184,7 @@ export class WasmWrapper implements Wrapper {
       const abort = (
         message: string,
         code: WrapErrorCode = WrapErrorCode.WRAPPER_INVOKE_ABORTED,
-        source?: {
-          file?: string;
-          row?: number;
-          col?: number;
-        }
+        source?: ErrorSource
       ) => {
         const prev = WrapError.parse(message);
         const text = prev ? "SubInvocation exception encountered" : message;

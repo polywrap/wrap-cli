@@ -1,5 +1,11 @@
 import { CleanResolutionStep } from "../algorithms";
 
+export type ErrorSource = Readonly<{
+  file?: string;
+  row?: number;
+  col?: number;
+}>;
+
 /**
 Wrap error codes provide additional context to WrapErrors.
 
@@ -44,14 +50,7 @@ export interface WrapErrorOptions {
   resolutionStack?: CleanResolutionStep;
   cause?: unknown;
   prev?: Error;
-  stack?: string;
 }
-
-type ErrorSource = Readonly<{
-  file?: string;
-  row?: number;
-  col?: number;
-}>;
 
 type RegExpGroups<T extends string> =
   | (RegExpExecArray & {
@@ -73,6 +72,7 @@ export class WrapError extends Error {
 
   constructor(reason = "Encountered an exception.", options: WrapErrorOptions) {
     super(WrapError.stringify(reason, options));
+
     this.code = options.code;
     this.reason = reason;
     this.uri = options.uri;
@@ -81,8 +81,8 @@ export class WrapError extends Error {
     this.source = options.source;
     this.resolutionStack = options.resolutionStack;
     this.cause = options.cause;
-    this.stack = options.stack;
     this.prev = options.prev;
+
     Object.setPrototypeOf(this, WrapError.prototype);
     Error.captureStackTrace(this, this.constructor);
   }
@@ -173,7 +173,6 @@ export class WrapError extends Error {
 
     const code = parseInt(codeStr as string);
 
-    // replace parens () with brackets {}
     const source: ErrorSource | undefined = file
       ? {
           file,
