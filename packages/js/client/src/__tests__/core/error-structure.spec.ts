@@ -237,7 +237,7 @@ describe("Error structure", () => {
         uri: "wrap://ens/fs.polywrap.eth",
         method: "readFile",
         args: {
-          pathh: __dirname + "/index.ts",
+          pathh:  "packages/js/client/src/__tests__/core/index.ts",
         },
       });
 
@@ -249,7 +249,7 @@ describe("Error structure", () => {
       expect(result.error?.reason).toEqual("The \"path\" argument must be of type string or an instance of Buffer or URL. Received undefined");
       expect(result.error?.uri).toEqual("wrap://ens/fs.polywrap.eth");
       expect(result.error?.method).toEqual("readFile");
-      expect(result.error?.args).toEqual("{\n  \"pathh\": \"/Users/kris/WebstormProjects/monorepo/packages/js/client/src/__tests__/core/index.ts\"\n}");
+      expect(result.error?.args).toContain("{\n  \"pathh\": \"packages/js/client/src/__tests__/core/index.ts\"\n}");
       expect(result.error?.source).toEqual({ file: "node:internal/fs/promises", row: 450, col: 10 });
     });
 
@@ -285,7 +285,9 @@ describe("Error structure", () => {
       expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
       expect(result.error?.reason).toEqual("I'm throwing!");
       expect(result.error?.uri).toEqual("wrap://plugin/mock");
-      expect(result.error?.source).toEqual({ file: "/Users/kris/WebstormProjects/monorepo/packages/js/client/src/__tests__/helpers/mockPluginRegistration.ts", row: 13, col: 17 });
+      expect(result.error?.source?.file?.endsWith("packages/js/client/src/__tests__/helpers/mockPluginRegistration.ts")).toBeTruthy();
+      expect(result.error?.source?.row).toEqual(13);
+      expect(result.error?.source?.col).toEqual(17);
     });
 
     test("Invoke a plugin wrapper that throws unexpectedly", async () => {
