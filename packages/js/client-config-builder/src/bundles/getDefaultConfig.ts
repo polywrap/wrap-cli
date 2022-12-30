@@ -96,9 +96,9 @@ export const defaultWrappers = {
   uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
   concurrentInterface: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
-  ethereum: "wrap://ens/goerli/ethereum.wrappers.eth:pkg@latest",
+  ethereum: "wrap://ipfs/QmbE8rKGwbxChrWCPpyBTacFUHGjmmp9x8EkKx8mEr8ZqH",
   ethereumProviderInterface:
-    "wrap://ens/goerli/ethereum.wrappers.eth:iprovider@latest",
+    "wrap://ipfs/QmRNDF5U43dmYVgNBfCswNcfjvrKzfkU1XMmTAGYHezNmy",
   ensTextRecordResolver:
     "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
 };
