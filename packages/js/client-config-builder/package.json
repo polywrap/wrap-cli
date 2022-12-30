@@ -21,7 +21,7 @@
   "dependencies": {
     "@polywrap/core-js": "0.10.0-pre.6",
     "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.6",
-    "ethereum-provider-js": "0.1.1",
+    "ethereum-provider-js": "0.1.3",
     "@polywrap/fs-plugin-js": "0.10.0-pre.6",
     "@polywrap/fs-resolver-plugin-js": "0.10.0-pre.6",
     "@polywrap/http-plugin-js": "0.10.0-pre.6",

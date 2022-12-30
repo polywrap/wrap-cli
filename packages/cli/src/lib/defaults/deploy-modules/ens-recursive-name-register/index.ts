@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Deployer } from "../../../deploy";
-import { invokeWithTimeout } from "../../../helpers/invokeWithTImeout";
+import { invokeWithTimeout } from "./invokeWithTimeout";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";

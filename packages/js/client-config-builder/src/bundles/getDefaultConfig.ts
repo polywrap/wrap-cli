@@ -54,6 +54,10 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         from: new Uri("wrap://ens/ethereum.polywrap.eth"),
         to: new Uri(defaultWrappers.ethereum),
       },
+      {
+        from: new Uri("wrap://ens/iprovider.polywrap.eth"),
+        to: new Uri(defaultWrappers.ethereumProviderInterface),
+      },
     ],
     interfaces: [
       {
@@ -76,7 +80,7 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         implementations: [new Uri("wrap://plugin/concurrent")],
       },
       {
-        interface: new Uri(defaultWrappers.ethereumProviderInterface),
+        interface: new Uri("wrap://ens/iprovider.polywrap.eth"),
         implementations: [new Uri("wrap://plugin/ethereum-provider")],
       },
     ],
@@ -96,7 +100,7 @@ export const defaultWrappers = {
   uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
   concurrentInterface: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
-  ethereum: "wrap://ipfs/QmbE8rKGwbxChrWCPpyBTacFUHGjmmp9x8EkKx8mEr8ZqH",
+  ethereum: "wrap://ipfs/QmdQmXoHEw8wXgo7mXtAQagqmNUJmuHEDhpPDhXQDXirjW",
   ethereumProviderInterface:
     "wrap://ipfs/QmRNDF5U43dmYVgNBfCswNcfjvrKzfkU1XMmTAGYHezNmy",
   ensTextRecordResolver:
