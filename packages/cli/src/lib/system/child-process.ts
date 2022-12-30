@@ -1,11 +1,6 @@
 import { Logger } from "../logging";
 
-import {
-  execFile,
-  ExecException,
-  execFileSync,
-  SpawnSyncReturns,
-} from "child_process";
+import { ExecException, SpawnSyncReturns, execSync, exec } from "child_process";
 
 export function runCommandSync(
   command: string,
@@ -16,7 +11,7 @@ export function runCommandSync(
   logger.info(`> ${command} ${args.join(" ")}`);
 
   try {
-    const stdout = execFileSync(command, args, {
+    const stdout = execSync(`${command} ${args.join(" ")}`, {
       cwd: __dirname,
       env: {
         ...process.env,
@@ -53,9 +48,8 @@ export async function runCommand(
       }
     };
 
-    const childObj = execFile(
-      command,
-      args,
+    const childObj = exec(
+      `${command} ${args.join(" ")}`,
       {
         cwd: cwd ?? __dirname,
         env: {
