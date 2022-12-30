@@ -26,7 +26,7 @@ import {
 
 import path from "path";
 import readline from "readline";
-import { Env, PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
@@ -40,7 +40,7 @@ type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
   configBuilder: IClientConfigBuilder;
-  wrapperEnvs: Env[];
+  wrapperEnvs: Record<string, Record<string, unknown>>;
   codegen: boolean; // defaults to true
   watch?: boolean;
   strategy: SupportedStrategies;

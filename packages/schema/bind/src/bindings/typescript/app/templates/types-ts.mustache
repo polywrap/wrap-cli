@@ -4,7 +4,8 @@ import * as Types from "./";
 // @ts-ignore
 import {
   CoreClient,
-  InvokeResult
+  InvokeResult,
+  Uri,
 } from "@polywrap/core-js";
 
 export type UInt = number;
@@ -104,7 +105,7 @@ export const {{type}} = {
     uri: string = "{{parent.uri}}"
   ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
-      uri,
+      uri: Uri.from(uri),
       method: "{{name}}",
       args: (args as unknown) as Record<string, unknown>,
     });

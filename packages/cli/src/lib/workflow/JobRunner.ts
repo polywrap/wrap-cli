@@ -1,12 +1,16 @@
 import { JobResult, Status, Step } from "./types";
 
-import { PolywrapClient } from "@polywrap/client-js";
-import { CoreClient, CoreClientConfig, MaybeAsync } from "@polywrap/core-js";
-import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
 import {
-  ClientConfig,
-  IClientConfigBuilder,
-} from "@polywrap/client-config-builder-js";
+  PolywrapClient,
+  buildPolywrapCoreClientConfig,
+} from "@polywrap/client-js";
+import {
+  CoreClient,
+  MaybeAsync,
+  Uri,
+} from "@polywrap/core-js";
+import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
+import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 export class JobRunner {
   private jobOutput: Map<string, JobResult>;
@@ -184,17 +188,13 @@ export class JobRunner {
     let finalClient = this.client;
 
     if (step.config) {
-      const finalConfig = (step.config as Partial<CoreClientConfig>).resolver
-        ? (step.config as CoreClientConfig)
-        : this.configBuilder
-            .add(step.config as Partial<ClientConfig>)
-            .buildCoreConfig();
+      const finalConfig = buildPolywrapCoreClientConfig(step.config);
 
       finalClient = new PolywrapClient(finalConfig, { noDefaults: true });
     }
 
     const invokeResult = await finalClient.invoke({
-      uri: step.uri,
+      uri: Uri.from(step.uri),
       method: step.method,
       args: args,
     });

@@ -18,7 +18,7 @@ import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import { Env, PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
@@ -38,7 +38,7 @@ type DocgenCommandOptions = {
   manifestFile: string;
   docgenDir: string;
   configBuilder: IClientConfigBuilder;
-  wrapperEnvs: Env[];
+  wrapperEnvs: Record<string, Record<string, unknown>>;
   imports: boolean;
   verbose?: boolean;
   quiet?: boolean;

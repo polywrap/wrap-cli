@@ -24,11 +24,10 @@ import path from "path";
 import yaml from "yaml";
 import fs from "fs";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { Env } from "@polywrap/core-js";
 
 type WorkflowCommandOptions = {
   configBuilder: IClientConfigBuilder;
-  wrapperEnvs: Env[];
+  wrapperEnvs: Record<string, Record<string, unknown>>;
   manifest: string;
   jobs?: string[];
   validationScript?: string;

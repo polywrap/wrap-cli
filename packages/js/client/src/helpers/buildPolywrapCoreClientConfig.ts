@@ -1,3 +1,6 @@
+// TODO: can move this to client-config-builder-js
+// TODO: buildPolywrapCoreClientConfig can take clientConfigBuilder as an argument
+
 import { PolywrapClientConfig } from "../PolywrapClientConfig";
 import { PolywrapCoreClientConfig } from "../PolywrapCoreClientConfig";
 import { sanitizeUri } from "./sanitizeUri";
@@ -10,9 +13,9 @@ import {
 } from "@polywrap/client-config-builder-js";
 import { UriResolverLike as SanitizedUriResolverLike } from "@polywrap/uri-resolvers-js";
 
-export const sanitizeConfig = (
-  config: Partial<PolywrapClientConfig> | PolywrapCoreClientConfig
-): BuilderConfig => {
+export function sanitizeConfig<TUri extends Uri | string = string>(
+  config: Partial<PolywrapClientConfig<TUri>> | PolywrapCoreClientConfig<TUri>
+): BuilderConfig {
   const builderConfig: BuilderConfig = {
     envs: {},
     interfaces: {},
@@ -24,46 +27,47 @@ export const sanitizeConfig = (
 
   if (config.envs) {
     for (const env of config.envs) {
-      builderConfig.envs[sanitizeUri(env.uri).uri] = env.env;
+      builderConfig.envs[sanitizeUri<TUri>(env.uri).uri] = env.env;
     }
   }
   if (config.interfaces) {
     for (const interfaceImplementation of config.interfaces) {
       builderConfig.interfaces[
-        sanitizeUri(interfaceImplementation.interface).uri
+        sanitizeUri<TUri>(interfaceImplementation.interface).uri
       ] = new Set(
         interfaceImplementation.implementations.map(
-          (uri) => sanitizeUri(uri).uri
+          (uri: TUri) => sanitizeUri<TUri>(uri).uri
         )
       );
     }
   }
   if ("redirects" in config && config.redirects) {
     for (const redirect of config.redirects) {
-      builderConfig.redirects[sanitizeUri(redirect.from).uri] = sanitizeUri(
-        redirect.to
-      ).uri;
+      builderConfig.redirects[
+        sanitizeUri<TUri>(redirect.from).uri
+      ] = sanitizeUri<TUri>(redirect.to).uri;
     }
   }
   if ("wrappers" in config && config.wrappers) {
     for (const wrapper of config.wrappers) {
-      builderConfig.wrappers[sanitizeUri(wrapper.uri).uri] = wrapper.wrapper;
+      builderConfig.wrappers[sanitizeUri<TUri>(wrapper.uri).uri] =
+        wrapper.wrapper;
     }
   }
   if ("packages" in config && config.packages) {
     for (const pkg of config.packages) {
-      builderConfig.packages[sanitizeUri(pkg.uri).uri] = pkg.package;
+      builderConfig.packages[sanitizeUri<TUri>(pkg.uri).uri] = pkg.package;
     }
   }
   if ("resolver" in config && config.resolver) {
     builderConfig.resolvers.push(config.resolver);
   }
   if ("resolvers" in config && config.resolvers) {
-    builderConfig.resolvers.push(sanitizeResolverLike(config.resolvers));
+    builderConfig.resolvers.push(sanitizeResolverLike<TUri>(config.resolvers));
   }
 
   return builderConfig;
-};
+}
 
 export function sanitizeResolverLike<TUri extends Uri | string = string>(
   resolverLike: UriResolverLike<TUri>
@@ -75,12 +79,12 @@ export function sanitizeResolverLike<TUri extends Uri | string = string>(
   } else if ("uri" in resolverLike) {
     return {
       ...resolverLike,
-      uri: sanitizeUri(resolverLike.uri),
+      uri: sanitizeUri<TUri>(resolverLike.uri),
     };
   } else if ("from" in resolverLike) {
     return {
-      from: sanitizeUri(resolverLike.from),
-      to: sanitizeUri(resolverLike.to),
+      from: sanitizeUri<TUri>(resolverLike.from),
+      to: sanitizeUri<TUri>(resolverLike.to),
     };
   } else {
     throw new Error(

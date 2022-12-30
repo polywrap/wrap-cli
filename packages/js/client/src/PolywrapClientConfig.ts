@@ -17,7 +17,7 @@ export interface PolywrapClientConfig<TUri extends Uri | string = string> {
   readonly redirects: IUriRedirect<TUri>[];
   readonly wrappers: IUriWrapper<TUri>[];
   readonly packages: IUriPackage<TUri>[];
-  readonly resolvers: UriResolverLike<TUri>[];
+  readonly resolvers: UriResolverLike<TUri>;
   readonly wrapperCache?: IWrapperCache;
   readonly tracerConfig?: Readonly<Partial<TracerConfig>>;
 }

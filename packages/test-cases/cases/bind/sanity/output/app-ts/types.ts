@@ -4,7 +4,8 @@ import * as Types from "./";
 // @ts-ignore
 import {
   CoreClient,
-  InvokeResult
+  InvokeResult,
+  Uri,
 } from "@polywrap/core-js";
 
 export type UInt = number;
@@ -189,7 +190,7 @@ export const TestImport_Module = {
     uri: string = "testimport.uri.eth"
   ): Promise<InvokeResult<Types.TestImport_Object | null>> => {
     return client.invoke<Types.TestImport_Object | null>({
-      uri,
+      uri: Uri.from(uri),
       method: "importedMethod",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -201,7 +202,7 @@ export const TestImport_Module = {
     uri: string = "testimport.uri.eth"
   ): Promise<InvokeResult<Types.Int32>> => {
     return client.invoke<Types.Int32>({
-      uri,
+      uri: Uri.from(uri),
       method: "anotherMethod",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -213,7 +214,7 @@ export const TestImport_Module = {
     uri: string = "testimport.uri.eth"
   ): Promise<InvokeResult<Array<Types.TestImport_Enum_Return | null>>> => {
     return client.invoke<Array<Types.TestImport_Enum_Return | null>>({
-      uri,
+      uri: Uri.from(uri),
       method: "returnsArrayOfEnums",
       args: (args as unknown) as Record<string, unknown>,
     });

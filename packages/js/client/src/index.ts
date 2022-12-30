@@ -1,5 +1,7 @@
 export * from "./PolywrapClient";
 export * from "./PolywrapClientConfig";
+export * from "./PolywrapCoreClientConfig";
+export * from "./helpers";
 export * from "@polywrap/core-js";
 export * from "@polywrap/core-client-js";
 export * from "@polywrap/uri-resolvers-js";

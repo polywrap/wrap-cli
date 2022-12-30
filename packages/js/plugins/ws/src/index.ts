@@ -14,6 +14,7 @@ import {
   manifest,
 } from "./wrap";
 
+import { Uri } from "@polywrap/core-js";
 import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 type NoConfig = Record<string, never>;
@@ -58,7 +59,7 @@ export class WsPlugin extends Module<NoConfig> {
     const callbackId = this._callbackId(args.callback);
     this._callbacks[callbackId] = async (msg) => {
       await _client.invoke<{ callback: boolean }>({
-        uri: args.callback.uri,
+        uri: Uri.from(args.callback.uri),
         method: args.callback.method,
         args: { data: msg.data },
       });
