@@ -2,6 +2,7 @@ import path from "path";
 import { readFileSync, existsSync } from "fs";
 
 import { normalizeLineEndings } from "@polywrap/os-js";
+const shell = require('shelljs');
 
 export const GetPathToBindTestFiles = () => `${__dirname}/cases/bind`
 export const GetPathToComposeTestFiles = () => `${__dirname}/cases/compose`
@@ -63,4 +64,11 @@ function getFilePath(
   } else {
     return path.join(directory, file);
   }
+}
+
+export function generateWrappers(): void {
+  shell.exec("git clone git@github.com:polywrap/wasm-test-harness.git");
+  shell.exec("git checkout tags/v0.2.1", { cwd: "./wasm-test-harness" });
+  shell.exec("mv ./wrappers ../cases", { cwd: "./wasm-test-harness" });
+  shell.rm("-rf wasm-test-harness");
 }

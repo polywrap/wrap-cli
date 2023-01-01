@@ -5,7 +5,13 @@
   "version": "0.10.0-pre.6",
   "license": "MIT",
   "main": "index.ts",
+  "scripts": {
+    "generate:wrappers": "npx ts-node -e \"import { generateWrappers } from './'; generateWrappers()\""
+  },
   "dependencies": {
     "@polywrap/os-js": "0.10.0-pre.6"
+  },
+  "devDependencies": {
+    "shelljs": "0.8.5"
   }
 }
