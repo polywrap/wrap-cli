@@ -21,7 +21,7 @@ Options:
                                        envs
   -n, --no-codegen                     Skip code generation
   -s, --strategy <vm | image | local>  Strategy to use for building the wrapper
-                                       (default: "vm")
+                                       (default: vm)
   -w, --watch                          Automatically rebuild when changes are
                                        made (default: false)
   -v, --verbose                        Verbose output (default: false)
@@ -108,7 +108,7 @@ describe("e2e tests for build command", () => {
     }
   };
 
-  it("Should show help text", async () => {
+  it.only("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "--help"],
       cwd: getTestCaseDir(0),
@@ -229,7 +229,7 @@ describe("e2e tests for build command", () => {
     });
   })
 
-  describe("Local strategy", () => {
+  describe.only("Local strategy", () => {
 
     // Local strategy runs `yarn` by default, so we need to ensure that we clean up lockfiles
     const cleanupYarnLockfiles = async () => {

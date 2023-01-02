@@ -40,7 +40,9 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
               runCommand(
                 scriptPath,
                 [polywrapModuleDir, this.outputDir],
-                logger
+                logger,
+                undefined,
+                process.cwd()
               )
             );
           }
