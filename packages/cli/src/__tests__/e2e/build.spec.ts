@@ -108,7 +108,7 @@ describe("e2e tests for build command", () => {
     }
   };
 
-  it.only("Should show help text", async () => {
+  it("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "--help"],
       cwd: getTestCaseDir(0),
@@ -229,7 +229,7 @@ describe("e2e tests for build command", () => {
     });
   })
 
-  describe.only("Local strategy", () => {
+  describe("Local strategy", () => {
 
     // Local strategy runs `yarn` by default, so we need to ensure that we clean up lockfiles
     const cleanupYarnLockfiles = async () => {
