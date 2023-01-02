@@ -316,7 +316,7 @@ describe("e2e tests for infra command", () => {
         [
           "infra",
           "config",
-          "--modules=notExistingModule,alsoNotExisting",
+          "--modules notExistingModule alsoNotExisting",
         ],
         getTestCaseDir(0),
       );
@@ -430,7 +430,7 @@ describe("e2e tests for infra command", () => {
         [
           "infra",
           "up",
-          "--modules=ganache,dev-server"
+          "--modules=ganache dev-server"
         ],
         getTestCaseDir(1),
       );
@@ -441,7 +441,7 @@ describe("e2e tests for infra command", () => {
       ]);
 
       await runPolywrapCli(
-        ["infra", "down", "--modules=ganache,dev-server"],
+        ["infra", "down", "--modules=ganache dev-server"],
         getTestCaseDir(1),
       );
     });
@@ -451,7 +451,7 @@ describe("e2e tests for infra command", () => {
         [
           "infra",
           "up",
-          "--modules=ipfs,ipfs-duplicate"
+          "--modules=ipfs ipfs-duplicate"
         ],
         getTestCaseDir(1),
       );
@@ -461,7 +461,7 @@ describe("e2e tests for infra command", () => {
       ]);
 
       await runPolywrapCli(
-        ["infra", "down", "--modules=ipfs,ipfs-duplicate"],
+        ["infra", "down", "--modules=ipfs ipfs-duplicate"],
         getTestCaseDir(1),
       );
     });

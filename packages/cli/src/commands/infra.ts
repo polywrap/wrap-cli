@@ -112,8 +112,6 @@ async function run(
 
   const modulesArray: string[] = modules ? modules : [];
 
-  console.log(modulesArray);
-
   const manifest: string[] = manifestFile
     ? [manifestFile]
     : defaultInfraManifest;
