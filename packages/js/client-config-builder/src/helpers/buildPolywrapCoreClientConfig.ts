@@ -130,8 +130,6 @@ export function buildPolywrapCoreClientConfig<
   }
 
   if (config) {
-    console.log(config);
-    console.log(sanitizeConfig(config));
     builder.add(sanitizeConfig(config));
   }
 

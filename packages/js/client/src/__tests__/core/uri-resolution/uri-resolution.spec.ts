@@ -64,8 +64,8 @@ const expectHistory = async (
     "$root-wrapper-dir"
   );
 
-  console.log(receivedCleanHistory);
-  console.log(JSON.stringify(JSON.parse(expectedCleanHistory), null, 2));
+  // console.log(receivedCleanHistory);
+  // console.log(JSON.stringify(JSON.parse(expectedCleanHistory), null, 2));
 
   expect(receivedCleanHistory).toEqual(
     JSON.stringify(JSON.parse(expectedCleanHistory), null, 2)
