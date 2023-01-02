@@ -1,7 +1,7 @@
 import { httpPlugin } from "../..";
 import { Http_Response } from "../../wrap";
 
-import { PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient, Uri } from "@polywrap/client-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 
 import nock from "nock";
@@ -20,7 +20,7 @@ describe("e2e tests for HttpPlugin", () => {
     polywrapClient = new PolywrapClient(
       {
         resolver: UriResolver.from({
-          uri: "wrap://ens/http.polywrap.eth",
+          uri: Uri.from("wrap://ens/http.polywrap.eth"),
           package: httpPlugin({}),
         }),
       },

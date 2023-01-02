@@ -1,5 +1,5 @@
 import { fileSystemPlugin } from "../index";
-import { PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient, Uri } from "@polywrap/client-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { FileSystem_Module, FileSystem_EncodingEnum } from "../wrap";
 import fs from "fs";
@@ -29,7 +29,7 @@ describe("FileSystem plugin", () => {
     client = new PolywrapClient(
       {
         resolver: UriResolver.from({
-          uri: "wrap://ens/fs.polywrap.eth",
+          uri: Uri.from("wrap://ens/fs.polywrap.eth"),
           package: fileSystemPlugin({}),
         }),
       },

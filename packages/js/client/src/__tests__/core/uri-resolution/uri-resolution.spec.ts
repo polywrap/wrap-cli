@@ -185,8 +185,6 @@ describe("URI resolution", () => {
       resolutionContext,
     });
 
-    // console.log(JSON.stringify(resolutionContext.getHistory(), null, 2))
-
     await expectWrapperWithHistory(
       result,
       pluginUri,
