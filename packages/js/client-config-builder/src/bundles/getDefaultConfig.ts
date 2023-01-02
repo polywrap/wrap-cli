@@ -1,5 +1,5 @@
-import { BuilderConfig } from "../BuilderConfig";
-import { TUri } from "../IClientConfigBuilder";
+import { BuilderConfig } from "../types/configs/BuilderConfig";
+import { TUri } from "../types/IClientConfigBuilder";
 
 import { IWrapPackage } from "@polywrap/core-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
@@ -78,6 +78,21 @@ export const getDefaultConfig = (): BuilderConfig => ({
   },
   packages: getDefaultPlugins(),
   wrappers: {},
-  interfaces: {},
+  interfaces: {
+    "wrap://ens/uri-resolver.core.polywrap.eth": new Set([
+      "wrap://ens/ipfs-resolver.polywrap.eth",
+      "wrap://ens/ens-resolver.polywrap.eth",
+      "wrap://ens/fs-resolver.polywrap.eth",
+      "wrap://ens/http-resolver.polywrap.eth",
+      // ens-text-record-resolver
+      "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
+    ]),
+    [defaultWrappers.concurrentInterface]: new Set([
+      "wrap://plugin/concurrent",
+    ]),
+    "wrap://ens/wrappers.polywrap.eth:logger@1.0.0": new Set([
+      "wrap://plugin/logger",
+    ]),
+  },
   resolvers: [],
 });

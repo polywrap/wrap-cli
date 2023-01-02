@@ -1,9 +1,13 @@
-import { PolywrapClientConfig } from "./PolywrapClientConfig";
-import { buildPolywrapCoreClientConfig, sanitizeUri } from "./helpers";
 import { InvokerOptions, TryResolveUriOptions } from "./types";
-import { PolywrapCoreClientConfig } from "./PolywrapCoreClientConfig";
 
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
+import {
+  PolywrapClientConfig,
+  PolywrapCoreClientConfig,
+  buildPolywrapCoreClientConfig,
+  sanitizeUri,
+  ClientConfig,
+} from "@polywrap/client-config-builder-js";
 import {
   CoreClientConfig,
   Env,
@@ -25,7 +29,9 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig } from "@polywrap/tracing-js";
 
-export class PolywrapClient extends PolywrapCoreClient {
+export class PolywrapClient<
+  TUri extends Uri | string = string
+> extends PolywrapCoreClient {
   /**
    * Instantiate a PolywrapClient
    *
@@ -33,20 +39,38 @@ export class PolywrapClient extends PolywrapCoreClient {
    * @param options - { noDefaults?: boolean }
    */
   constructor(
-    config?: Partial<PolywrapClientConfig>,
-    options?: { noDefaults?: false }
+    config?: Partial<PolywrapClientConfig<TUri>>,
+    options?: { noDefaults?: boolean }
   );
-  constructor(config: PolywrapCoreClientConfig, options: { noDefaults: true });
+  constructor(config: CoreClientConfig, options?: { noDefaults?: boolean });
+  constructor(
+    config: Partial<ClientConfig>,
+    options?: { noDefaults?: boolean }
+  );
+  constructor(
+    config: PolywrapCoreClientConfig<TUri>,
+    options?: { noDefaults: boolean }
+  );
   constructor(
     config:
-      | Partial<PolywrapClientConfig>
+      | Partial<PolywrapClientConfig<TUri>>
       | undefined
-      | PolywrapCoreClientConfig,
+      | PolywrapCoreClientConfig<TUri>
+      | CoreClientConfig
+      | Partial<ClientConfig>,
     options?: { noDefaults?: boolean }
   ) {
-    super(buildPolywrapCoreClientConfig(config, options?.noDefaults ?? false));
+    super(
+      buildPolywrapCoreClientConfig<TUri>(
+        config,
+        undefined,
+        options?.noDefaults ?? false
+      )
+    );
     try {
-      this.setTracingEnabled(config?.tracerConfig);
+      if (config && "tracerConfig" in config) {
+        this.setTracingEnabled(config.tracerConfig);
+      }
 
       Tracer.startSpan("PolywrapClient: constructor");
     } catch (error) {

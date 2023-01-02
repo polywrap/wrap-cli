@@ -1,6 +1,6 @@
-import { BuilderConfig } from "./BuilderConfig";
-import { ClientConfig } from "./ClientConfig";
-import { IClientConfigBuilder, TEnv, TUri } from "./IClientConfigBuilder";
+import { BuilderConfig } from "./types/configs/BuilderConfig";
+import { ClientConfig } from "./types/configs/ClientConfig";
+import { IClientConfigBuilder, TEnv, TUri } from "./types/IClientConfigBuilder";
 
 import {
   CoreClientConfig,
@@ -104,13 +104,15 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
   }
 
   addEnv(uri: TUri, env: TEnv): IClientConfigBuilder {
-    this._config.envs[uri] = env;
+    this._config.envs[uri] = { ...this._config.envs[uri], ...env };
 
     return this;
   }
 
   addEnvs(envs: Record<TUri, TEnv>): IClientConfigBuilder {
-    this._config.envs = { ...this._config.envs, ...envs };
+    for (const [uri, env] of Object.entries(envs)) {
+      this.addEnv(uri, env);
+    }
 
     return this;
   }
@@ -214,6 +216,7 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
     for (const [interfaceUri, implementations] of Object.entries(
       this._config.interfaces
     )) {
+      if (implementations.size === 0) continue;
       interfaces.push({
         interface: Uri.from(interfaceUri),
         implementations: Array.from(implementations).map((uri) =>

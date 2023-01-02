@@ -4,11 +4,7 @@ import {
   PolywrapClient,
   buildPolywrapCoreClientConfig,
 } from "@polywrap/client-js";
-import {
-  CoreClient,
-  MaybeAsync,
-  Uri,
-} from "@polywrap/core-js";
+import { CoreClient, MaybeAsync, Uri } from "@polywrap/core-js";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 

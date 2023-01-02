@@ -1,5 +1,5 @@
-import { BuilderConfig } from "./BuilderConfig";
-import { ClientConfig } from "./ClientConfig";
+import { BuilderConfig } from "./configs/BuilderConfig";
+import { ClientConfig } from "./configs/ClientConfig";
 
 import { CoreClientConfig, Wrapper, IWrapPackage } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";

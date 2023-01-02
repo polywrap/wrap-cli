@@ -19,6 +19,7 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
+    "@polywrap/tracing-js": "0.10.0-pre.6",
     "@polywrap/core-js": "0.10.0-pre.6",
     "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.6",
     "@polywrap/ethereum-plugin-js": "0.10.0-pre.6",

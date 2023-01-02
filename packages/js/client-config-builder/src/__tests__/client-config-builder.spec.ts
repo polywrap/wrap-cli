@@ -1,15 +1,12 @@
 import { ClientConfigBuilder } from "../ClientConfigBuilder";
 import {
   CoreClient,
-  Env,
-  InterfaceImplementations,
   Uri,
-  IUriRedirect,
   IUriResolver,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
-import { getDefaultConfig } from "../bundles";
+import { builtDefaultConfig } from "./builtDefaultConfig";
 
 class NamedUriResolver implements IUriResolver {
   private _name: string;
@@ -29,32 +26,48 @@ class NamedUriResolver implements IUriResolver {
 }
 
 describe("Client config builder", () => {
-  const testEnvs: Env[] = [
-    { uri: "wrap://ens/test.plugin.one", env: { test: "value" } },
-    { uri: "wrap://ens/test.plugin.two", env: { test: "value" } },
-  ];
+  const testEnv1: Record<string, Record<string, unknown>> = {
+    "wrap://ens/test.plugin.one": { test: "value" },
+  };
 
-  const testInterfaces: InterfaceImplementations[] = [
-    {
-      interface: "wrap://ens/test-interface-1.polywrap.eth",
-      implementations: ["wrap://ens/test1.polywrap.eth"],
-    },
-    {
-      interface: "wrap://ens/test-interface-2.polywrap.eth",
-      implementations: ["wrap://ens/test2.polywrap.eth"],
-    },
-  ];
+  const testEnv2: Record<string, Record<string, unknown>> = {
+    "wrap://ens/test.plugin.two": { test: "value" },
+  };
 
-  const testUriRedirects: IUriRedirect<string>[] = [
-    {
-      from: "wrap://ens/test-one.polywrap.eth",
-      to: "wrap://ens/test1.polywrap.eth",
-    },
-    {
-      from: "wrap://ens/test-two.polywrap.eth",
-      to: "wrap://ens/test2.polywrap.eth",
-    },
-  ];
+  const testInterface1: Record<string, Set<string>> = {
+    "wrap://ens/test-interface-1.polywrap.eth": new Set([
+      "wrap://ens/test1.polywrap.eth",
+    ]),
+  };
+
+  const testInterface2: Record<string, Set<string>> = {
+    "wrap://ens/test-interface-2.polywrap.eth": new Set([
+      "wrap://ens/test2.polywrap.eth",
+    ]),
+  };
+
+  const testUriRedirect1 = {
+    "wrap://ens/test-one.polywrap.eth": "wrap://ens/test1.polywrap.eth",
+  };
+
+  const testUriRedirect2 = {
+    "wrap://ens/test-two.polywrap.eth": "wrap://ens/test2.polywrap.eth",
+  };
+
+  const testEnvs: Record<string, Record<string, unknown>> = {
+    ...testEnv1,
+    ...testEnv2,
+  };
+
+  const testInterfaces: Record<string, Set<string>> = {
+    ...testInterface1,
+    ...testInterface2,
+  };
+
+  const testUriRedirects = {
+    ...testUriRedirect1,
+    ...testUriRedirect2,
+  };
 
   const testUriResolver: IUriResolver = new NamedUriResolver("test1");
 
@@ -83,21 +96,21 @@ describe("Client config builder", () => {
 
     expect(clientConfig).toBeTruthy();
     expect(clientConfig.envs).toStrictEqual(
-      testEnvs.map((x) => ({
-        uri: Uri.from(x.uri),
-        env: x.env,
+      Object.entries(testEnvs).map(([uri, env]) => ({
+        uri: Uri.from(uri),
+        env: env,
       }))
     );
     expect(clientConfig.interfaces).toStrictEqual(
-      testInterfaces.map((x) => ({
-        interface: Uri.from(x.interface),
-        implementations: x.implementations.map(Uri.from),
+      Object.entries(testInterfaces).map(([uri, interfaces]) => ({
+        interface: Uri.from(uri),
+        implementations: Array.from(interfaces).map(Uri.from),
       }))
     );
     expect(clientConfig.redirects).toStrictEqual(
-      testUriRedirects.map((x) => ({
-        from: Uri.from(x.from),
-        to: Uri.from(x.to),
+      Object.entries(testUriRedirects).map(([from, to]) => ({
+        from: Uri.from(from),
+        to: Uri.from(to),
       }))
     );
     expect(clientConfig.resolvers).toStrictEqual([testUriResolver]);
@@ -106,35 +119,35 @@ describe("Client config builder", () => {
   it("should succesfully add and merge two config objects and build", () => {
     const clientConfig = new ClientConfigBuilder()
       .add({
-        envs: [testEnvs[0]],
-        interfaces: [testInterfaces[0]],
-        redirects: [testUriRedirects[0]],
+        envs: testEnv1,
+        interfaces: testInterface1,
+        redirects: testUriRedirect1,
         resolvers: [testUriResolver],
       })
       .add({
-        envs: [testEnvs[1]],
-        interfaces: [testInterfaces[1]],
-        redirects: [testUriRedirects[1]],
+        envs: testEnv2,
+        interfaces: testInterface2,
+        redirects: testUriRedirect2,
       })
       .build();
 
     expect(clientConfig).toBeTruthy();
     expect(clientConfig.envs).toStrictEqual(
-      testEnvs.map((x) => ({
-        uri: Uri.from(x.uri),
-        env: x.env,
+      Object.entries(testEnvs).map(([uri, env]) => ({
+        uri: Uri.from(uri),
+        env: env,
       }))
     );
     expect(clientConfig.interfaces).toStrictEqual(
-      testInterfaces.map((x) => ({
-        interface: Uri.from(x.interface),
-        implementations: x.implementations.map(Uri.from),
+      Object.entries(testInterfaces).map(([uri, interfaces]) => ({
+        interface: Uri.from(uri),
+        implementations: Array.from(interfaces).map(Uri.from),
       }))
     );
     expect(clientConfig.redirects).toStrictEqual(
-      testUriRedirects.map((x) => ({
-        from: Uri.from(x.from),
-        to: Uri.from(x.to),
+      Object.entries(testUriRedirects).map(([from, to]) => ({
+        from: Uri.from(from),
+        to: Uri.from(to),
       }))
     );
     expect(clientConfig.resolvers).toStrictEqual([testUriResolver]);
@@ -143,7 +156,7 @@ describe("Client config builder", () => {
   it("should successfully add the default config", () => {
     const clientConfig = new ClientConfigBuilder().addDefaults().build();
 
-    const expectedConfig = getDefaultConfig();
+    const expectedConfig = builtDefaultConfig();
 
     expect(clientConfig).toBeTruthy();
     expect(clientConfig.envs).toStrictEqual(expectedConfig.envs);
@@ -199,8 +212,8 @@ describe("Client config builder", () => {
 
   it("should succesfully add two separate envs", () => {
     const config = new ClientConfigBuilder()
-      .addEnv(testEnvs[0].uri, testEnvs[0].env)
-      .addEnv(testEnvs[1].uri, testEnvs[1].env)
+      .addEnv(Object.keys(testEnvs)[0], Object.values(testEnvs)[0])
+      .addEnv(Object.keys(testEnvs)[1], Object.values(testEnvs)[1])
       .build();
 
     if (!config.envs || config.envs.length !== 2) {
@@ -208,20 +221,20 @@ describe("Client config builder", () => {
     }
 
     expect(config.envs).toContainEqual({
-      uri: Uri.from(testEnvs[0].uri),
-      env: testEnvs[0].env,
+      uri: Uri.from(Object.keys(testEnvs)[0]),
+      env: Object.values(testEnvs)[0],
     });
     expect(config.envs).toContainEqual({
-      uri: Uri.from(testEnvs[1].uri),
-      env: testEnvs[1].env,
+      uri: Uri.from(Object.keys(testEnvs)[1]),
+      env: Object.values(testEnvs)[1],
     });
   });
 
   it("should remove an env", () => {
     const config = new ClientConfigBuilder()
-      .addEnv(testEnvs[0].uri, testEnvs[0].env)
-      .addEnv(testEnvs[1].uri, testEnvs[1].env)
-      .removeEnv(testEnvs[0].uri)
+      .addEnv(Object.keys(testEnvs)[0], Object.values(testEnvs)[0])
+      .addEnv(Object.keys(testEnvs)[1], Object.values(testEnvs)[1])
+      .removeEnv(Object.keys(testEnvs)[0])
       .build();
 
     if (!config.envs || config.envs.length !== 1) {
@@ -229,8 +242,8 @@ describe("Client config builder", () => {
     }
 
     expect(config.envs).toContainEqual({
-      uri: Uri.from(testEnvs[1].uri),
-      env: testEnvs[1].env,
+      uri: Uri.from(Object.keys(testEnvs)[1]),
+      env: Object.values(testEnvs)[1],
     });
   });
 
@@ -603,7 +616,7 @@ describe("Client config builder", () => {
 
     const config = new ClientConfigBuilder().addResolver(uriResolver).build();
 
-    expect(((config.resolvers[0] as unknown) as NamedUriResolver).name).toBe(
+    expect((config.resolvers as Array<NamedUriResolver>)[0].name).toBe(
       "ResolverName"
     );
   });
@@ -617,10 +630,10 @@ describe("Client config builder", () => {
       .addResolver(uriResolver2)
       .build();
 
-    expect(((config.resolvers[0] as unknown) as NamedUriResolver).name).toBe(
+    expect((config.resolvers as Array<NamedUriResolver>)[0].name).toBe(
       "first"
     );
-    expect(((config.resolvers[1] as unknown) as NamedUriResolver).name).toBe(
+    expect((config.resolvers as Array<NamedUriResolver>)[1].name).toBe(
       "second"
     );
   });

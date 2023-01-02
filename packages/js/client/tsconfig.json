@@ -11,6 +11,6 @@
   },
   "include": [
     "./src/**/*.ts"
-  ],
+, "../client-config-builder/src/types/configs/PolywrapClientConfig.ts", "../client-config-builder/src/types/configs/PolywrapCoreClientConfig.ts"  ],
   "exclude": []
 }

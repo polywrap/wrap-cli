@@ -1,4 +1,4 @@
-import { TEnv, TUri } from "./IClientConfigBuilder";
+import { TEnv, TUri } from "../IClientConfigBuilder";
 
 import { Wrapper, IWrapPackage } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";

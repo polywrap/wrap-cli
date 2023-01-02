@@ -1,6 +1,6 @@
 import { getDefaultConfig } from "./bundles";
 import { BaseClientConfigBuilder } from "./BaseClientConfigBuilder";
-import { IClientConfigBuilder } from "./IClientConfigBuilder";
+import { IClientConfigBuilder } from "./types/IClientConfigBuilder";
 
 import { CoreClientConfig, IUriResolver } from "@polywrap/core-js";
 import {
@@ -26,6 +26,8 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
 
   buildCoreConfig(): CoreClientConfig {
     const clientConfig = this.build();
+
+    // console.log(clientConfig.packages);
 
     return {
       envs: clientConfig.envs,
