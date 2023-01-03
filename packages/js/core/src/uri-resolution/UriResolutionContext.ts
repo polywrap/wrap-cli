@@ -24,8 +24,7 @@ export class UriResolutionContext implements IUriResolutionContext {
   constructor(
     resolvingUriMap?: Map<string, boolean>,
     resolutionPathOrHistory?: Set<string> | IUriResolutionStep<unknown>[]
-  ) {
-    // $end
+  ) /* $ */ {
     this.resolvingUriMap = resolvingUriMap ?? new Map();
 
     if (Array.isArray(resolutionPathOrHistory)) {

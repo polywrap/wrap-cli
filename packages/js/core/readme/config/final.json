@@ -16,6 +16,26 @@
       "dir": "./readme",
       "include": "./README.md"
     },
+    "startTokens": [
+      {
+        "pattern": "$start: ",
+        "inline": false
+      },
+      {
+        "pattern": "/* $: {SNIPPET_NAME} */",
+        "inline": true
+      }
+    ],
+    "endTokens": [
+      {
+        "pattern": "$end",
+        "inline": false
+      },
+      {
+        "pattern": "/* $ */",
+        "inline": true
+      }
+    ],
     "outputDir": "./"
   }
 }

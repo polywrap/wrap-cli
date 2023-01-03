@@ -164,3 +164,8 @@ $snippet: IClientConfigBuilder-addResolver
 ```ts
 $snippet: IClientConfigBuilder-addResolvers
 ```
+
+## Bundle: DefaultConfig
+```ts
+$snippet: getDefaultConfig
+```

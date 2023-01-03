@@ -14,7 +14,6 @@ export interface MaybeUriOrManifest {
 }
 // $end
 
-/** */
 export const module = {
   // $start: UriResolverInterface-tryResolveUri
   /**
@@ -30,8 +29,7 @@ export const module = {
       invoker: Invoker,
       wrapper: Uri,
       uri: Uri
-    ): Promise<Result<MaybeUriOrManifest, Error>> => {
-      // $end
+    ): Promise<Result<MaybeUriOrManifest, Error>> /* $ */ => {
       return invoker.invoke<MaybeUriOrManifest>({
         uri: wrapper.uri,
         method: `tryResolveUri`,
@@ -56,8 +54,7 @@ export const module = {
       invoker: Invoker,
       wrapper: Uri,
       path: string
-    ): Promise<Result<Uint8Array | undefined, Error>> => {
-      // $end
+    ): Promise<Result<Uint8Array | undefined, Error>> /* $ */ => {
       return invoker.invoke<Uint8Array | undefined>({
         uri: wrapper.uri,
         method: "getFile",

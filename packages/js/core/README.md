@@ -397,31 +397,31 @@ export class Uri {
    *
    * @param uri - a string representation of a wrap URI
    */
-  constructor(uri: string) {
+  constructor(uri: string) 
 ```
 
 ##### authority
 ```ts
   /** @returns Uri authority */
-  public get authority(): string {
+  public get authority(): string 
 ```
 
 ##### path
 ```ts
   /** @returns Uri path */
-  public get path(): string {
+  public get path(): string 
 ```
 
 ##### uri
 ```ts
   /** @returns Uri string representation */
-  public get uri(): string {
+  public get uri(): string 
 ```
 
 ##### equals
 ```ts
   /** Test two Uri instances for equality */
-  public static equals(a: Uri, b: Uri): boolean {
+  public static equals(a: Uri, b: Uri): boolean 
 ```
 
 ##### isUri
@@ -431,7 +431,7 @@ export class Uri {
    *
    * @param value - value to check
    * @returns true if value is a Uri instance */
-  public static isUri(value: unknown): value is Uri {
+  public static isUri(value: unknown): value is Uri 
 ```
 
 ##### isValidUri
@@ -442,19 +442,19 @@ export class Uri {
    * @param uri - URI string
    * @param parsed? - UriConfig to update (mutate) with content of URI string
    * @returns true if input string is a valid wrap URI */
-  public static isValidUri(uri: string, parsed?: UriConfig): boolean {
+  public static isValidUri(uri: string, parsed?: UriConfig): boolean 
 ```
 
 ##### toString
 ```ts
   /** @returns Uri string representation */
-  public toString(): string {
+  public toString(): string 
 ```
 
 ##### toJSON
 ```ts
   /** @returns Uri string representation */
-  public toJSON(): string {
+  public toJSON(): string 
 ```
 
 ##### parseUri
@@ -466,7 +466,7 @@ export class Uri {
    * @returns A Result containing a UriConfig, if successful, or an error
    */
   @Tracer.traceMethod("Uri: parseUri")
-  public static parseUri(uri: string): Result<UriConfig, Error> {
+  public static parseUri(uri: string): Result<UriConfig, Error> 
 ```
 
 ##### from
@@ -480,7 +480,7 @@ export class Uri {
    * @param uri - a Uri instance or a string representation of a wrap URI
    */
   @Tracer.traceMethod("Uri: from")
-  public static from(uri: Uri | string): Uri {
+  public static from(uri: Uri | string): Uri 
 ```
 
 ### UriResolver
@@ -580,7 +580,7 @@ export interface MaybeUriOrManifest {
       invoker: Invoker,
       wrapper: Uri,
       uri: Uri
-    ): Promise<Result<MaybeUriOrManifest, Error>> => {
+    ): Promise<Result<MaybeUriOrManifest, Error>> 
 ```
 
 #### getFile
@@ -598,7 +598,7 @@ export interface MaybeUriOrManifest {
       invoker: Invoker,
       wrapper: Uri,
       path: string
-    ): Promise<Result<Uint8Array | undefined, Error>> => {
+    ): Promise<Result<Uint8Array | undefined, Error>> 
 ```
 
 ## Uri Resolution
@@ -747,5 +747,5 @@ export class UriResolutionContext implements IUriResolutionContext {
   constructor(
     resolvingUriMap?: Map<string, boolean>,
     resolutionPathOrHistory?: Set<string> | IUriResolutionStep<unknown>[]
-  ) {
+  ) 
 ```

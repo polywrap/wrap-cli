@@ -145,5 +145,5 @@ export interface PolywrapClientConfig<TUri extends Uri | string = Uri | string>
       | undefined
       | PolywrapCoreClientConfig,
     options?: { noDefaults?: boolean }
-  ) {
+  ) 
 ```

@@ -35,22 +35,19 @@ export class Uri {
 
   // $start: Uri-authority
   /** @returns Uri authority */
-  public get authority(): string {
-    // $end
+  public get authority(): string /* $ */ {
     return this._config.authority;
   }
 
   // $start: Uri-path
   /** @returns Uri path */
-  public get path(): string {
-    // $end
+  public get path(): string /* $ */ {
     return this._config.path;
   }
 
   // $start: Uri-uri
   /** @returns Uri string representation */
-  public get uri(): string {
-    // $end
+  public get uri(): string /* $ */ {
     return this._config.uri;
   }
 
@@ -63,8 +60,7 @@ export class Uri {
    *
    * @param uri - a string representation of a wrap URI
    */
-  constructor(uri: string) {
-    // $end
+  constructor(uri: string) /* $ */ {
     const result = Uri.parseUri(uri);
     if (!result.ok) {
       throw result.error;
@@ -74,8 +70,7 @@ export class Uri {
 
   // $start: Uri-equals
   /** Test two Uri instances for equality */
-  public static equals(a: Uri, b: Uri): boolean {
-    // $end
+  public static equals(a: Uri, b: Uri): boolean /* $ */ {
     return a.uri === b.uri;
   }
 
@@ -85,8 +80,7 @@ export class Uri {
    *
    * @param value - value to check
    * @returns true if value is a Uri instance */
-  public static isUri(value: unknown): value is Uri {
-    // $end
+  public static isUri(value: unknown): value is Uri /* $ */ {
     return typeof value === "object" && (value as Uri).uri !== undefined;
   }
 
@@ -97,8 +91,7 @@ export class Uri {
    * @param uri - URI string
    * @param parsed? - UriConfig to update (mutate) with content of URI string
    * @returns true if input string is a valid wrap URI */
-  public static isValidUri(uri: string, parsed?: UriConfig): boolean {
-    // $end
+  public static isValidUri(uri: string, parsed?: UriConfig): boolean /* $ */ {
     const result = Uri.parseUri(uri);
 
     if (parsed && result.ok) {
@@ -110,15 +103,13 @@ export class Uri {
 
   // $start: Uri-toString
   /** @returns Uri string representation */
-  public toString(): string {
-    // $end
+  public toString(): string /* $ */ {
     return this._config.uri;
   }
 
   // $start: Uri-toJSON
   /** @returns Uri string representation */
-  public toJSON(): string {
-    // $end
+  public toJSON(): string /* $ */ {
     return this._config.uri;
   }
 
@@ -130,8 +121,7 @@ export class Uri {
    * @returns A Result containing a UriConfig, if successful, or an error
    */
   @Tracer.traceMethod("Uri: parseUri")
-  public static parseUri(uri: string): Result<UriConfig, Error> {
-    // $end
+  public static parseUri(uri: string): Result<UriConfig, Error> /* $ */ {
     if (!uri) {
       return ResultErr(Error("The provided URI is empty"));
     }
@@ -195,8 +185,7 @@ export class Uri {
    * @param uri - a Uri instance or a string representation of a wrap URI
    */
   @Tracer.traceMethod("Uri: from")
-  public static from(uri: Uri | string): Uri {
-    // $end
+  public static from(uri: Uri | string): Uri /* $ */ {
     if (typeof uri === "string") {
       return new Uri(uri);
     } else if (Uri.isUri(uri)) {

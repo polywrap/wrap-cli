@@ -16,6 +16,7 @@ import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
 
+// $start: getDefaultConfig
 export const getDefaultConfig = (): ClientConfig<Uri> => {
   return {
     envs: [
@@ -150,3 +151,4 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
     },
   ];
 };
+// $end

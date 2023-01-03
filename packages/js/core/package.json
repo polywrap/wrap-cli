@@ -27,7 +27,7 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.6"
   },
   "devDependencies": {
-    "doc-snippets": "^0.4.0-pre.1",
+    "doc-snippets": "^0.4.0-pre.4",
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
     "@types/prettier": "2.6.0",
