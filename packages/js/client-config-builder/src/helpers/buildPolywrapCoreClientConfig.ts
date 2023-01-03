@@ -8,15 +8,16 @@ import { UriResolverLike } from "../types/configs/types";
 import { ClientConfigBuilder } from "../ClientConfigBuilder";
 import { sanitizeUri } from "./sanitizeUri";
 
-import { CoreClientConfig, Uri } from "@polywrap/core-js";
+import {
+  CoreClientConfig,
+  Env,
+  InterfaceImplementations,
+  Uri,
+} from "@polywrap/core-js";
 import { UriResolverLike as SanitizedUriResolverLike } from "@polywrap/uri-resolvers-js";
 
 export function sanitizeConfig<TUri extends Uri | string = string>(
-  config:
-    | Partial<PolywrapClientConfig<TUri>>
-    | PolywrapCoreClientConfig<TUri>
-    | Partial<ClientConfig>
-    | CoreClientConfig
+  config: Partial<PolywrapClientConfig<TUri>> | Partial<ClientConfig>
 ): BuilderConfig {
   const builderConfig: BuilderConfig = {
     envs: {},
@@ -65,9 +66,6 @@ export function sanitizeConfig<TUri extends Uri | string = string>(
         pkg.package;
     }
   }
-  if ("resolver" in config && config.resolver) {
-    builderConfig.resolvers.push(config.resolver);
-  }
   if ("resolvers" in config && config.resolvers) {
     builderConfig.resolvers.push(
       sanitizeResolverLike<TUri | Uri>(config.resolvers)
@@ -105,6 +103,41 @@ export function sanitizeResolverLike<TUri extends Uri | string = string>(
   }
 }
 
+export function sanitizePolywrapCoreConfig<TUri extends Uri | string = string>(
+  config: PolywrapCoreClientConfig<TUri> | CoreClientConfig
+): CoreClientConfig {
+  const sanitizedEnvs: Env[] = [];
+  const sanitizedInterfaces: InterfaceImplementations[] = [];
+
+  if (config.envs) {
+    for (const env of config.envs) {
+      sanitizedEnvs.push({
+        uri: sanitizeUri<TUri | Uri>(env.uri),
+        env: env.env,
+      });
+    }
+  }
+  if (config.interfaces) {
+    for (const interfaceImpl of config.interfaces) {
+      const sanitizedImpls: Uri[] = [];
+      for (const impl of interfaceImpl.implementations) {
+        sanitizedImpls.push(sanitizeUri<TUri | Uri>(impl));
+      }
+
+      sanitizedInterfaces.push({
+        interface: sanitizeUri<TUri | Uri>(interfaceImpl.interface),
+        implementations: sanitizedImpls,
+      });
+    }
+  }
+
+  return {
+    envs: sanitizedEnvs,
+    interfaces: sanitizedInterfaces,
+    resolver: config.resolver,
+  };
+}
+
 export function buildPolywrapCoreClientConfig<
   TUri extends Uri | string = string
 >(
@@ -129,7 +162,9 @@ export function buildPolywrapCoreClientConfig<
     builder.addDefaults();
   }
 
-  if (config) {
+  if (config && "resolver" in config) {
+    return sanitizePolywrapCoreConfig<TUri>(config);
+  } else if (config) {
     builder.add(sanitizeConfig(config));
   }
 

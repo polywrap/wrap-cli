@@ -127,7 +127,7 @@ describe("wasm-wrapper", () => {
   it("should allow clone + reconfigure of redirects", async () => {
     let builder = new ClientConfigBuilder().add({
       packages: { "wrap://ens/mock.polywrap.eth": mockPlugin() },
-    });
+    }).addDefaults();
 
     const client = new PolywrapClient(builder.buildCoreConfig());
 
