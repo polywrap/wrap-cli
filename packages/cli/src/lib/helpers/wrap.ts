@@ -41,7 +41,7 @@ export const generateWrapFile = async (
   path: string,
   logger: Logger
 ): Promise<void> => {
-  if (supportedWrapTypes.indexOf(type as WrapManifest["type"]) === -1) {
+  if (!supportedWrapTypes.includes(type as WrapManifest["type"])) {
     throw Error(intlMsg.lib_helpers_wrap_unsupportedType({ type }));
   }
 
