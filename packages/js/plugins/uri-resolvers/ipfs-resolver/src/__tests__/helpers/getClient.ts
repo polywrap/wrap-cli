@@ -3,14 +3,14 @@ import {
   PackageToWrapperCacheResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
-import { PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient, Uri } from "@polywrap/client-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { providers } from "@polywrap/test-env-js";
 import { ipfsResolverPlugin } from "../..";
 
 export const getClient = (env: Record<string, unknown>) => {
-  return new PolywrapClient(
+  return new PolywrapClient<string>(
     {
       envs: [
         {
@@ -26,7 +26,7 @@ export const getClient = (env: Record<string, unknown>) => {
       ],
       interfaces: [
         {
-          interface: ExtendableUriResolver.extInterfaceUri,
+          interface: ExtendableUriResolver.extInterfaceUri.uri,
           implementations: ["wrap://ens/ipfs-resolver.polywrap.eth"],
         },
       ],
@@ -34,11 +34,11 @@ export const getClient = (env: Record<string, unknown>) => {
         PackageToWrapperCacheResolver.from(
           [
             {
-              uri: "wrap://ens/ipfs.polywrap.eth",
+              uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
               package: ipfsPlugin({}),
             },
             {
-              uri: "wrap://ens/ipfs-resolver.polywrap.eth",
+              uri: Uri.from("wrap://ens/ipfs-resolver.polywrap.eth"),
               package: ipfsResolverPlugin({}),
             },
             new ExtendableUriResolver(),

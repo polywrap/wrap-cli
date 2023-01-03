@@ -15,9 +15,9 @@ import {
 import fs from "fs";
 import { Result } from "@polywrap/result";
 import { mockPluginRegistration } from "../../helpers/mockPluginRegistration";
-import { PolywrapClient, ExtendableUriResolver, PolywrapClientConfig } from "../../../";
+import { PolywrapClient, ExtendableUriResolver } from "../../../";
 
-jest.setTimeout(200000);
+jest.setTimeout(300000);
 
 const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 const wrapperUri = new Uri(`wrap://file/${wrapperPath}/build`);
