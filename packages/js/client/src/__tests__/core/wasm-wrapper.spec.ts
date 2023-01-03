@@ -17,7 +17,7 @@ const simpleWrapperUri = new Uri(`fs/${simpleWrapperPath}/build`);
 
 describe("wasm-wrapper", () => {
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath);
+    await buildWrapper(simpleWrapperPath, undefined, true);
   });
 
   const mockPlugin = (): IWrapPackage => {

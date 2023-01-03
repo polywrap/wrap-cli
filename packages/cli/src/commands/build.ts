@@ -13,6 +13,10 @@ import {
   parseClientConfigOption,
   parseManifestFileOption,
   parseLogFileOption,
+  getProjectFromManifest,
+  isPolywrapManifestLanguage,
+  polywrapManifestLanguages,
+  pluginManifestLanguages,
   parseWrapperEnvsOption,
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen";
@@ -23,8 +27,8 @@ import {
   DockerImageBuildStrategy,
   LocalBuildStrategy,
 } from "../lib/build-strategies";
+import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 
-import path from "path";
 import readline from "readline";
 import { PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -36,12 +40,18 @@ const strategyStr = intlMsg.commands_build_options_s_strategy();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
 
+const supportedProjectTypes = [
+  ...Object.values(polywrapManifestLanguages),
+  ...Object.values(pluginManifestLanguages),
+];
+
 type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
   configBuilder: IClientConfigBuilder;
   wrapperEnvs: Record<string, Record<string, unknown>>;
   codegen: boolean; // defaults to true
+  codegenDir: string;
   watch?: boolean;
   strategy: SupportedStrategies;
   verbose?: boolean;
@@ -71,11 +81,17 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(`--codegen`, `${intlMsg.commands_build_options_codegen()}`)
+      .option(
+        `--codegen-dir`,
+        `${intlMsg.commands_build_options_codegen_dir({
+          default: defaultCodegenDir,
+        })}`
+      )
       .option(
         `--wrapper-envs <${intlMsg.commands_common_options_wrapperEnvsPath()}>`,
         `${intlMsg.commands_common_options_wrapperEnvs()}`
       )
-      .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_n()}`)
       .option(
         `-s, --strategy <${strategyStr}>`,
         `${intlMsg.commands_build_options_s()}`,
@@ -98,6 +114,7 @@ export const build: Command = {
           configBuilder: await parseClientConfigOption(options.clientConfig),
           wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
+          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           strategy: options.strategy,
           logFile: parseLogFileOption(options.logFile),
         });
@@ -149,6 +166,7 @@ async function run(options: BuildCommandOptions) {
     wrapperEnvs,
     strategy,
     codegen,
+    codegenDir,
     verbose,
     quiet,
     logFile,
@@ -164,43 +182,71 @@ async function run(options: BuildCommandOptions) {
     noDefaults: true,
   });
 
-  const project = new PolywrapProject({
-    rootDir: path.dirname(manifestFile),
-    polywrapManifestPath: manifestFile,
-    logger,
-  });
+  const project = await getProjectFromManifest(manifestFile, logger);
+
+  if (!project) {
+    return;
+  }
+
   await project.validate();
 
-  const polywrapManifest = await project.getManifest();
-  await validateManifestModules(polywrapManifest);
+  const manifest = await project.getManifest();
+  const language = manifest.project.type;
 
-  const buildStrategy = createBuildStrategy(strategy, outputDir, project);
+  if (supportedProjectTypes.indexOf(language) === -1) {
+    logger.error(
+      intlMsg.commands_build_error_unsupportedProjectType({
+        supportedTypes: supportedProjectTypes.join(", "),
+      })
+    );
+    process.exit(1);
+  }
 
-  const schemaComposer = new SchemaComposer({
-    project,
-    client,
-  });
+  let buildStrategy: BuildStrategy<unknown>;
+
+  if (isPolywrapManifestLanguage(language)) {
+    await validateManifestModules(manifest as PolywrapManifest);
+
+    buildStrategy = createBuildStrategy(
+      strategy,
+      outputDir,
+      project as PolywrapProject
+    );
+  }
 
   const execute = async (): Promise<boolean> => {
-    const codeGenerator = codegen
-      ? new CodeGenerator({ project, schemaComposer })
-      : undefined;
+    try {
+      const schemaComposer = new SchemaComposer({
+        project,
+        client,
+      });
 
-    const compiler = new Compiler({
-      project,
-      outputDir,
-      schemaComposer,
-      buildStrategy,
-      codeGenerator,
-    });
+      if (codegen) {
+        const codeGenerator = new CodeGenerator({
+          project,
+          schemaComposer,
+          codegenDirAbs: codegenDir,
+        });
+        const codegenSuccess = await codeGenerator.generate();
 
-    const result = await compiler.compile();
+        if (!codegenSuccess) {
+          logger.error(intlMsg.commands_build_error_codegen_failed());
+          return false;
+        }
+      }
 
-    if (!result) {
-      return result;
+      const compiler = new Compiler({
+        project: project as PolywrapProject,
+        outputDir,
+        schemaComposer,
+        buildStrategy,
+      });
+
+      return await compiler.compile();
+    } catch (err) {
+      logger.error(err.message);
+      return false;
     }
-
-    return true;
   };
 
   if (!watch) {
@@ -209,6 +255,8 @@ async function run(options: BuildCommandOptions) {
     if (!result) {
       process.exit(1);
     }
+
+    process.exit(0);
   } else {
     // Execute
     await execute();
@@ -260,6 +308,4 @@ async function run(options: BuildCommandOptions) {
       },
     });
   }
-
-  process.exit(0);
 }
