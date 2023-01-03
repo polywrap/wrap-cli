@@ -22,7 +22,7 @@ describe("e2e tests for HttpPlugin", () => {
     beforeAll(async () => {
       client = getClient();
 
-      await buildWrapper(wrapperPath);
+      await buildWrapper(wrapperPath, undefined, true);
     });
 
     it("get", async () => {
