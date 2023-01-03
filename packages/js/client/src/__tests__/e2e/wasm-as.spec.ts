@@ -319,8 +319,41 @@ describe("wasm-as test cases", () => {
     const wrapperUri = `fs/${wrapperPath}/build`;
     const externalWrapperUri = `fs/${externalWrapperPath}/build`;
 
-    await buildWrapper(externalWrapperPath);
-    await buildWrapper(wrapperPath);
+    // await buildWrapper(externalWrapperPath);
+    // await buildWrapper(wrapperPath);
+    const client = new PolywrapClient({
+      envs: [
+        {
+          uri: wrapperUri,
+          env: {
+            object: {
+              prop: "object string",
+            },
+            str: "string",
+            optFilledStr: "optional string",
+            number: 10,
+            bool: true,
+            en: "FIRST",
+            array: [32, 23],
+          },
+        },
+        {
+          uri: externalWrapperUri,
+          env: {
+            externalArray: [1, 2, 3],
+            externalString: "iamexternal",
+          },
+        },
+      ],
+      redirects: [
+        {
+          from: "ens/externalenv.polywrap.eth",
+          to: externalWrapperUri,
+        },
+      ],
+    });
+
+    console.log(client.getEnvs());
 
     await TestCases.runComplexEnvs(
       new PolywrapClient({

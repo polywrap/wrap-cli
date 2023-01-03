@@ -183,7 +183,7 @@ export const createImports = (config: {
           abort(result.error?.message as string);
           return false;
         }
-        const implementations = result.value;
+        const implementations = result.value.map((i) => i.uri);
         state.getImplementationsResult = msgpackEncode(implementations);
         return implementations.length > 0;
       },

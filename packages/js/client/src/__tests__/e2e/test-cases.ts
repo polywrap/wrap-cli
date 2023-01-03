@@ -295,7 +295,7 @@ export const runImplementationsTest = async (
     applyResolution: false,
   });
   if (!implResult.ok) fail(implResult.error);
-  expect(implResult.value).toEqual([new Uri(implementationUri).uri]);
+  expect(implResult.value).toEqual([new Uri(implementationUri)]);
 
   const results = await Promise.all([
     client.invoke({
@@ -342,7 +342,7 @@ export const runGetImplementationsTest = async (
     applyResolution: false,
   });
   if (!implResult.ok) fail(implResult.error);
-  expect(implResult.value).toEqual([implUri.uri]);
+  expect(implResult.value).toEqual([implUri]);
 
   const result = await client.invoke({
     uri: aggregatorUri,
