@@ -122,7 +122,7 @@ describe("sanity", () => {
 
     expect(result.ok).toBeTruthy()
 
-    await buildWrapper(modifiedFooPath);
+    await buildWrapper(modifiedFooPath, undefined, true);
       let redirectUri: IUriRedirect = {
       from: Uri.from(fooUri),
       to: Uri.from(modifiedFooUri)

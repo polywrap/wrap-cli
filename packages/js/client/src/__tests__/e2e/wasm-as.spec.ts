@@ -319,8 +319,8 @@ describe("wasm-as test cases", () => {
     const wrapperUri = `fs/${wrapperPath}/build`;
     const externalWrapperUri = `fs/${externalWrapperPath}/build`;
 
-    await buildWrapper(externalWrapperPath);
-    await buildWrapper(wrapperPath);
+    await buildWrapper(externalWrapperPath, undefined, true);
+    await buildWrapper(wrapperPath, undefined, true);
 
     await TestCases.runComplexEnvs(
       new PolywrapClient({
