@@ -220,7 +220,7 @@ async function run(options: BuildCommandOptions) {
         project,
         client,
       });
-  
+
       if (codegen) {
         const codeGenerator = new CodeGenerator({
           project,
@@ -228,20 +228,20 @@ async function run(options: BuildCommandOptions) {
           codegenDirAbs: codegenDir,
         });
         const codegenSuccess = await codeGenerator.generate();
-  
+
         if (!codegenSuccess) {
           logger.error(intlMsg.commands_build_error_codegen_failed());
           return false;
         }
       }
-  
+
       const compiler = new Compiler({
         project: project as PolywrapProject,
         outputDir,
         schemaComposer,
         buildStrategy,
       });
-  
+
       return await compiler.compile();
     } catch (err) {
       logger.error(err.message);

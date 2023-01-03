@@ -13,7 +13,7 @@ import { normalizePath, writeFileSync } from "@polywrap/os-js";
 export const supportedWrapTypes: WrapManifest["type"][] = [
   "interface",
   "wasm",
-  "plugin"
+  "plugin",
 ];
 
 const run = async (

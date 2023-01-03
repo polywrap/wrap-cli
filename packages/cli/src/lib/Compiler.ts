@@ -78,11 +78,13 @@ export class Compiler {
       throw Error(intlMsg.lib_compiler_missingBuildStrategy());
     }
 
-    if (!await this._isWasm()) {
+    if (!(await this._isWasm())) {
       const manifest = await project.getManifest();
-      throw Error(intlMsg.lib_compiler_cannotBuildModule({
-        project: manifest.project.type
-      }));
+      throw Error(
+        intlMsg.lib_compiler_cannotBuildModule({
+          project: manifest.project.type,
+        })
+      );
     }
 
     // Build the sources
