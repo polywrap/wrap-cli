@@ -3,22 +3,23 @@ import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import { latestWrapManifestVersion } from "@polywrap/wrap-manifest-types-js";
 
 export class CustomConfigBuilder extends BaseClientConfigBuilder {
-  addDefaults(): CustomConfigBuilder {
+  addDefaults(): IClientConfigBuilder {
     return this.add(getDefaultConfig());
   }
 
-  buildCoreConfig(): CoreClientConfig<Uri> {
+  buildCoreConfig(): CoreClientConfig {
+    const config = super.build();
     return {
-      envs: this.config.envs,
-      interfaces: this.config.interfaces,
+      envs: config.envs,
+      interfaces: config.interfaces,
       resolver:
         RecursiveResolver.from(
           PackageToWrapperCacheResolver.from(
             [
               StaticResolver.from([
-                ...this.config.redirects,
-                ...this.config.wrappers,
-                ...this.config.packages,
+                ...config.redirects,
+                ...config.wrappers,
+                ...config.packages,
               ]),
               ...this.config.resolvers,
               new ExtendableUriResolver(),
@@ -150,8 +151,5 @@ const mockPlugin = () => {
 export function configure(_: IClientConfigBuilder): IClientConfigBuilder {
   return new CustomConfigBuilder()
     .addDefaults()
-    .addPackage({
-      uri: "wrap://ens/mock.eth",
-      package: mockPlugin(),
-    });
+    .addPackage("wrap://ens/mock.eth", mockPlugin());
 }
