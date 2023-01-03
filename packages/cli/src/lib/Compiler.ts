@@ -6,6 +6,7 @@ import {
   generateWrapFile,
   intlMsg,
   PolywrapProject,
+  PluginProject,
   resetDir,
   SchemaComposer,
   logActivity,
@@ -21,8 +22,8 @@ import path from "path";
 
 export interface CompilerConfig {
   outputDir: string;
-  project: PolywrapProject;
-  buildStrategy: BuildStrategy;
+  project: PolywrapProject | PluginProject;
+  buildStrategy?: BuildStrategy;
   schemaComposer: SchemaComposer;
 }
 
@@ -39,13 +40,13 @@ export class Compiler {
       // Output: wrap.info
       await this._outputWrapManifest();
 
-      if (!(await this._isInterface())) {
-        // Compile the Wrapper
+      if (await this._isWasm()) {
+        // Build & Output: wasm.wrap
         await this._buildModules();
-      }
 
-      // Copy: Resources folder
-      await this._copyResourcesFolder();
+        // Copy: Resources folder
+        await this._copyResourcesFolder();
+      }
     };
 
     try {
@@ -64,17 +65,24 @@ export class Compiler {
     }
   }
 
-  private async _isInterface(): Promise<boolean> {
+  private async _isWasm(): Promise<boolean> {
     const { project } = this._config;
     const manifest = await project.getManifest();
-    return manifest.project.type === "interface";
+    return manifest.project.type.startsWith("wasm/");
   }
 
   private async _buildModules(): Promise<void> {
-    const { outputDir } = this._config;
+    const { outputDir, project } = this._config;
 
-    if (await this._isInterface()) {
-      throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules());
+    if (!this._config.buildStrategy) {
+      throw Error(intlMsg.lib_compiler_missingBuildStrategy());
+    }
+
+    if (!await this._isWasm()) {
+      const manifest = await project.getManifest();
+      throw Error(intlMsg.lib_compiler_cannotBuildModule({
+        project: manifest.project.type
+      }));
     }
 
     // Build the sources
@@ -90,7 +98,7 @@ export class Compiler {
     const run = async () => {
       const manifest = await project.getManifest();
 
-      const type = (await this._isInterface()) ? "interface" : "wasm";
+      const type = manifest.project.type.split("/")[0];
       const abi = await schemaComposer.getComposedAbis();
       await generateWrapFile(
         abi,
@@ -122,7 +130,7 @@ export class Compiler {
   private async _copyResourcesFolder(): Promise<void> {
     const { outputDir, project } = this._config;
 
-    const projectManifest = await project.getManifest();
+    const projectManifest = await (project as PolywrapProject).getManifest();
 
     if (!projectManifest || !projectManifest.resources) {
       return Promise.resolve();

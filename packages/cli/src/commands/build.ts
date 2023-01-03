@@ -15,8 +15,6 @@ import {
   parseLogFileOption,
   getProjectFromManifest,
   isPolywrapManifestLanguage,
-  isPluginManifestLanguage,
-  generateWrapFile,
   polywrapManifestLanguages,
   pluginManifestLanguages,
   parseWrapperEnvsOption,
@@ -31,8 +29,6 @@ import {
 } from "../lib/build-strategies";
 import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 
-import fs from "fs";
-import path from "path";
 import readline from "readline";
 import { Env, PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -197,23 +193,34 @@ async function run(options: BuildCommandOptions) {
   const manifest = await project.getManifest();
   const language = manifest.project.type;
 
-  let execute: () => Promise<boolean>;
+  if (supportedProjectTypes.indexOf(language) === -1) {
+    logger.error(
+      intlMsg.commands_build_error_unsupportedProjectType({
+        supportedTypes: supportedProjectTypes.join(", "),
+      })
+    );
+    process.exit(1);
+  }
+
+  let buildStrategy: BuildStrategy<unknown>;
 
   if (isPolywrapManifestLanguage(language)) {
     await validateManifestModules(manifest as PolywrapManifest);
 
-    const buildStrategy = createBuildStrategy(
+    buildStrategy = createBuildStrategy(
       strategy,
       outputDir,
       project as PolywrapProject
     );
+  }
 
-    execute = async (): Promise<boolean> => {
+  const execute = async (): Promise<boolean> => {
+    try {
       const schemaComposer = new SchemaComposer({
         project,
         client,
       });
-
+  
       if (codegen) {
         const codeGenerator = new CodeGenerator({
           project,
@@ -221,79 +228,26 @@ async function run(options: BuildCommandOptions) {
           codegenDirAbs: codegenDir,
         });
         const codegenSuccess = await codeGenerator.generate();
-
+  
         if (!codegenSuccess) {
           logger.error(intlMsg.commands_build_error_codegen_failed());
           return false;
         }
       }
-
+  
       const compiler = new Compiler({
         project: project as PolywrapProject,
         outputDir,
         schemaComposer,
         buildStrategy,
       });
-
-      const result = await compiler.compile();
-
-      if (!result) {
-        return result;
-      }
-
-      return true;
-    };
-  } else if (isPluginManifestLanguage(language)) {
-    execute = async (): Promise<boolean> => {
-      const schemaComposer = new SchemaComposer({
-        project,
-        client,
-      });
-
-      // Output the built manifest
-      const manifestPath = path.join(outputDir, "wrap.info");
-
-      try {
-        if (codegen) {
-          const codeGenerator = new CodeGenerator({
-            project,
-            schemaComposer,
-            codegenDirAbs: codegenDir,
-          });
-          const codegenSuccess = await codeGenerator.generate();
-
-          if (!codegenSuccess) {
-            logger.error(intlMsg.commands_build_error_codegen_failed());
-            return false;
-          }
-        }
-
-        if (!fs.existsSync(outputDir)) {
-          fs.mkdirSync(outputDir);
-        }
-
-        await generateWrapFile(
-          await schemaComposer.getComposedAbis(),
-          await project.getName(),
-          "plugin",
-          manifestPath,
-          logger
-        );
-      } catch (err) {
-        logger.error(err.message);
-        return false;
-      }
-
-      return true;
-    };
-  } else {
-    logger.error(
-      intlMsg.commands_build_error_unsupportedProjectType({
-        supportedTypes: supportedProjectTypes.join(", "),
-      })
-    );
-    return;
-  }
+  
+      return await compiler.compile();
+    } catch (err) {
+      logger.error(err.message);
+      return false;
+    }
+  };
 
   if (!watch) {
     const result = await execute();

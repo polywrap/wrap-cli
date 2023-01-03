@@ -10,10 +10,16 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 import { normalizePath, writeFileSync } from "@polywrap/os-js";
 
+export const supportedWrapTypes: WrapManifest["type"][] = [
+  "interface",
+  "wasm",
+  "plugin"
+];
+
 const run = async (
   abi: WrapAbi,
   name: string,
-  type: "interface" | "wasm" | "plugin",
+  type: WrapManifest["type"],
   path: string
 ): Promise<void> => {
   const manifest: WrapManifest = {
@@ -31,10 +37,16 @@ const run = async (
 export const generateWrapFile = async (
   abi: WrapAbi,
   name: string,
-  type: "interface" | "wasm" | "plugin",
+  type: string,
   path: string,
   logger: Logger
 ): Promise<void> => {
+  if (supportedWrapTypes.indexOf(type as WrapManifest["type"]) === -1) {
+    throw Error(intlMsg.lib_helpers_wrap_unsupportedType({ type }));
+  }
+
+  const wrapType = type as WrapManifest["type"];
+
   const relativePath = displayPath(path);
   return await logActivity(
     logger,
@@ -48,7 +60,7 @@ export const generateWrapFile = async (
       path: normalizePath(relativePath),
     }),
     async (): Promise<void> => {
-      await run(abi, name, type, path);
+      await run(abi, name, wrapType, path);
     }
   );
 };
