@@ -208,7 +208,7 @@ const testData: CommandTestCaseData<CommandTypings> = {
       if (!test.cwd)
         throw Error("This shouldn't happen");
       const wrapperPath = path.join(test.cwd, "../run-test-wrapper");
-      await Commands.build(undefined, { cwd: wrapperPath });
+      await Commands.build({ codegen: true }, { cwd: wrapperPath });
     },
     after: (_, stdout, __, exitCode) => {
       expect(stdout).toContain("Data: ");
