@@ -183,7 +183,7 @@ export class WasmWrapper implements Wrapper {
 
       const abort = (
         message: string,
-        code: WrapErrorCode = WrapErrorCode.WRAPPER_INVOKE_ABORTED,
+        code: WrapErrorCode,
         source?: ErrorSource
       ) => {
         const prev = WrapError.parse(message);
@@ -194,7 +194,7 @@ export class WasmWrapper implements Wrapper {
           method,
           args: JSON.stringify(args, null, 2),
           source,
-          prev,
+          innerError: prev,
         });
       };
 

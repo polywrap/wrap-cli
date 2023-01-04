@@ -16,23 +16,23 @@ Error code naming convention (approximate):
     ==> handler_typeFn_pieceFn
 
 Error code map:
-  0-24 -> Client
-  25-49 -> URI resolution
-  50-74 -> Wrapper invocation & sub-invocation
-  75-255 -> Unallocated
+  0 -> Invalid
+  1-25 -> Client
+  26-50 -> URI resolution
+  51-75 -> Wrapper invocation & sub-invocation
+  76-255 -> Unallocated
  */
 export enum WrapErrorCode {
-  UNKNOWN,
-  CLIENT_LOAD_WRAPPER_ERROR,
+  CLIENT_LOAD_WRAPPER_ERROR = 1,
   CLIENT_GET_FILE_ERROR,
   CLIENT_GET_IMPLEMENTATIONS_ERROR,
   CLIENT_VALIDATE_RESOLUTION_FAIL,
   CLIENT_VALIDATE_ABI_FAIL,
   CLIENT_VALIDATE_RECURSIVE_FAIL,
-  URI_RESOLUTION_ERROR = 25,
+  URI_RESOLUTION_ERROR = 26,
   URI_RESOLVER_ERROR,
   URI_NOT_FOUND,
-  WRAPPER_INVOKE_ABORTED = 50,
+  WRAPPER_INVOKE_ABORTED = 51,
   WRAPPER_SUBINVOKE_ABORTED,
   WRAPPER_INVOKE_FAIL,
   WRAPPER_READ_FAIL,
@@ -49,7 +49,7 @@ export interface WrapErrorOptions {
   source?: ErrorSource;
   resolutionStack?: CleanResolutionStep;
   cause?: unknown;
-  prev?: Error;
+  innerError?: WrapError;
 }
 
 type RegExpGroups<T extends string> =
@@ -68,7 +68,7 @@ export class WrapError extends Error {
   readonly source?: ErrorSource;
   readonly resolutionStack?: CleanResolutionStep;
   readonly cause?: unknown;
-  readonly prev?: Error;
+  readonly innerError?: WrapError;
 
   constructor(reason = "Encountered an exception.", options: WrapErrorOptions) {
     super(WrapError.stringify(reason, options));
@@ -81,7 +81,7 @@ export class WrapError extends Error {
     this.source = options.source;
     this.resolutionStack = options.resolutionStack;
     this.cause = options.cause;
-    this.prev = options.prev;
+    this.innerError = options.innerError;
 
     Object.setPrototypeOf(this, WrapError.prototype);
     Error.captureStackTrace(this, this.constructor);
@@ -129,7 +129,7 @@ export class WrapError extends Error {
       }
       curr = new WrapError(currArgs.reason, {
         ...currArgs.options,
-        prev: curr,
+        innerError: curr,
       });
     }
     return curr;
@@ -209,7 +209,7 @@ export class WrapError extends Error {
       source,
       resolutionStack,
       cause,
-      prev,
+      innerError,
     } = options;
     const formattedCode = `${code} ${WrapErrorCode[code].replace(/_/g, " ")}`;
 
@@ -229,8 +229,8 @@ export class WrapError extends Error {
       ? `\nThis exception was caused by the following exception:\n${errorCause}`
       : "";
 
-    const maybeDelim = prev
-      ? `\nAnother exception was encountered during execution:\n${prev}`
+    const maybeDelim = innerError
+      ? `\nAnother exception was encountered during execution:\n${innerError}`
       : "";
 
     return [
