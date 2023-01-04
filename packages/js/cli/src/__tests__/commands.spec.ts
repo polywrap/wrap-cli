@@ -57,16 +57,12 @@ const clearDir = (dir: string) => {
 
 const testData: CommandTestCaseData<CommandTypings> = {
   build: [{
-    options: { strategy: "vm" },
+    options: { strategy: "vm", codegen: true },
     cwd: path.join(GetPathToCliTestFiles(), "wasm/build-cmd/assemblyscript/001-sanity"),
     before: async (test) => {
       // clear build dir
       if (!test.cwd) throw Error("This shouldn't happen");
       clearDir(path.join(test.cwd, "build"));
-      await Commands.codegen(
-        undefined,
-        { cwd: test.cwd, cli: test.cli }
-      );
     },
     after: (test) => {
       // check for build dir and artifacts
