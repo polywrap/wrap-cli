@@ -24,7 +24,7 @@ Options:
   --wrapper-envs <envs-path>           Path to a JSON file containing wrapper
                                        envs
   -s, --strategy <vm | image | local>  Strategy to use for building the wrapper
-                                       (default: "vm")
+                                       (default: vm)
   -w, --watch                          Automatically rebuild when changes are
                                        made (default: false)
   -v, --verbose                        Verbose output (default: false)
