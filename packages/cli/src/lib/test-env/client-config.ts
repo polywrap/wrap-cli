@@ -2,6 +2,7 @@ import { getTestEnvProviders } from "./providers";
 
 import { PolywrapClientConfig } from "@polywrap/client-js";
 import {
+  defaultInterfaces,
   defaultIpfsProviders,
   defaultWrappers,
 } from "@polywrap/client-config-builder-js";
@@ -79,7 +80,7 @@ export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
     ],
     interfaces: [
       {
-        interface: defaultWrappers.ethereumProviderInterface,
+        interface: defaultInterfaces.ethereumProvider,
         implementations: ["wrap://plugin/ethereum-provider"],
       },
     ],

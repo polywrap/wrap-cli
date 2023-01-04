@@ -13,7 +13,10 @@ import {
 } from "ethereum-provider-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
 import { PolywrapClient } from "@polywrap/client-js";
-import { defaultWrappers } from "@polywrap/client-config-builder-js";
+import {
+  defaultInterfaces,
+  defaultWrappers,
+} from "@polywrap/client-config-builder-js";
 
 class ENSRecursiveNameRegisterPublisher implements Deployer {
   async execute(
@@ -86,7 +89,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
       ],
       interfaces: [
         {
-          interface: defaultWrappers.ethereumProviderInterface,
+          interface: defaultInterfaces.ethereumProvider,
           implementations: ["wrap://plugin/ethereum-provider"],
         },
       ],
