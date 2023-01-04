@@ -14,7 +14,7 @@ describe("Filesystem plugin", () => {
   let client: PolywrapClient;
 
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath);
+    await buildWrapper(simpleWrapperPath, undefined, true);
 
     client = getClient();
   });

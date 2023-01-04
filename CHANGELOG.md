@@ -44,6 +44,9 @@
   * A `-l, --log-file [path]` option has been added to all commands. Its purpose is to configure a `Log file to save console output to`, useful in situations when the console log overflows.
 
 ## Breaking Changes
+* [PR-1385](https://github.com/polywrap/toolchain/pull/1385) `polywrap` CLI:
+  * Running `polywrap build` no longer automatically generates code bindings (`codegen`). You need to either run `polywrap codegen` before running `polywrap build`, or run `polywrap build` with the `--codegen` flag.
+  * Running `polywrap codegen` in Plugin Projects will no longer output the WRAP ABI (`wrap.info`) file into a build folder. To output the WRAP ABI, you need to run `polywrap build` within your Plugin Project.
 * [PR-1432](https://github.com/polywrap/toolchain/pull/1432) `polywrap` CLI:
   * Remove the `polywrap.meta.yaml` manifest.
 * [PR-1436](https://github.com/polywrap/toolchain/pull/1436) `@polywrap/client-config-builder-js`:

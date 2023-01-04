@@ -11,7 +11,7 @@ const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 
 describe("In-memory file reader", () => {
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath);
+    await buildWrapper(simpleWrapperPath, undefined, true);
   });
 
   it("can create in-memory file reader from buffers", async () => {
