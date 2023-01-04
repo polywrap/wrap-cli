@@ -16,7 +16,7 @@ import {
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
-import { defaultWrappers } from "@polywrap/client-config-builder-js";
+import { defaultInterfaces, defaultWrappers } from "@polywrap/client-config-builder-js";
 
 export const getClientWithEnsAndIpfs = () => {
   const connections: Connections = new Connections({
@@ -47,7 +47,7 @@ export const getClientWithEnsAndIpfs = () => {
           ],
         },
         {
-          interface: defaultWrappers.ethereumProviderInterface,
+          interface: defaultInterfaces.ethereumProvider,
           implementations: ["wrap://plugin/ethereum-provider"],
         },
       ],
