@@ -119,13 +119,11 @@ const _run = async (options: Required<TestCommandOptions>) => {
 
   const jobsArray: string[] = [];
   if (jobs) {
-    jobs.forEach((x) => jobsArray.push(
-      ...(x.includes(",") ? x.split(",") : [x])
-    ));
-  } else {
-    jobsArray.push(
-      ...Object.keys(workflow.jobs)
+    jobs.forEach((x) =>
+      jobsArray.push(...(x.includes(",") ? x.split(",") : [x]))
     );
+  } else {
+    jobsArray.push(...Object.keys(workflow.jobs));
   }
 
   const validationScript = workflow.validation

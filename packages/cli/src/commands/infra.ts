@@ -112,9 +112,9 @@ async function run(
 
   const modulesArray: string[] = [];
   if (modules) {
-    modules.forEach((x) => modulesArray.push(
-      ...(x.includes(",") ? x.split(",") : [x])
-    ));
+    modules.forEach((x) =>
+      modulesArray.push(...(x.includes(",") ? x.split(",") : [x]))
+    );
   }
 
   const manifest: string[] = manifestFile
