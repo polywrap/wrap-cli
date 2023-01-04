@@ -10,8 +10,11 @@ export class NodeDependencyFetcher extends InfraDependencyFetcher {
   public async installPackages(packages: InfraPackageArg[]): Promise<void> {
     this.composePackageJson(packages);
     await runCommand(
-      `cd ${this.config.installationDirectory} && npm i`,
-      this.config.logger
+      "npm",
+      ["i"],
+      this.config.logger,
+      undefined,
+      this.config.installationDirectory
     );
   }
 
@@ -48,8 +51,11 @@ export class YarnDependencyFetcher extends NodeDependencyFetcher {
   public async installPackages(packages: InfraPackageArg[]): Promise<void> {
     this.composePackageJson(packages);
     await runCommand(
-      `cd ${this.config.installationDirectory} && yarn`,
-      this.config.logger
+      "yarn",
+      [],
+      this.config.logger,
+      undefined,
+      this.config.installationDirectory
     );
   }
 }

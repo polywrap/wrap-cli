@@ -14,7 +14,7 @@ Generate Code For Polywrap Projects
 Options:
   -m, --manifest-file <path>         Path to the Polywrap manifest file
                                      (default: polywrap.yaml | polywrap.yml)
-  -g, --codegen-dir <path>            Output directory for the generated code
+  -g, --codegen-dir <path>           Output directory for the generated code
                                      (default: ./src/wrap)
   -s, --script <path>                Path to a custom generation script
                                      (JavaScript | TypeScript)

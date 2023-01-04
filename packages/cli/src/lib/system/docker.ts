@@ -8,13 +8,13 @@ import path from "path";
 import fs from "fs";
 
 export function isDockerInstalled(logger: Logger): boolean {
-  const { stdout } = runCommandSync("docker version", logger);
+  const { stdout } = runCommandSync("docker", ["version"], logger);
   return stdout ? stdout.includes("Version") : false;
 }
 
 export async function ensureDockerDaemonRunning(logger: Logger): Promise<void> {
   try {
-    runCommandSync("docker stats --no-stream", logger);
+    runCommandSync("docker", ["stats", "--no-stream"], logger);
   } catch (e) {
     throw new Error(intlMsg.lib_helpers_docker_couldNotConnect());
   }

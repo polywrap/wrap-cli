@@ -7,7 +7,7 @@ import {
   parseLogFileOption,
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
 import path from "path";
@@ -16,19 +16,16 @@ import chalk from "chalk";
 import yaml from "yaml";
 import { readdirSync } from "fs";
 
-type InfraCommandOptions = {
-  modules?: string;
-  verbose?: boolean;
-  quiet?: boolean;
-  manifest: string;
-  logFile?: string;
-};
-
-enum InfraActions {
+export enum InfraActions {
   UP = "up",
   DOWN = "down",
   VARS = "vars",
   CONFIG = "config",
+}
+
+export interface InfraCommandOptions extends BaseCommandOptions {
+  manifestFile: string | false;
+  modules: string[] | false;
 }
 
 const DEFAULT_MODULES_PATH = path.join(
@@ -76,7 +73,7 @@ export const infra: Command = {
         })
       )
       .option(
-        `-o, --modules <${moduleNameStr},${moduleNameStr}>`,
+        `-o, --modules <${moduleNameStr}...>`,
         intlMsg.commands_infra_options_o()
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
@@ -85,12 +82,12 @@ export const infra: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (action, options) => {
+      .action(async (action, options: Partial<InfraCommandOptions>) => {
         await run(action, {
-          ...options,
-          manifest: options.manifestFile
-            ? [options.manifestFile]
-            : defaultInfraManifest,
+          manifestFile: options.manifestFile || false,
+          modules: options.modules || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
           logFile: parseLogFileOption(options.logFile),
         });
       });
@@ -107,18 +104,22 @@ Example: 'polywrap infra up --modules=eth-ens-ipfs'.`;
 
 async function run(
   action: InfraActions,
-  options: InfraCommandOptions & { manifest: string[] }
+  options: Required<InfraCommandOptions>
 ): Promise<void> {
-  const { modules, verbose, quiet, manifest, logFile } = options;
+  const { modules, verbose, quiet, manifestFile, logFile } = options;
 
   const logger = createLogger({ verbose, quiet, logFile });
 
-  // eslint-disable-next-line prefer-const
-  let modulesArray: string[] = [];
+  const modulesArray: string[] = [];
   if (modules) {
-    modulesArray = modules.split(",").map((m: string) => m.trim());
+    modules.forEach((x) =>
+      modulesArray.push(...(x.includes(",") ? x.split(",") : [x]))
+    );
   }
 
+  const manifest: string[] = manifestFile
+    ? [manifestFile]
+    : defaultInfraManifest;
   const manifestPath = resolvePathIfExists(manifest);
 
   let infraManifest: InfraManifest | undefined;
@@ -150,7 +151,7 @@ async function run(
   if (!filteredModules.length) {
     if (modules) {
       const errorMsg = intlMsg.commands_infra_error_noModulesMatch({
-        modules,
+        modules: modules.join(", "),
       });
       logger.error(errorMsg);
       return;
