@@ -186,6 +186,8 @@ export class JobRunner {
     if (step.config) {
       const finalConfig = buildPolywrapCoreClientConfig(step.config);
 
+      console.log(finalConfig)
+
       finalClient = new PolywrapClient(finalConfig, { noDefaults: true });
     }
 

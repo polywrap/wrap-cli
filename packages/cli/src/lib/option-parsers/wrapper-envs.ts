@@ -29,6 +29,8 @@ export async function parseWrapperEnvsOption(
     }
   }
 
+  console.log(loadEnvironmentVariables(envs))
+
   const wrapperEnvs = loadEnvironmentVariables(envs) as Record<
     string,
     Record<string, unknown>

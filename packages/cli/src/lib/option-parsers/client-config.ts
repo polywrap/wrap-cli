@@ -42,7 +42,12 @@ export async function parseClientConfigOption(
       process.exit(1);
     }
 
-    return await configModule.configure(builder);
+    const bdlr = await configModule.configure(builder);
+    if (!bdlr.config.packages["wrap://ens/mock.eth"]) {
+      throw new Error("Mock plugin not found");
+    }
+    throw new Error("Mock plugin found");
+    return bdlr;
   } else {
     return builder;
   }

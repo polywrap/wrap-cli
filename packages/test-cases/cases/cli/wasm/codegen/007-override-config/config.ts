@@ -1,4 +1,15 @@
-import { BaseClientConfigBuilder, getDefaultConfig, IClientConfigBuilder, CoreClientConfig, ExtendableUriResolver, PackageToWrapperCacheResolver, RecursiveResolver, StaticResolver, Uri, WrapperCache } from "@polywrap/client-js";
+import {
+  BaseClientConfigBuilder,
+  getDefaultConfig,
+  IClientConfigBuilder,
+  CoreClientConfig,
+  ExtendableUriResolver,
+  PackageToWrapperCacheResolver,
+  RecursiveResolver,
+  StaticResolver,
+  Uri,
+  WrapperCache,
+} from "@polywrap/client-js";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import { latestWrapManifestVersion } from "@polywrap/schema-parse";
 
@@ -12,21 +23,20 @@ export class CustomConfigBuilder extends BaseClientConfigBuilder {
     return {
       envs: config.envs,
       interfaces: config.interfaces,
-      resolver:
-        RecursiveResolver.from(
-          PackageToWrapperCacheResolver.from(
-            [
-              StaticResolver.from([
-                ...config.redirects,
-                ...config.wrappers,
-                ...config.packages,
-              ]),
-              ...this.config.resolvers,
-              new ExtendableUriResolver(),
-            ],
-            new WrapperCache()
-          )
-        ),
+      resolver: RecursiveResolver.from(
+        PackageToWrapperCacheResolver.from(
+          [
+            StaticResolver.from([
+              ...config.redirects,
+              ...config.wrappers,
+              ...config.packages,
+            ]),
+            ...this.config.resolvers,
+            new ExtendableUriResolver(),
+          ],
+          new WrapperCache()
+        )
+      ),
     };
   }
 }
@@ -143,7 +153,7 @@ const mockPlugin = () => {
           imports: [],
           interfaces: [],
         },
-      }
+      },
     }
   );
 };
@@ -151,8 +161,5 @@ const mockPlugin = () => {
 export function configure(_: IClientConfigBuilder): IClientConfigBuilder {
   return new CustomConfigBuilder()
     .addDefaults()
-    .addPackage({
-      uri: "wrap://ens/mock.eth",
-      package: mockPlugin(),
-    });
+    .addPackage("wrap://ens/mock.eth", mockPlugin());
 }

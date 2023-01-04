@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Command, Program } from "./types";
 import {
   intlMsg,
