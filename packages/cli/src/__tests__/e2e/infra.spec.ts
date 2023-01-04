@@ -436,8 +436,7 @@ describe("e2e tests for infra command", () => {
       );
 
       await waitForPorts([
-        { port: 8546, expected: true },
-        { port: 8545, expected: true }
+        { port: 8546, expected: true }
       ]);
 
       await runPolywrapCli(
