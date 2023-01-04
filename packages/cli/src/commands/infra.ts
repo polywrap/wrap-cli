@@ -110,7 +110,12 @@ async function run(
 
   const logger = createLogger({ verbose, quiet, logFile });
 
-  const modulesArray: string[] = modules ? modules : [];
+  const modulesArray: string[] = [];
+  if (modules) {
+    modules.forEach((x) => modulesArray.push(
+      ...(x.includes(",") ? x.split(",") : [x])
+    ));
+  }
 
   const manifest: string[] = manifestFile
     ? [manifestFile]

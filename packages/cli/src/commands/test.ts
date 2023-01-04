@@ -114,7 +114,20 @@ const _run = async (options: Required<TestCommandOptions>) => {
 
   const manifestPath = path.resolve(manifestFile);
   const workflow = await loadWorkflowManifest(manifestPath, logger);
+
   validateJobNames(workflow.jobs);
+
+  const jobsArray: string[] = [];
+  if (jobs) {
+    jobs.forEach((x) => jobsArray.push(
+      ...(x.includes(",") ? x.split(",") : [x])
+    ));
+  } else {
+    jobsArray.push(
+      ...Object.keys(workflow.jobs)
+    );
+  }
+
   const validationScript = workflow.validation
     ? loadValidationScript(manifestPath, workflow.validation)
     : undefined;
@@ -144,7 +157,7 @@ const _run = async (options: Required<TestCommandOptions>) => {
   };
 
   const jobRunner = new JobRunner(configBuilder, onExecution);
-  await jobRunner.run(workflow.jobs, jobs || Object.keys(workflow.jobs));
+  await jobRunner.run(workflow.jobs, jobsArray);
 
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);
