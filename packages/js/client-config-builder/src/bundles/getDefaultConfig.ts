@@ -16,6 +16,41 @@ import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
 
+export const defaultIpfsProviders = [
+  "https://ipfs.wrappers.io",
+  "https://ipfs.io",
+];
+
+export const defaultWrappers = {
+  sha3: "wrap://ens/goerli/sha3.wrappers.eth",
+  uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
+  graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
+  ensTextRecordResolver:
+    "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
+  ethereum: "wrap://ipfs/QmdQmXoHEw8wXgo7mXtAQagqmNUJmuHEDhpPDhXQDXirjW",
+};
+
+export const defaultPackages = {
+  ipfs: "wrap://ens/ipfs.polywrap.eth",
+  ensResolver: "wrap://ens/ens-resolver.polywrap.eth",
+  ethereumProvider: "wrap://plugin/ethereum-provider",
+  http: "wrap://ens/http.polywrap.eth",
+  httpResolver: "wrap://ens/http-resolver.polywrap.eth",
+  logger: "wrap://plugin/logger",
+  fileSystem: "wrap://ens/fs.polywrap.eth",
+  fileSystemResolver: "wrap://ens/fs-resolver.polywrap.eth",
+  ipfsResolver: "wrap://ens/ipfs-resolver.polywrap.eth",
+  concurrent: "wrap://plugin/concurrent",
+};
+
+export const defaultInterfaces = {
+  uriResolver: "wrap://ens/uri-resolver.core.polywrap.eth",
+  concurrent: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
+  logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
+  ethereumProvider:
+    "wrap://ipfs/QmRNDF5U43dmYVgNBfCswNcfjvrKzfkU1XMmTAGYHezNmy",
+};
+
 export const getDefaultConfig = (): ClientConfig<Uri> => {
   return {
     envs: [
@@ -26,7 +61,7 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         },
       },
       {
-        uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+        uri: new Uri(defaultPackages.ipfs),
         env: {
           provider: defaultIpfsProviders[0],
           fallbackProviders: defaultIpfsProviders.slice(1),
@@ -47,8 +82,8 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         to: new Uri(defaultWrappers.graphNode),
       },
       {
-        from: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
-        to: new Uri("wrap://plugin/logger"),
+        from: new Uri(defaultInterfaces.logger),
+        to: new Uri(defaultPackages.logger),
       },
       {
         from: new Uri("wrap://ens/ethereum.polywrap.eth"),
@@ -56,32 +91,31 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
       },
       {
         from: new Uri("wrap://ens/iprovider.polywrap.eth"),
-        to: new Uri(defaultWrappers.ethereumProviderInterface),
+        to: new Uri(defaultInterfaces.ethereumProvider),
       },
     ],
     interfaces: [
       {
-        interface: new Uri("wrap://ens/uri-resolver.core.polywrap.eth"),
+        interface: new Uri(defaultInterfaces.uriResolver),
         implementations: [
-          new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-          new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-          new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-          new Uri("wrap://ens/http-resolver.polywrap.eth"),
-          // ens-text-record-resolver
+          new Uri(defaultPackages.ipfsResolver),
+          new Uri(defaultPackages.ensResolver),
+          new Uri(defaultPackages.fileSystemResolver),
+          new Uri(defaultPackages.httpResolver),
           new Uri(defaultWrappers.ensTextRecordResolver),
         ],
       },
       {
-        interface: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
-        implementations: [new Uri("wrap://plugin/logger")],
+        interface: new Uri(defaultInterfaces.logger),
+        implementations: [new Uri(defaultPackages.logger)],
       },
       {
-        interface: new Uri(defaultWrappers.concurrentInterface),
-        implementations: [new Uri("wrap://plugin/concurrent")],
+        interface: new Uri(defaultInterfaces.concurrent),
+        implementations: [new Uri(defaultPackages.concurrent)],
       },
       {
         interface: new Uri("wrap://ens/iprovider.polywrap.eth"),
-        implementations: [new Uri("wrap://plugin/ethereum-provider")],
+        implementations: [new Uri(defaultPackages.ethereumProvider)],
       },
     ],
     packages: getDefaultPlugins(),
@@ -90,37 +124,20 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
   };
 };
 
-export const defaultIpfsProviders = [
-  "https://ipfs.wrappers.io",
-  "https://ipfs.io",
-];
-
-export const defaultWrappers = {
-  sha3: "wrap://ens/goerli/sha3.wrappers.eth",
-  uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
-  graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
-  concurrentInterface: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
-  ethereum: "wrap://ipfs/QmdQmXoHEw8wXgo7mXtAQagqmNUJmuHEDhpPDhXQDXirjW",
-  ethereumProviderInterface:
-    "wrap://ipfs/QmRNDF5U43dmYVgNBfCswNcfjvrKzfkU1XMmTAGYHezNmy",
-  ensTextRecordResolver:
-    "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
-};
-
 export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
   return [
     // IPFS is required for downloading Polywrap packages
     {
-      uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+      uri: new Uri(defaultPackages.ipfs),
       package: ipfsPlugin({}),
     },
     // ENS is required for resolving domain to IPFS hashes
     {
-      uri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
+      uri: new Uri(defaultPackages.ensResolver),
       package: ensResolverPlugin({}),
     },
     {
-      uri: new Uri("wrap://plugin/ethereum-provider"),
+      uri: new Uri(defaultPackages.ethereumProvider),
       package: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
@@ -137,32 +154,32 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
       }),
     },
     {
-      uri: new Uri("wrap://ens/http.polywrap.eth"),
+      uri: new Uri(defaultPackages.http),
       package: httpPlugin({}),
     },
     {
-      uri: new Uri("wrap://ens/http-resolver.polywrap.eth"),
+      uri: new Uri(defaultPackages.httpResolver),
       package: httpResolverPlugin({}),
     },
     {
-      uri: new Uri("wrap://plugin/logger"),
+      uri: new Uri(defaultPackages.logger),
       // TODO: remove this once types are updated
       package: loggerPlugin({}) as IWrapPackage,
     },
     {
-      uri: new Uri("wrap://ens/fs.polywrap.eth"),
+      uri: new Uri(defaultPackages.fileSystem),
       package: fileSystemPlugin({}),
     },
     {
-      uri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+      uri: new Uri(defaultPackages.fileSystemResolver),
       package: fileSystemResolverPlugin({}),
     },
     {
-      uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
+      uri: new Uri(defaultPackages.ipfsResolver),
       package: ipfsResolverPlugin({}),
     },
     {
-      uri: new Uri("wrap://plugin/concurrent"),
+      uri: new Uri(defaultPackages.concurrent),
       package: concurrentPromisePlugin({}),
     },
   ];
