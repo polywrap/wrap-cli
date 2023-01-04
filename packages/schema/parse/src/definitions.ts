@@ -1,153 +1,164 @@
-//TODO: interfaces and capabilities
+/// ABIs
 
-export const SUPPORTED_SCALARS = [
-    "UInt",
-    "UInt8",
-    "UInt16",
-    "UInt32",
-    "Int",
-    "Int8",
-    "Int16",
-    "Int32",
-    "String",
-    "Boolean",
-    "Bytes",
-    "BigInt",
-    "BigNumber",
-    "JSON",
-] as const
-
-export type Scalar = typeof SUPPORTED_SCALARS[number];
-
-export const SUPPORTED_MAP_KEYS = [
-    "UInt",
-    "UInt8",
-    "UInt16",
-    "UInt32",
-    "Int",
-    "Int8",
-    "Int16",
-    "Int32",
-    "String"
-] as const
-
-export type MapKeyType = typeof SUPPORTED_MAP_KEYS[number];
-
-export interface Definition {
-    name: string;
-    kind: string;
-    comment?: string;
+export interface Abi extends AbiDefs {
+  version: "0.2";
+  imports?: ImportedAbi[];
 }
 
-export interface Imported {
-    uri: "test-interface.eth",
-    namespace: "Interface",
-    imported: true;
+export interface ImportedAbi extends AbiDefs {
+  namespace: string;
+  uri: string;
 }
 
-export type Reference = {
-    kind: "Scalar" | "Object" | "Enum"
-    required: boolean
-    type: string
-} | ArrayReference | MapReference
-
-export interface ArrayReference {
-    kind: "Array"
-    definition: ArrayDefinition
-    required: boolean
+export interface AbiDefs {
+  functions?: FunctionDef[];
+  objects?: ObjectDef[];
+  enums?: EnumDef[];
+  env?: EnvDef;
 }
 
-export interface MapReference {
-    kind: "Map"
-    definition: MapDefinition
-    required: boolean
+/// Definitions (user-defined)
+
+export type UniqueDefKind =
+  | "Function"
+  | "Object"
+  | "Enum"
+  | "Env";
+
+export type DefKind =
+  | UniqueDefKind
+  | "Argument"
+  | "Result"
+  | "Property";
+
+export interface Def {
+  kind: DefKind;
 }
 
-// Definitions
-
-export interface ScalarDefinition extends Definition {
-    kind: "Scalar";
-    name: Scalar;
+export interface NamedDef extends Def {
+  name: string;
+  comment?: string;
 }
 
-export interface ObjectDefinition extends Definition {
-    kind: "Object";
-    properties: ObjectProperty[]
+export interface TypeDef extends Def {
+  required: boolean;
+  type: AnyType;
 }
 
-export interface EnvDefinition extends Definition {
-    kind: "Env";
-    properties: ObjectProperty[]
+export interface NamedTypeDef extends NamedDef, TypeDef { }
+
+export interface FunctionDef extends NamedDef {
+  kind: "Function";
+  args: ArgumentDef[];
+  result: ResultDef;
 }
 
-export interface EnumDefinition extends Definition {
-    kind: "Enum";
-    constants: string[];
+export interface ArgumentDef extends NamedTypeDef {
+  kind: "Argument";
 }
 
-export interface MethodDefinition extends Definition {
-    kind: "Method";
-    arguments: MethodArgument[];
-    env?: {
-        required?: boolean
-    };
-    return: Reference
+export interface ResultDef extends TypeDef {
+  kind: "Result";
 }
 
-export interface ModuleDefinition extends Definition {
-    kind: "Module"
-    methods: MethodDefinition[]
+export interface ObjectDef extends NamedDef {
+  kind: "Object";
+  props: PropertyDef[];
 }
 
-// Special cases: References with embedded definitions
-
-export interface MapDefinition extends Definition {
-    name: ""
-    kind: "Map",
-    keys: {
-        kind: "Scalar"
-        required: boolean
-        type: string
-    },
-    values: Reference
+export interface PropertyDef extends NamedTypeDef {
+  kind: "Property";
 }
 
-export interface ArrayDefinition extends Definition {
-    name: ""
-    kind: "Array"
-    items: Reference;
+export interface EnumDef extends NamedDef {
+  kind: "Enum";
+  constants: string[];
 }
 
-// Helpers
-
-export interface ObjectProperty {
-    comment?: string;
-    name: string;
-    type: Reference
+export interface EnvDef extends NamedDef {
+  kind: "Env";
+  name: "Env";
+  props: PropertyDef[];
 }
 
-export interface MethodArgument {
-    name: string;
-    type: Reference;
+/// Types (built-ins)
+
+export type AnyType =
+  | ScalarType
+  | ArrayType
+  | MapType
+  | RefType;
+
+export type TypeKind =
+  | "Scalar"
+  | "Array"
+  | "Map"
+  | "Ref";
+
+export interface Type {
+  kind: TypeKind;
 }
 
-// Exports
-
-export interface WrapManifest {
-    version: "0.1.0" | "0.1";
-    type: "wasm" | "interface" | "plugin";
-    name: string;
-    abi: Abi;
+export interface ScalarType<
+  TScalarTypeName extends ScalarTypeName = ScalarTypeName
+> extends Type {
+  kind: "Scalar";
+  scalar: TScalarTypeName;
 }
 
-export interface Abi {
-    version: "0.1";
-    objectTypes: ObjectDefinition[];
-    moduleType?: ModuleDefinition;
-    enumTypes: EnumDefinition[];
-    importedObjectTypes: (ObjectDefinition & Imported)[];
-    importedModuleTypes: (ModuleDefinition & Imported)[];
-    importedEnumTypes: (EnumDefinition & Imported)[];
-    importedEnvTypes: (EnvDefinition & Imported)[];
-    envType?: EnvDefinition;
+export interface ArrayType extends Type {
+  kind: "Array";
+  required: boolean;
+  item: AnyType;
 }
+
+export interface MapType extends Type {
+  kind: "Map";
+  key: ScalarType<MapKeyTypeName>;
+  required: boolean;
+  value: AnyType;
+}
+
+export interface RefType extends Type {
+  kind: "Ref";
+  ref_kind: UniqueDefKind;
+  ref_name: string;
+}
+
+/// Constants
+
+export const scalarTypeSet = {
+  UInt: "UInt",
+  UInt8: "UInt8",
+  UInt16: "UInt16",
+  UInt32: "UInt32",
+  Int: "Int",
+  Int8: "Int8",
+  Int16: "Int16",
+  Int32: "Int32",
+  String: "String",
+  Boolean: "Boolean",
+  Bytes: "Bytes",
+  // TODO: remove complex types
+  BigInt: "BigInt",
+  BigNumber: "BigNumber",
+  JSON: "JSON",
+};
+export type ScalarTypeSet = typeof scalarTypeSet;
+
+export type ScalarTypeName = keyof ScalarTypeSet;
+
+export const mapKeyTypeSet = {
+  UInt: "UInt",
+  UInt8: "UInt8",
+  UInt16: "UInt16",
+  UInt32: "UInt32",
+  Int: "Int",
+  Int8: "Int8",
+  Int16: "Int16",
+  Int32: "Int32",
+  String: "String",
+};
+export type MapKeyTypeSet = typeof mapKeyTypeSet;
+
+export type MapKeyTypeName = keyof MapKeyTypeSet;

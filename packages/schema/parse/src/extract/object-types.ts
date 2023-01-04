@@ -1,6 +1,7 @@
 import {
   isEnvType,
   isModuleType,
+  isScalarType,
 } from "..";
 
 import {
@@ -11,29 +12,53 @@ import {
   StringValueNode,
   TypeNode,
 } from "graphql";
-import { ObjectDefinition, Abi as WrapAbi, ObjectProperty, Reference, EnumDefinition } from "../definitions";
+import { ObjectDef, Abi as WrapAbi, PropertyDef, AnyType, EnumDef, ScalarTypeName } from "../definitions";
 import { parseMapReference } from "./utils/map-utils";
 
-const extractObjectProperty = (node: FieldDefinitionNode, enumDefs: string[]): ObjectProperty => {
-  const extractType = (node: TypeNode, required = false): Reference => {
+const extractPropertyDef = (node: FieldDefinitionNode, enumDefs: string[]): PropertyDef => {
+  // const extractType = (node: TypeNode, required = false): AnyType => {
+  //   switch (node.kind) {
+  //     case "NonNullType":
+  //       return extractType(node.type, true)
+  //     case "ListType":
+  //       return {
+  //         kind: "Array",
+  //         item: extractType(node.type),
+  //         required
+  //       }
+  //     case "NamedType":
+  //       return {
+  //         kind: "Ref",
+  //         // TODO: Revisit this condition as it is not future proof
+  //         ref_kind: enumDefs.includes(node.name.value) ? "Enum" : "Object",
+  //         ref_name: node.name.value
+  //       }
+  //   }
+  // }
+
+  const extractType = (node: TypeNode): AnyType => {
     switch (node.kind) {
       case "NonNullType":
-        return extractType(node.type, true)
+        return extractType(node.type)
       case "ListType":
         return {
           kind: "Array",
-          required,
-          definition: {
-            kind: "Array",
-            items: extractType(node.type),
-            name: "",
-          }
+          required: node.type.kind === "NonNullType",
+          item: extractType(node.type)
         }
       case "NamedType":
+        if (isScalarType(node.name.value)) {
+          return {
+            kind: "Scalar",
+            scalar: node.name.value as ScalarTypeName
+          }
+        }
+
         return {
-          required,
-          kind: enumDefs.includes(node.name.value) ? "Enum" : "Object",
-          type: node.name.value
+          kind: "Ref",
+          // TODO: Revisit this condition as it is not future proof
+          ref_kind: enumDefs.includes(node.name.value) ? "Enum" : "Object",
+          ref_name: node.name.value
         }
     }
   }
@@ -49,6 +74,8 @@ const extractObjectProperty = (node: FieldDefinitionNode, enumDefs: string[]): O
           );
         }
         return {
+          kind: "Property",
+          required: node.type.kind === "NonNullType",
           name: node.name.value,
           type: parseMapReference(typeName, enumDefs)
         }
@@ -57,12 +84,14 @@ const extractObjectProperty = (node: FieldDefinitionNode, enumDefs: string[]): O
   }
 
   return {
+    kind: "Property",
     name: node.name.value,
+    required: node.type.kind === "NonNullType",
     type: extractType(node.type)
   }
 }
 
-const visitorEnter = (objectTypes: ObjectDefinition[], enumDefs: EnumDefinition[]) => ({
+const visitorEnter = (objectTypes: ObjectDef[], enumDefs: EnumDef[]) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const typeName = node.name.value;
 
@@ -87,11 +116,11 @@ const visitorEnter = (objectTypes: ObjectDefinition[], enumDefs: EnumDefinition[
     // );
 
     // Create a new TypeDefinition
-    const type = {
-      kind: "Object" as const,
+    const type: ObjectDef = {
+      kind: "Object",
       comment: node.description?.value,
       name: typeName,
-      properties: node.fields?.map(fieldNode => extractObjectProperty(fieldNode, enumDefs.map(e => e.name))) ?? []
+      props: node.fields?.map(fieldNode => extractPropertyDef(fieldNode, enumDefs.map(e => e.name))) ?? []
     };
     objectTypes.push(type);
   },

@@ -1,103 +1,83 @@
 import {
   isScalarType,
 } from "../..";
-
-import { Reference, SUPPORTED_MAP_KEYS, SUPPORTED_SCALARS } from "../../definitions";
+import { AnyType, MapKeyTypeName, mapKeyTypeSet, MapType, ScalarTypeName } from "../../definitions";
 
 
 // TODO: Make sure map also works for imported types and modules
 
-export const parseMapReference = (typeName: string, enumDefs: string[]): Reference => {
-  if (isArray(typeName)) {
-    const closeSquareBracketIdx = typeName.lastIndexOf("]");
-    const required = typeName[closeSquareBracketIdx + 1] === "!"
-    return {
-      kind: "Array",
-      required,
-      definition: {
-        items: parseMapReference(typeName.substring(1, closeSquareBracketIdx), enumDefs),
+export const parseMapReference = (typeName: string, enumDefs: string[]): MapType => {
+  const extractType = (typeName: string): AnyType => {
+    if (isArray(typeName)) {
+      const closeSquareBracketIdx = typeName.lastIndexOf("]");
+      const required = typeName[closeSquareBracketIdx + 1] === "!"
+      return {
         kind: "Array",
-        name: ""
+        required,
+        item: extractType(typeName.substring(1, closeSquareBracketIdx))
+      };
+    } else if (isMap(typeName)) {
+      return parseMapReference(typeName, enumDefs)
+    } else if (isScalarType(typeName)) {
+      return {
+        kind: "Scalar",
+        scalar: typeName as ScalarTypeName,
       }
-    };
-  } else if (isMap(typeName)) {
-    const openAngleBracketIdx = typeName.indexOf("<");
-    const closeAngleBracketIdx = typeName.lastIndexOf(">");
-
-    if (
-      closeAngleBracketIdx === -1
-    ) {
-      throw new Error(`Invalid map value type: ${typeName}`);
+    } else {
+      return {
+        kind: "Ref",
+        ref_kind: isEnum(typeName, enumDefs) ? "Enum" : "Object",
+        ref_name: typeName,
+      }
     }
-
-    const required = typeName.endsWith("!");
-    const subtype = typeName.substring(openAngleBracketIdx + 1, closeAngleBracketIdx);
-
-    const firstDelimiter = subtype.indexOf(",");
-
-    const _keyType = subtype.substring(0, firstDelimiter).trim();
-    const valType = subtype.substring(firstDelimiter + 1).trim();
-
-    if (!_keyType || !valType) {
-      throw new Error(`Invalid map value type: ${typeName}`);
-    }
-
-    // TODO: Is there a better way to enforce this -> Map key should always be required
-    // TODO: Should we throw an error if it's not?
-    const keyRequired = true;
-    const keyType = _keyType.endsWith("!") ? _keyType.slice(0, -1) : _keyType;
-
-    if (!isMapKey(keyType)) {
-      throw new Error(
-        `Found invalid map key type: ${keyType} while parsing ${typeName}`
-      );
-    }
-
-    return {
-      kind: "Map",
-      definition: {
-        name: "",
-        kind: "Map",
-        //TODO: validate possible keys
-        keys: {
-          kind: "Scalar",
-          type: keyType as typeof SUPPORTED_SCALARS[number],
-          required: keyRequired
-        },
-        values: parseMapReference(valType, enumDefs)
-      },
-      required,
-    }
-  } else if (isScalarType(typeName)) {
-    const required = typeName.endsWith("!");
-    const subtype = required ? typeName.substring(0, typeName.length - 1) : typeName
-
-    return {
-      kind: "Scalar",
-      type: subtype as typeof SUPPORTED_SCALARS[number],
-      required
-    }
-  } else if (isEnum(typeName, enumDefs)) {
-    const required = typeName.endsWith("!");
-
-    return {
-      type: enumDefs.find(e => e === typeName) as string,
-      kind: "Enum",
-      required
-    }
-  } else {
-    const required = typeName.endsWith("!");
-
-    return {
-      type: typeName,
-      kind: "Object",
-      required
-    }
+    // TODO: is this case necessary?
+    // else {
+    //   throw new Error(`Unrecognized reference type '${typeName}'`)
+    // }
   }
-  // TODO: is this case necessary?
-  // else {
-  //   throw new Error(`Unrecognized reference type '${typeName}'`)
-  // }
+
+  const openAngleBracketIdx = typeName.indexOf("<");
+  const closeAngleBracketIdx = typeName.lastIndexOf(">");
+
+  if (
+    closeAngleBracketIdx === -1
+  ) {
+    throw new Error(`Invalid map value type: ${typeName}`);
+  }
+
+  const subtype = typeName.substring(openAngleBracketIdx + 1, closeAngleBracketIdx);
+
+  const firstDelimiter = subtype.indexOf(",");
+
+  const _keyType = subtype.substring(0, firstDelimiter).trim();
+  const _valType = subtype.substring(firstDelimiter + 1).trim();
+
+  if (!_keyType || !_valType) {
+    throw new Error(`Invalid map value type: ${typeName}`);
+  }
+
+  // TODO: Is there a better way to enforce this -> Map key should always be required
+  // TODO: Should we throw an error if it's not?
+  // const keyRequired = true;
+  const keyType = _keyType.endsWith("!") ? _keyType.slice(0, -1) : _keyType;
+  const valType = _valType.endsWith("!") ? _valType.slice(0, -1) : _valType;
+
+  if (!isMapKey(keyType)) {
+    throw new Error(
+      `Found invalid map key type: ${keyType} while parsing ${typeName}`
+    );
+  }
+
+  return {
+    kind: "Map",
+    key: {
+      kind: "Scalar",
+      scalar: keyType as MapKeyTypeName
+    },
+    value: extractType(valType),
+    required: valType.endsWith("!"),
+  }
+
 }
 
 const isMap = (typeName: string): boolean => {
@@ -110,7 +90,7 @@ const isEnum = (typeName: string, enumDefs: string[]): boolean => {
 }
 
 const isMapKey = (typeName: string): boolean => {
-  return SUPPORTED_MAP_KEYS.includes(typeName as typeof SUPPORTED_MAP_KEYS[number]);
+  return typeName in mapKeyTypeSet;
 }
 
 const isArray = (typeName: string): boolean => {
