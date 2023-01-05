@@ -31,11 +31,11 @@ describe("Error structure", () => {
   let client: PolywrapClient;
 
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath);
-    await buildWrapper(badUtilWrapperPath);
-    await buildWrapper(badMathWrapperPath);
-    await buildWrapper(subinvokeErrorWrapperPath);
-    await buildWrapper(invalidTypesWrapperPath);
+    await buildWrapper(simpleWrapperPath, undefined, true);
+    await buildWrapper(badUtilWrapperPath, undefined, true);
+    await buildWrapper(badMathWrapperPath, undefined, true);
+    await buildWrapper(subinvokeErrorWrapperPath, undefined, true);
+    await buildWrapper(invalidTypesWrapperPath, undefined, true);
 
     client = new PolywrapClient({
       packages: [mockPluginRegistration("plugin/mock")],
