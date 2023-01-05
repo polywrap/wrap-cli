@@ -5,29 +5,32 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { testBuildOutput } from "./helpers/testBuildOutput";
 
 const HELP = `Usage: polywrap build|b [options]
 
 Build Polywrap Projects (type: interface, wasm)
 
 Options:
-  -m, --manifest-file <path>         Path to the Polywrap Build manifest file
-                                     (default: polywrap.yaml | polywrap.yml)
-  -o, --output-dir <path>            Output directory for build results
-                                     (default: ./build)
-  -c, --client-config <config-path>  Add custom configuration to the
-                                     PolywrapClient
-  --wrapper-envs <envs-path>         Path to a JSON file containing wrapper
-                                     envs
-  -n, --no-codegen                   Skip code generation
-  -s, --strategy <strategy>          Strategy to use for building the wrapper
-                                     (default: "vm")
-  -w, --watch                        Automatically rebuild when changes are
-                                     made (default: false)
-  -v, --verbose                      Verbose output (default: false)
-  -q, --quiet                        Suppress output (default: false)
-  -l, --log-file [path]              Log file to save console output to
-  -h, --help                         display help for command
+  -m, --manifest-file <path>           Path to the Polywrap Build manifest file
+                                       (default: polywrap.yaml | polywrap.yml)
+  -o, --output-dir <path>              Output directory for build results
+                                       (default: ./build)
+  -c, --client-config <config-path>    Add custom configuration to the
+                                       PolywrapClient
+  --codegen                            Perform code generation before build
+  --codegen-dir                        Codegen output directory (default:
+                                       ./src/wrap)
+  --wrapper-envs <envs-path>           Path to a JSON file containing wrapper
+                                       envs
+  -s, --strategy <vm | image | local>  Strategy to use for building the wrapper
+                                       (default: vm)
+  -w, --watch                          Automatically rebuild when changes are
+                                       made (default: false)
+  -v, --verbose                        Verbose output (default: false)
+  -q, --quiet                          Suppress output (default: false)
+  -l, --log-file [path]                Log file to save console output to
+  -h, --help                           display help for command
 `;
 
 jest.setTimeout(500000);
@@ -85,25 +88,6 @@ describe("e2e tests for build command", () => {
     if (expected.files) {
       for (const file of expected.files) {
         expect(fs.existsSync(path.join(testCaseDir, file))).toBeTruthy();
-      }
-    }
-  };
-
-  const testBuildOutput = (testCaseDir: string, buildDir: string) => {
-    const expectedOutputFile = path.join(
-      testCaseDir,
-      "expected",
-      "output.json"
-    );
-    if (fs.existsSync(expectedOutputFile)) {
-      const expectedFiles = JSON.parse(
-        fs.readFileSync(expectedOutputFile, { encoding: "utf8" })
-      );
-
-      for (const file of expectedFiles) {
-        if (!fs.existsSync(path.join(buildDir, file))) {
-          fail(`Did not find expected file: ${path.join(buildDir, file)}`);
-        }
       }
     }
   };
@@ -176,7 +160,7 @@ describe("e2e tests for build command", () => {
     );
     const testCaseDir = getTestCaseDir(0);
     const { exitCode: code, stdout: output } = await runCLI({
-      args: ["build", "-v", "--output-dir", outputDir],
+      args: ["build", "-v", "--output-dir", outputDir, "--codegen"],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -244,14 +228,14 @@ describe("e2e tests for build command", () => {
     beforeAll(async () => {
       await cleanupYarnLockfiles();
     });
-    
+
     afterAll(async () => {
       await cleanupYarnLockfiles();
     });
 
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v", "-s", "local"],
+        args: ["build", "-v", "-s", "local", "--codegen"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
@@ -263,7 +247,7 @@ describe("e2e tests for build command", () => {
       expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
     });
   })
-
+  
   describe("test-cases", () => {
     for (let i = 0; i < testCases.length; i++) {
       const testCaseName = testCases[i];
@@ -280,7 +264,7 @@ describe("e2e tests for build command", () => {
 
       test(testCaseName, async () => {
         let { exitCode, stdout, stderr } = await runCLI({
-          args: ["build", "-v", ...cmdArgs],
+          args: ["build", "-v", "--codegen", ...cmdArgs],
           cwd: testCaseDir,
           cli: polywrapCli,
         });

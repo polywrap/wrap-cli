@@ -17,7 +17,7 @@ describe("e2e tests for WsPlugin", () => {
     beforeAll(async () => {
       client = getClient();
 
-      await buildWrapper(wrapperPath);
+      await buildWrapper(wrapperPath, undefined, true);
     });
 
     beforeEach(() => {
@@ -134,7 +134,7 @@ describe("e2e tests for WsPlugin", () => {
       }, 20);
       let t3 = setTimeout(() => {
         server.send("3");
-      }, 30);
+      }, 50);
 
       const response = await client.invoke<boolean>({
         uri,

@@ -31,8 +31,8 @@ export async function foo({
   // get path to the wrapper in testing
   const wrapperPath: string = path.join(path.resolve(__dirname), "..");
 
-  // build current wrapper with CLI
-  await buildWrapper(wrapperPath);
+  // build current wrapper with CLI, invoking codegen before build
+  await buildWrapper(wrapperPath, undefined, true);
 
   // get URI to the local wrapper build
   const wrapperUri = `fs/${wrapperPath}/build`;

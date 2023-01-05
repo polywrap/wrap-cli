@@ -7,7 +7,7 @@ import path from "path";
 import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 export async function parseClientConfigOption(
-  clientConfig: string | undefined
+  clientConfig: string | undefined | false
 ): Promise<IClientConfigBuilder> {
   const builder = new ClientConfigBuilder().addDefaults();
 
