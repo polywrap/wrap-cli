@@ -1,12 +1,13 @@
 import {
   isScalarType,
 } from "../..";
-import { AnyType, MapKeyTypeName, mapKeyTypeSet, MapType, ScalarTypeName } from "../../definitions";
+import { AnyType, MapKeyTypeName, mapKeyTypeSet, MapType, ScalarTypeName, UniqueDefKind } from "../../definitions";
+import { parseRef } from "./refParser";
 
 
 // TODO: Make sure map also works for imported types and modules
 
-export const parseMapReference = (typeName: string, enumDefs: string[]): MapType => {
+export const parseMapReference = (typeName: string, uniqueDefs: Map<string, UniqueDefKind>): MapType => {
   const extractType = (typeName: string): AnyType => {
     if (isArray(typeName)) {
       const closeSquareBracketIdx = typeName.lastIndexOf("]");
@@ -17,18 +18,14 @@ export const parseMapReference = (typeName: string, enumDefs: string[]): MapType
         item: extractType(typeName.substring(1, closeSquareBracketIdx))
       };
     } else if (isMap(typeName)) {
-      return parseMapReference(typeName, enumDefs)
+      return parseMapReference(typeName, uniqueDefs)
     } else if (isScalarType(typeName)) {
       return {
         kind: "Scalar",
         scalar: typeName as ScalarTypeName,
       }
     } else {
-      return {
-        kind: "Ref",
-        ref_kind: isEnum(typeName, enumDefs) ? "Enum" : "Object",
-        ref_name: typeName,
-      }
+      return parseRef(typeName, uniqueDefs)
     }
     // TODO: is this case necessary?
     // else {
@@ -83,10 +80,6 @@ export const parseMapReference = (typeName: string, enumDefs: string[]): MapType
 const isMap = (typeName: string): boolean => {
   //TODO: would this be the right condition?
   return typeName.startsWith("Map<")
-}
-
-const isEnum = (typeName: string, enumDefs: string[]): boolean => {
-  return !!enumDefs.find(o => o === typeName);
 }
 
 const isMapKey = (typeName: string): boolean => {

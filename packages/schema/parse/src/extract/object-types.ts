@@ -12,10 +12,11 @@ import {
   StringValueNode,
   TypeNode,
 } from "graphql";
-import { ObjectDef, Abi as WrapAbi, PropertyDef, AnyType, EnumDef, ScalarTypeName } from "../definitions";
+import { ObjectDef, Abi as WrapAbi, PropertyDef, AnyType, ScalarTypeName, UniqueDefKind } from "../definitions";
 import { parseMapReference } from "./utils/map-utils";
+import { parseRef } from "./utils/refParser";
 
-const extractPropertyDef = (node: FieldDefinitionNode, enumDefs: string[]): PropertyDef => {
+const extractPropertyDef = (node: FieldDefinitionNode, uniqueDefs: Map<string, UniqueDefKind>): PropertyDef => {
   const extractType = (node: TypeNode): AnyType => {
     switch (node.kind) {
       case "NonNullType":
@@ -34,12 +35,7 @@ const extractPropertyDef = (node: FieldDefinitionNode, enumDefs: string[]): Prop
           }
         }
 
-        return {
-          kind: "Ref",
-          // TODO: Revisit this condition as it is not future proof
-          ref_kind: enumDefs.includes(node.name.value) ? "Enum" : "Object",
-          ref_name: node.name.value
-        }
+        return parseRef(node.name.value, uniqueDefs)
     }
   }
 
@@ -57,7 +53,7 @@ const extractPropertyDef = (node: FieldDefinitionNode, enumDefs: string[]): Prop
           kind: "Property",
           required: node.type.kind === "NonNullType",
           name: node.name.value,
-          type: parseMapReference(typeName, enumDefs)
+          type: parseMapReference(typeName, uniqueDefs)
         }
       }
     }
@@ -71,7 +67,7 @@ const extractPropertyDef = (node: FieldDefinitionNode, enumDefs: string[]): Prop
   }
 }
 
-const visitorEnter = (objectTypes: ObjectDef[], enumDefs: EnumDef[]) => ({
+const visitorEnter = (objectTypes: ObjectDef[], uniqueDefs: Map<string, UniqueDefKind>) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const typeName = node.name.value;
 
@@ -100,15 +96,14 @@ const visitorEnter = (objectTypes: ObjectDef[], enumDefs: EnumDef[]) => ({
       kind: "Object",
       comment: node.description?.value,
       name: typeName,
-      props: node.fields?.map(fieldNode => extractPropertyDef(fieldNode, enumDefs.map(e => e.name))) ?? []
+      props: node.fields?.map(fieldNode => extractPropertyDef(fieldNode, uniqueDefs)) ?? []
     };
     objectTypes.push(type);
   },
 });
 
-export const getObjectTypesVisitor = (abi: WrapAbi): ASTVisitor => {
+export const getObjectTypesVisitor = (abi: WrapAbi, uniqueDefs: Map<string, UniqueDefKind>): ASTVisitor => {
   return {
-    // TODO: Ensure enums were extracted previously
-    enter: visitorEnter(abi.objects ?? [], abi.enums ?? []),
+    enter: visitorEnter(abi.objects ?? [], uniqueDefs),
   };
 };
