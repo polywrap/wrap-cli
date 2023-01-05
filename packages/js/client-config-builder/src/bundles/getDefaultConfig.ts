@@ -47,8 +47,7 @@ export const defaultInterfaces = {
   uriResolver: "wrap://ens/uri-resolver.core.polywrap.eth",
   concurrent: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
   logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
-  ethereumProvider:
-    "wrap://ipfs/QmRNDF5U43dmYVgNBfCswNcfjvrKzfkU1XMmTAGYHezNmy",
+  ethereumProvider: "wrap://ens/iprovider.polywrap.eth",
 };
 
 export const getDefaultConfig = (): ClientConfig<Uri> => {
@@ -89,10 +88,6 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         from: new Uri("wrap://ens/ethereum.polywrap.eth"),
         to: new Uri(defaultWrappers.ethereum),
       },
-      {
-        from: new Uri("wrap://ens/iprovider.polywrap.eth"),
-        to: new Uri(defaultInterfaces.ethereumProvider),
-      },
     ],
     interfaces: [
       {
@@ -114,7 +109,7 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         implementations: [new Uri(defaultPackages.concurrent)],
       },
       {
-        interface: new Uri("wrap://ens/iprovider.polywrap.eth"),
+        interface: new Uri(defaultInterfaces.ethereumProvider),
         implementations: [new Uri(defaultPackages.ethereumProvider)],
       },
     ],

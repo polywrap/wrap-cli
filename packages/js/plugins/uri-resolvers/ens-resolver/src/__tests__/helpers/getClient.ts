@@ -15,7 +15,7 @@ import { PolywrapClient } from "@polywrap/client-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
-import { defaultWrappers } from "@polywrap/client-config-builder-js";
+import { defaultInterfaces, defaultWrappers } from "@polywrap/client-config-builder-js";
 
 export const getClient = () => {
   return new PolywrapClient(
@@ -30,7 +30,7 @@ export const getClient = () => {
           ],
         },
         {
-          interface: defaultWrappers.ethereumProviderInterface,
+          interface: defaultInterfaces.ethereumProvider,
           implementations: ["wrap://plugin/ethereum-provider"],
         },
       ],

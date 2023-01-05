@@ -39,6 +39,10 @@ describe("sanity", () => {
           interface: new Uri(defaultInterfaces.concurrent),
           implementations: [new Uri("wrap://plugin/concurrent")],
         },
+        {
+          interface: new Uri(defaultInterfaces.ethereumProvider),
+          implementations: [new Uri("wrap://plugin/ethereum-provider")],
+        },
       ]);
   });
 
