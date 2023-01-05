@@ -93,8 +93,8 @@ describe("Error structure", () => {
       expect(result.error?.args).toEqual("{\n  \"a\": 1,\n  \"b\": 1\n}");
       expect(result.error?.source).toEqual({ file: "~lib/@polywrap/wasm-as/containers/Result.ts", row: 171, col: 13 });
 
-      expect(result.error?.prev instanceof WrapError).toBeTruthy();
-      const prev = result.error?.prev as WrapError;
+      expect(result.error?.innerError instanceof WrapError).toBeTruthy();
+      const prev = result.error?.innerError as WrapError;
       expect(prev.name).toEqual("WrapError");
       expect(prev.code).toEqual(WrapErrorCode.URI_NOT_FOUND);
       expect(prev.reason).toEqual("Unable to find URI wrap://ens/not-found.eth.");
@@ -166,7 +166,7 @@ describe("Error structure", () => {
       expect(result.error?.method).toEqual("complexMethod");
       expect(result.error?.args).toEqual("{\n  \"arg\": \"test\"\n}");
       expect(result.error?.toString().split("52").length).toEqual(2);
-      expect(result.error?.prev).toBeUndefined();
+      expect(result.error?.innerError).toBeUndefined();
     });
 
     test("Subinvoke error two layers deep", async () => {
@@ -190,8 +190,8 @@ describe("Error structure", () => {
       expect(result.error?.args).toEqual("{\n  \"a\": 1,\n  \"b\": 1\n}");
       expect(result.error?.source).toEqual({ file: "~lib/@polywrap/wasm-as/containers/Result.ts", row: 171, col: 13 });
 
-      expect(result.error?.prev instanceof WrapError).toBeTruthy();
-      const prev = result.error?.prev as WrapError;
+      expect(result.error?.innerError instanceof WrapError).toBeTruthy();
+      const prev = result.error?.innerError as WrapError;
       expect(prev.name).toEqual("WrapError");
       expect(prev.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
       expect(prev.reason.startsWith("SubInvocation exception encountered")).toBeTruthy();
@@ -200,8 +200,8 @@ describe("Error structure", () => {
       expect(prev.args).toEqual("{\n  \"0\": 130,\n  \"1\": 161,\n  \"2\": 97,\n  \"3\": 1,\n  \"4\": 161,\n  \"5\": 98,\n  \"6\": 1\n}");
       expect(prev.source).toEqual({ file: "~lib/@polywrap/wasm-as/containers/Result.ts", row: 171, col: 13 });
 
-      expect(prev.prev instanceof WrapError).toBeTruthy();
-      const prevOfPrev = prev.prev as WrapError;
+      expect(prev.innerError instanceof WrapError).toBeTruthy();
+      const prevOfPrev = prev.innerError as WrapError;
       expect(prevOfPrev.name).toEqual("WrapError");
       expect(prevOfPrev.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
       expect(prevOfPrev.reason).toEqual("__wrap_abort: I threw an error!");
