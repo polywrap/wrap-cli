@@ -1,4 +1,4 @@
-import { Invoker, Uri, InterfaceImplementations, Env } from ".";
+import { Invoker, Uri, InterfaceImplementations, Env, WrapError } from ".";
 import { IUriResolutionContext, IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
 
@@ -43,20 +43,20 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
 
   getManifest<TUri extends Uri | string>(
     uri: TUri
-  ): Promise<Result<WrapManifest, Error>>;
+  ): Promise<Result<WrapManifest, WrapError>>;
 
   getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<Result<string | Uint8Array, Error>>;
+  ): Promise<Result<string | Uint8Array, WrapError>>;
 
   getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions
-  ): Promise<Result<TUri[], Error>>;
+  ): Promise<Result<TUri[], WrapError>>;
 
   validate<TUri extends Uri | string>(
     uri: TUri,
     options?: ValidateOptions
-  ): Promise<Result<true, Error>>;
+  ): Promise<Result<true, WrapError>>;
 }
