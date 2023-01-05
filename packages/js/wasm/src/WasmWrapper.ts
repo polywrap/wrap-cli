@@ -181,20 +181,28 @@ export class WasmWrapper implements Wrapper {
         env: options.env ? msgpackEncode(options.env) : EMPTY_ENCODED_OBJECT,
       };
 
-      const abort = (
+      const abortWithInvokeAborted = (
         message: string,
-        code: WrapErrorCode,
         source?: ErrorSource
       ) => {
         const prev = WrapError.parse(message);
         const text = prev ? "SubInvocation exception encountered" : message;
         throw new WrapError(text, {
-          code,
+          code: WrapErrorCode.WRAPPER_INVOKE_ABORTED,
           uri: options.uri.uri,
           method,
           args: JSON.stringify(args, null, 2),
           source,
           innerError: prev,
+        });
+      };
+
+      const abortWithInternalError = (message: string) => {
+        throw new WrapError(message, {
+          code: WrapErrorCode.WRAPPER_INTERNAL_ERROR,
+          uri: options.uri.uri,
+          method,
+          args: JSON.stringify(args, null, 2),
         });
       };
 
@@ -205,7 +213,8 @@ export class WasmWrapper implements Wrapper {
           state,
           client,
           memory,
-          abort,
+          abortWithInvokeAborted,
+          abortWithInternalError,
         }),
         requiredExports: WasmWrapper.requiredExports,
       });
