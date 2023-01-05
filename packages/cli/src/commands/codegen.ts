@@ -1,5 +1,5 @@
 /* eslint-disable  @typescript-eslint/no-unused-vars */
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import {
   CodeGenerator,
@@ -19,21 +19,18 @@ import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 
 import { Env, PolywrapClient } from "@polywrap/client-js";
-import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { Uri } from "@polywrap/core-js";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
-type CodegenCommandOptions = {
+export interface CodegenCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   codegenDir: string;
-  script?: string;
-  configBuilder: IClientConfigBuilder;
-  wrapperEnvs: Env[];
-  verbose?: boolean;
-  quiet?: boolean;
-  logFile?: string;
-};
+  script: string | false;
+  clientConfig: string | false;
+  wrapperEnvs: string | false;
+}
 
 export const codegen: Command = {
   setup: (program: Program) => {
@@ -49,7 +46,7 @@ export const codegen: Command = {
       )
       .option(
         `-g, --codegen-dir <${pathStr}>`,
-        ` ${intlMsg.commands_codegen_options_codegen({
+        `${intlMsg.commands_codegen_options_codegen({
           default: defaultCodegenDir,
         })}`
       )
@@ -71,38 +68,42 @@ export const codegen: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (options) => {
+      .action(async (options: Partial<CodegenCommandOptions>) => {
         await run({
-          ...options,
-          configBuilder: await parseClientConfigOption(options.clientConfig),
-          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
-          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
-          script: parseCodegenScriptOption(options.script),
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultProjectManifestFiles
           ),
+          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
+          script: parseCodegenScriptOption(options.script),
+          clientConfig: options.clientConfig || false,
+          wrapperEnvs: options.wrapperEnvs || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
           logFile: parseLogFileOption(options.logFile),
         });
       });
   },
 };
 
-async function run(options: CodegenCommandOptions) {
+async function run(options: Required<CodegenCommandOptions>) {
   const {
     manifestFile,
+    clientConfig,
+    wrapperEnvs,
     codegenDir,
     script,
-    configBuilder,
-    wrapperEnvs,
     verbose,
     quiet,
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
-  if (wrapperEnvs) {
-    configBuilder.addEnvs(wrapperEnvs);
+  const envs = await parseWrapperEnvsOption(wrapperEnvs);
+  const configBuilder = await parseClientConfigOption(clientConfig);
+
+  if (envs) {
+    configBuilder.addEnvs(envs as Env<Uri>[]);
   }
 
   // Get Client

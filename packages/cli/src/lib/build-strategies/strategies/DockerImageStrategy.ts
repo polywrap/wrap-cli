@@ -149,7 +149,8 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
       useBuildx &&= await this._isDockerBuildxInstalled();
 
       const { stdout: containerLsOutput } = runCommandSync(
-        "docker container ls -a",
+        "docker",
+        ["container", "ls", "-a"],
         this.project.logger
       );
 
@@ -157,18 +158,24 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
         containerLsOutput &&
         containerLsOutput.indexOf(`root-${imageName}`) > -1
       ) {
-        await runCommand(`docker rm -f root-${imageName}`, this.project.logger);
+        await runCommand(
+          "docker",
+          ["rm", "-f", `root-${imageName}`],
+          this.project.logger
+        );
       }
 
       // Create a new interactive terminal
       await runCommand(
-        `docker create -ti --name root-${imageName} ${imageName}`,
+        "docker",
+        ["create", "-ti", "--name", `root-${imageName}`, imageName],
         this.project.logger
       );
 
       // Make sure the "project" directory exists
       const { stdout: projectLsOutput } = runCommandSync(
-        `docker run --rm ${imageName} /bin/bash -c "ls /project"`,
+        "docker",
+        ["run", "--rm", imageName, "/bin/bash", "-c", '"ls /project"'],
         this.project.logger
       );
 
@@ -179,7 +186,8 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
       }
 
       const { stdout: buildLsOutput } = runCommandSync(
-        `docker run --rm ${imageName} /bin/bash -c "ls /project/build"`,
+        "docker",
+        ["run", "--rm", imageName, "/bin/bash", "-c", '"ls /project/build"'],
         this.project.logger
       );
 
@@ -193,22 +201,28 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
       }
 
       await runCommand(
-        `docker cp root-${imageName}:/project/build/${buildArtifact} ${outputDir}`,
+        "docker",
+        ["cp", `root-${imageName}:/project/build/${buildArtifact}`, outputDir],
         this.project.logger
       );
 
-      await runCommand(`docker rm -f root-${imageName}`, this.project.logger);
+      await runCommand(
+        "docker",
+        ["rm", "-f", `root-${imageName}`],
+        this.project.logger
+      );
 
       if (useBuildx) {
         if (removeBuilder) {
           await runCommand(
-            `docker buildx rm ${imageName}`,
+            "docker",
+            ["buildx", "rm", imageName],
             this.project.logger
           );
         }
       }
       if (removeImage) {
-        await runCommand(`docker rmi ${imageName}`, this.project.logger);
+        await runCommand("docker", ["rmi", imageName], this.project.logger);
       }
     };
 
@@ -250,7 +264,8 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
         let buildxUseFailed: boolean;
         try {
           const { stderr } = runCommandSync(
-            `docker buildx use ${imageName}`,
+            "docker",
+            ["buildx", "use", imageName],
             this.project.logger
           );
           buildxUseFailed = !!stderr;
@@ -260,12 +275,25 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
 
         if (buildxUseFailed) {
           await runCommand(
-            `docker buildx create --use --name ${imageName}`,
+            "docker",
+            ["buildx", "create", "--use", "--name", imageName],
             this.project.logger
           );
         }
         await runCommand(
-          `docker buildx build -f ${dockerfile} -t ${imageName} ${rootDir} ${cacheFrom} ${cacheTo} --output=type=docker`,
+          "docker",
+          [
+            "buildx",
+            "build",
+            "-f",
+            dockerfile,
+            "-t",
+            imageName,
+            rootDir,
+            cacheFrom,
+            cacheTo,
+            "--output=type=docker",
+          ],
           this.project.logger,
           undefined,
           undefined,
@@ -273,7 +301,8 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
         );
       } else {
         await runCommand(
-          `docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
+          "docker",
+          ["build", "-f", dockerfile, "-t", imageName, rootDir],
           this.project.logger,
           isWin()
             ? undefined
@@ -288,7 +317,8 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
 
       // Get the docker image ID
       const { stdout } = runCommandSync(
-        `docker image inspect ${imageName} -f "{{.ID}}"`,
+        "docker",
+        ["image", "inspect", imageName, "-f", "{{.ID}}"],
         this.project.logger
       );
 
@@ -319,7 +349,8 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
 
   private async _isDockerBuildxInstalled(): Promise<boolean> {
     const { stdout: version } = runCommandSync(
-      "docker buildx version",
+      "docker",
+      ["buildx", "version"],
       this.project.logger
     );
     return version && version.startsWith("github.com/docker/buildx")

@@ -1,4 +1,4 @@
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import {
   Compiler,
@@ -32,11 +32,11 @@ import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 import readline from "readline";
 import { Env, PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { Uri } from "@polywrap/core-js";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
-const strategyStr = intlMsg.commands_build_options_s_strategy();
+const strategyStr = Object.values(SupportedStrategies).join(" | ");
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
 
@@ -45,19 +45,16 @@ const supportedProjectTypes = [
   ...Object.values(pluginManifestLanguages),
 ];
 
-type BuildCommandOptions = {
+export interface BuildCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputDir: string;
-  configBuilder: IClientConfigBuilder;
+  clientConfig: string | false;
+  wrapperEnvs: string | false;
   codegen: boolean; // defaults to false
   codegenDir: string;
-  wrapperEnvs: Env[];
-  watch?: boolean;
-  strategy: SupportedStrategies;
-  verbose?: boolean;
-  quiet?: boolean;
-  logFile?: string;
-};
+  watch: boolean;
+  strategy: `${SupportedStrategies}`;
+}
 
 export const build: Command = {
   setup: (program: Program) => {
@@ -94,8 +91,9 @@ export const build: Command = {
       )
       .option(
         `-s, --strategy <${strategyStr}>`,
-        `${intlMsg.commands_build_options_s()}`,
-        defaultStrategy
+        `${intlMsg.commands_build_options_s({
+          default: defaultStrategy,
+        })}`
       )
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
@@ -104,18 +102,21 @@ export const build: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (options) => {
+      .action(async (options: Partial<BuildCommandOptions>) => {
         await run({
-          ...options,
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultPolywrapManifest
           ),
-          configBuilder: await parseClientConfigOption(options.clientConfig),
-          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
+          clientConfig: options.clientConfig || false,
+          wrapperEnvs: options.wrapperEnvs || false,
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
+          codegen: options.codegen || false,
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
-          strategy: options.strategy,
+          strategy: options.strategy || defaultStrategy,
+          watch: options.watch || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
           logFile: parseLogFileOption(options.logFile),
         });
       });
@@ -157,13 +158,13 @@ function createBuildStrategy(
   }
 }
 
-async function run(options: BuildCommandOptions) {
+async function run(options: Required<BuildCommandOptions>) {
   const {
     watch,
     manifestFile,
-    outputDir,
-    configBuilder,
+    clientConfig,
     wrapperEnvs,
+    outputDir,
     strategy,
     codegen,
     codegenDir,
@@ -173,8 +174,11 @@ async function run(options: BuildCommandOptions) {
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
-  if (wrapperEnvs) {
-    configBuilder.addEnvs(wrapperEnvs);
+  const envs = await parseWrapperEnvsOption(wrapperEnvs);
+  const configBuilder = await parseClientConfigOption(clientConfig);
+
+  if (envs) {
+    configBuilder.addEnvs(envs as Env<Uri>[]);
   }
 
   // Get Client
