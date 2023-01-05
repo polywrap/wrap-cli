@@ -146,7 +146,6 @@ describe("Error structure", () => {
       expect(result.error?.source).toEqual({ file: "src/wrap/module/wrapped.rs", row: 38, col: 13 });
     });
 
-
     test("Invoke a wrapper method that doesn't exist", async () => {
       const result = await client.invoke<string>({
         uri: simpleWrapperUri.uri,
@@ -165,7 +164,9 @@ describe("Error structure", () => {
       expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/simple/build")).toBeTruthy();
       expect(result.error?.method).toEqual("complexMethod");
       expect(result.error?.args).toEqual("{\n  \"arg\": \"test\"\n}");
-      expect(result.error?.toString().split("52").length).toEqual(2);
+      expect(result.error?.toString().split(
+        WrapErrorCode.WRAPPER_INVOKE_FAIL.valueOf().toString()
+      ).length).toEqual(2);
       expect(result.error?.innerError).toBeUndefined();
     });
 
