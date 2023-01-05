@@ -16,26 +16,6 @@ import { ObjectDef, Abi as WrapAbi, PropertyDef, AnyType, EnumDef, ScalarTypeNam
 import { parseMapReference } from "./utils/map-utils";
 
 const extractPropertyDef = (node: FieldDefinitionNode, enumDefs: string[]): PropertyDef => {
-  // const extractType = (node: TypeNode, required = false): AnyType => {
-  //   switch (node.kind) {
-  //     case "NonNullType":
-  //       return extractType(node.type, true)
-  //     case "ListType":
-  //       return {
-  //         kind: "Array",
-  //         item: extractType(node.type),
-  //         required
-  //       }
-  //     case "NamedType":
-  //       return {
-  //         kind: "Ref",
-  //         // TODO: Revisit this condition as it is not future proof
-  //         ref_kind: enumDefs.includes(node.name.value) ? "Enum" : "Object",
-  //         ref_name: node.name.value
-  //       }
-  //   }
-  // }
-
   const extractType = (node: TypeNode): AnyType => {
     switch (node.kind) {
       case "NonNullType":
@@ -129,6 +109,6 @@ const visitorEnter = (objectTypes: ObjectDef[], enumDefs: EnumDef[]) => ({
 export const getObjectTypesVisitor = (abi: WrapAbi): ASTVisitor => {
   return {
     // TODO: Ensure enums were extracted previously
-    enter: visitorEnter(abi.objectTypes || [], abi.enumTypes),
+    enter: visitorEnter(abi.objects ?? [], abi.enums ?? []),
   };
 };
