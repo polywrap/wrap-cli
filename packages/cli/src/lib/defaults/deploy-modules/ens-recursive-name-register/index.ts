@@ -109,7 +109,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
       throw new Error("Could not get signer");
     }
 
-    const registerData = await client.invoke<{ hash: string }>({
+    const registerData = await client.invoke<{ tx: { hash: string } }[]>({
       method: "registerDomainAndSubdomainsRecursively",
       uri: ensWrapperUri,
       args: {
@@ -138,7 +138,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
         method: "awaitTransaction",
         uri: ethereumWrapperUri,
         args: {
-          txHash: registerData.value.hash,
+          txHash: registerData.value[0].tx.hash,
           connection: {
             networkNameOrChainId: network,
           },

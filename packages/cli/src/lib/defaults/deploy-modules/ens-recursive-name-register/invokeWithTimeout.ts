@@ -19,20 +19,20 @@ export async function invokeWithTimeout<TResult>(
     controller.signal.addEventListener("abort", () => {
       reject("Timeout has been reached");
     });
-    client.invoke<TResult>(options).then(
-      (result) => {
-        timer && clearTimeout(timer);
+    client
+      .invoke<TResult>(options)
+      .then((result) => {
         if (!result.ok) {
           resolve([result.error, undefined]);
           return;
         }
         resolve([undefined, result.value]);
-      },
-      (error) => {
-        timer && clearTimeout(timer);
+      })
+      .catch((error) => {
         resolve([error, undefined]);
-      }
-    );
+      });
+  }).finally(() => {
+    timer && clearTimeout(timer);
   });
 
   if (error) {
