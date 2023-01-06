@@ -33,6 +33,8 @@ export const createImports = (config: {
         const method = readString(memory.buffer, methodPtr, methodLen);
         const args = readBytes(memory.buffer, argsPtr, argsLen);
 
+        console.log(uri);
+
         const result = await client.invoke<Uint8Array>({
           uri: Uri.from(uri),
           method: method,

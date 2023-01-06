@@ -252,14 +252,34 @@ export class PolywrapCoreClient implements CoreClient {
   public async invoke<TData = unknown>(
     options: InvokerOptions
   ): Promise<InvokeResult<TData>> {
+    if (options.uri.authority === "fs") {
+      console.log("HELLO FS ", options.uri.uri);
+    }
+    if (options.uri.authority === "ens") {
+      console.log("HELLO ENS ", options.uri.uri);
+    }
+
     try {
       const typedOptions: InvokeOptions = {
         ...options,
         uri: Uri.from(options.uri),
       };
 
+      // console.log("URI", typedOptions.uri.uri);
+      if (options.uri.uri === "wrap://ens/externalenv.polywrap.eth") {
+        console.log(typedOptions.uri.uri);
+      }
+
       const resolutionContext =
         options.resolutionContext ?? new UriResolutionContext();
+
+      if (options.uri.uri === "wrap://ens/externalenv.polywrap.eth") {
+        console.log("CREATE", resolutionContext);
+
+        await this.loadWrapper(typedOptions.uri, resolutionContext);
+
+        throw new Error("STOP");
+      }
 
       const loadWrapperResult = await this.loadWrapper(
         typedOptions.uri,
@@ -271,11 +291,21 @@ export class PolywrapCoreClient implements CoreClient {
       }
       const wrapper = loadWrapperResult.value;
 
+      if (options.uri.uri === "wrap://ens/externalenv.polywrap.eth") {
+        console.log("LOADED WRAPPER RESOLUTION CONTEXT", resolutionContext);
+      }
+
       const resolutionPath = resolutionContext.getResolutionPath();
+      if (options.uri.uri === "wrap://ens/externalenv.polywrap.eth") {
+        console.log(resolutionPath);
+      }
       const env = getEnvFromUriHistory(
         resolutionPath.length > 0 ? resolutionPath : [typedOptions.uri],
         this
       );
+      if (options.uri.uri === "wrap://ens/externalenv.polywrap.eth") {
+        console.log(env);
+      }
 
       const invokeResult = await this.invokeWrapper<TData>({
         env: env?.env,
@@ -302,18 +332,30 @@ export class PolywrapCoreClient implements CoreClient {
   public async tryResolveUri(
     options: TryResolveUriOptions
   ): Promise<Result<UriPackageOrWrapper, unknown>> {
+    // console.log(options.uri.uri);
+
     const uri = Uri.from(options.uri);
 
     const uriResolver = this.getResolver();
 
+    if (uri.uri === "wrap://ens/externalenv.polywrap.eth") {
+      console.log(options.resolutionContext);
+    }
+
     const resolutionContext =
       options.resolutionContext ?? new UriResolutionContext();
+
+    // console.log("URI RESOLVER 0", resolutionContext.getResolutionPath());
 
     const response = await uriResolver.tryResolveUri(
       uri,
       this,
       resolutionContext
     );
+
+    if (uri.uri === "wrap://ens/externalenv.polywrap.eth") {
+      console.log("URI RESOLVER 1", resolutionContext.getResolutionPath());
+    }
 
     return response;
   }
@@ -336,6 +378,12 @@ export class PolywrapCoreClient implements CoreClient {
     resolutionContext?: IUriResolutionContext,
     options?: DeserializeManifestOptions
   ): Promise<Result<Wrapper, Error>> {
+    console.log(uri.uri, resolutionContext);
+    // console.log(uri.uri);
+    // console.log("LOAD 0 RESOLUTION CONTEXT", resolutionContext)
+    if (uri.uri === "wrap://ens/externalenv.polywrap.eth") {
+      console.log("LOAD 0 CONTEXT", resolutionContext);
+    }
     if (!resolutionContext) {
       resolutionContext = new UriResolutionContext();
     }
@@ -344,6 +392,9 @@ export class PolywrapCoreClient implements CoreClient {
       uri,
       resolutionContext,
     });
+    if (uri.uri === "wrap://ens/externalenv.polywrap.eth") {
+      console.log("LOAD 1 CONTEXT", resolutionContext);
+    }
 
     if (!result.ok) {
       if (result.error) {

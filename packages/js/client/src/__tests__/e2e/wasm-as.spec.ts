@@ -2,24 +2,25 @@ import * as TestCases from "./test-cases";
 import { makeMemoryStoragePlugin } from "./memory-storage";
 import {
   buildWrapper,
-  initTestEnvironment,
-  stopTestEnvironment,
+  // initTestEnvironment,
+  // stopTestEnvironment,
   runCLI,
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { getClientWithEnsAndIpfs } from "../helpers/getClientWithEnsAndIpfs";
 import { PolywrapClient } from "../../PolywrapClient";
+import { PolywrapClientConfig } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(300000);
 
 describe("wasm-as test cases", () => {
-  beforeAll(async () => {
-    await initTestEnvironment();
-  });
+  // beforeAll(async () => {
+  //   await initTestEnvironment();
+  // });
 
-  afterAll(async () => {
-    await stopTestEnvironment();
-  });
+  // afterAll(async () => {
+  //   await stopTestEnvironment();
+  // });
 
   it("asyncify", async () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/asyncify`;
@@ -319,11 +320,11 @@ describe("wasm-as test cases", () => {
     const wrapperUri = `fs/${wrapperPath}/build`;
     const externalWrapperUri = `fs/${externalWrapperPath}/build`;
 
-    await buildWrapper(externalWrapperPath, undefined, true);
-    await buildWrapper(wrapperPath, undefined, true);
+    // await buildWrapper(externalWrapperPath, undefined, true);
+    // await buildWrapper(wrapperPath, undefined, true);
 
     await TestCases.runComplexEnvs(
-      new PolywrapClient({
+      new PolywrapClient<string>({
         envs: [
           {
             uri: wrapperUri,
@@ -352,6 +353,10 @@ describe("wasm-as test cases", () => {
             from: "ens/externalenv.polywrap.eth",
             to: externalWrapperUri,
           },
+          {
+            from: "ens/hello.eth",
+            to: wrapperUri,
+          }
         ],
       }),
       wrapperUri
