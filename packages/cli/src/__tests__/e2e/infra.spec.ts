@@ -19,7 +19,7 @@ const HELP = `Usage: polywrap infra|i <action> [options]
 Modular Infrastructure-As-Code Orchestrator
 
 Arguments:
-  action                         
+  action                       
     Infra allows you to execute the following commands:
     up      Start Polywrap infrastructure
     down    Stop Polywrap infrastructure
@@ -28,14 +28,14 @@ Arguments:
    (choices: "up", "down", "vars", "config")
 
 Options:
-  -m, --manifest-file  <path>    Path to the Polywrap Infra manifest file
-                                 (default: polywrap.infra.yaml |
-                                 polywrap.infra.yml)
-  -o, --modules <module,module>  Use only specified modules
-  -v, --verbose                  Verbose output (default: false)
-  -q, --quiet                    Suppress output (default: false)
-  -l, --log-file [path]          Log file to save console output to
-  -h, --help                     display help for command
+  -m, --manifest-file  <path>  Path to the Polywrap Infra manifest file
+                               (default: polywrap.infra.yaml |
+                               polywrap.infra.yml)
+  -o, --modules <module...>    Use only specified modules
+  -v, --verbose                Verbose output (default: false)
+  -q, --quiet                  Suppress output (default: false)
+  -l, --log-file [path]        Log file to save console output to
+  -h, --help                   display help for command
 `;
 
 const portInUse = (port: number) => {
@@ -119,7 +119,7 @@ describe("e2e tests for infra command", () => {
       );
 
       await runPolywrapCli(
-        ["infra", "down", "-v", "--modules=eth-ens-ipfs"],
+        ["infra", "down", "-v", "--modules eth-ens-ipfs"],
         getTestCaseDir(0),
       );
 
@@ -222,7 +222,7 @@ describe("e2e tests for infra command", () => {
 
     it("Should correctly open one process for default module because modules flag overwrites it", async () => {
       await runPolywrapCli(
-        ["infra", "up", "--modules=eth-ens-ipfs"],
+        ["infra", "up", "--modules eth-ens-ipfs"],
         getTestCaseDir(4),
       );
 
@@ -231,7 +231,7 @@ describe("e2e tests for infra command", () => {
       ]);
 
       await runPolywrapCli(
-        ["infra", "down", "--modules=eth-ens-ipfs"],
+        ["infra", "down", "--modules eth-ens-ipfs"],
         getTestCaseDir(4),
       );
     });
@@ -291,7 +291,7 @@ describe("e2e tests for infra command", () => {
 
     it("Should set environment up with only selected modules", async () => {
       await runPolywrapCli(
-        ["infra", "up", "--modules=ipfs"],
+        ["infra", "up", "--modules ipfs"],
         getTestCaseDir(0),
       );
 
@@ -302,7 +302,7 @@ describe("e2e tests for infra command", () => {
       ]);
 
       await runPolywrapCli(
-        ["infra", "down", "--modules=ipfs"],
+        ["infra", "down", "--modules ipfs"],
         getTestCaseDir(0),
       );
 
@@ -316,7 +316,7 @@ describe("e2e tests for infra command", () => {
         [
           "infra",
           "config",
-          "--modules=notExistingModule,alsoNotExisting",
+          "--modules notExistingModule alsoNotExisting",
         ],
         getTestCaseDir(0),
       );
@@ -332,7 +332,7 @@ describe("e2e tests for infra command", () => {
         [
           "infra",
           "up",
-          "--modules=eth-ens-ipfs",
+          "--modules eth-ens-ipfs",
           "--verbose"
         ],
         getTestCaseDir(0),
@@ -349,7 +349,7 @@ describe("e2e tests for infra command", () => {
         [
           "infra",
           "config",
-          "--modules=eth-ens-ipfs",
+          "--modules eth-ens-ipfs",
           "--verbose"
         ],
         getTestCaseDir(2),
@@ -363,7 +363,7 @@ describe("e2e tests for infra command", () => {
         [
           "infra",
           "config",
-          "--modules=eth-ens-ipfs",
+          "--modules eth-ens-ipfs",
           "--verbose"
         ],
         getTestCaseDir(0),
@@ -380,7 +380,7 @@ describe("e2e tests for infra command", () => {
         [
           "infra",
           "up",
-          "--modules=eth-ens-ipfs",
+          "--modules eth-ens-ipfs",
           "--verbose"
         ],
         getTestCaseDir(3),
@@ -430,7 +430,7 @@ describe("e2e tests for infra command", () => {
         [
           "infra",
           "up",
-          "--modules=ganache,dev-server"
+          "--modules ganache,dev-server"
         ],
         getTestCaseDir(1),
       );
@@ -441,7 +441,7 @@ describe("e2e tests for infra command", () => {
       ]);
 
       await runPolywrapCli(
-        ["infra", "down", "--modules=ganache,dev-server"],
+        ["infra", "down", "--modules ganache,dev-server"],
         getTestCaseDir(1),
       );
     });
@@ -451,7 +451,7 @@ describe("e2e tests for infra command", () => {
         [
           "infra",
           "up",
-          "--modules=ipfs,ipfs-duplicate"
+          "--modules ipfs,ipfs-duplicate"
         ],
         getTestCaseDir(1),
       );
@@ -461,7 +461,7 @@ describe("e2e tests for infra command", () => {
       ]);
 
       await runPolywrapCli(
-        ["infra", "down", "--modules=ipfs,ipfs-duplicate"],
+        ["infra", "down", "--modules ipfs,ipfs-duplicate"],
         getTestCaseDir(1),
       );
     });

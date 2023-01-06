@@ -27,7 +27,8 @@ describe("HTTP Plugin", () => {
       wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
       name: wrapperName,
       httpProvider: providers.http,
-    });
+      codegen: true
+  });
 
     wrapperHttpUri = uri;
 

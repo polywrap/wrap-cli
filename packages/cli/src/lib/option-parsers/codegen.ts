@@ -1,7 +1,7 @@
 import path from "path";
 
 export function parseCodegenScriptOption(
-  script: string | undefined
-): string | undefined {
-  return script ? path.resolve(script) : undefined;
+  script: string | undefined | false
+): string | false {
+  return script ? path.resolve(script) : false;
 }

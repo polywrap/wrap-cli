@@ -20,7 +20,6 @@ describe("e2e tests for codegen command - plugin project", () => {
       const testCaseDir = getTestCaseDir(i);
 
       let codegenDir = path.join(testCaseDir, "src", "wrap");
-      let buildDir = path.join(testCaseDir, "build");
       let cmdArgs: string[] = [];
       let cmdFile = path.join(testCaseDir, "cmd.json");
       if (fs.existsSync(cmdFile)) {
@@ -32,10 +31,6 @@ describe("e2e tests for codegen command - plugin project", () => {
         if (cmdConfig.codegenDir) {
           codegenDir = path.join(testCaseDir, cmdConfig.codegenDir);
         }
-
-        if (cmdConfig.buildDir) {
-          buildDir = path.join(testCaseDir, cmdConfig.buildDir);
-        }
       }
 
       test(testCaseName, async () => {
@@ -44,7 +39,7 @@ describe("e2e tests for codegen command - plugin project", () => {
           cwd: testCaseDir,
         });
         testCliOutput(testCaseDir, code, output, error);
-        testCodegenOutput(testCaseDir, codegenDir, buildDir);
+        testCodegenOutput(testCaseDir, codegenDir);
       });
     }
   });

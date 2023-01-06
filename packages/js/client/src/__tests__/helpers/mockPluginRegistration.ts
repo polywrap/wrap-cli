@@ -8,6 +8,9 @@ export const mockPluginRegistration = (uri: string | Uri) => {
       () => ({
         simpleMethod: (_: unknown): string => {
           return "plugin response";
+        },
+        methodThatThrows: (_: unknown): string => {
+          throw Error("I'm throwing!");
         }
       })
     ),
