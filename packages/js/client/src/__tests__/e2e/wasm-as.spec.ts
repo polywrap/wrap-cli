@@ -341,7 +341,7 @@ describe("wasm-as test cases", () => {
             },
           },
           {
-            uri: externalWrapperUri,
+            uri: "ens/externalenv.polywrap.eth",
             env: {
               externalArray: [1, 2, 3],
               externalString: "iamexternal",
@@ -353,10 +353,10 @@ describe("wasm-as test cases", () => {
             from: "ens/externalenv.polywrap.eth",
             to: externalWrapperUri,
           },
-          {
-            from: "ens/hello.eth",
-            to: wrapperUri,
-          }
+          // {
+          //   from: "ens/hello.eth",
+          //   to: wrapperUri,
+          // }
         ],
       }),
       wrapperUri

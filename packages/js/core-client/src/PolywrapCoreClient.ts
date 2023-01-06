@@ -276,14 +276,17 @@ export class PolywrapCoreClient implements CoreClient {
       if (options.uri.uri === "wrap://ens/externalenv.polywrap.eth") {
         console.log("CREATE", resolutionContext);
 
-        await this.loadWrapper(typedOptions.uri, resolutionContext);
+        // @ts-ignore
+        await this.loadWrapper(typedOptions.uri, resolutionContext, 1);
 
-        throw new Error("STOP");
+        // throw new Error("STOP");
       }
 
       const loadWrapperResult = await this.loadWrapper(
         typedOptions.uri,
-        resolutionContext
+        resolutionContext,
+        // @ts-ignore
+        2
       );
 
       if (!loadWrapperResult.ok) {
@@ -378,7 +381,7 @@ export class PolywrapCoreClient implements CoreClient {
     resolutionContext?: IUriResolutionContext,
     options?: DeserializeManifestOptions
   ): Promise<Result<Wrapper, Error>> {
-    console.log(uri.uri, resolutionContext);
+    console.log(options, uri.uri, resolutionContext);
     // console.log(uri.uri);
     // console.log("LOAD 0 RESOLUTION CONTEXT", resolutionContext)
     if (uri.uri === "wrap://ens/externalenv.polywrap.eth") {
