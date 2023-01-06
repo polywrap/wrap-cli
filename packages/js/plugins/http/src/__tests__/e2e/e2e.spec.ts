@@ -6,6 +6,7 @@ import { UriResolver } from "@polywrap/uri-resolvers-js";
 
 import nock from "nock";
 import { WrapError } from "@polywrap/core-js";
+import { initTestEnvironment, stopTestEnvironment, providers } from "@polywrap/test-env-js";
 
 jest.setTimeout(360000);
 
@@ -17,6 +18,10 @@ const defaultReplyHeaders = {
 describe("e2e tests for HttpPlugin", () => {
   let polywrapClient: PolywrapClient;
 
+  beforeAll(async () => {
+    await initTestEnvironment();
+  });
+
   beforeEach(() => {
     polywrapClient = new PolywrapClient(
       {
@@ -27,6 +32,10 @@ describe("e2e tests for HttpPlugin", () => {
       },
       { noDefaults: true }
     );
+  });
+
+  afterAll(async () => {
+    await stopTestEnvironment();
   });
 
   describe("get method", () => {
@@ -287,6 +296,34 @@ describe("e2e tests for HttpPlugin", () => {
       response = response as { ok: false; error: WrapError | undefined };
       expect(response.error).toBeDefined();
       expect(response.ok).toBeFalsy();
+    });
+
+    test("successful request with form-data", async () => {
+      const response = await polywrapClient.invoke<Http_Response>({
+        uri: "wrap://ens/http.polywrap.eth",
+        method: "post",
+        args: {
+          url: `${providers.ipfs}/api/v0/add`,
+          request: {
+            responseType: "TEXT",
+            formData:[{
+              name:"test.txt",
+              value:"QSBuZXcgc2FtcGxlIGZpbGU=",
+              fileName:"test.txt",
+              type:"application/octet-stream"
+            }],
+          },
+        },
+      });
+
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(response.value?.status).toBe(200);
+      expect(response.value?.body).toBe(JSON.stringify({
+        Name: "test.txt",
+        Hash: "Qmawvzw32Jq7RbMw2K8axEbzfNK74NPynBoq4tJnWvkYqP",
+        Size: "25"
+      }));
     });
   });
 });
