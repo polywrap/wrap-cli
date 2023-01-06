@@ -11,7 +11,7 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { ResultErr } from "@polywrap/result";
 import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
 import { WasmPackage } from "@polywrap/wasm-js";
-import { defaultInterfaces } from "@polywrap/client-config-builder-js";
+import { defaultInterfaces, defaultPackages, defaultWrappers } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 
@@ -19,31 +19,30 @@ describe("sanity", () => {
   test("default client config", () => {
     const client = new PolywrapClient();
 
-    new Uri("wrap://ens/http-resolver.polywrap.eth"),
-      expect(client.getInterfaces()).toStrictEqual([
-        {
-          interface: ExtendableUriResolver.extInterfaceUri,
-          implementations: [
-            new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-            new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-            new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-            new Uri("wrap://ens/http-resolver.polywrap.eth"),
-            new Uri("wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY"),
-          ],
-        },
-        {
-          interface: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
-          implementations: [new Uri("wrap://plugin/logger")],
-        },
-        {
-          interface: new Uri(defaultInterfaces.concurrent),
-          implementations: [new Uri("wrap://plugin/concurrent")],
-        },
-        {
-          interface: new Uri(defaultInterfaces.ethereumProvider),
-          implementations: [new Uri("wrap://plugin/ethereum-provider")],
-        },
-      ]);
+    expect(client.getInterfaces()).toStrictEqual([
+      {
+        interface: ExtendableUriResolver.extInterfaceUri,
+        implementations: [
+          new Uri(defaultPackages.ipfsResolver),
+          new Uri(defaultPackages.ensResolver),
+          new Uri(defaultPackages.fileSystemResolver),
+          new Uri(defaultPackages.httpResolver),
+          new Uri(defaultWrappers.ensTextRecordResolver),
+        ],
+      },
+      {
+        interface: new Uri(defaultInterfaces.logger),
+        implementations: [new Uri(defaultPackages.logger)],
+      },
+      {
+        interface: new Uri(defaultInterfaces.concurrent),
+        implementations: [new Uri(defaultPackages.concurrent)],
+      },
+      {
+        interface: new Uri(defaultInterfaces.ethereumProvider),
+        implementations: [new Uri(defaultPackages.ethereumProvider)],
+      },
+    ]);
   });
 
   test("validate requested uri is available", async () => {
