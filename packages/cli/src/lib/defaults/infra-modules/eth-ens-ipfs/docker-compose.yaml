@@ -1,7 +1,8 @@
 version: '3'
 services:
   ganache:
-    image: 'trufflesuite/ganache-cli:v6.12.2'
+    platform: linux/x86_64
+    build: ./eth
     ports:
       - '${ETHEREUM_PORT:-8545}:8545'
     command: -l 8000000 --networkId 1576478390085 --deterministic --hostname=0.0.0.0
