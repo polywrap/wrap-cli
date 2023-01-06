@@ -149,7 +149,7 @@ describe("e2e tests for HttpPlugin", () => {
     });
   });
 
-  describe.only("post method", () => {
+  describe("post method", () => {
     test("successful request with request type as application/json", async () => {
       const reqPayload = {
         data: "test-request",
@@ -326,7 +326,7 @@ describe("e2e tests for HttpPlugin", () => {
       }));
     });
 
-    test.only("successful request with form-data (complex)", async () => {
+    test("successful request with form-data (complex)", async () => {
       const response = await polywrapClient.invoke<Http_Response>({
         uri: "wrap://ens/http.polywrap.eth",
         method: "post",
