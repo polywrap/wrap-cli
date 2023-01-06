@@ -2,7 +2,7 @@ import { ASTVisitor, FieldDefinitionNode, isScalarType, ObjectTypeDefinitionNode
 import { isModuleType, isEnvType } from "../abi";
 import { Abi, AnyType, ObjectDef, PropertyDef, ScalarTypeName, UniqueDefKind } from "../definitions";
 import { parseRef } from "../extract/utils/refParser";
-import { parseAnnotateDirective } from "./directives";
+import { parseDirectivesInField } from "./directives";
 import { VisitorBuilder } from "./types";
 
 export const extractType = (node: TypeNode, uniqueDefs: Map<string, UniqueDefKind>): AnyType => {
@@ -31,26 +31,13 @@ export class ObjectVisitorBuilder implements VisitorBuilder {
   constructor(protected readonly uniqueDefs: Map<string, UniqueDefKind>) { }
 
   protected extractPropertyDef(node: FieldDefinitionNode, uniqueDefs: Map<string, UniqueDefKind>): PropertyDef {
-    if (node.directives) {
-      for (const dir of node.directives) {
-        if (dir.name.value === "annotate") {
-          const map = parseAnnotateDirective(dir, uniqueDefs);
-
-          return {
-            kind: "Property",
-            required: node.type.kind === "NonNullType",
-            name: node.name.value,
-            type: map
-          }
-        }
-      }
-    }
+    const { map } = parseDirectivesInField(node, uniqueDefs)
   
     return {
       kind: "Property",
       name: node.name.value,
       required: node.type.kind === "NonNullType",
-      type: extractType(node.type, uniqueDefs)
+      type: map ?? extractType(node.type, uniqueDefs)
     }
   }
 
