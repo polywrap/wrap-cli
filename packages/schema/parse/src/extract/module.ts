@@ -2,8 +2,8 @@ import { ASTVisitor, FieldDefinitionNode, ObjectTypeDefinitionNode } from "graph
 import { isModuleType } from "../abi";
 import { Abi, UniqueDefKind, ResultDef, FunctionDef, ArgumentDef } from "../definitions";
 import { parseAnnotateDirective, parseDirectivesInField } from "./directives";
-import { extractType } from "./object";
 import { VisitorBuilder } from "./types";
+import { extractType } from "./utils";
 
 export class ModuleVisitorBuilder implements VisitorBuilder {
   constructor(protected readonly uniqueDefs: Map<string, UniqueDefKind>) { }

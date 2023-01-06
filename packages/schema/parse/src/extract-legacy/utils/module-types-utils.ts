@@ -1,6 +1,4 @@
 import { createPropertyDefinition, createArrayDefinition } from "../..";
-import { setPropertyType } from "./property-utils";
-import { extractAnnotateDirective } from "./object-types-utils";
 
 import {
   BooleanValueNode,
@@ -13,7 +11,6 @@ import {
   InterfaceDefinition,
   MapDefinition,
   MethodDefinition,
-  ModuleDefinition,
   PropertyDefinition,
 } from "@polywrap/wrap-manifest-types-js";
 
@@ -22,7 +19,7 @@ export interface EnvDirDefinition {
 }
 
 export interface State {
-  currentModule?: ModuleDefinition;
+  insideModule: boolean;
   currentMethod?: MethodDefinition;
   currentArgument?: PropertyDefinition;
   currentReturn?: PropertyDefinition;
@@ -48,10 +45,10 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
     }
 
     // Argument value
-    setPropertyType(argument, argument.name, {
-      type: node.name.value,
-      required: state.nonNullType,
-    });
+    // setPropertyType(argument, argument.name, {
+    //   type: node.name.value,
+    //   required: state.nonNullType,
+    // });
 
     state.nonNullType = undefined;
   } else if (method) {
@@ -72,10 +69,10 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
     }
 
     if (state.currentReturn) {
-      setPropertyType(state.currentReturn, method.name, {
-        type: node.name.value,
-        required: state.nonNullType,
-      });
+      // setPropertyType(state.currentReturn, method.name, {
+      //   type: node.name.value,
+      //   required: state.nonNullType,
+      // });
     }
 
     state.nonNullType = undefined;
@@ -128,21 +125,21 @@ export function extractInputValueDefinition(
   }
 
   const name = node.name.value;
-  const { type, def } = extractAnnotateDirective(node, name);
+  // const { type, def } = extractAnnotateDirective(node, name);
 
-  const argument = createPropertyDefinition({
-    type: type ? type : "N/A",
-    name: name,
-    map: def ? (def as MapDefinition) : undefined,
-    comment: node.description?.value,
-    required: def && def.required ? true : undefined,
-  });
+  // const argument = createPropertyDefinition({
+  //   type: type ? type : "N/A",
+  //   name: name,
+  //   map: def ? (def as MapDefinition) : undefined,
+  //   comment: node.description?.value,
+  //   required: def && def.required ? true : undefined,
+  // });
 
   if (!method.arguments) {
     method.arguments = [];
   }
-  method.arguments.push(argument);
-  state.currentArgument = argument;
+  // method.arguments.push(argument);
+  // state.currentArgument = argument;
 }
 
 export function extractEnvDirective(

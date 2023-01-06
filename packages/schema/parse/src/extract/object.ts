@@ -1,31 +1,9 @@
-import { ASTVisitor, FieldDefinitionNode, isScalarType, ObjectTypeDefinitionNode, TypeNode } from "graphql";
+import { ASTVisitor, FieldDefinitionNode, ObjectTypeDefinitionNode } from "graphql";
 import { isModuleType, isEnvType } from "../abi";
-import { Abi, AnyType, ObjectDef, PropertyDef, ScalarTypeName, UniqueDefKind } from "../definitions";
-import { parseRef } from "../extract/utils/refParser";
+import { Abi, ObjectDef, PropertyDef, UniqueDefKind } from "../definitions";
 import { parseDirectivesInField } from "./directives";
 import { VisitorBuilder } from "./types";
-
-export const extractType = (node: TypeNode, uniqueDefs: Map<string, UniqueDefKind>): AnyType => {
-  switch (node.kind) {
-    case "NonNullType":
-      return extractType(node.type, uniqueDefs)
-    case "ListType":
-      return {
-        kind: "Array",
-        required: node.type.kind === "NonNullType",
-        item: extractType(node.type, uniqueDefs)
-      }
-    case "NamedType":
-      if (isScalarType(node.name.value)) {
-        return {
-          kind: "Scalar",
-          scalar: node.name.value as ScalarTypeName
-        }
-      }
-
-      return parseRef(node.name.value, uniqueDefs)
-  }
-}
+import { extractType } from "./utils";
 
 export class ObjectVisitorBuilder implements VisitorBuilder {
   constructor(protected readonly uniqueDefs: Map<string, UniqueDefKind>) { }
