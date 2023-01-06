@@ -41,15 +41,14 @@ type Module @imports(
   types: [
     "Ethereum_Module",
     "Ethereum_Connection",
-    "Ethereum_TxOverrides",
+    "Ethereum_TxOptions",
     "Ethereum_StaticTxResult",
+    "Ethereum_Eip1559FeesEstimate",
     "Ethereum_TxRequest",
+    "Ethereum_AccessItem",
     "Ethereum_TxReceipt",
     "Ethereum_Log",
-    "Ethereum_EventNotification",
-    "Ethereum_Network",
-    "Ethereum_TxResponse",
-    "Ethereum_Access"
+    "Ethereum_TxResponse"
   ]
 ) {
   method(
@@ -100,6 +99,10 @@ type Ethereum_Module @imported(
   namespace: "Ethereum",
   nativeType: "Module"
 ) {
+  getChainId(
+    connection: Ethereum_Connection
+  ): String!
+
   callContractView(
     address: String!
     method: String!
@@ -111,40 +114,27 @@ type Ethereum_Module @imported(
     address: String!
     method: String!
     args: [String!]
+    options: Ethereum_TxOptions
     connection: Ethereum_Connection
-    txOverrides: Ethereum_TxOverrides
   ): Ethereum_StaticTxResult!
-
-  getBalance(
-    address: String!
-    blockTag: BigInt
-    connection: Ethereum_Connection
-  ): BigInt!
 
   encodeParams(
     types: [String!]!
     values: [String!]!
+    connection: Ethereum_Connection
   ): String!
 
   encodeFunction(
     method: String!
     args: [String!]
+    connection: Ethereum_Connection
   ): String!
 
-  solidityPack(
-    types: [String!]!
-    values: [String!]!
-  ): String!
-
-  solidityKeccak256(
-    types: [String!]!
-    values: [String!]!
-  ): String!
-
-  soliditySha256(
-    types: [String!]!
-    values: [String!]!
-  ): String!
+  decodeFunction(
+    method: String!
+    data: String!
+    connection: Ethereum_Connection
+  ): [String!]!
 
   getSignerAddress(
     connection: Ethereum_Connection
@@ -155,7 +145,8 @@ type Ethereum_Module @imported(
     connection: Ethereum_Connection
   ): BigInt!
 
-  getSignerTransactionCount(
+  getBalance(
+    address: String!
     blockTag: BigInt
     connection: Ethereum_Connection
   ): BigInt!
@@ -164,68 +155,42 @@ type Ethereum_Module @imported(
     connection: Ethereum_Connection
   ): BigInt!
 
+  estimateEip1559Fees(
+    connection: Ethereum_Connection
+  ): Ethereum_Eip1559FeesEstimate!
+
+  sendRpc(
+    method: String!
+    params: [String!]!
+    connection: Ethereum_Connection
+  ): String!
+
+  getSignerTransactionCount(
+    blockTag: BigInt
+    connection: Ethereum_Connection
+  ): BigInt!
+
+  checkAddress(
+    address: String!
+    connection: Ethereum_Connection
+  ): Boolean!
+
+  toWei(
+    eth: String!
+  ): String!
+
+  toEth(
+    wei: String!
+  ): String!
+
   estimateTransactionGas(
     tx: Ethereum_TxRequest!
     connection: Ethereum_Connection
   ): BigInt!
 
-  estimateContractCallGas(
-    address: String!
-    method: String!
-    args: [String!]
-    connection: Ethereum_Connection
-    txOverrides: Ethereum_TxOverrides
-  ): BigInt!
-
-  checkAddress(
-    address: String!
-  ): Boolean!
-
-  toWei(
-    eth: String!
-  ): BigInt!
-
-  toEth(
-    wei: BigInt!
-  ): String!
-
   awaitTransaction(
     txHash: String!
-    confirmations: UInt32!
-    timeout: UInt32!
     connection: Ethereum_Connection
-  ): Ethereum_TxReceipt!
-
-  waitForEvent(
-    address: String!
-    event: String!
-    args: [String!]
-    timeout: UInt32
-    connection: Ethereum_Connection
-  ): Ethereum_EventNotification!
-
-  getNetwork(
-    connection: Ethereum_Connection
-  ): Ethereum_Network!
-
-  requestAccounts(
-    connection: Ethereum_Connection
-  ): [String!]!
-
-  callContractMethod(
-    address: String!
-    method: String!
-    args: [String!]
-    connection: Ethereum_Connection
-    txOverrides: Ethereum_TxOverrides
-  ): Ethereum_TxResponse!
-
-  callContractMethodAndWait(
-    address: String!
-    method: String!
-    args: [String!]
-    connection: Ethereum_Connection
-    txOverrides: Ethereum_TxOverrides
   ): Ethereum_TxReceipt!
 
   sendTransaction(
@@ -242,8 +207,33 @@ type Ethereum_Module @imported(
     abi: String!
     bytecode: String!
     args: [String!]
+    options: Ethereum_TxOptions
     connection: Ethereum_Connection
   ): String!
+
+  estimateContractCallGas(
+    address: String!
+    method: String!
+    args: [String!]
+    options: Ethereum_TxOptions
+    connection: Ethereum_Connection
+  ): BigInt!
+
+  callContractMethod(
+    address: String!
+    method: String!
+    args: [String!]
+    options: Ethereum_TxOptions
+    connection: Ethereum_Connection
+  ): Ethereum_TxResponse!
+
+  callContractMethodAndWait(
+    address: String!
+    method: String!
+    args: [String!]
+    options: Ethereum_TxOptions
+    connection: Ethereum_Connection
+  ): Ethereum_TxReceipt!
 
   signMessage(
     message: String!
@@ -254,17 +244,6 @@ type Ethereum_Module @imported(
     bytes: Bytes!
     connection: Ethereum_Connection
   ): String!
-
-  signTypedData(
-    payload: JSON!
-    connection: Ethereum_Connection
-  ): String
-
-  sendRPC(
-    method: String!
-    params: [String!]!
-    connection: Ethereum_Connection
-  ): String
 }
 
 ### Imported Modules END ###
@@ -280,14 +259,40 @@ type Ethereum_Connection @imported(
   networkNameOrChainId: String
 }
 
-type Ethereum_TxOverrides @imported(
+type Ethereum_TxOptions @imported(
   uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
-  nativeType: "TxOverrides"
+  nativeType: "TxOptions"
 ) {
+  """
+  Gas supplied for the transaction
+  """
   gasLimit: BigInt
+  """
+    The max total fee to pay per unit of gas.
+The difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.
+This property is ignored when gasPrice is not null.
+  """
+  maxFeePerGas: BigInt
+  """
+    The gas price paid is baseFeePerGas + maxPriorityFeePerGas.
+The difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.
+This property is ignored when gasPrice is not null.
+  """
+  maxPriorityFeePerGas: BigInt
+  """
+    The gas price for legacy transactions.
+If this property is not null, a legacy transaction will be sent and maxFeePerGas and maxPriorityFeePerGas will be ignored.
+  """
   gasPrice: BigInt
+  """
+  Ether value sent with transaction
+  """
   value: BigInt
+  """
+  Override default nonce
+  """
+  nonce: UInt32
 }
 
 type Ethereum_StaticTxResult @imported(
@@ -299,6 +304,15 @@ type Ethereum_StaticTxResult @imported(
   error: Boolean!
 }
 
+type Ethereum_Eip1559FeesEstimate @imported(
+  uri: "ens/ethereum.polywrap.eth",
+  namespace: "Ethereum",
+  nativeType: "Eip1559FeesEstimate"
+) {
+  maxFeePerGas: BigInt!
+  maxPriorityFeePerGas: BigInt!
+}
+
 type Ethereum_TxRequest @imported(
   uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
@@ -306,13 +320,48 @@ type Ethereum_TxRequest @imported(
 ) {
   to: String
   from: String
-  nonce: UInt32
-  gasLimit: BigInt
-  gasPrice: BigInt
   data: String
-  value: BigInt
-  chainId: BigInt
   type: UInt32
+  chainId: BigInt
+  accessList: [Ethereum_AccessItem!]
+  """
+  Gas supplied for the transaction
+  """
+  gasLimit: BigInt
+  """
+    The max total fee to pay per unit of gas.
+The difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.
+This property is ignored when gasPrice is not null.
+  """
+  maxFeePerGas: BigInt
+  """
+    The gas price paid is baseFeePerGas + maxPriorityFeePerGas.
+The difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.
+This property is ignored when gasPrice is not null.
+  """
+  maxPriorityFeePerGas: BigInt
+  """
+    The gas price for legacy transactions.
+If this property is not null, a legacy transaction will be sent and maxFeePerGas and maxPriorityFeePerGas will be ignored.
+  """
+  gasPrice: BigInt
+  """
+  Ether value sent with transaction
+  """
+  value: BigInt
+  """
+  Override default nonce
+  """
+  nonce: UInt32
+}
+
+type Ethereum_AccessItem @imported(
+  uri: "ens/ethereum.polywrap.eth",
+  namespace: "Ethereum",
+  nativeType: "AccessItem"
+) {
+  address: String!
+  storageKeys: [String!]!
 }
 
 type Ethereum_TxReceipt @imported(
@@ -334,7 +383,6 @@ type Ethereum_TxReceipt @imported(
   confirmations: UInt32!
   cumulativeGasUsed: BigInt!
   effectiveGasPrice: BigInt!
-  byzantium: Boolean!
   type: UInt32!
   status: UInt32
 }
@@ -355,26 +403,6 @@ type Ethereum_Log @imported(
   logIndex: UInt32!
 }
 
-type Ethereum_EventNotification @imported(
-  uri: "ens/ethereum.polywrap.eth",
-  namespace: "Ethereum",
-  nativeType: "EventNotification"
-) {
-  data: String!
-  address: String!
-  log: Ethereum_Log!
-}
-
-type Ethereum_Network @imported(
-  uri: "ens/ethereum.polywrap.eth",
-  namespace: "Ethereum",
-  nativeType: "Network"
-) {
-  name: String!
-  chainId: BigInt!
-  ensAddress: String
-}
-
 type Ethereum_TxResponse @imported(
   uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
@@ -385,29 +413,19 @@ type Ethereum_TxResponse @imported(
   from: String!
   nonce: UInt32!
   gasLimit: BigInt!
+  maxFeePerGas: BigInt
+  maxPriorityFeePerGas: BigInt
   gasPrice: BigInt
-  data: String!
   value: BigInt!
   chainId: BigInt!
   blockNumber: BigInt
   blockHash: String
   timestamp: UInt32
-  confirmations: UInt32!
-  raw: String
   r: String
   s: String
   v: UInt32
   type: UInt32
-  accessList: [Ethereum_Access!]
-}
-
-type Ethereum_Access @imported(
-  uri: "ens/ethereum.polywrap.eth",
-  namespace: "Ethereum",
-  nativeType: "Access"
-) {
-  address: String!
-  storageKeys: [String!]!
+  accessList: [Ethereum_AccessItem!]
 }
 
 ### Imported Objects END ###
