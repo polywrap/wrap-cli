@@ -33,7 +33,6 @@ export interface Wrapper extends Invocable {
    * Get a file from the Wrapper package.
    *
    * @param options Configuration options for file retrieval
-   * @param client The client instance requesting the file.
    */
   getFile(options: GetFileOptions): Promise<Result<Uint8Array | string, Error>>;
 
