@@ -22,6 +22,7 @@ export async function invokeWithTimeout<TResult>(
     client
       .invoke<TResult>(options)
       .then((result) => {
+        timer && clearTimeout(timer);
         if (!result.ok) {
           resolve([result.error, undefined]);
           return;
@@ -29,10 +30,9 @@ export async function invokeWithTimeout<TResult>(
         resolve([undefined, result.value]);
       })
       .catch((error) => {
+        timer && clearTimeout(timer);
         resolve([error, undefined]);
       });
-  }).finally(() => {
-    timer && clearTimeout(timer);
   });
 
   if (error) {
