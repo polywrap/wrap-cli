@@ -19,7 +19,7 @@ describe("workflow JobRunner", () => {
       "implementations",
       "rs"
     )}`
-    configBuilder.addRedirect("ens/add.eth", uri);
+    configBuilder.addRedirect("ens/imported.eth", uri);
     configBuilder.addDefaults();
   });
 

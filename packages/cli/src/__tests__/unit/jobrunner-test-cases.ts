@@ -1,4 +1,4 @@
-  import { MaybeAsync } from "@polywrap/core-js";
+import { MaybeAsync } from "@polywrap/core-js";
 import { JobResult, Status } from "../../lib";
 import { PolywrapWorkflow } from "@polywrap/polywrap-manifest-types-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";

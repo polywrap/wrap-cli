@@ -77,6 +77,6 @@ export function getWrappers(dev?: boolean): void {
   shell.exec("mv ./wrappers ../cases", { cwd: "./wasm-test-harness" });
 
   if (!dev) {
-    shell.rm("-rf wasm-test-harness");
+    shell.exec("rm -rf wasm-test-harness");
   }
 }
