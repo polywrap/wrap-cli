@@ -1,5 +1,5 @@
 import path from "path";
-import { readFileSync, existsSync } from "fs";
+import { readFileSync, existsSync, access } from "fs";
 
 import { normalizeLineEndings } from "@polywrap/os-js";
 const shell = require('shelljs');
@@ -66,9 +66,17 @@ function getFilePath(
   }
 }
 
-export function generateWrappers(): void {
-  shell.exec("git clone git@github.com:polywrap/wasm-test-harness.git");
-  shell.exec("git checkout tags/v0.2.1", { cwd: "./wasm-test-harness" });
+export function getWrappers(dev?: boolean): void {
+  access("./wasm-test-harness", (error) => {
+    if (error) {
+        shell.exec("git clone git@github.com:polywrap/wasm-test-harness.git");
+        shell.exec("git checkout tags/v0.2.1", { cwd: "./wasm-test-harness" });
+    }
+  })
+
   shell.exec("mv ./wrappers ../cases", { cwd: "./wasm-test-harness" });
-  shell.rm("-rf wasm-test-harness");
+
+  if (!dev) {
+    shell.rm("-rf wasm-test-harness");
+  }
 }

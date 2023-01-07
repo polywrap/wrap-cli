@@ -6,7 +6,8 @@
   "license": "MIT",
   "main": "index.ts",
   "scripts": {
-    "generate:wrappers": "npx ts-node -e \"import { generateWrappers } from './'; generateWrappers()\""
+    "generate:wrappers": "npx ts-node -e \"import { getWrappers } from './'; getWrappers()\"",
+    "generate:wrappers:dev": "npx ts-node -e \"import { getWrappers } from './'; getWrappers(true)\""
   },
   "dependencies": {
     "@polywrap/os-js": "0.10.0-pre.6"

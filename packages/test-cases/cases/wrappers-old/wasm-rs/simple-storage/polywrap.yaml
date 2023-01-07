@@ -1,9 +1,0 @@
-format: 0.3.0
-project:
-  name: SimpleStorage
-  type: wasm/rust
-source:
-  schema: ./schema.graphql
-  module: ./Cargo.toml
-extensions:
-  build: ./polywrap.build.yaml

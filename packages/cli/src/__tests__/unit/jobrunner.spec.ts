@@ -1,10 +1,8 @@
+import path from "path";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { buildWrapper } from "@polywrap/test-env-js";
+import { ClientConfigBuilder, IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { testCases } from "./jobrunner-test-cases";
 import { JobRunner } from "../../lib";
-import path from "path";
-import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { IClientConfigBuilder } from "@polywrap/client-config-builder-js/build/IClientConfigBuilder";
 
 jest.setTimeout(200000);
 
@@ -12,12 +10,17 @@ describe("workflow JobRunner", () => {
   let configBuilder: IClientConfigBuilder;
 
   beforeAll(async () => {
-    await buildWrapper(
-      path.join(GetPathToTestWrappers(), "wasm-as", "simple-calculator"),
-      undefined,
-      true
-    );
-    configBuilder = new ClientConfigBuilder().addDefaults();
+
+    configBuilder = new ClientConfigBuilder();
+    const uri = `fs/${path.join(
+      GetPathToTestWrappers(),
+      "subinvoke",
+      "00-subinvoke",
+      "implementations",
+      "rs"
+    )}`
+    configBuilder.addRedirect("ens/add.eth", uri);
+    configBuilder.addDefaults();
   });
 
   for (const testCase of testCases) {
