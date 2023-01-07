@@ -65,7 +65,10 @@ polywrap codegen --help
 ### `build | b`
 
 Build Wasm and Interface Polywrap projects.
+
 This outputs the project's ABI schema (Wasm and Interface) and binary package (Wasm) into the `./build` directory.
+
+Currently, `build` can be run for Wasm, Plugin and Interface projects.
 
 #### Options
 - `-m, --manifest-file <path>`
@@ -82,9 +85,9 @@ This outputs the project's ABI schema (Wasm and Interface) and binary package (W
 - `--wrapper-envs <envs-path>`
   Configure wrapper environment values using the provided file.
 
-- `-n, --no-codegen`
-  Don't perform codegen before building.
-  By default, `build` performs a `codegen` step before building your Project. This option skips this step. This is especially useful when you are testing manual changes to your types/bindings.
+- `--codegen`
+  Perform codegen before building.
+  By default, `build` doesn't perform a `codegen` step before building your Project. This option includes this step. This is especially useful when used in conjunction with the `--watch` option.
 
 - `-s, --strategy <strategy>`
   Specify which build strategy to use. By default, the `vm` build strategy is used.
@@ -101,6 +104,8 @@ This outputs the project's ABI schema (Wasm and Interface) and binary package (W
 Generate code bindings for Polywrap projects.
 
 This command generates types and bindings for your project based on your project's schema (found in `schema.graphql`).
+
+Currently, `codegen` can be run for App, Plugin and Wasm projects.
 
 #### Options
 - `-m, --manifest-file <path>`
@@ -124,10 +129,6 @@ This command generates types and bindings for your project based on your project
 
 - `--wrapper-envs <envs-path>`
   Configure wrapper environment values using the provided file.
-
-#### Special note
-
-When running `codegen` for Plugin Projects, the Polywrap CLI will also output an ABI schema for your plugin into the `./build` directory. You can override this output directory by specifying `-p, --publish-dir <path>`.
 
 ### `create | c`
 

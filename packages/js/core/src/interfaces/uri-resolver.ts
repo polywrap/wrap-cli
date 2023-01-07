@@ -1,4 +1,4 @@
-import { Uri, Invoker } from "../";
+import { Uri, Invoker, WrapError } from "../";
 
 import { Tracer } from "@polywrap/tracing-js";
 import { Result } from "@polywrap/result";
@@ -15,7 +15,7 @@ export const module = {
       invoker: Invoker,
       wrapper: Uri,
       uri: Uri
-    ): Promise<Result<MaybeUriOrManifest, Error>> => {
+    ): Promise<Result<MaybeUriOrManifest, WrapError>> => {
       return invoker.invoke<MaybeUriOrManifest>({
         uri: wrapper.uri,
         method: `tryResolveUri`,
@@ -32,7 +32,7 @@ export const module = {
       invoker: Invoker,
       wrapper: Uri,
       path: string
-    ): Promise<Result<Uint8Array | undefined, Error>> => {
+    ): Promise<Result<Uint8Array | undefined, WrapError>> => {
       return invoker.invoke<Uint8Array | undefined>({
         uri: wrapper.uri,
         method: "getFile",

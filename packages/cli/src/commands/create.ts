@@ -1,4 +1,4 @@
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import { generateProjectTemplate, intlMsg, parseLogFileOption } from "../lib";
 
@@ -23,13 +23,17 @@ export const supportedLangs = {
 };
 
 export type ProjectType = keyof typeof supportedLangs;
-export type SupportedLangs = typeof supportedLangs[ProjectType][number];
-type CreateCommandOptions = {
-  outputDir?: string;
-  verbose?: boolean;
-  quiet?: boolean;
-  logFile?: string;
-};
+export type SupportedWasmLangs = typeof supportedLangs.wasm[number];
+export type SupportedAppLangs = typeof supportedLangs.app[number];
+export type SupportedPluginLangs = typeof supportedLangs.plugin[number];
+type SupportedLangs =
+  | SupportedWasmLangs
+  | SupportedAppLangs
+  | SupportedPluginLangs;
+
+export interface CreateCommandOptions extends BaseCommandOptions {
+  outputDir: string | false;
+}
 
 export const create: Command = {
   setup: (program: Program) => {
@@ -59,12 +63,16 @@ export const create: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (langStr, nameStr, options) => {
-        await run("wasm", langStr, nameStr, {
-          ...options,
-          logFile: parseLogFileOption(options.logFile),
-        });
-      });
+      .action(
+        async (language, name, options: Partial<CreateCommandOptions>) => {
+          await run("wasm", language, name, {
+            outputDir: options.outputDir || false,
+            verbose: options.verbose || false,
+            quiet: options.quiet || false,
+            logFile: parseLogFileOption(options.logFile),
+          });
+        }
+      );
 
     createCommand
       .command("app")
@@ -87,12 +95,16 @@ export const create: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (langStr, nameStr, options) => {
-        await run("app", langStr, nameStr, {
-          ...options,
-          logFile: parseLogFileOption(options.logFile),
-        });
-      });
+      .action(
+        async (language, name, options: Partial<CreateCommandOptions>) => {
+          await run("app", language, name, {
+            outputDir: options.outputDir || false,
+            verbose: options.verbose || false,
+            quiet: options.quiet || false,
+            logFile: parseLogFileOption(options.logFile),
+          });
+        }
+      );
 
     createCommand
       .command(`plugin`)
@@ -115,20 +127,24 @@ export const create: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (langStr, nameStr, options) => {
-        await run("plugin", langStr, nameStr, {
-          ...options,
-          logFile: parseLogFileOption(options.logFile),
-        });
-      });
+      .action(
+        async (language, name, options: Partial<CreateCommandOptions>) => {
+          await run("plugin", language, name, {
+            outputDir: options.outputDir || false,
+            verbose: options.verbose || false,
+            quiet: options.quiet || false,
+            logFile: parseLogFileOption(options.logFile),
+          });
+        }
+      );
   },
 };
 
 async function run(
   command: ProjectType,
-  lang: SupportedLangs,
+  language: SupportedLangs,
   name: string,
-  options: CreateCommandOptions
+  options: Required<CreateCommandOptions>
 ) {
   const { outputDir, verbose, quiet, logFile } = options;
   const logger = createLogger({ verbose, quiet, logFile });
@@ -158,7 +174,7 @@ async function run(
     }
   }
 
-  await generateProjectTemplate(command, lang, projectDir)
+  await generateProjectTemplate(command, language, projectDir)
     .then(() => {
       let readyMessage;
       if (command === "wasm") {

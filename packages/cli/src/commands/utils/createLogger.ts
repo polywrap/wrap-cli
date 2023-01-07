@@ -5,7 +5,7 @@ import { LogLevel } from "@polywrap/logging-js";
 export function createLogger(options: {
   verbose?: boolean;
   quiet?: boolean;
-  logFile?: string;
+  logFile?: string | false;
 }): Logger {
   const level = options.quiet
     ? LogLevel.ERROR

@@ -4,8 +4,8 @@ import { PluginMethod } from "../PluginMethod";
 import { PluginModule } from "../PluginModule";
 import { GetPluginMethodsFunc } from "./GetPluginMethodsFunc";
 
-import { CoreClient } from "@polywrap/core-js";
-import { Result, ResultOk } from "@polywrap/result";
+import { CoreClient, WrapErrorCode } from "@polywrap/core-js";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class PluginModuleWithMethods<
   TEnv extends Record<string, unknown> = Record<string, unknown>
@@ -25,16 +25,22 @@ export class PluginModuleWithMethods<
     const fn = this.getMethod<TArgs, TResult>(method);
 
     if (!fn) {
-      throw Error(`Plugin missing method "${method}"`);
+      return ResultErr(Error(`Plugin missing method "${method}"`));
     }
 
     if (typeof fn !== "function") {
-      throw Error(`Plugin method "${method}" must be of type 'function'`);
+      return ResultErr(
+        Error(`Plugin method "${method}" must be of type 'function'`)
+      );
     }
 
-    const data = await fn(args, client);
-
-    return ResultOk(data);
+    try {
+      const data = await fn(args, client);
+      return ResultOk(data);
+    } catch (e) {
+      e.code = WrapErrorCode.WRAPPER_INVOKE_ABORTED;
+      return ResultErr(e);
+    }
   }
 
   getMethod<
@@ -45,6 +51,6 @@ export class PluginModuleWithMethods<
       this
     )[method] as PluginMethod<TArgs, TResult>;
 
-    return fn.bind(this);
+    return fn?.bind(this);
   }
 }
