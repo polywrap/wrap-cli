@@ -1,4 +1,3 @@
-import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
 import { WasmPackage } from "../WasmPackage";
@@ -9,21 +8,17 @@ import { WRAP_MANIFEST_PATH, WRAP_MODULE_PATH } from "../constants";
 
 jest.setTimeout(200000);
 
-const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
+const wrapperPath = `${GetPathToTestWrappers()}/subinvoke/00-subinvoke/implementations/as`;
 
 describe("In-memory packages", () => {
-  beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath, undefined, true);
-  });
-
   it("can create in-memory packages from buffers", async () => {
     const manifest = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MANIFEST_PATH}`
+      `${wrapperPath}/${WRAP_MANIFEST_PATH}`
     );
     const wrapManifest = await deserializeWrapManifest(manifest);
 
     const wasmModule = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MODULE_PATH}`
+      `${wrapperPath}/${WRAP_MODULE_PATH}`
     );
     const wasmPackage = WasmPackage.from(manifest, wasmModule);
 
@@ -49,12 +44,12 @@ describe("In-memory packages", () => {
 
   it("can create in-memory packages from file reader", async () => {
     const manifest = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MANIFEST_PATH}`
+      `${wrapperPath}/${WRAP_MANIFEST_PATH}`
     );
     const wrapManifest = await deserializeWrapManifest(manifest);
 
     const wasmModule = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MODULE_PATH}`
+      `${wrapperPath}/${WRAP_MODULE_PATH}`
     );
 
     const fileReader = InMemoryFileReader.from(manifest, wasmModule);
@@ -82,12 +77,12 @@ describe("In-memory packages", () => {
 
   it("can create in-memory packages from manifest and file reader", async () => {
     const manifest = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MANIFEST_PATH}`
+      `${wrapperPath}/${WRAP_MANIFEST_PATH}`
     );
     const wrapManifest = await deserializeWrapManifest(manifest);
 
     const wasmModule = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MODULE_PATH}`
+      `${wrapperPath}/${WRAP_MODULE_PATH}`
     );
 
     const fileReader = InMemoryFileReader.from(manifest, wasmModule);
@@ -117,12 +112,12 @@ describe("In-memory packages", () => {
     const testEncoded = new TextEncoder().encode("test");
 
     const manifest = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MANIFEST_PATH}`
+      `${wrapperPath}/${WRAP_MANIFEST_PATH}`
     );
     const wrapManifest = await deserializeWrapManifest(manifest);
 
     const wasmModule = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MODULE_PATH}`
+      `${wrapperPath}/${WRAP_MODULE_PATH}`
     );
 
     const wasmPackage = WasmPackage.from(manifest, wasmModule, {
