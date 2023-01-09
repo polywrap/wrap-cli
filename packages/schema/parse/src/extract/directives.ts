@@ -1,7 +1,10 @@
 import { DirectiveNode, FieldDefinitionNode } from "graphql";
 import { MapType, UniqueDefKind } from "../definitions";
-import { EnvDirDefinition } from "../extract-legacy/utils/module-types-utils";
 import { parseMapString } from "./utils";
+
+interface EnvDirDefinition {
+  required: boolean;
+}
 
 export const parseDirectivesInField = (node: FieldDefinitionNode, uniqueDefs: Map<string, UniqueDefKind>) => {
   let map: MapType | undefined;
