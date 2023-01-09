@@ -1,13 +1,16 @@
-import { createAbi } from "./abi";
-import { extractors, SchemaExtractorBuilder } from "./extract";
+import { createAbi, isEnvType, isModuleType } from "./abi";
 import { AbiTransforms, transformAbi, finalizePropertyDef } from "./transform";
 import { validators, SchemaValidatorBuilder } from "./validate";
 
 import { DocumentNode, parse, visit, visitInParallel } from "graphql";
-import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
+import { Abi, UniqueDefKind } from "./definitions";
+import { ExternalVisitorBuilder, VisitorBuilder } from "./extract/types";
+import { ObjectVisitorBuilder } from "./extract";
+import { EnvVisitorBuilder } from "./extract";
+import { EnumVisitorBuilder } from "./extract";
+import { ModuleVisitorBuilder } from "./extract";
 
 export * from "./abi";
-export * from "./extract";
 export * from "./transform";
 export * from "./validate";
 export * from "./header";
@@ -18,16 +21,42 @@ interface ParserOptions {
   // Use custom validators
   validators?: SchemaValidatorBuilder[];
   // Use custom extractors
-  extractors?: SchemaExtractorBuilder[];
+  extractors?: ExternalVisitorBuilder[];
   // Use custom transformations
   transforms?: AbiTransforms[];
+}
+
+const extractUniqueDefinitionNames = (document: DocumentNode): Map<string, UniqueDefKind> => {
+  const uniqueDefs = new Map<string, UniqueDefKind>();
+
+  visit(document, {
+    ObjectTypeDefinition: (node) => {
+      const name = node.name.value;
+
+      if (!isModuleType(name) && !isEnvType(name)) {
+        uniqueDefs.set(name, "Object")
+      }
+    },
+    EnumTypeDefinition: (node) => {
+      uniqueDefs.set(node.name.value, "Enum")
+    }
+  });
+
+  return uniqueDefs;
 }
 
 export function parseSchema(
   schema: string,
   options: ParserOptions = {}
-): WrapAbi {
+): Abi {
   const astNode = parse(schema);
+  const uniqueDefs = extractUniqueDefinitionNames(astNode);
+  const defaultExtractors: VisitorBuilder[] = [
+    new ObjectVisitorBuilder(uniqueDefs),
+    new EnvVisitorBuilder(uniqueDefs),
+    new EnumVisitorBuilder(),
+    new ModuleVisitorBuilder(uniqueDefs)
+  ]
 
   // Validate GraphQL Schema
   if (!options.noValidate) {
@@ -38,7 +67,7 @@ export function parseSchema(
   // Extract & Build Abi
   let info = createAbi();
 
-  const extracts = options.extractors || extractors;
+  const extracts = options.extractors?.map(extractorBuilder => extractorBuilder(info, uniqueDefs)) ?? defaultExtractors.map(e => e.build(info));
   extract(astNode, info, extracts);
 
   // Finalize & Transform Abi
