@@ -1,6 +1,6 @@
 import { AbiTransforms } from "..";
 import { PropertyDef } from "../definitions";
-import { toMapString } from "../extract/utils";
+import { toGraphQL } from "./toGraphQLType";
 
 export const addAnnotations: AbiTransforms = {
   enter: {
@@ -11,7 +11,7 @@ export const addAnnotations: AbiTransforms = {
       return {
         ...def,
         toGraphQLType: (): string =>
-          `Map${def.required ? "!" : ""} @annotate(type: "${toMapString(typeInProperty)}")`,
+          `Map${def.required ? "!" : ""} @annotate(type: "${toGraphQL(typeInProperty, def.required)}")`,
       } as PropertyDef;
     },
   },

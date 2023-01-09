@@ -121,22 +121,3 @@ const isMapKey = (typeName: string): boolean => {
 const isArray = (typeName: string): boolean => {
   return typeName.startsWith("[")
 }
-
-export const toMapString = (map: MapType): string => {
-  const stringifyMapValueType = (anyType: AnyType, required: boolean): string => {
-    let result = "";
-    switch (anyType.kind) {
-      case "Array": result = `[${stringifyMapValueType(anyType.item, anyType.required)}]`
-        break;
-      case "Ref": result = anyType.ref_name
-        break;
-      case "Scalar": result = anyType.scalar
-        break;
-      case "Map": result = toMapString(anyType)
-        break;
-    }
-    return required ? `${result}!` : result;
-  }
-
-  return `Map<${map.key.scalar}!, ${stringifyMapValueType(map.value, map.required)}>`
-}

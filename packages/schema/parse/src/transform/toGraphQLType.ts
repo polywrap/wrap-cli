@@ -1,127 +1,40 @@
-import { AbiTransforms } from ".";
-import { DefinitionKind } from "..";
-
-import {
-  GenericDefinition,
-  AnyDefinition,
-  ArrayDefinition,
-  MethodDefinition,
-  MapDefinition,
-} from "@polywrap/wrap-manifest-types-js";
+import { ArgumentDef, ArrayType, EnumDef, EnvDef, FunctionDef, MapType, ObjectDef, PropertyDef, RefType, ScalarType } from "../definitions";
 
 function applyRequired(type: string, required: boolean | undefined): string {
   return `${type}${required ? "!" : ""}`;
 }
 
-function anyToGraphQL(any: AnyDefinition, prefixed: boolean): string {
-  if (any.object) {
-    return toGraphQL(any.object, prefixed);
-  } else if (any.array) {
-    return toGraphQL(any.array, prefixed);
-  } else if (any.scalar) {
-    return toGraphQL(any.scalar, prefixed);
-  } else if (any.enum) {
-    return toGraphQL(any.enum, prefixed);
-  } else if (any.map) {
-    return toGraphQL(any.map, prefixed);
-  } else {
-    throw Error(
-      `anyToGraphQL: Any type is invalid.\n${JSON.stringify(any, null, 2)}`
-    );
-  }
-}
-
-export function toGraphQL(def: GenericDefinition, prefixed = false): string {
+export function toGraphQL(def: ObjectDef | FunctionDef | ArgumentDef | ScalarType | EnvDef | EnumDef | PropertyDef | ArrayType | MapType | RefType, required: boolean): string {
   switch (def.kind) {
-    case DefinitionKind.Object:
-    case DefinitionKind.ObjectRef:
-    case DefinitionKind.Scalar:
-    case DefinitionKind.ImportedObject:
-      return applyRequired(def.type, def.required);
-    case DefinitionKind.Enum:
-    case DefinitionKind.EnumRef:
-    case DefinitionKind.ImportedEnum:
-      if (prefixed) {
-        return applyRequired(`Enum_${def.type}`, def.required);
-      }
-
-      return applyRequired(def.type, def.required);
-    case DefinitionKind.Any:
-    case DefinitionKind.Property:
-      return anyToGraphQL(def as AnyDefinition, prefixed);
-    case DefinitionKind.Array: {
-      const array = def as ArrayDefinition;
-
-      if (!array.item) {
-        throw Error(
-          `toGraphQL: ArrayDefinition's item type is undefined.\n${JSON.stringify(
-            array,
-            null,
-            2
-          )}`
-        );
-      }
-
+    case "Object":
+    case "Env":
+      return applyRequired(def.name, required);
+    case "Scalar":
+      return applyRequired(def.scalar, required);
+    case "Enum":
+      return applyRequired(def.name, required);;
+    case "Property":
+      return toGraphQL(def.type, def.required);
+    case "Array":
       return applyRequired(
-        `[${toGraphQL(array.item, prefixed)}]`,
-        array.required
+        `[${toGraphQL(def.item, def.required)}]`,
+        required
       );
+    case "Map": {
+      return `Map<${def.key}!, ${toGraphQL(def.value, def.required)}>`
     }
-    case DefinitionKind.Map: {
-      const map = def as MapDefinition;
-      if (!map.key) {
-        throw Error(
-          `toGraphQL: MapDefinition's key type is undefined.\n${JSON.stringify(
-            map,
-            null,
-            2
-          )}`
-        );
-      }
-      if (!map.value) {
-        throw Error(
-          `toGraphQL: MapDefinition's value type is undefined.\n${JSON.stringify(
-            map,
-            null,
-            2
-          )}`
-        );
-      }
-      return applyRequired(
-        `Map<${toGraphQL(map.key, prefixed)}, ${toGraphQL(
-          map.value,
-          prefixed
-        )}>`,
-        map.required
-      );
-    }
-    case DefinitionKind.Method: {
-      const method = def as MethodDefinition;
+    case "Function": {
 
-      if (!method.return) {
-        throw Error(
-          `toGraphQL: MethodDefinition's return type is undefined.\n${JSON.stringify(
-            method,
-            null,
-            2
-          )}`
-        );
-      }
-
-      const result = `${method.name}(
-  ${(method.arguments || [])
-    .map((arg) => `${arg.name}: ${toGraphQL(arg, prefixed)}`)
-    .join("\n    ")}
-): ${toGraphQL(method.return, prefixed)}`;
+      const result = `${def.name}(
+  ${(def.args || [])
+          .map((arg) => `${arg.name}: ${toGraphQL(arg.type, arg.required)}`)
+          .join("\n    ")}
+): ${toGraphQL(def.result.type, def.result.required)}`;
       return result;
     }
-    case DefinitionKind.Module:
-      return def.type;
-    case DefinitionKind.ImportedModule:
-      return def.type;
     default:
       throw Error(
-        `toGraphQL: Unrecognized DefinitionKind.\n${JSON.stringify(
+        `toGraphQL: Unrecognized Definition or Type.\n${JSON.stringify(
           def,
           null,
           2
@@ -130,24 +43,3 @@ export function toGraphQL(def: GenericDefinition, prefixed = false): string {
   }
 }
 
-export function toPrefixedGraphQL(def: GenericDefinition): string {
-  return toGraphQL(def, true);
-}
-
-export const toPrefixedGraphQLType: AbiTransforms = {
-  enter: {
-    GenericDefinition: (def: GenericDefinition) => ({
-      ...def,
-      toGraphQLType: () => toPrefixedGraphQL(def),
-    }),
-  },
-};
-
-export const toGraphQLType: AbiTransforms = {
-  enter: {
-    GenericDefinition: (def: GenericDefinition) => ({
-      ...def,
-      toGraphQLType: () => toGraphQL(def),
-    }),
-  },
-};
