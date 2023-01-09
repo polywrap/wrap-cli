@@ -17,4 +17,4 @@ bin
 pkg
 wasm-pack.log
 .env
-wasm-test-harness
+packages/test-cases/cases/wrappers
