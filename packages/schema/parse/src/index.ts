@@ -1,5 +1,5 @@
 import { createAbi, isEnvType, isModuleType } from "./abi";
-import { AbiTransforms, transformAbi, finalizePropertyDef } from "./transform";
+import { AbiTransforms, transformAbi } from "./transform";
 import { validators, SchemaValidatorBuilder } from "./validate";
 
 import { DocumentNode, parse, visit, visitInParallel } from "graphql";
@@ -69,9 +69,6 @@ export function parseSchema(
 
   const extracts = options.extractors?.map(extractorBuilder => extractorBuilder(info, uniqueDefs)) ?? defaultExtractors.map(e => e.build(info));
   extract(astNode, info, extracts);
-
-  // Finalize & Transform Abi
-  info = transformAbi(info, finalizePropertyDef(info));
 
   if (options && options.transforms) {
     for (const transform of options.transforms) {

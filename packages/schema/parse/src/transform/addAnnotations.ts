@@ -1,18 +1,18 @@
-import { toGraphQL } from ".";
 import { AbiTransforms } from "..";
-
-import { PropertyDefinition } from "@polywrap/wrap-manifest-types-js";
+import { PropertyDef } from "../definitions";
+import { toMapString } from "../extract/utils";
 
 export const addAnnotations: AbiTransforms = {
   enter: {
-    PropertyDefinition: (def: PropertyDefinition): PropertyDefinition => {
-      if (!def.map) return def;
+    PropertyDefinition: (def) => {
+      const typeInProperty = def.type;
+      if (typeInProperty.kind !== "Map") return def;
 
       return {
         ...def,
         toGraphQLType: (): string =>
-          `Map${def.required ? "!" : ""} @annotate(type: "${toGraphQL(def)}")`,
-      } as PropertyDefinition;
+          `Map${def.required ? "!" : ""} @annotate(type: "${toMapString(typeInProperty)}")`,
+      } as PropertyDef;
     },
   },
 };

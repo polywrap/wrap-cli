@@ -1,4 +1,4 @@
-import { Abi, AnyType, ArgumentDef, ArrayType, EnumDef, EnvDef, FunctionDef, MapKeyTypeName, MapType, ObjectDef, PropertyDef, RefType, ResultDef, ScalarType } from "../definitions";
+import { Abi, AnyType, ArgumentDef, ArrayType, Def, EnumDef, EnvDef, FunctionDef, MapKeyTypeName, MapType, ObjectDef, PropertyDef, RefType, ResultDef, ScalarType, Type } from "../definitions";
 
 export interface AbiTransforms {
   enter?: AbiTransformer;
@@ -33,6 +33,7 @@ export interface AbiTransformer {
   MapType?: (type: MapType) => MapType
   RefType?: (type: RefType) => RefType
 
+  DefinitionOrType?: <T extends Def | Type>(def: T) => T
   Abi?: (abi: Abi) => Abi
 }
 
@@ -73,29 +74,54 @@ const transformType = <T extends TypeToTransform>(type: T, transform?: AbiTransf
     ArrayType,
     MapType,
     RefType,
+    DefinitionOrType
   } = transform;
+
+  if (DefinitionOrType) {
+    result = Object.assign(result, DefinitionOrType(result))
+  }
 
   if (FunctionDefinition && result.kind === "Function") {
     result = Object.assign(result, FunctionDefinition(result))
-  } else if (ObjectDefinition && result.kind === "Object") {
+  }
+  
+  if (ObjectDefinition && result.kind === "Object") {
     result = Object.assign(result, ObjectDefinition(result))
-  } else if (EnumDefinition && result.kind === "Enum") {
+  }
+  
+  if (EnumDefinition && result.kind === "Enum") {
     result = Object.assign(result, EnumDefinition(result))
-  } else if (EnvDefinition && result.kind === "Env") {
+  }
+  
+  if (EnvDefinition && result.kind === "Env") {
     result = Object.assign(result, EnvDefinition(result))
-  } else if (ArgumentDefinition && result.kind === "Argument") {
+  }
+  
+  if (ArgumentDefinition && result.kind === "Argument") {
     result = Object.assign(result, ArgumentDefinition(result))
-  } else if (ResultDefinition && result.kind === "Result") {
+  }
+  
+  if (ResultDefinition && result.kind === "Result") {
     result = Object.assign(result, ResultDefinition(result))
-  } else if (PropertyDefinition && result.kind === "Property") {
+  }
+  
+  if (PropertyDefinition && result.kind === "Property") {
     result = Object.assign(result, PropertyDefinition(result))
-  } else if (ScalarType && result.kind === "Scalar") {
+  }
+  
+  if (ScalarType && result.kind === "Scalar") {
     result = Object.assign(result, ScalarType(result))
-  } else if (ArrayType && result.kind === "Array") {
+  }
+  
+  if (ArrayType && result.kind === "Array") {
     result = Object.assign(result, ArrayType(result))
-  } else if (MapType && result.kind === "Map") {
+  }
+  
+  if (MapType && result.kind === "Map") {
     result = Object.assign(result, MapType(result))
-  } else if (RefType && result.kind === "Ref") {
+  }
+  
+  if (RefType && result.kind === "Ref") {
     result = Object.assign(result, RefType(result))
   }
 
