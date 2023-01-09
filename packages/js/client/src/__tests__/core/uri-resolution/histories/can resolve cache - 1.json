@@ -1,9 +1,9 @@
 [
-  "wrap://file/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple/build)",
+  "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
   [
-    "wrap://file/$root-wrapper-dir/simple/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple/build)",
+    "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
     [
-      "wrap://file/$root-wrapper-dir/simple/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple/build)",
+      "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
       [
         "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
         [
@@ -26,7 +26,7 @@
             "wrap://ens/fs-resolver.polywrap.eth => StaticResolver - Package (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://ens/fs-resolver.polywrap.eth)"
           ]
         ],
-        "wrap://file/$root-wrapper-dir/simple/build => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple/build)"
+        "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)"
       ]
     ]
   ]

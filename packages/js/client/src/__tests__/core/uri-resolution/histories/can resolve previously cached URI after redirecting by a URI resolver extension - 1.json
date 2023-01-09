@@ -1,9 +1,9 @@
 [
-  "wrap://simple/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver => uri (wrap://file/$root-wrapper-dir/simple/build)",
+  "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => PackageToWrapperCacheResolver => uri (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
   [
-    "wrap://simple/$root-wrapper-dir/simple/build => UriResolverAggregator => uri (wrap://file/$root-wrapper-dir/simple/build)",
+    "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => UriResolverAggregator => uri (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
     [
-      "wrap://simple/$root-wrapper-dir/simple/build => ExtendableUriResolver => uri (wrap://file/$root-wrapper-dir/simple/build)",
+      "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ExtendableUriResolver => uri (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
       [
         "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
         [
@@ -44,33 +44,33 @@
             ]
           ]
         ],
-        "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
+        "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
         [
-          "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
+          "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
           [
-            "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
+            "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
             [
               "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
               "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
               "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
-              "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)"
+              "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)"
             ]
           ]
         ],
-        "wrap://simple/$root-wrapper-dir/simple/build => ResolverExtension (wrap://file/$root-wrapper-dir/simple-fs-resolver/build) => uri (wrap://file/$root-wrapper-dir/simple/build)"
+        "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ResolverExtension (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs) => uri (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)"
       ]
     ]
   ],
-  "wrap://file/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple/build)",
+  "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
   [
-    "wrap://file/$root-wrapper-dir/simple/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple/build)",
+    "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
     [
-      "wrap://file/$root-wrapper-dir/simple/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple/build)",
+      "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
       [
         "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
         "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
         "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
-        "wrap://file/$root-wrapper-dir/simple/build => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple/build)"
+        "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)"
       ]
     ]
   ]

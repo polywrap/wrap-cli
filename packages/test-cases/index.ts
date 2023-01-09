@@ -66,17 +66,9 @@ function getFilePath(
   }
 }
 
-export function getWrappers(dev?: boolean): void {
-  access("./wasm-test-harness", (error) => {
-    if (error) {
-        shell.exec("git clone git@github.com:polywrap/wasm-test-harness.git");
-        shell.exec("git checkout tags/v0.2.1", { cwd: "./wasm-test-harness" });
-    }
-  })
-
+export function fetchWrappers(): void {
+  shell.exec("git clone git@github.com:polywrap/wasm-test-harness.git");
+  shell.exec("git checkout tags/v0.2.1", { cwd: "./wasm-test-harness" });
   shell.exec("mv ./wrappers ../cases", { cwd: "./wasm-test-harness" });
-
-  if (!dev) {
-    shell.exec("rm -rf wasm-test-harness");
-  }
+  shell.exec("rm -rf wasm-test-harness");
 }
