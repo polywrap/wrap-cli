@@ -27,7 +27,7 @@ export const defaultWrappers = {
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
   ensTextRecordResolver:
     "wrap://ipfs/QmbaqqUVaKiQSX7YbhwWzZC5NsUgwMVwXnARDfG6dbQgKy",
-  ethereum: "wrap://ipfs/Qmf38QJV1kS2qd1DwLB5zvcDXmf2D8EdrzdBTc4oYbPKeJ",
+  ethereum: "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F6",
 };
 
 export const defaultPackages = {
