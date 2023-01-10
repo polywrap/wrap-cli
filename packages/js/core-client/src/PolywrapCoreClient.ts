@@ -418,7 +418,7 @@ export class PolywrapCoreClient implements CoreClient {
     uri: Uri,
     resolutionContext?: IUriResolutionContext,
     options?: DeserializeManifestOptions
-  ): Promise<Result<Wrapper, Error>> /* $ */ {
+  ): Promise<Result<Wrapper, WrapError>> /* $ */ {
     Tracer.setAttribute("label", `Wrapper loaded: ${uri}`, TracingLevel.High);
 
     if (!resolutionContext) {
