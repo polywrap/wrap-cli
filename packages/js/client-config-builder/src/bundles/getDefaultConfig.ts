@@ -1,8 +1,6 @@
 import { ClientConfig } from "../ClientConfig";
 
 import { IUriPackage, Uri, IWrapPackage } from "@polywrap/core-js";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import {
   ethereumPlugin,
   Connection,
@@ -15,6 +13,7 @@ import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
+import path from "path";
 
 export const defaultIpfsProviders = [
   "https://ipfs.wrappers.io",
@@ -27,6 +26,25 @@ export const defaultWrappers = {
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
   ensTextRecordResolver:
     "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
+  ipfsHttpClient: `wrap://fs/${path.join(
+    __dirname,
+    "wrappers",
+    "ipfs-http-client"
+  )}`,
+  ipfsResolver: `wrap://fs/${path.join(
+    __dirname,
+    "wrappers",
+    "ipfs-resolver"
+  )}`,
+};
+
+export const defaultWrapperAliases = {
+  sha3: "wrap://ens/sha3.polywrap.eth",
+  uts46: "wrap://ens/uts46.polywrap.eth",
+  graphNode: "wrap://ens/graph-node.polywrap.eth",
+  ensTextRecordResolver: "wrap://ens/ens-text-record-resolver.polywrap/eth",
+  ipfsHttpClient: "wrap://ens/ipfs-http-client.polywrap.eth",
+  ipfsResolver: "wrap://ens/ipfs-resolver.polywrap.eth",
 };
 
 export const defaultPackages = {
@@ -38,7 +56,6 @@ export const defaultPackages = {
   logger: "wrap://plugin/logger",
   fileSystem: "wrap://ens/fs.polywrap.eth",
   fileSystemResolver: "wrap://ens/fs-resolver.polywrap.eth",
-  ipfsResolver: "wrap://ens/ipfs-resolver.polywrap.eth",
   concurrent: "wrap://plugin/concurrent",
 };
 
@@ -58,7 +75,7 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         },
       },
       {
-        uri: new Uri(defaultPackages.ipfs),
+        uri: new Uri(defaultWrapperAliases.ipfsResolver),
         env: {
           provider: defaultIpfsProviders[0],
           fallbackProviders: defaultIpfsProviders.slice(1),
@@ -67,27 +84,35 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
     ],
     redirects: [
       {
-        from: new Uri("wrap://ens/sha3.polywrap.eth"),
+        from: new Uri(defaultWrapperAliases.sha3),
         to: new Uri(defaultWrappers.sha3),
       },
       {
-        from: new Uri("wrap://ens/uts46.polywrap.eth"),
+        from: new Uri(defaultWrapperAliases.uts46),
         to: new Uri(defaultWrappers.uts46),
       },
       {
-        from: new Uri("wrap://ens/graph-node.polywrap.eth"),
+        from: new Uri(defaultWrapperAliases.graphNode),
         to: new Uri(defaultWrappers.graphNode),
       },
       {
         from: new Uri(defaultInterfaces.logger),
         to: new Uri(defaultPackages.logger),
       },
+      {
+        from: new Uri(defaultWrapperAliases.ipfsResolver),
+        to: new Uri(defaultWrappers.ipfsResolver),
+      },
+      {
+        from: new Uri(defaultWrapperAliases.ipfsHttpClient),
+        to: new Uri(defaultWrappers.ipfsHttpClient),
+      },
     ],
     interfaces: [
       {
         interface: new Uri(defaultInterfaces.uriResolver),
         implementations: [
-          new Uri(defaultPackages.ipfsResolver),
+          new Uri(defaultWrapperAliases.ipfsResolver),
           new Uri(defaultPackages.ensResolver),
           new Uri(defaultPackages.fileSystemResolver),
           new Uri(defaultPackages.httpResolver),
@@ -111,11 +136,6 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
 
 export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
   return [
-    // IPFS is required for downloading Polywrap packages
-    {
-      uri: new Uri(defaultPackages.ipfs),
-      package: ipfsPlugin({}),
-    },
     // ENS is required for resolving domain to IPFS hashes
     {
       uri: new Uri(defaultPackages.ensResolver),
@@ -158,10 +178,6 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
     {
       uri: new Uri(defaultPackages.fileSystemResolver),
       package: fileSystemResolverPlugin({}),
-    },
-    {
-      uri: new Uri(defaultPackages.ipfsResolver),
-      package: ipfsResolverPlugin({}),
     },
     {
       uri: new Uri(defaultPackages.concurrent),

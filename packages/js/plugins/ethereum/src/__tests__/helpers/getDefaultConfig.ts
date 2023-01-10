@@ -5,7 +5,7 @@ import { ethereumPlugin, Connections } from "../..";
 import { providers } from "@polywrap/test-env-js";
 import {
   defaultIpfsProviders,
-  ClientConfig,
+  ClientConfig, defaultWrapperAliases,
 } from "@polywrap/client-config-builder-js";
 
 export const getDefaultConfig = (
@@ -14,7 +14,7 @@ export const getDefaultConfig = (
   return {
     envs: [
       {
-        uri: "wrap://ens/ipfs.polywrap.eth",
+        uri: defaultWrapperAliases.ipfsResolver,
         env: {
           provider: providers.ipfs,
           fallbackProviders: defaultIpfsProviders,
