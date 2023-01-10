@@ -16,6 +16,8 @@ import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
 
+// $start: getDefaultConfig
+
 export const defaultIpfsProviders = [
   "https://ipfs.wrappers.io",
   "https://ipfs.io",
@@ -48,7 +50,6 @@ export const defaultInterfaces = {
   logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
 };
 
-// $start: getDefaultConfig
 export const getDefaultConfig = (): ClientConfig<Uri> => {
   return {
     envs: [
@@ -109,7 +110,6 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
     resolvers: [],
   };
 };
-// $end
 
 export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
   return [
@@ -171,3 +171,5 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
     },
   ];
 };
+
+// $end
