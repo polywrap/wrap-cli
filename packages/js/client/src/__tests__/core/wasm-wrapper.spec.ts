@@ -5,9 +5,8 @@ import { Uri, PolywrapClient, IWrapPackage } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
-import { ErrResult } from "../utils/resultTypes";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
+import { mockPluginRegistration, ErrResult } from "../helpers";
 
 jest.setTimeout(200000);
 

@@ -13,7 +13,7 @@ import {
 } from "@polywrap/uri-resolvers-js";
 import fs from "fs";
 import { Result } from "@polywrap/result";
-import { mockPluginRegistration } from "../../helpers/mockPluginRegistration";
+import { mockPluginRegistration } from "../../helpers";
 import { PolywrapClient, ExtendableUriResolver } from "../../../";
 
 jest.setTimeout(200000);

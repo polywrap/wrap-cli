@@ -1,5 +1,5 @@
 import path from "path";
-import { readFileSync, existsSync, access } from "fs";
+import { readFileSync, existsSync } from "fs";
 
 import { normalizeLineEndings } from "@polywrap/os-js";
 const shell = require('shelljs');

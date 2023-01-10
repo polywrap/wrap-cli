@@ -1,7 +1,7 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { Uri, PolywrapClient } from "../..";
 import { WrapError, WrapErrorCode } from "@polywrap/core-js";
-import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
+import { mockPluginRegistration } from "../helpers";
 
 jest.setTimeout(660000);
 
@@ -271,8 +271,8 @@ describe("Error structure", () => {
       expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
       expect(result.error?.reason).toEqual("I'm throwing!");
       expect(result.error?.uri).toEqual("wrap://plugin/mock");
-      expect(result.error?.source?.file?.endsWith("packages/js/client/src/__tests__/helpers/mockPluginRegistration.ts")).toBeTruthy();
-      expect(result.error?.source?.row).toEqual(13);
+      expect(result.error?.source?.file?.endsWith("packages/js/client/src/__tests__/helpers.ts")).toBeTruthy();
+      expect(result.error?.source?.row).toEqual(49);
       expect(result.error?.source?.col).toEqual(17);
     });
 
