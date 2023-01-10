@@ -1,4 +1,3 @@
-import { UriResolverError } from "./UriResolverError";
 import { PolywrapCoreClientConfig } from "./PolywrapCoreClientConfig";
 
 import {
@@ -21,6 +20,8 @@ import {
   InvokeResult,
   ValidateOptions,
   buildCleanUriHistory,
+  WrapError,
+  WrapErrorCode,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
@@ -150,7 +151,7 @@ export class PolywrapCoreClient implements CoreClient {
   @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<TUri extends Uri | string>(
     uri: TUri
-  ): Promise<Result<WrapManifest, Error>> /* $ */ {
+  ): Promise<Result<WrapManifest, WrapError>> /* $ */ {
     const load = await this.loadWrapper(Uri.from(uri), undefined);
     if (!load.ok) {
       return load;
@@ -173,14 +174,22 @@ export class PolywrapCoreClient implements CoreClient {
   public async getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<Result<string | Uint8Array, Error>> /* $ */ {
+  ): Promise<Result<string | Uint8Array, WrapError>> /* $ */ {
     const load = await this.loadWrapper(Uri.from(uri), undefined);
     if (!load.ok) {
       return load;
     }
     const wrapper = load.value;
 
-    return await wrapper.getFile(options);
+    const result = await wrapper.getFile(options);
+    if (!result.ok) {
+      const error = new WrapError(result.error?.message, {
+        code: WrapErrorCode.CLIENT_GET_FILE_ERROR,
+        uri: uri.toString(),
+      });
+      return ResultErr(error);
+    }
+    return ResultOk(result.value);
   }
 
   // $start: PolywrapCoreClient-getImplementations
@@ -196,7 +205,7 @@ export class PolywrapCoreClient implements CoreClient {
   public async getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions = {}
-  ): Promise<Result<TUri[], Error>> /* $ */ {
+  ): Promise<Result<TUri[], WrapError>> /* $ */ {
     const isUriTypeString = typeof uri === "string";
     const applyResolution = !!options.applyResolution;
 
@@ -422,35 +431,37 @@ export class PolywrapCoreClient implements CoreClient {
     });
 
     if (!result.ok) {
+      const history = buildCleanUriHistory(resolutionContext.getHistory());
+
+      let error: WrapError;
       if (result.error) {
-        return ResultErr(new UriResolverError(result.error, resolutionContext));
+        error = new WrapError("A URI Resolver returned an error.", {
+          code: WrapErrorCode.URI_RESOLVER_ERROR,
+          uri: uri.uri,
+          resolutionStack: history,
+          cause: result.error,
+        });
       } else {
-        return ResultErr(
-          Error(
-            `Error resolving URI "${
-              uri.uri
-            }"\nResolution Stack: ${JSON.stringify(
-              buildCleanUriHistory(resolutionContext.getHistory()),
-              null,
-              2
-            )}`
-          )
-        );
+        error = new WrapError("Error resolving URI", {
+          code: WrapErrorCode.URI_RESOLUTION_ERROR,
+          uri: uri.uri,
+          resolutionStack: history,
+        });
       }
+
+      return ResultErr(error);
     }
 
     const uriPackageOrWrapper = result.value;
 
     if (uriPackageOrWrapper.type === "uri") {
-      const error = Error(
-        `Error resolving URI "${uri.uri}"\nURI not found ${
-          uriPackageOrWrapper.uri.uri
-        }\nResolution Stack: ${JSON.stringify(
-          buildCleanUriHistory(resolutionContext.getHistory()),
-          null,
-          2
-        )}`
-      );
+      const message = `Unable to find URI ${uriPackageOrWrapper.uri.uri}.`;
+      const history = buildCleanUriHistory(resolutionContext.getHistory());
+      const error = new WrapError(message, {
+        code: WrapErrorCode.URI_NOT_FOUND,
+        uri: uri.uri,
+        resolutionStack: history,
+      });
       return ResultErr(error);
     }
 
@@ -458,7 +469,12 @@ export class PolywrapCoreClient implements CoreClient {
       const result = await uriPackageOrWrapper.package.createWrapper(options);
 
       if (!result.ok) {
-        return result;
+        const error = new WrapError(result.error?.message, {
+          code: WrapErrorCode.CLIENT_LOAD_WRAPPER_ERROR,
+          uri: uri.uri,
+          cause: result.error,
+        });
+        return ResultErr(error);
       }
 
       return ResultOk(result.value);
@@ -476,34 +492,43 @@ export class PolywrapCoreClient implements CoreClient {
    * @param options - { abi?: boolean; recursive?: boolean }
    * @returns A Promise with a Result containing a boolean or Error
    */
-  @Tracer.traceMethod("PolywrapClient: validateConfig")
+  @Tracer.traceMethod("PolywrapClient: validate")
   public async validate<TUri extends Uri | string>(
     uri: TUri,
     options: ValidateOptions
-  ): Promise<Result<true, Error>> /* $ */ {
+  ): Promise<Result<true, WrapError>> /* $ */ {
     const wrapper = await this.loadWrapper(Uri.from(uri));
     if (!wrapper.ok) {
-      return ResultErr(new Error(wrapper.error?.message));
+      return wrapper;
     }
 
     const { abi } = await wrapper.value.getManifest();
     const importedModules: ImportedModuleDefinition[] =
       abi.importedModuleTypes || [];
 
-    const importUri = (importedModuleType: ImportedModuleDefinition) => {
-      return this.tryResolveUri({ uri: importedModuleType.uri });
+    const importUri = async (
+      importedModuleType: ImportedModuleDefinition
+    ): Promise<{
+      uri: string;
+      result: Result<UriPackageOrWrapper, unknown>;
+    }> => {
+      const uri = importedModuleType.uri;
+      return {
+        uri,
+        result: await this.tryResolveUri({ uri }),
+      };
     };
     const resolvedModules = await Promise.all(importedModules.map(importUri));
-    const modulesNotFound = resolvedModules.filter(({ ok }) => !ok) as {
-      error: Error;
-    }[];
+    const modulesNotFound = resolvedModules
+      .filter(({ result }) => !result.ok)
+      .map(({ uri }) => uri);
 
     if (modulesNotFound.length) {
-      const missingModules = modulesNotFound.map(({ error }) => {
-        const uriIndex = error?.message.indexOf("\n");
-        return error?.message.substring(0, uriIndex);
+      const message = `The following URIs could not be resolved: ${modulesNotFound}`;
+      const error = new WrapError(message, {
+        code: WrapErrorCode.CLIENT_VALIDATE_RESOLUTION_FAIL,
+        uri: uri.toString(),
       });
-      const error = new Error(JSON.stringify(missingModules));
       return ResultErr(error);
     }
 
@@ -522,7 +547,6 @@ export class PolywrapCoreClient implements CoreClient {
           ({ uri }) => importedModule.uri === uri
         );
 
-        const errorMessage = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
         for (const [i, _] of Object.keys(importedMethods).entries()) {
           const importedMethod = importedMethods[i];
 
@@ -530,9 +554,21 @@ export class PolywrapCoreClient implements CoreClient {
             const expectedMethod = expectedMethods?.methods[i];
             const areEqual = compareSignature(importedMethod, expectedMethod);
 
-            if (!areEqual) return ResultErr(new Error(errorMessage));
+            if (!areEqual) {
+              const message = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
+              const error = new WrapError(message, {
+                code: WrapErrorCode.CLIENT_VALIDATE_ABI_FAIL,
+                uri: uri.toString(),
+              });
+              return ResultErr(error);
+            }
           } else {
-            return ResultErr(new Error(errorMessage));
+            const message = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
+            const error = new WrapError(message, {
+              code: WrapErrorCode.CLIENT_VALIDATE_ABI_FAIL,
+              uri: uri.toString(),
+            });
+            return ResultErr(error);
           }
         }
       }
@@ -544,14 +580,18 @@ export class PolywrapCoreClient implements CoreClient {
       );
       const resolverUris = await Promise.all(validateImportedModules);
       const invalidUris = resolverUris.filter(({ ok }) => !ok) as {
-        error: Error;
+        error: WrapError;
       }[];
+
       if (invalidUris.length) {
-        const missingUris = invalidUris.map(({ error }) => {
-          const uriIndex = error?.message.indexOf("\n");
-          return error?.message.substring(0, uriIndex);
+        let message = "The following URIs failed validation:";
+        for (const { error } of invalidUris) {
+          message += `\n${error.uri} -> ${error.reason}`;
+        }
+        const error = new WrapError(message, {
+          code: WrapErrorCode.CLIENT_VALIDATE_RECURSIVE_FAIL,
+          uri: uri.toString(),
         });
-        const error = new Error(JSON.stringify(missingUris));
         return ResultErr(error);
       }
     }

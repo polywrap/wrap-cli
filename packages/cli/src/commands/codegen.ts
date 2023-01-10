@@ -1,5 +1,5 @@
 /* eslint-disable  @typescript-eslint/no-unused-vars */
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import {
   CodeGenerator,
@@ -10,37 +10,27 @@ import {
   parseManifestFileOption,
   parseClientConfigOption,
   getProjectFromManifest,
-  isPluginManifestLanguage,
-  generateWrapFile,
   defaultProjectManifestFiles,
   defaultPolywrapManifest,
   parseLogFileOption,
   parseWrapperEnvsOption,
 } from "../lib";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
+import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 
 import { Env, PolywrapClient } from "@polywrap/client-js";
-import path from "path";
-import fs from "fs";
-import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
-
-const defaultCodegenDir = "./src/wrap";
-const defaultPublishDir = "./build";
+import { Uri } from "@polywrap/core-js";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
-type CodegenCommandOptions = {
+export interface CodegenCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   codegenDir: string;
-  publishDir: string;
-  script?: string;
-  configBuilder: IClientConfigBuilder;
-  wrapperEnvs: Env[];
-  verbose?: boolean;
-  quiet?: boolean;
-  logFile?: string;
-};
+  script: string | false;
+  clientConfig: string | false;
+  wrapperEnvs: string | false;
+}
 
 export const codegen: Command = {
   setup: (program: Program) => {
@@ -56,14 +46,8 @@ export const codegen: Command = {
       )
       .option(
         `-g, --codegen-dir <${pathStr}>`,
-        ` ${intlMsg.commands_codegen_options_codegen({
+        `${intlMsg.commands_codegen_options_codegen({
           default: defaultCodegenDir,
-        })}`
-      )
-      .option(
-        `-p, --publish-dir <${pathStr}>`,
-        `${intlMsg.commands_codegen_options_publish({
-          default: defaultPublishDir,
         })}`
       )
       .option(
@@ -84,40 +68,42 @@ export const codegen: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (options) => {
+      .action(async (options: Partial<CodegenCommandOptions>) => {
         await run({
-          ...options,
-          configBuilder: await parseClientConfigOption(options.clientConfig),
-          wrapperEnvs: await parseWrapperEnvsOption(options.wrapperEnvs),
-          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
-          script: parseCodegenScriptOption(options.script),
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultProjectManifestFiles
           ),
-          publishDir: parseDirOption(options.publishDir, defaultPublishDir),
+          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
+          script: parseCodegenScriptOption(options.script),
+          clientConfig: options.clientConfig || false,
+          wrapperEnvs: options.wrapperEnvs || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
           logFile: parseLogFileOption(options.logFile),
         });
       });
   },
 };
 
-async function run(options: CodegenCommandOptions) {
+async function run(options: Required<CodegenCommandOptions>) {
   const {
     manifestFile,
+    clientConfig,
+    wrapperEnvs,
     codegenDir,
     script,
-    configBuilder,
-    wrapperEnvs,
-    publishDir,
     verbose,
     quiet,
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
-  if (wrapperEnvs) {
-    configBuilder.addEnvs(wrapperEnvs);
+  const envs = await parseWrapperEnvsOption(wrapperEnvs);
+  const configBuilder = await parseClientConfigOption(clientConfig);
+
+  if (envs) {
+    configBuilder.addEnvs(envs as Env<Uri>[]);
   }
 
   // Get Client
@@ -128,10 +114,13 @@ async function run(options: CodegenCommandOptions) {
   const project = await getProjectFromManifest(manifestFile, logger);
 
   if (!project) {
-    return;
+    logger.error(
+      `${intlMsg.commands_codegen_project_load_error({
+        manifestPath: manifestFile,
+      })}`
+    );
+    process.exit(1);
   }
-
-  const projectType = await project.getManifestLanguage();
 
   const schemaComposer = new SchemaComposer({
     project,
@@ -154,24 +143,6 @@ async function run(options: CodegenCommandOptions) {
       });
 
   const result = await codeGenerator.generate();
-
-  // HACK: Codegen outputs wrap.info into a build directory for plugins, needs to be moved into a build command?
-  if (isPluginManifestLanguage(projectType)) {
-    // Output the built manifest
-    const manifestPath = path.join(publishDir, "wrap.info");
-
-    if (!fs.existsSync(publishDir)) {
-      fs.mkdirSync(publishDir);
-    }
-
-    await generateWrapFile(
-      await schemaComposer.getComposedAbis(),
-      await project.getName(),
-      "plugin",
-      manifestPath,
-      logger
-    );
-  }
 
   if (result) {
     logger.info(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);

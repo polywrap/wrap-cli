@@ -1,0 +1,3 @@
+type Module {
+  iThrow(a: Int!): Int!
+}

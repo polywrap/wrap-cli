@@ -243,15 +243,36 @@ export const runCLI = async (options: {
  * Build the wrapper located at the given path
  *
  * @param wrapperAbsPath - absolute path of wrapper to build
- * @param manifestPathOverride? - path to p
+ * @param manifestPathOverride? - path to polywrap manifest
+ * @param codegen? - run codegen before build
  */
 export async function buildWrapper(
   wrapperAbsPath: string,
-  manifestPathOverride?: string
+  manifestPathOverride?: string,
+  codegen?: boolean
 ): Promise<void> /* $ */ {
   const manifestPath = manifestPathOverride
     ? path.join(wrapperAbsPath, manifestPathOverride)
     : `${wrapperAbsPath}/polywrap.yaml`;
+
+  if (codegen) {
+    const {
+      exitCode: codegenExitCode,
+      stdout: codegenStdout,
+      stderr: codegenStderr,
+    } = await runCLI({
+      args: ["codegen", "--manifest-file", manifestPath],
+      cwd: wrapperAbsPath,
+    });
+
+    if (codegenExitCode != 0) {
+      console.error(`polywrap exited with code: ${codegenExitCode}`);
+      console.log(`stderr:\n${codegenStdout}`);
+      console.log(`stdout:\n${codegenStderr}`);
+      throw Error("polywrap CLI failed");
+    }
+  }
+
   const {
     exitCode: buildExitCode,
     stdout: buildStdout,
@@ -283,6 +304,7 @@ export async function buildWrapper(
  * @param ipfsProvider - ipfs provider to use for deployment
  * @param ethereumProvider - ethereum provider to use for ENS registration
  * @param ensName? - an ENS domain name to register and assign to the wrapper
+ * @param codegen? - run codegen before build
  *
  * @returns registered ens domain name and IPFS hash
  */
@@ -291,11 +313,13 @@ export async function buildAndDeployWrapper({
   ipfsProvider,
   ethereumProvider,
   ensName,
+  codegen,
 }: {
   wrapperAbsPath: string;
   ipfsProvider: string;
   ethereumProvider: string;
   ensName?: string;
+  codegen?: boolean;
 }): Promise<{
   ensDomain: string;
   ipfsCid: string;
@@ -312,7 +336,7 @@ export async function buildAndDeployWrapper({
   // create a new ENS domain
   const wrapperEns = ensName ?? `${generateName()}.eth`;
 
-  await buildWrapper(wrapperAbsPath);
+  await buildWrapper(wrapperAbsPath, undefined, codegen);
 
   // manually configure manifests
   const { __type, ...polywrapManifest } = deserializePolywrapManifest(
@@ -423,6 +447,7 @@ export async function buildAndDeployWrapper({
  * @param wrapperAbsPath - absolute path of wrapper to build
  * @param httpProvider - http provider used for deployment and domain registration
  * @param name? - a domain name to register and assign to the wrapper
+ * @param codegen? - run codegen before build
  *
  * @returns http uri
  */
@@ -430,10 +455,12 @@ export async function buildAndDeployWrapperToHttp({
   wrapperAbsPath,
   httpProvider,
   name,
+  codegen,
 }: {
   wrapperAbsPath: string;
   httpProvider: string;
   name?: string;
+  codegen?: boolean;
 }): Promise<{ uri: string }> /* $ */ {
   const manifestPath = `${wrapperAbsPath}/polywrap.yaml`;
   const tempManifestFilename = `polywrap-temp.yaml`;
@@ -447,7 +474,7 @@ export async function buildAndDeployWrapperToHttp({
   const wrapperName = name ?? generateName();
   const postUrl = `${httpProvider}/wrappers/local/${wrapperName}`;
 
-  await buildWrapper(wrapperAbsPath);
+  await buildWrapper(wrapperAbsPath, undefined, codegen);
 
   // manually configure manifests
 

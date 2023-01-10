@@ -5,7 +5,7 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import fs from "fs";
 import path from "path";
 
-jest.setTimeout(700000);
+jest.setTimeout(1200000);
 
 describe("e2e tests for build command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/build-cmd/rust");
@@ -20,7 +20,7 @@ describe("e2e tests for build command", () => {
   describe("Image strategy", () => {
     it("Builds for rust", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v", "-s", "image"],
+        args: ["build", "-v", "--codegen", "-s", "image"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
@@ -37,7 +37,7 @@ describe("e2e tests for build command", () => {
   describe.skip("Local strategy", () => {
     it("Builds for rust", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v", "-s", "local"],
+        args: ["build", "-v", "--codegen", "-s", "local"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
@@ -53,7 +53,7 @@ describe("e2e tests for build command", () => {
   describe("VM strategy", () => {
     it("Builds for rust", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v", "-s", "vm"],
+        args: ["build", "-v", "--codegen", "-s", "vm"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });

@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import {
   defaultPolywrapManifest,
@@ -21,13 +21,10 @@ import { validate } from "jsonschema";
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_deploy_options_o_path();
 
-type DeployCommandOptions = {
+export interface DeployCommandOptions extends BaseCommandOptions {
   manifestFile: string;
-  outputFile?: string;
-  verbose?: boolean;
-  quiet?: boolean;
-  logFile?: string;
-};
+  outputFile: string | false;
+}
 
 type ManifestJob = DeployManifest["jobs"][number];
 type ManifestStep = ManifestJob["steps"][number];
@@ -54,20 +51,22 @@ export const deploy: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (options) => {
+      .action(async (options: Partial<DeployCommandOptions>) => {
         await run({
-          ...options,
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultPolywrapManifest
           ),
+          outputFile: options.outputFile || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
           logFile: parseLogFileOption(options.logFile),
         });
       });
   },
 };
 
-async function run(options: DeployCommandOptions): Promise<void> {
+async function run(options: Required<DeployCommandOptions>): Promise<void> {
   const { manifestFile, outputFile, verbose, quiet, logFile } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 

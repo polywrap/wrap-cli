@@ -1,6 +1,11 @@
-import { Uri, InterfaceImplementations, CoreClient } from "../types";
+import {
+  Uri,
+  InterfaceImplementations,
+  CoreClient,
+  WrapError,
+  WrapErrorCode,
+} from "../types";
 import { IUriResolutionContext } from "../uri-resolution";
-import { GetImplementationsError } from "./GetImplementationsError";
 import { applyResolution } from "./applyResolution";
 
 import { Tracer } from "@polywrap/tracing-js";
@@ -13,7 +18,7 @@ export const getImplementations = Tracer.traceFunc(
     interfaces: readonly InterfaceImplementations<Uri>[],
     client?: CoreClient,
     resolutionContext?: IUriResolutionContext
-  ): Promise<Result<Uri[], GetImplementationsError>> => {
+  ): Promise<Result<Uri[], WrapError>> => {
     const result: Uri[] = [];
 
     const addUniqueResult = (uri: Uri) => {
@@ -26,7 +31,7 @@ export const getImplementations = Tracer.traceFunc(
     const addAllImplementationsFromImplementationsArray = async (
       implementationsArray: readonly InterfaceImplementations<Uri>[],
       wrapperInterfaceUri: Uri
-    ): Promise<Result<undefined, unknown>> => {
+    ): Promise<Result<undefined, WrapError>> => {
       for (const interfaceImplementations of implementationsArray) {
         let fullyResolvedUri: Uri;
         if (client) {
@@ -36,7 +41,12 @@ export const getImplementations = Tracer.traceFunc(
             resolutionContext
           );
           if (!redirectsResult.ok) {
-            return redirectsResult;
+            const error = new WrapError("Failed to resolve redirects", {
+              uri: interfaceImplementations.interface.uri,
+              code: WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS_ERROR,
+              cause: redirectsResult.error,
+            });
+            return ResultErr(error);
           }
           fullyResolvedUri = redirectsResult.value;
         } else {
@@ -61,7 +71,12 @@ export const getImplementations = Tracer.traceFunc(
         resolutionContext
       );
       if (!redirectsResult.ok) {
-        return ResultErr(new GetImplementationsError(redirectsResult.error));
+        const error = new WrapError("Failed to resolve redirects", {
+          uri: wrapperInterfaceUri.uri,
+          code: WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS_ERROR,
+          cause: redirectsResult.error,
+        });
+        return ResultErr(error);
       }
       finalUri = redirectsResult.value;
     }
@@ -71,8 +86,6 @@ export const getImplementations = Tracer.traceFunc(
       finalUri
     );
 
-    return addAllImp.ok
-      ? ResultOk(result)
-      : ResultErr(new GetImplementationsError(addAllImp.error));
+    return addAllImp.ok ? ResultOk(result) : addAllImp;
   }
 );

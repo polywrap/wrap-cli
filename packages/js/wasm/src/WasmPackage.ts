@@ -44,7 +44,12 @@ export class WasmPackage implements IWasmPackage {
     }
 
     const wrapManifest = result.value;
-    return ResultOk(await deserializeWrapManifest(wrapManifest, options));
+
+    try {
+      return ResultOk(await deserializeWrapManifest(wrapManifest, options));
+    } catch (e) {
+      return ResultErr(e);
+    }
   }
 
   async getWasmModule(): Promise<Result<Uint8Array, Error>> {
