@@ -4,6 +4,7 @@ import { PolywrapClientConfig } from "@polywrap/client-js";
 import {
   defaultInterfaces,
   defaultIpfsProviders,
+  defaultPackages,
   defaultWrappers,
 } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
@@ -40,7 +41,7 @@ export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
     ],
     packages: [
       {
-        uri: "wrap://plugin/ethereum-provider",
+        uri: defaultPackages.ethereumProvider,
         package: ethereumProviderPlugin({
           connections: new Connections({
             networks: {
@@ -81,7 +82,7 @@ export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
     interfaces: [
       {
         interface: defaultInterfaces.ethereumProvider,
-        implementations: ["wrap://plugin/ethereum-provider"],
+        implementations: [defaultPackages.ethereumProvider],
       },
     ],
   };

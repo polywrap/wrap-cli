@@ -15,6 +15,7 @@ import { embeddedWrappers } from "@polywrap/test-env-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import {
   defaultInterfaces,
+  defaultPackages,
   defaultWrappers,
 } from "@polywrap/client-config-builder-js";
 
@@ -73,7 +74,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
       ],
       packages: [
         {
-          uri: "wrap://plugin/ethereum-provider",
+          uri: defaultPackages.ethereumProvider,
           package: ethereumProviderPlugin({
             connections: new Connections({
               networks: {
@@ -90,7 +91,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
       interfaces: [
         {
           interface: defaultInterfaces.ethereumProvider,
-          implementations: ["wrap://plugin/ethereum-provider"],
+          implementations: [defaultPackages.ethereumProvider],
         },
       ],
     });
