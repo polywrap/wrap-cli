@@ -15,6 +15,7 @@ import {
   GetImplementationsOptions,
   InterfaceImplementations,
   InvokeResult,
+  IUriResolutionContext,
   IUriResolver,
   Uri,
   UriPackageOrWrapper,
@@ -24,6 +25,7 @@ import {
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 import {
   compareSignature,
+  DeserializeManifestOptions,
   ImportedModuleDefinition,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
@@ -182,10 +184,12 @@ export class PolywrapClient<
   }
 
   @Tracer.traceMethod("PolywrapClient: loadWrapper")
-  public async loadWrapper<TUri extends Uri | string = string>(
-    uri: TUri
+  loadWrapper(
+    uri: Uri,
+    resolutionContext?: IUriResolutionContext,
+    options?: DeserializeManifestOptions
   ): Promise<Result<Wrapper, Error>> {
-    return super.loadWrapper(sanitizeUri(uri));
+    return super.loadWrapper(sanitizeUri(uri), resolutionContext, options);
   }
 
   @Tracer.traceMethod("PolywrapClient: validateConfig")
