@@ -1,4 +1,4 @@
-import { Argument, Command, Program } from "./types";
+import { Argument, Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import {
   defaultBuildManifest,
@@ -69,23 +69,17 @@ const manifestTypes = [
   "infra",
   "workflow",
 ] as const;
-type ManifestType = typeof manifestTypes[number];
+export type ManifestType = typeof manifestTypes[number];
 
-type ManifestSchemaCommandOptions = {
+export interface ManifestSchemaCommandOptions extends BaseCommandOptions {
   raw: boolean;
-  manifestFile: ManifestType;
-  verbose?: boolean;
-  quiet?: boolean;
-  logFile?: string;
-};
+  manifestFile: string | false;
+}
 
-type ManifestMigrateCommandOptions = {
-  manifestFile: string;
-  format: string;
-  verbose?: boolean;
-  quiet?: boolean;
-  logFile?: string;
-};
+export interface ManifestMigrateCommandOptions extends BaseCommandOptions {
+  manifestFile: string | false;
+  format: string | false;
+}
 
 export const manifest: Command = {
   setup: (program: Program) => {
@@ -107,11 +101,7 @@ export const manifest: Command = {
           .choices(manifestTypes)
           .default(manifestTypes[0])
       )
-      .option(
-        `-r, --raw`,
-        intlMsg.commands_manifest_command_s_option_r(),
-        false
-      )
+      .option(`-r, --raw`, intlMsg.commands_manifest_command_s_option_r())
       .option(
         `-m, --manifest-file <${pathStr}>`,
         `${intlMsg.commands_manifest_options_m({
@@ -124,9 +114,12 @@ export const manifest: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (type, options) => {
+      .action(async (type, options: Partial<ManifestSchemaCommandOptions>) => {
         await runSchemaCommand(type, {
-          ...options,
+          raw: options.raw || false,
+          manifestFile: options.manifestFile || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
           logFile: parseLogFileOption(options.logFile),
         });
       });
@@ -160,9 +153,12 @@ export const manifest: Command = {
       )
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
-      .action(async (type, options) => {
+      .action(async (type, options: Partial<ManifestMigrateCommandOptions>) => {
         await runMigrateCommand(type, {
-          ...options,
+          manifestFile: options.manifestFile || false,
+          format: options.format || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
           logFile: parseLogFileOption(options.logFile),
         });
       });
@@ -171,7 +167,7 @@ export const manifest: Command = {
 
 export const runSchemaCommand = async (
   type: ManifestType,
-  options: ManifestSchemaCommandOptions
+  options: Required<ManifestSchemaCommandOptions>
 ): Promise<void> => {
   const { verbose, quiet, logFile } = options;
   const logger = createLogger({ verbose, quiet, logFile });
@@ -358,7 +354,7 @@ export const runSchemaCommand = async (
 
 const runMigrateCommand = async (
   type: ManifestType,
-  options: ManifestMigrateCommandOptions
+  options: Required<ManifestMigrateCommandOptions>
 ) => {
   const { verbose, quiet, logFile } = options;
   const logger = createLogger({ verbose, quiet, logFile });
@@ -393,7 +389,7 @@ const runMigrateCommand = async (
         return migrateManifestFile(
           manifestFile,
           migratePolywrapProjectManifest,
-          options.format ?? latestPolywrapManifestFormat,
+          options.format || latestPolywrapManifestFormat,
           logger
         );
       } else if (isAppManifestLanguage(language)) {
@@ -405,7 +401,7 @@ const runMigrateCommand = async (
         return migrateManifestFile(
           manifestFile,
           migrateAppProjectManifest,
-          options.format ?? latestAppManifestFormat,
+          options.format || latestAppManifestFormat,
           logger
         );
       } else if (isPluginManifestLanguage(language)) {
@@ -417,7 +413,7 @@ const runMigrateCommand = async (
         return migrateManifestFile(
           manifestFile,
           migratePluginProjectManifest,
-          options.format ?? latestPluginManifestFormat,
+          options.format || latestPluginManifestFormat,
           logger
         );
       }
@@ -435,7 +431,7 @@ const runMigrateCommand = async (
       migrateManifestFile(
         parseManifestFileOption(options.manifestFile, defaultBuildManifest),
         migrateBuildExtensionManifest,
-        options.format ?? latestBuildManifestFormat,
+        options.format || latestBuildManifestFormat,
         logger
       );
       break;
@@ -449,7 +445,7 @@ const runMigrateCommand = async (
       migrateManifestFile(
         parseManifestFileOption(options.manifestFile, defaultDeployManifest),
         migrateDeployExtensionManifest,
-        options.format ?? latestDeployManifestFormat,
+        options.format || latestDeployManifestFormat,
         logger
       );
       break;
@@ -463,7 +459,7 @@ const runMigrateCommand = async (
       migrateManifestFile(
         parseManifestFileOption(options.manifestFile, defaultInfraManifest),
         migrateInfraExtensionManifest,
-        options.format ?? latestInfraManifestFormat,
+        options.format || latestInfraManifestFormat,
         logger
       );
       break;
@@ -477,7 +473,7 @@ const runMigrateCommand = async (
       migrateManifestFile(
         parseManifestFileOption(options.manifestFile, defaultWorkflowManifest),
         migrateWorkflow,
-        options.format ?? latestPolywrapWorkflowFormat,
+        options.format || latestPolywrapWorkflowFormat,
         logger
       );
       break;
@@ -552,7 +548,7 @@ function maybeFailOnUnsupportedManifestFormat(
 }
 
 function maybeFailOnUnsupportedTargetFormat(
-  format: string | undefined,
+  format: string | undefined | false,
   formats: string[],
   logger: Logger
 ) {

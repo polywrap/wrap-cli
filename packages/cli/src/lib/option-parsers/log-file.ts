@@ -2,7 +2,7 @@ import { getDefaultLogFileName } from "../option-defaults";
 
 export function parseLogFileOption(
   logFile: string | boolean | undefined
-): string | undefined {
+): string | false {
   if (logFile) {
     if (logFile === true) {
       return getDefaultLogFileName();
@@ -10,5 +10,5 @@ export function parseLogFileOption(
     return logFile;
   }
 
-  return undefined;
+  return false;
 }

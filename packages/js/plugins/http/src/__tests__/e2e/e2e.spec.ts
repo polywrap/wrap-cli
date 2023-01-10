@@ -5,6 +5,7 @@ import { PolywrapClient, Uri } from "@polywrap/client-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 
 import nock from "nock";
+import { WrapError } from "@polywrap/core-js";
 
 jest.setTimeout(360000);
 
@@ -133,7 +134,7 @@ describe("e2e tests for HttpPlugin", () => {
         },
       });
 
-      response = response as { ok: false; error: Error | undefined };
+      response = response as { ok: false; error: WrapError | undefined };
       expect(response.error).toBeDefined();
       expect(response.ok).toBeFalsy();
     });
@@ -283,7 +284,7 @@ describe("e2e tests for HttpPlugin", () => {
         },
       });
 
-      response = response as { ok: false; error: Error | undefined };
+      response = response as { ok: false; error: WrapError | undefined };
       expect(response.error).toBeDefined();
       expect(response.ok).toBeFalsy();
     });

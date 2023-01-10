@@ -5,6 +5,7 @@ import { FileSystem_Module, FileSystem_EncodingEnum } from "../wrap";
 import fs from "fs";
 import path from "path";
 import fileSystemEncodingToBufferEncoding from "../utils/fileSystemEncodingToBufferEncoding";
+import { WrapError } from "@polywrap/core-js";
 
 jest.setTimeout(360000);
 
@@ -61,7 +62,7 @@ describe("FileSystem plugin", () => {
       client
     );
 
-    result = result as { ok: false; error: Error | undefined };
+    result = result as { ok: false; error: WrapError | undefined };
     expect(result.error).toBeTruthy();
     expect(result.ok).toBeFalsy();
   });

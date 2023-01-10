@@ -102,7 +102,7 @@ describe("sanity", () => {
     resultError = (result as { error: Error }).error;
     expect(result.ok).toBeFalsy();
     expect(resultError).toBeTruthy();
-    expect(resultError.message).toContain("Error resolving URI");
+    expect(resultError.message).toContain("Unable to find URI");
 
     await buildWrapper(greetingPath, undefined, true);
 

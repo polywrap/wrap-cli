@@ -1,4 +1,5 @@
 import { PluginModule } from "./PluginModule";
+import { getErrorSource } from "./utils/getErrorSource";
 
 import {
   Wrapper,
@@ -7,6 +8,8 @@ import {
   InvocableResult,
   GetFileOptions,
   isBuffer,
+  WrapError,
+  WrapErrorCode,
 } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
@@ -38,7 +41,12 @@ export class PluginWrapper implements Wrapper {
     const args = options.args || {};
 
     if (!this.module.getMethod(method)) {
-      return ResultErr(Error(`PluginWrapper: method "${method}" not found.`));
+      const error = new WrapError(`Plugin missing method "${method}"`, {
+        code: WrapErrorCode.WRAPPER_METHOD_NOT_FOUND,
+        uri: options.uri.uri,
+        method,
+      });
+      return ResultErr(error);
     }
 
     // Set the module's environment
@@ -51,10 +59,16 @@ export class PluginWrapper implements Wrapper {
       const result = msgpackDecode(args);
 
       if (typeof result !== "object") {
-        const msgPackException = Error(
-          `PluginWrapper: decoded MsgPack args did not result in an object.\nResult: ${result}`
+        const error = new WrapError(
+          `Decoded MsgPack args did not result in an object.\nResult: ${result}`,
+          {
+            code: WrapErrorCode.WRAPPER_ARGS_MALFORMED,
+            uri: options.uri.uri,
+            method,
+            args: JSON.stringify(args),
+          }
         );
-        return ResultErr(msgPackException);
+        return ResultErr(error);
       }
 
       jsArgs = result as Record<string, unknown>;
@@ -73,14 +87,19 @@ export class PluginWrapper implements Wrapper {
         encoded: false,
       };
     } else {
-      const invocationException = Error(
-        `PluginWrapper: invocation exception encountered.\n` +
-          `uri: ${options.uri}\nmodule: ${module}\n` +
-          `method: ${method}\n` +
-          `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
-          `exception: ${result.error?.message}`
-      );
-      return ResultErr(invocationException);
+      const code =
+        (result.error as { code?: WrapErrorCode })?.code ??
+        WrapErrorCode.WRAPPER_INVOKE_FAIL;
+      const reason =
+        result.error?.message ?? `Failed to invoke method "${method}"`;
+      const error = new WrapError(reason, {
+        code,
+        uri: options.uri.toString(),
+        method,
+        args: JSON.stringify(jsArgs, null, 2),
+        source: getErrorSource(result.error),
+      });
+      return ResultErr(error);
     }
   }
 }

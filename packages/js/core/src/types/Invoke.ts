@@ -1,4 +1,4 @@
-import { Uri, Wrapper } from ".";
+import { WrapError, Uri, Wrapper } from ".";
 import { IUriResolutionContext } from "../uri-resolution";
 
 import { Result } from "@polywrap/result";
@@ -30,7 +30,7 @@ export interface InvokeOptions {
  *
  * @template TData Type of the invoke result data.
  */
-export type InvokeResult<TData = unknown> = Result<TData, Error>;
+export type InvokeResult<TData = unknown> = Result<TData, WrapError>;
 
 export interface InvokerOptions extends InvokeOptions {
   encodeResult?: boolean;

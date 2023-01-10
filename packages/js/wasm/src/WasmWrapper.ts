@@ -9,13 +9,16 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import {
-  Wrapper,
-  InvokeOptions,
   CoreClient,
-  InvocableResult,
-  isBuffer,
   GetFileOptions,
   GetManifestOptions,
+  InvocableResult,
+  InvokeOptions,
+  isBuffer,
+  Wrapper,
+  WrapError,
+  WrapErrorCode,
+  ErrorSource,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
@@ -134,7 +137,13 @@ export class WasmWrapper implements Wrapper {
       const args = options.args || {};
       const wasmResult = await this._getWasmModule();
       if (!wasmResult.ok) {
-        return wasmResult;
+        const error = new WrapError(wasmResult.error, {
+          code: WrapErrorCode.WRAPPER_READ_FAIL,
+          uri: options.uri.uri,
+          method,
+          args: JSON.stringify(args, null, 2),
+        });
+        return ResultErr(error);
       }
       const wasm = wasmResult.value;
 
@@ -155,12 +164,29 @@ export class WasmWrapper implements Wrapper {
         env: options.env ? msgpackEncode(options.env) : EMPTY_ENCODED_OBJECT,
       };
 
-      const abort = (message: string) => {
-        throw Error(
-          `WasmWrapper: Wasm module aborted execution.\nURI: ${options.uri.uri}\n` +
-            `Method: ${method}\n` +
-            `Args: ${JSON.stringify(args, null, 2)}\nMessage: ${message}.\n`
-        );
+      const abortWithInvokeAborted = (
+        message: string,
+        source?: ErrorSource
+      ) => {
+        const prev = WrapError.parse(message);
+        const text = prev ? "SubInvocation exception encountered" : message;
+        throw new WrapError(text, {
+          code: WrapErrorCode.WRAPPER_INVOKE_ABORTED,
+          uri: options.uri.uri,
+          method,
+          args: JSON.stringify(args, null, 2),
+          source,
+          innerError: prev,
+        });
+      };
+
+      const abortWithInternalError = (message: string) => {
+        throw new WrapError(message, {
+          code: WrapErrorCode.WRAPPER_INTERNAL_ERROR,
+          uri: options.uri.uri,
+          method,
+          args: JSON.stringify(args, null, 2),
+        });
       };
 
       const memory = AsyncWasmInstance.createMemory({ module: wasm });
@@ -170,7 +196,8 @@ export class WasmWrapper implements Wrapper {
           state,
           client,
           memory,
-          abort,
+          abortWithInvokeAborted,
+          abortWithInternalError,
         }),
         requiredExports: WasmWrapper.requiredExports,
       });
@@ -183,7 +210,7 @@ export class WasmWrapper implements Wrapper {
         state.env.byteLength
       );
 
-      const invokeResult = this._processInvokeResult(state, result, abort);
+      const invokeResult = this._processInvokeResult(state, result);
 
       if (invokeResult.ok) {
         return {
@@ -191,13 +218,12 @@ export class WasmWrapper implements Wrapper {
           encoded: true,
         };
       } else {
-        const error = Error(
-          `WasmWrapper: invocation exception encountered.\n` +
-            `uri: ${options.uri.uri}\n` +
-            `method: ${method}\n` +
-            `args: ${JSON.stringify(args, null, 2)}\n` +
-            `exception: ${invokeResult.error?.message}`
-        );
+        const error = new WrapError(invokeResult.error, {
+          code: WrapErrorCode.WRAPPER_INVOKE_FAIL,
+          uri: options.uri.uri,
+          method,
+          args: JSON.stringify(args, null, 2),
+        });
         return ResultErr(error);
       }
     } catch (error) {
@@ -207,30 +233,29 @@ export class WasmWrapper implements Wrapper {
 
   private _processInvokeResult(
     state: State,
-    result: boolean,
-    abort: (message: string) => never
-  ): Result<Uint8Array, Error> {
+    result: boolean
+  ): Result<Uint8Array, string> {
     if (result) {
       if (!state.invoke.result) {
-        abort("Invoke result is missing.");
+        return ResultErr("Invoke result is missing.");
       }
 
       return ResultOk(state.invoke.result);
     } else {
       if (!state.invoke.error) {
-        abort("Invoke error is missing.");
+        return ResultErr("Invoke error is missing.");
       }
 
-      return ResultErr(Error(state.invoke.error));
+      return ResultErr(state.invoke.error);
     }
   }
 
-  private async _getWasmModule(): Promise<Result<Uint8Array, Error>> {
+  private async _getWasmModule(): Promise<Result<Uint8Array, string>> {
     if (this._wasmModule === undefined) {
       const result = await this._fileReader.readFile(WRAP_MODULE_PATH);
 
       if (!result.ok) {
-        return ResultErr(Error(`Wrapper does not contain a wasm module`));
+        return ResultErr("Wrapper does not contain a wasm module");
       }
 
       this._wasmModule = result.value;

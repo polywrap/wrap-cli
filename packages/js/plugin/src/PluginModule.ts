@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { PluginMethod } from "./PluginMethod";
 
-import { CoreClient } from "@polywrap/core-js";
+import { CoreClient, WrapErrorCode } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export abstract class PluginModule<
@@ -47,9 +47,13 @@ export abstract class PluginModule<
       );
     }
 
-    const data = await fn(args, client);
-
-    return ResultOk(data);
+    try {
+      const data = await fn(args, client);
+      return ResultOk(data);
+    } catch (e) {
+      e.code = WrapErrorCode.WRAPPER_INVOKE_ABORTED;
+      return ResultErr(e);
+    }
   }
 
   public getMethod<
@@ -63,6 +67,6 @@ export abstract class PluginModule<
       PluginMethod<TArgs, TResult>
     >)[method];
 
-    return fn.bind(this);
+    return fn?.bind(this);
   }
 }

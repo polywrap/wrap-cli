@@ -1,16 +1,17 @@
 import { Logger } from "../logging";
 
-import { exec, ExecException, execSync, SpawnSyncReturns } from "child_process";
+import { ExecException, SpawnSyncReturns, execSync, exec } from "child_process";
 
 export function runCommandSync(
   command: string,
+  args: string[],
   logger: Logger,
   env: Record<string, string> | undefined = undefined
 ): { stdout?: string; stderr?: SpawnSyncReturns<string> & Error } {
-  logger.info(`> ${command}`);
+  logger.info(`> ${command} ${args.join(" ")}`);
 
   try {
-    const stdout = execSync(command, {
+    const stdout = execSync(`${command} ${args.join(" ")}`, {
       cwd: __dirname,
       env: {
         ...process.env,
@@ -26,12 +27,13 @@ export function runCommandSync(
 
 export async function runCommand(
   command: string,
+  args: string[],
   logger: Logger,
   env: Record<string, string> | undefined = undefined,
   cwd: string | undefined = undefined,
   redirectStderr = false
 ): Promise<{ stdout: string; stderr: string }> {
-  logger.info(`> ${command}`);
+  logger.info(`> ${command} ${args.join(" ")}`);
 
   return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
     const callback = (
@@ -47,7 +49,7 @@ export async function runCommand(
     };
 
     const childObj = exec(
-      command,
+      `${command} ${args.join(" ")}`,
       {
         cwd: cwd ?? __dirname,
         env: {
