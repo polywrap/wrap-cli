@@ -25,7 +25,7 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.6"
   },
   "devDependencies": {
-    "doc-snippets": "^0.4.0-pre.4",
+    "doc-snippets": "^1.0.0",
     "@polywrap/uri-resolvers-js": "0.10.0-pre.6",
     "@types/jest": "26.0.8",
     "@types/uuid": "8.3.0",

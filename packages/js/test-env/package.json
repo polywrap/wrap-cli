@@ -14,7 +14,8 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn copy:wrappers",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
-    "copy:wrappers": "copyfiles ./src/wrappers/**/**/* ./build/wrappers/ -u 2"
+    "copy:wrappers": "copyfiles ./src/wrappers/**/**/* ./build/wrappers/ -u 2",
+    "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
     "@polywrap/core-js": "0.10.0-pre.6",
@@ -24,6 +25,7 @@
     "yaml": "2.1.3"
   },
   "devDependencies": {
+    "doc-snippets": "^1.0.0",
     "copyfiles": "2.4.1",
     "rimraf": "3.0.2",
     "ts-node": "8.10.2",
@@ -32,5 +34,41 @@
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {
     "access": "public"
+  },
+  "doc-snippets": {
+    "extract": {
+      "include": "./**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}",
+      "ignore": [
+        "./**/node_modules/**",
+        "./**/.polywrap/**",
+        "./**/__tests__/**"
+      ],
+      "dir": "./src"
+    },
+    "inject": {
+      "dir": "./readme",
+      "include": "./README.md"
+    },
+    "startTokens": [
+      {
+        "pattern": "$start: ",
+        "inline": false
+      },
+      {
+        "pattern": "/* $: {SNIPPET_NAME} */",
+        "inline": true
+      }
+    ],
+    "endTokens": [
+      {
+        "pattern": "$end",
+        "inline": false
+      },
+      {
+        "pattern": "/* $ */",
+        "inline": true
+      }
+    ],
+    "outputDir": "./"
   }
 }

@@ -6988,10 +6988,10 @@ dns-txt@^2.0.2:
   dependencies:
     buffer-indexof "^1.0.0"
 
-doc-snippets@^0.4.0-pre.4:
-  version "0.4.0-pre.4"
-  resolved "https://registry.yarnpkg.com/doc-snippets/-/doc-snippets-0.4.0-pre.4.tgz#31b0c3ceaf0407049947aa190ef3ae0b52dd2032"
-  integrity sha512-QqUC5H+urFUAn+CnZg9YUgUhwRAEEc8CIoAqhlLUWFGxTxkdfnS0DCV3Oxd2Nl4vPd+KCj5Uk8m+hdDs5jMhPQ==
+doc-snippets@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/doc-snippets/-/doc-snippets-1.0.0.tgz#5921d52c6cfe6de0ab9b28f9594232cb6876c37e"
+  integrity sha512-4wVSd7jxhliPvqZ3sdhKhRla/EYy6DKlflWYd+E7JTGYXy1xBWyMnbSkWshGUiVK8TgZAF45iE4Y6eSo5F2lqg==
   dependencies:
     commander "^9.4.1"
     glob "^8.0.3"

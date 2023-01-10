@@ -33,7 +33,7 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.6"
   },
   "devDependencies": {
-    "doc-snippets": "^0.4.0-pre.4",
+    "doc-snippets": "^1.0.0",
     "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.6",
     "@polywrap/ethereum-plugin-js": "0.10.0-pre.6",
     "@polywrap/fs-plugin-js": "0.10.0-pre.6",
