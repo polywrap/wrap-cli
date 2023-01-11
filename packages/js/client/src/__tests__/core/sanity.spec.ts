@@ -43,10 +43,10 @@ describe("sanity", () => {
   });
 
   test("validate requested uri is available", async () => {
-    const subinvokeWrapperPath = `file/${GetPathToTestWrappers()}/subinvoke/00-subinvoke/implementation/as`;
-    const subinvokeUri = "ens/subinvoke.eth"
-    const invokeUri = `file/${GetPathToTestWrappers()}/subinvoke/01-invoke/implementation/as`;
-    const consumerUri = `file/${GetPathToTestWrappers()}/subinvoke/01-invoke/implementation/as`
+    const subinvokeUri = "ens/imported-subinvoke.eth"
+    const invokeUri = "ens/imported-invoke.eth";
+    const consumerUri = "ens/consumer.eth";
+
     const getPackage = async (name: string) => {
       const manifest = await fs.promises.readFile(
         `${GetPathToTestWrappers()}/subinvoke/${name}/implementations/as/wrap.info`
