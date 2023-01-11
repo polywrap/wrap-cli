@@ -2,3 +2,5 @@
 
 type Module implements UriResolver_Module {
 }
+
+type Env {}
