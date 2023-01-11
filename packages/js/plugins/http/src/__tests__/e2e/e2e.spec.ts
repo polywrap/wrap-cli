@@ -6,6 +6,7 @@ import { UriResolver } from "@polywrap/uri-resolvers-js";
 
 import nock from "nock";
 import { WrapError } from "@polywrap/core-js";
+import { initTestEnvironment, stopTestEnvironment, providers } from "@polywrap/test-env-js";
 
 jest.setTimeout(360000);
 
@@ -17,6 +18,10 @@ const defaultReplyHeaders = {
 describe("e2e tests for HttpPlugin", () => {
   let polywrapClient: PolywrapClient;
 
+  beforeAll(async () => {
+    await initTestEnvironment();
+  });
+
   beforeEach(() => {
     polywrapClient = new PolywrapClient(
       {
@@ -27,6 +32,10 @@ describe("e2e tests for HttpPlugin", () => {
       },
       { noDefaults: true }
     );
+  });
+
+  afterAll(async () => {
+    await stopTestEnvironment();
   });
 
   describe("get method", () => {
@@ -287,6 +296,90 @@ describe("e2e tests for HttpPlugin", () => {
       response = response as { ok: false; error: WrapError | undefined };
       expect(response.error).toBeDefined();
       expect(response.ok).toBeFalsy();
+    });
+
+    test("successful request with form-data (simple)", async () => {
+      const response = await polywrapClient.invoke<Http_Response>({
+        uri: "wrap://ens/http.polywrap.eth",
+        method: "post",
+        args: {
+          url: `${providers.ipfs}/api/v0/add`,
+          request: {
+            responseType: "TEXT",
+            formData:[{
+              name:"test.txt",
+              value:"QSBuZXcgc2FtcGxlIGZpbGU=",
+              fileName:"test.txt",
+              type:"application/octet-stream"
+            }],
+          },
+        },
+      });
+
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(response.value?.status).toBe(200);
+      expect(response.value?.body).toBe(JSON.stringify({
+        Name: "test.txt",
+        Hash: "Qmawvzw32Jq7RbMw2K8axEbzfNK74NPynBoq4tJnWvkYqP",
+        Size: "25"
+      }));
+    });
+
+    test("successful request with form-data (complex)", async () => {
+      const response = await polywrapClient.invoke<Http_Response>({
+        uri: "wrap://ens/http.polywrap.eth",
+        method: "post",
+        args: {
+          url: `${providers.ipfs}/api/v0/add`,
+          request: {
+            responseType: "TEXT",
+            formData:[
+              { name: "file_0.txt", value: "ZmlsZV8w", fileName: "file_0.txt", type: "application/octet-stream" },
+              { name: "file_1.txt", value: "ZmlsZV8x",fileName: "file_1.txt", type: "application/octet-stream" },
+              { name: "directory_A", value: null, fileName: "directory_A", type: "application/x-directory" },
+              { name: "directory_A/file_A_0.txt", value: "ZmlsZV9BXzA=", fileName: "directory_A%2Ffile_A_0.txt", type: "application/octet-stream" },
+              { name: "directory_A/file_A_1.txt", value: "ZmlsZV9BXzE=", fileName: "directory_A%2Ffile_A_1.txt", type: "application/octet-stream" }
+            ],
+          },
+        },
+      });
+
+      if (!response.ok) fail(response.error);
+      expect(response.value).toBeDefined();
+      expect(response.value?.status).toBe(200);
+
+      const results = response.value?.body?.trim()
+        .split("\n")
+        .map((v) => JSON.parse(v));
+
+      expect(results).toStrictEqual([
+        {
+          Name: "file_0.txt",
+          Hash: "QmV3uDt3KhEYchouUzEbfz7FBA2c2LvNo76dxLLwJW76b1",
+          Size: "14"
+        },
+        {
+          Name: "file_1.txt",
+          Hash: "QmYwMByE4ibjuMu2nRYRfBweJGJErjmMXfZ92srKhYfq5f",
+          Size: "14"
+        },
+        {
+          Name: "directory_A/file_A_0.txt",
+          Hash: "QmeYp73qnn8EdogE4d6BhQCHtep7dkRC8FgdE3Qbo4nY9c",
+          Size: "16"
+        },
+        {
+          Name: "directory_A/file_A_1.txt",
+          Hash: "QmWetZjwHWuGsDyxX6ae5wGS68mFTXC5x61H1TUNxqBXzn",
+          Size: "16"
+        },
+        {
+          Name: "directory_A",
+          Hash: "Qmb5XsySizDeTn1kvNbyiiNy9eyg3Lb6EwGjQt7iiKBxoL",
+          Size: "144"
+        },
+      ]);
     });
   });
 });
