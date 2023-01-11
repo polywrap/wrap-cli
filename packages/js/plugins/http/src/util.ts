@@ -1,6 +1,12 @@
-import { Http_Request, Http_Response, Http_ResponseTypeEnum } from "./wrap";
+import {
+  Http_Request,
+  Http_Response,
+  Http_ResponseTypeEnum,
+  Http_FormDataEntry,
+} from "./wrap";
 
 import { AxiosResponse, AxiosRequestConfig } from "axios";
+import FormData from "form-data";
 
 /**
  * Convert AxiosResponse<string> to Response
@@ -89,4 +95,23 @@ export function toAxiosRequestConfig(
   }
 
   return config;
+}
+
+export function toFormData(entries: Http_FormDataEntry[]): FormData {
+  const fd = new FormData();
+  entries.forEach((entry) => {
+    const options: FormData.AppendOptions = {};
+    options.contentType = entry.type ?? undefined;
+    options.filename = entry.fileName ?? undefined;
+    let value: string | Buffer | undefined;
+    if (entry.type) {
+      value = entry.value
+        ? Buffer.from(entry.value, "base64")
+        : Buffer.alloc(0);
+    } else {
+      value = entry.value ?? undefined;
+    }
+    fd.append(entry.name, value, options);
+  });
+  return fd;
 }
