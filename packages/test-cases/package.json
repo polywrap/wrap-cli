@@ -8,10 +8,13 @@
   "scripts": {
     "generate:wrappers": "npx ts-node -e \"import { fetchWrappers } from './'; fetchWrappers()\""
   },
+  "type": "module",
   "dependencies": {
     "@polywrap/os-js": "0.10.0-pre.7"
   },
   "devDependencies": {
-    "shelljs": "0.8.5"
+    "@types/adm-zip": "0.5.0",
+    "adm-zip": "0.5.10",
+    "axios": "1.2.2"
   }
 }

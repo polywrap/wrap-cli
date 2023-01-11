@@ -2,7 +2,8 @@ import path from "path";
 import { readFileSync, existsSync } from "fs";
 
 import { normalizeLineEndings } from "@polywrap/os-js";
-const shell = require('shelljs');
+import admZip from 'adm-zip';
+import axios from "axios";
 
 export const GetPathToBindTestFiles = () => `${__dirname}/cases/bind`
 export const GetPathToComposeTestFiles = () => `${__dirname}/cases/compose`
@@ -67,8 +68,34 @@ function getFilePath(
 }
 
 export function fetchWrappers(): void {
-  shell.exec("git clone git@github.com:polywrap/wasm-test-harness.git");
-  shell.exec("git checkout tags/v0.2.1", { cwd: "./wasm-test-harness" });
-  shell.exec("mv ./wrappers ../cases", { cwd: "./wasm-test-harness" });
-  shell.exec("rm -rf wasm-test-harness");
+  // function to fetch file from GitHub release
+  async function fetchFromGithub(url: string) {
+    // fetch file
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+    if (response.status !== 200) {
+      throw new Error(`Failed to fetch file from ${url}`);
+    }
+    return response.data;
+  }
+
+  async function unzipFile(fileBuffer: Buffer, destination: string) {
+    // create adm-zip instance
+    const zip = new admZip(fileBuffer);
+    // extract archive
+    zip.extractAllTo(destination, /*overwrite*/ true);
+  }
+
+    const download = async () => {
+      try {
+        const url = "https://github.com/polywrap/wasm-test-harness/archive/refs/tags/v0.2.1.zip";
+        const buffer = await fetchFromGithub(url);
+        console.log("after the fest")
+        const destination = './unzipped';
+        await unzipFile(buffer, destination);
+        console.log(`File was successfully unzipped to ${destination}`);
+      } catch (error) {
+        console.log(`An error occurred: ${error.message}`);
+      }
+    }
+    download().then().catch(e => console.log(e))
 }
