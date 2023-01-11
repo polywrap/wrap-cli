@@ -20,6 +20,7 @@ import {
 import fs from "fs";
 import path from "path";
 import { WasmPackage } from "@polywrap/wasm-js";
+import { httpPlugin } from "@polywrap/http-plugin-js";
 
 export const getClient = () => {
   const ipfsHttpClientPath = defaultEmbeddedWrapperPaths.ipfsHttpClient;
@@ -44,7 +45,7 @@ export const getClient = () => {
           ],
         },
       ],
-      resolver: RecursiveResolver.from([
+      resolver: RecursiveResolver.from(
         PackageToWrapperCacheResolver.from(
           [
             {
@@ -82,11 +83,15 @@ export const getClient = () => {
                 },
               }),
             },
+            {
+              uri: defaultPackages.http,
+              package: httpPlugin({}),
+            },
             new ExtendableUriResolver(),
           ],
           new WrapperCache()
         )
-      ]),
+      ),
     },
     { noDefaults: true }
   );

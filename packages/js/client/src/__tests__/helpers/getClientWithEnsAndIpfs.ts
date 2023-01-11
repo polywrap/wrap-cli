@@ -22,6 +22,7 @@ import {
 import fs from "fs";
 import path from "path";
 import { WasmPackage } from "@polywrap/wasm-js";
+import { httpPlugin } from "@polywrap/http-plugin-js";
 
 export const getClientWithEnsAndIpfs = () => {
   const connections: Connections = new Connections({
@@ -92,6 +93,10 @@ export const getClientWithEnsAndIpfs = () => {
             {
               uri: defaultPackages.fileSystemResolver,
               package: fileSystemResolverPlugin({}),
+            },
+            {
+              uri: defaultPackages.http,
+              package: httpPlugin({}),
             },
             new ExtendableUriResolver(),
           ],
