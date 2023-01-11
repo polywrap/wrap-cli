@@ -3,7 +3,7 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PluginPackage, PluginModule } from "@polywrap/plugin-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { defaultPackages } from "@polywrap/client-config-builder-js";
-import { httpPlugin } from "@polywrap/http-plugin-js";
+import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 jest.setTimeout(200000);
 
 describe("plugin-wrapper", () => {
@@ -81,14 +81,14 @@ describe("plugin-wrapper", () => {
     const client = new PolywrapClient(
       {
         resolver: UriResolver.from([
-          { uri: defaultPackages.http, package: httpPlugin({}) },
+          { uri: defaultPackages.fileSystemResolver, package: fileSystemResolverPlugin({}) },
         ]),
       },
       { noDefaults: true }
     );
-    const manifest = await client.getManifest(defaultPackages.ensResolver);
+    const manifest = await client.getManifest(defaultPackages.fileSystemResolver);
     if (!manifest.ok) fail(manifest.error);
     expect(manifest.value.type).toEqual("plugin");
-    expect(manifest.value.name).toEqual("Http");
+    expect(manifest.value.name).toEqual("FileSystemResolver");
   });
 });
