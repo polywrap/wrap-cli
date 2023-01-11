@@ -98,7 +98,9 @@ async function run(options: Required<CodegenCommandOptions>) {
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
-  const envs = await parseWrapperEnvsOption(wrapperEnvs ? wrapperEnvs : undefined);
+  const envs = await parseWrapperEnvsOption(
+    wrapperEnvs ? wrapperEnvs : undefined
+  );
   const configBuilder = await parseClientConfigOption(clientConfig);
 
   if (envs) {

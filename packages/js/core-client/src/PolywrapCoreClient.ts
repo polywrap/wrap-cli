@@ -310,7 +310,6 @@ export class PolywrapCoreClient implements CoreClient {
   public async tryResolveUri(
     options: TryResolveUriOptions
   ): Promise<Result<UriPackageOrWrapper, unknown>> {
-
     const uri = Uri.from(options.uri);
 
     const uriResolver = this.getResolver();
@@ -345,7 +344,6 @@ export class PolywrapCoreClient implements CoreClient {
     resolutionContext?: IUriResolutionContext,
     options?: DeserializeManifestOptions
   ): Promise<Result<Wrapper, WrapError>> {
-
     if (!resolutionContext) {
       resolutionContext = new UriResolutionContext();
     }
