@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/core-client-js",
   "description": "Polywrap Javascript Core Client",
-  "version": "0.10.0-pre.6",
+  "version": "0.10.0-pre.7",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -17,14 +17,14 @@
     "test": "jest --passWithNoTests --runInBand --verbose=true --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.10.0-pre.6",
-    "@polywrap/msgpack-js": "0.10.0-pre.6",
-    "@polywrap/result": "0.10.0-pre.6",
-    "@polywrap/tracing-js": "0.10.0-pre.6",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.6"
+    "@polywrap/core-js": "0.10.0-pre.7",
+    "@polywrap/msgpack-js": "0.10.0-pre.7",
+    "@polywrap/result": "0.10.0-pre.7",
+    "@polywrap/tracing-js": "0.10.0-pre.7",
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.7"
   },
   "devDependencies": {
-    "@polywrap/uri-resolvers-js": "0.10.0-pre.6",
+    "@polywrap/uri-resolvers-js": "0.10.0-pre.7",
     "@types/jest": "26.0.8",
     "@types/uuid": "8.3.0",
     "jest": "26.6.3",
