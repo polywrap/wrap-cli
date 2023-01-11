@@ -48,8 +48,8 @@ const config = {
   // declare and configure plugin wrappers
   plugins: [
     {
-      uri: "wrap://ens/ipfs.polywrap.eth",
-      plugin: ipfsPlugin({}),
+      uri: "wrap://plugin/ens-resolver",
+      package: ensResolverPlugin({}),
     },
   ],
   // declare interface implementations
@@ -57,14 +57,14 @@ const config = {
     {
       interface: "wrap://ens/uri-resolver.core.polywrap.eth",
       implementations: [
-        "wrap://ens/ipfs-resolver.polywrap.eth",
+        "wrap://plugin/ens-resolver",
       ],
     },
   ],
   // set environmental variables for a wrapper
   envs: [
     {
-      uri: "wrap://ens/ipfs.polywrap.eth",
+      uri: "wrap://ens/ipfs-resolver.polywrap.eth",
       env: {
         provider: "https://ipfs.wrappers.io",
       },

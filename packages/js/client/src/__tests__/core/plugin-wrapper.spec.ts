@@ -2,7 +2,8 @@ import { PolywrapClient } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PluginPackage, PluginModule } from "@polywrap/plugin-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
+import { defaultPackages } from "@polywrap/client-config-builder-js";
+import { httpPlugin } from "@polywrap/http-plugin-js";
 jest.setTimeout(200000);
 
 describe("plugin-wrapper", () => {
@@ -80,14 +81,14 @@ describe("plugin-wrapper", () => {
     const client = new PolywrapClient(
       {
         resolver: UriResolver.from([
-          { uri: "ens/ipfs.polywrap.eth", package: ipfsPlugin({}) },
+          { uri: defaultPackages.http, package: httpPlugin({}) },
         ]),
       },
       { noDefaults: true }
     );
-    const manifest = await client.getManifest("ens/ipfs.polywrap.eth");
+    const manifest = await client.getManifest(defaultPackages.ensResolver);
     if (!manifest.ok) fail(manifest.error);
     expect(manifest.value.type).toEqual("plugin");
-    expect(manifest.value.name).toEqual("Ipfs");
+    expect(manifest.value.name).toEqual("Http");
   });
 });
