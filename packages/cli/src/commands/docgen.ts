@@ -21,7 +21,6 @@ import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { PolywrapClient } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
-import { Uri } from "@polywrap/core-js";
 
 const commandToPathMap: Record<string, string> = {
   schema: schemaScriptPath,
@@ -137,11 +136,11 @@ async function run(
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
-  const envs = await parseWrapperEnvsOption(wrapperEnvs);
+  const envs = await parseWrapperEnvsOption(wrapperEnvs ? wrapperEnvs : undefined);
   const configBuilder = await parseClientConfigOption(clientConfig);
 
   if (envs) {
-    configBuilder.addEnvs(envs as Env<Uri>[]);
+    configBuilder.addEnvs(envs);
   }
 
   let project = await getProjectFromManifest(manifestFile, logger);

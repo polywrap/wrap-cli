@@ -20,6 +20,7 @@ import {
   Uri,
   UriPackageOrWrapper,
   ValidateOptions,
+  WrapError,
   Wrapper,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
@@ -130,7 +131,7 @@ export class PolywrapClient<
   @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<TUri extends Uri | string = string>(
     uri: TUri
-  ): Promise<Result<WrapManifest, Error>> {
+  ): Promise<Result<WrapManifest, WrapError>> {
     return super.getManifest(sanitizeUri(uri));
   }
 
@@ -138,7 +139,7 @@ export class PolywrapClient<
   public async getFile<TUri extends Uri | string = string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<Result<string | Uint8Array, Error>> {
+  ): Promise<Result<string | Uint8Array, WrapError>> {
     return super.getFile(sanitizeUri(uri), options);
   }
 
@@ -146,7 +147,7 @@ export class PolywrapClient<
   public async getImplementations<TUri extends Uri | string = string>(
     uri: TUri,
     options?: GetImplementationsOptions
-  ): Promise<Result<Uri[], Error>> {
+  ): Promise<Result<Uri[], WrapError>> {
     return super.getImplementations(sanitizeUri(uri), options);
   }
 
@@ -188,7 +189,7 @@ export class PolywrapClient<
     uri: Uri,
     resolutionContext?: IUriResolutionContext,
     options?: DeserializeManifestOptions
-  ): Promise<Result<Wrapper, Error>> {
+  ): Promise<Result<Wrapper, WrapError>> {
     return super.loadWrapper(sanitizeUri(uri), resolutionContext, options);
   }
 

@@ -32,7 +32,6 @@ import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 import readline from "readline";
 import { PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { Uri } from "@polywrap/core-js";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
@@ -174,11 +173,11 @@ async function run(options: Required<BuildCommandOptions>) {
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
-  const envs = await parseWrapperEnvsOption(wrapperEnvs);
+  const envs = await parseWrapperEnvsOption(wrapperEnvs ? wrapperEnvs : undefined);
   const configBuilder = await parseClientConfigOption(clientConfig);
 
   if (envs) {
-    configBuilder.addEnvs(envs as Env<Uri>[]);
+    configBuilder.addEnvs(envs);
   }
 
   // Get Client

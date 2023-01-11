@@ -23,7 +23,6 @@ import { createLogger } from "./utils/createLogger";
 import path from "path";
 import yaml from "yaml";
 import fs from "fs";
-import { Env, Uri } from "@polywrap/core-js";
 
 export interface TestCommandOptions extends BaseCommandOptions {
   clientConfig: string | false;
@@ -105,11 +104,13 @@ const _run = async (options: Required<TestCommandOptions>) => {
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
-  const envs = await parseWrapperEnvsOption(wrapperEnvs);
+  const envs = await parseWrapperEnvsOption(
+    wrapperEnvs ? wrapperEnvs : undefined
+  );
   const configBuilder = await parseClientConfigOption(clientConfig);
 
   if (envs) {
-    configBuilder.addEnvs(envs as Env<Uri>[]);
+    configBuilder.addEnvs(envs);
   }
 
   const manifestPath = path.resolve(manifestFile);
