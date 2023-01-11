@@ -10,16 +10,24 @@ describe("workflow JobRunner", () => {
   let configBuilder: IClientConfigBuilder;
 
   beforeAll(async () => {
-
     configBuilder = new ClientConfigBuilder();
-    const uri = `fs/${path.join(
+    const subinvokeUri = `fs/${path.join(
       GetPathToTestWrappers(),
       "subinvoke",
       "00-subinvoke",
       "implementations",
       "rs"
     )}`
-    configBuilder.addRedirect("ens/imported.eth", uri);
+
+    const invokeUri = `fs/${path.join(
+      GetPathToTestWrappers(),
+      "subinvoke",
+      "01-invoke",
+      "implementations",
+      "rs"
+    )}`
+
+    configBuilder.addRedirect("ens/imported-invoke.eth", invokeUri).addRedirect("ens/imported-subinvoke.eth", subinvokeUri);
     configBuilder.addDefaults();
   });
 
