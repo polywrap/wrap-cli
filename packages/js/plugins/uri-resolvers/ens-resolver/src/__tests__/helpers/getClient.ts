@@ -8,13 +8,23 @@ import {
 import {
   RecursiveResolver,
   PackageToWrapperCacheResolver,
-  WrapperCache, RedirectResolver,
+  WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
-import { defaultPackages, defaultWrapperAliases, defaultWrappers } from "@polywrap/client-config-builder-js";
+import {
+  defaultEmbeddedWrapperPaths,
+  defaultPackages,
+  defaultWrapperAliases,
+} from "@polywrap/client-config-builder-js";
+import fs from "fs";
+import path from "path";
+import { WasmPackage } from "@polywrap/wasm-js";
 
 export const getClient = () => {
+  const ipfsHttpClientPath = defaultEmbeddedWrapperPaths.ipfsHttpClient;
+  const ipfsResolverPath = defaultEmbeddedWrapperPaths.ipfsResolver;
+
   return new PolywrapClient(
     {
       interfaces: [
@@ -28,10 +38,22 @@ export const getClient = () => {
         },
       ],
       resolver: RecursiveResolver.from([
-        new RedirectResolver(defaultWrapperAliases.ipfsResolver, defaultWrappers.ipfsResolver),
-        new RedirectResolver(defaultWrapperAliases.ipfsHttpClient, defaultWrappers.ipfsHttpClient),
         PackageToWrapperCacheResolver.from(
           [
+            {
+              uri: defaultWrapperAliases.ipfsHttpClient,
+              package: WasmPackage.from(
+                fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
+                fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
+              ),
+            },
+            {
+              uri: defaultWrapperAliases.ipfsResolver,
+              package: WasmPackage.from(
+                fs.readFileSync(path.join(ipfsResolverPath, "wrap.info")),
+                fs.readFileSync(path.join(ipfsResolverPath, "wrap.wasm"))
+              ),
+            },
             {
               uri: defaultPackages.ethereum,
               package: ethereumPlugin({

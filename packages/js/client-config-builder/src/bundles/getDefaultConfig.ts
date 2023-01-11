@@ -14,6 +14,8 @@ import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
 import path from "path";
+import { WasmPackage } from "@polywrap/wasm-js";
+import * as fs from "fs";
 
 export const defaultIpfsProviders = [
   "https://ipfs.wrappers.io",
@@ -26,16 +28,11 @@ export const defaultWrappers = {
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
   ensTextRecordResolver:
     "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
-  ipfsHttpClient: `wrap://fs/${path.join(
-    __dirname,
-    "wrappers",
-    "ipfs-http-client"
-  )}`,
-  ipfsResolver: `wrap://fs/${path.join(
-    __dirname,
-    "wrappers",
-    "ipfs-resolver"
-  )}`,
+};
+
+export const defaultEmbeddedWrapperPaths = {
+  ipfsHttpClient: path.join(__dirname, "wrappers", "ipfs-http-client"),
+  ipfsResolver: path.join(__dirname, "wrappers", "ipfs-resolver"),
 };
 
 export const defaultWrapperAliases = {
@@ -99,14 +96,6 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         from: new Uri(defaultInterfaces.logger),
         to: new Uri(defaultPackages.logger),
       },
-      {
-        from: new Uri(defaultWrapperAliases.ipfsResolver),
-        to: new Uri(defaultWrappers.ipfsResolver),
-      },
-      {
-        from: new Uri(defaultWrapperAliases.ipfsHttpClient),
-        to: new Uri(defaultWrappers.ipfsHttpClient),
-      },
     ],
     interfaces: [
       {
@@ -128,14 +117,32 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         implementations: [new Uri(defaultPackages.concurrent)],
       },
     ],
-    packages: getDefaultPlugins(),
+    packages: getDefaultPackages(),
     wrappers: [],
     resolvers: [],
   };
 };
 
-export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
+export const getDefaultPackages = (): IUriPackage<Uri>[] => {
+  const ipfsHttpClientPath = defaultEmbeddedWrapperPaths.ipfsHttpClient;
+  const ipfsResolverPath = defaultEmbeddedWrapperPaths.ipfsResolver;
+
   return [
+    // IPFS is required for downloading Polywrap packages
+    {
+      uri: new Uri(defaultWrapperAliases.ipfsHttpClient),
+      package: WasmPackage.from(
+        fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
+        fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
+      ),
+    },
+    {
+      uri: new Uri(defaultWrapperAliases.ipfsResolver),
+      package: WasmPackage.from(
+        fs.readFileSync(path.join(ipfsResolverPath, "wrap.info")),
+        fs.readFileSync(path.join(ipfsResolverPath, "wrap.wasm"))
+      ),
+    },
     // ENS is required for resolving domain to IPFS hashes
     {
       uri: new Uri(defaultPackages.ensResolver),

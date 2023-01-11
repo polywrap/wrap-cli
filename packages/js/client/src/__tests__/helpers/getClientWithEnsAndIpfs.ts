@@ -10,11 +10,18 @@ import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
   PackageToWrapperCacheResolver,
-  RecursiveResolver, RedirectResolver,
+  RecursiveResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
-import { defaultPackages, defaultWrapperAliases, defaultWrappers } from "@polywrap/client-config-builder-js";
+import {
+  defaultEmbeddedWrapperPaths,
+  defaultPackages,
+  defaultWrapperAliases,
+} from "@polywrap/client-config-builder-js";
+import fs from "fs";
+import path from "path";
+import { WasmPackage } from "@polywrap/wasm-js";
 
 export const getClientWithEnsAndIpfs = () => {
   const connections: Connections = new Connections({
@@ -25,6 +32,10 @@ export const getClientWithEnsAndIpfs = () => {
     },
     defaultNetwork: "testnet",
   });
+
+  const ipfsHttpClientPath = defaultEmbeddedWrapperPaths.ipfsHttpClient;
+  const ipfsResolverPath = defaultEmbeddedWrapperPaths.ipfsResolver;
+
   return new PolywrapClient(
     {
       envs: [
@@ -46,10 +57,22 @@ export const getClientWithEnsAndIpfs = () => {
         },
       ],
       resolver: RecursiveResolver.from([
-        new RedirectResolver(defaultWrapperAliases.ipfsResolver, defaultWrappers.ipfsResolver),
-        new RedirectResolver(defaultWrapperAliases.ipfsHttpClient, defaultWrappers.ipfsHttpClient),
         PackageToWrapperCacheResolver.from(
           [
+            {
+              uri: defaultWrapperAliases.ipfsHttpClient,
+              package: WasmPackage.from(
+                fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
+                fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
+              ),
+            },
+            {
+              uri: defaultWrapperAliases.ipfsResolver,
+              package: WasmPackage.from(
+                fs.readFileSync(path.join(ipfsResolverPath, "wrap.info")),
+                fs.readFileSync(path.join(ipfsResolverPath, "wrap.wasm"))
+              ),
+            },
             {
               uri: defaultPackages.ethereum,
               package: ethereumPlugin({ connections }),
