@@ -7,7 +7,7 @@ import { GetPathToTestWrappers } from "@polywrap/test-cases";
 
 export const typeTestCases = (implementation: string) => {
 	describe("types test cases", () => {
-		test(`asyncify-${implementation}`, async () => {
+		test(`asyncify ${implementation}`, async () => {
 			const builder = new ClientConfigBuilder()
 			builder.addPackage({
 				uri: "wrap://ens/memory-storage.polywrap.eth",
@@ -128,7 +128,7 @@ export const typeTestCases = (implementation: string) => {
 			expect(setDataWithManyStructuredArgs.value).toBe(true);
 		})
 
-		test(`bigint-type-${implementation}`, async () => {
+		test(`bigint-type ${implementation}`, async () => {
 			const uri = `fs/${GetPathToTestWrappers()}/bigint-type/implementations/${implementation}`;
 			const client = new PolywrapClient();
 			let response = await client.invoke({
@@ -170,7 +170,7 @@ export const typeTestCases = (implementation: string) => {
 			expect(response.value).toEqual(result.toString());
 		})
 
-		test(`bignumber-type-${implementation}`, async () => {
+		test(`bignumber-type ${implementation}`, async () => {
 			const uri = `fs/${GetPathToTestWrappers()}/bignumber-type/implementations/${implementation}`;
 			const client = new PolywrapClient();
 			let response = await client.invoke({
@@ -216,7 +216,7 @@ export const typeTestCases = (implementation: string) => {
 			expect(response.value).toEqual(result.toFixed());
 		})
 
-		test(`bytes-type-${implementation}`, async () => {
+		test(`bytes-type ${implementation}`, async () => {
 			const uri = `fs/${GetPathToTestWrappers()}/bytes-type/implementations/${implementation}`;
 			const client = new PolywrapClient();
 			const response = await client.invoke({
@@ -236,7 +236,7 @@ export const typeTestCases = (implementation: string) => {
 			);
 		})
 
-		test(`enum-type-${implementation}`, async () => {
+		test(`enum-type ${implementation}`, async () => {
 			const uri = `fs/${GetPathToTestWrappers()}/enum-type/implementations/${implementation}`;
 			const client = new PolywrapClient();
 
@@ -295,7 +295,7 @@ export const typeTestCases = (implementation: string) => {
 			expect(method2a.value).toEqual([0, 0, 2]);
 		})
 
-		test(`invalid-types-${implementation}`, async () => {
+		test(`invalid-types ${implementation}`, async () => {
 			const uri = `fs/${GetPathToTestWrappers()}/invalid-type/implementations/${implementation}`;
 			const client = new PolywrapClient();
 			let invalidBoolIntSent = await client.invoke({
@@ -368,7 +368,7 @@ export const typeTestCases = (implementation: string) => {
 			);
 		})
 
-		test(`json-type-${implementation}`, async () => {
+		test(`json-type ${implementation}`, async () => {
 			const uri = `fs/${GetPathToTestWrappers()}/json-type/implementations/${implementation}`;
 			const client = new PolywrapClient();
 			type Json = string;
@@ -462,7 +462,7 @@ export const typeTestCases = (implementation: string) => {
 			}
 		})
 
-		test(`numbers-type-${implementation}`, async () => {
+		test(`numbers-type ${implementation}`, async () => {
 			const uri = `fs/${GetPathToTestWrappers()}/numbers-type/implementations/${implementation}`;
 			const client = new PolywrapClient();
 			let i8Underflow = await client.invoke({
@@ -551,7 +551,7 @@ export const typeTestCases = (implementation: string) => {
 			);
 		})
 
-		test(`object-type-${implementation}`, async () => {
+		test(`object-type ${implementation}`, async () => {
 			const uri = `fs/${GetPathToTestWrappers()}/object-type/implementations/${implementation}`;
 			const client = new PolywrapClient();
 			const method1a = await client.invoke({
@@ -703,7 +703,7 @@ export const typeTestCases = (implementation: string) => {
 			});
 		})
 
-		test(`map-type-${implementation}`, async () => {
+		test(`map-type ${implementation}`, async () => {
 			const uri = `fs/${GetPathToTestWrappers()}/map-type/implementations/${implementation}`;
 			const client = new PolywrapClient();
 			const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);

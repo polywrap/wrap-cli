@@ -6,8 +6,8 @@ import {
 } from "../..";
 import fs from "fs";
 
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { IUriPackage, IUriRedirect } from "@polywrap/core-js";
-import { buildWrapper } from "@polywrap/test-env-js";
 import { ResultErr } from "@polywrap/result";
 import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
 import { WasmPackage } from "@polywrap/wasm-js";
@@ -43,20 +43,17 @@ describe("sanity", () => {
   });
 
   test("validate requested uri is available", async () => {
-    const fooPath = `${__dirname}/../utils/validate/wrapper-a`;
-    const greetingPath = `${__dirname}/../utils/validate/wrapper-b`;
-    const modifiedFooPath = `${__dirname}/../utils/validate/wrapper-c`
-    const fooUri = `ens/foo.eth`;
-    const greetingUri = `ens/greeting.eth`;
-    const modifiedFooUri = `ens/foo-modified.eth`;
-
+    const subinvokeWrapperPath = `file/${GetPathToTestWrappers()}/subinvoke/00-subinvoke/implementation/as`;
+    const subinvokeUri = "ens/subinvoke.eth"
+    const invokeUri = `file/${GetPathToTestWrappers()}/subinvoke/01-invoke/implementation/as`;
+    const consumerUri = `file/${GetPathToTestWrappers()}/subinvoke/01-invoke/implementation/as`
     const getPackage = async (name: string) => {
       const manifest = await fs.promises.readFile(
-        `${__dirname}/../utils/validate/${name}/build/wrap.info`
+        `${GetPathToTestWrappers()}/subinvoke/${name}/implementations/as/wrap.info`
       );
 
       const wasmModule = await fs.promises.readFile(
-        `${__dirname}/../utils/validate/${name}/build/wrap.wasm`
+        `${GetPathToTestWrappers()}/subinvoke/${name}/implementations/as/wrap.wasm`
       );
       return WasmPackage.from(manifest, wasmModule)
     }
@@ -71,17 +68,16 @@ describe("sanity", () => {
       envs: undefined
     }
 
-    await buildWrapper(fooPath, undefined, true);
     let client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
-    let result = await client.validate(fooUri, {});
+    let result = await client.validate(subinvokeUri, {});
     expect(result.ok).toBeFalsy();
     let resultError = (result as { error: Error }).error;
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
 
     let fooPackage: IUriPackage<string> = {
-      uri: fooUri,
-      package: await getPackage("wrapper-a")
+      uri: subinvokeUri,
+      package: await getPackage("00-subinvoke")
     }
 
     let resolvers: UriResolverLike[] = [ fooPackage ]
@@ -92,11 +88,11 @@ describe("sanity", () => {
     };
     
     client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
-    result = await client.validate(fooUri, {});
+    result = await client.validate(subinvokeUri, {});
 
     expect(result.ok).toBeTruthy();
 
-    result = await client.validate(greetingUri, {
+    result = await client.validate(invokeUri, {
       recursive: true
     })
     resultError = (result as { error: Error }).error;
@@ -104,11 +100,9 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Unable to find URI");
 
-    await buildWrapper(greetingPath, undefined, true);
-
     let modifiedFooWrapper: IUriPackage<string> = {
-      uri: greetingUri,
-      package: await getPackage("wrapper-b")
+      uri: invokeUri,
+      package: await getPackage("01-invoke")
     };
     resolvers.push(modifiedFooWrapper);
     staticResolver = StaticResolver.from(resolvers);
@@ -116,16 +110,15 @@ describe("sanity", () => {
     (config as Record<string, unknown>).resolver = staticResolver;
     client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
 
-    result = await client.validate(greetingUri, {
+    result = await client.validate(invokeUri, {
       recursive: true
     })
 
     expect(result.ok).toBeTruthy()
 
-    await buildWrapper(modifiedFooPath, undefined, true);
-      let redirectUri: IUriRedirect<string> = {
-      from: fooUri,
-      to: modifiedFooUri
+    let redirectUri: IUriRedirect<string> = {
+      from: subinvokeUri,
+      to: consumerUri
     };
     resolvers.push(redirectUri);
 
@@ -134,7 +127,7 @@ describe("sanity", () => {
     (config as Record<string, unknown>).resolver = staticResolver;
     client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
 
-    result = await client.validate(greetingUri, {
+    result = await client.validate(invokeUri, {
       abi: true
     })
 

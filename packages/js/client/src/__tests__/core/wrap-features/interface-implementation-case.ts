@@ -8,7 +8,7 @@ jest.setTimeout(200000);
 
 export const interfaceInvokeCase = (implementation: string) => {
 	describe("interface invoke", () => {
-		test(`invoke wrappers-${implementation}`, async () => {
+		test(`invoke wrappers ${implementation}`, async () => {
 			const interfaceUri = "wrap://ens/interface.eth";
 			const implementationPath = `${GetPathToTestWrappers()}/interface-invoke/01-implementation/implementations/${implementation}`;
 			const implementationUri = `fs/${implementationPath}`;
