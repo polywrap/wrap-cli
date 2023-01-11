@@ -27,13 +27,20 @@ export const getClient = () => {
 
   return new PolywrapClient(
     {
+      envs: [
+        {
+          uri: defaultWrapperAliases.ipfsResolver,
+          env: {
+            provider: providers.ipfs,
+          },
+        },
+      ],
       interfaces: [
         {
           interface: ExtendableUriResolver.extInterfaceUri,
           implementations: [
             defaultWrapperAliases.ipfsResolver,
             defaultPackages.ensResolver,
-            defaultPackages.fileSystemResolver,
           ],
         },
       ],
