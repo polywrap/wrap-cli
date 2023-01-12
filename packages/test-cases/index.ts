@@ -4,6 +4,7 @@ import { readFileSync, existsSync } from "fs";
 import { normalizeLineEndings } from "@polywrap/os-js";
 import admZip from 'adm-zip';
 import axios from "axios";
+const shell = require("shelljs");
 
 export const GetPathToBindTestFiles = () => `${__dirname}/cases/bind`
 export const GetPathToComposeTestFiles = () => `${__dirname}/cases/compose`
@@ -87,12 +88,19 @@ export function fetchWrappers(): void {
 
     const download = async () => {
       try {
-        const url = "https://github.com/polywrap/wasm-test-harness/archive/refs/tags/v0.2.1.zip";
+        const tag = "0.2.1"
+        const repoName = "wasm-test-harness"
+        const url = `https://github.com/polywrap/${repoName}/archive/refs/tags/v${tag}.zip`;
+
         const buffer = await fetchFromGithub(url);
-        console.log("after the fest")
-        const destination = './unzipped';
-        await unzipFile(buffer, destination);
-        console.log(`File was successfully unzipped to ${destination}`);
+        const zipBuiltFolder = './output';
+        await unzipFile(buffer, zipBuiltFolder);
+        const generatedFolder = `${repoName}-${tag}`
+
+        const wrappersPath = path.join(zipBuiltFolder, generatedFolder, "wrappers")
+        shell.exec(`mv ${wrappersPath} ./cases`)
+        shell.exec(`rm -rf ${zipBuiltFolder}`)
+        console.log(`Wrappers folder fetch successful`);
       } catch (error) {
         console.log(`An error occurred: ${error.message}`);
       }
