@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from "fs";
 
 import { normalizeLineEndings } from "@polywrap/os-js";
 import admZip from 'adm-zip';
-import axios from "axios";
+const axios = require("axios");
 const shell = require("shelljs");
 
 export const GetPathToBindTestFiles = () => `${__dirname}/cases/bind`
@@ -88,18 +88,18 @@ export function fetchWrappers(): void {
 
     const download = async () => {
       try {
-        const tag = "0.2.1"
+        const tag = "0.0.1-pre.1"
         const repoName = "wasm-test-harness"
-        const url = `https://github.com/polywrap/${repoName}/archive/refs/tags/v${tag}.zip`;
+        const url = `https://github.com/polywrap/${repoName}/releases/download/${tag}/wrappers.zip`;
 
         const buffer = await fetchFromGithub(url);
         const zipBuiltFolder = './output';
         await unzipFile(buffer, zipBuiltFolder);
-        const generatedFolder = `${repoName}-${tag}`
-
-        const wrappersPath = path.join(zipBuiltFolder, generatedFolder, "wrappers")
+        const wrappersPath = path.join(zipBuiltFolder, "wrappers")
         shell.exec(`mv ${wrappersPath} ./cases`)
         shell.exec(`rm -rf ${zipBuiltFolder}`)
+        shell.exec(`rm -rf node_modules`)
+
         console.log(`Wrappers folder fetch successful`);
       } catch (error) {
         console.log(`An error occurred: ${error.message}`);
