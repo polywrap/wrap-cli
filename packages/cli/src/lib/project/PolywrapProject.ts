@@ -283,7 +283,9 @@ export class PolywrapProject extends Project<PolywrapManifest> {
 
       buildManifest.linked_packages.map(
         (linkedPackage: { path: string; name: string; filter?: string }) => {
-          const sourceDir = path.join(rootDir, linkedPackage.path);
+          const sourceDir = path.isAbsolute(linkedPackage.path)
+            ? linkedPackage.path
+            : path.join(rootDir, linkedPackage.path);
           const destinationDir = path.join(cacheSubPath, linkedPackage.name);
 
           // Update the cache
