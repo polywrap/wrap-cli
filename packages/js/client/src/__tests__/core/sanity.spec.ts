@@ -11,7 +11,7 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { ResultErr } from "@polywrap/result";
 import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
 import { WasmPackage } from "@polywrap/wasm-js";
-import { defaultWrappers } from "@polywrap/client-config-builder-js";
+import { defaultInterfaces } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 
