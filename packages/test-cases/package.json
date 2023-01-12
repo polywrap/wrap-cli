@@ -8,7 +8,6 @@
   "scripts": {
     "generate:wrappers": "npx ts-node -e \"import { fetchWrappers } from './'; fetchWrappers()\""
   },
-  "type": "module",
   "dependencies": {
     "@polywrap/os-js": "0.10.0-pre.7"
   },
