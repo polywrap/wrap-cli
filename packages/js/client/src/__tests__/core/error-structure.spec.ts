@@ -41,11 +41,11 @@ describe("Error structure", () => {
       packages: [mockPluginRegistration("plugin/mock")],
       redirects: [
         {
-          from: "ens/bad-math.eth",
+          from: Uri.from("ens/bad-math.eth"),
           to: badMathWrapperUri,
         },
         {
-          from: "ens/bad-util.eth",
+          from: Uri.from("ens/bad-util.eth"),
           to: badUtilWrapperUri,
         }
       ]

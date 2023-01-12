@@ -46,18 +46,14 @@ describe("env", () => {
         { noDefaults: true }
       );
 
-      const wrapper = client.tryResolveUri({uri: Uri.from("ens/hello.eth")});
-      
-      console.log("END");
+      const mockEnv = await client.invoke({
+        uri: Uri.from("ens/hello.eth"),
+        method: "mockEnv",
+      });
 
-      // const mockEnv = await client.invoke({
-      //   uri: Uri.from("ens/hello.eth"),
-      //   method: "mockEnv",
-      // });
-
-      // if (!mockEnv.ok) fail(mockEnv.error);
-      // expect(mockEnv.value).toBeTruthy();
-      // expect(mockEnv.value).toMatchObject({ arg1: "10" });
+      if (!mockEnv.ok) fail(mockEnv.error);
+      expect(mockEnv.value).toBeTruthy();
+      expect(mockEnv.value).toMatchObject({ arg1: "10" });
     });
 
     test("inline plugin env types", async () => {
