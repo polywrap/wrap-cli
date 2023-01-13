@@ -18,7 +18,7 @@ import nodePath from "path";
 import yaml from "yaml";
 import { validate } from "jsonschema";
 
-const defaultManifestStr = defaultPolywrapManifest.join(" | ");
+const defaultManifestStr = "polywrap.deploy.yaml";
 const pathStr = intlMsg.commands_deploy_options_o_path();
 
 export interface DeployCommandOptions extends BaseCommandOptions {
