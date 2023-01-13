@@ -6,10 +6,10 @@ import {
   DeployPackage,
   intlMsg,
   parseManifestFileOption,
-  PolywrapProject,
   DeployJob,
   DeployStep,
   parseLogFileOption,
+  PolywrapDeploy,
 } from "../lib";
 
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -70,20 +70,12 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
   const { manifestFile, outputFile, verbose, quiet, logFile } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
-  const project = new PolywrapProject({
-    rootDir: nodePath.dirname(manifestFile),
-    polywrapManifestPath: manifestFile,
-    logger,
-  });
-  await project.validate();
+  const deployer = await PolywrapDeploy.create(
+    nodePath.dirname(manifestFile),
+    logger
+  );
 
-  const deployManifest = await project.getDeployManifest();
-
-  if (!deployManifest) {
-    throw new Error("No deploy manifest found.");
-  }
-
-  const allStepsFromAllJobs = Object.entries(deployManifest.jobs).flatMap(
+  const allStepsFromAllJobs = Object.entries(deployer.manifest.jobs).flatMap(
     ([jobName, job]) => {
       return job.steps.map((step) => ({
         jobName,
@@ -98,11 +90,11 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
 
   sanitizePackages(packageNames);
 
-  await project.cacheDeployModules(packageNames);
+  await deployer.cacheDeployModules(packageNames);
 
   const packageMapEntries = await Promise.all(
     packageNames.map(async (packageName) => {
-      const deployerPackage = await project.getDeployModule(packageName);
+      const deployerPackage = await deployer.getDeployModule(packageName);
       return [packageName, deployerPackage];
     })
   );
@@ -121,9 +113,9 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
     };
   }
 
-  validateManifestWithExts(deployManifest, stepToPackageMap);
+  validateManifestWithExts(deployer.manifest, stepToPackageMap);
 
-  const jobs = Object.entries(deployManifest.jobs).map(([jobName, job]) => {
+  const jobs = Object.entries(deployer.manifest.jobs).map(([jobName, job]) => {
     const steps: DeployStep[] = job.steps.map((step) => {
       return new DeployStep({
         name: step.name,
