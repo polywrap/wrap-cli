@@ -999,34 +999,30 @@ export const runComplexEnvs = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-  // const res = await client.tryResolveUri<string>({uri: "ens/externalenv.polywrap.eth"});
-
-  // console.log(res);
-
-  // const methodRequireEnvResult = await client.invoke({
-  //   uri: wrapperUri,
-  //   method: "methodRequireEnv",
-  //   args: {
-  //     arg: "string",
-  //   },
-  // });
-  // if (!methodRequireEnvResult.ok) fail(methodRequireEnvResult.error);
-  // expect(methodRequireEnvResult.value).toEqual({
-  //   str: "string",
-  //   optFilledStr: "optional string",
-  //   optStr: null,
-  //   number: 10,
-  //   optNumber: null,
-  //   bool: true,
-  //   optBool: null,
-  //   object: {
-  //     prop: "object string",
-  //   },
-  //   optObject: null,
-  //   en: 0,
-  //   optEnum: null,
-  //   array: [32, 23],
-  // });
+  const methodRequireEnvResult = await client.invoke({
+    uri: wrapperUri,
+    method: "methodRequireEnv",
+    args: {
+      arg: "string",
+    },
+  });
+  if (!methodRequireEnvResult.ok) fail(methodRequireEnvResult.error);
+  expect(methodRequireEnvResult.value).toEqual({
+    str: "string",
+    optFilledStr: "optional string",
+    optStr: null,
+    number: 10,
+    optNumber: null,
+    bool: true,
+    optBool: null,
+    object: {
+      prop: "object string",
+    },
+    optObject: null,
+    en: 0,
+    optEnum: null,
+    array: [32, 23],
+  });
 
   const subinvokeEnvMethodResult = await client.invoke({
     uri: wrapperUri,

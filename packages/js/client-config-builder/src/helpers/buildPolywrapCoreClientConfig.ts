@@ -67,9 +67,11 @@ export function sanitizeConfig<TUri extends Uri | string = string>(
     }
   }
   if ("resolvers" in config && config.resolvers) {
-    builderConfig.resolvers.push(
-      sanitizeResolverLike<TUri | Uri>(config.resolvers)
-    );
+    for(const resolver of config.resolvers){
+      builderConfig.resolvers.push(
+        sanitizeResolverLike<TUri | Uri>(resolver)
+      );
+    }
   }
 
   return builderConfig;

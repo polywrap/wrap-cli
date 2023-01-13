@@ -27,8 +27,6 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
   buildCoreConfig(): CoreClientConfig {
     const clientConfig = this.build();
 
-    // console.log(clientConfig.packages);
-
     return {
       envs: clientConfig.envs,
       interfaces: clientConfig.interfaces,
@@ -42,7 +40,7 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
                 ...clientConfig.wrappers,
                 ...clientConfig.packages,
               ]),
-              ...this._config.resolvers,
+              ...clientConfig.resolvers,
               new ExtendableUriResolver(),
             ],
             this.wrapperCache ?? new WrapperCache()

@@ -13,5 +13,5 @@ export interface ClientConfig {
   readonly redirects: IUriRedirect[];
   readonly wrappers: IUriWrapper[];
   readonly packages: IUriPackage[];
-  readonly resolvers: UriResolverLike;
+  readonly resolvers: UriResolverLike[];
 }
