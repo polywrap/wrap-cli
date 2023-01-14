@@ -8,6 +8,7 @@ import { Logger } from "../logging";
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 import { Schema as JsonSchema } from "jsonschema";
 import path from "path";
+import nodePath from "path";
 
 interface PolywrapDeployConfig {
   cache: CacheDirectory;
@@ -17,9 +18,8 @@ interface PolywrapDeployConfig {
 
 export class PolywrapDeploy {
   public static cacheLayout = {
-    root: "wasm/",
-    deployDir: "deploy/",
-    deployModulesDir: "deploy/modules/",
+    root: "deploy/",
+    deployModulesDir: "modules/",
   };
   public manifest: DeployManifest;
   private _config: PolywrapDeployConfig;
@@ -43,7 +43,7 @@ export class PolywrapDeploy {
   ): Promise<PolywrapDeploy> {
     const deployManifest = await loadDeployManifest(manifest, logger);
     const cache = new CacheDirectory({
-      rootDir: manifest,
+      rootDir: nodePath.dirname(manifest),
       subDir: PolywrapDeploy.cacheLayout.root,
     });
     return new PolywrapDeploy(deployManifest, cache, logger);

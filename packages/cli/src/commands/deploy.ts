@@ -2,7 +2,6 @@
 import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import {
-  defaultPolywrapManifest,
   DeployPackage,
   intlMsg,
   parseManifestFileOption,
@@ -53,10 +52,9 @@ export const deploy: Command = {
       )
       .action(async (options: Partial<DeployCommandOptions>) => {
         await run({
-          manifestFile: parseManifestFileOption(
-            options.manifestFile,
-            defaultPolywrapManifest
-          ),
+          manifestFile: parseManifestFileOption(options.manifestFile, [
+            defaultManifestStr,
+          ]),
           outputFile: options.outputFile || false,
           verbose: options.verbose || false,
           quiet: options.quiet || false,
@@ -70,10 +68,7 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
   const { manifestFile, outputFile, verbose, quiet, logFile } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
-  const deployer = await PolywrapDeploy.create(
-    nodePath.dirname(manifestFile),
-    logger
-  );
+  const deployer = await PolywrapDeploy.create(manifestFile, logger);
 
   const allStepsFromAllJobs = Object.entries(deployer.manifest.jobs).flatMap(
     ([jobName, job]) => {
