@@ -12,9 +12,11 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn copy:wrappers",
+    "build": "yarn build:fast && yarn build:snippets && yarn build:readme",
+    "build:fast": "rimraf ./build && tsc --project tsconfig.build.json && yarn copy:wrappers",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "copy:wrappers": "copyfiles ./src/wrappers/**/**/* ./build/wrappers/ -u 2",
+    "build:snippets": "tsc --project ./examples/tsconfig.examples.json",
     "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
@@ -37,13 +39,16 @@
   },
   "doc-snippets": {
     "extract": {
-      "include": "./**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}",
+      "include": [
+        "./src/**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}",
+        "./examples/**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}"
+      ],
       "ignore": [
         "./**/node_modules/**",
         "./**/.polywrap/**",
         "./**/__tests__/**"
       ],
-      "dir": "./src"
+      "dir": "./"
     },
     "inject": {
       "dir": "./readme",
