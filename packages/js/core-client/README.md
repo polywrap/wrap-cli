@@ -15,71 +15,32 @@ npm install --save @polywrap/core-client-js
 
 ## Usage
 
-### Instantiate the client
-```ts
-import { PolywrapCoreClient } from "@polywrap/core-client-js";
+### Instantiate
 
-const config = { ... };
-const client = new PolywrapCoreClient(config);
+Use the `@polywrap/client-config-builder-js` package to build a CoreClientConfig for your project, then use the PolywrapCoreClient [constructor](#constructor) to instantiate the client with your config.
+
+```ts
+  const config = new ClientConfigBuilder().addDefaults().buildCoreConfig();
+
+  const client = new PolywrapCoreClient(config);
 ```
 
-### Invoke a wrapper
+### Invoke
+
+Invoke a wrapper.
 
 ```ts
-await client.invoke({
-  uri: "ens/helloworld.dev.polywrap.eth",
-  method: "logMessage",
-  args: {
-    message: "Hello World!"
-  }
-});
-```
+  const result = await client.invoke({
+    uri: "ens/helloworld.dev.polywrap.eth",
+    method: "logMessage",
+    args: {
+      message: "Hello World!"
+    }
+  });
 
-### Configure the core client
+  if (!result.ok) throw result.error;
 
-```ts
-const config = {
-  // declare interface implementations
-  interfaces: [
-    {
-      interface: "wrap://ens/uri-resolver.core.polywrap.eth",
-      implementations: [
-        "wrap://ens/ipfs-resolver.polywrap.eth",
-      ],
-    },
-  ],
-  // set environmental variables for a wrapper
-  envs: [
-    {
-      uri: "wrap://ens/ipfs.polywrap.eth",
-      env: {
-        provider: "https://ipfs.wrappers.io",
-      },
-    },
-  ],
-  // customize URI resolution by adding redirects and embedded wrappers/packages
-  resolver:
-    RecursiveResolver.from(
-      PackageToWrapperCacheResolver.from(
-        [
-          StaticResolver.from([
-            ...redirects,
-            ...wrappers,
-            ...packages,
-          ]),
-          ...this.config.resolvers,
-          new ExtendableUriResolver(),
-        ],
-        new WrapperCache()
-      )
-    ),
-  // tracer configuration - see @polywrap/tracing-js package
-  tracerConfig: { ... },
-};
-```
-```ts
-// create a client by modifying the default configuration bundle
-const client = new PolywrapCoreClient(config);
+  const value = result.value;
 ```
 
 # Reference
