@@ -9,6 +9,7 @@ import {
   DeployStep,
   parseLogFileOption,
   PolywrapDeploy,
+  defaultDeployManifest,
 } from "../lib";
 
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -17,7 +18,7 @@ import nodePath from "path";
 import yaml from "yaml";
 import { validate } from "jsonschema";
 
-const defaultManifestStr = "polywrap.deploy.yaml";
+const defaultManifestStr = defaultDeployManifest.join(" | ");
 const pathStr = intlMsg.commands_deploy_options_o_path();
 
 export interface DeployCommandOptions extends BaseCommandOptions {
@@ -52,9 +53,10 @@ export const deploy: Command = {
       )
       .action(async (options: Partial<DeployCommandOptions>) => {
         await run({
-          manifestFile: parseManifestFileOption(options.manifestFile, [
-            defaultManifestStr,
-          ]),
+          manifestFile: parseManifestFileOption(
+            options.manifestFile,
+            defaultDeployManifest
+          ),
           outputFile: options.outputFile || false,
           verbose: options.verbose || false,
           quiet: options.quiet || false,
