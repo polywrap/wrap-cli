@@ -82,6 +82,8 @@ const config = {
 const client = new PolywrapCoreClient(config);
 ```
 
+# Reference
+
 ## Types
 
 ```ts

@@ -42,6 +42,8 @@ const config = builder.build();
 let client = new PolywrapClient(config);
 ```
 
+# Reference
+
 ## Types
 
 ```ts

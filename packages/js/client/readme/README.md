@@ -104,6 +104,8 @@ const client = new PolywrapClient(config);
 const altClient = new PolywrapClient(config, { noDefaults: true });
 ```
 
+# Reference
+
 ## Types
 
 ```ts

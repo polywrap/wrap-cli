@@ -12,7 +12,8 @@ import {
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 export class ClientConfigBuilder extends BaseClientConfigBuilder {
-  /* $start: ClientConfigBuilder-constructor */ /**
+  // $start: ClientConfigBuilder-constructor
+  /**
    * Instantiate a ClientConfigBuilder
    *
    * @param wrapperCache?: a wrapper cache to be used in place of the default wrapper cache
