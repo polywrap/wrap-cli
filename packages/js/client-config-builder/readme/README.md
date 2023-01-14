@@ -1,45 +1,47 @@
 # PolywrapClient Config Builder
 
-A DSL for building the PolywrapClient config object. 
+A utility class for building the PolywrapClient config. 
 
 Supports building configs using method chaining or imperatively.
 
+## Quickstart
+
+### Initialize
+
+Initialize a ClientConfigBuilder using the [constructor](#constructor)
+
+```typescript
+$snippet: quickstart-initialize
+```
+
+### Configure
+
+Add client configuration with [add](#add), or flexibly mix and match builder [configuration methods](#addwrapper) to add and remove configuration items.
+
+```typescript
+$snippet: quickstart-configure
+```
+
+You can add the entire [default client configuration bundle](#bundle--defaultconfig) at once with [addDefaults](#adddefaults)
+
+```typescript
+$snippet: quickstart-addDefaults
+```
+
+### Build
+
+Finally, build a ClientConfig or CoreClientConfig to pass to the PolywrapClient constructor.
+
+```typescript
+$snippet: quickstart-build
+```
+
+### Example
+
+A complete example using all or most of the available methods.
+
 ```typescript=
-import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { PolywrapClient } from "@polywrap/client-js";
-
-const config = new ClientConfigBuilder()
-  .add({
-    envs: [/*...*/],
-    interfaces: [/*...*/],
-    redirects: [/*...*/],
-    wrappers: [/*...*/],
-    packages: [/*...*/],
-    resolvers: [/*...*/],
-  })
-  .add({/*...*/})
-  .build();
-
-// ...
-
-const builder = new ClientConfigBuilder();
-
-builder.addDefaults();
-
-builder.add({
-  packages: [/*...*/]
-});
-
-builder.add({
-  envs: [/*...*/]
-});
-
-const config = builder.build();
-
-
-// ...
-
-let client = new PolywrapClient(config);
+$snippet: quickstart
 ```
 
 # Reference
@@ -57,24 +59,9 @@ $snippet: ClientConfig
 $snippet: ClientConfigBuilder-constructor
 ```
 
-### build
-```ts
-$snippet: IClientConfigBuilder-build
-```
-
-### buildCoreConfig
-```ts
-$snippet: IClientConfigBuilder-buildCoreConfig
-```
-
 ### add
 ```ts
 $snippet: IClientConfigBuilder-add
-```
-
-### addDefaults
-```ts
-$snippet: IClientConfigBuilder-addDefaults
 ```
 
 ### addWrapper
@@ -167,7 +154,24 @@ $snippet: IClientConfigBuilder-addResolver
 $snippet: IClientConfigBuilder-addResolvers
 ```
 
-## Bundle: DefaultConfig
+### addDefaults
+```ts
+$snippet: IClientConfigBuilder-addDefaults
+```
+
+### build
+```ts
+$snippet: IClientConfigBuilder-build
+```
+
+### buildCoreConfig
+```ts
+$snippet: IClientConfigBuilder-buildCoreConfig
+```
+
+## Bundles
+
+### Bundle: DefaultConfig
 ```ts
 $snippet: getDefaultConfig
 ```
