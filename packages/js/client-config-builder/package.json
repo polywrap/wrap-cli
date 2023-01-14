@@ -53,13 +53,16 @@
   },
   "doc-snippets": {
     "extract": {
-      "include": "./**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}",
+      "include": [
+        "./src/**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}",
+        "./examples/**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}"
+      ],
       "ignore": [
         "./**/node_modules/**",
         "./**/.polywrap/**",
         "./**/__tests__/**"
       ],
-      "dir": "./src"
+      "dir": "./"
     },
     "inject": {
       "dir": "./readme",

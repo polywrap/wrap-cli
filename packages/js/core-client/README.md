@@ -82,6 +82,8 @@ const config = {
 const client = new PolywrapCoreClient(config);
 ```
 
+# Reference
+
 ## Types
 
 ```ts
@@ -194,7 +196,7 @@ export interface PolywrapCoreClientConfig<
   @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<TUri extends Uri | string>(
     uri: TUri
-  ): Promise<Result<WrapManifest, Error>> 
+  ): Promise<Result<WrapManifest, WrapError>> 
 ```
 
 ### getFile
@@ -210,7 +212,7 @@ export interface PolywrapCoreClientConfig<
   public async getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<Result<string | Uint8Array, Error>> 
+  ): Promise<Result<string | Uint8Array, WrapError>> 
 ```
 
 ### getImplementations
@@ -227,7 +229,7 @@ export interface PolywrapCoreClientConfig<
   public async getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions = {}
-  ): Promise<Result<TUri[], Error>> 
+  ): Promise<Result<TUri[], WrapError>> 
 ```
 
 ### invokeWrapper
@@ -337,7 +339,7 @@ export interface PolywrapCoreClientConfig<
     uri: Uri,
     resolutionContext?: IUriResolutionContext,
     options?: DeserializeManifestOptions
-  ): Promise<Result<Wrapper, Error>> 
+  ): Promise<Result<Wrapper, WrapError>> 
 ```
 
 ### validate
@@ -350,11 +352,11 @@ export interface PolywrapCoreClientConfig<
    * @param options - { abi?: boolean; recursive?: boolean }
    * @returns A Promise with a Result containing a boolean or Error
    */
-  @Tracer.traceMethod("PolywrapClient: validateConfig")
+  @Tracer.traceMethod("PolywrapClient: validate")
   public async validate<TUri extends Uri | string>(
     uri: TUri,
     options: ValidateOptions
-  ): Promise<Result<true, Error>> 
+  ): Promise<Result<true, WrapError>> 
 ```
 
 ## Development

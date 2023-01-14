@@ -8,6 +8,5 @@
   ],
   "exclude": [
     "./src/**/__tests__",
-    "./examples"
   ]
 }

@@ -2,6 +2,8 @@
 
 A TypeScript / JavaScript implementation of the WRAP standard, including all fundamental types & algorithms.
 
+# Reference
+
 ## Types
 
 ### CoreClient
@@ -93,7 +95,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    */
   getManifest<TUri extends Uri | string>(
     uri: TUri
-  ): Promise<Result<WrapManifest, Error>>;
+  ): Promise<Result<WrapManifest, WrapError>>;
 
   /**
    * returns a file contained in a wrap package
@@ -105,7 +107,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
   getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<Result<string | Uint8Array, Error>>;
+  ): Promise<Result<string | Uint8Array, WrapError>>;
 
   /**
    * returns the interface implementations associated with an interface URI
@@ -118,7 +120,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
   getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions
-  ): Promise<Result<TUri[], Error>>;
+  ): Promise<Result<TUri[], WrapError>>;
 
   /**
    * Validate a wrapper, given a URI.
@@ -131,7 +133,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
   validate<TUri extends Uri | string>(
     uri: TUri,
     options?: ValidateOptions
-  ): Promise<Result<true, Error>>;
+  ): Promise<Result<true, WrapError>>;
 }
 
 ```
@@ -193,7 +195,7 @@ export interface InvokeOptions<TUri extends Uri | string = string> {
  *
  * @template TData Type of the invoke result data.
  */
-export type InvokeResult<TData = unknown> = Result<TData, Error>;
+export type InvokeResult<TData = unknown> = Result<TData, WrapError>;
 
 /**
  * Provides options for the invoker to set based on the state of the invocation.
@@ -580,7 +582,7 @@ export interface MaybeUriOrManifest {
       invoker: Invoker,
       wrapper: Uri,
       uri: Uri
-    ): Promise<Result<MaybeUriOrManifest, Error>> 
+    ): Promise<Result<MaybeUriOrManifest, WrapError>> 
 ```
 
 #### getFile
@@ -598,7 +600,7 @@ export interface MaybeUriOrManifest {
       invoker: Invoker,
       wrapper: Uri,
       path: string
-    ): Promise<Result<Uint8Array | undefined, Error>> 
+    ): Promise<Result<Uint8Array | undefined, WrapError>> 
 ```
 
 ## Uri Resolution

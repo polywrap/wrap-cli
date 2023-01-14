@@ -36,7 +36,7 @@ export function configure(): ClientConfigBuilder {
     resolvers: [],
   });
 
-  // add or remove items using the more specific add methods
+  // add or remove items by chaining method calls
   builder
     .addPackage({
       uri: "wrap://plugin/package",
