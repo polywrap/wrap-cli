@@ -7,10 +7,7 @@ import axios from "axios";
 import fs from "fs";
 import yaml from "yaml";
 import { Uri } from "@polywrap/core-js";
-import {
-  DeployManifest,
-  deserializePolywrapManifest,
-} from "@polywrap/polywrap-manifest-types-js";
+import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 
 export const ensAddresses = {
   ensAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
@@ -367,10 +364,7 @@ export async function buildAndDeployWrapperToHttp({
   name?: string;
   codegen?: boolean;
 }): Promise<{ uri: string }> {
-  const manifestPath = `${wrapperAbsPath}/polywrap.yaml`;
-  const tempManifestFilename = `polywrap-temp.yaml`;
   const tempDeployManifestFilename = `polywrap.deploy-temp.yaml`;
-  const tempManifestPath = path.join(wrapperAbsPath, tempManifestFilename);
   const tempDeployManifestPath = path.join(
     wrapperAbsPath,
     tempDeployManifestFilename
@@ -380,22 +374,6 @@ export async function buildAndDeployWrapperToHttp({
   const postUrl = `${httpProvider}/wrappers/local/${wrapperName}`;
 
   await buildWrapper(wrapperAbsPath, undefined, codegen);
-
-  // manually configure manifests
-
-  const { __type, ...polywrapManifest } = deserializePolywrapManifest(
-    fs.readFileSync(manifestPath, "utf-8")
-  );
-
-  polywrapManifest.extensions = {
-    ...polywrapManifest.extensions,
-    deploy: `./${tempDeployManifestFilename}`,
-  };
-  fs.writeFileSync(
-    tempManifestPath,
-    yaml.stringify({ ...polywrapManifest }, null, 2)
-  );
-
   const deployManifest: Omit<DeployManifest, "__type"> = {
     format: "0.2.0",
     jobs: {
@@ -425,7 +403,7 @@ export async function buildAndDeployWrapperToHttp({
     stdout: deployStdout,
     stderr: deployStderr,
   } = await runCLI({
-    args: ["deploy", "--manifest-file", tempManifestPath],
+    args: ["deploy", "--manifest-file", tempDeployManifestPath],
   });
 
   if (deployExitCode !== 0) {
@@ -436,8 +414,6 @@ export async function buildAndDeployWrapperToHttp({
   }
 
   // remove manually configured manifests
-
-  fs.unlinkSync(tempManifestPath);
   fs.unlinkSync(tempDeployManifestPath);
 
   return {
