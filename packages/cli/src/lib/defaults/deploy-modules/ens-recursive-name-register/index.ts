@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Deployer } from "../../../deploy";
-import { invokeWithTimeout } from "./invokeWithTimeout";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
@@ -18,6 +17,7 @@ import {
   defaultPackages,
   defaultWrappers,
 } from "@polywrap/client-config-builder-js";
+import { invokeWithTimeout } from "wraplib";
 
 class ENSRecursiveNameRegisterPublisher implements Deployer {
   async execute(
