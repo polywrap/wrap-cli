@@ -10,3 +10,5 @@ source:
       abi: ../0-subinvoke/build/wrap.info
     - uri: ens/not-found.eth
       abi: ../0-subinvoke/build/wrap.info
+extensions:
+  build: ./polywrap.build.yaml

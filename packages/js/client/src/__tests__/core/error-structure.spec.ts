@@ -209,7 +209,7 @@ describe("Error structure", () => {
       expect(prevOfPrev.uri.endsWith("wrap://ens/bad-util.eth")).toBeTruthy();
       expect(prevOfPrev.method).toEqual("iThrow");
       expect(prevOfPrev.args).toEqual("{\n  \"0\": 129,\n  \"1\": 161,\n  \"2\": 97,\n  \"3\": 0\n}");
-      expect(prevOfPrev.source).toEqual({ file: "src/index.ts", row: 5, col: 5 });
+      expect(prevOfPrev.source).toEqual({ file: "src/index.ts", row: 6, col: 7 });
     });
 
     test("Invoke a wrapper of incompatible version", async () => {
