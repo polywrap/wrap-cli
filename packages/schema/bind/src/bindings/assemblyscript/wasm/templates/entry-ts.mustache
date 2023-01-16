@@ -24,12 +24,11 @@ export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): b
     method_size,
     args_size
   );
+  let result: ArrayBuffer;
   {{#moduleType}}
   {{#methods}}
   {{^first}}else {{/first}}if (args.method == "{{name}}") {
-    const result = {{name}}Wrapped(module, args.args, env_size);
-    wrap_invoke_result(result);
-    return true;
+    result = {{name}}Wrapped(module, args.args, env_size);
   }
   {{/methods}}
   {{/moduleType}}
@@ -39,6 +38,8 @@ export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): b
     );
     return false;
   }
+  wrap_invoke_result(result);
+  return true;
 }
 
 export function wrapAbort(

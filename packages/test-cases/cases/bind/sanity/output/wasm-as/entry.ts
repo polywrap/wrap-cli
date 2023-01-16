@@ -21,25 +21,18 @@ export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): b
     method_size,
     args_size
   );
+  let result: ArrayBuffer;
   if (args.method == "moduleMethod") {
-    const result = moduleMethodWrapped(module, args.args, env_size);
-    wrap_invoke_result(result);
-    return true;
+    result = moduleMethodWrapped(module, args.args, env_size);
   }
   else if (args.method == "objectMethod") {
-    const result = objectMethodWrapped(module, args.args, env_size);
-    wrap_invoke_result(result);
-    return true;
+    result = objectMethodWrapped(module, args.args, env_size);
   }
   else if (args.method == "optionalEnvMethod") {
-    const result = optionalEnvMethodWrapped(module, args.args, env_size);
-    wrap_invoke_result(result);
-    return true;
+    result = optionalEnvMethodWrapped(module, args.args, env_size);
   }
   else if (args.method == "if") {
-    const result = ifWrapped(module, args.args, env_size);
-    wrap_invoke_result(result);
-    return true;
+    result = ifWrapped(module, args.args, env_size);
   }
   else {
     wrap_invoke_error(
@@ -47,6 +40,8 @@ export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): b
     );
     return false;
   }
+  wrap_invoke_result(result);
+  return true;
 }
 
 export function wrapAbort(

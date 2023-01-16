@@ -187,7 +187,7 @@ function applyTransforms(abi: WrapAbi): WrapAbi {
     extendType(Functions),
     addFirstLast,
     toPrefixedGraphQLType,
-    moduleHasEnv,
+    moduleHasEnv(),
   ];
 
   for (const transform of transforms) {
