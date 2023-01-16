@@ -105,13 +105,13 @@ function replaceAll(str: string, strToReplace: string, replaceStr: string) {
 }
 
 describe("URI resolution", () => {
-  // beforeAll(async () => {
-  //   await Promise.all([
-  //     buildWrapper(wrapperPath, undefined, true),
-  //     buildWrapper(simpleFsResolverWrapperPath, undefined, true),
-  //     buildWrapper(simpleRedirectResolverWrapperPath, undefined, true)
-  //   ]);
-  // });
+  beforeAll(async () => {
+    await Promise.all([
+      buildWrapper(wrapperPath, undefined, true),
+      buildWrapper(simpleFsResolverWrapperPath, undefined, true),
+      buildWrapper(simpleRedirectResolverWrapperPath, undefined, true)
+    ]);
+  });
 
   it("sanity", async () => {
     const uri = new Uri("ens/uri.eth");
@@ -167,7 +167,6 @@ describe("URI resolution", () => {
     ]);
   });
 
-  // TODO: This test is failing because UriResolverAggregator is called twice
   it("can resolve plugin", async () => {
     const pluginUri = new Uri("ens/plugin.eth");
     const client = new PolywrapClient(
