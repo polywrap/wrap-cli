@@ -18,31 +18,26 @@ pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32, env_size: u32) 
 
     let mut module = Module::__new__();
     let args: InvokeArgs = invoke::wrap_invoke_args(method_size, args_size);
+    let result: Vec<u8>;
 
     match args.method.as_str() {
         "moduleMethod" => {
-            let result = module_method_wrapped(&mut module, args.args.as_slice(), env_size);
-            invoke::wrap_invoke_result(result);
-            true
+            result = module_method_wrapped(&mut module, args.args.as_slice(), env_size);
         }
         "objectMethod" => {
-            let result = object_method_wrapped(&mut module, args.args.as_slice(), env_size);
-            invoke::wrap_invoke_result(result);
-            true
+            result = object_method_wrapped(&mut module, args.args.as_slice(), env_size);
         }
         "optionalEnvMethod" => {
-            let result = optional_env_method_wrapped(&mut module, args.args.as_slice(), env_size);
-            invoke::wrap_invoke_result(result);
-            true
+            result = optional_env_method_wrapped(&mut module, args.args.as_slice(), env_size);
         }
         "if" => {
-            let result = if_wrapped(&mut module, args.args.as_slice(), env_size);
-            invoke::wrap_invoke_result(result);
-            true
+            result = if_wrapped(&mut module, args.args.as_slice(), env_size);
         }
         _ => {
             invoke::wrap_invoke_error(format!("Could not find invoke function {}", args.method));
-            false
+            return false;
         }
-    }
+    };
+    invoke::wrap_invoke_result(result);
+    return true;
 }

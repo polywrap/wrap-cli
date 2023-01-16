@@ -21,20 +21,21 @@ pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32, env_size: u32) 
 
     let mut module = Module::__new__();
     let args: InvokeArgs = invoke::wrap_invoke_args(method_size, args_size);
+    let result: Vec<u8>;
 
     match args.method.as_str() {
         {{#moduleType}}
         {{#methods}}
         "{{name}}" => {
-            let result = {{#toLower}}{{name}}{{/toLower}}_wrapped(&mut module, args.args.as_slice(), env_size);
-            invoke::wrap_invoke_result(result);
-            true
+            result = {{#toLower}}{{name}}{{/toLower}}_wrapped(&mut module, args.args.as_slice(), env_size);
         }
         {{/methods}}
         {{/moduleType}}
         _ => {
             invoke::wrap_invoke_error(format!("Could not find invoke function {}", args.method));
-            false
+            return false;
         }
-    }
+    };
+    invoke::wrap_invoke_result(result);
+    return true;
 }

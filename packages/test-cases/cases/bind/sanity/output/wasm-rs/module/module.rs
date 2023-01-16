@@ -20,6 +20,7 @@ use crate::Else;
 pub struct Module {
   pub env: Option<Env>,
 }
+
 pub trait EnvTrait {
   fn __set_env__(&mut self, env: Env) -> ();
 }

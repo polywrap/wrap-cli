@@ -201,7 +201,7 @@ function applyTransforms(abi: WrapAbi): WrapAbi {
     methodParentPointers(),
     Transforms.propertyDeps(),
     Transforms.byRef(),
-    moduleHasEnv,
+    moduleHasEnv(),
   ];
 
   for (const transform of transforms) {

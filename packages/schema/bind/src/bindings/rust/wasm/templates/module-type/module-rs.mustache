@@ -28,6 +28,7 @@ pub struct Module {
   {{#hasEnv}}pub env: Option<Env>,{{/hasEnv}}
 }
 {{#hasEnv}}
+
 pub trait EnvTrait {
   fn __set_env__(&mut self, env: Env) -> ();
 }
