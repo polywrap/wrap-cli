@@ -16,6 +16,7 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
       const buildManifestConfig = buildManifest.config as BuildManifestConfig;
 
       if (buildManifestConfig.polywrap_module) {
+        const polywrapModuleDir = buildManifestConfig.polywrap_module.dir;
         let scriptPath = `${__dirname}/../../defaults/build-strategies/${bindLanguage}/${this.getStrategyName()}/local.sh`;
 
         if (bindLanguage.startsWith("wasm")) {
@@ -23,15 +24,27 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
           scriptPath = customScript ?? scriptPath;
         }
 
-        const command = `chmod +x ${scriptPath} && ${scriptPath} ${buildManifestConfig.polywrap_module.dir} ${this.outputDir}`;
-
         await logActivity(
           this.project.logger,
           intlMsg.lib_helpers_buildText(),
           intlMsg.lib_helpers_buildError(),
           intlMsg.lib_helpers_buildWarning(),
           async (logger) => {
-            return await runCommand(command, logger, undefined, process.cwd());
+            return await runCommand(
+              "chmod",
+              ["+x", scriptPath],
+              logger,
+              undefined,
+              process.cwd()
+            ).then(() =>
+              runCommand(
+                scriptPath,
+                [polywrapModuleDir, this.outputDir],
+                logger,
+                undefined,
+                process.cwd()
+              )
+            );
           }
         );
       }

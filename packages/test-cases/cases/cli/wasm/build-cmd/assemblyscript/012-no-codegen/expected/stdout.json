@@ -1,7 +1,0 @@
-{
-  "stderr": [
-    "Failed to compile Polywrap",
-    "File 'src/wrap/entry.ts' not found"
-  ],
-  "exitCode": 1
-}

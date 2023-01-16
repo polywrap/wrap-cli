@@ -2,7 +2,7 @@
   "stdout": [
     "Manifest loaded from ./polywrap.custom.plugin.yaml",
     "Generate types",
-    "Manifest written to ./build/wrap.info"
+    "Types were generated successfully"
   ],
   "exitCode": 0
 }
