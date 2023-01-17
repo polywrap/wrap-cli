@@ -221,7 +221,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
               `${path.resolve(
                 this._volumePaths.linkedPackages
               )}:/linked-packages`,
-              `${CONFIGS[language].baseImage}:${process.arch}}`,
+              `${CONFIGS[language].baseImage}:${process.arch}`,
               "/bin/bash",
               "-c",
               '"chmod -R 777 /project && chmod -R 777 /linked-packages"',
