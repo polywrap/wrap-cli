@@ -13,8 +13,14 @@ describe("unit tests for option-parsers", () => {
       "ens/hello-world.polywrap.eth": { foo: "bar" },
     };
 
-    it("Should return undefined when no filename is provided", async () => {
+    it("Should return undefined when undefined is provided for wrapperEnvsPath", async () => {
       const envs = await parseWrapperEnvsOption(undefined);
+
+      expect(envs).toBeUndefined();
+    });
+
+    it("Should return undefined when false is provided for wrapperEnvsPath", async () => {
+      const envs = await parseWrapperEnvsOption(false);
 
       expect(envs).toBeUndefined();
     });
