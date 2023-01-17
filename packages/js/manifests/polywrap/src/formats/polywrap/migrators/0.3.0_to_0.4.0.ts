@@ -14,3 +14,4 @@ export function migrate(migrate: OldManifest, logger?: ILogger): NewManifest {
     format: "0.4.0",
   };
 }
+Deployer

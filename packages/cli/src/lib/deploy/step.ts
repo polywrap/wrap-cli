@@ -1,4 +1,4 @@
-import { Deployer } from "./deployer";
+import { DeployModule } from "./Deployer";
 
 import { Uri } from "@polywrap/core-js";
 
@@ -14,24 +14,24 @@ export interface StepResult {
 interface StepArgs {
   name: string;
   uriOrStepResult: UriOrPrevStepResult;
-  deployer: Deployer;
+  deployModule: DeployModule;
   config: Record<string, unknown>;
 }
 
 export class DeployStep {
   public name: string;
-  public deployer: Deployer;
+  public deployModule: DeployModule;
   public uriOrStepResult: string;
   public config: Record<string, unknown>;
 
   constructor(args: StepArgs) {
     this.name = args.name;
-    this.deployer = args.deployer;
+    this.deployModule = args.deployModule;
     this.uriOrStepResult = args.uriOrStepResult;
     this.config = args.config;
   }
 
   public async run(uri: Uri, config: Record<string, unknown>): Promise<Uri> {
-    return await this.deployer.execute(uri, config);
+    return await this.deployModule.execute(uri, config);
   }
 }

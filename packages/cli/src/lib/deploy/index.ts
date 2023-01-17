@@ -1,13 +1,12 @@
-import { Deployer } from "./deployer";
+import { DeployModule } from "./Deployer";
 
 import { Schema as JsonSchema } from "jsonschema";
 
-export * from "./deployer";
+export * from "./Deployer";
 export * from "./step";
 export * from "./job";
-export * from "./PolywrapDeploy";
 
 export interface DeployPackage {
-  deployer: Deployer;
+  deployModule: DeployModule;
   manifestExt: JsonSchema | undefined;
 }
