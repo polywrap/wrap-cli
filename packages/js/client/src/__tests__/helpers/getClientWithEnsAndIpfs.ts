@@ -23,6 +23,7 @@ import {
   defaultPackages,
   defaultWrappers,
 } from "@polywrap/client-config-builder-js";
+import { RetryResolver } from "wraplib";
 
 export const getClientWithEnsAndIpfs = () => {
   const connections: Connections = new Connections({
@@ -95,7 +96,9 @@ export const getClientWithEnsAndIpfs = () => {
                 package: fileSystemResolverPlugin({}),
               },
             ]),
-            new ExtendableUriResolver(),
+            new RetryResolver(new ExtendableUriResolver(), {
+              ipfs: { retries: 1, interval: 500 },
+            }),
           ],
           new WrapperCache()
         )
