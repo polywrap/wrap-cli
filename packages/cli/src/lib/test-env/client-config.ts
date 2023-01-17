@@ -2,10 +2,8 @@ import { getTestEnvProviders } from "./providers";
 
 import { PolywrapClientConfig } from "@polywrap/client-js";
 import {
-  defaultInterfaces,
   defaultIpfsProviders,
   defaultPackages,
-  defaultWrappers,
 } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
@@ -13,12 +11,9 @@ import {
   Connections,
   Connection,
 } from "ethereum-provider-js";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensAddresses } from "@polywrap/test-env-js";
 
 export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
-  // TODO: move this into its own package, since it's being used everywhere?
-  // maybe have it exported from test-env.
   const providers = getTestEnvProviders();
   const ipfsProvider = providers.ipfsProvider;
   const ethProvider = providers.ethProvider;
@@ -61,28 +56,12 @@ export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
         }),
       },
       {
-        uri: "wrap://ens/ipfs.polywrap.eth",
-        package: ipfsPlugin({}),
-      },
-      {
         uri: "wrap://ens/ens-resolver.polywrap.eth",
         package: ensResolverPlugin({
           addresses: {
             testnet: ensAddress,
           },
         }),
-      },
-    ],
-    redirects: [
-      {
-        from: "wrap://ens/ethereum.polywrap.eth",
-        to: defaultWrappers.ethereum,
-      },
-    ],
-    interfaces: [
-      {
-        interface: defaultInterfaces.ethereumProvider,
-        implementations: [defaultPackages.ethereumProvider],
       },
     ],
   };
