@@ -12,7 +12,8 @@ import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import {
   PackageToWrapperCacheResolver,
-  RecursiveResolver, RedirectResolver, StaticResolver,
+  RecursiveResolver,
+  StaticResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
@@ -60,11 +61,11 @@ export const getClientWithEnsAndIpfs = () => {
       resolver: RecursiveResolver.from(
         PackageToWrapperCacheResolver.from(
           [
-            new RedirectResolver(
-              "wrap://ens/ethereum.polywrap.eth",
-              defaultWrappers.ethereum
-            ),
             StaticResolver.from([
+              {
+                from: "wrap://ens/ethereum.polywrap.eth",
+                to: defaultWrappers.ethereum
+              },
               {
                 uri: defaultPackages.ethereumProvider,
                 package: ethereumProviderPlugin({ connections }),
