@@ -1,5 +1,7 @@
 import JSZip from "jszip";
+import sanitize from "sanitize-filename";
 import fse from "fs-extra";
+import path from "path";
 
 export class Zip {
   private _zip: JSZip;
@@ -22,8 +24,13 @@ export class Zip {
   }
 
   public createZip(sourceDir: string, outputPath: string): Promise<boolean> {
+    if (!fse.lstatSync(sourceDir).isDirectory()) {
+      throw new Error(`Zip sourceDir '${sourceDir}' is not a directory.`);
+    }
+
     fse.readdirSync(sourceDir).forEach(file => {
-      this._zip.file(file, fse.readFileSync(`${sourceDir}/${file}`))
+      const filePath = path.join(sourceDir, sanitize(file));
+      this._zip.file(file, fse.readFileSync(filePath))
     })
     return this._generateNodeZip(outputPath);
   }
