@@ -2,21 +2,16 @@
 import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import {
-  DeployPackage,
   intlMsg,
   parseManifestFileOption,
-  DeployJob,
-  DeployStep,
   parseLogFileOption,
   Deployer,
   defaultDeployManifest,
 } from "../lib";
 
-import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
-import nodePath from "path";
+import path from "path";
 import yaml from "yaml";
-import { validate } from "jsonschema";
 
 const defaultManifestStr = defaultDeployManifest.join(" | ");
 const pathStr = intlMsg.commands_deploy_options_o_path();
@@ -25,9 +20,6 @@ export interface DeployCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputFile: string | false;
 }
-
-type ManifestJob = DeployManifest["jobs"][number];
-type ManifestStep = ManifestJob["steps"][number];
 
 export const deploy: Command = {
   setup: (program: Program) => {
@@ -71,69 +63,10 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
   const logger = createLogger({ verbose, quiet, logFile });
 
   const deployer = await Deployer.create(manifestFile, logger);
-
-  const allStepsFromAllJobs = Object.entries(deployer.manifest.jobs).flatMap(
-    ([jobName, job]) => {
-      return job.steps.map((step) => ({
-        jobName,
-        ...step,
-      }));
-    }
-  );
-
-  const packageNames = [
-    ...new Set(allStepsFromAllJobs.map((step) => step.package)),
-  ];
-
-  sanitizePackages(packageNames);
-
-  await deployer.cacheDeployModules(packageNames);
-
-  const packageMapEntries = await Promise.all(
-    packageNames.map(async (packageName) => {
-      const deployerPackage = await deployer.getDeployModule(packageName);
-      return [packageName, deployerPackage];
-    })
-  );
-
-  const packageMap = Object.fromEntries(packageMapEntries);
-
-  const stepToPackageMap: Record<
-    string,
-    DeployPackage & { jobName: string }
-  > = {};
-
-  for (const step of allStepsFromAllJobs) {
-    stepToPackageMap[step.name] = {
-      ...packageMap[step.package],
-      jobName: step.jobName,
-    };
-  }
-
-  validateManifestWithExts(deployer.manifest, stepToPackageMap);
-
-  const jobs = Object.entries(deployer.manifest.jobs).map(([jobName, job]) => {
-    const steps: DeployStep[] = job.steps.map((step) => {
-      return new DeployStep({
-        name: step.name,
-        uriOrStepResult: step.uri,
-        deployModule: stepToPackageMap[step.name].deployModule,
-        config: step.config ?? {},
-      });
-    });
-
-    return new DeployJob({
-      name: jobName,
-      steps,
-      config: job.config ?? {},
-      logger,
-    });
-  });
-
-  const jobResults = await Promise.all(jobs.map((job) => job.run()));
+  const jobResults = await deployer.run();
 
   if (outputFile) {
-    const outputFileExt = nodePath.extname(outputFile).substring(1);
+    const outputFileExt = path.extname(outputFile).substring(1);
     if (!outputFileExt) throw new Error("Require output file extension");
     switch (outputFileExt) {
       case "yaml":
@@ -152,62 +85,4 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
     }
   }
   process.exit(0);
-}
-
-function sanitizePackages(packages: string[]) {
-  const unrecognizedPackages: string[] = [];
-
-  const availableDeployers = fs.readdirSync(
-    nodePath.join(__dirname, "..", "lib", "defaults", "deploy-modules")
-  );
-
-  packages.forEach((p) => {
-    if (!availableDeployers.includes(p)) {
-      unrecognizedPackages.push(p);
-    }
-  });
-
-  if (unrecognizedPackages.length) {
-    throw new Error(
-      `Unrecognized packages: ${unrecognizedPackages.join(", ")}`
-    );
-  }
-}
-
-function validateManifestWithExts(
-  deployManifest: DeployManifest,
-  stepToPackageMap: Record<string, DeployPackage & { jobName: string }>
-) {
-  const errors = Object.entries(stepToPackageMap).flatMap(
-    ([stepName, step]) => {
-      const jobEntry = Object.entries(deployManifest.jobs).find(
-        ([jobName]) => jobName === step.jobName
-      ) as [string, ManifestJob];
-
-      const job = jobEntry[1];
-
-      const stepToValidate = job.steps.find(
-        (s) => s.name === stepName
-      ) as ManifestStep;
-
-      return step.manifestExt
-        ? validate(
-            {
-              ...job.config,
-              ...stepToValidate.config,
-            },
-            step.manifestExt
-          ).errors
-        : [];
-    }
-  );
-
-  if (errors.length) {
-    throw new Error(
-      [
-        `Validation errors encountered while sanitizing DeployManifest format ${deployManifest.format}`,
-        ...errors.map((error) => error.toString()),
-      ].join("\n")
-    );
-  }
 }
