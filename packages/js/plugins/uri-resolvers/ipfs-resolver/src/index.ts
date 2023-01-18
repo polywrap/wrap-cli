@@ -34,7 +34,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
     let manifest: Bytes | undefined;
 
     let attempts = (this.env.retries?.tryResolveUri ?? 0) + 1;
-    while (attempts -- > 0) {
+    while (attempts-- > 0) {
       const manifestResult = await Ipfs_Module.cat(
         {
           cid: `${args.path}/${manifestSearchPattern}`,
@@ -63,22 +63,22 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
     args: Args_getFile,
     client: CoreClient
   ): Promise<Bytes | null> {
-      let attempts = (this.env.retries?.getFile ?? 0) + 1;
-      while (attempts -- > 0) {
-        const catResult = await Ipfs_Module.cat(
-          {
-            cid: args.path,
-            options: {
-              timeout: this.env.timeouts?.getFile,
-              disableParallelRequests: this.env.disableParallelRequests,
-            },
+    let attempts = (this.env.retries?.getFile ?? 0) + 1;
+    while (attempts-- > 0) {
+      const catResult = await Ipfs_Module.cat(
+        {
+          cid: args.path,
+          options: {
+            timeout: this.env.timeouts?.getFile,
+            disableParallelRequests: this.env.disableParallelRequests,
           },
-          client
-        );
-        if (catResult.ok) return catResult.value;
-      }
+        },
+        client
+      );
+      if (catResult.ok) return catResult.value;
+    }
 
-      return null;
+    return null;
   }
 
   private static isCID(cid: string): boolean {
