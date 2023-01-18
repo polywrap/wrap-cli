@@ -3,7 +3,10 @@ import { JobResult, Status, Step } from "./types";
 import { PolywrapClient } from "@polywrap/client-js";
 import { CoreClient, MaybeAsync, Uri } from "@polywrap/core-js";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
-import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import {
+  buildPolywrapCoreClientConfig,
+  IClientConfigBuilder,
+} from "@polywrap/client-config-builder-js";
 
 export class JobRunner {
   private _jobOutput: Map<string, JobResult>;
@@ -184,11 +187,7 @@ export class JobRunner {
     let finalClient = this._client;
 
     if (step.config) {
-      const finalConfig = (step.config as Partial<CoreClientConfig>).resolver
-        ? (step.config as CoreClientConfig)
-        : this._configBuilder
-            .add(step.config as Partial<ClientConfig>)
-            .buildCoreConfig();
+      const finalConfig = buildPolywrapCoreClientConfig(step.config);
 
       finalClient = new PolywrapClient(finalConfig, { noDefaults: true });
     }

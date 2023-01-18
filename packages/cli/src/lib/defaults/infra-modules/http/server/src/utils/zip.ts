@@ -1,7 +1,5 @@
 import JSZip from "jszip";
-import sanitize from "sanitize-filename";
 import fse from "fs-extra";
-import path from "path";
 
 export class Zip {
   private _zip: JSZip;
