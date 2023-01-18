@@ -60,7 +60,10 @@ export class UriResolutionContext implements IUriResolutionContext {
   }
 
   createSubHistoryContext(): IUriResolutionContext {
-    return new UriResolutionContext(this._resolvingUriMap, this._resolutionPath);
+    return new UriResolutionContext(
+      this._resolvingUriMap,
+      this._resolutionPath
+    );
   }
 
   createSubContext(): IUriResolutionContext {
