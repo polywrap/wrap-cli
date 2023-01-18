@@ -24,13 +24,8 @@ export class Zip {
   }
 
   public createZip(sourceDir: string, outputPath: string): Promise<boolean> {
-    if (!fse.lstatSync(sourceDir).isDirectory()) {
-      throw new Error(`Zip sourceDir '${sourceDir}' is not a directory.`);
-    }
-
     fse.readdirSync(sourceDir).forEach(file => {
-      const filePath = path.join(sourceDir, sanitize(file));
-      this._zip.file(file, fse.readFileSync(filePath))
+      this._zip.file(file, fse.readFileSync(`${sourceDir}/${file}`))
     })
     return this._generateNodeZip(outputPath);
   }
