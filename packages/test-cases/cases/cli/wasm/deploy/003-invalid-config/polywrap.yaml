@@ -1,4 +1,4 @@
-format: 0.4.0
+format: 0.3.0
 project:
   name: deploy-invalid-config
   type: wasm/assemblyscript
