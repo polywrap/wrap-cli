@@ -8,7 +8,7 @@ import {
   DeployJob,
   DeployStep,
   parseLogFileOption,
-  PolywrapDeploy,
+  Deployer,
   defaultDeployManifest,
 } from "../lib";
 
@@ -70,7 +70,7 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
   const { manifestFile, outputFile, verbose, quiet, logFile } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
-  const deployer = await PolywrapDeploy.create(manifestFile, logger);
+  const deployer = await Deployer.create(manifestFile, logger);
 
   const allStepsFromAllJobs = Object.entries(deployer.manifest.jobs).flatMap(
     ([jobName, job]) => {
@@ -117,7 +117,7 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
       return new DeployStep({
         name: step.name,
         uriOrStepResult: step.uri,
-        deployer: stepToPackageMap[step.name].deployer,
+        deployModule: stepToPackageMap[step.name].deployModule,
         config: step.config ?? {},
       });
     });

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import { Deployer } from "./deployer";
+import { DeployModule } from "./DeployModule";
 import { loadDeployManifest, loadDeployManifestExt } from "../project";
 import { CacheDirectory } from "../CacheDirectory";
 import { Logger } from "../logging";
@@ -10,19 +10,19 @@ import { Schema as JsonSchema } from "jsonschema";
 import path from "path";
 import nodePath from "path";
 
-interface PolywrapDeployConfig {
+interface DeployerConfig {
   cache: CacheDirectory;
   logger: Logger;
   defaultModulesCached: boolean;
 }
 
-export class PolywrapDeploy {
+export class Deployer {
   public static cacheLayout = {
     root: "deploy/",
     deployModulesDir: "modules/",
   };
   public manifest: DeployManifest;
-  private _config: PolywrapDeployConfig;
+  private _config: DeployerConfig;
 
   private constructor(
     manifest: DeployManifest,
@@ -40,24 +40,27 @@ export class PolywrapDeploy {
   public static async create(
     manifest: string,
     logger: Logger
-  ): Promise<PolywrapDeploy> {
+  ): Promise<Deployer> {
     const deployManifest = await loadDeployManifest(manifest, logger);
     const cache = new CacheDirectory({
       rootDir: nodePath.dirname(manifest),
-      subDir: PolywrapDeploy.cacheLayout.root,
+      subDir: Deployer.cacheLayout.root,
     });
-    return new PolywrapDeploy(deployManifest, cache, logger);
+    return new Deployer(deployManifest, cache, logger);
   }
 
   public async getDeployModule(
     moduleName: string
-  ): Promise<{ deployer: Deployer; manifestExt: JsonSchema | undefined }> {
+  ): Promise<{
+    deployModule: DeployModule;
+    manifestExt: JsonSchema | undefined;
+  }> {
     if (!this._config.defaultModulesCached) {
       throw new Error("Deploy modules have not been cached");
     }
 
     const cachePath = this._config.cache.getCachePath(
-      `${PolywrapDeploy.cacheLayout.deployModulesDir}/${moduleName}`
+      `${Deployer.cacheLayout.deployModulesDir}/${moduleName}`
     );
 
     const manifestExtPath = path.join(cachePath, "polywrap.deploy.ext.json");
@@ -69,7 +72,7 @@ export class PolywrapDeploy {
 
     return {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      deployer: require(cachePath).default as Deployer,
+      deployModule: require(cachePath).default as DeployModule,
       manifestExt,
     };
   }
@@ -79,13 +82,11 @@ export class PolywrapDeploy {
       return;
     }
 
-    this._config.cache.removeCacheDir(
-      PolywrapDeploy.cacheLayout.deployModulesDir
-    );
+    this._config.cache.removeCacheDir(Deployer.cacheLayout.deployModulesDir);
 
     for await (const deployModule of modules) {
       await this._config.cache.copyIntoCache(
-        `${PolywrapDeploy.cacheLayout.deployModulesDir}/${deployModule}`,
+        `${Deployer.cacheLayout.deployModulesDir}/${deployModule}`,
         `${__dirname}/../defaults/deploy-modules/${deployModule}/*`,
         { up: true }
       );
