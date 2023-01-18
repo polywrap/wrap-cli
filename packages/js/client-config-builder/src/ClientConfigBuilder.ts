@@ -14,8 +14,8 @@ import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 export class ClientConfigBuilder extends BaseClientConfigBuilder {
   constructor(
-    private readonly wrapperCache?: IWrapperCache,
-    private readonly resolver?: IUriResolver<unknown>
+    private readonly _wrapperCache?: IWrapperCache,
+    private readonly _resolver?: IUriResolver<unknown>
   ) {
     super();
   }
@@ -31,7 +31,7 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
       envs: clientConfig.envs,
       interfaces: clientConfig.interfaces,
       resolver:
-        this.resolver ??
+        this._resolver ??
         RecursiveResolver.from(
           PackageToWrapperCacheResolver.from(
             [
@@ -43,7 +43,7 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
               ...clientConfig.resolvers,
               new ExtendableUriResolver(),
             ],
-            this.wrapperCache ?? new WrapperCache()
+            this._wrapperCache ?? new WrapperCache()
           )
         ),
     };

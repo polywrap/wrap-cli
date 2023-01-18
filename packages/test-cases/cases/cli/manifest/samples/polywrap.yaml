@@ -4,4 +4,3 @@ language: wasm/assemblyscript
 schema: ./src/schema.graphql
 module: ./src/index.ts
 build: ./polywrap.build.yaml
-deploy: ./polywrap.deploy.yaml

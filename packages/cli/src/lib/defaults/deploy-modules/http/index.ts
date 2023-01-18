@@ -1,4 +1,4 @@
-import { Deployer } from "../../../deploy/deployer";
+import { DeployModule } from "../../../deploy";
 
 import { Uri } from "@polywrap/core-js";
 import FormData from "form-data";
@@ -33,7 +33,7 @@ const dirToFormData = (baseDirPath: string) => {
   return formData;
 };
 
-class HTTPDeployer implements Deployer {
+class HTTPDeployer implements DeployModule {
   async execute(uri: Uri, config?: { postUrl: string }): Promise<Uri> {
     if (!isValidUri(uri)) {
       throw new Error(

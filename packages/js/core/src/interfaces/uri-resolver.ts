@@ -3,8 +3,8 @@ import { Uri, Invoker, WrapError } from "../";
 import { Result } from "@polywrap/result";
 
 export interface MaybeUriOrManifest {
-  uri?: string;
-  manifest?: Uint8Array;
+  uri?: string | null;
+  manifest?: Uint8Array | null;
 }
 
 export const module = {
