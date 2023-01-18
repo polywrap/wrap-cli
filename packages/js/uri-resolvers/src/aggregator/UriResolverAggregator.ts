@@ -18,7 +18,7 @@ export class UriResolverAggregator<
   TResolutionError = undefined,
   TGetResolversError = undefined
 > extends UriResolverAggregatorBase<TResolutionError, TGetResolversError> {
-  private resolvers:
+  private _resolvers:
     | IUriResolver<unknown>[]
     | GetResolversFunc
     | GetResolversWithErrorFunc<TGetResolversError>;
@@ -37,13 +37,13 @@ export class UriResolverAggregator<
       | UriResolverLike[]
       | GetResolversFunc
       | GetResolversWithErrorFunc<TGetResolversError>,
-    private resolverName?: string
+    private _resolverName?: string
   ) {
     super();
     if (Array.isArray(resolvers)) {
-      this.resolvers = resolvers.map((x) => UriResolver.from(x));
+      this._resolvers = resolvers.map((x) => UriResolver.from(x));
     } else {
-      this.resolvers = resolvers;
+      this._resolvers = resolvers;
     }
   }
 
@@ -51,10 +51,10 @@ export class UriResolverAggregator<
     uri: Uri,
     client: CoreClient
   ): Promise<Result<IUriResolver<unknown>[], TGetResolversError>> {
-    if (Array.isArray(this.resolvers)) {
-      return ResultOk(this.resolvers);
+    if (Array.isArray(this._resolvers)) {
+      return ResultOk(this._resolvers);
     } else {
-      const result = await this.resolvers(uri, client);
+      const result = await this._resolvers(uri, client);
 
       if (Array.isArray(result)) {
         return ResultOk(result);
@@ -65,5 +65,5 @@ export class UriResolverAggregator<
   }
 
   protected getStepDescription = (): string =>
-    `${this.resolverName ?? "UriResolverAggregator"}`;
+    `${this._resolverName ?? "UriResolverAggregator"}`;
 }

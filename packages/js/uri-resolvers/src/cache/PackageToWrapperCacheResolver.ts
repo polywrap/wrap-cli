@@ -16,9 +16,9 @@ export class PackageToWrapperCacheResolver<TError>
   name: string;
 
   constructor(
-    private resolverToCache: IUriResolver<TError>,
-    private cache: IWrapperCache,
-    private options?: {
+    private _resolverToCache: IUriResolver<TError>,
+    private _cache: IWrapperCache,
+    private _options?: {
       deserializeManifestOptions?: DeserializeManifestOptions;
       endOnRedirect?: boolean;
     }
@@ -44,7 +44,7 @@ export class PackageToWrapperCacheResolver<TError>
     client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | Error>> {
-    const wrapper = await this.cache.get(uri);
+    const wrapper = await this._cache.get(uri);
 
     if (wrapper) {
       const result = UriResolutionResult.ok(uri, wrapper);
@@ -59,7 +59,7 @@ export class PackageToWrapperCacheResolver<TError>
 
     const subContext = resolutionContext.createSubHistoryContext();
 
-    let result = await this.resolverToCache.tryResolveUri(
+    let result = await this._resolverToCache.tryResolveUri(
       uri,
       client,
       subContext
@@ -71,7 +71,7 @@ export class PackageToWrapperCacheResolver<TError>
         const resolutionPath: Uri[] = subContext.getResolutionPath();
 
         const createResult = await wrapPackage.createWrapper({
-          noValidate: this.options?.deserializeManifestOptions?.noValidate,
+          noValidate: this._options?.deserializeManifestOptions?.noValidate,
         });
 
         if (!createResult.ok) {
@@ -81,7 +81,7 @@ export class PackageToWrapperCacheResolver<TError>
         const wrapper = createResult.value;
 
         for (const uri of resolutionPath) {
-          await this.cache.set(uri, wrapper);
+          await this._cache.set(uri, wrapper);
         }
 
         result = UriResolutionResult.ok(result.value.uri, wrapper);
@@ -90,7 +90,7 @@ export class PackageToWrapperCacheResolver<TError>
         const resolutionPath: Uri[] = subContext.getResolutionPath();
 
         for (const uri of resolutionPath) {
-          await this.cache.set(uri, wrapper);
+          await this._cache.set(uri, wrapper);
         }
       }
     }

@@ -3,9 +3,9 @@ import { IUriResolutionContext } from "./IUriResolutionContext";
 import { Uri } from "../types";
 
 export class UriResolutionContext implements IUriResolutionContext {
-  private resolvingUriMap: Map<string, boolean>;
-  private resolutionPath: Set<string>;
-  private history: IUriResolutionStep<unknown>[];
+  private _resolvingUriMap: Map<string, boolean>;
+  private _resolutionPath: Set<string>;
+  private _history: IUriResolutionStep<unknown>[];
 
   constructor();
   constructor(
@@ -20,50 +20,50 @@ export class UriResolutionContext implements IUriResolutionContext {
     resolvingUriMap?: Map<string, boolean>,
     resolutionPathOrHistory?: Set<string> | IUriResolutionStep<unknown>[]
   ) {
-    this.resolvingUriMap = resolvingUriMap ?? new Map();
+    this._resolvingUriMap = resolvingUriMap ?? new Map();
 
     if (Array.isArray(resolutionPathOrHistory)) {
-      this.resolutionPath = new Set();
-      this.history = resolutionPathOrHistory;
+      this._resolutionPath = new Set();
+      this._history = resolutionPathOrHistory;
     } else if (resolutionPathOrHistory instanceof Set) {
-      this.resolutionPath = resolutionPathOrHistory;
-      this.history = [];
+      this._resolutionPath = resolutionPathOrHistory;
+      this._history = [];
     } else {
-      this.resolutionPath = new Set();
-      this.history = [];
+      this._resolutionPath = new Set();
+      this._history = [];
     }
   }
 
   isResolving(uri: Uri): boolean {
-    return !!this.resolvingUriMap.get(uri.toString());
+    return !!this._resolvingUriMap.get(uri.toString());
   }
 
   startResolving(uri: Uri): void {
-    this.resolvingUriMap.set(uri.toString(), true);
-    this.resolutionPath.add(uri.toString());
+    this._resolvingUriMap.set(uri.toString(), true);
+    this._resolutionPath.add(uri.toString());
   }
 
   stopResolving(uri: Uri): void {
-    this.resolvingUriMap.delete(uri.toString());
+    this._resolvingUriMap.delete(uri.toString());
   }
 
   trackStep<TError>(step: IUriResolutionStep<TError>): void {
-    this.history.push(step);
+    this._history.push(step);
   }
 
   getHistory(): IUriResolutionStep<unknown>[] {
-    return this.history;
+    return this._history;
   }
 
   getResolutionPath(): Uri[] {
-    return [...this.resolutionPath].map((x) => new Uri(x));
+    return [...this._resolutionPath].map((x) => new Uri(x));
   }
 
   createSubHistoryContext(): IUriResolutionContext {
-    return new UriResolutionContext(this.resolvingUriMap, this.resolutionPath);
+    return new UriResolutionContext(this._resolvingUriMap, this._resolutionPath);
   }
 
   createSubContext(): IUriResolutionContext {
-    return new UriResolutionContext(this.resolvingUriMap, this.history);
+    return new UriResolutionContext(this._resolvingUriMap, this._history);
   }
 }

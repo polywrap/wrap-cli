@@ -14,7 +14,7 @@ import { Result } from "@polywrap/result";
 
 export class ResolverWithLoopGuard<TError = undefined>
   implements IUriResolver<TError | InfiniteLoopError> {
-  constructor(private resolver: IUriResolver<TError>) {}
+  constructor(private _resolver: IUriResolver<TError>) {}
 
   static from<TResolverError = unknown>(
     resolver: UriResolverLike
@@ -37,7 +37,7 @@ export class ResolverWithLoopGuard<TError = undefined>
 
     resolutionContext.startResolving(uri);
 
-    const result = await this.resolver.tryResolveUri(
+    const result = await this._resolver.tryResolveUri(
       uri,
       client,
       resolutionContext

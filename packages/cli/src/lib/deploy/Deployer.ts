@@ -77,11 +77,11 @@ export class Deployer {
 
     this._sanitizePackages(packageNames);
 
-    await this.cacheDeployModules(packageNames);
+    await this._cacheDeployModules(packageNames);
 
     const packageMapEntries = await Promise.all(
       packageNames.map(async (packageName) => {
-        const deployerPackage = await this.getDeployModule(packageName);
+        const deployerPackage = await this._getDeployModule(packageName);
         return [packageName, deployerPackage];
       })
     );
@@ -143,7 +143,7 @@ export class Deployer {
     }
   }
 
-  private async getDeployModule(
+  private async _getDeployModule(
     moduleName: string
   ): Promise<{
     deployModule: DeployModule;
@@ -171,7 +171,7 @@ export class Deployer {
     };
   }
 
-  private async cacheDeployModules(modules: string[]): Promise<void> {
+  private async _cacheDeployModules(modules: string[]): Promise<void> {
     if (this._config.defaultModulesCached) {
       return;
     }

@@ -14,37 +14,37 @@ import {
 import * as path from "path";
 
 export class WasmPackageValidator {
-  constructor(private constraints: WasmPackageConstraints) {}
+  constructor(private _constraints: WasmPackageConstraints) {}
 
   async validate(reader: PackageReader): Promise<ValidationResult> {
-    const infoResult = await this.validateInfo(reader, WRAP_INFO);
+    const infoResult = await this._validateInfo(reader, WRAP_INFO);
     if (!infoResult.valid) {
       return infoResult;
     }
 
     const manifest = infoResult.manifest as WrapManifest;
 
-    const moduleResult = await this.validateModule(reader, manifest);
+    const moduleResult = await this._validateModule(reader, manifest);
     if (!moduleResult.valid) {
       return moduleResult;
     }
 
-    return this.success();
+    return this._success();
   }
 
-  private async validateStructure(
+  private async _validateStructure(
     reader: PackageReader
   ): Promise<ValidationResult> {
-    const { result: pathResult } = await this.validatePath(reader, "./", 0, 0);
+    const { result: pathResult } = await this._validatePath(reader, "./", 0, 0);
 
     if (!pathResult.valid) {
       return pathResult;
     }
 
-    return this.success();
+    return this._success();
   }
 
-  private async validatePath(
+  private async _validatePath(
     reader: PackageReader,
     basePath: string,
     currentSize: number,
@@ -59,27 +59,27 @@ export class WasmPackageValidator {
       const stats = await reader.getStats(path.join(basePath, itemPath));
 
       currentSize += stats.size;
-      if (currentSize > this.constraints.maxSize) {
+      if (currentSize > this._constraints.maxSize) {
         return {
-          result: this.fail(ValidationFailReason.PackageTooLarge),
+          result: this._fail(ValidationFailReason.PackageTooLarge),
           currentSize,
           currentFileCnt,
         };
       }
 
       currentFileCnt++;
-      if (currentFileCnt > this.constraints.maxNumberOfFiles) {
+      if (currentFileCnt > this._constraints.maxNumberOfFiles) {
         return {
-          result: this.fail(ValidationFailReason.TooManyFiles),
+          result: this._fail(ValidationFailReason.TooManyFiles),
           currentSize,
           currentFileCnt,
         };
       }
 
       if (stats.isFile) {
-        if (stats.size > this.constraints.maxFileSize) {
+        if (stats.size > this._constraints.maxFileSize) {
           return {
-            result: this.fail(ValidationFailReason.FileTooLarge),
+            result: this._fail(ValidationFailReason.FileTooLarge),
             currentSize,
             currentFileCnt,
           };
@@ -89,7 +89,7 @@ export class WasmPackageValidator {
           result,
           currentSize: newSize,
           currentFileCnt: newFileCnt,
-        } = await this.validatePath(
+        } = await this._validatePath(
           reader,
           path.join(basePath, itemPath),
           currentSize,
@@ -109,21 +109,21 @@ export class WasmPackageValidator {
     }
 
     return {
-      result: this.success(),
+      result: this._success(),
       currentSize,
       currentFileCnt,
     };
   }
 
-  private async validateInfo(
+  private async _validateInfo(
     reader: PackageReader,
     name: string
   ): Promise<ValidationResult & { manifest?: WrapManifest }> {
     if (!(await reader.exists(name))) {
-      return this.fail(ValidationFailReason.WrapManifestNotFound);
+      return this._fail(ValidationFailReason.WrapManifestNotFound);
     }
 
-    const structureResult = await this.validateStructure(reader);
+    const structureResult = await this._validateStructure(reader);
     if (!structureResult.valid) {
       return structureResult;
     }
@@ -136,40 +136,40 @@ export class WasmPackageValidator {
       };
     } catch (e) {
       if (e.message.includes('instance requires property "abi"')) {
-        return this.fail(ValidationFailReason.AbiNotFound);
+        return this._fail(ValidationFailReason.AbiNotFound);
       } else if (
         e.message.includes("instance.abi") &&
         e.message.includes("Validation errors encountered")
       ) {
-        return this.fail(ValidationFailReason.InvalidAbi);
+        return this._fail(ValidationFailReason.InvalidAbi);
       }
-      return this.fail(ValidationFailReason.InvalidWrapManifest);
+      return this._fail(ValidationFailReason.InvalidWrapManifest);
     }
   }
 
-  private async validateModule(
+  private async _validateModule(
     reader: PackageReader,
     manifest: WrapManifest
   ): Promise<ValidationResult> {
     if (manifest.type === "interface") {
-      return this.success();
+      return this._success();
     }
 
     const module = await reader.getStats(WRAP_WASM);
-    if (module.size > this.constraints.maxModuleSize) {
-      return this.fail(ValidationFailReason.ModuleTooLarge);
+    if (module.size > this._constraints.maxModuleSize) {
+      return this._fail(ValidationFailReason.ModuleTooLarge);
     }
 
-    return this.success();
+    return this._success();
   }
 
-  private success(): ValidationResult {
+  private _success(): ValidationResult {
     return {
       valid: true,
     };
   }
 
-  private fail(
+  private _fail(
     reason: ValidationFailReason,
     error: Error | undefined = undefined
   ): ValidationResult {
