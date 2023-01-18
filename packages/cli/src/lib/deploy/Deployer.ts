@@ -5,13 +5,13 @@ import {
   DeployModule,
   DeployPackage,
   DeployJob,
-  DeployJobResult
+  DeployJobResult,
 } from ".";
 import {
   loadDeployManifest,
   loadDeployManifestExt,
   CacheDirectory,
-  Logger
+  Logger,
 } from "..";
 
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -87,7 +87,7 @@ export class Deployer {
     );
 
     const packageMap = Object.fromEntries(packageMapEntries);
-  
+
     const stepToPackageMap: Record<
       string,
       DeployPackage & { jobName: string }
@@ -111,7 +111,7 @@ export class Deployer {
           config: step.config ?? {},
         });
       });
-  
+
       return new DeployJob({
         name: jobName,
         steps,
@@ -125,17 +125,17 @@ export class Deployer {
 
   private _sanitizePackages(packages: string[]) {
     const unrecognizedPackages: string[] = [];
-  
+
     const availableDeployers = fs.readdirSync(
       path.join(__dirname, "..", "defaults", "deploy-modules")
     );
-  
+
     packages.forEach((p) => {
       if (!availableDeployers.includes(p)) {
         unrecognizedPackages.push(p);
       }
     });
-  
+
     if (unrecognizedPackages.length) {
       throw new Error(
         `Unrecognized packages: ${unrecognizedPackages.join(", ")}`
@@ -198,13 +198,13 @@ export class Deployer {
         const jobEntry = Object.entries(deployManifest.jobs).find(
           ([jobName]) => jobName === step.jobName
         ) as [string, DeployManifestJob];
-  
+
         const job = jobEntry[1];
-  
+
         const stepToValidate = job.steps.find(
           (s) => s.name === stepName
         ) as DeployManifestStep;
-  
+
         return step.manifestExt
           ? validate(
               {
@@ -216,7 +216,7 @@ export class Deployer {
           : [];
       }
     );
-  
+
     if (errors.length) {
       throw new Error(
         [

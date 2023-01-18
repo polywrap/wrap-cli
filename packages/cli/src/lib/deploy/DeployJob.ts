@@ -1,4 +1,9 @@
-import { DeployStep, StepName, StepResult, UriOrPrevStepResult } from "./DeployStep";
+import {
+  DeployStep,
+  StepName,
+  StepResult,
+  UriOrPrevStepResult,
+} from "./DeployStep";
 import { Logger } from "../logging";
 
 import { Uri } from "@polywrap/core-js";
