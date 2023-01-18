@@ -11,8 +11,8 @@ export class PluginPackage<
   TEnv extends Record<string, unknown> = Record<string, unknown>
 > implements IWrapPackage {
   constructor(
-    private pluginModule: PluginModule<TConfig, TEnv>,
-    private manifest: WrapManifest
+    private _pluginModule: PluginModule<TConfig, TEnv>,
+    private _manifest: WrapManifest
   ) {}
 
   static from<
@@ -51,10 +51,10 @@ export class PluginPackage<
   }
 
   async getManifest(): Promise<Result<WrapManifest, Error>> {
-    return ResultOk(this.manifest);
+    return ResultOk(this._manifest);
   }
 
   async createWrapper(): Promise<Result<Wrapper, Error>> {
-    return ResultOk(new PluginWrapper(this.manifest, this.pluginModule));
+    return ResultOk(new PluginWrapper(this._manifest, this._pluginModule));
   }
 }
