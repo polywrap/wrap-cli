@@ -1,11 +1,13 @@
 import { PolywrapClient } from "@polywrap/client-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
-  buildAndDeployWrapper,
+  deployWrapper,
   initTestEnvironment,
   providers,
+  ensAddresses,
   stopTestEnvironment,
 } from "@polywrap/test-env-js";
+import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 
 import { getClient } from "./helpers/getClient";
 
@@ -14,21 +16,50 @@ jest.setTimeout(300000);
 describe("ENS Resolver Plugin", () => {
   let client: PolywrapClient;
   let wrapperEnsDomain: string;
-
-  const wrapperAbsPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
+  const wrapperAbsPath = `${GetPathToTestWrappers()}/bigint-type/implementations/as`;
 
   beforeAll(async () => {
     await initTestEnvironment();
+    wrapperEnsDomain = "cool-wrapper.eth";
 
-    let { ensDomain } = await buildAndDeployWrapper({
-      wrapperAbsPath: wrapperAbsPath,
-      ipfsProvider: providers.ipfs,
-      ethereumProvider: providers.ethereum,
-      ensName: "cool.wrapper.eth",
-      codegen: true
+    const jobs: DeployManifest["jobs"] = {
+      buildAndDeployWrapper: {
+        config: {
+          provider: providers.ethereum,
+          ensRegistryAddress: ensAddresses.ensAddress,
+          ensRegistrarAddress: ensAddresses.registrarAddress,
+          ensResolverAddress: ensAddresses.resolverAddress,
+        },
+        steps: [
+          {
+            name: "registerName",
+            package: "ens-recursive-name-register",
+            uri: `wrap://ens/${wrapperEnsDomain}`,
+          },
+          {
+            name: "ipfsDeploy",
+            package: "ipfs",
+            uri: `fs/${wrapperAbsPath}`,
+            config: {
+              gatewayUri: providers.ipfs,
+            },
+          },
+          {
+            name: "ensPublish",
+            package: "ens",
+            uri: "$$ipfsDeploy",
+            config: {
+              domainName: wrapperEnsDomain,
+            },
+          },
+        ],
+      },
+    };
+
+    await deployWrapper({
+      wrapperAbsPath,
+      jobs
     });
-
-    wrapperEnsDomain = ensDomain;
 
     client = getClient();
   });
@@ -51,6 +82,6 @@ describe("ENS Resolver Plugin", () => {
 
     const manifest = await result.value.wrapper.getManifest();
 
-    expect(manifest?.name).toBe("SimpleStorage");
+    expect(manifest?.name).toBe("bigint-type");
   });
 });
