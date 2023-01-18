@@ -34,7 +34,7 @@ export class UriResolverExtensionFileReader implements IFileReader {
       path
     );
     if (!result.ok) return result;
-    if (result.value === undefined) {
+    if (!result.value) {
       return ResultErr(new Error(`File not found at ${path}`));
     }
     return {

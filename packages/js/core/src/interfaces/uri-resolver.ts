@@ -7,10 +7,10 @@ import { Result } from "@polywrap/result";
 /** Contains either a Uri, a manifest, or neither */
 export interface MaybeUriOrManifest {
   /** wrap URI */
-  uri?: string;
+  uri?: string | null;
 
   /** Serialized wrap manifest */
-  manifest?: Uint8Array;
+  manifest?: Uint8Array | null;
 }
 // $end
 
@@ -54,8 +54,8 @@ export const module = {
       invoker: Invoker,
       wrapper: Uri,
       path: string
-    ): Promise<Result<Uint8Array | undefined, WrapError>> /* $ */ => {
-      return invoker.invoke<Uint8Array | undefined>({
+    ): Promise<Result<Uint8Array | null, WrapError>> /* $ */ => {
+      return invoker.invoke<Uint8Array | null>({
         uri: wrapper.uri,
         method: "getFile",
         args: {
