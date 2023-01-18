@@ -48,7 +48,7 @@ describe("IPFS Plugin", () => {
       fail("Expected response to be a wrapper");
     }
 
-    const manifest = await result.value.wrapper.getManifest({});
+    const manifest = await result.value.wrapper.getManifest();
 
     expect(manifest?.name).toBe("SimpleStorage");
   });
@@ -112,18 +112,6 @@ describe("IPFS Plugin", () => {
           checkIfExists: timeout,
           tryResolveUri: timeout,
         },
-      },
-      timeout
-    );
-
-    await runGetFileTimeoutTestWithEnv(
-      {
-        timeouts: {
-          getFile: timeout,
-          checkIfExists: timeout,
-          tryResolveUri: timeout,
-        },
-        skipCheckIfExists: true,
       },
       timeout
     );

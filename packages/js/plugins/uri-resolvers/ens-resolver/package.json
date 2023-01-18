@@ -27,7 +27,6 @@
     "ethers": "5.0.7"
   },
   "devDependencies": {
-    "wraplib": "0.1.0",
     "@polywrap/client-js": "0.10.0-pre.7",
     "ethereum-provider-js": "0.1.3",
     "@polywrap/ipfs-plugin-js": "0.10.0-pre.7",

@@ -3,15 +3,15 @@
 
 type Timeouts {
   getFile: UInt32,
-  checkIfExists: UInt32,
   tryResolveUri: UInt32,
 }
 
+type Retries {
+    getFile: UInt32
+    tryResolveUri: UInt32
+}
+
 type Env {
-    """
-    Determines whether the plugin should try to resolve a file (check for its existence) or immediately get the file
-    """
-    skipCheckIfExists: Boolean,
     """
     Timeouts for methods
     """
@@ -20,6 +20,10 @@ type Env {
     Disable parallel requests
     """
     disableParallelRequests: Boolean
+    """
+    Retry on fail
+    """
+    retries: Retries
 }
 
 type Module implements UriResolver_Module {

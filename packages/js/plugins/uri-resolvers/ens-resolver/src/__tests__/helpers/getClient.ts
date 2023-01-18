@@ -23,7 +23,6 @@ import {
 } from "@polywrap/client-config-builder-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
-import { RetryResolver } from "wraplib";
 
 export const getClient = () => {
   return new PolywrapClient(
@@ -34,6 +33,12 @@ export const getClient = () => {
           env: {
             provider: providers.ipfs,
             fallbackProviders: defaultIpfsProviders,
+          },
+        },
+        {
+          uri: defaultPackages.ipfsResolver,
+          env: {
+            retries: { tryResolveUri: 1, getFile: 1 },
           },
         },
       ],
@@ -97,9 +102,7 @@ export const getClient = () => {
                 package: fileSystemResolverPlugin({}),
               },
             ]),
-            new RetryResolver(new ExtendableUriResolver(), {
-              ipfs: { retries: 1, interval: 500 },
-            }),
+            new ExtendableUriResolver(),
           ],
           new WrapperCache()
         )

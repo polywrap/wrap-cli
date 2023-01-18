@@ -21,7 +21,6 @@ import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
-import { RetryResolver } from "wraplib";
 
 export function getClient(connections: Connections): PolywrapClient {
   const uriResolver = RecursiveResolver.from(
@@ -69,9 +68,7 @@ export function getClient(connections: Connections): PolywrapClient {
             package: ethereumProviderPlugin({ connections }),
           },
         ]),
-        new RetryResolver(new ExtendableUriResolver(), {
-          ipfs: { retries: 1, interval: 500 },
-        }),
+        new ExtendableUriResolver(),
       ],
       new WrapperCache()
     )
@@ -80,6 +77,9 @@ export function getClient(connections: Connections): PolywrapClient {
     .addEnv(defaultPackages.ipfs, {
       provider: defaultIpfsProviders[0],
       fallbackProviders: defaultIpfsProviders.slice(1),
+    })
+    .addEnv(defaultPackages.ipfsResolver, {
+      retries: { tryResolveUri: 2, getFile: 2 },
     })
     .addInterfaceImplementations(ExtendableUriResolver.extInterfaceUri, [
       defaultPackages.fileSystemResolver,

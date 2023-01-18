@@ -66,6 +66,12 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
           fallbackProviders: defaultIpfsProviders.slice(1),
         },
       },
+      {
+        uri: new Uri(defaultPackages.ipfsResolver),
+        env: {
+          retries: { tryResolveUri: 1, getFile: 1 },
+        },
+      },
     ],
     redirects: [
       {

@@ -33,7 +33,8 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
 
     let manifest: Bytes | undefined;
 
-    try {
+    let attempts = (this.env.retries?.tryResolveUri ?? 0) + 1;
+    while (attempts -- > 0) {
       const manifestResult = await Ipfs_Module.cat(
         {
           cid: `${args.path}/${manifestSearchPattern}`,
@@ -46,62 +47,38 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
       );
 
       if (manifestResult.ok) {
-        manifest = Buffer.from(manifestResult.value);
+        try {
+          manifest = Buffer.from(manifestResult.value);
+          return { uri: null, manifest: manifest };
+        } catch (e) {
+          break;
+        }
       }
-    } catch (e) {
-      // TODO: logging
-      // https://github.com/polywrap/monorepo/issues/33
     }
 
-    return { uri: null, manifest: manifest ?? null };
+    return { uri: null, manifest: null };
   }
 
   public async getFile(
     args: Args_getFile,
     client: CoreClient
   ): Promise<Bytes | null> {
-    try {
-      let provider: string | undefined = undefined;
-
-      if (!this.env.skipCheckIfExists) {
-        const resolveResult = await Ipfs_Module.resolve(
+      let attempts = (this.env.retries?.getFile ?? 0) + 1;
+      while (attempts -- > 0) {
+        const catResult = await Ipfs_Module.cat(
           {
             cid: args.path,
             options: {
-              timeout: this.env.timeouts?.checkIfExists,
+              timeout: this.env.timeouts?.getFile,
               disableParallelRequests: this.env.disableParallelRequests,
             },
           },
           client
         );
-
-        if (!resolveResult.ok || !resolveResult.value) {
-          return null;
-        }
-
-        provider = resolveResult.value.provider;
+        if (catResult.ok) return catResult.value;
       }
 
-      const catResult = await Ipfs_Module.cat(
-        {
-          cid: args.path,
-          options: {
-            provider: provider,
-            timeout: this.env.timeouts?.getFile,
-            disableParallelRequests: this.env.disableParallelRequests,
-          },
-        },
-        client
-      );
-
-      if (!catResult.ok) {
-        return null;
-      }
-
-      return catResult.value;
-    } catch (e) {
       return null;
-    }
   }
 
   private static isCID(cid: string): boolean {
