@@ -1,4 +1,4 @@
-import { Deployer } from "../../../deploy/deployer";
+import { DeployModule } from "../../../deploy";
 
 import { Uri } from "@polywrap/core-js";
 
@@ -8,7 +8,7 @@ const { globSource } = IPFSClient;
 
 const isValidUri = (uri: Uri) => uri.authority === "fs";
 
-class IPFSDeployer implements Deployer {
+class IPFSDeployer implements DeployModule {
   async execute(uri: Uri, config?: { gatewayUri: string }): Promise<Uri> {
     if (!isValidUri(uri)) {
       throw new Error(

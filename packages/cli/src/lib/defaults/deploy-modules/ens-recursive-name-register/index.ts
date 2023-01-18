@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Deployer } from "../../../deploy";
+import { DeployModule } from "../../../deploy";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
@@ -13,7 +13,7 @@ import {
 import { embeddedWrappers } from "@polywrap/test-env-js";
 import { PolywrapClient } from "@polywrap/client-js";
 
-class ENSRecursiveNameRegisterPublisher implements Deployer {
+class ENSRecursiveNameRegisterPublisher implements DeployModule {
   async execute(
     uri: Uri,
     config: {

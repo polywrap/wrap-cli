@@ -19,12 +19,12 @@ import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class PluginWrapper implements Wrapper {
   constructor(
-    private manifest: WrapManifest,
-    private module: PluginModule<unknown>
+    private _manifest: WrapManifest,
+    private _module: PluginModule<unknown>
   ) {
     Tracer.startSpan("PluginWrapper: constructor");
     Tracer.setAttribute("args", {
-      plugin: this.module,
+      plugin: this._module,
     });
     Tracer.endSpan();
   }
@@ -39,7 +39,7 @@ export class PluginWrapper implements Wrapper {
 
   @Tracer.traceMethod("PluginWrapper: getManifest")
   public getManifest(): WrapManifest {
-    return this.manifest;
+    return this._manifest;
   }
 
   @Tracer.traceMethod("PluginWrapper: invoke", TracingLevel.High)
@@ -55,7 +55,7 @@ export class PluginWrapper implements Wrapper {
     const { method } = options;
     const args = options.args || {};
 
-    if (!this.module.getMethod(method)) {
+    if (!this._module.getMethod(method)) {
       const error = new WrapError(`Plugin missing method "${method}"`, {
         code: WrapErrorCode.WRAPPER_METHOD_NOT_FOUND,
         uri: options.uri.uri,
@@ -65,7 +65,7 @@ export class PluginWrapper implements Wrapper {
     }
 
     // Set the module's environment
-    this.module.setEnv(options.env || {});
+    this._module.setEnv(options.env || {});
 
     let jsArgs: Record<string, unknown>;
 
@@ -94,7 +94,7 @@ export class PluginWrapper implements Wrapper {
     }
 
     // Invoke the function
-    const result = await this.module._wrap_invoke(method, jsArgs, client);
+    const result = await this._module._wrap_invoke(method, jsArgs, client);
 
     if (result.ok) {
       const data = result.value;

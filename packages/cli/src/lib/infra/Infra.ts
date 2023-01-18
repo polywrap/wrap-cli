@@ -276,7 +276,7 @@ export class Infra {
         const packageDir = dependencyFetcher.getPackageDir(m.package);
         const packagePath = m.dockerComposePath
           ? path.join(packageDir, m.dockerComposePath)
-          : this.tryResolveComposeFile(
+          : this._tryResolveComposeFile(
               packageDir,
               this._defaultModuleComposePaths
             );
@@ -353,7 +353,7 @@ export class Infra {
         isFile ? module.path : module.name
       );
       copySync(module.path, modulePath);
-      const composePath = this.tryResolveComposeFile(
+      const composePath = this._tryResolveComposeFile(
         modulePath,
         this._defaultModuleComposePaths
       );
@@ -386,7 +386,7 @@ export class Infra {
     return path.join(this._config.defaultInfraModulesPath, defaultModulePath);
   }
 
-  private tryResolveComposeFile(
+  private _tryResolveComposeFile(
     moduleDir: string,
     pathsToTry: string[],
     triedPaths: string[] = []
@@ -405,7 +405,7 @@ export class Infra {
       return pathToTry;
     }
 
-    return this.tryResolveComposeFile(moduleDir, pathsToTry.slice(1), [
+    return this._tryResolveComposeFile(moduleDir, pathsToTry.slice(1), [
       ...triedPaths,
       pathToTry,
     ]);

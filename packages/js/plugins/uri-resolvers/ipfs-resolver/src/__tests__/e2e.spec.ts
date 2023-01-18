@@ -48,7 +48,7 @@ describe("IPFS Plugin", () => {
       fail("Expected response to be a wrapper");
     }
 
-    const manifest = await result.value.wrapper.getManifest({});
+    const manifest = await result.value.wrapper.getManifest();
 
     expect(manifest?.name).toBe("SimpleStorage");
   });
