@@ -28,7 +28,6 @@ import fsExtra from "fs-extra";
 export interface PolywrapProjectConfig extends ProjectConfig {
   polywrapManifestPath: string;
   buildManifestPath?: string;
-  deployManifestPath?: string;
 }
 
 export interface BuildManifestConfig {
