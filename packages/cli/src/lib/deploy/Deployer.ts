@@ -1,18 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
+import { DeployModule } from "./DeployModule";
 import { loadDeployManifest, loadDeployManifestExt } from "../project";
 import { CacheDirectory } from "../CacheDirectory";
 import { Logger } from "../logging";
 
-import { Uri } from "@polywrap/core-js";
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 import { Schema as JsonSchema } from "jsonschema";
 import path from "path";
 import nodePath from "path";
-
-export interface DeployModule {
-  execute(uri: Uri, config?: unknown): Promise<Uri>;
-}
 
 interface DeployerConfig {
   cache: CacheDirectory;

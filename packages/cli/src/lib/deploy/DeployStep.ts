@@ -1,4 +1,4 @@
-import { DeployModule } from "./Deployer";
+import { DeployModule } from "./DeployModule";
 
 import { Uri } from "@polywrap/core-js";
 
