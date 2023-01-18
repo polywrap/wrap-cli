@@ -45,23 +45,6 @@ export interface PolywrapManifest {
    * Project resources folder
    */
   resources?: string;
-  /**
-   * Project extension files (build, deploy, infra).
-   */
-  extensions?: {
-    /**
-     * Path to the project build manifest file.
-     */
-    build?: string;
-    /**
-     * Path to project deploy manifest file.
-     */
-    deploy?: string;
-    /**
-     * Path to project infra manifest file.
-     */
-    infra?: string;
-  };
   __type: "PolywrapManifest";
 }
 export interface ImportAbis {
