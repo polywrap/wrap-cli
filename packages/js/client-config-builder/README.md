@@ -223,12 +223,12 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
   /**
    * Instantiate a ClientConfigBuilder
    *
-   * @param wrapperCache?: a wrapper cache to be used in place of the default wrapper cache
-   * @param resolver?: a uri resolver to be used in place of any added redirects, wrappers, packages, and resolvers when building a CoreClientConfig
+   * @param _wrapperCache?: a wrapper cache to be used in place of the default wrapper cache
+   * @param _resolver?: a uri resolver to be used in place of any added redirects, wrappers, packages, and resolvers when building a CoreClientConfig
    */
   constructor(
-    private readonly wrapperCache?: IWrapperCache,
-    private readonly resolver?: IUriResolver<unknown>
+    private readonly _wrapperCache?: IWrapperCache,
+    private readonly _resolver?: IUriResolver<unknown>
   ) 
 ```
 

@@ -558,10 +558,10 @@ export interface Wrapper extends Invocable {
 /** Contains either a Uri, a manifest, or neither */
 export interface MaybeUriOrManifest {
   /** wrap URI */
-  uri?: string;
+  uri?: string | null;
 
   /** Serialized wrap manifest */
-  manifest?: Uint8Array;
+  manifest?: Uint8Array | null;
 }
 ```
 
@@ -600,7 +600,7 @@ export interface MaybeUriOrManifest {
       invoker: Invoker,
       wrapper: Uri,
       path: string
-    ): Promise<Result<Uint8Array | undefined, WrapError>> 
+    ): Promise<Result<Uint8Array | null, WrapError>> 
 ```
 
 ## Uri Resolution
@@ -729,6 +729,8 @@ export type UriPackageOrWrapper = UriValue | UriPackageValue | UriWrapperValue;
 ### UriResolutionContext
 
 ```ts
+/** An implementation of the IUriResolutionContext interface */
+// $start: UriResolutionContext
 /** An implementation of the IUriResolutionContext interface */
 export class UriResolutionContext implements IUriResolutionContext {
 ```
