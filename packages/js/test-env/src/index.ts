@@ -298,6 +298,6 @@ export async function deployWrapper({
 
   return {
     stdout: deployStdout,
-    stderr: deployStderr
-  }
+    stderr: deployStderr,
+  };
 }
