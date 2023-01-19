@@ -72,7 +72,9 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
       );
     }
 
-    const registerData = await client.invoke<{ tx: { hash: string } }[]>({
+    const registerData = await client.invoke<
+      { tx: { hash: string }; didRegister: boolean }[]
+    >({
       method: "registerDomainAndSubdomainsRecursively",
       uri: embeddedWrappers.ens,
       args: {
@@ -94,20 +96,23 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
       );
     }
 
-    await invokeWithTimeout(
-      client,
-      {
-        method: "awaitTransaction",
-        uri: "wrap://ens/ethereum.polywrap.eth",
-        args: {
-          txHash: registerData.value[0].tx.hash,
-          connection: {
-            networkNameOrChainId: network,
+    // didRegister can be false if the ens domain is already registered, in which case there is no transaction
+    if (registerData.value[0].didRegister) {
+      await invokeWithTimeout(
+        client,
+        {
+          method: "awaitTransaction",
+          uri: "wrap://ens/ethereum.polywrap.eth",
+          args: {
+            txHash: registerData.value[0].tx.hash,
+            connection: {
+              networkNameOrChainId: network,
+            },
           },
         },
-      },
-      15000
-    );
+        15000
+      );
+    }
 
     return new Uri(`ens/${network}/${ensDomain}`);
   }
