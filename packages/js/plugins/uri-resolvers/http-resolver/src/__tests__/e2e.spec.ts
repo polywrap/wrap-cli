@@ -81,7 +81,7 @@ describe("HTTP Plugin", () => {
 
     const manifest = await result.value.wrapper.getManifest();
 
-    expect(manifest?.name).toBe("SimpleStorage");
+    expect(manifest?.name).toBe("bigint-type");
     expect(manifest).toEqual(expectedManifest);
   });
 
