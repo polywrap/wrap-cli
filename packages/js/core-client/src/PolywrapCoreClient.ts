@@ -47,7 +47,7 @@ export class PolywrapCoreClient implements CoreClient {
 
       Tracer.startSpan("PolywrapClient: constructor");
 
-      this._config = this.buildConfigFromPolywrapCoreClientConfig(config);
+      this._config = this._buildConfigFromPolywrapCoreClientConfig(config);
 
       Tracer.setAttribute("config", this._config);
     } catch (error) {
@@ -581,7 +581,7 @@ export class PolywrapCoreClient implements CoreClient {
     return ResultOk(true);
   }
 
-  private buildConfigFromPolywrapCoreClientConfig(
+  private _buildConfigFromPolywrapCoreClientConfig(
     config: PolywrapCoreClientConfig
   ): PolywrapCoreClientConfig<Uri> {
     return {

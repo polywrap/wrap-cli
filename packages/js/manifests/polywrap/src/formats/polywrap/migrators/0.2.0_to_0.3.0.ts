@@ -7,6 +7,19 @@ export function migrate(migrate: OldManifest, logger?: ILogger): NewManifest {
     logger?.warn(
       `The Polywrap Meta Manifest has been deprecated, please use the new "resources" field in the Polywrap Manifest.`
     );
+    delete migrate.extensions.meta;
+  }
+  if (migrate.extensions?.deploy) {
+    logger?.warn(
+      `The Polywrap Deploy Manifest no longer needs to be listed as a project extension, and can be used as a standalone.`
+    );
+    delete migrate.extensions.deploy;
+  }
+  if (migrate.extensions?.infra) {
+    logger?.warn(
+      `The Polywrap Infra Manifest no longer needs to be listed as a project extension, and can be used as a standalone.`
+    );
+    delete migrate.extensions.infra;
   }
   return {
     ...migrate,
