@@ -51,28 +51,6 @@
           }
         }
       }
-    },
-    "extensions": {
-      "description": "Project extension files (build, deploy, infra).",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "build": {
-          "description": "Path to the project build manifest file.",
-          "type": "string",
-          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
-        },
-        "deploy": {
-          "description": "Path to project deploy manifest file.",
-          "type": "string",
-          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
-        },
-        "infra": {
-          "description": "Path to project infra manifest file.",
-          "type": "string",
-          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
-        }
-      }
     }
   },
   "definitions": {

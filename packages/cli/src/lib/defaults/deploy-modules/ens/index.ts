@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Deployer } from "../../../deploy";
+import { DeployModule } from "../../../deploy";
 import { getClient } from "./getClient";
-
 import { invokeWithTimeout } from "wraplib";
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
@@ -12,7 +11,7 @@ import { Connections, Connection } from "ethereum-provider-js";
 
 const contentHash = require("content-hash");
 
-class ENSPublisher implements Deployer {
+class ENSPublisher implements DeployModule {
   async execute(
     uri: Uri,
     config: {

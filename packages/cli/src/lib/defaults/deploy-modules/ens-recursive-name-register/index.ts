@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Deployer } from "../../../deploy";
+import { DeployModule } from "../../../deploy";
 import { getClient } from "./getClient";
-
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
@@ -10,7 +9,7 @@ import { Connections, Connection } from "ethereum-provider-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
 import { invokeWithTimeout } from "wraplib";
 
-class ENSRecursiveNameRegisterPublisher implements Deployer {
+class ENSRecursiveNameRegisterPublisher implements DeployModule {
   async execute(
     uri: Uri,
     config: {
