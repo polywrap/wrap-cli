@@ -3449,6 +3449,18 @@
     is-ipfs "1.0.3"
     multiformats "9.7.0"
 
+"@polywrap/ipfs-plugin-js@0.10.0-pre.7":
+  version "0.10.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polywrap/ipfs-plugin-js/-/ipfs-plugin-js-0.10.0-pre.7.tgz#bf54e6b26b34fb0b6c6c04935a074f56e5e34bb6"
+  integrity sha512-3lgRc86WC+uOjstZVX6WIO/Tvza8XaOKGIHIQYFf+NyTEG/TueQvkNaUZo7RbHoDaXrvDUvmNyzeW0O0OQzfUA==
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.7"
+    "@polywrap/ipfs-http-client-lite" "0.3.0"
+    "@polywrap/plugin-js" "0.10.0-pre.7"
+    abort-controller "3.0.0"
+    is-ipfs "1.0.3"
+    multiformats "9.7.0"
+
 "@polywrap/ipfs-resolver-plugin-js@0.10.0-pre.6":
   version "0.10.0-pre.6"
   resolved "https://registry.yarnpkg.com/@polywrap/ipfs-resolver-plugin-js/-/ipfs-resolver-plugin-js-0.10.0-pre.6.tgz#9a261e3973d0ef84b5fe230fcfd65a0d09618148"
@@ -3457,6 +3469,17 @@
     "@polywrap/core-js" "0.10.0-pre.6"
     "@polywrap/ipfs-http-client-lite" "0.3.0"
     "@polywrap/plugin-js" "0.10.0-pre.6"
+    abort-controller "3.0.0"
+    is-ipfs "1.0.3"
+
+"@polywrap/ipfs-resolver-plugin-js@0.10.0-pre.7":
+  version "0.10.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polywrap/ipfs-resolver-plugin-js/-/ipfs-resolver-plugin-js-0.10.0-pre.7.tgz#e82ebae17eacc542d8f83c183674e82715c5bd9c"
+  integrity sha512-jI+KqpAq0b8P7nmItUwUJ1JTibMfFUvt5mYuylJj9w3Ua15foTpML60uhOCt1kZ4TeaZoq7C1QcytbWTMsfhUQ==
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.7"
+    "@polywrap/ipfs-http-client-lite" "0.3.0"
+    "@polywrap/plugin-js" "0.10.0-pre.7"
     abort-controller "3.0.0"
     is-ipfs "1.0.3"
 
