@@ -10,6 +10,8 @@ import {
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
+// $start: Wrapper.ts
+
 /**
  * The Wrapper definition, which can be used to spawn
  * many invocations of this particular Wrapper. Internally
@@ -41,3 +43,5 @@ export interface Wrapper extends Invocable {
    */
   getManifest(): WrapManifest;
 }
+
+// $end

@@ -7,10 +7,10 @@
       "es5",
       "dom"
     ],
-    "outDir": "build"
   },
   "include": [
-    "./src/**/*.ts"
+    "./src/**/*.ts",
+    "./examples/**/*.ts"
   ],
   "exclude": []
 }
