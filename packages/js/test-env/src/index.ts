@@ -6,24 +6,33 @@ import fs from "fs";
 import yaml from "yaml";
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 
+// $start: ensAddresses
+/** The Ethereum addresses of the default infrastructure module's locally-deployed ENS smart contracts. */
 export const ensAddresses = {
   ensAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
   resolverAddress: "0x5b1869D9A4C187F2EAa108f3062412ecf0526b24",
   registrarAddress: "0xD833215cBcc3f914bD1C9ece3EE7BF8B14f841bb",
   reverseAddress: "0xe982E462b094850F12AF94d21D470e21bE9D0E9C",
 } as const;
+// $end
 
+// $start: providers
+/** The URIs for the default providers used by the default infrastructure module. */
 export const providers = {
   ipfs: "http://localhost:5001",
   ethereum: "http://localhost:8545",
   http: "http://localhost:3500",
 };
+// $end
 
+// $start: embeddedWrappers
+/** Wasm wrappers embedded in the package */
 export const embeddedWrappers = {
   ens: `wrap://fs/${path.join(__dirname, "wrappers", "ens")}`,
   uts46: `wrap://fs/${path.join(__dirname, "wrappers", "uts46")}`,
   sha3: `wrap://fs/${path.join(__dirname, "wrappers", "sha3")}`,
 };
+// $end: embeddedWrappers
 
 const monorepoCli = `${__dirname}/../../../cli/bin/polywrap`;
 const npmCli = `${__dirname}/../../../polywrap/bin/polywrap`;
@@ -63,7 +72,15 @@ async function awaitResponse(
   return false;
 }
 
-export const initTestEnvironment = async (cli?: string): Promise<void> => {
+// $start: initTestEnvironment
+/**
+ * Starts a local test environment using the default infrastructure module.
+ *
+ * @param cli? - a path to a Polywrap CLI binary.
+ */
+export const initTestEnvironment = async (
+  cli?: string
+): Promise<void> /* $ */ => {
   // Start the test environment
   const { exitCode, stderr, stdout } = await runCLI({
     args: ["infra", "up", "--modules=eth-ens-ipfs", "--verbose"],
@@ -121,7 +138,15 @@ export const initTestEnvironment = async (cli?: string): Promise<void> => {
   }
 };
 
-export const stopTestEnvironment = async (cli?: string): Promise<void> => {
+// $start: stopTestEnvironment
+/**
+ * Stops the local test environment (default infrastructure module) if one is running.
+ *
+ * @param cli? - a path to a Polywrap CLI binary.
+ */
+export const stopTestEnvironment = async (
+  cli?: string
+): Promise<void> /* $ */ => {
   // Stop the test environment
   const { exitCode, stderr } = await runCLI({
     args: ["infra", "down", "--modules=eth-ens-ipfs"],
@@ -137,6 +162,18 @@ export const stopTestEnvironment = async (cli?: string): Promise<void> => {
   return Promise.resolve();
 };
 
+// $start: runCLI
+/**
+ * Runs the polywrap CLI programmatically.
+ *
+ * @param options - an object containing:
+ *   args - an array of command line arguments
+ *   cwd? - a current working directory
+ *   cli? - a path to a Polywrap CLI binary
+ *   env? - a map of environmental variables
+ *
+ * @returns exit code, standard output, and standard error logs
+ */
 export const runCLI = async (options: {
   args: string[];
   cwd?: string;
@@ -146,7 +183,7 @@ export const runCLI = async (options: {
   exitCode: number;
   stdout: string;
   stderr: string;
-}> => {
+}> /* $ */ => {
   const [exitCode, stdout, stderr] = await new Promise((resolve, reject) => {
     if (!options.cwd) {
       // Make sure to set an absolute working directory
@@ -195,11 +232,19 @@ export const runCLI = async (options: {
   };
 };
 
+// $start: buildWrapper
+/**
+ * Build the wrapper located at the given path
+ *
+ * @param wrapperAbsPath - absolute path of wrapper to build
+ * @param manifestPathOverride? - path to polywrap manifest
+ * @param codegen? - run codegen before build
+ */
 export async function buildWrapper(
   wrapperAbsPath: string,
   manifestPathOverride?: string,
   codegen?: boolean
-): Promise<void> {
+): Promise<void> /* $ */ {
   const manifestPath = manifestPathOverride
     ? path.join(wrapperAbsPath, manifestPathOverride)
     : `${wrapperAbsPath}/polywrap.yaml`;
@@ -244,20 +289,26 @@ export async function buildWrapper(
   }
 }
 
-export async function deployWrapper({
-  wrapperAbsPath,
-  codegen,
-  build,
-  jobs,
-}: {
-  wrapperAbsPath: string;
-  codegen?: boolean;
-  build?: boolean;
-  jobs: DeployManifest["jobs"];
+// $start: deployWrapper
+/**
+ * Deploy the wrapper located at the given path, and then deploy it based on given jobs.
+ *
+ * @param options - an object containing:
+ *   wrapperAbsPath - absolute path of wrapper to build
+ *   jobs - jobs that will be executed in deploy process
+ *   codegen? - run codegen before build
+ *   build? - run build before deploy
+ */
+export async function deployWrapper(options: {
+  wrapperAbsPath: string,
+  jobs: DeployManifest["jobs"],
+  codegen?: boolean,
+  build?: boolean,
 }): Promise<void | {
   stdout: string;
   stderr: string;
-}> {
+}> /* $ */ {
+  const { wrapperAbsPath, jobs, codegen, build } = options;
   const tempDeployManifestFilename = `polywrap.deploy-temp.yaml`;
   const tempDeployManifestPath = path.join(
     wrapperAbsPath,

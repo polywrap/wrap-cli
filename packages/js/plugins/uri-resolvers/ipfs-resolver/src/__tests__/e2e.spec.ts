@@ -39,14 +39,18 @@ describe("IPFS Plugin", () => {
       },
     };
 
-    const { stdout } = await deployWrapper({
+    const response = await deployWrapper({
       wrapperAbsPath: wrapperAbsPath,
       jobs
     });
 
+    if (!response) {
+      throw Error("Failed to deploy wrapper");
+    }
+
     const extractCID = /(wrap:\/\/ipfs\/[A-Za-z0-9]+)/;
-    const result = stdout.match(extractCID);
-    wrapperIpfsCid = new Uri(result[1]).path;;
+    const result = response.stdout.match(extractCID);
+    wrapperIpfsCid = new Uri(result![1]).path;
   });
 
   afterAll(async () => {

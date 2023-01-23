@@ -7,6 +7,7 @@ import {
 } from "@polywrap/core-client-js";
 
 export class PolywrapClient extends PolywrapCoreClient {
+  // $start: PolywrapClient-constructor
   /**
    * Instantiate a PolywrapClient
    *
@@ -24,7 +25,7 @@ export class PolywrapClient extends PolywrapCoreClient {
       | undefined
       | PolywrapCoreClientConfig,
     options?: { noDefaults?: boolean }
-  ) {
+  ) /* $ */ {
     super(
       !options?.noDefaults
         ? buildPolywrapCoreClientConfig(

@@ -16,6 +16,8 @@ import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
 
+// $start: getDefaultConfig
+
 export const defaultIpfsProviders = [
   "https://ipfs.wrappers.io",
   "https://ipfs.io",
@@ -169,3 +171,5 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
     },
   ];
 };
+
+// $end

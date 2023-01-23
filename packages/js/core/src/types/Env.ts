@@ -2,6 +2,9 @@ import { Uri } from ".";
 
 import { Tracer } from "@polywrap/tracing-js";
 
+// $start: Env.ts
+
+/** A map of string-indexed, Msgpack-serializable environmental variables associated with a wrapper */
 export interface Env<TUri extends Uri | string = string> {
   /** Uri of wrapper */
   uri: TUri;
@@ -9,6 +12,8 @@ export interface Env<TUri extends Uri | string = string> {
   /** Env variables used by the module */
   env: Record<string, unknown>;
 }
+
+// $end
 
 export const sanitizeEnvs = Tracer.traceFunc(
   "core: sanitizeEnvs",

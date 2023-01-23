@@ -8,26 +8,27 @@ It allows user to initiate the test environment through a javascript function (i
 
 # Usage
 
-Initialization with the simple-storage wrapper.
+## Init test env
+
+Spin up docker containers for Ganache and IPFS.
 
 ``` typescript
-import path from "path";
-import { PolywrapClient } from "@polywrap/client-js";
-import {
-  buildWrapper,
-  initTestEnvironment,
-  stopTestEnvironment,
-  providers,
-  ensAddresses
-} from "@polywrap/test-env-js";
-import * as App from "../types/wrap";
-
-// test wrapper in a test environment
-export async function foo({
-  // spin up docker containers for Ganache and IPFS.
   await initTestEnvironment();
-  const CONNECTION = { networkNameOrChainId: "testnet" };
+```
 
+## Stop test env
+
+Stop docker containers for Ganache and IPFS.
+
+``` typescript
+  await stopTestEnvironment();
+```
+
+## Build a wrapper
+
+Build a local wrapper project.
+
+``` typescript
   // get path to the wrapper in testing
   const wrapperPath: string = path.join(path.resolve(__dirname), "..");
 
@@ -35,34 +36,145 @@ export async function foo({
   await buildWrapper(wrapperPath, undefined, true);
 
   // get URI to the local wrapper build
-  const wrapperUri = `fs/${wrapperPath}/build`;
-
-  // invoke the wrapper to deploy a contract to the test env
-  const deployContractResponse = await App.SimpleStorage_Module.deployContract(
-    { connection: CONNECTION },
-    client,
-    wrapperUri
-  );
-  const contractAddress = deployContractResponse.data as string;
-
-  // invoke the wrapper to query a contract in the test env
-  const response = await App.SimpleStorage_Module.getData(
-    {
-      address: contractAddr,
-      connection: CONNECTION,
-    },
-    client,
-    wrapperUri
-  );
-});
-
+  const wrapperUri = `wrap://fs/${wrapperPath}/build`;
 ```
 
-# API
+## Execute the CLI
 
-- ensAddresses, providers - constant addresses and urls
-- runCLI - run arbitrary Polywrap CLI commands
-- initTestEnvironment - spin up Ganache and IPFS Docker instances 
-- stopTestEnvironment - stop Docker
-- buildWrapper - compile wasm and bindings
-- buildAndDeployWrapper - deploy wrapper to the testnet ENS
+Execute a command with the Polywrap CLI.
+
+``` typescript
+  const { exitCode, stderr, stdout } = await runCLI({
+    args: ["infra", "up", "--verbose"],
+  });
+```
+
+## Constants
+
+### providers
+
+```typescript
+/** The URIs for the default providers used by the default infrastructure module. */
+export const providers = {
+  ipfs: "http://localhost:5001",
+  ethereum: "http://localhost:8545",
+  http: "http://localhost:3500",
+};
+```
+
+### ensAddresses
+
+```typescript
+/** The Ethereum addresses of the default infrastructure module's locally-deployed ENS smart contracts. */
+export const ensAddresses = {
+  ensAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
+  resolverAddress: "0x5b1869D9A4C187F2EAa108f3062412ecf0526b24",
+  registrarAddress: "0xD833215cBcc3f914bD1C9ece3EE7BF8B14f841bb",
+  reverseAddress: "0xe982E462b094850F12AF94d21D470e21bE9D0E9C",
+} as const;
+```
+
+### embeddedWrappers
+
+```typescript
+/** Wasm wrappers embedded in the package */
+export const embeddedWrappers = {
+  ens: `wrap://fs/${path.join(__dirname, "wrappers", "ens")}`,
+  uts46: `wrap://fs/${path.join(__dirname, "wrappers", "uts46")}`,
+  sha3: `wrap://fs/${path.join(__dirname, "wrappers", "sha3")}`,
+};
+```
+
+## Methods
+
+### initTestEnvironment
+
+```typescript
+/**
+ * Starts a local test environment using the default infrastructure module.
+ *
+ * @param cli? - a path to a Polywrap CLI binary.
+ */
+export const initTestEnvironment = async (
+  cli?: string
+): Promise<void> 
+```
+
+### stopTestEnvironment
+
+```typescript
+/**
+ * Stops the local test environment (default infrastructure module) if one is running.
+ *
+ * @param cli? - a path to a Polywrap CLI binary.
+ */
+export const stopTestEnvironment = async (
+  cli?: string
+): Promise<void> 
+```
+
+### buildWrapper
+
+```typescript
+/**
+ * Build the wrapper located at the given path
+ *
+ * @param wrapperAbsPath - absolute path of wrapper to build
+ * @param manifestPathOverride? - path to polywrap manifest
+ * @param codegen? - run codegen before build
+ */
+export async function buildWrapper(
+  wrapperAbsPath: string,
+  manifestPathOverride?: string,
+  codegen?: boolean
+): Promise<void> 
+```
+
+### deployWrapper
+
+```typescript
+/**
+ * Deploy the wrapper located at the given path, and then deploy it based on given jobs.
+ *
+ * @param options - an object containing:
+ *   wrapperAbsPath - absolute path of wrapper to build
+ *   jobs - jobs that will be executed in deploy process
+ *   codegen? - run codegen before build
+ *   build? - run build before deploy
+ */
+export async function deployWrapper(options: {
+  wrapperAbsPath: string,
+  jobs: DeployManifest["jobs"],
+  codegen?: boolean,
+  build?: boolean,
+}): Promise<void | {
+  stdout: string;
+  stderr: string;
+}> 
+```
+
+### runCLI
+
+```typescript
+/**
+ * Runs the polywrap CLI programmatically.
+ *
+ * @param options - an object containing:
+ *   args - an array of command line arguments
+ *   cwd? - a current working directory
+ *   cli? - a path to a Polywrap CLI binary
+ *   env? - a map of environmental variables
+ *
+ * @returns exit code, standard output, and standard error logs
+ */
+export const runCLI = async (options: {
+  args: string[];
+  cwd?: string;
+  cli?: string;
+  env?: Record<string, string>;
+}): Promise<{
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+}> 
+```
