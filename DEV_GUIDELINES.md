@@ -47,6 +47,10 @@ In the test-cases directory, you can find the `wrappers` folder, which is auto g
 [WASM Test Harness](https://github.com/polywrap/wasm-test-harness), check the `fetchWrappers` function from the [test-env package](./packages/test-cases/index.ts). These tests are used mostly for client tests, if you would like to
 modify them, [follow the development guide of the wasm test harness](https://github.com/polywrap/wasm-test-harness#build--contribute).
 
+If any PR modifies `packages/wasm`, `packages/cli` or `packages/schema`, it will try to generate wrappers on CI based on the changes
+introduced on the PR (You can check the workflow in detail [here](https://github.com/polywrap/wasm-test-harness/blob/master/.github/workflows/generate-wrappers.yaml#L14)).
+For this, a new branch in the Test Harness need to be opened **with the same name** of the base branch from the PR
+
 ## Branches
 
 Currently, there are 2 active branches with configured branch policies:
