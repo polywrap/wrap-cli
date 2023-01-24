@@ -1,12 +1,12 @@
 [
-  "wrap://ens/from.eth => PackageToWrapperCacheResolver => uri (wrap://ens/to1.eth)",
+  "wrap://ens/from.eth => EcoCacheResolver => uri (wrap://ens/to1.eth)",
   [
     "wrap://ens/from.eth => UriResolverAggregator => uri (wrap://ens/to1.eth)",
     [
       "wrap://ens/from.eth => StaticResolver - Redirect (wrap://ens/from.eth - wrap://ens/to1.eth) => uri (wrap://ens/to1.eth)"
     ]
   ],
-  "wrap://ens/to1.eth => PackageToWrapperCacheResolver => uri (wrap://ens/to2.eth)",
+  "wrap://ens/to1.eth => EcoCacheResolver => uri (wrap://ens/to2.eth)",
   [
     "wrap://ens/to1.eth => UriResolverAggregator => uri (wrap://ens/to2.eth)",
     [
