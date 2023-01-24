@@ -4,11 +4,11 @@ import { BaseClientConfigBuilder } from "./BaseClientConfigBuilder";
 import { CoreClientConfig, Uri, IUriResolver } from "@polywrap/core-js";
 import {
   IWrapperCache,
-  PackageToWrapperCacheResolver,
   RecursiveResolver,
   StaticResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
+import { EcoCacheResolver } from "wraplib";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 export class ClientConfigBuilder extends BaseClientConfigBuilder {
@@ -37,7 +37,7 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
       resolver:
         this._resolver ??
         RecursiveResolver.from(
-          PackageToWrapperCacheResolver.from(
+          EcoCacheResolver.from(
             [
               StaticResolver.from([
                 ...this.config.redirects,
