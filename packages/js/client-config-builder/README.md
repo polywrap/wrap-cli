@@ -13,12 +13,6 @@ Initialize a ClientConfigBuilder using the [constructor](#constructor)
 ```typescript
   // start with a blank slate (typical usage)
   const builder = new ClientConfigBuilder();
-
-  // instantiate a builder with a custom cache and/or resolver
-  const _builder = new ClientConfigBuilder(
-    new WrapperCache(),
-    RecursiveResolver.from([])
-  );
 ```
 
 ### Configure
@@ -63,7 +57,13 @@ Finally, build a ClientConfig or CoreClientConfig to pass to the PolywrapClient 
   const clientConfig = builder.build();
 
   // accepted by either the PolywrapClient or the PolywrapCoreClient
-  const coreClientConfig = builder.buildCoreConfig();
+  let coreClientConfig = builder.buildCoreConfig();
+
+  // build with a custom cache and/or resolver
+  coreClientConfig = builder.buildCoreConfig(
+    new WrapperCache(),
+    RecursiveResolver.from([])
+  );
 ```
 
 ### Example
@@ -197,14 +197,8 @@ export interface ClientConfig {
 ```ts
   /**
    * Instantiate a ClientConfigBuilder
-   *
-   * @param _wrapperCache?: a wrapper cache to be used in place of the default wrapper cache
-   * @param _resolver?: a uri resolver to be used in place of any added redirects, wrappers, packages, and resolvers when building a CoreClientConfig
    */
-  constructor(
-    private readonly _wrapperCache?: IWrapperCache,
-    private readonly _resolver?: IUriResolver<unknown>
-  ) 
+  constructor() 
 ```
 
 ### add
