@@ -35,6 +35,7 @@ import { Tracer, TracerConfig } from "@polywrap/tracing-js";
 export class PolywrapClient<
   TUri extends Uri | string = string
 > extends PolywrapCoreClient {
+  // $start: PolywrapClient-constructor
   /**
    * Instantiate a PolywrapClient
    *
@@ -62,7 +63,7 @@ export class PolywrapClient<
       | CoreClientConfig
       | Partial<ClientConfig>,
     options?: { noDefaults?: boolean }
-  ) {
+  ) /* $ */ {
     super(
       buildPolywrapCoreClientConfig<TUri>(
         config,
@@ -193,8 +194,17 @@ export class PolywrapClient<
     return super.loadWrapper(sanitizeUri(uri), resolutionContext, options);
   }
 
+  // $start: PolywrapCoreClient-validate
+  /**
+   * Validate a wrapper, given a URI.
+   * Optionally, validate the full ABI and/or recursively validate imports.
+   *
+   * @param uri - the Uri to resolve
+   * @param options - { abi?: boolean; recursive?: boolean }
+   * @returns A Promise with a Result containing a boolean or Error
+   */
   @Tracer.traceMethod("PolywrapClient: validateConfig")
-  public async validate<TUri extends Uri | string>(
+  public async validate<TUri extends Uri | string> /* $ */(
     uri: TUri,
     options: ValidateOptions
   ): Promise<Result<true, Error>> {

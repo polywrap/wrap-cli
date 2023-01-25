@@ -12,11 +12,15 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json",
+    "build": "yarn build:fast && yarn build:readme",
+    "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose"
+    "test:watch": "jest --watch --passWithNoTests --verbose",
+    "build:readme:subsections": "yarn doc-snippets combine -c ./readme/config/sub-sections.json",
+    "build:readme:final": "yarn doc-snippets combine -c ./readme/config/final.json",
+    "build:readme": "yarn build:readme:subsections && yarn build:readme:final"
   },
   "dependencies": {
     "@polywrap/result": "0.10.0-pre.7",
@@ -24,6 +28,7 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.7"
   },
   "devDependencies": {
+    "doc-snippets": "^1.0.0",
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
     "@types/prettier": "2.6.0",

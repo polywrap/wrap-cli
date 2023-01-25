@@ -1,4 +1,4 @@
-format: 0.2.0
+format: 0.3.0
 project:
   name: template-wasm-as
   type: wasm/assemblyscript
@@ -7,4 +7,3 @@ source:
   schema: ./src/schema.graphql
 extensions:
   build: ./polywrap.build.yaml
-  deploy: ./polywrap.deploy.yaml

@@ -1,9 +1,16 @@
 {
   "extends": "../../../tsconfig",
   "compilerOptions": {
-    "lib": ["es2020", "es2015", "es5", "dom"],
-    "outDir": "build"
+    "lib": [
+      "es2020",
+      "es2015",
+      "es5",
+      "dom"
+    ],
   },
-  "include": ["./src/**/*.ts"],
+  "include": [
+    "./src/**/*.ts",
+    "./examples/**/*.ts"
+  ],
   "exclude": []
 }

@@ -13,7 +13,11 @@ import {
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 export class ClientConfigBuilder extends BaseClientConfigBuilder {
-  constructor() {
+  // $start: ClientConfigBuilder-constructor
+  /**
+   * Instantiate a ClientConfigBuilder
+   */
+  constructor() /* $ */ {
     super();
   }
 
