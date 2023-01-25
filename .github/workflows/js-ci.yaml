@@ -65,7 +65,7 @@ jobs:
   Generate-Wrappers:
     needs: Check-Changed-Folders
     if: ${{ needs.Check-Changed-Folders.outputs.should-generate == 'true' }}
-    uses: polywrap/wasm-test-harness/.github/workflows/generate-wrappers.yaml@master
+    uses: ./.github/workflows/generate-modified-test-wrappers.yaml
     with:
       cli-path: /toolchain/packages/cli
       wasm-path: /toolchain/packages/wasm
