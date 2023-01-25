@@ -5,20 +5,16 @@ import { Project, ProjectConfig } from ".";
 import {
   isPolywrapManifestLanguage,
   loadBuildManifest,
-  loadDeployManifest,
-  loadDeployManifestExt,
   loadPolywrapManifest,
   PolywrapManifestLanguage,
   polywrapManifestLanguages,
   polywrapManifestLanguageToBindLanguage,
 } from "./manifests";
-import { Deployer } from "../deploy";
 import { resetDir } from "../system";
 import { createUUID } from "../helpers";
 
 import {
   BuildManifest,
-  DeployManifest,
   PolywrapManifest,
 } from "@polywrap/polywrap-manifest-types-js";
 import { normalizePath } from "@polywrap/os-js";
@@ -26,14 +22,12 @@ import { BindOptions, BindOutput, bindSchema } from "@polywrap/schema-bind";
 import { WrapAbi } from "@polywrap/schema-parse";
 import regexParser from "regex-parser";
 import path from "path";
-import { Schema as JsonSchema } from "jsonschema";
 import fs from "fs";
 import fsExtra from "fs-extra";
 
 export interface PolywrapProjectConfig extends ProjectConfig {
   polywrapManifestPath: string;
   buildManifestPath?: string;
-  deployManifestPath?: string;
 }
 
 export interface BuildManifestConfig {
@@ -61,13 +55,9 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     buildUuidFile: "build/uuid",
     buildProjectDir: "build/project",
     buildLinkedPackagesDir: "build/linked-packages/",
-    deployDir: "deploy/",
-    deployModulesDir: "deploy/modules/",
   };
   private _polywrapManifest: PolywrapManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
-  private _deployManifest: DeployManifest | undefined;
-  private _defaultDeployModulesCached = false;
 
   constructor(protected _config: PolywrapProjectConfig) {
     super(_config, {
@@ -85,12 +75,9 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   public reset(): void {
     this._polywrapManifest = undefined;
     this._buildManifest = undefined;
-    this._deployManifest = undefined;
-    this._defaultDeployModulesCached = false;
     this._cache.removeCacheDir(
       PolywrapProject.cacheLayout.buildLinkedPackagesDir
     );
-    this._cache.removeCacheDir(PolywrapProject.cacheLayout.deployDir);
   }
 
   public async validate(): Promise<void> {
@@ -315,96 +302,6 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     }
   }
 
-  /// Polywrap Deploy Manifest (polywrap.deploy.yaml)
-
-  public async getDeployManifestPath(): Promise<string | undefined> {
-    const polywrapManifest = await this.getManifest();
-
-    // If a custom deploy manifest path is configured
-    if (this._config.deployManifestPath) {
-      return this._config.deployManifestPath;
-    }
-    // If the polywrap.yaml manifest specifies a custom deploy manifest
-    else if (polywrapManifest.extensions?.deploy) {
-      this._config.deployManifestPath = path.join(
-        this.getManifestDir(),
-        polywrapManifest.extensions.deploy
-      );
-      return this._config.deployManifestPath;
-    }
-    // No deploy manifest found
-    else {
-      return undefined;
-    }
-  }
-
-  public async getDeployManifestDir(): Promise<string | undefined> {
-    const manifestPath = await this.getDeployManifestPath();
-
-    if (manifestPath) {
-      return path.dirname(manifestPath);
-    } else {
-      return undefined;
-    }
-  }
-
-  public async getDeployManifest(): Promise<DeployManifest | undefined> {
-    if (!this._deployManifest) {
-      const manifestPath = await this.getDeployManifestPath();
-
-      if (manifestPath) {
-        this._deployManifest = await loadDeployManifest(
-          manifestPath,
-          this.logger
-        );
-      }
-    }
-    return this._deployManifest;
-  }
-
-  public async getDeployModule(
-    moduleName: string
-  ): Promise<{ deployer: Deployer; manifestExt: JsonSchema | undefined }> {
-    if (!this._defaultDeployModulesCached) {
-      throw new Error("Deploy modules have not been cached");
-    }
-
-    const cachePath = this._cache.getCachePath(
-      `${PolywrapProject.cacheLayout.deployModulesDir}/${moduleName}`
-    );
-
-    const manifestExtPath = path.join(cachePath, "polywrap.deploy.ext.json");
-
-    const manifestExt = await loadDeployManifestExt(
-      manifestExtPath,
-      this.logger
-    );
-
-    return {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      deployer: require(cachePath).default as Deployer,
-      manifestExt,
-    };
-  }
-
-  public async cacheDeployModules(modules: string[]): Promise<void> {
-    if (this._defaultDeployModulesCached) {
-      return;
-    }
-
-    this._cache.removeCacheDir(PolywrapProject.cacheLayout.deployModulesDir);
-
-    for await (const deployModule of modules) {
-      await this._cache.copyIntoCache(
-        `${PolywrapProject.cacheLayout.deployModulesDir}/${deployModule}`,
-        `${__dirname}/../defaults/deploy-modules/${deployModule}/*`,
-        { up: true }
-      );
-    }
-
-    this._defaultDeployModulesCached = true;
-  }
-
   public async getManifestPaths(absolute = false): Promise<string[]> {
     const root = this.getManifestDir();
     const paths = [
@@ -418,14 +315,6 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     if (buildManifestPath) {
       paths.push(
         absolute ? buildManifestPath : path.relative(root, buildManifestPath)
-      );
-    }
-
-    const deployManifestPath = await this.getDeployManifestPath();
-
-    if (deployManifestPath) {
-      paths.push(
-        absolute ? deployManifestPath : path.relative(root, deployManifestPath)
       );
     }
 

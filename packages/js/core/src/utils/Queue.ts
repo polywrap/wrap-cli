@@ -1,38 +1,38 @@
 export class Queue<T> {
-  private elements: Record<string, T | undefined>;
-  private head: number;
-  private tail: number;
+  private _elements: Record<string, T | undefined>;
+  private _head: number;
+  private _tail: number;
 
   constructor() {
-    this.elements = {};
-    this.head = 0;
-    this.tail = 0;
+    this._elements = {};
+    this._head = 0;
+    this._tail = 0;
   }
 
   enqueue(element: T): void {
-    this.elements[this.tail] = element;
-    this.tail++;
+    this._elements[this._tail] = element;
+    this._tail++;
   }
 
   dequeue(): T | undefined {
-    const item = this.elements[this.head];
+    const item = this._elements[this._head];
 
     if (item === undefined) {
       return undefined;
     }
 
-    delete this.elements[this.head];
-    this.head++;
+    delete this._elements[this._head];
+    this._head++;
 
     return item;
   }
 
   peek(): T | undefined {
-    return this.elements[this.head];
+    return this._elements[this._head];
   }
 
   get length(): number {
-    return this.tail - this.head;
+    return this._tail - this._head;
   }
 
   get isEmpty(): boolean {
@@ -42,8 +42,8 @@ export class Queue<T> {
   toArray(): T[] {
     const array: T[] = [];
 
-    for (let i = this.head; i < this.tail; i++) {
-      array.push(this.elements[i] as T);
+    for (let i = this._head; i < this._tail; i++) {
+      array.push(this._elements[i] as T);
     }
 
     return array;

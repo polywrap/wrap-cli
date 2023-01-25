@@ -29,67 +29,64 @@ import {
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class PolywrapCoreClient implements CoreClient {
+  // $start: PolywrapCoreClient-constructor
   /**
    * Instantiate a PolywrapClient
    *
    * @param config - a core client configuration
    */
-  constructor(private _config: CoreClientConfig) {}
+  constructor(private _config: CoreClientConfig) /* $ */ {}
 
+  // $start: PolywrapCoreClient-getConfig
   /**
    * Returns the configuration used to instantiate the client
    *
    * @returns an immutable Polywrap client config
    */
-  public getConfig(): CoreClientConfig {
+  public getConfig(): CoreClientConfig /* $ */ {
     return this._config;
   }
 
-  /**
-   * returns all plugin registrations from the configuration used to instantiate the client
-   *
-   * @returns an array of plugin registrations
-   */
-  /**
-   * returns a plugin package from the configuration used to instantiate the client
-   *
-   * @param uri - the uri used to register the plugin
-   * @returns a plugin package, or undefined if a plugin is not found at the given uri
-   */
+  // $start: PolywrapCoreClient-getInterfaces
   /**
    * returns all interfaces from the configuration used to instantiate the client
    *
    * @returns an array of interfaces and their registered implementations
    */
-  public getInterfaces(): readonly InterfaceImplementations[] | undefined {
+  public getInterfaces():
+    | readonly InterfaceImplementations[]
+    | undefined /* $ */ {
     return this._config.interfaces;
   }
 
+  // $start: PolywrapCoreClient-getEnvs
   /**
    * returns all env registrations from the configuration used to instantiate the client
    *
    * @returns an array of env objects containing wrapper environmental variables
    */
-  public getEnvs(): readonly Env[] | undefined {
+  public getEnvs(): readonly Env[] | undefined /* $ */ {
     return this._config.envs;
   }
 
+  // $start: PolywrapCoreClient-getResolver
   /**
    * returns the URI resolver from the configuration used to instantiate the client
    *
    * @returns an object that implements the IUriResolver interface
    */
-  public getResolver(): IUriResolver<unknown> {
+  public getResolver(): IUriResolver<unknown> /* $ */ {
     return this._config.resolver;
   }
 
+  // $start: PolywrapCoreClient-getEnvByUri
   /**
    * returns an env (a set of environmental variables) from the configuration used to instantiate the client
    *
    * @param uri - the URI used to register the env
    * @returns an env, or undefined if an env is not found at the given URI
    */
-  public getEnvByUri(uri: Uri): Env | undefined {
+  public getEnvByUri(uri: Uri): Env | undefined /* $ */ {
     const uriUri = Uri.from(uri);
 
     const envs = this.getEnvs();
@@ -100,13 +97,16 @@ export class PolywrapCoreClient implements CoreClient {
     return envs.find((environment) => Uri.equals(environment.uri, uriUri));
   }
 
+  // $start: PolywrapCoreClient-getManifest
   /**
    * returns a package's wrap manifest
    *
    * @param uri - a wrap URI
    * @returns a Result containing the WrapManifest if the request was successful
    */
-  public async getManifest(uri: Uri): Promise<Result<WrapManifest, WrapError>> {
+  public async getManifest(
+    uri: Uri
+  ): Promise<Result<WrapManifest, WrapError>> /* $ */ {
     const load = await this.loadWrapper(Uri.from(uri), undefined);
     if (!load.ok) {
       return load;
@@ -117,6 +117,7 @@ export class PolywrapCoreClient implements CoreClient {
     return ResultOk(manifest);
   }
 
+  // $start: PolywrapCoreClient-getFile
   /**
    * returns a file contained in a wrap package
    *
@@ -127,7 +128,7 @@ export class PolywrapCoreClient implements CoreClient {
   public async getFile(
     uri: Uri,
     options: GetFileOptions
-  ): Promise<Result<string | Uint8Array, WrapError>> {
+  ): Promise<Result<string | Uint8Array, WrapError>> /* $ */ {
     const load = await this.loadWrapper(Uri.from(uri), undefined);
     if (!load.ok) {
       return load;
@@ -145,18 +146,19 @@ export class PolywrapCoreClient implements CoreClient {
     return ResultOk(result.value);
   }
 
+  // $start: PolywrapCoreClient-getImplementations
   /**
    * returns the interface implementations associated with an interface URI
    *  from the configuration used to instantiate the client
    *
    * @param uri - a wrap URI
-   * @param options - { applyResolution?: boolean }
+   * @param options - { applyResolution?: boolean; resolutionContext?: IUriResolutionContext }
    * @returns a Result containing URI array if the request was successful
    */
   public async getImplementations(
     uri: Uri,
     options: GetImplementationsOptions = {}
-  ): Promise<Result<Uri[], WrapError>> {
+  ): Promise<Result<Uri[], WrapError>> /* $ */ {
     const applyResolution = !!options.applyResolution;
 
     const getImplResult = await getImplementations(
@@ -175,8 +177,9 @@ export class PolywrapCoreClient implements CoreClient {
     return ResultOk(uris);
   }
 
+  // $start: PolywrapCoreClient-invokeWrapper
   /**
-   * Invoke a wrapper using standard syntax and an instance of the wrapper
+   * Invoke a wrapper using an instance of the wrapper.
    *
    * @param options - {
    *   // The Wrapper's URI
@@ -185,23 +188,26 @@ export class PolywrapCoreClient implements CoreClient {
    *   // Method to be executed.
    *   method: string;
    *
-   *   //Arguments for the method, structured as a map, removing the chance of incorrectly ordering arguments.
+   *   //Arguments for the method, structured as a map, removing the chance of incorrectly ordered arguments.
    *    args?: Record<string, unknown> | Uint8Array;
    *
    *   // Env variables for the wrapper invocation.
    *    env?: Record<string, unknown>;
    *
+   *   // A Uri resolution context
    *   resolutionContext?: IUriResolutionContext;
    *
    *   // if true, return value is a msgpack-encoded byte array
    *   encodeResult?: boolean;
-   * }
    *
+   *   // The wrapper to invoke
+   *   wrapper: Wrapper
+   * }
    * @returns A Promise with a Result containing the return value or an error
    */
   public async invokeWrapper<TData = unknown>(
     options: InvokerOptions & { wrapper: Wrapper }
-  ): Promise<InvokeResult<TData>> {
+  ): Promise<InvokeResult<TData>> /* $ */ {
     try {
       const typedOptions: InvokeOptions = {
         ...options,
@@ -231,8 +237,11 @@ export class PolywrapCoreClient implements CoreClient {
     }
   }
 
+  // $start: PolywrapCoreClient-invoke
   /**
-   * Invoke a wrapper using standard syntax.
+   * Invoke a wrapper.
+   *
+   * @remarks
    * Unlike `invokeWrapper`, this method automatically retrieves and caches the wrapper.
    *
    * @param options - {
@@ -242,23 +251,23 @@ export class PolywrapCoreClient implements CoreClient {
    *   // Method to be executed.
    *   method: string;
    *
-   *   //Arguments for the method, structured as a map, removing the chance of incorrectly ordering arguments.
+   *   //Arguments for the method, structured as a map, removing the chance of incorrectly ordered arguments.
    *    args?: Record<string, unknown> | Uint8Array;
    *
    *   // Env variables for the wrapper invocation.
    *    env?: Record<string, unknown>;
    *
+   *   // A Uri resolution context
    *   resolutionContext?: IUriResolutionContext;
    *
    *   // if true, return value is a msgpack-encoded byte array
    *   encodeResult?: boolean;
    * }
-   *
    * @returns A Promise with a Result containing the return value or an error
    */
   public async invoke<TData = unknown>(
     options: InvokerOptions
-  ): Promise<InvokeResult<TData>> {
+  ): Promise<InvokeResult<TData>> /* $ */ {
     try {
       const typedOptions: InvokeOptions = {
         ...options,
@@ -301,6 +310,7 @@ export class PolywrapCoreClient implements CoreClient {
     }
   }
 
+  // $start: PolywrapCoreClient-tryResolveUri
   /**
    * Resolve a URI to a wrap package, a wrapper, or a uri
    *
@@ -309,7 +319,7 @@ export class PolywrapCoreClient implements CoreClient {
    */
   public async tryResolveUri(
     options: TryResolveUriOptions
-  ): Promise<Result<UriPackageOrWrapper, unknown>> {
+  ): Promise<Result<UriPackageOrWrapper, unknown>> /* $ */ {
     const uri = Uri.from(options.uri);
 
     const uriResolver = this.getResolver();
@@ -326,6 +336,7 @@ export class PolywrapCoreClient implements CoreClient {
     return response;
   }
 
+  // $start: PolywrapCoreClient-loadWrapper
   /**
    * Resolve a URI to a wrap package or wrapper.
    * If the URI resolves to wrap package, load the wrapper.
@@ -334,16 +345,16 @@ export class PolywrapCoreClient implements CoreClient {
    * Unlike other methods, `loadWrapper` does not accept a string URI.
    * You can create a Uri (from the `@polywrap/core-js` package) using `Uri.from("wrap://...")`
    *
-   * @param uri: the Uri to resolve
-   * @param resolutionContext? a resolution context
+   * @param uri - the Uri to resolve
+   * @param resolutionContext? - a resolution context
    * @param options - { noValidate?: boolean }
-   * @returns A Promise with a Result containing either a wrapper if successful
+   * @returns A Promise with a Result containing a Wrapper or Error
    */
   public async loadWrapper(
     uri: Uri,
     resolutionContext?: IUriResolutionContext,
     options?: DeserializeManifestOptions
-  ): Promise<Result<Wrapper, WrapError>> {
+  ): Promise<Result<Wrapper, WrapError>> /* $ */ {
     if (!resolutionContext) {
       resolutionContext = new UriResolutionContext();
     }
