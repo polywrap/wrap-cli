@@ -62,7 +62,7 @@ jobs:
       - id: set-output
         run: echo "should-generate=${{steps.changed-files.outputs.any_changed}}" >> $GITHUB_ENV
 
-  Generate-Wrappers:
+  Generate-Test-Wrappers:
     needs: Check-Changed-Folders
     if: ${{ needs.Check-Changed-Folders.outputs.should-generate == 'true' }}
     uses: ./.github/workflows/generate-modified-test-wrappers.yaml
@@ -72,7 +72,7 @@ jobs:
 
   Test-Core:
     runs-on: ubuntu-latest
-    needs: Generate-Wrappers
+    needs: Generate-Test-Wrappers
     timeout-minutes: 60
     if: ${{ always() }}
     steps:
@@ -121,7 +121,7 @@ jobs:
 
   Test-Plugins:
     runs-on: ubuntu-latest
-    needs: Generate-Wrappers
+    needs: Generate-Test-Wrappers
     if: ${{ always() }}
     timeout-minutes: 60
     steps:
@@ -170,7 +170,7 @@ jobs:
 
   Test-Client:
     runs-on: ubuntu-latest
-    needs: Generate-Wrappers
+    needs: Generate-Test-Wrappers
     if: ${{ always() }}
     timeout-minutes: 60
     steps:
@@ -219,7 +219,7 @@ jobs:
 
   Test-Cli:
     runs-on: ubuntu-latest
-    needs: Generate-Wrappers
+    needs: Generate-Test-Wrappers
     if: ${{ always() }}
     timeout-minutes: 60
     steps:
