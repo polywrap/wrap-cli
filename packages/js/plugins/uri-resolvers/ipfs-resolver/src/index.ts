@@ -46,7 +46,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
         _client
       );
 
-      if (manifestResult.ok && manifestResult.value.length > 0) {
+      if (manifestResult.ok && manifestResult.value?.length) {
         manifest = Buffer.from(manifestResult.value);
         return { uri: null, manifest };
       }
