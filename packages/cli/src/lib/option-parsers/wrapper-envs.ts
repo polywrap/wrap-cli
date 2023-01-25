@@ -7,7 +7,7 @@ import YAML from "yaml";
 type WrapperEnvs = Record<string, Record<string, unknown>>;
 
 export async function parseWrapperEnvsOption(
-  wrapperEnvsPath: string | undefined
+  wrapperEnvsPath: string | false | undefined
 ): Promise<Readonly<Record<string, Record<string, unknown>>> | undefined> {
   if (!wrapperEnvsPath) {
     return undefined;

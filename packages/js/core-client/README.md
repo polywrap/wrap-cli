@@ -74,7 +74,9 @@ Invoke a wrapper.
    *
    * @returns an array of interfaces and their registered implementations
    */
-  public getInterfaces(): readonly InterfaceImplementations[] | undefined  
+  public getInterfaces():
+    | readonly InterfaceImplementations[]
+    | undefined 
 ```
 
 ### getEnvs
@@ -105,7 +107,7 @@ Invoke a wrapper.
    * @param uri - the URI used to register the env
    * @returns an env, or undefined if an env is not found at the given URI
    */
-  public getEnvByUri(uri: Uri): Env | undefined  
+  public getEnvByUri(uri: Uri): Env | undefined 
 ```
 
 ### getManifest
@@ -116,7 +118,9 @@ Invoke a wrapper.
    * @param uri - a wrap URI
    * @returns a Result containing the WrapManifest if the request was successful
    */
-  public async getManifest(uri: Uri): Promise<Result<WrapManifest, WrapError>> 
+  public async getManifest(
+    uri: Uri
+  ): Promise<Result<WrapManifest, WrapError>> 
 ```
 
 ### getFile

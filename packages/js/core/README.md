@@ -93,9 +93,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    * @param uri - a wrap URI
    * @returns a Result containing the WrapManifest if the request was successful
    */
-  getManifest(
-    uri: Uri
-  ): Promise<Result<WrapManifest, WrapError>>;
+  getManifest(uri: Uri): Promise<Result<WrapManifest, WrapError>>;
 
   /**
    * returns a file contained in a wrap package
@@ -269,7 +267,7 @@ export interface IUriPackage {
 ```ts
 
 /** Redirect invocations from one URI to another */
-export interface IUriRedirect{
+export interface IUriRedirect {
   /** URI to redirect from */
   from: Uri;
 
@@ -489,7 +487,7 @@ export interface UriResolverHandler<TError = undefined> {
    * @param options - TryResolveUriOptions
    * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
    */
-  tryResolveUri<TUri extends Uri | string>(
+  tryResolveUri(
     options?: TryResolveUriOptions
   ): Promise<Result<UriPackageOrWrapper, TError>>;
 }
