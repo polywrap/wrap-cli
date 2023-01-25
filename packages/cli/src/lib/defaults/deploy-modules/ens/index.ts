@@ -1,14 +1,22 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { DeployModule } from "../../../deploy";
-import { getClient } from "./getClient";
 
 import { invokeWithTimeout } from "wraplib";
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
-import { Connections, Connection } from "ethereum-provider-js";
+import {
+  Connections,
+  Connection,
+  ethereumProviderPlugin,
+} from "ethereum-provider-js";
+import {
+  ClientConfigBuilder,
+  defaultPackages,
+} from "@polywrap/client-config-builder-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
 const contentHash = require("content-hash");
 
@@ -42,16 +50,37 @@ class ENSPublisher implements DeployModule {
       ? new Wallet(config.privateKey).connect(connectionProvider)
       : undefined;
 
-    const connections = new Connections({
-      networks: {
-        [network]: new Connection({
-          provider: config.provider,
-          signer,
+    const clientConfig = new ClientConfigBuilder()
+      .addRedirects([
+        {
+          from: "wrap://ens/uts46.polywrap.eth",
+          to: embeddedWrappers.uts46,
+        },
+        {
+          from: "wrap://ens/sha3.polywrap.eth",
+          to: embeddedWrappers.sha3,
+        },
+      ])
+      .addPackage({
+        uri: defaultPackages.ethereumProvider,
+        package: ethereumProviderPlugin({
+          connections: new Connections({
+            networks: {
+              [network]: new Connection({
+                provider: config.provider,
+                signer,
+              }),
+            },
+            defaultNetwork: network,
+          }),
         }),
-      },
-      defaultNetwork: network,
-    });
-    const client = getClient(connections);
+      })
+      .setEnv(defaultPackages.ipfsResolver, {
+        retries: { tryResolveUri: 2, getFile: 2 },
+      })
+      .build();
+
+    const client = new PolywrapClient(clientConfig);
 
     const resolver = await client.invoke<string>({
       method: "getResolver",

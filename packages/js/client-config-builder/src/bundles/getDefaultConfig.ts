@@ -27,7 +27,7 @@ export const defaultWrappers = {
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
   ensTextRecordResolver:
     "wrap://ipfs/QmbaqqUVaKiQSX7YbhwWzZC5NsUgwMVwXnARDfG6dbQgKy",
-  ethereum: "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F6",
+  ethereum: "wrap://ipfs/QmPV4sG9zaVVv686Z9bXDFcysUEFfQwME5ayneWQTabNUe",
 };
 
 export const defaultPackages = {
@@ -47,7 +47,7 @@ export const defaultInterfaces = {
   uriResolver: "wrap://ens/uri-resolver.core.polywrap.eth",
   concurrent: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
   logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
-  ethereumProvider: "wrap://ens/iprovider.polywrap.eth",
+  ethereumProvider: "wrap://ens/wrappers.polywrap.eth:ethereum-provider@1.0.0",
 };
 
 export const getDefaultConfig = (): ClientConfig<Uri> => {

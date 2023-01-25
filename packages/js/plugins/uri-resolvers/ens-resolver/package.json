@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@polywrap/client-js": "0.10.0-pre.7",
-    "ethereum-provider-js": "0.1.3",
+    "ethereum-provider-js": "0.1.4",
     "@polywrap/ipfs-plugin-js": "0.10.0-pre.7",
     "@polywrap/ipfs-resolver-plugin-js": "0.10.0-pre.7",
     "@polywrap/client-config-builder-js": "0.10.0-pre.7",
