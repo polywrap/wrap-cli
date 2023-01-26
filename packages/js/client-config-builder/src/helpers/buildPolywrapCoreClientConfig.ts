@@ -151,11 +151,7 @@ export function buildPolywrapCoreClientConfig<
   noDefaults = false
 ): CoreClientConfig {
   if (!builder) {
-    if (config && "wrapperCache" in config) {
-      builder = new ClientConfigBuilder(config.wrapperCache);
-    } else {
-      builder = new ClientConfigBuilder();
-    }
+    builder = new ClientConfigBuilder();
   }
 
   if (!noDefaults) {
@@ -168,7 +164,9 @@ export function buildPolywrapCoreClientConfig<
     builder.add(sanitizeConfig(config));
   }
 
-  const sanitizedConfig = builder.buildCoreConfig();
+  if (config && "wrapperCache" in config) {
+    return builder.buildCoreConfig(config.wrapperCache);
+  }
 
-  return sanitizedConfig;
+  return builder.buildCoreConfig();
 }

@@ -11,15 +11,9 @@ export function initialize(): ClientConfigBuilder {
   // $start: quickstart-initialize
   // start with a blank slate (typical usage)
   const builder = new ClientConfigBuilder();
-
-  // instantiate a builder with a custom cache and/or resolver
-  const _builder = new ClientConfigBuilder(
-    new WrapperCache(),
-    RecursiveResolver.from([])
-  );
   // $end
 
-  return builder ?? _builder;
+  return builder;
 }
 
 export function configure(): ClientConfigBuilder {
@@ -66,7 +60,13 @@ export function build():
   const clientConfig = builder.build();
 
   // accepted by either the PolywrapClient or the PolywrapCoreClient
-  const coreClientConfig = builder.buildCoreConfig();
+  let coreClientConfig = builder.buildCoreConfig();
+
+  // build with a custom cache and/or resolver
+  coreClientConfig = builder.buildCoreConfig(
+    new WrapperCache(),
+    RecursiveResolver.from([])
+  );
   // $end
 
   return builder ?? clientConfig ?? coreClientConfig;

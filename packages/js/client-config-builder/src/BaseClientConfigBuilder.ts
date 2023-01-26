@@ -12,8 +12,9 @@ import {
   IUriRedirect,
   IUriWrapper,
   IUriPackage,
+  IUriResolver,
 } from "@polywrap/core-js";
-import { UriResolverLike } from "@polywrap/uri-resolvers-js";
+import { IWrapperCache, UriResolverLike } from "@polywrap/uri-resolvers-js";
 
 export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
   protected _config: BuilderConfig = {
@@ -26,7 +27,10 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
   };
 
   abstract addDefaults(): IClientConfigBuilder;
-  abstract buildCoreConfig(): CoreClientConfig;
+  abstract buildCoreConfig(
+    wrapperCache?: IWrapperCache,
+    resolver?: IUriResolver<unknown>
+  ): CoreClientConfig;
 
   get config(): BuilderConfig {
     return this._config;
