@@ -581,6 +581,10 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         to: new Uri(defaultPackages.logger),
       },
       {
+        from: new Uri("wrap://ens/fs.polywrap.eth"),
+        to: new Uri(defaultInterfaces.fileSystem),
+      },
+      {
         from: new Uri(defaultInterfaces.fileSystem),
         to: new Uri(defaultPackages.fileSystem),
       },
