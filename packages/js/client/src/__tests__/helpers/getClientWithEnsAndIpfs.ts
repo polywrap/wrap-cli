@@ -16,6 +16,7 @@ import {
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
+import { defaultPackages } from "@polywrap/client-config-builder-js";
 
 export const getClientWithEnsAndIpfs = () => {
   const connections: Connections = new Connections({
@@ -70,7 +71,7 @@ export const getClientWithEnsAndIpfs = () => {
               package: ipfsResolverPlugin({}),
             },
             {
-              uri: "wrap://ens/fs.polywrap.eth",
+              uri: defaultPackages.fileSystem,
               package: fileSystemPlugin({}),
             },
             {

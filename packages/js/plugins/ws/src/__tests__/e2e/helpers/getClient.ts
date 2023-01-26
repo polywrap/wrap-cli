@@ -10,6 +10,7 @@ import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { wsPlugin } from "../../..";
+import { defaultPackages } from "@polywrap/client-config-builder-js";
 
 export const getClient = (staticResolvers?: StaticResolverLike[]) => {
   return new PolywrapClient(
@@ -33,7 +34,7 @@ export const getClient = (staticResolvers?: StaticResolverLike[]) => {
                 package: fileSystemResolverPlugin({}),
               },
               {
-                uri: "wrap://ens/fs.polywrap.eth",
+                uri: defaultPackages.fileSystem,
                 package: fileSystemPlugin({}),
               },
               ...(staticResolvers ?? []),

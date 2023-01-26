@@ -38,7 +38,7 @@ export const defaultPackages = {
   http: "wrap://ens/http.polywrap.eth",
   httpResolver: "wrap://ens/http-resolver.polywrap.eth",
   logger: "wrap://plugin/logger",
-  fileSystem: "wrap://ens/fs.polywrap.eth",
+  fileSystem: "wrap://plugin/fs",
   fileSystemResolver: "wrap://ens/fs-resolver.polywrap.eth",
   ipfsResolver: "wrap://ens/ipfs-resolver.polywrap.eth",
   concurrent: "wrap://plugin/concurrent",
@@ -48,6 +48,7 @@ export const defaultInterfaces = {
   uriResolver: "wrap://ens/uri-resolver.core.polywrap.eth",
   concurrent: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
   logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
+  fileSystem: "wrap://ens/wrappers.polywrap.eth:file-system@1.0.0",
 };
 
 export const getDefaultConfig = (): ClientConfig<Uri> => {
@@ -83,6 +84,14 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
       {
         from: new Uri(defaultInterfaces.logger),
         to: new Uri(defaultPackages.logger),
+      },
+      {
+        from: new Uri("wrap://ens/fs.polywrap.eth"),
+        to: new Uri(defaultInterfaces.fileSystem),
+      },
+      {
+        from: new Uri(defaultInterfaces.fileSystem),
+        to: new Uri(defaultPackages.fileSystem),
       },
     ],
     interfaces: [
