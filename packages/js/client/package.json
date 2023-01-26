@@ -12,12 +12,15 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json",
+    "build": "yarn build:fast && yarn build:snippets && yarn build:readme",
+    "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose=true --detectOpenHandles --forceExit",
     "test:ci": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit",
     "test:rust": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit --config ./jest.rs.config.js",
-    "test:watch": "jest --watch --passWithNoTests --verbose --detectOpenHandles"
+    "test:watch": "jest --watch --passWithNoTests --verbose --detectOpenHandles",
+    "build:snippets": "tsc --project ./examples/tsconfig.examples.json",
+    "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
     "@polywrap/client-config-builder-js": "0.10.0-pre.7",
@@ -54,10 +57,50 @@
     "ts-loader": "8.0.17",
     "ts-node": "8.10.2",
     "typescript": "4.1.6",
-    "yaml": "2.1.3"
+    "yaml": "2.1.3",
+    "doc-snippets": "^1.0.0"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {
     "access": "public"
+  },
+  "doc-snippets": {
+    "extract": {
+      "include": [
+        "./src/**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}",
+        "./examples/**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}"
+      ],
+      "ignore": [
+        "./**/node_modules/**",
+        "./**/.polywrap/**",
+        "./**/__tests__/**"
+      ],
+      "dir": "./"
+    },
+    "inject": {
+      "dir": "./readme",
+      "include": "./README.md"
+    },
+    "startTokens": [
+      {
+        "pattern": "$start: ",
+        "inline": false
+      },
+      {
+        "pattern": "/* $: {SNIPPET_NAME} */",
+        "inline": true
+      }
+    ],
+    "endTokens": [
+      {
+        "pattern": "$end",
+        "inline": false
+      },
+      {
+        "pattern": "/* $ */",
+        "inline": true
+      }
+    ],
+    "outputDir": "./"
   }
 }

@@ -17,6 +17,8 @@ import path from "path";
 import { WasmPackage } from "@polywrap/wasm-js";
 import * as fs from "fs";
 
+// $start: getDefaultConfig
+
 export const defaultIpfsProviders = [
   "https://ipfs.wrappers.io",
   "https://ipfs.io",
@@ -192,3 +194,5 @@ export const getDefaultPackages = (): IUriPackage<Uri>[] => {
     },
   ];
 };
+
+// $end

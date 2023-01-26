@@ -2,11 +2,18 @@ import { IUriResolutionStep } from "./IUriResolutionStep";
 import { IUriResolutionContext } from "./IUriResolutionContext";
 import { Uri } from "../types";
 
+// $start: UriResolutionContext
+/** An implementation of the IUriResolutionContext interface */
+// $start: UriResolutionContext
+/** An implementation of the IUriResolutionContext interface */
 export class UriResolutionContext implements IUriResolutionContext {
+  // $end
   private _resolvingUriMap: Map<string, boolean>;
   private _resolutionPath: Set<string>;
   private _history: IUriResolutionStep<unknown>[];
 
+  // $start: UriResolutionContext-constructor
+  /** Construct a UriResolutionContext */
   constructor();
   constructor(
     resolvingUriMap: Map<string, boolean>,
@@ -19,7 +26,7 @@ export class UriResolutionContext implements IUriResolutionContext {
   constructor(
     resolvingUriMap?: Map<string, boolean>,
     resolutionPathOrHistory?: Set<string> | IUriResolutionStep<unknown>[]
-  ) {
+  ) /* $ */ {
     this._resolvingUriMap = resolvingUriMap ?? new Map();
 
     if (Array.isArray(resolutionPathOrHistory)) {
