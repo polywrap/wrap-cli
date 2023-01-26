@@ -31,12 +31,14 @@ import {
   Args_signMessage,
   Args_signMessageBytes,
   Args_signTypedData,
+  Args_splitSignature,
   TxResponse,
   BigInt,
   StaticTxResult,
   EventNotification,
   TxReceipt,
   Network,
+  SplitSignature,
   Connection as SchemaConnection,
   manifest,
 } from "./wrap";
@@ -419,6 +421,18 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
       JSON.parse(args.payload),
     ]);
     return response.toString();
+  }
+
+  public async splitSignature(
+    args: Args_splitSignature,
+    _client: CoreClient
+  ): Promise<SplitSignature> {
+    const signature = ethers.utils.splitSignature(args.signature);
+    return {
+      r: signature.r,
+      s: signature.s,
+      v: signature.v,
+    };
   }
 
   public async sendRPC(

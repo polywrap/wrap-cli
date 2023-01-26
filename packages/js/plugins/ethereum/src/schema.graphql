@@ -97,6 +97,12 @@ type Network {
     ensAddress: String
 }
 
+type SplitSignature {
+    r: String!
+    s: String!
+    v: UInt32!
+}
+
 type Env {
     connection: Connection
 }
@@ -253,6 +259,10 @@ type Module {
         payload: JSON!
         connection: Connection
     ): String
+
+    splitSignature(
+        signature: String!
+    ): SplitSignature!
 
     sendRPC(
         method: String!
