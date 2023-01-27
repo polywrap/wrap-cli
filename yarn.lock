@@ -6253,6 +6253,14 @@ concurrent-plugin-js@0.1.1:
     "@polywrap/core-js" "0.10.0-pre.5"
     "@polywrap/msgpack-js" "0.10.0-pre.5"
 
+concurrent-plugin-js@0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/concurrent-plugin-js/-/concurrent-plugin-js-0.1.2.tgz#206b9f12723fb99d79a4c03c0f28b427deca6ff4"
+  integrity sha512-MWpw9uuQtQ/IerG2CtGjFm+UTmDy0D+D7HZh4hW5PYTk4SbcYBVJtK6n7Yk3tg8NE3rcXLnRxLBoW7UbO2o5hw==
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.7"
+    "@polywrap/msgpack-js" "0.10.0-pre.7"
+
 config-chain@^1.1.12:
   version "1.1.13"
   resolved "https://registry.yarnpkg.com/config-chain/-/config-chain-1.1.13.tgz#fad0795aa6a6cdaff9ed1b68e9dff94372c232f4"
