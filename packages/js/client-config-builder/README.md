@@ -494,16 +494,37 @@ export const defaultWrappers = {
   uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
   concurrentInterface: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
+  ensTextRecordResolver:
+    "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
+};
+
+export const defaultPackages = {
+  ipfs: "wrap://ens/ipfs.polywrap.eth",
+  ensResolver: "wrap://ens/ens-resolver.polywrap.eth",
+  ethereum: "wrap://ens/ethereum.polywrap.eth",
+  http: "wrap://ens/http.polywrap.eth",
+  httpResolver: "wrap://ens/http-resolver.polywrap.eth",
+  logger: "wrap://plugin/logger",
+  fileSystem: "wrap://ens/fs.polywrap.eth",
+  fileSystemResolver: "wrap://ens/fs-resolver.polywrap.eth",
+  ipfsResolver: "wrap://ens/ipfs-resolver.polywrap.eth",
+  concurrent: "wrap://plugin/concurrent",
+};
+
+export const defaultInterfaces = {
+  uriResolver: "wrap://ens/uri-resolver.core.polywrap.eth",
+  concurrent: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
+  logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
 };
 
 export const getDefaultPlugins = (): Record<TUri, IWrapPackage> => {
   return {
     // IPFS is required for downloading Polywrap packages
-    "wrap://ens/ipfs.polywrap.eth": ipfsPlugin({}),
+    [defaultPackages.ipfs]: ipfsPlugin({}),
     // ENS is required for resolving domain to IPFS hashes
-    "wrap://ens/ens-resolver.polywrap.eth": ensResolverPlugin({}),
+    [defaultPackages.ensResolver]: ensResolverPlugin({}),
     // Ethereum is required for resolving domain to Ethereum addresses
-    "wrap://ens/ethereum.polywrap.eth": ethereumPlugin({
+    [defaultPackages.ethereum]: ethereumPlugin({
       connections: new Connections({
         networks: {
           mainnet: new Connection({
@@ -517,13 +538,13 @@ export const getDefaultPlugins = (): Record<TUri, IWrapPackage> => {
         },
       }),
     }),
-    "wrap://ens/http.polywrap.eth": httpPlugin({}),
-    "wrap://ens/http-resolver.polywrap.eth": httpResolverPlugin({}),
-    "wrap://plugin/logger": loggerPlugin({}) as IWrapPackage,
-    "wrap://ens/fs.polywrap.eth": fileSystemPlugin({}),
-    "wrap://ens/fs-resolver.polywrap.eth": fileSystemResolverPlugin({}),
-    "wrap://ens/ipfs-resolver.polywrap.eth": ipfsResolverPlugin({}),
-    "wrap://plugin/concurrent": concurrentPromisePlugin({}),
+    [defaultPackages.http]: httpPlugin({}),
+    [defaultPackages.httpResolver]: httpResolverPlugin({}),
+    [defaultPackages.logger]: loggerPlugin({}) as IWrapPackage,
+    [defaultPackages.fileSystem]: fileSystemPlugin({}),
+    [defaultPackages.fileSystemResolver]: fileSystemResolverPlugin({}),
+    [defaultPackages.ipfsResolver]: ipfsResolverPlugin({}),
+    [defaultPackages.concurrent]: concurrentPromisePlugin({}),
   };
 };
 
@@ -532,13 +553,13 @@ export const getDefaultConfig = (): BuilderConfig => ({
     "wrap://ens/sha3.polywrap.eth": defaultWrappers.sha3,
     "wrap://ens/uts46.polywrap.eth": defaultWrappers.uts46,
     "wrap://ens/graph-node.polywrap.eth": defaultWrappers.graphNode,
-    "wrap://ens/wrappers.polywrap.eth:logger@1.0.0": "wrap://plugin/logger",
+    [defaultInterfaces.logger]: defaultPackages.logger,
   },
   envs: {
     [defaultWrappers.graphNode]: {
       provider: "https://api.thegraph.com",
     },
-    "wrap://ens/ipfs.polywrap.eth": {
+    [defaultPackages.ipfs]: {
       provider: defaultIpfsProviders[0],
       fallbackProviders: defaultIpfsProviders.slice(1),
     },
@@ -546,19 +567,19 @@ export const getDefaultConfig = (): BuilderConfig => ({
   packages: getDefaultPlugins(),
   wrappers: {},
   interfaces: {
-    "wrap://ens/uri-resolver.core.polywrap.eth": new Set([
-      "wrap://ens/ipfs-resolver.polywrap.eth",
-      "wrap://ens/ens-resolver.polywrap.eth",
-      "wrap://ens/fs-resolver.polywrap.eth",
-      "wrap://ens/http-resolver.polywrap.eth",
+    [defaultInterfaces.uriResolver]: new Set([
+      defaultPackages.ipfsResolver,
+      defaultPackages.ensResolver,
+      defaultPackages.fileSystemResolver,
+      defaultPackages.httpResolver,
       // ens-text-record-resolver
-      "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
+      defaultWrappers.ensTextRecordResolver,
     ]),
     [defaultWrappers.concurrentInterface]: new Set([
-      "wrap://plugin/concurrent",
+      defaultPackages.concurrent,
     ]),
-    "wrap://ens/wrappers.polywrap.eth:logger@1.0.0": new Set([
-      "wrap://plugin/logger",
+    [defaultInterfaces.logger]: new Set([
+      defaultPackages.logger,
     ]),
   },
   resolvers: [],
