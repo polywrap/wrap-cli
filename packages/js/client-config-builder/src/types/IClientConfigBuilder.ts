@@ -4,9 +4,6 @@ import { ClientConfig } from "./configs/ClientConfig";
 import { CoreClientConfig, Wrapper, IWrapPackage } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 
-export type TUri = string;
-export type TEnv = Record<string, unknown>;
-
 export interface IClientConfigBuilder {
   // $start: IClientConfigBuilder-build
   /**
@@ -54,7 +51,7 @@ export interface IClientConfigBuilder {
    * @param wrapper: wrapper to be added
    * @returns IClientConfigBuilder (mutated self)
    */
-  addWrapper(uri: TUri, wrapper: Wrapper): IClientConfigBuilder;
+  addWrapper(uri: string, wrapper: Wrapper): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-addWrappers
@@ -65,7 +62,7 @@ export interface IClientConfigBuilder {
    * @param uriWrappers: an object where keys are uris and wrappers are value
    * @returns IClientConfigBuilder (mutated self)
    */
-  addWrappers(uriWrappers: Record<TUri, Wrapper>): IClientConfigBuilder;
+  addWrappers(uriWrappers: Record<string, Wrapper>): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-removeWrapper
@@ -75,7 +72,7 @@ export interface IClientConfigBuilder {
    * @param uri: the wrapper's URI
    * @returns IClientConfigBuilder (mutated self)
    */
-  removeWrapper(uri: TUri): IClientConfigBuilder;
+  removeWrapper(uri: string): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-addPackage
@@ -86,7 +83,7 @@ export interface IClientConfigBuilder {
    * @param wrapPackage: package to be added
    * @returns IClientConfigBuilder (mutated self)
    */
-  addPackage(uri: TUri, wrapPackage: IWrapPackage): IClientConfigBuilder;
+  addPackage(uri: string, wrapPackage: IWrapPackage): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-addPackages
@@ -97,7 +94,7 @@ export interface IClientConfigBuilder {
    * @param uriPackages: an object where keys are uris and packages are value
    * @returns IClientConfigBuilder (mutated self)
    */
-  addPackages(uriPackages: Record<TUri, IWrapPackage>): IClientConfigBuilder;
+  addPackages(uriPackages: Record<string, IWrapPackage>): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-removePackage
@@ -107,7 +104,7 @@ export interface IClientConfigBuilder {
    * @param uri: the package's URI
    * @returns IClientConfigBuilder (mutated self)
    */
-  removePackage(uri: TUri): IClientConfigBuilder;
+  removePackage(uri: string): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-addEnv
@@ -119,7 +116,7 @@ export interface IClientConfigBuilder {
    * @param env: an object with the env variables for the uri
    * @returns IClientConfigBuilder (mutated self)
    */
-  addEnv(uri: TUri, env: TEnv): IClientConfigBuilder;
+  addEnv(uri: string, env: Record<string, unknown>): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-addEnvs
@@ -130,7 +127,7 @@ export interface IClientConfigBuilder {
    * @param uriEnvs: and object where key is the uri and value is the another object with the env variables for the uri
    * @returns IClientConfigBuilder (mutated self)
    */
-  addEnvs(uriEnvs: Record<string, TEnv>): IClientConfigBuilder;
+  addEnvs(uriEnvs: Record<string, Record<string, unknown>>): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-removeEnv
@@ -140,7 +137,7 @@ export interface IClientConfigBuilder {
    * @param uri: the URI associated with the Env
    * @returns IClientConfigBuilder (mutated self)
    */
-  removeEnv(uri: TUri): IClientConfigBuilder;
+  removeEnv(uri: string): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-setEnv
@@ -152,7 +149,7 @@ export interface IClientConfigBuilder {
    * @param env: an object with the environment variables for the uri
    * @returns IClientConfigBuilder (mutated self)
    */
-  setEnv(uri: TUri, env: TEnv): IClientConfigBuilder;
+  setEnv(uri: string, env: Record<string, unknown>): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-addInterfaceImplementation
@@ -164,8 +161,8 @@ export interface IClientConfigBuilder {
    * @returns IClientConfigBuilder (mutated self)
    */
   addInterfaceImplementation(
-    interfaceUri: TUri,
-    implementationUri: TUri
+    interfaceUri: string,
+    implementationUri: string
   ): IClientConfigBuilder;
   // $end
 
@@ -178,8 +175,8 @@ export interface IClientConfigBuilder {
    * @returns IClientConfigBuilder (mutated self)
    */
   addInterfaceImplementations(
-    interfaceUri: TUri,
-    implementationUris: Array<TUri>
+    interfaceUri: string,
+    implementationUris: Array<string>
   ): IClientConfigBuilder;
   // $end
 
@@ -192,8 +189,8 @@ export interface IClientConfigBuilder {
    * @returns IClientConfigBuilder (mutated self)
    */
   removeInterfaceImplementation(
-    interfaceUri: TUri,
-    implementationUri: TUri
+    interfaceUri: string,
+    implementationUri: string
   ): IClientConfigBuilder;
   // $end
 
@@ -205,7 +202,7 @@ export interface IClientConfigBuilder {
    * @param to: the URI to redirect to
    * @returns IClientConfigBuilder (mutated self)
    */
-  addRedirect(from: TUri, to: TUri): IClientConfigBuilder;
+  addRedirect(from: string, to: string): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-addRedirects
@@ -215,7 +212,7 @@ export interface IClientConfigBuilder {
    * @param redirects: an object where key is from and value is to
    * @returns IClientConfigBuilder (mutated self)
    */
-  addRedirects(redirects: Record<TUri, TUri>): IClientConfigBuilder;
+  addRedirects(redirects: Record<string, string>): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-removeRedirect
@@ -225,7 +222,7 @@ export interface IClientConfigBuilder {
    * @param from: the URI that is being redirected
    * @returns IClientConfigBuilder (mutated self)
    */
-  removeRedirect(from: TUri): IClientConfigBuilder;
+  removeRedirect(from: string): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-addResolver
@@ -235,9 +232,9 @@ export interface IClientConfigBuilder {
    * @remarks
    * A UriResolverLike can be any one of:
    *     IUriResolver<unknown>
-   *   | IUriRedirect<TUri>
-   *   | IUriPackage<TUri>
-   *   | IUriWrapper<TUri>
+   *   | IUriRedirect<string>
+   *   | IUriPackage<string>
+   *   | IUriWrapper<string>
    *   | UriResolverLike[];
    *
    * @param resolver: A UriResolverLike
@@ -253,9 +250,9 @@ export interface IClientConfigBuilder {
    * @remarks
    * A UriResolverLike can be any one of:
    *     IUriResolver<unknown>
-   *   | IUriRedirect<TUri>
-   *   | IUriPackage<TUri>
-   *   | IUriWrapper<TUri>
+   *   | IUriRedirect<string>
+   *   | IUriPackage<string>
+   *   | IUriWrapper<string>
    *   | UriResolverLike[];
    *
    * @param resolvers: A list of UriResolverLike

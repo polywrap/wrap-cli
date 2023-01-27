@@ -1,5 +1,4 @@
 import { BuilderConfig } from "../types/configs/BuilderConfig";
-import { TUri } from "../types/IClientConfigBuilder";
 
 import { IWrapPackage } from "@polywrap/core-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
@@ -52,7 +51,7 @@ export const defaultInterfaces = {
   logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
 };
 
-export const getDefaultPlugins = (): Record<TUri, IWrapPackage> => {
+export const getDefaultPlugins = (): Record<string, IWrapPackage> => {
   return {
     // IPFS is required for downloading Polywrap packages
     [defaultPackages.ipfs]: ipfsPlugin({}),

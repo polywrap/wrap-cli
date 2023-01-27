@@ -1,6 +1,6 @@
 import { BuilderConfig } from "./types/configs/BuilderConfig";
 import { ClientConfig } from "./types/configs/ClientConfig";
-import { IClientConfigBuilder, TEnv, TUri } from "./types/IClientConfigBuilder";
+import { IClientConfigBuilder } from "./types/IClientConfigBuilder";
 
 import {
   CoreClientConfig,
@@ -107,13 +107,13 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
     return this;
   }
 
-  addEnv(uri: TUri, env: TEnv): IClientConfigBuilder {
+  addEnv(uri: string, env: Record<string, unknown>): IClientConfigBuilder {
     this._config.envs[uri] = { ...this._config.envs[uri], ...env };
 
     return this;
   }
 
-  addEnvs(envs: Record<TUri, TEnv>): IClientConfigBuilder {
+  addEnvs(envs: Record<string, Record<string, unknown>>): IClientConfigBuilder {
     for (const [uri, env] of Object.entries(envs)) {
       this.addEnv(uri, env);
     }
@@ -121,13 +121,13 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
     return this;
   }
 
-  removeEnv(uri: TUri): IClientConfigBuilder {
+  removeEnv(uri: string): IClientConfigBuilder {
     delete this._config.envs[uri];
 
     return this;
   }
 
-  setEnv(uri: TUri, env: TEnv): IClientConfigBuilder {
+  setEnv(uri: string, env: Record<string, unknown>): IClientConfigBuilder {
     this._config.envs[uri] = env;
 
     return this;
@@ -149,8 +149,8 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
   }
 
   addInterfaceImplementations(
-    interfaceUri: TUri,
-    implementationUris: Array<TUri> | Set<TUri>
+    interfaceUri: string,
+    implementationUris: Array<string> | Set<string>
   ): IClientConfigBuilder {
     const existingInterface = this._config.interfaces[interfaceUri];
 
@@ -166,8 +166,8 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
   }
 
   removeInterfaceImplementation(
-    interfaceUri: TUri,
-    implementationUri: TUri
+    interfaceUri: string,
+    implementationUri: string
   ): IClientConfigBuilder {
     const existingInterface = this._config.interfaces[interfaceUri];
 
@@ -178,19 +178,19 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
     return this;
   }
 
-  addRedirect(from: TUri, to: TUri): IClientConfigBuilder {
+  addRedirect(from: string, to: string): IClientConfigBuilder {
     this._config.redirects[from] = to;
 
     return this;
   }
 
-  addRedirects(redirects: Record<TUri, TUri>): IClientConfigBuilder {
+  addRedirects(redirects: Record<string, string>): IClientConfigBuilder {
     this._config.redirects = { ...this._config.redirects, ...redirects };
 
     return this;
   }
 
-  removeRedirect(from: TUri): IClientConfigBuilder {
+  removeRedirect(from: string): IClientConfigBuilder {
     delete this._config.redirects[from];
 
     return this;

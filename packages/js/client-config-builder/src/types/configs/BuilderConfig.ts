@@ -1,13 +1,11 @@
-import { TEnv, TUri } from "../IClientConfigBuilder";
-
 import { Wrapper, IWrapPackage } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 
 export interface BuilderConfig {
-  envs: Record<TUri, TEnv>;
-  interfaces: Record<TUri, Set<TUri>>;
-  redirects: Record<TUri, TUri>;
-  wrappers: Record<TUri, Wrapper>;
-  packages: Record<TUri, IWrapPackage>;
+  envs: Record<string, Record<string, unknown>>;
+  interfaces: Record<string, Set<string>>;
+  redirects: Record<string, string>;
+  wrappers: Record<string, Wrapper>;
+  packages: Record<string, IWrapPackage>;
   resolvers: UriResolverLike[];
 }
