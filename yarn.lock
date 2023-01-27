@@ -18174,16 +18174,6 @@ wrap-ansi@^7.0.0:
     string-width "^4.1.0"
     strip-ansi "^6.0.0"
 
-wraplib@0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/wraplib/-/wraplib-0.1.1.tgz#67cf066416ad6f8435c1750fa20433eeb6c1b576"
-  integrity sha512-UBTHt+jh2cecYhKIN1pNl7ok87A8vBW8UXxHVVHuP14+90ugjvG7kdd3vyW2hqsgcr/tyCpPZGPGzKTJX1jpEg==
-  dependencies:
-    "@polywrap/core-js" "0.10.0-pre.7"
-    "@polywrap/result" "0.10.0-pre.7"
-    "@polywrap/uri-resolvers-js" "0.10.0-pre.7"
-    async-mutex "0.4.0"
-
 wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"

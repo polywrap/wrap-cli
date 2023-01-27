@@ -7,8 +7,8 @@ import {
   RecursiveResolver,
   StaticResolver,
   WrapperCache,
+  EcoCacheResolver,
 } from "@polywrap/uri-resolvers-js";
-import { EcoCacheResolver } from "wraplib";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 export class ClientConfigBuilder extends BaseClientConfigBuilder {
