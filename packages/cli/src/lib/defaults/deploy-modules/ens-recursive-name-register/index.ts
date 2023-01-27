@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { DeployModule } from "../../../deploy";
+import { invokeWithTimeout } from "./invokeWithTimeout";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
@@ -11,7 +12,6 @@ import {
   ethereumProviderPlugin,
 } from "ethereum-provider-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
-import { invokeWithTimeout } from "wraplib";
 import {
   ClientConfigBuilder,
   defaultPackages,
