@@ -541,7 +541,7 @@ export const defaultPackages = {
 
 export const defaultInterfaces = {
   uriResolver: "wrap://ens/uri-resolver.core.polywrap.eth",
-  concurrent: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
+  concurrent: "wrap://ens/wrappers.polywrap.eth:concurrent@1.0.0",
   logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
 };
 
