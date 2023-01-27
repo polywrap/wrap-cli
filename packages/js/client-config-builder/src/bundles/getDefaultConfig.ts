@@ -98,6 +98,10 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         from: new Uri(defaultInterfaces.logger),
         to: new Uri(defaultPackages.logger),
       },
+      {
+        from: new Uri("wrap://ens/wrappers.polywrap.eth:http@1.0.0"),
+        to: new Uri(defaultPackages.http),
+      },
     ],
     interfaces: [
       {

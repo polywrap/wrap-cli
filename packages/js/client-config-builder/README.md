@@ -526,6 +526,20 @@ export const defaultWrappers = {
     "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
 };
 
+export const defaultEmbeddedWrapperPaths = {
+  ipfsHttpClient: path.join(__dirname, "wrappers", "ipfs-http-client"),
+  ipfsResolver: path.join(__dirname, "wrappers", "ipfs-resolver"),
+};
+
+export const defaultWrapperAliases = {
+  sha3: "wrap://ens/sha3.polywrap.eth",
+  uts46: "wrap://ens/uts46.polywrap.eth",
+  graphNode: "wrap://ens/graph-node.polywrap.eth",
+  ensTextRecordResolver: "wrap://ens/ens-text-record-resolver.polywrap/eth",
+  ipfsHttpClient: "wrap://ens/ipfs-http-client.polywrap.eth",
+  ipfsResolver: "wrap://ens/ipfs-resolver.polywrap.eth",
+};
+
 export const defaultPackages = {
   ipfs: "wrap://ens/ipfs.polywrap.eth",
   ensResolver: "wrap://ens/ens-resolver.polywrap.eth",
@@ -535,7 +549,6 @@ export const defaultPackages = {
   logger: "wrap://plugin/logger",
   fileSystem: "wrap://ens/fs.polywrap.eth",
   fileSystemResolver: "wrap://ens/fs-resolver.polywrap.eth",
-  ipfsResolver: "wrap://ens/ipfs-resolver.polywrap.eth",
   concurrent: "wrap://plugin/concurrent",
 };
 
@@ -555,7 +568,7 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         },
       },
       {
-        uri: new Uri(defaultPackages.ipfs),
+        uri: new Uri(defaultWrapperAliases.ipfsResolver),
         env: {
           provider: defaultIpfsProviders[0],
           fallbackProviders: defaultIpfsProviders.slice(1),
@@ -564,27 +577,31 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
     ],
     redirects: [
       {
-        from: new Uri("wrap://ens/sha3.polywrap.eth"),
+        from: new Uri(defaultWrapperAliases.sha3),
         to: new Uri(defaultWrappers.sha3),
       },
       {
-        from: new Uri("wrap://ens/uts46.polywrap.eth"),
+        from: new Uri(defaultWrapperAliases.uts46),
         to: new Uri(defaultWrappers.uts46),
       },
       {
-        from: new Uri("wrap://ens/graph-node.polywrap.eth"),
+        from: new Uri(defaultWrapperAliases.graphNode),
         to: new Uri(defaultWrappers.graphNode),
       },
       {
         from: new Uri(defaultInterfaces.logger),
         to: new Uri(defaultPackages.logger),
       },
+      {
+        from: new Uri("wrap://ens/wrappers.polywrap.eth:http@1.0.0"),
+        to: new Uri(defaultPackages.http),
+      },
     ],
     interfaces: [
       {
         interface: new Uri(defaultInterfaces.uriResolver),
         implementations: [
-          new Uri(defaultPackages.ipfsResolver),
+          new Uri(defaultWrapperAliases.ipfsResolver),
           new Uri(defaultPackages.ensResolver),
           new Uri(defaultPackages.fileSystemResolver),
           new Uri(defaultPackages.httpResolver),
@@ -600,18 +617,31 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
         implementations: [new Uri(defaultPackages.concurrent)],
       },
     ],
-    packages: getDefaultPlugins(),
+    packages: getDefaultPackages(),
     wrappers: [],
     resolvers: [],
   };
 };
 
-export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
+export const getDefaultPackages = (): IUriPackage<Uri>[] => {
+  const ipfsHttpClientPath = defaultEmbeddedWrapperPaths.ipfsHttpClient;
+  const ipfsResolverPath = defaultEmbeddedWrapperPaths.ipfsResolver;
+
   return [
     // IPFS is required for downloading Polywrap packages
     {
-      uri: new Uri(defaultPackages.ipfs),
-      package: ipfsPlugin({}),
+      uri: new Uri(defaultWrapperAliases.ipfsHttpClient),
+      package: WasmPackage.from(
+        fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
+        fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
+      ),
+    },
+    {
+      uri: new Uri(defaultWrapperAliases.ipfsResolver),
+      package: WasmPackage.from(
+        fs.readFileSync(path.join(ipfsResolverPath, "wrap.info")),
+        fs.readFileSync(path.join(ipfsResolverPath, "wrap.wasm"))
+      ),
     },
     // ENS is required for resolving domain to IPFS hashes
     {
@@ -655,10 +685,6 @@ export const getDefaultPlugins = (): IUriPackage<Uri>[] => {
     {
       uri: new Uri(defaultPackages.fileSystemResolver),
       package: fileSystemResolverPlugin({}),
-    },
-    {
-      uri: new Uri(defaultPackages.ipfsResolver),
-      package: ipfsResolverPlugin({}),
     },
     {
       uri: new Uri(defaultPackages.concurrent),
