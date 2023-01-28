@@ -1,5 +1,4 @@
 import { BuilderConfig } from "./configs/BuilderConfig";
-import { ClientConfig } from "./configs/ClientConfig";
 
 import { CoreClientConfig, Wrapper, IWrapPackage } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";
@@ -7,20 +6,11 @@ import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 export interface IClientConfigBuilder {
   // $start: IClientConfigBuilder-build
   /**
-   * Build a sanitized client configuration that can be passed to the PolywrapClient constructor
-   *
-   * @returns ClientConfig that results from applying all the steps in the builder pipeline
-   */
-  build(): ClientConfig;
-  // $end
-
-  // $start: IClientConfigBuilder-buildCoreConfig
-  /**
    * Build a sanitized core client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors
    *
    * @returns CoreClientConfig that results from applying all the steps in the builder pipeline
    */
-  buildCoreConfig(): CoreClientConfig;
+  build(): CoreClientConfig;
   // $end
 
   // $start: IClientConfigBuilder-add

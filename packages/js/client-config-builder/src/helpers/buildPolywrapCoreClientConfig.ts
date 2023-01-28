@@ -165,8 +165,8 @@ export function buildPolywrapCoreClientConfig<
   }
 
   if (config && "wrapperCache" in config) {
-    return builder.buildCoreConfig(config.wrapperCache);
+    return builder.build(config.wrapperCache);
   }
 
-  return builder.buildCoreConfig();
+  return builder.build();
 }

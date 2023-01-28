@@ -56,23 +56,20 @@ export function build():
   const builder = new ClientConfigBuilder();
 
   // $start: quickstart-build
-  // accepted by the PolywrapClient
-  const clientConfig = builder.build();
-
   // accepted by either the PolywrapClient or the PolywrapCoreClient
-  let coreClientConfig = builder.buildCoreConfig();
+  let coreClientConfig = builder.build();
 
   // build with a custom cache and/or resolver
-  coreClientConfig = builder.buildCoreConfig(
+  coreClientConfig = builder.build(
     new WrapperCache(),
     RecursiveResolver.from([])
   );
   // $end
 
-  return builder ?? clientConfig ?? coreClientConfig;
+  return builder ?? coreClientConfig;
 }
 
-export async function example(): Promise<ClientConfig> {
+export async function example(): Promise<CoreClientConfig> {
   // $start: quickstart-example
   // init
   const builder = new ClientConfigBuilder();

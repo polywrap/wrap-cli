@@ -27,7 +27,7 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
   };
 
   abstract addDefaults(): IClientConfigBuilder;
-  abstract buildCoreConfig(
+  abstract build(
     wrapperCache?: IWrapperCache,
     resolver?: IUriResolver<unknown>
   ): CoreClientConfig;
@@ -210,13 +210,40 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
     return this;
   }
 
-  build(): ClientConfig {
+  protected buildx(): ClientConfig {
+    const envs = this.buildEnvs();
+
+    const interfaces = this.buildInterfaces();
+
+    const redirects = this.buildRedirects();
+
+    const wrappers =  this.buildWrappers();
+
+    const packages = this.buildPackages();
+
+    return {
+      envs,
+      interfaces,
+      redirects,
+      wrappers,
+      packages,
+      resolvers: this._config.resolvers,
+    };
+  }
+
+  protected buildEnvs(): Env[] {
     const envs: Env[] = [];
+
     for (const [uri, env] of Object.entries(this._config.envs)) {
       envs.push({ uri: Uri.from(uri), env });
     }
 
+    return envs;
+  }
+
+  protected buildInterfaces(): InterfaceImplementations[] {
     const interfaces: InterfaceImplementations[] = [];
+
     for (const [interfaceUri, implementations] of Object.entries(
       this._config.interfaces
     )) {
@@ -229,28 +256,36 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
       });
     }
 
+    return interfaces;
+  }
+
+  protected buildRedirects(): IUriRedirect[] {
     const redirects: IUriRedirect[] = [];
+
     for (const [uri, redirect] of Object.entries(this._config.redirects)) {
       redirects.push({ from: Uri.from(uri), to: Uri.from(redirect) });
     }
 
+    return redirects;
+  }
+
+  protected buildWrappers(): IUriWrapper[] {
     const wrappers: IUriWrapper[] = [];
+    
     for (const [uri, wrapper] of Object.entries(this._config.wrappers)) {
       wrappers.push({ uri: Uri.from(uri), wrapper });
     }
 
+    return wrappers;
+  }
+
+  protected buildPackages(): IUriPackage[] {
     const packages: IUriPackage[] = [];
+    
     for (const [uri, wrapPackage] of Object.entries(this._config.packages)) {
       packages.push({ uri: Uri.from(uri), package: wrapPackage });
     }
 
-    return {
-      envs,
-      interfaces,
-      redirects,
-      wrappers,
-      packages,
-      resolvers: this._config.resolvers,
-    };
+    return packages;
   }
 }

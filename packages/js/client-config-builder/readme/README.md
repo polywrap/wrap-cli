@@ -164,11 +164,6 @@ $snippet: IClientConfigBuilder-addDefaults
 $snippet: IClientConfigBuilder-build
 ```
 
-### buildCoreConfig
-```ts
-$snippet: IClientConfigBuilder-buildCoreConfig
-```
-
 ## Bundles
 
 ### Bundle: DefaultConfig

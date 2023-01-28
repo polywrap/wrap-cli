@@ -53,14 +53,11 @@ You can add the entire [default client configuration bundle](#bundle--defaultcon
 Finally, build a ClientConfig or CoreClientConfig to pass to the PolywrapClient constructor.
 
 ```typescript
-  // accepted by the PolywrapClient
-  const clientConfig = builder.build();
-
   // accepted by either the PolywrapClient or the PolywrapCoreClient
-  let coreClientConfig = builder.buildCoreConfig();
+  let coreClientConfig = builder.build();
 
   // build with a custom cache and/or resolver
-  coreClientConfig = builder.buildCoreConfig(
+  coreClientConfig = builder.build(
     new WrapperCache(),
     RecursiveResolver.from([])
   );
@@ -462,21 +459,11 @@ export interface ClientConfig {
 ### build
 ```ts
   /**
-   * Build a sanitized client configuration that can be passed to the PolywrapClient constructor
-   *
-   * @returns ClientConfig that results from applying all the steps in the builder pipeline
-   */
-  build(): ClientConfig;
-```
-
-### buildCoreConfig
-```ts
-  /**
    * Build a sanitized core client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors
    *
    * @returns CoreClientConfig that results from applying all the steps in the builder pipeline
    */
-  buildCoreConfig(): CoreClientConfig;
+  build(): CoreClientConfig;
 ```
 
 ## Bundles

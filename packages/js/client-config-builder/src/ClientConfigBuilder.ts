@@ -25,26 +25,24 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
     return this.add(getDefaultConfig());
   }
 
-  buildCoreConfig(
+  build(
     wrapperCache?: IWrapperCache,
     resolver?: IUriResolver<unknown>
   ): CoreClientConfig {
-    const clientConfig = this.build();
-
     return {
-      envs: clientConfig.envs,
-      interfaces: clientConfig.interfaces,
+      envs: this.buildEnvs(),
+      interfaces: this.buildInterfaces(),
       resolver:
         resolver ??
         RecursiveResolver.from(
           PackageToWrapperCacheResolver.from(
             [
               StaticResolver.from([
-                ...clientConfig.redirects,
-                ...clientConfig.wrappers,
-                ...clientConfig.packages,
+                ...this.buildRedirects(),
+                ...this.buildWrappers(),
+                ...this.buildPackages()
               ]),
-              ...clientConfig.resolvers,
+              ...this._config.resolvers,
               new ExtendableUriResolver(),
             ],
             wrapperCache ?? new WrapperCache()
