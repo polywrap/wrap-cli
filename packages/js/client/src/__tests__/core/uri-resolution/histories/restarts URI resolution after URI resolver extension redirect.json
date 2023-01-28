@@ -1,71 +1,71 @@
 [
-  "wrap://simple-redirect/$root-wrapper-dir/simple/build => EcoCacheResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
+  "wrap://simple-redirect/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
   [
     "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverAggregator => uri (wrap://simple/$root-wrapper-dir/simple/build)",
     [
       "wrap://simple-redirect/$root-wrapper-dir/simple/build => ExtendableUriResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
       [
-        "wrap://ens/ipfs-resolver.polywrap.eth => EcoCacheResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
+        "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
         [
           "wrap://ens/ipfs-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/ipfs-resolver.polywrap.eth)",
           [
             "wrap://ens/ipfs-resolver.polywrap.eth => StaticResolver - Package (wrap://ens/ipfs-resolver.polywrap.eth) => package (wrap://ens/ipfs-resolver.polywrap.eth)"
           ]
         ],
-        "wrap://ens/ens-resolver.polywrap.eth => EcoCacheResolver => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
+        "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
         [
           "wrap://ens/ens-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/ens-resolver.polywrap.eth)",
           [
             "wrap://ens/ens-resolver.polywrap.eth => StaticResolver - Package (wrap://ens/ens-resolver.polywrap.eth) => package (wrap://ens/ens-resolver.polywrap.eth)"
           ]
         ],
-        "wrap://ens/fs-resolver.polywrap.eth => EcoCacheResolver => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
+        "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
         [
           "wrap://ens/fs-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/fs-resolver.polywrap.eth)",
           [
             "wrap://ens/fs-resolver.polywrap.eth => StaticResolver - Package (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://ens/fs-resolver.polywrap.eth)"
           ]
         ],
-        "wrap://ens/http-resolver.polywrap.eth => EcoCacheResolver => wrapper (wrap://ens/http-resolver.polywrap.eth)",
+        "wrap://ens/http-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/http-resolver.polywrap.eth)",
         [
           "wrap://ens/http-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/http-resolver.polywrap.eth)",
           [
             "wrap://ens/http-resolver.polywrap.eth => StaticResolver - Package (wrap://ens/http-resolver.polywrap.eth) => package (wrap://ens/http-resolver.polywrap.eth)"
           ]
         ],
-        "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => EcoCacheResolver => wrapper (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+        "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => PackageToWrapperCacheResolver => wrapper (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
         [
           "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => UriResolverAggregator => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
           [
             "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ExtendableUriResolver => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
             [
-              "wrap://ens/ipfs-resolver.polywrap.eth => EcoCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
+              "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
               "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ResolverExtension (wrap://ens/ipfs-resolver.polywrap.eth) => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)"
             ]
           ]
         ],
-        "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => EcoCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
+        "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
         [
           "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
           [
             "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
             [
-              "wrap://ens/ipfs-resolver.polywrap.eth => EcoCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
-              "wrap://ens/ens-resolver.polywrap.eth => EcoCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
-              "wrap://ens/fs-resolver.polywrap.eth => EcoCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
+              "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
+              "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
+              "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
               "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)"
             ]
           ]
         ],
-        "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => EcoCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
+        "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
         [
           "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
           [
             "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
             [
-              "wrap://ens/ipfs-resolver.polywrap.eth => EcoCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
-              "wrap://ens/ens-resolver.polywrap.eth => EcoCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
-              "wrap://ens/fs-resolver.polywrap.eth => EcoCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
+              "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
+              "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
+              "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
               "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)"
             ]
           ]
@@ -74,7 +74,7 @@
       ]
     ]
   ],
-  "wrap://simple/$root-wrapper-dir/simple/build => EcoCacheResolver => uri (wrap://ens/redirect.eth)",
+  "wrap://simple/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver => uri (wrap://ens/redirect.eth)",
   [
     "wrap://simple/$root-wrapper-dir/simple/build => UriResolverAggregator => uri (wrap://ens/redirect.eth)",
     [

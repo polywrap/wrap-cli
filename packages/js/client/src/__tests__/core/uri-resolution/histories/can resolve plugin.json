@@ -1,5 +1,5 @@
 [
-  "wrap://ens/plugin.eth => EcoCacheResolver => wrapper (wrap://ens/plugin.eth)",
+  "wrap://ens/plugin.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/plugin.eth)",
   [
     "wrap://ens/plugin.eth => UriResolverAggregator => package (wrap://ens/plugin.eth)",
     [

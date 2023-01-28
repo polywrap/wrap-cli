@@ -8,19 +8,19 @@ import {
 import { expectHistory } from "./helpers/expectHistory";
 import { ClientConfigBuilder, defaultPackages, PolywrapClient } from "@polywrap/client-js";
 import { RecursiveResolver, StaticResolver, WrapperCache } from "@polywrap/uri-resolvers-js";
-import { EcoCacheResolver } from "../../build";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { httpResolverPlugin } from "@polywrap/http-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
+import { PackageToWrapperCacheResolver } from "../../build";
 
 jest.setTimeout(200000);
 
-const getClientWithEcoCacheResolver = (): PolywrapClient => {
+const getClientWithCacheResolver = (): PolywrapClient => {
   const resolver = RecursiveResolver.from(
-    EcoCacheResolver.from(
+    PackageToWrapperCacheResolver.from(
       [
         StaticResolver.from([
           {
@@ -65,12 +65,12 @@ const getClientWithEcoCacheResolver = (): PolywrapClient => {
   return new PolywrapClient(config, { noDefaults: true });
 };
 
-describe("EcoCacheResolver", () => {
+describe("PackageToWrapperCacheResolver", () => {
 
   it("repeated calls with same uri trigger only one network request", async () => {
     const uri = new Uri("wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F6");
 
-    const client = getClientWithEcoCacheResolver();
+    const client = getClientWithCacheResolver();
 
     const invocations: Promise<Result<UriPackageOrWrapper, unknown>>[] = [];
     const resolutionContexts: IUriResolutionContext[] = []
