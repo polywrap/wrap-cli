@@ -181,7 +181,7 @@ async function run(options: Required<BuildCommandOptions>) {
   }
 
   // Get Client
-  const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
+  const client = new PolywrapClient(configBuilder.build(), {
     noDefaults: true,
   });
 

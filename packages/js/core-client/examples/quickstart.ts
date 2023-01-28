@@ -4,7 +4,7 @@ import { Uri } from "@polywrap/core-js";
 
 export function instantiate(): PolywrapCoreClient {
   // $start: quickstart-instantiate
-  const config = new ClientConfigBuilder().addDefaults().buildCoreConfig();
+  const config = new ClientConfigBuilder().addDefaults().build();
 
   const client = new PolywrapCoreClient(config);
   // $end
@@ -13,7 +13,7 @@ export function instantiate(): PolywrapCoreClient {
 }
 
 export async function invoke(): Promise<any> {
-  const config = new ClientConfigBuilder().addDefaults().buildCoreConfig();
+  const config = new ClientConfigBuilder().addDefaults().build();
 
   const client = new PolywrapCoreClient(config);
 

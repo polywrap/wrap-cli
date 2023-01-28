@@ -160,7 +160,7 @@ async function run(
   // Resolve custom script
   const customScript = require.resolve(commandToPathMap[action]);
 
-  const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
+  const client = new PolywrapClient(configBuilder.build(), {
     noDefaults: true,
   });
 

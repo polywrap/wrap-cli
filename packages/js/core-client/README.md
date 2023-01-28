@@ -20,7 +20,7 @@ npm install --save @polywrap/core-client-js
 Use the `@polywrap/client-config-builder-js` package to build a CoreClientConfig for your project, then use the PolywrapCoreClient [constructor](#constructor) to instantiate the client with your config.
 
 ```ts
-  const config = new ClientConfigBuilder().addDefaults().buildCoreConfig();
+  const config = new ClientConfigBuilder().addDefaults().build();
 
   const client = new PolywrapCoreClient(config);
 ```

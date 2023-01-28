@@ -20,7 +20,7 @@ export class JobRunner {
     ) => MaybeAsync<void>
   ) {
     this._jobOutput = new Map();
-    this._client = new PolywrapClient(this._configBuilder.buildCoreConfig(), {
+    this._client = new PolywrapClient(this._configBuilder.build(), {
       noDefaults: true,
     });
   }

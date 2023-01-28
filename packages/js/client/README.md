@@ -30,7 +30,7 @@ Use the PolywrapClient [constructor](#constructor) to instantiate the client wit
 Use the `@polywrap/client-config-builder-js` package to build a custom configuration for your project.
 
 ```ts
-  const config = new ClientConfigBuilder().addDefaults().buildCoreConfig();
+  const config = new ClientConfigBuilder().addDefaults().build();
 
   const client = new PolywrapClient(config, { noDefaults: true });
 ```
