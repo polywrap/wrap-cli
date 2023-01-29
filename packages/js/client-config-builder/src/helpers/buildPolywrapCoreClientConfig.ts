@@ -4,7 +4,7 @@ import {
   BuilderConfig,
   ClientConfig,
 } from "../types";
-import { UriResolverLike } from "../types/configs/types";
+import { GenericUriResolverLike } from "../types/configs/types";
 import { ClientConfigBuilder } from "../ClientConfigBuilder";
 import { sanitizeUri } from "./sanitizeUri";
 
@@ -76,7 +76,7 @@ export function sanitizeConfig<TUri extends Uri | string = string>(
 }
 
 export function sanitizeResolverLike<TUri extends Uri | string = string>(
-  resolverLike: UriResolverLike<TUri> | SanitizedUriResolverLike
+  resolverLike: GenericUriResolverLike<TUri> | SanitizedUriResolverLike
 ): SanitizedUriResolverLike {
   if (Array.isArray(resolverLike)) {
     const sanitizedResolvers: SanitizedUriResolverLike[] = [];
