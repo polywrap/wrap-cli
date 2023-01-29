@@ -7,7 +7,7 @@ import {
   buildPolywrapCoreClientConfig,
   sanitizeUri,
   ClientConfig,
-} from "@polywrap/client-config-builder-js";
+} from "./legacy";
 import {
   CoreClientConfig,
   Env,

@@ -1,4 +1,4 @@
-import { ClientConfigBuilder, ClientConfig } from "../build";
+import { ClientConfigBuilder } from "../build";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { WasmWrapper } from "@polywrap/wasm-js";
@@ -51,7 +51,6 @@ export function configure(): ClientConfigBuilder {
 
 export function build():
   | ClientConfigBuilder
-  | ClientConfig
   | CoreClientConfig {
   const builder = new ClientConfigBuilder();
 

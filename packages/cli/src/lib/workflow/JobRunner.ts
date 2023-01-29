@@ -1,12 +1,12 @@
 import { JobResult, Status, Step } from "./types";
 
-import { PolywrapClient } from "@polywrap/client-js";
+import {
+  IClientConfigBuilder,
+  PolywrapClient,
+  buildPolywrapCoreClientConfig,
+} from "@polywrap/client-js";
 import { CoreClient, MaybeAsync, Uri } from "@polywrap/core-js";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
-import {
-  buildPolywrapCoreClientConfig,
-  IClientConfigBuilder,
-} from "@polywrap/client-config-builder-js";
 
 export class JobRunner {
   private _jobOutput: Map<string, JobResult>;

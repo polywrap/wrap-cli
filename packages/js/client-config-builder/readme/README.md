@@ -46,12 +46,6 @@ $snippet: quickstart-example
 
 # Reference
 
-## Types
-
-```ts
-$snippet: ClientConfig
-```
-
 ## ClientConfigBuilder
 
 ### Constructor

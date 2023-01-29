@@ -1,5 +1,4 @@
 import { BuilderConfig } from "./types/configs/BuilderConfig";
-import { ClientConfig } from "./types/configs/ClientConfig";
 import { IClientConfigBuilder } from "./types/IClientConfigBuilder";
 
 import {
@@ -208,27 +207,6 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
     }
 
     return this;
-  }
-
-  protected buildx(): ClientConfig {
-    const envs = this.buildEnvs();
-
-    const interfaces = this.buildInterfaces();
-
-    const redirects = this.buildRedirects();
-
-    const wrappers = this.buildWrappers();
-
-    const packages = this.buildPackages();
-
-    return {
-      envs,
-      interfaces,
-      redirects,
-      wrappers,
-      packages,
-      resolvers: this._config.resolvers,
-    };
   }
 
   protected buildEnvs(): Env[] {
