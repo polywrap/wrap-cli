@@ -117,7 +117,9 @@ export interface IClientConfigBuilder {
    * @param uriEnvs: and object where key is the uri and value is the another object with the env variables for the uri
    * @returns IClientConfigBuilder (mutated self)
    */
-  addEnvs(uriEnvs: Record<string, Record<string, unknown>>): IClientConfigBuilder;
+  addEnvs(
+    uriEnvs: Record<string, Record<string, unknown>>
+  ): IClientConfigBuilder;
   // $end
 
   // $start: IClientConfigBuilder-removeEnv

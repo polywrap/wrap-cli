@@ -217,7 +217,7 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
 
     const redirects = this.buildRedirects();
 
-    const wrappers =  this.buildWrappers();
+    const wrappers = this.buildWrappers();
 
     const packages = this.buildPackages();
 
@@ -271,7 +271,7 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
 
   protected buildWrappers(): IUriWrapper[] {
     const wrappers: IUriWrapper[] = [];
-    
+
     for (const [uri, wrapper] of Object.entries(this._config.wrappers)) {
       wrappers.push({ uri: Uri.from(uri), wrapper });
     }
@@ -281,7 +281,7 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
 
   protected buildPackages(): IUriPackage[] {
     const packages: IUriPackage[] = [];
-    
+
     for (const [uri, wrapPackage] of Object.entries(this._config.packages)) {
       packages.push({ uri: Uri.from(uri), package: wrapPackage });
     }

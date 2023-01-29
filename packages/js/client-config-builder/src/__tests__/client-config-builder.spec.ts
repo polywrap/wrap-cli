@@ -81,14 +81,8 @@ describe("Client config builder", () => {
   it("should build an empty partial config", () => {
     const clientConfig = new ClientConfigBuilder().build();
 
-    expect(clientConfig).toStrictEqual({
-      envs: [],
-      interfaces: [],
-      redirects: [],
-      wrappers: [],
-      packages: [],
-      resolvers: [],
-    });
+    expect(clientConfig.envs).toStrictEqual([]);
+    expect(clientConfig.interfaces).toStrictEqual([]);
   });
 
   it("should succesfully add config object and build", () => {

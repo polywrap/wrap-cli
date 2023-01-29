@@ -40,7 +40,7 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
               StaticResolver.from([
                 ...this.buildRedirects(),
                 ...this.buildWrappers(),
-                ...this.buildPackages()
+                ...this.buildPackages(),
               ]),
               ...this._config.resolvers,
               new ExtendableUriResolver(),
