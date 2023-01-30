@@ -2,7 +2,7 @@ import {
   PolywrapClientConfig,
   PolywrapCoreClientConfig,
   ClientConfig,
-  sanitizeUri
+  sanitizeUri,
 } from ".";
 import { GenericUriResolverLike } from "./types";
 
@@ -13,7 +13,10 @@ import {
   Uri,
 } from "@polywrap/core-js";
 import { UriResolverLike as SanitizedUriResolverLike } from "@polywrap/uri-resolvers-js";
-import { BuilderConfig, ClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import {
+  BuilderConfig,
+  ClientConfigBuilder,
+} from "@polywrap/client-config-builder-js";
 
 export function sanitizeConfig<TUri extends Uri | string = string>(
   config: Partial<PolywrapClientConfig<TUri>> | Partial<ClientConfig>

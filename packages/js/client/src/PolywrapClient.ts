@@ -1,6 +1,4 @@
 import { InvokerOptions, TryResolveUriOptions } from "./types";
-
-import { PolywrapCoreClient } from "@polywrap/core-client-js";
 import {
   PolywrapClientConfig,
   PolywrapCoreClientConfig,
@@ -8,6 +6,8 @@ import {
   sanitizeUri,
   ClientConfig,
 } from "./legacy";
+
+import { PolywrapCoreClient } from "@polywrap/core-client-js";
 import {
   CoreClientConfig,
   Env,
