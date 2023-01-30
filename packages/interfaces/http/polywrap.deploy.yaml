@@ -1,9 +1,0 @@
-format: 0.2.0
-jobs:
-  ipfs_deploy:
-    steps:
-      - name: ipfs_deploy
-        package: ipfs
-        uri: fs/./build
-        config:
-          gatewayUri: https://ipfs.wrappers.io
