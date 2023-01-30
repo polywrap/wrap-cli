@@ -183,7 +183,7 @@ describe("interface-impls", () => {
     const implementationUris = interfaces[0].implementations;
 
     const builder = new ClientConfigBuilder();
-    const defaultClientConfig = builder.addDefaults().buildCoreConfig();
+    const defaultClientConfig = builder.addDefaults().build();
 
     expect(implementationUris).toEqual([
       ...(defaultClientConfig.interfaces || []).find(
