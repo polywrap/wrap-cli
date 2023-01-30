@@ -1,6 +1,7 @@
 import { getDefaultConfig } from "./bundles";
 import { BaseClientConfigBuilder } from "./BaseClientConfigBuilder";
 import { IClientConfigBuilder } from "./types/IClientConfigBuilder";
+import { BuilderConfig } from "./types";
 
 import {
   CoreClientConfig,
@@ -20,7 +21,6 @@ import {
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
-import { BuilderConfig } from "./types";
 
 export class ClientConfigBuilder extends BaseClientConfigBuilder {
   // $start: ClientConfigBuilder-constructor
