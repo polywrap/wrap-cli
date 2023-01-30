@@ -1,6 +1,6 @@
-import { IGenericUriPackage } from "./IUriPackage";
-import { IGenericUriRedirect } from "./IUriRedirect";
-import { IGenericUriWrapper } from "./IUriWrapper";
+import { IGenericUriPackage } from "./GenericIUriPackage";
+import { IGenericUriRedirect } from "./GenericIUriRedirect";
+import { IGenericUriWrapper } from "./GenericIUriWrapper";
 
 import { IUriResolver, Uri } from "@polywrap/core-js";
 
