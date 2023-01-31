@@ -16,7 +16,7 @@ import { Uri } from "@polywrap/core-js";
  * Client configuration that can be passed to the PolywrapClient.
  *
  * @remarks
- * Extends ClientConfig from @polywrap/client-config-builder-js.
+ * Extends ClientConfig from @polywrap/client-js.
  * The PolywrapClient converts the PolywrapClientConfig to a CoreClientConfig.
  */
 export interface PolywrapClientConfig<TUri extends Uri | string = string> {
