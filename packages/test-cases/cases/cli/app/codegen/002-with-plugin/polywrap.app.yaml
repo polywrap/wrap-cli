@@ -4,6 +4,3 @@ project:
   type: app/typescript
 source:
   schema: ./schema.graphql
-  import_abis:
-      - uri: "wrap://ens/plugin.eth"
-        abi: "./../../../../../../js/plugins/http/build/wrap.info"
