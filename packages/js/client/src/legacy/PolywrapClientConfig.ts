@@ -1,10 +1,10 @@
 import {
-  Env,
-  InterfaceImplementations,
-  IUriPackage,
-  IUriRedirect,
-  IUriWrapper,
-  UriResolverLike,
+  GenericEnv,
+  GenericInterfaceImplementations,
+  IGenericUriPackage,
+  IGenericUriRedirect,
+  IGenericUriWrapper,
+  GenericUriResolverLike,
 } from "./types";
 
 import { IWrapperCache } from "@polywrap/uri-resolvers-js";
@@ -21,19 +21,19 @@ import { Uri } from "@polywrap/core-js";
  */
 export interface PolywrapClientConfig<TUri extends Uri | string = string> {
   /** set environmental variables for a wrapper */
-  readonly envs: Env<TUri>[];
+  readonly envs: GenericEnv<TUri>[];
 
   /** register interface implementations */
-  readonly interfaces: InterfaceImplementations<TUri>[];
+  readonly interfaces: GenericInterfaceImplementations<TUri>[];
 
   /** redirect invocations from one uri to another */
-  readonly redirects: IUriRedirect<TUri>[];
+  readonly redirects: IGenericUriRedirect<TUri>[];
 
   /** add embedded wrappers */
-  readonly wrappers: IUriWrapper<TUri>[];
+  readonly wrappers: IGenericUriWrapper<TUri>[];
 
   /** add and configure embedded packages */
-  readonly packages: IUriPackage<TUri>[];
+  readonly packages: IGenericUriPackage<TUri>[];
 
   /** customize URI resolution
    *
@@ -45,7 +45,7 @@ export interface PolywrapClientConfig<TUri extends Uri | string = string> {
    *   | IUriWrapper
    *   | UriResolverLike<TUri>[]
    *   */
-  readonly resolvers: UriResolverLike<TUri>[];
+  readonly resolvers: GenericUriResolverLike<TUri>[];
   /** a wrapper cache to be used in place of the default wrapper cache */
   readonly wrapperCache?: IWrapperCache;
 

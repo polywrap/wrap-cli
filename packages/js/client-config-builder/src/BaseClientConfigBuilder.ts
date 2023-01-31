@@ -1,17 +1,10 @@
 import { BuilderConfig } from "./types/configs/BuilderConfig";
-import { ClientConfig } from "./types/configs/ClientConfig";
 import { IClientConfigBuilder } from "./types/IClientConfigBuilder";
 
 import {
   CoreClientConfig,
   Wrapper,
   IWrapPackage,
-  Env,
-  Uri,
-  InterfaceImplementations,
-  IUriRedirect,
-  IUriWrapper,
-  IUriPackage,
   IUriResolver,
 } from "@polywrap/core-js";
 import { IWrapperCache, UriResolverLike } from "@polywrap/uri-resolvers-js";
@@ -27,7 +20,7 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
   };
 
   abstract addDefaults(): IClientConfigBuilder;
-  abstract buildCoreConfig(
+  abstract build(
     wrapperCache?: IWrapperCache,
     resolver?: IUriResolver<unknown>
   ): CoreClientConfig;
@@ -208,49 +201,5 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
     }
 
     return this;
-  }
-
-  build(): ClientConfig {
-    const envs: Env[] = [];
-    for (const [uri, env] of Object.entries(this._config.envs)) {
-      envs.push({ uri: Uri.from(uri), env });
-    }
-
-    const interfaces: InterfaceImplementations[] = [];
-    for (const [interfaceUri, implementations] of Object.entries(
-      this._config.interfaces
-    )) {
-      if (implementations.size === 0) continue;
-      interfaces.push({
-        interface: Uri.from(interfaceUri),
-        implementations: Array.from(implementations).map((uri) =>
-          Uri.from(uri)
-        ),
-      });
-    }
-
-    const redirects: IUriRedirect[] = [];
-    for (const [uri, redirect] of Object.entries(this._config.redirects)) {
-      redirects.push({ from: Uri.from(uri), to: Uri.from(redirect) });
-    }
-
-    const wrappers: IUriWrapper[] = [];
-    for (const [uri, wrapper] of Object.entries(this._config.wrappers)) {
-      wrappers.push({ uri: Uri.from(uri), wrapper });
-    }
-
-    const packages: IUriPackage[] = [];
-    for (const [uri, wrapPackage] of Object.entries(this._config.packages)) {
-      packages.push({ uri: Uri.from(uri), package: wrapPackage });
-    }
-
-    return {
-      envs,
-      interfaces,
-      redirects,
-      wrappers,
-      packages,
-      resolvers: this._config.resolvers,
-    };
   }
 }

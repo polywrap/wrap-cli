@@ -1,12 +1,10 @@
 import {
   PolywrapClientConfig,
   PolywrapCoreClientConfig,
-  BuilderConfig,
   ClientConfig,
-} from "../types";
-import { UriResolverLike } from "../types/configs/types";
-import { ClientConfigBuilder } from "../ClientConfigBuilder";
-import { sanitizeUri } from "./sanitizeUri";
+  sanitizeUri,
+} from ".";
+import { GenericUriResolverLike } from "./types";
 
 import {
   CoreClientConfig,
@@ -15,6 +13,10 @@ import {
   Uri,
 } from "@polywrap/core-js";
 import { UriResolverLike as SanitizedUriResolverLike } from "@polywrap/uri-resolvers-js";
+import {
+  BuilderConfig,
+  ClientConfigBuilder,
+} from "@polywrap/client-config-builder-js";
 
 export function sanitizeConfig<TUri extends Uri | string = string>(
   config: Partial<PolywrapClientConfig<TUri>> | Partial<ClientConfig>
@@ -76,7 +78,7 @@ export function sanitizeConfig<TUri extends Uri | string = string>(
 }
 
 export function sanitizeResolverLike<TUri extends Uri | string = string>(
-  resolverLike: UriResolverLike<TUri> | SanitizedUriResolverLike
+  resolverLike: GenericUriResolverLike<TUri> | SanitizedUriResolverLike
 ): SanitizedUriResolverLike {
   if (Array.isArray(resolverLike)) {
     const sanitizedResolvers: SanitizedUriResolverLike[] = [];
@@ -165,8 +167,8 @@ export function buildPolywrapCoreClientConfig<
   }
 
   if (config && "wrapperCache" in config) {
-    return builder.buildCoreConfig(config.wrapperCache);
+    return builder.build(config.wrapperCache);
   }
 
-  return builder.buildCoreConfig();
+  return builder.build();
 }

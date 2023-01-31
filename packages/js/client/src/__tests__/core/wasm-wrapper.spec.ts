@@ -129,7 +129,7 @@ describe("wasm-wrapper", () => {
       packages: { "wrap://ens/mock.polywrap.eth": mockPlugin() },
     }).addDefaults();
 
-    const client = new PolywrapClient(builder.buildCoreConfig());
+    const client = new PolywrapClient(builder.build());
 
     const clientResult = await client.invoke({
       uri: simpleWrapperUri.uri,

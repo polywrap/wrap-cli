@@ -6,26 +6,35 @@ import {
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
-import { builtDefaultConfig } from "./builtDefaultConfig";
+import { UriResolutionResult } from "@polywrap/uri-resolvers-js";
+import { getDefaultConfig } from "../bundles";
 
-class NamedUriResolver implements IUriResolver {
-  private _name: string;
+class MockUriResolver implements IUriResolver {
+  private from: string;
+  private to: string;
 
-  constructor(name: string) {
-    this._name = name;
+  constructor(from: string, to: string) {
+    this.from = from;
+    this.to = to;
   }
   get name(): string {
-    return this._name;
+    return this.from;
   }
-  tryResolveUri(
+  async tryResolveUri(
     uri: Uri,
-    client: CoreClient
+    _client: CoreClient
   ): Promise<Result<UriPackageOrWrapper>> {
-    throw new Error("Method not implemented.");
+    if (Uri.equals(uri, Uri.from(this.from))) {
+      return UriResolutionResult.ok(Uri.from(this.to));
+    }
+
+    return UriResolutionResult.err(undefined);
   }
 }
 
 describe("Client config builder", () => {
+  const emptyBuilderConfig = new ClientConfigBuilder().config;
+
   const testEnv1: Record<string, Record<string, unknown>> = {
     "wrap://ens/test.plugin.one": { test: "value" },
   };
@@ -69,30 +78,32 @@ describe("Client config builder", () => {
     ...testUriRedirect2,
   };
 
-  const testUriResolver: IUriResolver = new NamedUriResolver("test1");
+  const testUriResolver: IUriResolver = new MockUriResolver(
+    "wrap://ens/testFrom.eth",
+    "wrap://ens/testTo.eth"
+  );
 
   it("should build an empty partial config", () => {
     const clientConfig = new ClientConfigBuilder().build();
 
-    expect(clientConfig).toStrictEqual({
-      envs: [],
-      interfaces: [],
-      redirects: [],
-      wrappers: [],
-      packages: [],
-      resolvers: [],
-    });
+    expect(clientConfig.envs).toStrictEqual([]);
+    expect(clientConfig.interfaces).toStrictEqual([]);
   });
 
   it("should succesfully add config object and build", () => {
-    const clientConfig = new ClientConfigBuilder()
-      .add({
-        envs: testEnvs,
-        interfaces: testInterfaces,
-        redirects: testUriRedirects,
-        resolvers: [testUriResolver],
-      })
-      .build();
+    const configObject = {
+      envs: testEnvs,
+      interfaces: testInterfaces,
+      redirects: testUriRedirects,
+      resolvers: [testUriResolver],
+    };
+
+    const builder = new ClientConfigBuilder().add(
+      configObject
+    ) as ClientConfigBuilder;
+
+    const clientConfig = builder.build();
+    const builderConfig = builder.config;
 
     expect(clientConfig).toBeTruthy();
     expect(clientConfig.envs).toStrictEqual(
@@ -107,17 +118,15 @@ describe("Client config builder", () => {
         implementations: Array.from(interfaces).map(Uri.from),
       }))
     );
-    expect(clientConfig.redirects).toStrictEqual(
-      Object.entries(testUriRedirects).map(([from, to]) => ({
-        from: Uri.from(from),
-        to: Uri.from(to),
-      }))
-    );
-    expect(clientConfig.resolvers).toStrictEqual([testUriResolver]);
+
+    expect(builderConfig).toEqual({
+      ...emptyBuilderConfig,
+      ...configObject,
+    });
   });
 
   it("should succesfully add and merge two config objects and build", () => {
-    const clientConfig = new ClientConfigBuilder()
+    const builder = new ClientConfigBuilder()
       .add({
         envs: testEnv1,
         interfaces: testInterface1,
@@ -128,8 +137,10 @@ describe("Client config builder", () => {
         envs: testEnv2,
         interfaces: testInterface2,
         redirects: testUriRedirect2,
-      })
-      .build();
+      }) as ClientConfigBuilder;
+
+    const clientConfig = builder.build();
+    const builderConfig = builder.config;
 
     expect(clientConfig).toBeTruthy();
     expect(clientConfig.envs).toStrictEqual(
@@ -144,25 +155,28 @@ describe("Client config builder", () => {
         implementations: Array.from(interfaces).map(Uri.from),
       }))
     );
-    expect(clientConfig.redirects).toStrictEqual(
-      Object.entries(testUriRedirects).map(([from, to]) => ({
-        from: Uri.from(from),
-        to: Uri.from(to),
-      }))
-    );
-    expect(clientConfig.resolvers).toStrictEqual([testUriResolver]);
+
+    expect(clientConfig.resolver).toBeTruthy();
+
+    expect(builderConfig).toEqual({
+      ...emptyBuilderConfig,
+      envs: { ...testEnv1, ...testEnv2 },
+      interfaces: { ...testInterface1, ...testInterface2 },
+      redirects: { ...testUriRedirect1, ...testUriRedirect2 },
+      resolvers: [testUriResolver],
+    });
   });
 
   it("should successfully add the default config", () => {
-    const clientConfig = new ClientConfigBuilder().addDefaults().build();
+    const builder = new ClientConfigBuilder().addDefaults() as ClientConfigBuilder;
 
-    const expectedConfig = builtDefaultConfig();
+    const clientConfig = builder.build();
+    const builderConfig = builder.config;
 
     expect(clientConfig).toBeTruthy();
-    expect(clientConfig.envs).toStrictEqual(expectedConfig.envs);
-    expect(clientConfig.interfaces).toStrictEqual(expectedConfig.interfaces);
-    expect(clientConfig.redirects).toStrictEqual(expectedConfig.redirects);
-    expect(clientConfig.resolvers).toStrictEqual(expectedConfig.resolvers);
+
+    const expectedBuilderConfig = getDefaultConfig();
+    expect(builderConfig).toEqual(expectedBuilderConfig);
   });
 
   it("should successfully add an env", () => {
@@ -536,35 +550,43 @@ describe("Client config builder", () => {
     const from = "wrap://ens/from.this.ens";
     const to = "wrap://ens/to.that.ens";
 
-    const config = new ClientConfigBuilder().addRedirect(from, to).build();
+    const builder = new ClientConfigBuilder().addRedirect(
+      from,
+      to
+    ) as ClientConfigBuilder;
 
-    expect(config.redirects).toHaveLength(1);
-    expect(config.redirects).toContainEqual({
-      from: Uri.from(from),
-      to: Uri.from(to),
+    const config = builder.build();
+    const builderConfig = builder.config;
+
+    expect(config).toBeTruthy();
+    expect(builderConfig).toStrictEqual({
+      ...emptyBuilderConfig,
+      redirects: {
+        [from]: to,
+      },
     });
   });
 
   it("should add two uri redirects with different from uris", () => {
     const from1 = "wrap://ens/from.this1.ens";
     const to1 = "wrap://ens/to.that1.ens";
-
     const from2 = "wrap://ens/from.this2.ens";
     const to2 = "wrap://ens/to.that2.ens";
 
-    const config = new ClientConfigBuilder()
+    const builder = new ClientConfigBuilder()
       .addRedirect(from1, to1)
-      .addRedirect(from2, to2)
-      .build();
+      .addRedirect(from2, to2) as ClientConfigBuilder;
 
-    expect(config.redirects).toHaveLength(2);
-    expect(config.redirects).toContainEqual({
-      from: Uri.from(from1),
-      to: Uri.from(to1),
-    });
-    expect(config.redirects).toContainEqual({
-      from: Uri.from(from2),
-      to: Uri.from(to2),
+    const config = builder.build();
+    const builderConfig = builder.config;
+
+    expect(config).toBeTruthy();
+    expect(builderConfig).toStrictEqual({
+      ...emptyBuilderConfig,
+      redirects: {
+        [from1]: to1,
+        [from2]: to2,
+      },
     });
   });
 
@@ -574,67 +596,82 @@ describe("Client config builder", () => {
     const to1 = "wrap://ens/to.that1.ens";
     const to2 = "wrap://ens/to.that2.ens";
 
-    const config = new ClientConfigBuilder()
+    const builder = new ClientConfigBuilder()
       .addRedirect(from1, to1)
       .addRedirect(from2, to1)
-      .addRedirect(from1, to2)
-      .build();
+      .addRedirect(from1, to2) as ClientConfigBuilder;
 
-    expect(config.redirects).toHaveLength(2);
-    expect(config.redirects).toContainEqual({
-      from: Uri.from(from1),
-      to: Uri.from(to2),
-    });
-    expect(config.redirects).toContainEqual({
-      from: Uri.from(from2),
-      to: Uri.from(to1),
+    const config = builder.build();
+    const builderConfig = builder.config;
+
+    expect(config).toBeTruthy();
+    expect(builderConfig).toStrictEqual({
+      ...emptyBuilderConfig,
+      redirects: {
+        [from1]: to2,
+        [from2]: to1,
+      },
     });
   });
 
   it("should remove an uri redirect", () => {
     const from1 = "wrap://ens/from.this1.ens";
     const to1 = "wrap://ens/to.that1.ens";
-
     const from2 = "wrap://ens/from.this2.ens";
     const to2 = "wrap://ens/to.that2.ens";
-
-    const config = new ClientConfigBuilder()
+    const builder = new ClientConfigBuilder()
       .addRedirect(from1, to1)
       .addRedirect(from2, to2)
-      .removeRedirect(from1)
-      .build();
+      .removeRedirect(from1) as ClientConfigBuilder;
 
-    expect(config.redirects).toHaveLength(1);
-    expect(config.redirects).toContainEqual({
-      from: Uri.from(from2),
-      to: Uri.from(to2),
+    const config = builder.build();
+    const builderConfig = builder.config;
+
+    expect(config).toBeTruthy();
+    expect(builderConfig).toStrictEqual({
+      ...emptyBuilderConfig,
+      redirects: {
+        [from2]: to2,
+      },
     });
   });
 
   it("should set uri resolver", () => {
-    const uriResolver = new NamedUriResolver("ResolverName");
-
-    const config = new ClientConfigBuilder().addResolver(uriResolver).build();
-
-    expect((config.resolvers as Array<NamedUriResolver>)[0].name).toBe(
-      "ResolverName"
+    const uriResolver = new MockUriResolver(
+      "wrap://ens/from.eth",
+      "wrap://ens/to.eth"
     );
+
+    const builder = new ClientConfigBuilder().addResolver(
+      uriResolver
+    ) as ClientConfigBuilder;
+
+    const config = builder.build();
+    const builderConfig = builder.config;
+
+    expect(config).toBeTruthy();
+    expect(builderConfig.resolvers).toStrictEqual([uriResolver]);
   });
 
-  it("should overwrite uri resolver on set when it already exists", () => {
-    const uriResolver1 = new NamedUriResolver("first");
-    const uriResolver2 = new NamedUriResolver("second");
+  it("should add multiple resolvers", () => {
+    const uriResolver1 = new MockUriResolver(
+      "wrap://ens/from1.eth",
+      "wrap://ens/to1.eth"
+    );
+    const uriResolver2 = new MockUriResolver(
+      "wrap://ens/from2.eth",
+      "wrap://ens/to2.eth"
+    );
 
-    const config = new ClientConfigBuilder()
+    const builder = new ClientConfigBuilder()
       .addResolver(uriResolver1)
-      .addResolver(uriResolver2)
-      .build();
+      .addResolver(uriResolver2) as ClientConfigBuilder;
 
-    expect((config.resolvers as Array<NamedUriResolver>)[0].name).toBe(
-      "first"
-    );
-    expect((config.resolvers as Array<NamedUriResolver>)[1].name).toBe(
-      "second"
-    );
+    const config = builder.build();
+    const builderConfig = builder.config;
+
+    expect(config).toBeTruthy();
+
+    expect(builderConfig.resolvers).toStrictEqual([uriResolver1, uriResolver2]);
   });
 });

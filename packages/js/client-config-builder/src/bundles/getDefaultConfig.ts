@@ -112,9 +112,7 @@ export const getDefaultConfig = (): BuilderConfig => ({
     [defaultWrappers.concurrentInterface]: new Set([
       defaultPackages.concurrent,
     ]),
-    [defaultInterfaces.logger]: new Set([
-      defaultPackages.logger,
-    ]),
+    [defaultInterfaces.logger]: new Set([defaultPackages.logger]),
   },
   resolvers: [],
 });

@@ -1,45 +1,9 @@
 import {
-  BaseClientConfigBuilder,
-  getDefaultConfig,
   IClientConfigBuilder,
-  CoreClientConfig,
-  ExtendableUriResolver,
-  PackageToWrapperCacheResolver,
-  RecursiveResolver,
-  StaticResolver,
-  Uri,
-  WrapperCache,
+  ClientConfigBuilder,
 } from "@polywrap/client-js";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import { latestWrapManifestVersion } from "@polywrap/schema-parse";
-
-export class CustomConfigBuilder extends BaseClientConfigBuilder {
-  addDefaults(): IClientConfigBuilder {
-    return this.add(getDefaultConfig());
-  }
-
-  buildCoreConfig(): CoreClientConfig {
-    const config = super.build();
-    return {
-      envs: config.envs,
-      interfaces: config.interfaces,
-      resolver: RecursiveResolver.from(
-        PackageToWrapperCacheResolver.from(
-          [
-            StaticResolver.from([
-              ...config.redirects,
-              ...config.wrappers,
-              ...config.packages,
-            ]),
-            ...this.config.resolvers,
-            new ExtendableUriResolver(),
-          ],
-          new WrapperCache()
-        )
-      ),
-    };
-  }
-}
 
 interface Config extends Record<string, unknown> {
   val: number;
@@ -159,7 +123,7 @@ const mockPlugin = () => {
 };
 
 export function configure(_: IClientConfigBuilder): IClientConfigBuilder {
-  return new CustomConfigBuilder()
+  return new ClientConfigBuilder()
     .addDefaults()
     .addPackage("wrap://ens/mock.eth", mockPlugin());
 }
