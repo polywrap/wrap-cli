@@ -10,12 +10,18 @@ Polywrap URI resolver extensions to customize resolution in the Polywrap Client.
 ## Installation
 
 ```bash
-npm install --save @polywrap/core-client-js
+npm install --save @polywrap/uri-resolver-extensions-js
 ```
 
 ## Usage
 
-TODO
+If you build a configuration for the Polywrap client using the `ClientConfigBuilder` in the `@polywrap/client-config-builder-js` package, the `ExtendableUriResovler` is included by default. In that case you only need to register implementations of the URI Resolver Extension interface.
+
+Otherwise, you must also add the `ExtendableUriResolver` to your resolver.
+
+```ts
+$snippet: quickstart-example
+```
 
 # Reference
 
