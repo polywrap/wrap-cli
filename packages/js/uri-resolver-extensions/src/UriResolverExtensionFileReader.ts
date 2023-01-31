@@ -10,8 +10,10 @@ import {
 import { IFileReader } from "@polywrap/wasm-js";
 import { Result, ResultErr } from "@polywrap/result";
 
+// $start: UriResolverExtensionFileReader
 /** An IFileReader that reads files by invoking URI Resolver Extension wrappers */
-export class UriResolverExtensionFileReader implements IFileReader {
+export class UriResolverExtensionFileReader implements IFileReader /* $ */ {
+  // $start: UriResolverExtensionFileReader-constructor
   /**
    * Construct a UriResolverExtensionFileReader
    *
@@ -23,8 +25,9 @@ export class UriResolverExtensionFileReader implements IFileReader {
     private readonly _resolverExtensionUri: Uri,
     private readonly _wrapperUri: Uri,
     private readonly _client: CoreClient
-  ) {}
+  ) /* $ */ {}
 
+  // $start: UriResolverExtensionFileReader-readFile
   /**
    * Read a file
    *
@@ -32,7 +35,7 @@ export class UriResolverExtensionFileReader implements IFileReader {
    *
    * @returns a Result containing a buffer if successful, or an error
    * */
-  async readFile(filePath: string): Promise<Result<Uint8Array, Error>> {
+  async readFile(filePath: string): Promise<Result<Uint8Array, Error>> /* $ */ {
     const path = combinePaths(this._wrapperUri.path, filePath);
     const result = await UriResolverInterface.module.getFile(
       {

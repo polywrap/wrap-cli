@@ -9,12 +9,14 @@ $snippet: IWrapperCache
 $snippet: WrapperCache
 ```
 
-### get
+### Methods
+
+#### get
 ```ts
 $snippet: WrapperCache-get
 ```
 
-### set
+#### set
 ```ts
 $snippet: WrapperCache-set
 ```
@@ -29,12 +31,14 @@ $snippet: PackageToWrapperCacheResolver
 $snippet: PackageToWrapperCacheResolver-constructor
 ```
 
-### from
+### Methods
+
+#### from
 ```ts
 $snippet: PackageToWrapperCacheResolver-from
 ```
 
-### tryResolveUri
+#### tryResolveUri
 ```ts
 $snippet: PackageToWrapperCacheResolver-tryResolveUri
 ```

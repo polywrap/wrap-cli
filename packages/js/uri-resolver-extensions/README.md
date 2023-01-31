@@ -1,5 +1,231 @@
-# @polywrap/uri-resolvers-extensions-js
+# @polywrap/core-client-js
+<a href="https://www.npmjs.com/package/@polywrap/uri-resolver-extensions-js" target="_blank" rel="noopener noreferrer">
+<img src="https://img.shields.io/npm/v/@polywrap/uri-resolver-extensions-js.svg" alt="npm"/>
+</a>
 
-## Description 
+<br/>
+<br/>
+Polywrap URI resolver extensions to customize resolution in the Polywrap Client.
 
-Polywrap URI resolver extensions to customize resolution inside of the Polywrap Client.
+## Installation
+
+```bash
+npm install --save @polywrap/core-client-js
+```
+
+## Usage
+
+TODO
+
+# Reference
+
+## ExtendableUriResolver
+
+```ts
+/**
+ * A Uri Resolver that delegates resolution to wrappers implementing the
+ * URI Resolver Extension Interface.
+ * */
+export class ExtendableUriResolver extends UriResolverAggregatorBase<
+  Error,
+  Error
+> 
+```
+
+### Properties
+
+#### extInterfaceUri (static)
+```ts
+  /** The default interface uri to which implementations should be registered */
+  public static extInterfaceUri: Uri = new Uri(
+    "wrap://ens/uri-resolver.core.polywrap.eth"
+  );
+```
+
+#### extInterfaceUri
+```ts
+  /** The active interface uri to which implementations should be registered */
+  public readonly extInterfaceUri: Uri;
+```
+
+### constructor
+```ts
+  /**
+   * Create an ExtendableUriResolver
+   *
+   * @param extInterfaceUri - URI Resolver Interface URI
+   * @param resolverName - Name to use in resolution history output
+   * */
+  constructor(
+    extInterfaceUri: Uri = ExtendableUriResolver.extInterfaceUri,
+    resolverName = "ExtendableUriResolver"
+  ) 
+```
+
+### Methods
+
+#### getUriResolvers
+```ts
+  /**
+   * Get a list of URI Resolvers
+   *
+   * @param uri - the URI to query for resolvers
+   * @param client - a CoreClient instance that can be used to make an invocation
+   * @param resolutionContext - the current URI resolution context
+   *
+   * @returns a list of IUriResolver or an error
+   * */
+  async getUriResolvers(
+    uri: Uri,
+    client: CoreClient,
+    resolutionContext: IUriResolutionContext
+  ): Promise<Result<IUriResolver<unknown>[], Error>> 
+```
+
+#### tryResolverUri
+```ts
+  /**
+   * Resolve a URI to a wrap package, a wrapper, or a URI.
+   * Attempts resolution with each the URI Resolver Extension wrappers sequentially.
+   *
+   * @param uri - the URI to resolve
+   * @param client - a CoreClient instance that may be used to invoke a wrapper that implements the UriResolver interface
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
+  async tryResolveUri(
+    uri: Uri,
+    client: CoreClient,
+    resolutionContext: IUriResolutionContext
+  ): Promise<Result<UriPackageOrWrapper, Error>> 
+```
+
+#### getStepDescription (protected)
+```ts
+  /**
+   * A utility function for generating step descriptions to facilitate resolution context updates
+   *
+   * @returns text describing the URI resolution step
+   * */
+  protected getStepDescription = (): string 
+```
+
+## UriResolverExtensionFileReader
+```ts
+/** An IFileReader that reads files by invoking URI Resolver Extension wrappers */
+export class UriResolverExtensionFileReader implements IFileReader 
+```
+
+### constructor
+```ts
+  /**
+   * Construct a UriResolverExtensionFileReader
+   *
+   * @param _resolverExtensionUri - URI of the URI Resolver Extension wrapper
+   * @param _wrapperUri - URI of the wrap package to read from
+   * @param _client - A CoreClient instance
+   * */
+  constructor(
+    private readonly _resolverExtensionUri: Uri,
+    private readonly _wrapperUri: Uri,
+    private readonly _client: CoreClient
+  ) 
+```
+
+### Methods
+
+#### readFile
+```ts
+  /**
+   * Read a file
+   *
+   * @param filePath - the file's path from the wrap package root
+   *
+   * @returns a Result containing a buffer if successful, or an error
+   * */
+  async readFile(filePath: string): Promise<Result<Uint8Array, Error>> 
+```
+
+## UriResolverWrapper
+```ts
+/**
+ * An IUriResolver that delegates resolution to a wrapper that implements
+ * the URI Resolver Extension Interface
+ * */
+export class UriResolverWrapper extends ResolverWithHistory<unknown> 
+```
+
+### constructor
+```ts
+  /**
+   * construct a UriResolverWrapper
+   *
+   * @param implementationUri - URI that resolves to a URI Resolver Extension implementation
+   * */
+  constructor(public readonly implementationUri: Uri) 
+```
+
+### Methods
+
+#### getStepDescription
+```ts
+  /**
+   * A utility function for generating step descriptions to facilitate resolution context updates
+   *
+   * @returns text describing the URI resolution step
+   * */
+  protected getStepDescription = (): string 
+```
+
+#### tryResolveUriWithImplementation
+```ts
+/**
+ * Attempt to resolve a URI by invoking a URI Resolver Extension wrapper
+ *
+ * @param uri - the URI to resolve
+ * @param implementationUri - URI that resolves to a URI Resolver Extension implementation
+ * @param client - a CoreClient instance that will be used to invoke the URI Resolver Extension wrapper
+ * @param resolutionContext - the current URI resolution context
+ * @returns A Promise with a Result containing either URI or a manifest if successful
+ */
+const tryResolveUriWithImplementation = async (
+  uri: Uri,
+  implementationUri: Uri,
+  client: CoreClient,
+  resolutionContext: IUriResolutionContext
+): Promise<
+  Result<UriResolverInterface.MaybeUriOrManifest | undefined, unknown>
+> 
+```
+
+#### _tryResolverUri (protected)
+```ts
+  /**
+   * Attempt to resolve a URI by invoking a URI Resolver Extension wrapper, then
+   * parse the result to a wrap package, a wrapper, or a URI
+   *
+   * @param uri - the URI to resolve
+   * @param client - a CoreClient instance that may be used to invoke a wrapper that implements the UriResolver interface
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
+  protected async _tryResolveUri(
+    uri: Uri,
+    client: CoreClient,
+    resolutionContext: IUriResolutionContext
+  ): Promise<Result<UriPackageOrWrapper, unknown>> 
+```
+
+## Development
+
+This package is open-source. It lives within the [Polywrap toolchain monorepo](https://github.com/polywrap/toolchain/tree/origin/packages/js/uri-resolver-extensions). Contributions from the community are welcomed!
+
+### Build
+```bash
+nvm use && yarn install && yarn build
+```
+
+### Test
+```bash
+yarn test
+``

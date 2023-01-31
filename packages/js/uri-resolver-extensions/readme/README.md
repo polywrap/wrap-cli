@@ -19,13 +19,89 @@ TODO
 
 # Reference
 
-## PolywrapCoreClient
+## ExtendableUriResolver
 
-### Constructor
 ```ts
-$snippet: PolywrapCoreClient-constructor
+$snippet: ExtendableUriResolver
 ```
 
+### Properties
+
+#### extInterfaceUri (static)
+```ts
+$snippet: ExtendableUriResolver-extInterfaceUri-static
+```
+
+#### extInterfaceUri
+```ts
+$snippet: ExtendableUriResolver-extInterfaceUri
+```
+
+### constructor
+```ts
+$snippet: ExtendableUriResolver-constructor
+```
+
+### Methods
+
+#### getUriResolvers
+```ts
+$snippet: ExtendableUriResolver-getUriResolvers
+```
+
+#### tryResolverUri
+```ts
+$snippet: ExtendableUriResolver-tryResolverUri
+```
+
+#### getStepDescription (protected)
+```ts
+$snippet: ExtendableUriResolver-getStepDescription
+```
+
+## UriResolverExtensionFileReader
+```ts
+$snippet: UriResolverExtensionFileReader
+```
+
+### constructor
+```ts
+$snippet: UriResolverExtensionFileReader-constructor
+```
+
+### Methods
+
+#### readFile
+```ts
+$snippet: UriResolverExtensionFileReader-readFile
+```
+
+## UriResolverWrapper
+```ts
+$snippet: UriResolverWrapper
+```
+
+### constructor
+```ts
+$snippet: UriResolverWrapper-constructor
+```
+
+### Methods
+
+#### getStepDescription
+```ts
+$snippet: UriResolverWrapper-getStepDescription
+```
+
+#### tryResolveUriWithImplementation
+```ts
+$snippet: UriResolverWrapper-tryResolveUriWithImplementation
+```
+
+#### _tryResolverUri (protected)
+```ts
+$snippet: UriResolverWrapper-_tryResolverUri
+```
 
 ## Development
 

@@ -4,28 +4,29 @@ $start: aggregator.md
 $snippet: UriResolverAggregatorBase
 ```
 
-### getUriResolvers
+### Methods
+
+#### getUriResolvers
 ```ts
 $snippet: UriResolverAggregatorBase-getUriResolvers
 ```
 
-### tryResolveUri
+#### tryResolveUri
 ```ts
 $snippet: UriResolverAggregatorBase-tryResolveUri
 ```
 
-### getStepDescription
+#### getStepDescription (protected)
 ```ts
 $snippet: UriResolverAggregatorBase-getStepDescription
 ```
 
-### tryResolveUriWithResolvers
+#### tryResolveUriWithResolvers (protected)
 ```ts
 $snippet: UriResolverAggregatorBase-tryResolveUriWithResolvers
 ```
 
 ## UriResolverAggregator
-
 ```ts
 $snippet: UriResolverAggregator
 ```
@@ -42,17 +43,19 @@ $snippet: UriResolverAggregator-GetResolversFunc
 $snippet: UriResolverAggregator-GetResolversWithErrorFunc
 ```
 
-### constructor
+### Methods
+
+#### constructor
 ```ts
 $snippet: UriResolverAggregator-constructor
 ```
 
-### getUriResolvers
+#### getUriResolvers
 ```ts
 $snippet: UriResolverAggregator-getUriResolvers
 ```
 
-### getStepDescription
+#### getStepDescription (protected)
 ```ts
 $snippet: UriResolverAggregator-getStepDescription
 ```

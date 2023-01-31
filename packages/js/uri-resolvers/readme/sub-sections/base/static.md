@@ -9,12 +9,14 @@ $snippet: PackageResolver
 $snippet: PackageResolver-constructor
 ```
 
-### getStepDescription
+### Methods
+
+#### getStepDescription (protected)
 ```ts
 $snippet: PackageResolver-getStepDescription
 ```
 
-### _tryResolveUri
+#### _tryResolveUri (protected)
 ```ts
 $snippet: PackageResolver-_tryResolveUri
 ```
@@ -29,12 +31,14 @@ $snippet: RedirectResolver
 $snippet: RedirectResolver-constructor
 ```
 
-### getStepDescription
+### Methods
+
+#### getStepDescription (protected)
 ```ts
 $snippet: RedirectResolver-getStepDescription
 ```
 
-### _tryResolveUri
+#### _tryResolveUri (protected)
 ```ts
 $snippet: RedirectResolver-_tryResolveUri
 ```
@@ -49,12 +53,14 @@ $snippet: WrapperResolver
 $snippet: WrapperResolver-constructor
 ```
 
-### getStepDescription
+### Methods
+
+#### getStepDescription (protected)
 ```ts
 $snippet: WrapperResolver-getStepDescription
 ```
 
-### _tryResolveUri
+#### _tryResolveUri
 ```ts
 $snippet: WrapperResolver-_tryResolveUri
 ```
@@ -69,12 +75,14 @@ $snippet: StaticResolver
 $snippet: StaticResolver-constructor
 ```
 
-### from
+### Methods
+
+#### from
 ```ts
 $snippet: StaticResolver-from
 ```
 
-### tryResolveUri
+#### tryResolveUri
 ```ts
 $snippet: StaticResolver-tryResolveUri
 ```

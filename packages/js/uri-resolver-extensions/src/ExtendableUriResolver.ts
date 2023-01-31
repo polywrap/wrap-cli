@@ -13,6 +13,7 @@ import {
   UriResolutionResult,
 } from "@polywrap/uri-resolvers-js";
 
+// $start: ExtendableUriResolver
 /**
  * A Uri Resolver that delegates resolution to wrappers implementing the
  * URI Resolver Extension Interface.
@@ -20,16 +21,21 @@ import {
 export class ExtendableUriResolver extends UriResolverAggregatorBase<
   Error,
   Error
-> {
+> /* $ */ {
+  // $start: ExtendableUriResolver-extInterfaceUri-static
   /** The default interface uri to which implementations should be registered */
   public static extInterfaceUri: Uri = new Uri(
     "wrap://ens/uri-resolver.core.polywrap.eth"
   );
+  // $end
 
+  // $start: ExtendableUriResolver-extInterfaceUri
   /** The active interface uri to which implementations should be registered */
   public readonly extInterfaceUri: Uri;
+  // $end
   private readonly _resolverName: string;
 
+  // $start: ExtendableUriResolver-constructor
   /**
    * Create an ExtendableUriResolver
    *
@@ -39,12 +45,13 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
   constructor(
     extInterfaceUri: Uri = ExtendableUriResolver.extInterfaceUri,
     resolverName = "ExtendableUriResolver"
-  ) {
+  ) /* $ */ {
     super();
     this.extInterfaceUri = extInterfaceUri;
     this._resolverName = resolverName;
   }
 
+  // $start: ExtendableUriResolver-getUriResolvers
   /**
    * Get a list of URI Resolvers
    *
@@ -58,7 +65,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     uri: Uri,
     client: CoreClient,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<IUriResolver<unknown>[], Error>> {
+  ): Promise<Result<IUriResolver<unknown>[], Error>> /* $ */ {
     const getImplementationsResult = await client.getImplementations(
       this.extInterfaceUri,
       {
@@ -79,6 +86,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     return ResultOk(resolvers);
   }
 
+  // $start: ExtendableUriResolver-tryResolverUri
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
    * Attempts resolution with each the URI Resolver Extension wrappers sequentially.
@@ -92,7 +100,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     uri: Uri,
     client: CoreClient,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, Error>> {
+  ): Promise<Result<UriPackageOrWrapper, Error>> /* $ */ {
     const result = await this.getUriResolvers(uri, client, resolutionContext);
     if (!result.ok) {
       return UriResolutionResult.err(result.error);
@@ -111,10 +119,11 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     );
   }
 
+  // $start: ExtendableUriResolver-getStepDescription
   /**
    * A utility function for generating step descriptions to facilitate resolution context updates
    *
    * @returns text describing the URI resolution step
    * */
-  protected getStepDescription = (): string => `${this._resolverName}`;
+  protected getStepDescription = (): string /* $ */ => `${this._resolverName}`;
 }

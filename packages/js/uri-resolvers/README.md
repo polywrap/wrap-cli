@@ -32,7 +32,9 @@ export abstract class UriResolverAggregatorBase<
 > implements IUriResolver<TResolutionError | TGetResolversError> 
 ```
 
-### getUriResolvers
+### Methods
+
+#### getUriResolvers
 ```ts
   /**
    * Get a list of URI Resolvers
@@ -50,7 +52,7 @@ export abstract class UriResolverAggregatorBase<
   ): Promise<Result<IUriResolver<unknown>[], TGetResolversError>>;
 ```
 
-### tryResolveUri
+#### tryResolveUri
 ```ts
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
@@ -70,7 +72,7 @@ export abstract class UriResolverAggregatorBase<
   > 
 ```
 
-### getStepDescription
+#### getStepDescription (protected)
 ```ts
   /**
    * A utility function for generating step descriptions to facilitate resolution context updates
@@ -86,7 +88,7 @@ export abstract class UriResolverAggregatorBase<
   ): string;
 ```
 
-### tryResolveUriWithResolvers
+#### tryResolveUriWithResolvers (protected)
 ```ts
   /**
    * Using each of the aggregated resolvers, attempt to resolve a URI
@@ -107,7 +109,6 @@ export abstract class UriResolverAggregatorBase<
 ```
 
 ## UriResolverAggregator
-
 ```ts
 /**
  * An implementation of UriResolverAggregatorBase
@@ -151,7 +152,9 @@ export type GetResolversWithErrorFunc<TError> = (
 ) => Promise<Result<IUriResolver<unknown>[], TError>>;
 ```
 
-### constructor
+### Methods
+
+#### constructor
 ```ts
   /**
    * Creates a UriResolverAggregator from a list of resolvers, or from a function
@@ -175,7 +178,7 @@ export type GetResolversWithErrorFunc<TError> = (
   ) 
 ```
 
-### getUriResolvers
+#### getUriResolvers
 ```ts
   /**
    * Get a list of URI Resolvers
@@ -191,7 +194,7 @@ export type GetResolversWithErrorFunc<TError> = (
   ): Promise<Result<IUriResolver<unknown>[], TGetResolversError>> 
 ```
 
-### getStepDescription
+#### getStepDescription (protected)
 ```ts
   /**
    * A utility function for generating step descriptions to facilitate resolution context updates
@@ -221,13 +224,15 @@ export interface IWrapperCache {
 export class WrapperCache implements IWrapperCache 
 ```
 
-### get
+### Methods
+
+#### get
 ```ts
   /** get a Wrapper from the cache, given its URI index */
   get(uri: Uri): Wrapper | undefined 
 ```
 
-### set
+#### set
 ```ts
   /** add a Wrapper to the cache, indexed by a URI */
   set(uris: Uri, wrapper: Wrapper): void 
@@ -263,7 +268,9 @@ export class PackageToWrapperCacheResolver<TError>
   ) 
 ```
 
-### from
+### Methods
+
+#### from
 ```ts
   /**
    * Create a PackageToWrapperCacheResolver from a resolver-like object
@@ -284,7 +291,7 @@ export class PackageToWrapperCacheResolver<TError>
   ): PackageToWrapperCacheResolver<TResolverError> 
 ```
 
-### tryResolveUri
+#### tryResolveUri
 ```ts
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
@@ -344,7 +351,9 @@ export abstract class ResolverWithHistory<TError = undefined>
   implements IUriResolver<TError> 
 ```
 
-### tryResolveUri
+### Methods
+
+#### tryResolveUri
 ```ts
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
@@ -367,7 +376,7 @@ export abstract class ResolverWithHistory<TError = undefined>
   ): Promise<Result<UriPackageOrWrapper, TError>> 
 ```
 
-### getStepDescription
+#### getStepDescription (protected)
 ```ts
   /**
    * A utility function for generating step descriptions to facilitate resolution context updates
@@ -383,7 +392,7 @@ export abstract class ResolverWithHistory<TError = undefined>
   ): string;
 ```
 
-### _tryResolveUri
+#### _tryResolveUri (protected)
 ```ts
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
@@ -418,7 +427,9 @@ export class ResolverWithLoopGuard<TError = undefined>
   constructor(private _resolver: IUriResolver<TError>) 
 ```
 
-### from
+### Methods
+
+#### from
 ```ts
   /**
    * Create a ResolverWithLoopGuard from a resolver-like object
@@ -432,7 +443,7 @@ export class ResolverWithLoopGuard<TError = undefined>
   ): ResolverWithLoopGuard<TResolverError> 
 ```
 
-### tryResolveUri
+#### tryResolveUri
 ```ts
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
@@ -456,7 +467,9 @@ export class ResolverWithLoopGuard<TError = undefined>
 export class UriResolutionResult<TError = undefined> 
 ```
 
-### ok
+### Methods
+
+#### ok
 ```ts
   /** Returns a Result with `ok` set to true */
   static ok<TError = undefined>(uri: Uri): Result<UriPackageOrWrapper, TError>;
@@ -477,7 +490,7 @@ export class UriResolutionResult<TError = undefined>
   ): Result<UriPackageOrWrapper, TError> 
 ```
 
-### err
+#### err
 ```ts
   /** Returns a Result with `ok` set to false */
   static err<TError = unknown>(
@@ -491,7 +504,9 @@ export class UriResolutionResult<TError = undefined>
 export class UriResolver 
 ```
 
-### from
+### Methods
+
+#### from
 ```ts
   /**
    * Create an IUriResolver instance
@@ -540,7 +555,9 @@ export class PackageResolver extends ResolverWithHistory
   constructor(private _uri: Uri, private wrapPackage: IWrapPackage) 
 ```
 
-### getStepDescription
+### Methods
+
+#### getStepDescription (protected)
 ```ts
   /**
    * A utility function for generating step descriptions to facilitate resolution context updates
@@ -550,14 +567,13 @@ export class PackageResolver extends ResolverWithHistory
   protected getStepDescription = (): string 
 ```
 
-### _tryResolveUri
+#### _tryResolveUri (protected)
 ```ts
   /**
-   * Resolve a URI to a wrap package, a wrapper, or a URI.
-   * Updates the resolution context with the result.
+   * Resolve a URI to a wrap package
    *
    * @param uri - the URI to resolve
-   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   * @returns A Promise with a Result containing a wrap package if successful
    */
   protected async _tryResolveUri(
     uri: Uri
@@ -586,13 +602,26 @@ export class RedirectResolver<
   constructor(from: TUri, to: TUri) 
 ```
 
-### getStepDescription
+### Methods
+
+#### getStepDescription (protected)
 ```ts
+  /**
+   * A utility function for generating step descriptions to facilitate resolution context updates
+   *
+   * @returns text describing the URI resolution step
+   * */
   protected getStepDescription = (): string 
 ```
 
-### _tryResolveUri
+#### _tryResolveUri (protected)
 ```ts
+  /**
+   * Resolve a URI to a new URI
+   *
+   * @param uri - the URI to resolve
+   * @returns A Promise with a Result containing a URI if successful
+   */
   protected async _tryResolveUri(
     uri: Uri
   ): Promise<Result<UriPackageOrWrapper>> 
@@ -618,13 +647,26 @@ export class WrapperResolver extends ResolverWithHistory
   constructor(private _uri: Uri, private _wrapper: Wrapper) 
 ```
 
-### getStepDescription
+### Methods
+
+#### getStepDescription (protected)
 ```ts
+  /**
+   * A utility function for generating step descriptions to facilitate resolution context updates
+   *
+   * @returns text describing the URI resolution step
+   * */
   protected getStepDescription = (): string 
 ```
 
-### _tryResolveUri
+#### _tryResolveUri
 ```ts
+  /**
+   * Resolve a URI to a wrapper
+   *
+   * @param uri - the URI to resolve
+   * @returns A Promise with a Result containing a wrapper if successful
+   */
   protected async _tryResolveUri(
     uri: Uri
   ): Promise<Result<UriPackageOrWrapper>> 
@@ -650,7 +692,9 @@ export class StaticResolver<TError = undefined>
   constructor(public uriMap: Map<string, UriPackageOrWrapper>) 
 ```
 
-### from
+### Methods
+
+#### from
 ```ts
   /**
    * Create a StaticResolver from a static-resolver-like object
@@ -664,7 +708,7 @@ export class StaticResolver<TError = undefined>
   ): StaticResolver<TError> 
 ```
 
-### tryResolveUri
+#### tryResolveUri
 ```ts
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.

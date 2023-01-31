@@ -19,17 +19,19 @@ $snippet: InfiniteLoopError-constructor
 $snippet: ResolverWithHistory
 ```
 
-### tryResolveUri
+### Methods
+
+#### tryResolveUri
 ```ts
 $snippet: ResolverWithHistory-tryResolveUri
 ```
 
-### getStepDescription
+#### getStepDescription (protected)
 ```ts
 $snippet: ResolverWithHistory-getStepDescription
 ```
 
-### _tryResolveUri
+#### _tryResolveUri (protected)
 ```ts
 $snippet: ResolverWithHistory-_tryResolveUri
 ```
@@ -44,12 +46,14 @@ $snippet: ResolverWithLoopGuard
 $snippet: ResolverWithLoopGuard-constructor
 ```
 
-### from
+### Methods
+
+#### from
 ```ts
 $snippet: ResolverWithLoopGuard-from
 ```
 
-### tryResolveUri
+#### tryResolveUri
 ```ts
 $snippet: ResolverWithLoopGuard-tryResolveUri
 ```
@@ -59,12 +63,14 @@ $snippet: ResolverWithLoopGuard-tryResolveUri
 $snippet: UriResolutionResult
 ```
 
-### ok
+### Methods
+
+#### ok
 ```ts
 $snippet: UriResolutionResult-ok
 ```
 
-### err
+#### err
 ```ts
 $snippet: UriResolutionResult-err
 ```
@@ -74,7 +80,9 @@ $snippet: UriResolutionResult-err
 $snippet: UriResolver
 ```
 
-### from
+### Methods
+
+#### from
 ```ts
 $snippet: UriResolver-from
 ```

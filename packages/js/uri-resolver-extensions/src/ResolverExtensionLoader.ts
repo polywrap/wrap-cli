@@ -6,7 +6,7 @@ import {
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
-/**
+/*
  * load a URI Resolver Extension wrapper, given a URI that resolves to it
  *
  * @param currentUri - The URI currently being resolved

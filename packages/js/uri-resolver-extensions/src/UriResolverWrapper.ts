@@ -16,28 +16,32 @@ import {
   UriResolutionResult,
 } from "@polywrap/uri-resolvers-js";
 
+// $start: UriResolverWrapper
 /**
  * An IUriResolver that delegates resolution to a wrapper that implements
  * the URI Resolver Extension Interface
  * */
-export class UriResolverWrapper extends ResolverWithHistory<unknown> {
+export class UriResolverWrapper extends ResolverWithHistory<unknown> /* $ */ {
+  // $start: UriResolverWrapper-constructor
   /**
    * construct a UriResolverWrapper
    *
    * @param implementationUri - URI that resolves to a URI Resolver Extension implementation
    * */
-  constructor(public readonly implementationUri: Uri) {
+  constructor(public readonly implementationUri: Uri) /* $ */ {
     super();
   }
 
+  // $start: UriResolverWrapper-getStepDescription
   /**
    * A utility function for generating step descriptions to facilitate resolution context updates
    *
    * @returns text describing the URI resolution step
    * */
-  protected getStepDescription = (): string =>
+  protected getStepDescription = (): string /* $ */ =>
     `ResolverExtension (${this.implementationUri.uri})`;
 
+  // $start: UriResolverWrapper-_tryResolverUri
   /**
    * Attempt to resolve a URI by invoking a URI Resolver Extension wrapper, then
    * parse the result to a wrap package, a wrapper, or a URI
@@ -51,7 +55,7 @@ export class UriResolverWrapper extends ResolverWithHistory<unknown> {
     uri: Uri,
     client: CoreClient,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, unknown>> {
+  ): Promise<Result<UriPackageOrWrapper, unknown>> /* $ */ {
     const result = await tryResolveUriWithImplementation(
       uri,
       this.implementationUri,
@@ -80,6 +84,7 @@ export class UriResolverWrapper extends ResolverWithHistory<unknown> {
   }
 }
 
+// $start: UriResolverWrapper-tryResolveUriWithImplementation
 /**
  * Attempt to resolve a URI by invoking a URI Resolver Extension wrapper
  *
@@ -96,7 +101,7 @@ const tryResolveUriWithImplementation = async (
   resolutionContext: IUriResolutionContext
 ): Promise<
   Result<UriResolverInterface.MaybeUriOrManifest | undefined, unknown>
-> => {
+> /* $ */ => {
   const subContext = resolutionContext.createSubContext();
   const result = await loadResolverExtension(
     uri,
