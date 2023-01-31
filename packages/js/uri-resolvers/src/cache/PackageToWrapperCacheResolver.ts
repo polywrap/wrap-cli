@@ -11,16 +11,18 @@ import {
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
+// $start: PackageToWrapperCacheResolver
 /**
  * An IUriResolver implementation that caches wrappers once they are resolved.
  * The PackageToWrapeprCacheResolver wraps one or more IUriResolver
  * implementations and delegates resolution to them.
  * */
 export class PackageToWrapperCacheResolver<TError>
-  implements IUriResolver<TError | Error> {
+  implements IUriResolver<TError | Error> /* $ */ {
   // TODO: the name property is never assigned
   name: string;
 
+  // $start: PackageToWrapperCacheResolver-constructor
   /**
    * Create a PackageToWrapperCacheResolver
    *
@@ -35,8 +37,9 @@ export class PackageToWrapperCacheResolver<TError>
       deserializeManifestOptions?: DeserializeManifestOptions;
       endOnRedirect?: boolean;
     }
-  ) {}
+  ) /* $ */ {}
 
+  // $start: PackageToWrapperCacheResolver-from
   /**
    * Create a PackageToWrapperCacheResolver from a resolver-like object
    *
@@ -53,7 +56,7 @@ export class PackageToWrapperCacheResolver<TError>
       deserializeManifestOptions?: DeserializeManifestOptions;
       endOnRedirect?: boolean;
     }
-  ): PackageToWrapperCacheResolver<TResolverError> {
+  ): PackageToWrapperCacheResolver<TResolverError> /* $ */ {
     return new PackageToWrapperCacheResolver(
       UriResolver.from<TResolverError>(resolver),
       cache,
@@ -61,6 +64,7 @@ export class PackageToWrapperCacheResolver<TError>
     );
   }
 
+  // $start: PackageToWrapperCacheResolver-tryResolveUri
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
    * If successful, cache the result.
@@ -74,7 +78,7 @@ export class PackageToWrapperCacheResolver<TError>
     uri: Uri,
     client: CoreClient,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TError | Error>> {
+  ): Promise<Result<UriPackageOrWrapper, TError | Error>> /* $ */ {
     const wrapper = await this._cache.get(uri);
 
     if (wrapper) {

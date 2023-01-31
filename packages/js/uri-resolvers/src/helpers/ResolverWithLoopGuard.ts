@@ -12,16 +12,19 @@ import {
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 
+// $start: ResolverWithLoopGuard
 /** An IUriResolver implementation that prevents infinite loops in the resolution path. */
 export class ResolverWithLoopGuard<TError = undefined>
-  implements IUriResolver<TError | InfiniteLoopError> {
+  implements IUriResolver<TError | InfiniteLoopError> /* $ */ {
+  // $start: ResolverWithLoopGuard-constructor
   /**
    * Construct a ResolverWithLoopGuard
    *
    * @param _resolver - a resolution to delegate resolution to
    * */
-  constructor(private _resolver: IUriResolver<TError>) {}
+  constructor(private _resolver: IUriResolver<TError>) /* $ */ {}
 
+  // $start: ResolverWithLoopGuard-from
   /**
    * Create a ResolverWithLoopGuard from a resolver-like object
    *
@@ -31,12 +34,13 @@ export class ResolverWithLoopGuard<TError = undefined>
    * */
   static from<TResolverError = unknown>(
     resolver: UriResolverLike
-  ): ResolverWithLoopGuard<TResolverError> {
+  ): ResolverWithLoopGuard<TResolverError> /* $ */ {
     return new ResolverWithLoopGuard(
       UriResolver.from<TResolverError>(resolver)
     );
   }
 
+  // $start: ResolverWithLoopGuard-tryResolveUri
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
    * Ensures the URI is not caught in an infinite loop by checking if it is already resolving.
@@ -50,7 +54,7 @@ export class ResolverWithLoopGuard<TError = undefined>
     uri: Uri,
     client: CoreClient,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
+  ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> /* $ */ {
     if (resolutionContext.isResolving(uri)) {
       return UriResolutionResult.err(
         new InfiniteLoopError(uri, resolutionContext.getHistory())

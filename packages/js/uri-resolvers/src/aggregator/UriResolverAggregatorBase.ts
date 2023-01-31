@@ -9,6 +9,7 @@ import {
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 
+// $start: UriResolverAggregatorBase
 /**
  * Abstract class for IUriResolver implementations that aggregate multiple resolvers.
  * The UriResolverAggregatorBase class attempts to resolve a URI by sequentially
@@ -17,7 +18,8 @@ import { Result } from "@polywrap/result";
 export abstract class UriResolverAggregatorBase<
   TResolutionError = undefined,
   TGetResolversError = undefined
-> implements IUriResolver<TResolutionError | TGetResolversError> {
+> implements IUriResolver<TResolutionError | TGetResolversError> /* $ */ {
+  // $start: UriResolverAggregatorBase-getUriResolvers
   /**
    * Get a list of URI Resolvers
    *
@@ -32,7 +34,9 @@ export abstract class UriResolverAggregatorBase<
     client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<IUriResolver<unknown>[], TGetResolversError>>;
+  // $end
 
+  // $start: UriResolverAggregatorBase-tryResolveUri
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
    * Attempts to resolve the URI using each of the aggregated resolvers sequentially.
@@ -48,7 +52,7 @@ export abstract class UriResolverAggregatorBase<
     resolutionContext: IUriResolutionContext
   ): Promise<
     Result<UriPackageOrWrapper, TResolutionError | TGetResolversError>
-  > {
+  > /* $ */ {
     const resolverResult = await this.getUriResolvers(
       uri,
       client,
@@ -69,7 +73,8 @@ export abstract class UriResolverAggregatorBase<
     );
   }
 
-  /*
+  // $start: UriResolverAggregatorBase-getStepDescription
+  /**
    * A utility function for generating step descriptions to facilitate resolution context updates
    *
    * @param uri - the URI being resolved
@@ -81,8 +86,10 @@ export abstract class UriResolverAggregatorBase<
     uri: Uri,
     result: Result<UriPackageOrWrapper, TResolutionError>
   ): string;
+  // $end
 
-  /*
+  // $start: UriResolverAggregatorBase-tryResolveUriWithResolvers
+  /**
    * Using each of the aggregated resolvers, attempt to resolve a URI
    *
    * @param uri - the URI to resolve
@@ -97,7 +104,7 @@ export abstract class UriResolverAggregatorBase<
     client: CoreClient,
     resolvers: IUriResolver<unknown>[],
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TResolutionError>> {
+  ): Promise<Result<UriPackageOrWrapper, TResolutionError>> /* $ */ {
     const subContext = resolutionContext.createSubHistoryContext();
 
     for (const resolver of resolvers) {

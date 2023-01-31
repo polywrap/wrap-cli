@@ -12,15 +12,22 @@ import {
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 
+// $start: StaticResolver
+/**
+ * An IUriResolver implementation that efficiently delegates URI resolution to
+ * static resolvers--i.e. those that resolve to embedded URIs, Wrappers, and Packages
+ * */
 export class StaticResolver<TError = undefined>
-  implements IUriResolver<TError> {
+  implements IUriResolver<TError> /* $ */ {
+  // $start: StaticResolver-constructor
   /**
    * Construct a Static Resolver
    *
    * @param uriMap - a mapping of URI to embedded URI, package, or wrapper
    * */
-  constructor(public uriMap: Map<string, UriPackageOrWrapper>) {}
+  constructor(public uriMap: Map<string, UriPackageOrWrapper>) /* $ */ {}
 
+  // $start: StaticResolver-from
   /**
    * Create a StaticResolver from a static-resolver-like object
    *
@@ -30,7 +37,7 @@ export class StaticResolver<TError = undefined>
    * */
   static from<TError = undefined>(
     staticResolverLikes: UriResolverLike[]
-  ): StaticResolver<TError> {
+  ): StaticResolver<TError> /* $ */ {
     const uriMap = new Map<string, UriPackageOrWrapper>();
     for (const staticResolverLike of staticResolverLikes) {
       if (Array.isArray(staticResolverLike)) {
@@ -81,6 +88,7 @@ export class StaticResolver<TError = undefined>
     return new StaticResolver(uriMap);
   }
 
+  // $start: StaticResolver-tryResolveUri
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
    *
@@ -93,7 +101,7 @@ export class StaticResolver<TError = undefined>
     uri: Uri,
     _: CoreClient,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TError>> {
+  ): Promise<Result<UriPackageOrWrapper, TError>> /* $ */ {
     const uriPackageOrWrapper = this.uriMap.get(uri.uri);
 
     let result: Result<UriPackageOrWrapper, TError>;

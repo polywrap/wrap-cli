@@ -7,12 +7,14 @@ import {
 } from "@polywrap/core-js";
 import { Result, ResultOk, ResultErr } from "@polywrap/result";
 
+// $start: UriResolutionResult
 /** Factory for creating Result from URI resolution output */
-export class UriResolutionResult<TError = undefined> {
+export class UriResolutionResult<TError = undefined> /* $ */ {
   // TODO: are the result and history fields ever assigned or used?
   public result: Result<UriPackageOrWrapper, TError>;
   public history?: IUriResolutionStep<unknown>[];
 
+  // $start: UriResolutionResult-ok
   /** Returns a Result with `ok` set to true */
   static ok<TError = undefined>(uri: Uri): Result<UriPackageOrWrapper, TError>;
   static ok<TError = undefined>(
@@ -29,7 +31,7 @@ export class UriResolutionResult<TError = undefined> {
   static ok<TError = undefined>(
     uriPackageOrWrapper: Uri | UriPackageOrWrapper,
     packageOrWrapper?: IWrapPackage | Wrapper
-  ): Result<UriPackageOrWrapper, TError> {
+  ): Result<UriPackageOrWrapper, TError> /* $ */ {
     if (!packageOrWrapper) {
       if ((uriPackageOrWrapper as UriPackageOrWrapper).type) {
         return ResultOk(uriPackageOrWrapper as UriPackageOrWrapper);
@@ -66,10 +68,11 @@ export class UriResolutionResult<TError = undefined> {
     throw new Error("Unexpected type when creating UriResolutionResponse");
   }
 
+  // $start: UriResolutionResult-err
   /** Returns a Result with `ok` set to false */
   static err<TError = unknown>(
     error: TError
-  ): Result<UriPackageOrWrapper, TError> {
+  ): Result<UriPackageOrWrapper, TError> /* $ */ {
     return ResultErr(error);
   }
 }

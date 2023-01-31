@@ -6,6 +6,7 @@ import {
   IUriWrapper,
 } from "@polywrap/core-js";
 
+// $start: UriResolverLike
 /** An UriResolverLike can be one of three things:
  * - An IUriResolver
  * - An object that can be transformed into a static IUriResolver
@@ -17,3 +18,4 @@ export type UriResolverLike =
   | IUriPackage<Uri | string>
   | IUriWrapper<Uri | string>
   | UriResolverLike[];
+// $end

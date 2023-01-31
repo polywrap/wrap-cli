@@ -12,20 +12,23 @@ import {
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 
+// $start: RecursiveResolver
 /**
  * An IUriResolver implementation that makes the URI resolution process recursive.
  * It allows the resolution process to restart when URI redirects are encountered.
  * The RecursiveResolver wraps one or more resolvers and delegates resolution to them.
  * */
 export class RecursiveResolver<TError = undefined>
-  implements IUriResolver<TError | InfiniteLoopError> {
+  implements IUriResolver<TError | InfiniteLoopError> /* $ */ {
+  // $start: RecursiveResolver-constructor
   /**
    * Construct a RecursiveResolver
    *
    * @param _resolver - a resolver to delegate resolution to
    * */
-  constructor(private _resolver: IUriResolver<TError>) {}
+  constructor(private _resolver: IUriResolver<TError>) /* $ */ {}
 
+  // $start: RecursiveResolver-from
   /**
    * Create a RecursiveResolver from a resolver-like object
    *
@@ -35,10 +38,11 @@ export class RecursiveResolver<TError = undefined>
    * */
   static from<TResolverError = unknown>(
     resolver: UriResolverLike
-  ): RecursiveResolver<TResolverError> {
+  ): RecursiveResolver<TResolverError> /* $ */ {
     return new RecursiveResolver(UriResolver.from<TResolverError>(resolver));
   }
 
+  // $start: RecursiveResolver-tryResolveUri
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
    * If the URI resolves to a new URI, attempt to resolve thew new URI.
@@ -52,7 +56,7 @@ export class RecursiveResolver<TError = undefined>
     uri: Uri,
     client: CoreClient,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
+  ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> /* $ */ {
     if (resolutionContext.isResolving(uri)) {
       return UriResolutionResult.err(
         new InfiniteLoopError(uri, resolutionContext.getHistory())

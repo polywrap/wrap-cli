@@ -14,8 +14,10 @@ import {
   IUriWrapper,
 } from "@polywrap/core-js";
 
+// $start: UriResolver
 /** An IUriResolver factory */
-export class UriResolver {
+export class UriResolver /* $ */ {
+  // $start: UriResolver-from
   /**
    * Create an IUriResolver instance
    *
@@ -25,7 +27,7 @@ export class UriResolver {
   static from<TError = undefined>(
     resolverLike: UriResolverLike,
     resolverName?: string
-  ): IUriResolver<TError> {
+  ): IUriResolver<TError> /* $ */ {
     if (Array.isArray(resolverLike)) {
       return new UriResolverAggregator(
         (resolverLike as UriResolverLike[]).map((x) =>
