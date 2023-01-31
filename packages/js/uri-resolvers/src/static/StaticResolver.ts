@@ -14,8 +14,20 @@ import { Result } from "@polywrap/result";
 
 export class StaticResolver<TError = undefined>
   implements IUriResolver<TError> {
+  /**
+   * Construct a Static Resolver
+   *
+   * @param uriMap - a mapping of URI to embedded URI, package, or wrapper
+   * */
   constructor(public uriMap: Map<string, UriPackageOrWrapper>) {}
 
+  /**
+   * Create a StaticResolver from a static-resolver-like object
+   *
+   * @param staticResolverLikes - an array of resolver-like objects to delegate resolution to
+   *
+   * @returns a StaticResolver
+   * */
   static from<TError = undefined>(
     staticResolverLikes: UriResolverLike[]
   ): StaticResolver<TError> {
@@ -69,6 +81,14 @@ export class StaticResolver<TError = undefined>
     return new StaticResolver(uriMap);
   }
 
+  /**
+   * Resolve a URI to a wrap package, a wrapper, or a URI.
+   *
+   * @param uri - the URI to resolve
+   * @param _ - not used
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
   async tryResolveUri(
     uri: Uri,
     _: CoreClient,

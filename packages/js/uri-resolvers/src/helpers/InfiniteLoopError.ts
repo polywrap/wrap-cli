@@ -2,7 +2,16 @@ import { getUriResolutionPath } from "./getUriResolutionPath";
 
 import { Uri, IUriResolutionStep } from "@polywrap/core-js";
 
+/**
+ * Error used if the URI resolution path contains an infinite loop
+ * */
 export class InfiniteLoopError extends Error {
+  /**
+   * Create an InfiniteLoopError
+   *
+   * @param _uri - URI being resolved
+   * @param _history - URI resolution history
+   * */
   constructor(
     private readonly _uri: Uri,
     private readonly _history: IUriResolutionStep<unknown>[]

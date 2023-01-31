@@ -11,10 +11,23 @@ import {
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
+/**
+ * An IUriResolver implementation that caches wrappers once they are resolved.
+ * The PackageToWrapeprCacheResolver wraps one or more IUriResolver
+ * implementations and delegates resolution to them.
+ * */
 export class PackageToWrapperCacheResolver<TError>
   implements IUriResolver<TError | Error> {
+  // TODO: the name property is never assigned
   name: string;
 
+  /**
+   * Create a PackageToWrapperCacheResolver
+   *
+   * @param _resolverToCache - a resolver to delegate resolution to
+   * @param _cache - a wrapper cache
+   * @param _options - control wrapper manifest deserialization
+   * */
   constructor(
     private _resolverToCache: IUriResolver<TError>,
     private _cache: IWrapperCache,
@@ -24,6 +37,15 @@ export class PackageToWrapperCacheResolver<TError>
     }
   ) {}
 
+  /**
+   * Create a PackageToWrapperCacheResolver from a resolver-like object
+   *
+   * @param resolver - a resolver-like item to delegate resolution to
+   * @param cache - a wrapper cache
+   * @param options - control wrapper manifest deserialization
+   *
+   * @returns a PackageToWrapperCacheResolver
+   * */
   static from<TResolverError = unknown>(
     resolver: UriResolverLike,
     cache: IWrapperCache,
@@ -39,6 +61,15 @@ export class PackageToWrapperCacheResolver<TError>
     );
   }
 
+  /**
+   * Resolve a URI to a wrap package, a wrapper, or a URI.
+   * If successful, cache the result.
+   *
+   * @param uri - the URI to resolve
+   * @param client - a CoreClient instance that may be used to invoke a wrapper that implements the UriResolver interface
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
   async tryResolveUri(
     uri: Uri,
     client: CoreClient,

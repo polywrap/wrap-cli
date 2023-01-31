@@ -14,7 +14,14 @@ import {
   IUriWrapper,
 } from "@polywrap/core-js";
 
+/** An IUriResolver factory */
 export class UriResolver {
+  /**
+   * Create an IUriResolver instance
+   *
+   * @param resolverLike - an object that can be transformed into a resolver
+   * @param resolverName - a name to assign to the resolver in resolution history output
+   * */
   static from<TError = undefined>(
     resolverLike: UriResolverLike,
     resolverName?: string

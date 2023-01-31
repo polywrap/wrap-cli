@@ -9,16 +9,39 @@ import {
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 
+/**
+ * Abstract class for IUriResolver implementations that aggregate multiple resolvers.
+ * The UriResolverAggregatorBase class attempts to resolve a URI by sequentially
+ * attempting resolution with each of its composite resolvers.
+ * */
 export abstract class UriResolverAggregatorBase<
   TResolutionError = undefined,
   TGetResolversError = undefined
 > implements IUriResolver<TResolutionError | TGetResolversError> {
+  /**
+   * Get a list of URI Resolvers
+   *
+   * @param uri - the URI to query for resolvers
+   * @param client - a CoreClient instance that can be used to make an invocation
+   * @param resolutionContext - a resolution context to update when resolving URIs
+   *
+   * @returns a list of IUriResolver or an error
+   * */
   abstract getUriResolvers(
     uri: Uri,
     client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<IUriResolver<unknown>[], TGetResolversError>>;
 
+  /**
+   * Resolve a URI to a wrap package, a wrapper, or a URI.
+   * Attempts to resolve the URI using each of the aggregated resolvers sequentially.
+   *
+   * @param uri - the URI to resolve
+   * @param client - a CoreClient instance that may be used to invoke a wrapper that implements the UriResolver interface
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
   async tryResolveUri(
     uri: Uri,
     client: CoreClient,
@@ -46,11 +69,29 @@ export abstract class UriResolverAggregatorBase<
     );
   }
 
+  /*
+   * A utility function for generating step descriptions to facilitate resolution context updates
+   *
+   * @param uri - the URI being resolved
+   * @param result - the result of a resolution attempt
+   *
+   * @returns text describing the URI resolution step
+   * */
   protected abstract getStepDescription(
     uri: Uri,
     result: Result<UriPackageOrWrapper, TResolutionError>
   ): string;
 
+  /*
+   * Using each of the aggregated resolvers, attempt to resolve a URI
+   *
+   * @param uri - the URI to resolve
+   * @param client - a CoreClient instance that can be used to make an invocation
+   * @param resolvers - a list of IUriResolver implementations
+   * @param resolutionContext - a resolution context to update when resolving URIs
+   *
+   * @returns a URI, a Wrap Package, or a Wrapper (or an error)
+   * */
   protected async tryResolveUriWithResolvers(
     uri: Uri,
     client: CoreClient,

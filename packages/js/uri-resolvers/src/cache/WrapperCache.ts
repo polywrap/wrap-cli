@@ -2,6 +2,9 @@ import { IWrapperCache } from "./IWrapperCache";
 
 import { Wrapper, Uri } from "@polywrap/core-js";
 
+/**
+ * A minimal implementation of IWrapperCache
+ * */
 export class WrapperCache implements IWrapperCache {
   private _map: Map<string, Wrapper> = new Map();
 

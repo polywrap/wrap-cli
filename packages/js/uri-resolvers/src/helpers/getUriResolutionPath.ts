@@ -1,5 +1,11 @@
 import { IUriResolutionStep } from "@polywrap/core-js";
 
+/**
+ * Get a resolution path from the history of a URI resolution attempt
+ *
+ * @param history - the resolution context
+ * @returns the URI's resolution path
+ * */
 export const getUriResolutionPath = (
   history: IUriResolutionStep<unknown>[]
 ): IUriResolutionStep<unknown>[] => {
