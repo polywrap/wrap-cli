@@ -7,7 +7,6 @@ import {
   StaticResolver,
   WrapperCache,
 } from "../build";
-import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { WrapperResolver } from "../build/wrappers";
 
 export function example(): IUriResolver<unknown> {
@@ -23,7 +22,6 @@ export function example(): IUriResolver<unknown> {
               ...wrappers,
               ...packages,
             ]),
-            new ExtendableUriResolver(),
           ],
           new WrapperCache()
         )

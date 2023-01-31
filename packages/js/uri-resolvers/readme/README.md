@@ -15,7 +15,7 @@ npm install --save @polywrap/uri-resolvers-js
 
 ## Usage
 
-The following example is similar to the default resolver used by the ClientConfigBuilder in the @polywrap/client-config-builder-js package:
+This example is similar to the default resolver used by the ClientConfigBuilder in the @polywrap/client-config-builder-js package.
 
 ```ts
 $snippet: quickstart-example
