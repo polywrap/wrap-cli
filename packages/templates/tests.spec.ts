@@ -13,26 +13,17 @@ describe("Templates", () => {
   // Define the commands to run for each language
   const languageTestCommands: Record<string, Record<string, string>> = {
     typescript: { build: "yarn build", test: "yarn test" },
-    "typescript-node": {
-      build: "yarn build",
-      test: "yarn test",
-    },
-    "typescript-react": {
-      build: "CI=false yarn build",
-    },
     assemblyscript: {
+      codegen: "yarn codegen",
       build: "npx polywrap build -m ./polywrap.wasm-linked.yaml",
       test: "yarn test",
     },
     rust: {
+      codegen: "yarn codegen",
       build: "yarn build",
       test: "yarn test",
     },
     interface: { build: "yarn build" },
-    docusaurus: {
-      install: "yarn install --no-lockfile",
-      build: "yarn build",
-    },
   };
 
   // Filter unnecessary directories
