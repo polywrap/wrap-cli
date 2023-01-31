@@ -31,11 +31,10 @@ export class PackageResolver extends ResolverWithHistory /* $ */ {
 
   // $start: PackageResolver-_tryResolveUri
   /**
-   * Resolve a URI to a wrap package, a wrapper, or a URI.
-   * Updates the resolution context with the result.
+   * Resolve a URI to a wrap package
    *
    * @param uri - the URI to resolve
-   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   * @returns A Promise with a Result containing a wrap package if successful
    */
   protected async _tryResolveUri(
     uri: Uri

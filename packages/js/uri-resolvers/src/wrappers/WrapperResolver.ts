@@ -21,10 +21,21 @@ export class WrapperResolver extends ResolverWithHistory /* $ */ {
   }
 
   // $start: WrapperResolver-getStepDescription
+  /**
+   * A utility function for generating step descriptions to facilitate resolution context updates
+   *
+   * @returns text describing the URI resolution step
+   * */
   protected getStepDescription = (): string /* $ */ =>
     `Wrapper (${this._uri.uri})`;
 
   // $start: WrapperResolver-_tryResolveUri
+  /**
+   * Resolve a URI to a wrapper
+   *
+   * @param uri - the URI to resolve
+   * @returns A Promise with a Result containing a wrapper if successful
+   */
   protected async _tryResolveUri(
     uri: Uri
   ): Promise<Result<UriPackageOrWrapper>> /* $ */ {

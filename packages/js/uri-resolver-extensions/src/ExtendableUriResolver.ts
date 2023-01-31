@@ -13,17 +13,29 @@ import {
   UriResolutionResult,
 } from "@polywrap/uri-resolvers-js";
 
+/**
+ * A Uri Resolver that delegates resolution to wrappers implementing the
+ * URI Resolver Extension Interface.
+ * */
 export class ExtendableUriResolver extends UriResolverAggregatorBase<
   Error,
   Error
 > {
+  /** The default interface uri to which implementations should be registered */
   public static extInterfaceUri: Uri = new Uri(
     "wrap://ens/uri-resolver.core.polywrap.eth"
   );
 
+  /** The active interface uri to which implementations should be registered */
   public readonly extInterfaceUri: Uri;
   private readonly _resolverName: string;
 
+  /**
+   * Create an ExtendableUriResolver
+   *
+   * @param extInterfaceUri - URI Resolver Interface URI
+   * @param resolverName - Name to use in resolution history output
+   * */
   constructor(
     extInterfaceUri: Uri = ExtendableUriResolver.extInterfaceUri,
     resolverName = "ExtendableUriResolver"
@@ -33,6 +45,15 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     this._resolverName = resolverName;
   }
 
+  /**
+   * Get a list of URI Resolvers
+   *
+   * @param uri - the URI to query for resolvers
+   * @param client - a CoreClient instance that can be used to make an invocation
+   * @param resolutionContext - the current URI resolution context
+   *
+   * @returns a list of IUriResolver or an error
+   * */
   async getUriResolvers(
     uri: Uri,
     client: CoreClient,
@@ -58,6 +79,15 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     return ResultOk(resolvers);
   }
 
+  /**
+   * Resolve a URI to a wrap package, a wrapper, or a URI.
+   * Attempts resolution with each the URI Resolver Extension wrappers sequentially.
+   *
+   * @param uri - the URI to resolve
+   * @param client - a CoreClient instance that may be used to invoke a wrapper that implements the UriResolver interface
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
   async tryResolveUri(
     uri: Uri,
     client: CoreClient,
@@ -81,5 +111,10 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     );
   }
 
+  /**
+   * A utility function for generating step descriptions to facilitate resolution context updates
+   *
+   * @returns text describing the URI resolution step
+   * */
   protected getStepDescription = (): string => `${this._resolverName}`;
 }

@@ -12,11 +12,13 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json",
+    "build": "yarn build:fast && yarn build:readme",
+    "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose"
+    "test:watch": "jest --watch --passWithNoTests --verbose",
+    "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
     "@polywrap/core-js": "0.10.0-pre.7",
@@ -35,5 +37,44 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "doc-snippets": {
+    "extract": {
+      "include": [
+        "./src/**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}",
+        "./examples/**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}"
+      ],
+      "ignore": [
+        "./**/node_modules/**",
+        "./**/.polywrap/**",
+        "./**/__tests__/**"
+      ],
+      "dir": "./"
+    },
+    "inject": {
+      "dir": "./readme",
+      "include": "./README.md"
+    },
+    "startTokens": [
+      {
+        "pattern": "$start: ",
+        "inline": false
+      },
+      {
+        "pattern": "/* $: {SNIPPET_NAME} */",
+        "inline": true
+      }
+    ],
+    "endTokens": [
+      {
+        "pattern": "$end",
+        "inline": false
+      },
+      {
+        "pattern": "/* $ */",
+        "inline": true
+      }
+    ],
+    "outputDir": "./"
   }
 }

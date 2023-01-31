@@ -28,10 +28,21 @@ export class RedirectResolver<
   }
 
   // $start: RedirectResolver-getStepDescription
+  /**
+   * A utility function for generating step descriptions to facilitate resolution context updates
+   *
+   * @returns text describing the URI resolution step
+   * */
   protected getStepDescription = (): string /* $ */ =>
     `Redirect (${this.from.uri} - ${this.to.uri})`;
 
   // $start: RedirectResolver-_tryResolveUri
+  /**
+   * Resolve a URI to a new URI
+   *
+   * @param uri - the URI to resolve
+   * @returns A Promise with a Result containing a URI if successful
+   */
   protected async _tryResolveUri(
     uri: Uri
   ): Promise<Result<UriPackageOrWrapper>> /* $ */ {

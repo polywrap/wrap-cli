@@ -16,14 +16,37 @@ import {
   UriResolutionResult,
 } from "@polywrap/uri-resolvers-js";
 
+/**
+ * An IUriResolver that delegates resolution to a wrapper that implements
+ * the URI Resolver Extension Interface
+ * */
 export class UriResolverWrapper extends ResolverWithHistory<unknown> {
+  /**
+   * construct a UriResolverWrapper
+   *
+   * @param implementationUri - URI that resolves to a URI Resolver Extension implementation
+   * */
   constructor(public readonly implementationUri: Uri) {
     super();
   }
 
+  /**
+   * A utility function for generating step descriptions to facilitate resolution context updates
+   *
+   * @returns text describing the URI resolution step
+   * */
   protected getStepDescription = (): string =>
     `ResolverExtension (${this.implementationUri.uri})`;
 
+  /**
+   * Attempt to resolve a URI by invoking a URI Resolver Extension wrapper, then
+   * parse the result to a wrap package, a wrapper, or a URI
+   *
+   * @param uri - the URI to resolve
+   * @param client - a CoreClient instance that may be used to invoke a wrapper that implements the UriResolver interface
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
   protected async _tryResolveUri(
     uri: Uri,
     client: CoreClient,
@@ -57,6 +80,15 @@ export class UriResolverWrapper extends ResolverWithHistory<unknown> {
   }
 }
 
+/**
+ * Attempt to resolve a URI by invoking a URI Resolver Extension wrapper
+ *
+ * @param uri - the URI to resolve
+ * @param implementationUri - URI that resolves to a URI Resolver Extension implementation
+ * @param client - a CoreClient instance that will be used to invoke the URI Resolver Extension wrapper
+ * @param resolutionContext - the current URI resolution context
+ * @returns A Promise with a Result containing either URI or a manifest if successful
+ */
 const tryResolveUriWithImplementation = async (
   uri: Uri,
   implementationUri: Uri,
