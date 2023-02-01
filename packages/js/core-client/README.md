@@ -157,7 +157,7 @@ export interface PolywrapCoreClientConfig<
   @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<TUri extends Uri | string>(
     uri: TUri
-  ): Promise<Result<WrapManifest, WrapError>> 
+  ): Promise<Result<Readonly<WrapManifest>, WrapError>> 
 ```
 
 ### getFile

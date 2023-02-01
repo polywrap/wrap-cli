@@ -329,7 +329,7 @@ export interface IWrapPackage {
    */
   getManifest(
     options?: GetManifestOptions
-  ): Promise<Result<WrapManifest, Error>>;
+  ): Promise<Result<Readonly<WrapManifest>, Error>>;
 
   /**
    * Produce an instance of the wrapper
@@ -546,7 +546,7 @@ export interface Wrapper extends Invocable {
   /**
    * Get a manifest from the Wrapper package.
    */
-  getManifest(): WrapManifest;
+  getManifest(): Readonly<WrapManifest>;
 }
 
 ```
