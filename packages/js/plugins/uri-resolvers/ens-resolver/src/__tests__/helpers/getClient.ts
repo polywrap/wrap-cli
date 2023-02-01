@@ -15,6 +15,7 @@ import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import {
   defaultEmbeddedWrapperPaths,
   defaultPackages,
+  defaultWrapperAliases,
 } from "@polywrap/client-config-builder-js";
 import fs from "fs";
 import path from "path";
@@ -29,10 +30,9 @@ export const getClient = () => {
     {
       envs: [
         {
-          uri: defaultPackages.ipfsResolver,
+          uri: defaultWrapperAliases.ipfsResolver,
           env: {
             provider: providers.ipfs,
-            retries: { tryResolveUri: 1, getFile: 1 },
           },
         },
       ],
@@ -40,7 +40,7 @@ export const getClient = () => {
         {
           interface: ExtendableUriResolver.extInterfaceUri,
           implementations: [
-            defaultPackages.ipfsResolver,
+            defaultWrapperAliases.ipfsResolver,
             defaultPackages.ensResolver,
           ],
         },
@@ -49,14 +49,14 @@ export const getClient = () => {
         PackageToWrapperCacheResolver.from(
           [
             {
-              uri: defaultPackages.ipfsHttpClient,
+              uri: defaultWrapperAliases.ipfsHttpClient,
               package: WasmPackage.from(
                 fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
                 fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
               ),
             },
             {
-              uri: defaultPackages.ipfsResolver,
+              uri: defaultWrapperAliases.ipfsResolver,
               package: WasmPackage.from(
                 fs.readFileSync(path.join(ipfsResolverPath, "wrap.info")),
                 fs.readFileSync(path.join(ipfsResolverPath, "wrap.wasm"))
