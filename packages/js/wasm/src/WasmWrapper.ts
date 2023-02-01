@@ -21,6 +21,7 @@ import {
   WrapError,
   WrapErrorCode,
   ErrorSource,
+  deepCopy
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
@@ -136,7 +137,7 @@ export class WasmWrapper implements Wrapper {
 
   @Tracer.traceMethod("WasmWrapper: getManifest")
   public getManifest(): Readonly<WrapManifest> {
-    return JSON.parse(JSON.stringify(this._manifest));
+    return deepCopy(this._manifest);
   }
 
   @Tracer.traceMethod("WasmWrapper: invoke", TracingLevel.High)

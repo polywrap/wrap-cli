@@ -2,7 +2,7 @@ import { PluginModule } from "./PluginModule";
 import { PluginWrapper } from "./PluginWrapper";
 import { GetPluginMethodsFunc, PluginModuleWithMethods } from "./utils";
 
-import { IWrapPackage, Wrapper } from "@polywrap/core-js";
+import { IWrapPackage, Wrapper, deepCopy } from "@polywrap/core-js";
 import { Result, ResultOk } from "@polywrap/result";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
@@ -51,7 +51,7 @@ export class PluginPackage<
   }
 
   async getManifest(): Promise<Result<Readonly<WrapManifest>, Error>> {
-    return ResultOk(JSON.parse(JSON.stringify(this._manifest)));
+    return ResultOk(deepCopy(this._manifest));
   }
 
   async createWrapper(): Promise<Result<Wrapper, Error>> {
