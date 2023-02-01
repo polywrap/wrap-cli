@@ -50,8 +50,8 @@ export class PluginPackage<
     }
   }
 
-  async getManifest(): Promise<Result<WrapManifest, Error>> {
-    return ResultOk(this.manifest);
+  async getManifest(): Promise<Result<Readonly<WrapManifest>, Error>> {
+    return ResultOk(JSON.parse(JSON.stringify(this.manifest)));
   }
 
   async createWrapper(): Promise<Result<Wrapper, Error>> {

@@ -36,7 +36,7 @@ export class WasmPackage implements IWasmPackage {
 
   async getManifest(
     options?: GetManifestOptions
-  ): Promise<Result<WrapManifest, Error>> {
+  ): Promise<Result<Readonly<WrapManifest>, Error>> {
     const result = await this.fileReader.readFile(WRAP_MANIFEST_PATH);
 
     if (!result.ok) {

@@ -35,8 +35,8 @@ export class PluginWrapper implements Wrapper {
   }
 
   @Tracer.traceMethod("PluginWrapper: getManifest")
-  public getManifest(): WrapManifest {
-    return this.manifest;
+  public getManifest(): Readonly<WrapManifest> {
+    return JSON.parse(JSON.stringify(this.manifest));
   }
 
   @Tracer.traceMethod("PluginWrapper: invoke", TracingLevel.High)

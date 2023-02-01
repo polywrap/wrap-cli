@@ -160,7 +160,7 @@ export class PolywrapCoreClient implements CoreClient {
   @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<TUri extends Uri | string>(
     uri: TUri
-  ): Promise<Result<WrapManifest, Error>> {
+  ): Promise<Result<Readonly<WrapManifest>, Error>> {
     const load = await this.loadWrapper(Uri.from(uri), undefined);
     if (!load.ok) {
       return load;

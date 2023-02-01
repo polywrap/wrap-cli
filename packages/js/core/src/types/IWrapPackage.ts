@@ -9,7 +9,7 @@ import { Result } from "@polywrap/result";
 export interface IWrapPackage {
   getManifest(
     options?: GetManifestOptions
-  ): Promise<Result<WrapManifest, Error>>;
+  ): Promise<Result<Readonly<WrapManifest>, Error>>;
   createWrapper(
     options?: DeserializeManifestOptions
   ): Promise<Result<Wrapper, Error>>;
