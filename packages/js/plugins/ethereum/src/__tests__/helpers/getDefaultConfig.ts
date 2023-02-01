@@ -5,7 +5,9 @@ import { ethereumPlugin, Connections } from "../..";
 import { providers } from "@polywrap/test-env-js";
 import {
   defaultIpfsProviders,
-  ClientConfig, defaultWrapperAliases,
+  ClientConfig,
+  defaultInterfaces,
+  defaultWrapperAliases,
 } from "@polywrap/client-config-builder-js";
 
 export const getDefaultConfig = (
@@ -37,7 +39,7 @@ export const getDefaultConfig = (
         package: fileSystemResolverPlugin({}),
       },
       {
-        uri: "wrap://ens/fs.polywrap.eth",
+        uri: defaultInterfaces.fileSystem,
         package: fileSystemPlugin({}),
       },
     ],

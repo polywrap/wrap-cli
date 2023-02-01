@@ -15,6 +15,7 @@ import {
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import {
+  defaultInterfaces
   defaultEmbeddedWrapperPaths,
   defaultPackages,
   defaultWrapperAliases,
@@ -87,7 +88,7 @@ export const getClientWithEnsAndIpfs = () => {
               }),
             },
             {
-              uri: defaultPackages.fileSystem,
+              uri: defaultInterfaces.fileSystem,
               package: fileSystemPlugin({}),
             },
             {

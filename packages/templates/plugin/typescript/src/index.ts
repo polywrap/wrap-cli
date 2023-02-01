@@ -1,6 +1,6 @@
 import { Module, Args_sampleMethod, manifest } from "./wrap";
 
-import { PluginFactory } from "@polywrap/core-js";
+import { PluginFactory, PluginPackage } from "@polywrap/plugin-js";
 
 export interface SamplePluginConfig {
   defaultValue: string;
@@ -18,10 +18,10 @@ export class SamplePlugin extends Module<SamplePluginConfig> {
 export const samplePlugin: PluginFactory<SamplePluginConfig> = (
   config: SamplePluginConfig
 ) => {
-  return {
-    factory: () => new SamplePlugin(config),
-    manifest: manifest
-  };
+  return new PluginPackage(
+    new SamplePlugin(config),
+    manifest
+  );
 };
 
 export const plugin = samplePlugin;
