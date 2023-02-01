@@ -41,7 +41,7 @@ export interface Wrapper extends Invocable {
   /**
    * Get a manifest from the Wrapper package.
    */
-  getManifest(): WrapManifest;
+  getManifest(): Readonly<WrapManifest>;
 }
 
 // $end

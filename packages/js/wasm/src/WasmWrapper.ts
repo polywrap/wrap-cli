@@ -135,8 +135,8 @@ export class WasmWrapper implements Wrapper {
   }
 
   @Tracer.traceMethod("WasmWrapper: getManifest")
-  public getManifest(): WrapManifest {
-    return this._manifest;
+  public getManifest(): Readonly<WrapManifest> {
+    return JSON.parse(JSON.stringify(this._manifest));
   }
 
   @Tracer.traceMethod("WasmWrapper: invoke", TracingLevel.High)

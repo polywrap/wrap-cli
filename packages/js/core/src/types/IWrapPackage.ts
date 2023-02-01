@@ -24,7 +24,7 @@ export interface IWrapPackage {
    */
   getManifest(
     options?: GetManifestOptions
-  ): Promise<Result<WrapManifest, Error>>;
+  ): Promise<Result<Readonly<WrapManifest>, Error>>;
 
   /**
    * Produce an instance of the wrapper
