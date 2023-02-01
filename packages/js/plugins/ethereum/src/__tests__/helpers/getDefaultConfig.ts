@@ -20,6 +20,7 @@ export const getDefaultConfig = (
         env: {
           provider: providers.ipfs,
           fallbackProviders: defaultIpfsProviders,
+          retries: { tryResolveUri: 1, getFile: 1 },
         },
       },
     ],

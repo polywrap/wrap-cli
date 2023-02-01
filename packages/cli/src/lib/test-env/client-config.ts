@@ -33,6 +33,7 @@ export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
         env: {
           provider: ipfsProvider,
           fallbackProviders: defaultIpfsProviders,
+          retries: { tryResolveUri: 1, getFile: 1 },
         },
       },
     ],
