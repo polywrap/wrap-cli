@@ -13,7 +13,7 @@ import {
 import { PolywrapClient } from "@polywrap/client-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import {
-  defaultEmbeddedWrapperPaths,
+  defaultEmbeddedWrapperPaths, defaultInterfaces,
   defaultPackages,
 } from "@polywrap/client-config-builder-js";
 import fs from "fs";
@@ -49,7 +49,7 @@ export const getClient = () => {
         PackageToWrapperCacheResolver.from(
           [
             {
-              uri: defaultPackages.ipfsHttpClient,
+              uri: "wrap://ens/wrappers.polywrap.eth:ipfs-http-client@1.0.0",
               package: WasmPackage.from(
                 fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
                 fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
@@ -84,7 +84,7 @@ export const getClient = () => {
               }),
             },
             {
-              uri: defaultPackages.http,
+              uri: defaultInterfaces.http,
               package: httpPlugin({}),
             },
             new ExtendableUriResolver(),
