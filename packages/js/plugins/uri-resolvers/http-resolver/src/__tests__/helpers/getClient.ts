@@ -7,7 +7,7 @@ import { PolywrapClient } from "@polywrap/client-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { httpResolverPlugin } from "../..";
-import { defaultPackages } from "@polywrap/client-config-builder-js";
+import { defaultInterfaces, defaultPackages } from "@polywrap/client-config-builder-js";
 
 export const getClient = () => {
   return new PolywrapClient(
@@ -22,7 +22,7 @@ export const getClient = () => {
         PackageToWrapperCacheResolver.from(
           [
             {
-              uri: defaultPackages.http,
+              uri: defaultInterfaces.http,
               package: httpPlugin({}),
             },
             {
