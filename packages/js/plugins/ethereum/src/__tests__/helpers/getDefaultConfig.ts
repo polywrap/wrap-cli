@@ -7,7 +7,7 @@ import {
   defaultIpfsProviders,
   ClientConfig,
   defaultInterfaces,
-  defaultWrapperAliases,
+  defaultPackages,
 } from "@polywrap/client-config-builder-js";
 
 export const getDefaultConfig = (
@@ -16,7 +16,7 @@ export const getDefaultConfig = (
   return {
     envs: [
       {
-        uri: defaultWrapperAliases.ipfsResolver,
+        uri: defaultPackages.ipfsResolver,
         env: {
           provider: providers.ipfs,
           fallbackProviders: defaultIpfsProviders,
@@ -26,7 +26,7 @@ export const getDefaultConfig = (
     interfaces: [
       {
         interface: ExtendableUriResolver.extInterfaceUri,
-        implementations: ["wrap://ens/fs-resolver.polywrap.eth"],
+        implementations: [defaultPackages.fileSystemResolver],
       },
     ],
     packages: [
@@ -35,7 +35,7 @@ export const getDefaultConfig = (
         package: ethereumPlugin({ connections }),
       },
       {
-        uri: "wrap://ens/fs-resolver.polywrap.eth",
+        uri: defaultPackages.fileSystemResolver,
         package: fileSystemResolverPlugin({}),
       },
       {

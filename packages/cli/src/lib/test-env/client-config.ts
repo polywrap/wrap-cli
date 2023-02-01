@@ -4,7 +4,6 @@ import { PolywrapClientConfig } from "@polywrap/client-js";
 import {
   defaultIpfsProviders,
   defaultPackages,
-  defaultWrapperAliases,
 } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
@@ -30,7 +29,7 @@ export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
   return {
     envs: [
       {
-        uri: defaultWrapperAliases.ipfsResolver,
+        uri: defaultPackages.ipfsResolver,
         env: {
           provider: ipfsProvider,
           fallbackProviders: defaultIpfsProviders,

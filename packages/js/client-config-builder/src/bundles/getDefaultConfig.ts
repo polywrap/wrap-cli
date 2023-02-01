@@ -17,6 +17,11 @@ import path from "path";
 import { WasmPackage } from "@polywrap/wasm-js";
 import * as fs from "fs";
 
+const defaultEmbeddedWrapperPaths = {
+  ipfsHttpClient: path.join(__dirname, "wrappers", "ipfs-http-client"),
+  ipfsResolver: path.join(__dirname, "wrappers", "ipfs-resolver"),
+};
+
 // $start: getDefaultConfig
 
 export const defaultIpfsProviders = [
@@ -25,37 +30,24 @@ export const defaultIpfsProviders = [
 ];
 
 export const defaultWrappers = {
-  sha3: "wrap://ens/goerli/sha3.wrappers.eth",
-  uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
-  graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
+  sha3: "wrap://ens/wrappers.polywrap.eth:sha3@1.0.0",
+  uts46: "wrap://ens/wrappers.polywrap.eth:uts46@1.0.0",
+  graphNode: "wrap://ens/wrappers.polywrap.eth:graph-node@1.0.0",
   ensTextRecordResolver:
     "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
 };
 
-export const defaultEmbeddedWrapperPaths = {
-  ipfsHttpClient: path.join(__dirname, "wrappers", "ipfs-http-client"),
-  ipfsResolver: path.join(__dirname, "wrappers", "ipfs-resolver"),
-};
-
-export const defaultWrapperAliases = {
-  sha3: "wrap://ens/sha3.polywrap.eth",
-  uts46: "wrap://ens/uts46.polywrap.eth",
-  graphNode: "wrap://ens/graph-node.polywrap.eth",
-  ensTextRecordResolver: "wrap://ens/ens-text-record-resolver.polywrap/eth",
-  ipfsHttpClient: "wrap://ens/ipfs-http-client.polywrap.eth",
-  ipfsResolver: "wrap://ens/ipfs-resolver.polywrap.eth",
-};
-
 export const defaultPackages = {
-  ipfs: "wrap://ens/ipfs.polywrap.eth",
   ensResolver: "wrap://ens/ens-resolver.polywrap.eth",
   ethereum: "wrap://ens/ethereum.polywrap.eth",
-  http: "wrap://plugin/http",
-  httpResolver: "wrap://ens/http-resolver.polywrap.eth",
-  logger: "wrap://plugin/logger",
-  fileSystem: "wrap://plugin/fs",
-  fileSystemResolver: "wrap://ens/fs-resolver.polywrap.eth",
-  concurrent: "wrap://plugin/concurrent",
+  http: "wrap://package/http",
+  httpResolver: "wrap://package/http-resolver",
+  logger: "wrap://package/logger",
+  fileSystem: "wrap://package/fs",
+  fileSystemResolver: "wrap://package/fs-resolver",
+  concurrent: "wrap://package/concurrent",
+  ipfsHttpClient: "wrap://package/ipfs-http-client",
+  ipfsResolver: "wrap://package/ipfs-resolver",
 };
 
 export const defaultInterfaces = {
@@ -70,13 +62,7 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
   return {
     envs: [
       {
-        uri: new Uri(defaultWrappers.graphNode),
-        env: {
-          provider: "https://api.thegraph.com",
-        },
-      },
-      {
-        uri: new Uri(defaultWrapperAliases.ipfsResolver),
+        uri: new Uri(defaultPackages.ipfsResolver),
         env: {
           provider: defaultIpfsProviders[0],
           fallbackProviders: defaultIpfsProviders.slice(1),
@@ -85,32 +71,12 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
     ],
     redirects: [
       {
-        from: new Uri(defaultWrapperAliases.sha3),
-        to: new Uri(defaultWrappers.sha3),
-      },
-      {
-        from: new Uri(defaultWrapperAliases.uts46),
-        to: new Uri(defaultWrappers.uts46),
-      },
-      {
-        from: new Uri(defaultWrapperAliases.graphNode),
-        to: new Uri(defaultWrappers.graphNode),
-      },
-      {
         from: new Uri(defaultInterfaces.logger),
         to: new Uri(defaultPackages.logger),
       },
       {
-        from: new Uri("wrap://ens/http.polywrap.eth"),
-        to: new Uri(defaultInterfaces.http),
-      },
-      {
         from: new Uri(defaultInterfaces.http),
         to: new Uri(defaultPackages.http),
-      },
-      {
-        from: new Uri("wrap://ens/fs.polywrap.eth"),
-        to: new Uri(defaultInterfaces.fileSystem),
       },
       {
         from: new Uri(defaultInterfaces.fileSystem),
@@ -121,7 +87,7 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
       {
         interface: new Uri(defaultInterfaces.uriResolver),
         implementations: [
-          new Uri(defaultWrapperAliases.ipfsResolver),
+          new Uri(defaultPackages.ipfsResolver),
           new Uri(defaultPackages.ensResolver),
           new Uri(defaultPackages.fileSystemResolver),
           new Uri(defaultPackages.httpResolver),
@@ -150,14 +116,14 @@ export const getDefaultPackages = (): IUriPackage<Uri>[] => {
   return [
     // IPFS is required for downloading Polywrap packages
     {
-      uri: new Uri(defaultWrapperAliases.ipfsHttpClient),
+      uri: new Uri(defaultPackages.ipfsHttpClient),
       package: WasmPackage.from(
         fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
         fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
       ),
     },
     {
-      uri: new Uri(defaultWrapperAliases.ipfsResolver),
+      uri: new Uri(defaultPackages.ipfsResolver),
       package: WasmPackage.from(
         fs.readFileSync(path.join(ipfsResolverPath, "wrap.info")),
         fs.readFileSync(path.join(ipfsResolverPath, "wrap.wasm"))

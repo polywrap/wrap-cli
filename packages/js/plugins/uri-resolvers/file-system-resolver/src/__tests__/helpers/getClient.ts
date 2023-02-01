@@ -7,7 +7,7 @@ import { PolywrapClient } from "@polywrap/client-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "../..";
-import { defaultInterfaces } from "@polywrap/client-config-builder-js";
+import { defaultInterfaces, defaultPackages } from "@polywrap/client-config-builder-js";
 
 export const getClient = () => {
   return new PolywrapClient(
@@ -15,14 +15,14 @@ export const getClient = () => {
       interfaces: [
         {
           interface: ExtendableUriResolver.extInterfaceUri,
-          implementations: ["wrap://ens/fs-resolver.polywrap.eth"],
+          implementations: [defaultPackages.fileSystemResolver],
         },
       ],
       resolver: RecursiveResolver.from(
         PackageToWrapperCacheResolver.from(
           [
             {
-              uri: "wrap://ens/fs-resolver.polywrap.eth",
+              uri: defaultPackages.fileSystemResolver,
               package: fileSystemResolverPlugin({}),
             },
             {
