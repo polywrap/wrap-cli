@@ -526,6 +526,11 @@ export const defaultWrappers = {
     "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
 };
 
+export const defaultEmbeddedWrapperPaths = {
+  ipfsHttpClient: path.join(__dirname, "wrappers", "ipfs-http-client"),
+  ipfsResolver: path.join(__dirname, "wrappers", "ipfs-resolver"),
+};
+
 export const defaultPackages = {
   ensResolver: "wrap://ens/ens-resolver.polywrap.eth",
   ethereum: "wrap://ens/ethereum.polywrap.eth",

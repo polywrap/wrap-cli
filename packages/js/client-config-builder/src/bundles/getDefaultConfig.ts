@@ -17,11 +17,6 @@ import path from "path";
 import { WasmPackage } from "@polywrap/wasm-js";
 import * as fs from "fs";
 
-const defaultEmbeddedWrapperPaths = {
-  ipfsHttpClient: path.join(__dirname, "wrappers", "ipfs-http-client"),
-  ipfsResolver: path.join(__dirname, "wrappers", "ipfs-resolver"),
-};
-
 // $start: getDefaultConfig
 
 export const defaultIpfsProviders = [
@@ -35,6 +30,11 @@ export const defaultWrappers = {
   graphNode: "wrap://ens/wrappers.polywrap.eth:graph-node@1.0.0",
   ensTextRecordResolver:
     "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
+};
+
+export const defaultEmbeddedWrapperPaths = {
+  ipfsHttpClient: path.join(__dirname, "wrappers", "ipfs-http-client"),
+  ipfsResolver: path.join(__dirname, "wrappers", "ipfs-resolver"),
 };
 
 export const defaultPackages = {
