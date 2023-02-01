@@ -8,5 +8,5 @@ source:
   import_abis:
     - uri: "ens/uri-resolver.core.polywrap.eth"
       abi: ../../../../interfaces/uri-resolver/build/wrap.info
-    - uri: "ens/fs.polywrap.eth"
-      abi: ../../../../interfaces/file-system/build/wrap.info
+    - uri: "wrap://ens/wrappers.polywrap.eth:file-system@1.0.0"
+      abi: ./schema.interface.graphql
