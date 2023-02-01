@@ -566,6 +566,18 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
     ],
     redirects: [
       {
+        from: new Uri("wrap://ens/sha3.polywrap.eth"),
+        to: new Uri(
+          "wrap://ipfs/QmThRxFfr7Hj9Mq6WmcGXjkRrgqMG3oD93SLX27tinQWy5"
+        ),
+      },
+      {
+        from: new Uri("wrap://ens/uts46.polywrap.eth"),
+        to: new Uri(
+          "wrap://ipfs/QmPL9Njg3rGkpoJyoy8pZ5fTavjvHxNuuuiGRApzyGESZB"
+        ),
+      },
+      {
         from: new Uri(defaultInterfaces.logger),
         to: new Uri(defaultPackages.logger),
       },

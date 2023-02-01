@@ -2,9 +2,7 @@ import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ethereumPlugin, Connections } from "../..";
-import { providers } from "@polywrap/test-env-js";
 import {
-  defaultIpfsProviders,
   ClientConfig,
   defaultInterfaces,
   defaultPackages,
@@ -14,16 +12,6 @@ export const getDefaultConfig = (
   connections: Connections
 ): Partial<ClientConfig> => {
   return {
-    envs: [
-      {
-        uri: defaultPackages.ipfsResolver,
-        env: {
-          provider: providers.ipfs,
-          fallbackProviders: defaultIpfsProviders,
-          retries: { tryResolveUri: 1, getFile: 1 },
-        },
-      },
-    ],
     interfaces: [
       {
         interface: ExtendableUriResolver.extInterfaceUri,
