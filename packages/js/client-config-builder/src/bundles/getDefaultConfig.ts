@@ -46,7 +46,7 @@ export const defaultPackages = {
   fileSystem: "wrap://package/fs",
   fileSystemResolver: "wrap://package/fs-resolver",
   concurrent: "wrap://package/concurrent",
-  ipfsHttpClient: "wrap://package/ipfs-http-client",
+  ipfsHttpClient: "wrap://ens/wrappers.polywrap.eth:ipfs-http-client@1.0.0",
   ipfsResolver: "wrap://package/ipfs-resolver",
 };
 
