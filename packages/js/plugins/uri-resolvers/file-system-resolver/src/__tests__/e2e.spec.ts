@@ -10,7 +10,7 @@ jest.setTimeout(360000);
 const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 const simpleWrapperUri = new Uri(`fs/${simpleWrapperPath}/build`);
 
-describe("Filesystem plugin", () => {
+describe("Filesystem Resolver plugin", () => {
   let client: PolywrapClient;
 
   beforeAll(async () => {

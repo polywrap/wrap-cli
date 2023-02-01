@@ -35,7 +35,7 @@
     "@polywrap/tracing-js": "0.10.0-pre.7",
     "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.7",
     "@polywrap/uri-resolvers-js": "0.10.0-pre.7",
-    "concurrent-plugin-js": "0.1.1",
+    "concurrent-plugin-js": "0.1.2",
     "doc-snippets": "^1.0.0"
   },
   "devDependencies": {

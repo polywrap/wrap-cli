@@ -60,6 +60,16 @@ jobs:
         with:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
 
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '^1.13.1'
+
+      - name: Install cue lang
+        run: go install cuelang.org/go/cmd/cue@latest
+
+      - name: Check if cue is installed
+        run: cue version
+
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"

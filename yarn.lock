@@ -3391,6 +3391,14 @@
     "@polywrap/core-js" "0.10.0-pre.6"
     "@polywrap/plugin-js" "0.10.0-pre.6"
 
+"@polywrap/fs-plugin-js@0.10.0-pre.7":
+  version "0.10.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polywrap/fs-plugin-js/-/fs-plugin-js-0.10.0-pre.7.tgz#d066fac96869363de512978bb66204b589ffa9a1"
+  integrity sha512-zhNOrzaK+X95orrD9FgHRt6etUMq2kjzfZtbPGHcBxN3JR81rtO+7UsVfCdz1U2VoHXsKOZ6t59JhHVfvVRP/g==
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.7"
+    "@polywrap/plugin-js" "0.10.0-pre.7"
+
 "@polywrap/fs-resolver-plugin-js@0.10.0-pre.6":
   version "0.10.0-pre.6"
   resolved "https://registry.yarnpkg.com/@polywrap/fs-resolver-plugin-js/-/fs-resolver-plugin-js-0.10.0-pre.6.tgz#94b48d2eb87d940a2b1cf5822b3b6cc8ca7f606c"
@@ -6262,6 +6270,14 @@ concurrent-plugin-js@0.1.1:
   dependencies:
     "@polywrap/core-js" "0.10.0-pre.5"
     "@polywrap/msgpack-js" "0.10.0-pre.5"
+
+concurrent-plugin-js@0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/concurrent-plugin-js/-/concurrent-plugin-js-0.1.2.tgz#206b9f12723fb99d79a4c03c0f28b427deca6ff4"
+  integrity sha512-MWpw9uuQtQ/IerG2CtGjFm+UTmDy0D+D7HZh4hW5PYTk4SbcYBVJtK6n7Yk3tg8NE3rcXLnRxLBoW7UbO2o5hw==
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.7"
+    "@polywrap/msgpack-js" "0.10.0-pre.7"
 
 config-chain@^1.1.12:
   version "1.1.13"

@@ -39,7 +39,7 @@ export const defaultPackages = {
   http: "wrap://plugin/http",
   httpResolver: "wrap://ens/http-resolver.polywrap.eth",
   logger: "wrap://plugin/logger",
-  fileSystem: "wrap://ens/fs.polywrap.eth",
+  fileSystem: "wrap://plugin/fs",
   fileSystemResolver: "wrap://ens/fs-resolver.polywrap.eth",
   ipfsResolver: "wrap://ens/ipfs-resolver.polywrap.eth",
   concurrent: "wrap://plugin/concurrent",
@@ -47,9 +47,10 @@ export const defaultPackages = {
 
 export const defaultInterfaces = {
   uriResolver: "wrap://ens/uri-resolver.core.polywrap.eth",
-  concurrent: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
+  concurrent: "wrap://ens/wrappers.polywrap.eth:concurrent@1.0.0",
   logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
   http: "wrap://ens/wrappers.polywrap.eth:http@1.1.0",
+  fileSystem: "wrap://ens/wrappers.polywrap.eth:file-system@1.0.0",
 };
 
 export const getDefaultPlugins = (): Record<string, IWrapPackage> => {

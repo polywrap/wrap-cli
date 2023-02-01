@@ -16,6 +16,7 @@ import {
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
+import { defaultInterfaces } from "@polywrap/client-config-builder-js";
 
 export const getClientWithEnsAndIpfs = () => {
   const connections: Connections = new Connections({
