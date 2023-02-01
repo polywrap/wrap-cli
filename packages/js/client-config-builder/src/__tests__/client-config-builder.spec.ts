@@ -6,29 +6,22 @@ import {
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
-import { UriResolutionResult } from "@polywrap/uri-resolvers-js";
 import { getDefaultConfig } from "../bundles";
 
 class MockUriResolver implements IUriResolver {
-  private from: string;
-  private to: string;
+  private uri: string;
 
   constructor(from: string, to: string) {
-    this.from = from;
-    this.to = to;
+    this.uri = from;
   }
   get name(): string {
-    return this.from;
+    return this.uri;
   }
-  async tryResolveUri(
-    uri: Uri,
+  tryResolveUri(
+    _uri: Uri,
     _client: CoreClient
   ): Promise<Result<UriPackageOrWrapper>> {
-    if (Uri.equals(uri, Uri.from(this.from))) {
-      return UriResolutionResult.ok(Uri.from(this.to));
-    }
-
-    return UriResolutionResult.err(undefined);
+    throw new Error("Not implemented");
   }
 }
 
@@ -98,9 +91,7 @@ describe("Client config builder", () => {
       resolvers: [testUriResolver],
     };
 
-    const builder = new ClientConfigBuilder().add(
-      configObject
-    ) as ClientConfigBuilder;
+    const builder = new ClientConfigBuilder().add(configObject);
 
     const clientConfig = builder.build();
     const builderConfig = builder.config;
@@ -137,7 +128,7 @@ describe("Client config builder", () => {
         envs: testEnv2,
         interfaces: testInterface2,
         redirects: testUriRedirect2,
-      }) as ClientConfigBuilder;
+      });
 
     const clientConfig = builder.build();
     const builderConfig = builder.config;
@@ -168,7 +159,7 @@ describe("Client config builder", () => {
   });
 
   it("should successfully add the default config", () => {
-    const builder = new ClientConfigBuilder().addDefaults() as ClientConfigBuilder;
+    const builder = new ClientConfigBuilder().addDefaults();
 
     const clientConfig = builder.build();
     const builderConfig = builder.config;
@@ -550,10 +541,7 @@ describe("Client config builder", () => {
     const from = "wrap://ens/from.this.ens";
     const to = "wrap://ens/to.that.ens";
 
-    const builder = new ClientConfigBuilder().addRedirect(
-      from,
-      to
-    ) as ClientConfigBuilder;
+    const builder = new ClientConfigBuilder().addRedirect(from, to);
 
     const config = builder.build();
     const builderConfig = builder.config;
@@ -575,7 +563,7 @@ describe("Client config builder", () => {
 
     const builder = new ClientConfigBuilder()
       .addRedirect(from1, to1)
-      .addRedirect(from2, to2) as ClientConfigBuilder;
+      .addRedirect(from2, to2);
 
     const config = builder.build();
     const builderConfig = builder.config;
@@ -599,7 +587,7 @@ describe("Client config builder", () => {
     const builder = new ClientConfigBuilder()
       .addRedirect(from1, to1)
       .addRedirect(from2, to1)
-      .addRedirect(from1, to2) as ClientConfigBuilder;
+      .addRedirect(from1, to2);
 
     const config = builder.build();
     const builderConfig = builder.config;
@@ -622,7 +610,7 @@ describe("Client config builder", () => {
     const builder = new ClientConfigBuilder()
       .addRedirect(from1, to1)
       .addRedirect(from2, to2)
-      .removeRedirect(from1) as ClientConfigBuilder;
+      .removeRedirect(from1);
 
     const config = builder.build();
     const builderConfig = builder.config;
@@ -642,9 +630,7 @@ describe("Client config builder", () => {
       "wrap://ens/to.eth"
     );
 
-    const builder = new ClientConfigBuilder().addResolver(
-      uriResolver
-    ) as ClientConfigBuilder;
+    const builder = new ClientConfigBuilder().addResolver(uriResolver);
 
     const config = builder.build();
     const builderConfig = builder.config;
@@ -665,7 +651,7 @@ describe("Client config builder", () => {
 
     const builder = new ClientConfigBuilder()
       .addResolver(uriResolver1)
-      .addResolver(uriResolver2) as ClientConfigBuilder;
+      .addResolver(uriResolver2);
 
     const config = builder.build();
     const builderConfig = builder.config;

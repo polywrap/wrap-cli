@@ -4,6 +4,8 @@ import { CoreClientConfig, Wrapper, IWrapPackage } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 
 export interface IClientConfigBuilder {
+  config: BuilderConfig;
+
   // $start: IClientConfigBuilder-build
   /**
    * Build a sanitized core client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors
