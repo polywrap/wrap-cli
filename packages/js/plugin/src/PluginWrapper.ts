@@ -11,7 +11,7 @@ import {
   isBuffer,
   WrapError,
   WrapErrorCode,
-  deepCopy
+  deepCopy,
 } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";

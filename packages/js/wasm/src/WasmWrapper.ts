@@ -21,7 +21,7 @@ import {
   WrapError,
   WrapErrorCode,
   ErrorSource,
-  deepCopy
+  deepCopy,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
