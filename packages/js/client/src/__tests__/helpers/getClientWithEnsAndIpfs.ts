@@ -96,7 +96,7 @@ export const getClientWithEnsAndIpfs = () => {
               package: fileSystemResolverPlugin({}),
             },
             {
-              uri: defaultPackages.http,
+              uri: defaultInterfaces.http,
               package: httpPlugin({}),
             },
             new ExtendableUriResolver(),
