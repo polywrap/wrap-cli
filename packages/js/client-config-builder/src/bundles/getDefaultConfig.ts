@@ -38,7 +38,7 @@ export const defaultEmbeddedWrapperPaths = {
 };
 
 export const defaultPackages = {
-  ensResolver: "wrap://ens/ens-resolver.polywrap.eth",
+  ensResolver: "wrap://package/ens-resolver",
   ethereum: "wrap://ens/ethereum.polywrap.eth",
   http: "wrap://package/http",
   httpResolver: "wrap://package/http-resolver",
@@ -46,7 +46,7 @@ export const defaultPackages = {
   fileSystem: "wrap://package/fs",
   fileSystemResolver: "wrap://package/fs-resolver",
   concurrent: "wrap://package/concurrent",
-  ipfsHttpClient: "wrap://ens/wrappers.polywrap.eth:ipfs-http-client@1.0.0",
+  ipfsHttpClient: "wrap://package/ipfs-http-client",
   ipfsResolver: "wrap://package/ipfs-resolver",
 };
 
@@ -56,6 +56,7 @@ export const defaultInterfaces = {
   logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
   http: "wrap://ens/wrappers.polywrap.eth:http@1.1.0",
   fileSystem: "wrap://ens/wrappers.polywrap.eth:file-system@1.0.0",
+  ipfsHttpClient: "wrap://ens/wrappers.polywrap.eth:ipfs-http-client@1.0.0",
 };
 
 export const getDefaultConfig = (): ClientConfig<Uri> => {
@@ -71,6 +72,7 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
       },
     ],
     redirects: [
+      // TODO: remove sha3 and uts46 redirects when ethereum wrapper is merged (used by updated ens wrapper)
       {
         from: new Uri("wrap://ens/sha3.polywrap.eth"),
         to: new Uri(
@@ -114,6 +116,10 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
       {
         interface: new Uri(defaultInterfaces.concurrent),
         implementations: [new Uri(defaultPackages.concurrent)],
+      },
+      {
+        interface: new Uri(defaultInterfaces.ipfsHttpClient),
+        implementations: [new Uri(defaultPackages.ipfsHttpClient)],
       },
     ],
     packages: getDefaultPackages(),

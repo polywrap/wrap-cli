@@ -1,4 +1,4 @@
-import { PolywrapClient } from "../..";
+import { PolywrapClient, Uri } from "../..";
 import { ensAddresses, providers } from "@polywrap/test-env-js";
 import {
   Connection,
@@ -56,6 +56,10 @@ export const getClientWithEnsAndIpfs = () => {
             defaultPackages.ensResolver,
             defaultPackages.fileSystemResolver,
           ],
+        },
+        {
+          interface: new Uri(defaultInterfaces.ipfsHttpClient),
+          implementations: [new Uri(defaultPackages.ipfsHttpClient)],
         },
       ],
       resolver: RecursiveResolver.from([
