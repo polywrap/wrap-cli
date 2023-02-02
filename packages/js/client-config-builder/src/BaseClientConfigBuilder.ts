@@ -1,11 +1,7 @@
 import { BuilderConfig } from "./types/configs/BuilderConfig";
 import { IClientConfigBuilder } from "./types/IClientConfigBuilder";
 
-import {
-  CoreClientConfig,
-  Wrapper,
-  IWrapPackage,
-} from "@polywrap/core-js";
+import { CoreClientConfig, Wrapper, IWrapPackage } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 
 export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
