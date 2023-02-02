@@ -33,6 +33,7 @@ describe("Filesystem Resolver plugin", () => {
     });
 
     if (!result.ok) {
+      console.log(result.error);
       fail("Expected response to not be an error");
     }
 

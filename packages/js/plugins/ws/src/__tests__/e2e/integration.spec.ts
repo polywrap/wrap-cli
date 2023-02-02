@@ -129,20 +129,20 @@ describe("e2e tests for WsPlugin", () => {
     it("cache", async () => {
       let t1 = setTimeout(() => {
         server.send("1");
-      }, 10);
+      }, 100);
       let t2 = setTimeout(() => {
         server.send("2");
-      }, 20);
+      }, 200);
       let t3 = setTimeout(() => {
         server.send("3");
-      }, 50);
+      }, 500);
 
       const response = await client.invoke<boolean>({
         uri,
         method: "get",
         args: {
           url: "ws://localhost:1234",
-          timeout: 20,
+          timeout: 210,
         },
       });
       if (!response.ok) fail(response.error);
