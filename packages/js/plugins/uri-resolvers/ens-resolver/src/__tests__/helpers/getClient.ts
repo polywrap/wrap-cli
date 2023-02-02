@@ -47,14 +47,14 @@ export const getClient = () => {
         },
         {
           interface: new Uri(defaultInterfaces.ipfsHttpClient),
-          implementations: [new Uri(defaultPackages.ipfsHttpClient)],
+          implementations: [new Uri(defaultInterfaces.ipfsHttpClient)],
         },
       ],
       resolver: RecursiveResolver.from(
         PackageToWrapperCacheResolver.from(
           [
             {
-              uri: defaultPackages.ipfsHttpClient,
+              uri: defaultInterfaces.ipfsHttpClient,
               package: WasmPackage.from(
                 fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
                 fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
