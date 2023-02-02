@@ -32,12 +32,12 @@ describe("sanity", () => {
           ],
         },
         {
-          interface: new Uri(defaultWrappers.concurrentInterface),
-          implementations: [new Uri("wrap://plugin/concurrent")],
-        },
-        {
           interface: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
           implementations: [new Uri("wrap://plugin/logger")],
+        },
+        {
+          interface: new Uri(defaultWrappers.concurrentInterface),
+          implementations: [new Uri("wrap://plugin/concurrent")],
         },
       ]);
   });

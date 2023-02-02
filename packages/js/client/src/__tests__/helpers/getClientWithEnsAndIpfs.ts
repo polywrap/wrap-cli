@@ -71,7 +71,7 @@ export const getClientWithEnsAndIpfs = () => {
               package: ipfsResolverPlugin({}),
             },
             {
-              uri: Uri.from("wrap://ens/fs.polywrap.eth"),
+              uri: Uri.from(defaultInterfaces.fileSystem),
               package: fileSystemPlugin({}),
             },
             {

@@ -443,7 +443,7 @@ export const defaultWrappers = {
   sha3: "wrap://ens/goerli/sha3.wrappers.eth",
   uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
-  concurrentInterface: "wrap://ens/goerli/interface.concurrent.wrappers.eth",
+  concurrentInterface: "wrap://ens/goerli/interface.concurrent.wrappers.eth", //
   ensTextRecordResolver:
     "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
 };
@@ -506,6 +506,10 @@ export const getDefaultConfig = (): BuilderConfig => ({
     "wrap://ens/uts46.polywrap.eth": defaultWrappers.uts46,
     "wrap://ens/graph-node.polywrap.eth": defaultWrappers.graphNode,
     [defaultInterfaces.logger]: defaultPackages.logger,
+    ["wrap://ens/http.polywrap.eth"]: defaultInterfaces.http,
+    [defaultInterfaces.http]: defaultPackages.http,
+    "wrap://ens/fs.polywrap.eth": defaultInterfaces.fileSystem,
+    [defaultInterfaces.fileSystem]: defaultPackages.fileSystem,
   },
   envs: {
     [defaultWrappers.graphNode]: {
@@ -527,10 +531,10 @@ export const getDefaultConfig = (): BuilderConfig => ({
       // ens-text-record-resolver
       defaultWrappers.ensTextRecordResolver,
     ]),
+    [defaultInterfaces.logger]: new Set([defaultPackages.logger]),
     [defaultWrappers.concurrentInterface]: new Set([
       defaultPackages.concurrent,
     ]),
-    [defaultInterfaces.logger]: new Set([defaultPackages.logger]),
   },
   resolvers: [],
 });
