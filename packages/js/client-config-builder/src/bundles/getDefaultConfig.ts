@@ -25,17 +25,17 @@ export const defaultIpfsProviders = [
   "https://ipfs.io",
 ];
 
+export const defaultEmbeddedWrapperPaths = {
+  ipfsHttpClient: path.join(__dirname, "wrappers", "ipfs-http-client"),
+  ipfsResolver: path.join(__dirname, "wrappers", "ipfs-resolver"),
+};
+
 export const defaultWrappers = {
   sha3: "wrap://ens/wrappers.polywrap.eth:sha3@1.0.0",
   uts46: "wrap://ens/wrappers.polywrap.eth:uts46@1.0.0",
   graphNode: "wrap://ens/wrappers.polywrap.eth:graph-node@1.0.0",
   ensTextRecordResolver:
     "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
-};
-
-export const defaultEmbeddedWrapperPaths = {
-  ipfsHttpClient: path.join(__dirname, "wrappers", "ipfs-http-client"),
-  ipfsResolver: path.join(__dirname, "wrappers", "ipfs-resolver"),
 };
 
 export const defaultPackages = {
