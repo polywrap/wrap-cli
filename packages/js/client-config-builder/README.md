@@ -534,18 +534,12 @@ export const defaultEmbeddedWrapperPaths = {
 export const defaultPackages = {
   ensResolver: "wrap://package/ens-resolver",
   ethereum: "wrap://ens/ethereum.polywrap.eth",
-  http: "wrap://package/http",
   httpResolver: "wrap://package/http-resolver",
-  logger: "wrap://package/logger",
-  fileSystem: "wrap://package/fs",
   fileSystemResolver: "wrap://package/fs-resolver",
-  concurrent: "wrap://package/concurrent",
-  ipfsHttpClient: "wrap://package/ipfs-http-client",
   ipfsResolver: "wrap://package/ipfs-resolver",
 };
 
 export const defaultInterfaces = {
-  uriResolver: "wrap://ens/uri-resolver.core.polywrap.eth",
   concurrent: "wrap://ens/wrappers.polywrap.eth:concurrent@1.0.0",
   logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
   http: "wrap://ens/wrappers.polywrap.eth:http@1.1.0",
@@ -579,22 +573,10 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
           "wrap://ipfs/QmPL9Njg3rGkpoJyoy8pZ5fTavjvHxNuuuiGRApzyGESZB"
         ),
       },
-      {
-        from: new Uri(defaultInterfaces.logger),
-        to: new Uri(defaultPackages.logger),
-      },
-      {
-        from: new Uri(defaultInterfaces.http),
-        to: new Uri(defaultPackages.http),
-      },
-      {
-        from: new Uri(defaultInterfaces.fileSystem),
-        to: new Uri(defaultPackages.fileSystem),
-      },
     ],
     interfaces: [
       {
-        interface: new Uri(defaultInterfaces.uriResolver),
+        interface: ExtendableUriResolver.extInterfaceUri,
         implementations: [
           new Uri(defaultPackages.ipfsResolver),
           new Uri(defaultPackages.ensResolver),
@@ -605,15 +587,23 @@ export const getDefaultConfig = (): ClientConfig<Uri> => {
       },
       {
         interface: new Uri(defaultInterfaces.logger),
-        implementations: [new Uri(defaultPackages.logger)],
+        implementations: [new Uri(defaultInterfaces.logger)],
       },
       {
         interface: new Uri(defaultInterfaces.concurrent),
-        implementations: [new Uri(defaultPackages.concurrent)],
+        implementations: [new Uri(defaultInterfaces.concurrent)],
       },
       {
         interface: new Uri(defaultInterfaces.ipfsHttpClient),
-        implementations: [new Uri(defaultPackages.ipfsHttpClient)],
+        implementations: [new Uri(defaultInterfaces.ipfsHttpClient)],
+      },
+      {
+        interface: new Uri(defaultInterfaces.fileSystem),
+        implementations: [new Uri(defaultInterfaces.fileSystem)],
+      },
+      {
+        interface: new Uri(defaultInterfaces.http),
+        implementations: [new Uri(defaultInterfaces.http)],
       },
     ],
     packages: getDefaultPackages(),
@@ -629,7 +619,7 @@ export const getDefaultPackages = (): IUriPackage<Uri>[] => {
   return [
     // IPFS is required for downloading Polywrap packages
     {
-      uri: new Uri(defaultPackages.ipfsHttpClient),
+      uri: new Uri(defaultInterfaces.ipfsHttpClient),
       package: WasmPackage.from(
         fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
         fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
@@ -665,7 +655,7 @@ export const getDefaultPackages = (): IUriPackage<Uri>[] => {
       }),
     },
     {
-      uri: new Uri(defaultPackages.http),
+      uri: new Uri(defaultInterfaces.http),
       package: httpPlugin({}),
     },
     {
@@ -673,12 +663,12 @@ export const getDefaultPackages = (): IUriPackage<Uri>[] => {
       package: httpResolverPlugin({}),
     },
     {
-      uri: new Uri(defaultPackages.logger),
+      uri: new Uri(defaultInterfaces.logger),
       // TODO: remove this once types are updated
       package: loggerPlugin({}) as IWrapPackage,
     },
     {
-      uri: new Uri(defaultPackages.fileSystem),
+      uri: new Uri(defaultInterfaces.fileSystem),
       package: fileSystemPlugin({}),
     },
     {
@@ -686,7 +676,7 @@ export const getDefaultPackages = (): IUriPackage<Uri>[] => {
       package: fileSystemResolverPlugin({}),
     },
     {
-      uri: new Uri(defaultPackages.concurrent),
+      uri: new Uri(defaultInterfaces.concurrent),
       package: concurrentPromisePlugin({}),
     },
   ];
