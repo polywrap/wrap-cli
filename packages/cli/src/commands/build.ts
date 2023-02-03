@@ -202,6 +202,8 @@ async function run(options: BuildCommandOptions) {
     if (!result) {
       process.exit(1);
     }
+
+    process.exit(0);
   } else {
     // Execute
     await execute();
@@ -253,6 +255,4 @@ async function run(options: BuildCommandOptions) {
       },
     });
   }
-
-  process.exit(0);
 }
