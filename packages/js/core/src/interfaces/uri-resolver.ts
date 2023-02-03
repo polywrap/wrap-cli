@@ -4,8 +4,8 @@ import { Tracer } from "@polywrap/tracing-js";
 import { Result } from "@polywrap/result";
 
 export interface MaybeUriOrManifest {
-  uri?: string;
-  manifest?: Uint8Array;
+  uri?: string | null;
+  manifest?: Uint8Array | null;
 }
 
 export const module = {
@@ -32,8 +32,8 @@ export const module = {
       invoker: Invoker,
       wrapper: Uri,
       path: string
-    ): Promise<Result<Uint8Array | undefined, Error>> => {
-      return invoker.invoke<Uint8Array | undefined>({
+    ): Promise<Result<Uint8Array | null, Error>> => {
+      return invoker.invoke<Uint8Array | null>({
         uri: wrapper.uri,
         method: "getFile",
         args: {
