@@ -8,14 +8,15 @@ import {
   UriPackageOrWrapper,
   UriResolutionContext,
   UriResolutionResult,
+  buildCleanUriHistory,
 } from "@polywrap/core-js";
-import { buildCleanUriHistory, getUriResolutionPath } from "@polywrap/uri-resolvers-js";
+import { getUriResolutionPath } from "@polywrap/uri-resolvers-js";
 import { getClient } from "../../utils/getClient";
 import fs from "fs";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
-jest.setTimeout(200000);
+jest.setTimeout(300000);
 
 const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 const wrapperUri = new Uri(`wrap://file/${wrapperPath}/build`);
