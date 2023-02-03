@@ -22,6 +22,13 @@ import {
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
+type BuildOptions =
+  | {
+      wrapperCache: IWrapperCache;
+    }
+  | {
+      resolver: IUriResolver<unknown>;
+    };
 export class ClientConfigBuilder extends BaseClientConfigBuilder {
   // $start: ClientConfigBuilder-constructor
   /**
@@ -35,10 +42,11 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
     return this.add(getDefaultConfig());
   }
 
-  build(
-    wrapperCache?: IWrapperCache,
-    resolver?: IUriResolver<unknown>
-  ): CoreClientConfig {
+  build(options?: BuildOptions): CoreClientConfig {
+    const resolver =
+      options && "resolver" in options ? options.resolver : undefined;
+    const wrapperCache =
+      options && "wrapperCache" in options ? options.wrapperCache : undefined;
     return {
       envs: this.buildEnvs(),
       interfaces: this.buildInterfaces(),
