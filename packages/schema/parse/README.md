@@ -31,7 +31,7 @@ interface ParserOptions {
 ```
 
 ### ABI Transforms
-ABI transformations can be used to modify the ABI structure. A variety of pre-defined transformations can be found in the [./src/transform/](./src/transform/) directory.
+ABI transformations can be used to modify the ABI structure. A variety of pre-defined transformations can be found in the ./src/transform/ directory.
 
 Example:
 ```typescript
