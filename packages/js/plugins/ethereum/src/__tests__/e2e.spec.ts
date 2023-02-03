@@ -23,6 +23,7 @@ import { ethers, Wallet } from "ethers";
 import { keccak256 } from "js-sha3";
 import { Connections } from "../Connections";
 import { Connection } from "../Connection";
+import { WrapError } from "@polywrap/core-js";
 
 const { hash: namehash } = require("eth-ens-namehash");
 const contracts = {
@@ -910,7 +911,7 @@ describe("Ethereum Plugin", () => {
       uri,
       method: "requestAccounts",
     })
-    result = result as { ok: false; error: Error | undefined };
+    result = result as { ok: false; error: WrapError | undefined };
     // eth_requestAccounts is not supported by Ganache
     // this RPC error indicates that the method call was attempted
     expect(result.error?.message.indexOf("Method eth_requestAccounts not supported")).toBeGreaterThanOrEqual(0);

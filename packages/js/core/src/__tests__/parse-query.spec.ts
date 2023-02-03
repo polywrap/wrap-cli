@@ -186,7 +186,7 @@ describe("parseQuery", () => {
       throw Error("This should never happen");
     }
 
-    const error = result.error?.message;
+    const error = result.error;
     expect(error).toContain("Empty query document found");
   });
 
@@ -199,7 +199,7 @@ describe("parseQuery", () => {
       throw Error("This should never happen");
     }
 
-    const error = result.error?.message;
+    const error = result.error;
     expect(error).toContain("Unrecognized root level definition type");
   });
 
@@ -214,7 +214,7 @@ describe("parseQuery", () => {
       throw Error("This should never happen");
     }
 
-    const error = result.error?.message;
+    const error = result.error;
     expect(error).toContain("Empty selection set found");
   });
 
@@ -227,7 +227,7 @@ describe("parseQuery", () => {
       throw Error("This should never happen");
     }
 
-    const error = result.error?.message;
+    const error = result.error;
     expect(error).toContain("Unsupported selection type found: FragmentSpread");
   });
 
@@ -246,7 +246,7 @@ describe("parseQuery", () => {
       throw Error("This should never happen");
     }
 
-    const error = result.error?.message;
+    const error = result.error;
     expect(error).toContain("Variables were not specified");
   });
 
@@ -265,7 +265,7 @@ describe("parseQuery", () => {
       throw Error("This should never happen");
     }
 
-    const error = result.error?.message;
+    const error = result.error;
     expect(error).toContain("Missing variable");
   });
 
@@ -297,7 +297,7 @@ describe("parseQuery", () => {
       throw Error("This should never happen");
     }
 
-    const error = result.error?.message;
+    const error = result.error;
     expect(error).toContain("Duplicate arguments found");
   });
 
@@ -324,7 +324,7 @@ describe("parseQuery", () => {
       throw Error("This should never happen");
     }
 
-    const error = result.error?.message;
+    const error = result.error;
     expect(error).toContain(`Duplicate query name found "alias"`);
   });
 
@@ -351,7 +351,7 @@ describe("parseQuery", () => {
       throw Error("This should never happen");
     }
 
-    const error = result.error?.message;
+    const error = result.error;
     expect(error).toContain(`Duplicate query name found "method"`);
   });
 });
