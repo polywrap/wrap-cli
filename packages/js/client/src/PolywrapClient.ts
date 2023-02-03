@@ -1,5 +1,3 @@
-import { UriResolverError } from "./UriResolverError";
-
 import {
   Wrapper,
   Client,
@@ -29,11 +27,11 @@ import {
   PluginPackage,
   QueryResult,
   InvokeResult,
-} from "@polywrap/core-js";
-import {
   buildCleanUriHistory,
-  IWrapperCache,
-} from "@polywrap/uri-resolvers-js";
+  WrapError,
+  WrapErrorCode,
+} from "@polywrap/core-js";
+import { IWrapperCache } from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
   DeserializeManifestOptions,
@@ -229,7 +227,7 @@ export class PolywrapClient implements Client {
   public async getManifest<TUri extends Uri | string>(
     uri: TUri,
     options: GetManifestOptions = {}
-  ): Promise<Result<WrapManifest, Error>> {
+  ): Promise<Result<WrapManifest, WrapError>> {
     const load = await this.loadWrapper(Uri.from(uri), undefined);
     if (!load.ok) {
       return load;
@@ -251,14 +249,22 @@ export class PolywrapClient implements Client {
   public async getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<Result<string | Uint8Array, Error>> {
+  ): Promise<Result<string | Uint8Array, WrapError>> {
     const load = await this.loadWrapper(Uri.from(uri), undefined);
     if (!load.ok) {
       return load;
     }
     const wrapper = load.value;
 
-    return await wrapper.getFile(options);
+    const result = await wrapper.getFile(options);
+    if (!result.ok) {
+      const error = new WrapError(result.error?.message, {
+        code: WrapErrorCode.CLIENT_GET_FILE_ERROR,
+        uri: uri.toString(),
+      });
+      return ResultErr(error);
+    }
+    return ResultOk(result.value);
   }
 
   /**
@@ -273,7 +279,7 @@ export class PolywrapClient implements Client {
   public getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions = {}
-  ): Result<TUri[], Error> {
+  ): Result<TUri[], WrapError> {
     const isUriTypeString = typeof uri === "string";
     const applyRedirects = !!options.applyRedirects;
 
@@ -324,7 +330,7 @@ export class PolywrapClient implements Client {
   >(options: QueryOptions<TVariables, TUri>): Promise<QueryResult<TData>> {
     let result: QueryResult<TData>;
 
-    err: try {
+    try {
       const typedOptions: QueryOptions<TVariables, Uri> = {
         ...options,
         uri: Uri.from(options.uri),
@@ -339,8 +345,14 @@ export class PolywrapClient implements Client {
       // Parse the query to understand what's being invoked
       const parseResult = parseQuery(uri, queryDocument, variables);
       if (!parseResult.ok) {
-        result = { errors: [parseResult.error as Error] };
-        break err;
+        const error = new WrapError(
+          `Failed to parse query: ${parseResult.error}`,
+          {
+            code: WrapErrorCode.WRAPPER_ARGS_MALFORMED,
+            uri: options.uri.toString(),
+          }
+        );
+        return { errors: [error] };
       }
       const queryInvocations = parseResult.value;
 
@@ -369,13 +381,13 @@ export class PolywrapClient implements Client {
 
       // Aggregate all invocation results
       const data: Record<string, unknown> = {};
-      const errors: Error[] = [];
+      const errors: WrapError[] = [];
 
       for (const invocation of invocationResults) {
         if (invocation.result.ok) {
           data[invocation.name] = invocation.result.value;
         } else {
-          errors.push(invocation.result.error as Error);
+          errors.push(invocation.result.error as WrapError);
         }
       }
 
@@ -384,10 +396,16 @@ export class PolywrapClient implements Client {
         errors: errors.length === 0 ? undefined : errors,
       };
     } catch (error: unknown) {
+      const unknownQueryErrorToWrapError = (e: Error): WrapError =>
+        new WrapError((e as Error)?.message, {
+          code: WrapErrorCode.WRAPPER_INVOKE_FAIL,
+          uri: options.uri.toString(),
+          cause: e as Error,
+        });
       if (Array.isArray(error)) {
-        result = { errors: error };
+        result = { errors: error.map(unknownQueryErrorToWrapError) };
       } else {
-        result = { errors: [error as Error] };
+        result = { errors: [unknownQueryErrorToWrapError(error as Error)] };
       }
     }
 
@@ -685,7 +703,7 @@ export class PolywrapClient implements Client {
     uri: Uri,
     resolutionContext?: IUriResolutionContext,
     options?: DeserializeManifestOptions
-  ): Promise<Result<Wrapper, Error>> {
+  ): Promise<Result<Wrapper, WrapError>> {
     Tracer.setAttribute("label", `Wrapper loaded: ${uri}`, TracingLevel.High);
 
     if (!resolutionContext) {
@@ -698,35 +716,37 @@ export class PolywrapClient implements Client {
     });
 
     if (!result.ok) {
+      const history = buildCleanUriHistory(resolutionContext.getHistory());
+
+      let error: WrapError;
       if (result.error) {
-        return ResultErr(new UriResolverError(result.error, resolutionContext));
+        error = new WrapError("A URI Resolver returned an error.", {
+          code: WrapErrorCode.URI_RESOLVER_ERROR,
+          uri: uri.uri,
+          resolutionStack: history,
+          cause: result.error,
+        });
       } else {
-        return ResultErr(
-          Error(
-            `Error resolving URI "${
-              uri.uri
-            }"\nResolution Stack: ${JSON.stringify(
-              buildCleanUriHistory(resolutionContext.getHistory()),
-              null,
-              2
-            )}`
-          )
-        );
+        error = new WrapError("Error resolving URI", {
+          code: WrapErrorCode.URI_RESOLUTION_ERROR,
+          uri: uri.uri,
+          resolutionStack: history,
+        });
       }
+
+      return ResultErr(error);
     }
 
     const uriPackageOrWrapper = result.value;
 
     if (uriPackageOrWrapper.type === "uri") {
-      const error = Error(
-        `Error resolving URI "${uri.uri}"\nURI not found ${
-          uriPackageOrWrapper.uri.uri
-        }\nResolution Stack: ${JSON.stringify(
-          buildCleanUriHistory(resolutionContext.getHistory()),
-          null,
-          2
-        )}`
-      );
+      const message = `Unable to find URI ${uriPackageOrWrapper.uri.uri}.`;
+      const history = buildCleanUriHistory(resolutionContext.getHistory());
+      const error = new WrapError(message, {
+        code: WrapErrorCode.URI_NOT_FOUND,
+        uri: uri.uri,
+        resolutionStack: history,
+      });
       return ResultErr(error);
     }
 
@@ -734,7 +754,12 @@ export class PolywrapClient implements Client {
       const result = await uriPackageOrWrapper.package.createWrapper(options);
 
       if (!result.ok) {
-        return result;
+        const error = new WrapError(result.error?.message, {
+          code: WrapErrorCode.CLIENT_LOAD_WRAPPER_ERROR,
+          uri: uri.uri,
+          cause: result.error,
+        });
+        return ResultErr(error);
       }
 
       return ResultOk(result.value);

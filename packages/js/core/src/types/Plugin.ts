@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Client, MaybeAsync } from ".";
+import { Client, MaybeAsync, WrapErrorCode } from ".";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
@@ -60,9 +60,13 @@ export abstract class PluginModule<
       );
     }
 
-    const data = await fn(args, client);
-
-    return ResultOk(data);
+    try {
+      const data = await fn(args, client);
+      return ResultOk(data);
+    } catch (e) {
+      e.code = WrapErrorCode.WRAPPER_INVOKE_ABORTED;
+      return ResultErr(e);
+    }
   }
 
   public getMethod<
@@ -76,7 +80,7 @@ export abstract class PluginModule<
       PluginMethod<TArgs, TResult>
     >)[method];
 
-    return fn.bind(this);
+    return fn?.bind(this);
   }
 }
 
