@@ -7,7 +7,7 @@ import {
 import { CoreClient, InterfaceImplementations } from "../types";
 import { Result, ResultOk } from "@polywrap/result";
 
-const getClient = (redirects: IUriRedirect<Uri>[]): CoreClient => {
+const getClient = (redirects: IUriRedirect[]): CoreClient => {
   return {
     tryResolveUri: async ( { uri }: { uri: Uri }): Promise<Result<UriPackageOrWrapper, unknown>> => {
       while (true) {
@@ -36,7 +36,7 @@ describe("getImplementations", () => {
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
     const implementation3Uri = "wrap://ens/some-implementation3.eth";
 
-    const redirects: IUriRedirect<Uri>[] = [
+    const redirects: IUriRedirect[] = [
       {
         from: new Uri(interface1Uri),
         to: new Uri(interface2Uri)
@@ -51,7 +51,7 @@ describe("getImplementations", () => {
       }
     ];
 
-    const interfaces: InterfaceImplementations<Uri>[] = [
+    const interfaces: InterfaceImplementations[] = [
       {
         interface: new Uri(interface1Uri),
         implementations: [
@@ -112,14 +112,14 @@ describe("getImplementations", () => {
     const implementation1Uri = "wrap://ens/some-implementation.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const redirects: IUriRedirect<Uri>[] = [
+    const redirects: IUriRedirect[] = [
       {
         from: new Uri(implementation1Uri),
         to: new Uri(implementation2Uri)
       }
     ];
 
-    const interfaces: InterfaceImplementations<Uri>[] = [
+    const interfaces: InterfaceImplementations[] = [
       {
         interface: new Uri(interface1Uri),
         implementations: [

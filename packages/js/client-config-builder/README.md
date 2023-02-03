@@ -13,12 +13,6 @@ Initialize a ClientConfigBuilder using the [constructor](#constructor)
 ```typescript
   // start with a blank slate (typical usage)
   const builder = new ClientConfigBuilder();
-
-  // instantiate a builder with a custom cache and/or resolver
-  const _builder = new ClientConfigBuilder(
-    new WrapperCache(),
-    RecursiveResolver.from([])
-  );
 ```
 
 ### Configure
@@ -28,31 +22,24 @@ Add client configuration with [add](#add), or flexibly mix and match builder [co
 ```typescript
   // add multiple items to the configuration using the catch-all `add` method
   builder.add({
-    envs: [],
-    interfaces: [],
-    redirects: [],
-    wrappers: [],
-    packages: [],
+    envs: {},
+    interfaces: {},
+    redirects: {},
+    wrappers: {},
+    packages: {},
     resolvers: [],
   });
 
   // add or remove items by chaining method calls
   builder
-    .addPackage({
-      uri: "wrap://plugin/package",
-      package: httpPlugin({}),
-    })
+    .addPackage("wrap://plugin/package", httpPlugin({}))
     .removePackage("wrap://plugin/package")
-    .addPackages([
+    .addPackages(
       {
-        uri: "wrap://plugin/http",
-        package: httpPlugin({}),
-      },
-      {
-        uri: "wrap://plugin/filesystem",
-        package: fileSystemPlugin({}),
-      },
-    ]);
+        "wrap://plugin/http": httpPlugin({}),
+        "wrap://plugin/filesystem": fileSystemPlugin({}),
+      }
+    );
 ```
 
 You can add the entire [default client configuration bundle](#bundle--defaultconfig) at once with [addDefaults](#adddefaults)
@@ -66,11 +53,14 @@ You can add the entire [default client configuration bundle](#bundle--defaultcon
 Finally, build a ClientConfig or CoreClientConfig to pass to the PolywrapClient constructor.
 
 ```typescript
-  // accepted by the PolywrapClient
-  const clientConfig = builder.build();
-
   // accepted by either the PolywrapClient or the PolywrapCoreClient
-  const coreClientConfig = builder.buildCoreConfig();
+  let coreClientConfig = builder.build();
+
+  // build with a custom cache and/or resolver
+  coreClientConfig = builder.build(
+    new WrapperCache(),
+    RecursiveResolver.from([])
+  );
 ```
 
 ### Example
@@ -86,58 +76,43 @@ A complete example using all or most of the available methods.
 
   // add many config items at once
   builder.add({
-    envs: [],
-    interfaces: [],
-    redirects: [],
-    wrappers: [],
-    packages: [],
+    envs: {},
+    interfaces: {},
+    redirects: {},
+    wrappers: {},
+    packages: {},
     resolvers: [],
   });
 
   // add and remove wrappers
   builder
-    .addWrapper({
-      uri: "wrap://ens/wrapper.eth",
-      wrapper: await WasmWrapper.from(
-        new Uint8Array([1, 2, 3]),
-        new Uint8Array([1, 2, 3])
-      ),
-    })
+    .addWrapper("wrap://ens/wrapper.eth", await WasmWrapper.from(
+      new Uint8Array([1, 2, 3]),
+      new Uint8Array([1, 2, 3])
+    ))
     .removeWrapper("wrap://ens/wrapper.eth")
-    .addWrappers([
-      {
-        uri: "wrap://ens/wrapper.eth",
-        wrapper: await WasmWrapper.from(
+    .addWrappers({
+      "wrap://ens/wrapper.eth": await WasmWrapper.from(
           new Uint8Array([1, 2, 3]),
           new Uint8Array([1, 2, 3])
-        ),
-      },
-    ]);
+      )}
+    );
 
   // add and remove wrap packages
   builder
-    .addPackage({
-      uri: "wrap://plugin/package",
-      package: httpPlugin({}),
-    })
+    .addPackage("wrap://plugin/package", httpPlugin({}))
     .removePackage("wrap://plugin/package")
-    .addPackages([
-      {
-        uri: "wrap://plugin/package",
-        package: httpPlugin({}),
-      },
-    ]);
+    .addPackages({
+      "wrap://plugin/package": httpPlugin({})
+    })
 
   // add and remove Envs
   builder
     .addEnv("wrap://ens/wrapper.eth", { key: "value" })
     .removeEnv("wrap://ens/wrapper.eth")
-    .addEnvs([
-      {
-        uri: "wrap://ens/wrapper.eth",
-        env: { key: "value" },
-      },
-    ]);
+    .addEnvs({
+      "wrap://ens/wrapper.eth": { key: "value" },
+    });
 
   // override existing Env, or add new Env if one is not registered at URI
   builder.setEnv("wrap://ens/wrapper.eth", { key: "value" });
@@ -160,12 +135,9 @@ A complete example using all or most of the available methods.
   builder
     .addRedirect("wrap://ens/from.eth", "wrap://ens/to.eth")
     .removeRedirect("wrap://ens/from.eth")
-    .addRedirects([
-      {
-        from: "wrap://ens/from.eth",
-        to: "wrap://ens/to.eth",
-      },
-    ]);
+    .addRedirects({
+       "wrap://ens/from.eth": "wrap://ens/to.eth",
+    });
 
   // add resolvers
   builder.addResolver(RecursiveResolver.from([]));
@@ -177,71 +149,26 @@ A complete example using all or most of the available methods.
 
 # Reference
 
-## Types
-
-```ts
-/**
- * Client configuration that can be passed to the PolywrapClient
- *
- * @remarks
- * The PolywrapClient converts the ClientConfig to a CoreClientConfig.
- */
-export interface ClientConfig<TUri extends Uri | string = Uri | string> {
-  /** set environmental variables for a wrapper */
-  readonly envs: Env<TUri>[];
-
-  /** register interface implementations */
-  readonly interfaces: InterfaceImplementations<TUri>[];
-
-  /** redirect invocations from one uri to another */
-  readonly redirects: IUriRedirect<TUri>[];
-
-  /** add embedded wrappers */
-  readonly wrappers: IUriWrapper<TUri>[];
-
-  /** add and configure embedded packages */
-  readonly packages: IUriPackage<TUri>[];
-
-  /** customize URI resolution
-   *
-   * @remarks
-   * A UriResolverLike can be any one of:
-   *     IUriResolver<unknown>
-   *   | IUriRedirect<Uri | string>
-   *   | IUriPackage<Uri | string>
-   *   | IUriWrapper<Uri | string>
-   *   | UriResolverLike[]
-   *   */
-  readonly resolvers: UriResolverLike[];
-}
-```
-
 ## ClientConfigBuilder
 
 ### Constructor
 ```ts
   /**
    * Instantiate a ClientConfigBuilder
-   *
-   * @param _wrapperCache?: a wrapper cache to be used in place of the default wrapper cache
-   * @param _resolver?: a uri resolver to be used in place of any added redirects, wrappers, packages, and resolvers when building a CoreClientConfig
    */
-  constructor(
-    private readonly _wrapperCache?: IWrapperCache,
-    private readonly _resolver?: IUriResolver<unknown>
-  ) 
+  constructor() 
 ```
 
 ### add
 ```ts
   /**
-   * Add a partial ClientConfig
+   * Add a partial BuilderConfig
    * This is equivalent to calling each of the plural add functions: `addEnvs`, `addWrappers`, etc.
    *
-   * @param config: a partial CliengConfig
+   * @param config: a partial BuilderConfig
    * @returns IClientConfigBuilder (mutated self)
    */
-  add(config: Partial<ClientConfig>): IClientConfigBuilder;
+  add(config: Partial<BuilderConfig>): IClientConfigBuilder;
 ```
 
 ### addWrapper
@@ -249,10 +176,11 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
   /**
    * Add an embedded wrapper
    *
-   * @param uriWrapper: a wrapper and its URI
+   * @param uri: uri of wrapper
+   * @param wrapper: wrapper to be added
    * @returns IClientConfigBuilder (mutated self)
    */
-  addWrapper(uriWrapper: IUriWrapper<Uri | string>): IClientConfigBuilder;
+  addWrapper(uri: string, wrapper: Wrapper): IClientConfigBuilder;
 ```
 
 ### addWrappers
@@ -261,10 +189,10 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * Add one or more embedded wrappers.
    * This is equivalent to calling addWrapper for each wrapper.
    *
-   * @param uriWrappers: a list of wrappers and their URIs
+   * @param uriWrappers: an object where keys are uris and wrappers are value
    * @returns IClientConfigBuilder (mutated self)
    */
-  addWrappers(uriWrappers: IUriWrapper<Uri | string>[]): IClientConfigBuilder;
+  addWrappers(uriWrappers: Record<string, Wrapper>): IClientConfigBuilder;
 ```
 
 ### removeWrapper
@@ -275,7 +203,7 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * @param uri: the wrapper's URI
    * @returns IClientConfigBuilder (mutated self)
    */
-  removeWrapper(uri: Uri | string): IClientConfigBuilder;
+  removeWrapper(uri: string): IClientConfigBuilder;
 ```
 
 ### addPackage
@@ -283,10 +211,11 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
   /**
    * Add an embedded wrap package
    *
-   * @param uriPackage: a package and its URI
+   * @param uri: uri of wrapper
+   * @param wrapPackage: package to be added
    * @returns IClientConfigBuilder (mutated self)
    */
-  addPackage(uriPackage: IUriPackage<Uri | string>): IClientConfigBuilder;
+  addPackage(uri: string, wrapPackage: IWrapPackage): IClientConfigBuilder;
 ```
 
 ### addPackages
@@ -295,10 +224,10 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * Add one or more embedded wrap packages
    * This is equivalent to calling addPackage for each package
    *
-   * @param uriPackages: a list of packages and their URIs
+   * @param uriPackages: an object where keys are uris and packages are value
    * @returns IClientConfigBuilder (mutated self)
    */
-  addPackages(uriPackages: IUriPackage<Uri | string>[]): IClientConfigBuilder;
+  addPackages(uriPackages: Record<string, IWrapPackage>): IClientConfigBuilder;
 ```
 
 ### removePackage
@@ -309,7 +238,7 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * @param uri: the package's URI
    * @returns IClientConfigBuilder (mutated self)
    */
-  removePackage(uri: Uri | string): IClientConfigBuilder;
+  removePackage(uri: string): IClientConfigBuilder;
 ```
 
 ### addEnv
@@ -319,10 +248,10 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * If an Env is already associated with the uri, it is modified.
    *
    * @param uri: the wrapper's URI to associate with the Env
-   * @param env: a string-index map of msgpack-serializable environmental variables
+   * @param env: an object with the env variables for the uri
    * @returns IClientConfigBuilder (mutated self)
    */
-  addEnv(uri: Uri | string, env: Record<string, unknown>): IClientConfigBuilder;
+  addEnv(uri: string, env: Record<string, unknown>): IClientConfigBuilder;
 ```
 
 ### addEnvs
@@ -331,10 +260,12 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * Add one or more Envs
    * This is equivalent to calling addEnv for each Env
    *
-   * @param envs: a list of Envs
+   * @param uriEnvs: and object where key is the uri and value is the another object with the env variables for the uri
    * @returns IClientConfigBuilder (mutated self)
    */
-  addEnvs(envs: Env<Uri | string>[]): IClientConfigBuilder;
+  addEnvs(
+    uriEnvs: Record<string, Record<string, unknown>>
+  ): IClientConfigBuilder;
 ```
 
 ### removeEnv
@@ -345,7 +276,7 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * @param uri: the URI associated with the Env
    * @returns IClientConfigBuilder (mutated self)
    */
-  removeEnv(uri: Uri | string): IClientConfigBuilder;
+  removeEnv(uri: string): IClientConfigBuilder;
 ```
 
 ### setEnv
@@ -355,10 +286,10 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * If an Env is already associated with the uri, it is replaced.
    *
    * @param uri: the wrapper's URI to associate with the Env
-   * @param env: a string-index map of msgpack-serializable environmental variables
+   * @param env: an object with the environment variables for the uri
    * @returns IClientConfigBuilder (mutated self)
    */
-  setEnv(uri: Uri | string, env: Record<string, unknown>): IClientConfigBuilder;
+  setEnv(uri: string, env: Record<string, unknown>): IClientConfigBuilder;
 ```
 
 ### addInterfaceImplementation
@@ -371,8 +302,8 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * @returns IClientConfigBuilder (mutated self)
    */
   addInterfaceImplementation(
-    interfaceUri: Uri | string,
-    implementationUri: Uri | string
+    interfaceUri: string,
+    implementationUri: string
   ): IClientConfigBuilder;
 ```
 
@@ -386,8 +317,8 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * @returns IClientConfigBuilder (mutated self)
    */
   addInterfaceImplementations(
-    interfaceUri: Uri | string,
-    implementationUris: Array<Uri | string>
+    interfaceUri: string,
+    implementationUris: Array<string>
   ): IClientConfigBuilder;
 ```
 
@@ -401,8 +332,8 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * @returns IClientConfigBuilder (mutated self)
    */
   removeInterfaceImplementation(
-    interfaceUri: Uri | string,
-    implementationUri: Uri | string
+    interfaceUri: string,
+    implementationUri: string
   ): IClientConfigBuilder;
 ```
 
@@ -415,7 +346,7 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * @param to: the URI to redirect to
    * @returns IClientConfigBuilder (mutated self)
    */
-  addRedirect(from: Uri | string, to: Uri | string): IClientConfigBuilder;
+  addRedirect(from: string, to: string): IClientConfigBuilder;
 ```
 
 ### addRedirects
@@ -423,10 +354,10 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
   /**
    * Add an array of URI redirects
    *
-   * @param redirects: a list of URI redirects
+   * @param redirects: an object where key is from and value is to
    * @returns IClientConfigBuilder (mutated self)
    */
-  addRedirects(redirects: IUriRedirect<Uri | string>[]): IClientConfigBuilder;
+  addRedirects(redirects: Record<string, string>): IClientConfigBuilder;
 ```
 
 ### removeRedirect
@@ -437,7 +368,7 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * @param from: the URI that is being redirected
    * @returns IClientConfigBuilder (mutated self)
    */
-  removeRedirect(from: Uri | string): IClientConfigBuilder;
+  removeRedirect(from: string): IClientConfigBuilder;
 ```
 
 ### addResolver
@@ -448,9 +379,9 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * @remarks
    * A UriResolverLike can be any one of:
    *     IUriResolver<unknown>
-   *   | IUriRedirect<Uri | string>
-   *   | IUriPackage<Uri | string>
-   *   | IUriWrapper<Uri | string>
+   *   | IUriRedirect<string>
+   *   | IUriPackage<string>
+   *   | IUriWrapper<string>
    *   | UriResolverLike[];
    *
    * @param resolver: A UriResolverLike
@@ -467,9 +398,9 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
    * @remarks
    * A UriResolverLike can be any one of:
    *     IUriResolver<unknown>
-   *   | IUriRedirect<Uri | string>
-   *   | IUriPackage<Uri | string>
-   *   | IUriWrapper<Uri | string>
+   *   | IUriRedirect<string>
+   *   | IUriPackage<string>
+   *   | IUriWrapper<string>
    *   | UriResolverLike[];
    *
    * @param resolvers: A list of UriResolverLike
@@ -491,21 +422,11 @@ export interface ClientConfig<TUri extends Uri | string = Uri | string> {
 ### build
 ```ts
   /**
-   * Build a sanitized client configuration that can be passed to the PolywrapClient constructor
-   *
-   * @returns ClientConfig<Uri> that results from applying all the steps in the builder pipeline
-   */
-  build(): ClientConfig<Uri>;
-```
-
-### buildCoreConfig
-```ts
-  /**
    * Build a sanitized core client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors
    *
-   * @returns CoreClientConfig<Uri> that results from applying all the steps in the builder pipeline
+   * @returns CoreClientConfig that results from applying all the steps in the builder pipeline
    */
-  buildCoreConfig(): CoreClientConfig<Uri>;
+  build(): CoreClientConfig;
 ```
 
 ## Bundles
@@ -518,168 +439,103 @@ export const defaultIpfsProviders = [
   "https://ipfs.io",
 ];
 
-export const defaultEmbeddedWrapperPaths = {
-  ipfsHttpClient: path.join(__dirname, "wrappers", "ipfs-http-client"),
-  ipfsResolver: path.join(__dirname, "wrappers", "ipfs-resolver"),
-};
-
 export const defaultWrappers = {
-  sha3: "wrap://ens/wrappers.polywrap.eth:sha3@1.0.0",
-  uts46: "wrap://ens/wrappers.polywrap.eth:uts46@1.0.0",
-  graphNode: "wrap://ens/wrappers.polywrap.eth:graph-node@1.0.0",
+  sha3: "wrap://ens/goerli/sha3.wrappers.eth",
+  uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
+  graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
+  concurrentInterface: "wrap://ens/goerli/interface.concurrent.wrappers.eth", //
   ensTextRecordResolver:
     "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
 };
 
 export const defaultPackages = {
-  ensResolver: "wrap://package/ens-resolver",
+  ipfs: "wrap://ens/ipfs.polywrap.eth",
+  ensResolver: "wrap://ens/ens-resolver.polywrap.eth",
   ethereum: "wrap://ens/ethereum.polywrap.eth",
-  httpResolver: "wrap://package/http-resolver",
-  fileSystemResolver: "wrap://package/fs-resolver",
-  ipfsResolver: "wrap://package/ipfs-resolver",
+  http: "wrap://plugin/http",
+  httpResolver: "wrap://ens/http-resolver.polywrap.eth",
+  logger: "wrap://plugin/logger",
+  fileSystem: "wrap://plugin/fs",
+  fileSystemResolver: "wrap://ens/fs-resolver.polywrap.eth",
+  ipfsResolver: "wrap://ens/ipfs-resolver.polywrap.eth",
+  concurrent: "wrap://plugin/concurrent",
 };
 
 export const defaultInterfaces = {
+  uriResolver: "wrap://ens/uri-resolver.core.polywrap.eth",
   concurrent: "wrap://ens/wrappers.polywrap.eth:concurrent@1.0.0",
   logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
   http: "wrap://ens/wrappers.polywrap.eth:http@1.1.0",
   fileSystem: "wrap://ens/wrappers.polywrap.eth:file-system@1.0.0",
-  ipfsHttpClient: "wrap://ens/wrappers.polywrap.eth:ipfs-http-client@1.0.0",
 };
 
-export const getDefaultConfig = (): ClientConfig<Uri> => {
+export const getDefaultPlugins = (): Record<string, IWrapPackage> => {
   return {
-    envs: [
-      {
-        uri: new Uri(defaultPackages.ipfsResolver),
-        env: {
-          provider: defaultIpfsProviders[0],
-          fallbackProviders: defaultIpfsProviders.slice(1),
-          retries: { tryResolveUri: 1, getFile: 1 },
+    // IPFS is required for downloading Polywrap packages
+    [defaultPackages.ipfs]: ipfsPlugin({}),
+    // ENS is required for resolving domain to IPFS hashes
+    [defaultPackages.ensResolver]: ensResolverPlugin({}),
+    // Ethereum is required for resolving domain to Ethereum addresses
+    [defaultPackages.ethereum]: ethereumPlugin({
+      connections: new Connections({
+        networks: {
+          mainnet: new Connection({
+            provider:
+              "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+          }),
+          goerli: new Connection({
+            provider:
+              "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+          }),
         },
-      },
-    ],
-    redirects: [
-      // TODO: remove sha3 and uts46 redirects when ethereum wrapper is merged (used by updated ens wrapper)
-      {
-        from: new Uri("wrap://ens/sha3.polywrap.eth"),
-        to: new Uri(
-          "wrap://ipfs/QmThRxFfr7Hj9Mq6WmcGXjkRrgqMG3oD93SLX27tinQWy5"
-        ),
-      },
-      {
-        from: new Uri("wrap://ens/uts46.polywrap.eth"),
-        to: new Uri(
-          "wrap://ipfs/QmPL9Njg3rGkpoJyoy8pZ5fTavjvHxNuuuiGRApzyGESZB"
-        ),
-      },
-    ],
-    interfaces: [
-      {
-        interface: ExtendableUriResolver.extInterfaceUri,
-        implementations: [
-          new Uri(defaultPackages.ipfsResolver),
-          new Uri(defaultPackages.ensResolver),
-          new Uri(defaultPackages.fileSystemResolver),
-          new Uri(defaultPackages.httpResolver),
-          new Uri(defaultWrappers.ensTextRecordResolver),
-        ],
-      },
-      {
-        interface: new Uri(defaultInterfaces.logger),
-        implementations: [new Uri(defaultInterfaces.logger)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.concurrent),
-        implementations: [new Uri(defaultInterfaces.concurrent)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.ipfsHttpClient),
-        implementations: [new Uri(defaultInterfaces.ipfsHttpClient)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.fileSystem),
-        implementations: [new Uri(defaultInterfaces.fileSystem)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.http),
-        implementations: [new Uri(defaultInterfaces.http)],
-      },
-    ],
-    packages: getDefaultPackages(),
-    wrappers: [],
-    resolvers: [],
+      }),
+    }),
+    [defaultPackages.http]: httpPlugin({}),
+    [defaultPackages.httpResolver]: httpResolverPlugin({}),
+    [defaultPackages.logger]: loggerPlugin({}) as IWrapPackage,
+    [defaultPackages.fileSystem]: fileSystemPlugin({}),
+    [defaultPackages.fileSystemResolver]: fileSystemResolverPlugin({}),
+    [defaultPackages.ipfsResolver]: ipfsResolverPlugin({}),
+    [defaultPackages.concurrent]: concurrentPromisePlugin({}),
   };
 };
 
-export const getDefaultPackages = (): IUriPackage<Uri>[] => {
-  const ipfsHttpClientPath = defaultEmbeddedWrapperPaths.ipfsHttpClient;
-  const ipfsResolverPath = defaultEmbeddedWrapperPaths.ipfsResolver;
-
-  return [
-    // IPFS is required for downloading Polywrap packages
-    {
-      uri: new Uri(defaultInterfaces.ipfsHttpClient),
-      package: WasmPackage.from(
-        fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
-        fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
-      ),
+export const getDefaultConfig = (): BuilderConfig => ({
+  redirects: {
+    "wrap://ens/sha3.polywrap.eth": defaultWrappers.sha3,
+    "wrap://ens/uts46.polywrap.eth": defaultWrappers.uts46,
+    "wrap://ens/graph-node.polywrap.eth": defaultWrappers.graphNode,
+    [defaultInterfaces.logger]: defaultPackages.logger,
+    ["wrap://ens/http.polywrap.eth"]: defaultInterfaces.http,
+    [defaultInterfaces.http]: defaultPackages.http,
+    "wrap://ens/fs.polywrap.eth": defaultInterfaces.fileSystem,
+    [defaultInterfaces.fileSystem]: defaultPackages.fileSystem,
+  },
+  envs: {
+    [defaultWrappers.graphNode]: {
+      provider: "https://api.thegraph.com",
     },
-    {
-      uri: new Uri(defaultPackages.ipfsResolver),
-      package: WasmPackage.from(
-        fs.readFileSync(path.join(ipfsResolverPath, "wrap.info")),
-        fs.readFileSync(path.join(ipfsResolverPath, "wrap.wasm"))
-      ),
+    [defaultPackages.ipfs]: {
+      provider: defaultIpfsProviders[0],
+      fallbackProviders: defaultIpfsProviders.slice(1),
     },
-    // ENS is required for resolving domain to IPFS hashes
-    {
-      uri: new Uri(defaultPackages.ensResolver),
-      package: ensResolverPlugin({}),
-    },
-    {
-      uri: new Uri(defaultPackages.ethereum),
-      package: ethereumPlugin({
-        connections: new Connections({
-          networks: {
-            mainnet: new Connection({
-              provider:
-                "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-            }),
-            goerli: new Connection({
-              provider:
-                "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-            }),
-          },
-        }),
-      }),
-    },
-    {
-      uri: new Uri(defaultInterfaces.http),
-      package: httpPlugin({}),
-    },
-    {
-      uri: new Uri(defaultPackages.httpResolver),
-      package: httpResolverPlugin({}),
-    },
-    {
-      uri: new Uri(defaultInterfaces.logger),
-      // TODO: remove this once types are updated
-      package: loggerPlugin({}) as IWrapPackage,
-    },
-    {
-      uri: new Uri(defaultInterfaces.fileSystem),
-      package: fileSystemPlugin({}),
-    },
-    {
-      uri: new Uri(defaultPackages.fileSystemResolver),
-      package: fileSystemResolverPlugin({}),
-    },
-    {
-      uri: new Uri(defaultInterfaces.concurrent),
-      package: concurrentPromisePlugin({}),
-    },
-  ];
-};
-
+  },
+  packages: getDefaultPlugins(),
+  wrappers: {},
+  interfaces: {
+    [defaultInterfaces.uriResolver]: new Set([
+      defaultPackages.ipfsResolver,
+      defaultPackages.ensResolver,
+      defaultPackages.fileSystemResolver,
+      defaultPackages.httpResolver,
+      // ens-text-record-resolver
+      defaultWrappers.ensTextRecordResolver,
+    ]),
+    [defaultInterfaces.logger]: new Set([defaultPackages.logger]),
+    [defaultWrappers.concurrentInterface]: new Set([
+      defaultPackages.concurrent,
+    ]),
+  },
+  resolvers: [],
+});
 ```

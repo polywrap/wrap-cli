@@ -3,9 +3,9 @@ import { Uri, IWrapPackage } from ".";
 // $start: IUriPackage.ts
 
 /** Associates a URI with an embedded wrap package */
-export interface IUriPackage<TUri extends Uri | string> {
+export interface IUriPackage {
   /** The package's URI */
-  uri: TUri;
+  uri: Uri;
 
   /** The wrap package */
   package: IWrapPackage;

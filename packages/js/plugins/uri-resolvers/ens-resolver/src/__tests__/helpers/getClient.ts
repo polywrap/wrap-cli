@@ -10,7 +10,9 @@ import {
   PackageToWrapperCacheResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
-import { PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient, Uri } from "@polywrap/client-js";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
+import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import {
   defaultEmbeddedWrapperPaths, defaultInterfaces,
@@ -26,49 +28,46 @@ export const getClient = () => {
   const ipfsHttpClientPath = defaultEmbeddedWrapperPaths.ipfsHttpClient;
   const ipfsResolverPath = defaultEmbeddedWrapperPaths.ipfsResolver;
 
-  return new PolywrapClient(
+  return new PolywrapClient<string>(
     {
       envs: [
-        {
-          uri: defaultPackages.ipfsResolver,
-          env: {
-            provider: providers.ipfs,
-            retries: { tryResolveUri: 1, getFile: 1 },
-          },
+        [defaultPackages.ipfsResolver]: {
+          provider: providers.ipfs,
+          retries: { tryResolveUri: 1, getFile: 1 },
         },
       ],
       interfaces: [
         {
-          interface: ExtendableUriResolver.extInterfaceUri,
+          interface: ExtendableUriResolver.extInterfaceUri.uri,
           implementations: [
             defaultPackages.ipfsResolver,
             defaultPackages.ensResolver,
           ],
         },
         {
-          interface: new Uri(defaultInterfaces.ipfsHttpClient),
-          implementations: [new Uri(defaultInterfaces.ipfsHttpClient)],
+          interface: defaultInterfaces.ipfsHttpClient,
+          implementations: [defaultInterfaces.ipfsHttpClient],
         },
       ],
       resolver: RecursiveResolver.from(
         PackageToWrapperCacheResolver.from(
           [
             {
-              uri: defaultInterfaces.ipfsHttpClient,
+              uri: Uri.from(defaultInterfaces.ipfsHttpClient),
               package: WasmPackage.from(
                 fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
                 fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
               ),
             },
             {
-              uri: defaultPackages.ipfsResolver,
+              uri: Uri.from(defaultPackages.ipfsResolver),
               package: WasmPackage.from(
                 fs.readFileSync(path.join(ipfsResolverPath, "wrap.info")),
                 fs.readFileSync(path.join(ipfsResolverPath, "wrap.wasm"))
               ),
             },
             {
-              uri: defaultPackages.ethereum,
+              uri: Uri.from(defaultPackages.ethereum),
               package: ethereumPlugin({
                 connections: new Connections({
                   networks: {
@@ -81,7 +80,7 @@ export const getClient = () => {
               }),
             },
             {
-              uri: defaultPackages.ensResolver,
+              uri: Uri.from(defaultPackages.ensResolver),
               package: ensResolverPlugin({
                 addresses: {
                   testnet: ensAddresses.ensAddress,
@@ -89,7 +88,7 @@ export const getClient = () => {
               }),
             },
             {
-              uri: defaultInterfaces.http,
+              uri: Uri.from(defaultInterfaces.http),
               package: httpPlugin({}),
             },
             new ExtendableUriResolver(),

@@ -11,7 +11,7 @@ export function instantiate(): PolywrapClient {
 
 export function configure(): PolywrapClient {
   // $start: quickstart-configure
-  const config = new ClientConfigBuilder().addDefaults().buildCoreConfig();
+  const config = new ClientConfigBuilder().addDefaults().build();
 
   const client = new PolywrapClient(config, { noDefaults: true });
   // $end

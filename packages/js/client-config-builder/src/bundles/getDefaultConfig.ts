@@ -1,4 +1,4 @@
-import { ClientConfig } from "../ClientConfig";
+import { BuilderConfig } from "../types/configs/BuilderConfig";
 
 import { IUriPackage, Uri, IWrapPackage } from "@polywrap/core-js";
 import {
@@ -54,139 +54,84 @@ export const defaultInterfaces = {
   ipfsHttpClient: "wrap://ens/wrappers.polywrap.eth:ipfs-http-client@1.0.0",
 };
 
-export const getDefaultConfig = (): ClientConfig<Uri> => {
-  return {
-    envs: [
-      {
-        uri: new Uri(defaultPackages.ipfsResolver),
-        env: {
-          provider: defaultIpfsProviders[0],
-          fallbackProviders: defaultIpfsProviders.slice(1),
-          retries: { tryResolveUri: 1, getFile: 1 },
-        },
-      },
-    ],
-    redirects: [
-      // TODO: remove sha3 and uts46 redirects when ethereum wrapper is merged (used by updated ens wrapper)
-      {
-        from: new Uri("wrap://ens/sha3.polywrap.eth"),
-        to: new Uri(
-          "wrap://ipfs/QmThRxFfr7Hj9Mq6WmcGXjkRrgqMG3oD93SLX27tinQWy5"
-        ),
-      },
-      {
-        from: new Uri("wrap://ens/uts46.polywrap.eth"),
-        to: new Uri(
-          "wrap://ipfs/QmPL9Njg3rGkpoJyoy8pZ5fTavjvHxNuuuiGRApzyGESZB"
-        ),
-      },
-    ],
-    interfaces: [
-      {
-        interface: ExtendableUriResolver.extInterfaceUri,
-        implementations: [
-          new Uri(defaultPackages.ipfsResolver),
-          new Uri(defaultPackages.ensResolver),
-          new Uri(defaultPackages.fileSystemResolver),
-          new Uri(defaultPackages.httpResolver),
-          new Uri(defaultWrappers.ensTextRecordResolver),
-        ],
-      },
-      {
-        interface: new Uri(defaultInterfaces.logger),
-        implementations: [new Uri(defaultInterfaces.logger)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.concurrent),
-        implementations: [new Uri(defaultInterfaces.concurrent)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.ipfsHttpClient),
-        implementations: [new Uri(defaultInterfaces.ipfsHttpClient)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.fileSystem),
-        implementations: [new Uri(defaultInterfaces.fileSystem)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.http),
-        implementations: [new Uri(defaultInterfaces.http)],
-      },
-    ],
-    packages: getDefaultPackages(),
-    wrappers: [],
-    resolvers: [],
-  };
-};
-
-export const getDefaultPackages = (): IUriPackage<Uri>[] => {
+export const getDefaultPlugins = (): Record<string, IWrapPackage> => {
   const ipfsHttpClientPath = defaultEmbeddedWrapperPaths.ipfsHttpClient;
   const ipfsResolverPath = defaultEmbeddedWrapperPaths.ipfsResolver;
 
-  return [
-    // IPFS is required for downloading Polywrap packages
-    {
-      uri: new Uri(defaultInterfaces.ipfsHttpClient),
-      package: WasmPackage.from(
-        fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
-        fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
-      ),
-    },
-    {
-      uri: new Uri(defaultPackages.ipfsResolver),
-      package: WasmPackage.from(
-        fs.readFileSync(path.join(ipfsResolverPath, "wrap.info")),
-        fs.readFileSync(path.join(ipfsResolverPath, "wrap.wasm"))
-      ),
-    },
+  return {
+    [defaultInterfaces.ipfsHttpClient]: WasmPackage.from(
+      fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
+      fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
+    ),
+    [defaultPackages.ipfsResolver]: WasmPackage.from(
+      fs.readFileSync(path.join(ipfsResolverPath, "wrap.info")),
+      fs.readFileSync(path.join(ipfsResolverPath, "wrap.wasm"))
+    ),
     // ENS is required for resolving domain to IPFS hashes
-    {
-      uri: new Uri(defaultPackages.ensResolver),
-      package: ensResolverPlugin({}),
-    },
-    {
-      uri: new Uri(defaultPackages.ethereum),
-      package: ethereumPlugin({
-        connections: new Connections({
-          networks: {
-            mainnet: new Connection({
-              provider:
-                "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-            }),
-            goerli: new Connection({
-              provider:
-                "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-            }),
-          },
-        }),
+    [defaultPackages.ensResolver]: ensResolverPlugin({}),
+    // Ethereum is required for resolving domain to Ethereum addresses
+    [defaultPackages.ethereum]: ethereumPlugin({
+      connections: new Connections({
+        networks: {
+          mainnet: new Connection({
+            provider:
+              "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+          }),
+          goerli: new Connection({
+            provider:
+              "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+          }),
+        },
       }),
-    },
-    {
-      uri: new Uri(defaultInterfaces.http),
-      package: httpPlugin({}),
-    },
-    {
-      uri: new Uri(defaultPackages.httpResolver),
-      package: httpResolverPlugin({}),
-    },
-    {
-      uri: new Uri(defaultInterfaces.logger),
-      // TODO: remove this once types are updated
-      package: loggerPlugin({}) as IWrapPackage,
-    },
-    {
-      uri: new Uri(defaultInterfaces.fileSystem),
-      package: fileSystemPlugin({}),
-    },
-    {
-      uri: new Uri(defaultPackages.fileSystemResolver),
-      package: fileSystemResolverPlugin({}),
-    },
-    {
-      uri: new Uri(defaultInterfaces.concurrent),
-      package: concurrentPromisePlugin({}),
-    },
-  ];
+    }),
+    [defaultInterfaces.http]: httpPlugin({}),
+    [defaultPackages.httpResolver]: httpResolverPlugin({}),
+    [defaultInterfaces.logger]: loggerPlugin({}) as IWrapPackage,
+    [defaultInterfaces.fileSystem]: fileSystemPlugin({}),
+    [defaultPackages.fileSystemResolver]: fileSystemResolverPlugin({}),
+    [defaultPackages.ipfsResolver]: ipfsResolverPlugin({}),
+    [defaultInterfaces.concurrent]: concurrentPromisePlugin({}),
+  };
 };
 
+export const getDefaultConfig = (): BuilderConfig => ({
+  redirects: {
+    // TODO: remove sha3 and uts46 redirects when ethereum wrapper is merged (used by updated ens wrapper)
+    "wrap://ens/sha3.polywrap.eth": "wrap://ipfs/QmThRxFfr7Hj9Mq6WmcGXjkRrgqMG3oD93SLX27tinQWy5",
+    "wrap://ens/uts46.polywrap.eth": "wrap://ipfs/QmPL9Njg3rGkpoJyoy8pZ5fTavjvHxNuuuiGRApzyGESZB",
+    "wrap://ens/graph-node.polywrap.eth": defaultWrappers.graphNode,
+    [defaultInterfaces.logger]: defaultPackages.logger,
+    ["wrap://ens/http.polywrap.eth"]: defaultInterfaces.http,
+    [defaultInterfaces.http]: defaultPackages.http,
+    "wrap://ens/fs.polywrap.eth": defaultInterfaces.fileSystem,
+    [defaultInterfaces.fileSystem]: defaultPackages.fileSystem,
+  },
+  envs: {
+    [defaultWrappers.graphNode]: {
+      provider: "https://api.thegraph.com",
+    },
+    [defaultPackages.ipfsResolver]: {
+      provider: defaultIpfsProviders[0],
+      fallbackProviders: defaultIpfsProviders.slice(1),
+      retries: { tryResolveUri: 1, getFile: 1 },
+    },
+  },
+  packages: getDefaultPlugins(),
+  wrappers: {},
+  interfaces: {
+    [ExtendableUriResolver.extInterfaceUri]: new Set([
+      defaultPackages.ipfsResolver,
+      defaultPackages.ensResolver,
+      defaultPackages.fileSystemResolver,
+      defaultPackages.httpResolver,
+      defaultWrappers.ensTextRecordResolver,
+    ]),
+    [defaultInterfaces.logger]: new Set([defaultInterfaces.logger]),
+    [defaultInterfaces.concurrent]: new Set([defaultInterfaces.concurrent]),
+    [defaultInterfaces.ipfsHttpClient]: new Set([defaultInterfaces.ipfsHttpClient]),
+    [defaultInterfaces.fileSystem]: new Set([defaultInterfaces.fileSystem]),
+    [defaultInterfaces.http]: new Set([defaultInterfaces.http]),
+  },
+  resolvers: [],
+});
 // $end

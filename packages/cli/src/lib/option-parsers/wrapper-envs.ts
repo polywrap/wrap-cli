@@ -1,7 +1,6 @@
 import { loadEnvironmentVariables } from "../system";
 
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { Env, Uri } from "@polywrap/core-js";
 import fs from "fs";
 import YAML from "yaml";
 
@@ -9,7 +8,7 @@ type WrapperEnvs = Record<string, Record<string, unknown>>;
 
 export async function parseWrapperEnvsOption(
   wrapperEnvsPath: string | false | undefined
-): Promise<Readonly<Env<Uri>[]> | undefined> {
+): Promise<Readonly<Record<string, Record<string, unknown>>> | undefined> {
   if (!wrapperEnvsPath) {
     return undefined;
   }
@@ -41,5 +40,5 @@ export async function parseWrapperEnvsOption(
     builder.addEnv(env, wrapperEnvs[env]);
   }
 
-  return builder.buildCoreConfig().envs;
+  return builder.config.envs;
 }

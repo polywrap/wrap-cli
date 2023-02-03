@@ -5,7 +5,7 @@ import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { State } from "./WasmWrapper";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { CoreClient, ErrorSource } from "@polywrap/core-js";
+import { CoreClient, Uri, ErrorSource } from "@polywrap/core-js";
 
 export const createImports = (config: {
   client: CoreClient;
@@ -41,7 +41,7 @@ export const createImports = (config: {
         const args = readBytes(memory.buffer, argsPtr, argsLen);
 
         const result = await client.invoke<Uint8Array>({
-          uri: uri,
+          uri: Uri.from(uri),
           method: method,
           args: new Uint8Array(args),
           encodeResult: true,
@@ -115,7 +115,7 @@ export const createImports = (config: {
         state.subinvokeImplementation.args = [implUri, method, args];
 
         const result = await client.invoke<Uint8Array>({
-          uri: implUri,
+          uri: Uri.from(implUri),
           method: method,
           args: new Uint8Array(args),
           encodeResult: true,
@@ -193,12 +193,12 @@ export const createImports = (config: {
         uriLen: u32
       ): Promise<boolean> => {
         const uri = readString(memory.buffer, uriPtr, uriLen);
-        const result = await client.getImplementations(uri, {});
+        const result = await client.getImplementations(Uri.from(uri), {});
         if (!result.ok) {
           abortWithInternalError(result.error?.message as string);
           return false;
         }
-        const implementations = result.value;
+        const implementations = result.value.map((i) => i.uri);
         state.getImplementationsResult = msgpackEncode(implementations);
         return implementations.length > 0;
       },

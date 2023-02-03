@@ -33,13 +33,10 @@ const mockPlugin = () => {
         setData(value: Int!): Boolean!
         deployContract: String!
       }
-    `)
+    `),
   });
 };
 
 export function configure(builder: IClientConfigBuilder): IClientConfigBuilder {
-  return builder.addPackage({
-    uri: "wrap://ens/mock.eth",
-    package: mockPlugin(),
-  });
+  return builder.addPackage("wrap://ens/mock.eth", mockPlugin());
 }

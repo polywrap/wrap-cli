@@ -1,7 +1,8 @@
 import { getTestEnvProviders } from "./providers";
 
-import { PolywrapClientConfig } from "@polywrap/client-js";
 import {
+  BuilderConfig,
+  defaultIpfsProviders,
   defaultIpfsProviders,
   defaultPackages,
 } from "@polywrap/client-config-builder-js";
@@ -13,7 +14,7 @@ import {
 } from "@polywrap/ethereum-plugin-js";
 import { ensAddresses } from "@polywrap/test-env-js";
 
-export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
+export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   // TODO: move this into its own package, since it's being used everywhere?
   // maybe have it exported from test-env.
   const providers = getTestEnvProviders();
@@ -27,45 +28,36 @@ export function getTestEnvClientConfig(): Partial<PolywrapClientConfig> {
   const ensAddress = ensAddresses.ensAddress;
 
   return {
-    envs: [
-      {
-        uri: defaultPackages.ipfsResolver,
-        env: {
-          provider: ipfsProvider,
-          fallbackProviders: defaultIpfsProviders,
-          retries: { tryResolveUri: 1, getFile: 1 },
-        },
+    envs: {
+      defaultPackages.ipfsResolver: {
+        provider: ipfsProvider,
+        fallbackProviders: defaultIpfsProviders,
+        retries: { tryResolveUri: 1, getFile: 1 },
       },
-    ],
-    packages: [
-      {
-        uri: defaultPackages.ethereum,
-        package: ethereumPlugin({
-          connections: new Connections({
-            networks: {
-              testnet: new Connection({
-                provider: ethProvider,
-              }),
-              mainnet: new Connection({
-                provider:
-                  "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-              }),
-              goerli: new Connection({
-                provider:
-                  "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-              }),
-            },
-          }),
-        }),
-      },
-      {
-        uri: defaultPackages.ensResolver,
-        package: ensResolverPlugin({
-          addresses: {
-            testnet: ensAddress,
+    },
+    packages: {
+      defaultPackages.ethereum: ethereumPlugin({
+        connections: new Connections({
+          networks: {
+            testnet: new Connection({
+              provider: ethProvider,
+            }),
+            mainnet: new Connection({
+              provider:
+                "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+            }),
+            goerli: new Connection({
+              provider:
+                "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+            }),
           },
         }),
-      },
-    ],
+      }),
+      defaultPackages.ensResolver: ensResolverPlugin({
+        addresses: {
+          testnet: ensAddress,
+        },
+      }),
+    },
   };
 }

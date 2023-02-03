@@ -3,7 +3,7 @@ import { Message } from "../../wrap";
 
 import WS from "jest-websocket-mock";
 import { PolywrapClient } from "@polywrap/client-js"
-import { CoreClient } from "@polywrap/core-js";
+import { CoreClient, Uri } from "@polywrap/core-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { PluginPackage } from "@polywrap/plugin-js";
 
@@ -19,7 +19,7 @@ describe("WebSocket plugin", () => {
       {
         resolver: UriResolver.from([
           {
-            uri: "wrap://ens/ws.polywrap.eth",
+            uri: Uri.from("wrap://ens/ws.polywrap.eth"),
             package: wsPlugin({}),
           },
         ]),
@@ -147,11 +147,11 @@ describe("WebSocket plugin", () => {
         {
           resolver: UriResolver.from([
             {
-              uri: "wrap://ens/ws.polywrap.eth",
+              uri: Uri.from("wrap://ens/ws.polywrap.eth"),
               package: wsPlugin({}),
             },
             {
-              uri: "wrap://ens/stub.polywrap.eth",
+              uri: Uri.from("wrap://ens/stub.polywrap.eth"),
               package: callbackPlugin,
             },
           ]),

@@ -10,12 +10,12 @@ export type UriValue = {
 };
 
 /** Indicates that a URI resolved to a wrap package */
-export type UriPackageValue = IUriPackage<Uri> & {
+export type UriPackageValue = IUriPackage & {
   type: "package";
 };
 
 /** Indicates that a URI resolved to a wrapper */
-export type UriWrapperValue = IUriWrapper<Uri> & {
+export type UriWrapperValue = IUriWrapper & {
   type: "wrapper";
 };
 

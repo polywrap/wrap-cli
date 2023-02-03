@@ -90,8 +90,8 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
 
-    let fooPackage: IUriPackage<string> = {
-      uri: fooUri,
+    let fooPackage: IUriPackage = {
+      uri: Uri.from(fooUri),
       package: await getPackage("wrapper-a")
     }
 
@@ -117,8 +117,8 @@ describe("sanity", () => {
 
     await buildWrapper(greetingPath, undefined, true);
 
-    let modifiedFooWrapper: IUriPackage<string> = {
-      uri: greetingUri,
+    let modifiedFooWrapper: IUriPackage = {
+      uri: Uri.from(greetingUri),
       package: await getPackage("wrapper-b")
     };
     resolvers.push(modifiedFooWrapper);
@@ -134,9 +134,9 @@ describe("sanity", () => {
     expect(result.ok).toBeTruthy()
 
     await buildWrapper(modifiedFooPath, undefined, true);
-      let redirectUri: IUriRedirect<string> = {
-      from: fooUri,
-      to: modifiedFooUri
+      let redirectUri: IUriRedirect = {
+      from: Uri.from(fooUri),
+      to: Uri.from(modifiedFooUri)
     };
     resolvers.push(redirectUri);
 

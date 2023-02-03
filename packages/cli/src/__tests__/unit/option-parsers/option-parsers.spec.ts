@@ -1,29 +1,26 @@
-import { Uri } from "@polywrap/core-js";
 import path from "path";
 import { parseWrapperEnvsOption } from "../../../lib";
 
 describe("unit tests for option-parsers", () => {
   describe("wrapper-envs", () => {
-    const sampleFileEnvs = [
-      {
-        uri: Uri.from("wrap://ens/hello-world.polywrap.eth"),
-        env: {
-          foo: "bar",
+    const sampleFileEnvs = {
+      "ens/ethereum.polywrap.eth": {
+        connection: {
+          networkNameOrChainId: "mainnet",
+          node: "https://mainnet.infura.io/v3/some_api_key",
         },
       },
-      {
-        uri: Uri.from("ens/ethereum.polywrap.eth"),
-        env: {
-          connection: {
-            node: "https://mainnet.infura.io/v3/some_api_key",
-            networkNameOrChainId: "mainnet",
-          },
-        },
-      },
-    ];
+      "ens/hello-world.polywrap.eth": { foo: "bar" },
+    };
 
-    it("Should return undefined when no filename is provided", async () => {
+    it("Should return undefined when undefined is provided for wrapperEnvsPath", async () => {
       const envs = await parseWrapperEnvsOption(undefined);
+
+      expect(envs).toBeUndefined();
+    });
+
+    it("Should return undefined when false is provided for wrapperEnvsPath", async () => {
+      const envs = await parseWrapperEnvsOption(false);
 
       expect(envs).toBeUndefined();
     });

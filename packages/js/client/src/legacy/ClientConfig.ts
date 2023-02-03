@@ -1,5 +1,4 @@
 import {
-  Uri,
   Env,
   InterfaceImplementations,
   IUriRedirect,
@@ -15,30 +14,30 @@ import { UriResolverLike } from "@polywrap/uri-resolvers-js";
  * @remarks
  * The PolywrapClient converts the ClientConfig to a CoreClientConfig.
  */
-export interface ClientConfig<TUri extends Uri | string = Uri | string> {
+export interface ClientConfig {
   /** set environmental variables for a wrapper */
-  readonly envs: Env<TUri>[];
+  readonly envs: Env[];
 
   /** register interface implementations */
-  readonly interfaces: InterfaceImplementations<TUri>[];
+  readonly interfaces: InterfaceImplementations[];
 
   /** redirect invocations from one uri to another */
-  readonly redirects: IUriRedirect<TUri>[];
+  readonly redirects: IUriRedirect[];
 
   /** add embedded wrappers */
-  readonly wrappers: IUriWrapper<TUri>[];
+  readonly wrappers: IUriWrapper[];
 
   /** add and configure embedded packages */
-  readonly packages: IUriPackage<TUri>[];
+  readonly packages: IUriPackage[];
 
   /** customize URI resolution
    *
    * @remarks
    * A UriResolverLike can be any one of:
    *     IUriResolver<unknown>
-   *   | IUriRedirect<Uri | string>
-   *   | IUriPackage<Uri | string>
-   *   | IUriWrapper<Uri | string>
+   *   | IUriRedirect
+   *   | IUriPackage
+   *   | IUriWrapper
    *   | UriResolverLike[]
    *   */
   readonly resolvers: UriResolverLike[];

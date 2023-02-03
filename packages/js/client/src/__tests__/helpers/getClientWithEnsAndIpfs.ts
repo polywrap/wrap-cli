@@ -37,7 +37,7 @@ export const getClientWithEnsAndIpfs = () => {
   const ipfsHttpClientPath = defaultEmbeddedWrapperPaths.ipfsHttpClient;
   const ipfsResolverPath = defaultEmbeddedWrapperPaths.ipfsResolver;
 
-  return new PolywrapClient(
+  return new PolywrapClient<string>(
     {
       envs: [
         {
@@ -50,7 +50,7 @@ export const getClientWithEnsAndIpfs = () => {
       ],
       interfaces: [
         {
-          interface: ExtendableUriResolver.extInterfaceUri,
+          interface: ExtendableUriResolver.extInterfaceUri.uri,
           implementations: [
             defaultPackages.ipfsResolver,
             defaultPackages.ensResolver,
@@ -58,33 +58,33 @@ export const getClientWithEnsAndIpfs = () => {
           ],
         },
         {
-          interface: new Uri(defaultInterfaces.ipfsHttpClient),
-          implementations: [new Uri(defaultInterfaces.ipfsHttpClient)],
+          interface: defaultInterfaces.ipfsHttpClient,
+          implementations: [defaultInterfaces.ipfsHttpClient],
         },
       ],
       resolver: RecursiveResolver.from([
         PackageToWrapperCacheResolver.from(
           [
             {
-              uri: defaultInterfaces.ipfsHttpClient,
+              uri: Uri.from(defaultInterfaces.ipfsHttpClient),
               package: WasmPackage.from(
                 fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
                 fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
               ),
             },
             {
-              uri: defaultPackages.ipfsResolver,
+              uri: Uri.from(defaultPackages.ipfsResolver),
               package: WasmPackage.from(
                 fs.readFileSync(path.join(ipfsResolverPath, "wrap.info")),
                 fs.readFileSync(path.join(ipfsResolverPath, "wrap.wasm"))
               ),
             },
             {
-              uri: defaultPackages.ethereum,
+              uri: Uri.from(defaultPackages.ethereum),
               package: ethereumPlugin({ connections }),
             },
             {
-              uri: defaultPackages.ensResolver,
+              uri: Uri.from(defaultPackages.ensResolver),
               package: ensResolverPlugin({
                 addresses: {
                   testnet: ensAddresses.ensAddress,
@@ -92,15 +92,15 @@ export const getClientWithEnsAndIpfs = () => {
               }),
             },
             {
-              uri: defaultInterfaces.fileSystem,
+              uri: Uri.from(defaultInterfaces.fileSystem),
               package: fileSystemPlugin({}),
             },
             {
-              uri: defaultPackages.fileSystemResolver,
+              uri: Uri.from(defaultPackages.fileSystemResolver),
               package: fileSystemResolverPlugin({}),
             },
             {
-              uri: defaultInterfaces.http,
+              uri: Uri.from(defaultInterfaces.http),
               package: httpPlugin({}),
             },
             new ExtendableUriResolver(),

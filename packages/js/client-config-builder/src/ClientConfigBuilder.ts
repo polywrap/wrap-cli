@@ -1,7 +1,18 @@
 import { getDefaultConfig } from "./bundles";
 import { BaseClientConfigBuilder } from "./BaseClientConfigBuilder";
+import { IClientConfigBuilder } from "./types/IClientConfigBuilder";
+import { BuilderConfig } from "./types";
 
-import { CoreClientConfig, Uri, IUriResolver } from "@polywrap/core-js";
+import {
+  CoreClientConfig,
+  Env,
+  InterfaceImplementations,
+  IUriPackage,
+  IUriRedirect,
+  IUriResolver,
+  IUriWrapper,
+  Uri,
+} from "@polywrap/core-js";
 import {
   IWrapperCache,
   PackageToWrapperCacheResolver,
@@ -15,41 +26,100 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
   // $start: ClientConfigBuilder-constructor
   /**
    * Instantiate a ClientConfigBuilder
-   *
-   * @param _wrapperCache?: a wrapper cache to be used in place of the default wrapper cache
-   * @param _resolver?: a uri resolver to be used in place of any added redirects, wrappers, packages, and resolvers when building a CoreClientConfig
    */
-  constructor(
-    private readonly _wrapperCache?: IWrapperCache,
-    private readonly _resolver?: IUriResolver<unknown>
-  ) /* $ */ {
+  constructor() /* $ */ {
     super();
   }
 
-  addDefaults(): ClientConfigBuilder {
+  addDefaults(): IClientConfigBuilder {
     return this.add(getDefaultConfig());
   }
 
-  buildCoreConfig(): CoreClientConfig<Uri> {
+  build(
+    wrapperCache?: IWrapperCache,
+    resolver?: IUriResolver<unknown>
+  ): CoreClientConfig {
     return {
-      envs: this.config.envs,
-      interfaces: this.config.interfaces,
+      envs: this.buildEnvs(),
+      interfaces: this.buildInterfaces(),
       resolver:
-        this._resolver ??
+        resolver ??
         RecursiveResolver.from(
           PackageToWrapperCacheResolver.from(
             [
               StaticResolver.from([
-                ...this.config.redirects,
-                ...this.config.wrappers,
-                ...this.config.packages,
+                ...this.buildRedirects(),
+                ...this.buildWrappers(),
+                ...this.buildPackages(),
               ]),
-              ...this.config.resolvers,
+              ...this._config.resolvers,
               new ExtendableUriResolver(),
             ],
-            this._wrapperCache ?? new WrapperCache()
+            wrapperCache ?? new WrapperCache()
           )
         ),
     };
+  }
+
+  get config(): BuilderConfig {
+    return this._config;
+  }
+
+  private buildEnvs(): Env[] {
+    const envs: Env[] = [];
+
+    for (const [uri, env] of Object.entries(this._config.envs)) {
+      envs.push({ uri: Uri.from(uri), env });
+    }
+
+    return envs;
+  }
+
+  private buildInterfaces(): InterfaceImplementations[] {
+    const interfaces: InterfaceImplementations[] = [];
+
+    for (const [interfaceUri, implementations] of Object.entries(
+      this._config.interfaces
+    )) {
+      if (implementations.size === 0) continue;
+      interfaces.push({
+        interface: Uri.from(interfaceUri),
+        implementations: Array.from(implementations).map((uri) =>
+          Uri.from(uri)
+        ),
+      });
+    }
+
+    return interfaces;
+  }
+
+  private buildRedirects(): IUriRedirect[] {
+    const redirects: IUriRedirect[] = [];
+
+    for (const [uri, redirect] of Object.entries(this._config.redirects)) {
+      redirects.push({ from: Uri.from(uri), to: Uri.from(redirect) });
+    }
+
+    return redirects;
+  }
+
+  private buildWrappers(): IUriWrapper[] {
+    const wrappers: IUriWrapper[] = [];
+
+    for (const [uri, wrapper] of Object.entries(this._config.wrappers)) {
+      wrappers.push({ uri: Uri.from(uri), wrapper });
+    }
+
+    return wrappers;
+  }
+
+  private buildPackages(): IUriPackage[] {
+    const packages: IUriPackage[] = [];
+
+    for (const [uri, wrapPackage] of Object.entries(this._config.packages)) {
+      packages.push({ uri: Uri.from(uri), package: wrapPackage });
+    }
+
+    return packages;
   }
 }

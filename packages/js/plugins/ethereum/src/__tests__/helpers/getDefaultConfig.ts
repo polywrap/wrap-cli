@@ -7,6 +7,8 @@ import {
   defaultInterfaces,
   defaultPackages,
 } from "@polywrap/client-config-builder-js";
+import { Uri } from "@polywrap/core-js";
+import { ClientConfig } from "@polywrap/client-js";
 
 export const getDefaultConfig = (
   connections: Connections
@@ -15,20 +17,20 @@ export const getDefaultConfig = (
     interfaces: [
       {
         interface: ExtendableUriResolver.extInterfaceUri,
-        implementations: [defaultPackages.fileSystemResolver],
+        implementations: [Uri.from(defaultPackages.fileSystemResolver)],
       },
     ],
     packages: [
       {
-        uri: "wrap://ens/ethereum.polywrap.eth",
+        uri: Uri.from(defaultPackages.ethereum),
         package: ethereumPlugin({ connections }),
       },
       {
-        uri: defaultPackages.fileSystemResolver,
+        uri: Uri.from(defaultPackages.fileSystemResolver),
         package: fileSystemResolverPlugin({}),
       },
       {
-        uri: defaultInterfaces.fileSystem,
+        uri: Uri.from(defaultInterfaces.fileSystem),
         package: fileSystemPlugin({}),
       },
     ],

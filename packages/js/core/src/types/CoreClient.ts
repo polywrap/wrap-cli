@@ -8,12 +8,12 @@ import { Result } from "@polywrap/result";
 // $start: CoreClient.ts
 
 /** Core Client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors */
-export interface CoreClientConfig<TUri extends Uri | string = Uri | string> {
+export interface CoreClientConfig {
   /** set environmental variables for a wrapper */
-  readonly interfaces?: Readonly<InterfaceImplementations<TUri>[]>;
+  readonly interfaces?: Readonly<InterfaceImplementations[]>;
 
   /** register interface implementations */
-  readonly envs?: Readonly<Env<TUri>[]>;
+  readonly envs?: Readonly<Env[]>;
 
   /** configure URI resolution for redirects, packages, and wrappers */
   readonly resolver: Readonly<IUriResolver<unknown>>;
@@ -53,21 +53,21 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    *
    * @returns an immutable core client config
    */
-  getConfig(): CoreClientConfig<Uri>;
+  getConfig(): CoreClientConfig;
 
   /**
    * returns all interfaces from the configuration used to instantiate the client
    *
    * @returns an array of interfaces and their registered implementations
    */
-  getInterfaces(): readonly InterfaceImplementations<Uri>[] | undefined;
+  getInterfaces(): readonly InterfaceImplementations[] | undefined;
 
   /**
    * returns all env registrations from the configuration used to instantiate the client
    *
    * @returns an array of env objects containing wrapper environmental variables
    */
-  getEnvs(): readonly Env<Uri>[] | undefined;
+  getEnvs(): readonly Env[] | undefined;
 
   /**
    * returns an env (a set of environmental variables) from the configuration used to instantiate the client
@@ -75,7 +75,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    * @param uri - the URI used to register the env
    * @returns an env, or undefined if an env is not found at the given URI
    */
-  getEnvByUri<TUri extends Uri | string>(uri: TUri): Env<Uri> | undefined;
+  getEnvByUri(uri: Uri): Env | undefined;
 
   /**
    * returns the URI resolver from the configuration used to instantiate the client
@@ -90,9 +90,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    * @param uri - a wrap URI
    * @returns a Result containing the WrapManifest if the request was successful
    */
-  getManifest<TUri extends Uri | string>(
-    uri: TUri
-  ): Promise<Result<WrapManifest, WrapError>>;
+  getManifest(uri: Uri): Promise<Result<WrapManifest, WrapError>>;
 
   /**
    * returns a file contained in a wrap package
@@ -101,8 +99,8 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    * @param options - { path: string; encoding?: "utf-8" | string }
    * @returns a Promise of a Result containing a file if the request was successful
    */
-  getFile<TUri extends Uri | string>(
-    uri: TUri,
+  getFile(
+    uri: Uri,
     options: GetFileOptions
   ): Promise<Result<string | Uint8Array, WrapError>>;
 
@@ -114,23 +112,10 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    * @param options - { applyResolution?: boolean; resolutionContext?: IUriResolutionContext }
    * @returns a Result containing URI array if the request was successful
    */
-  getImplementations<TUri extends Uri | string>(
-    uri: TUri,
+  getImplementations(
+    uri: Uri,
     options: GetImplementationsOptions
-  ): Promise<Result<TUri[], WrapError>>;
-
-  /**
-   * Validate a wrapper, given a URI.
-   * Optionally, validate the full ABI and/or recursively validate imports.
-   *
-   * @param uri: the Uri to resolve
-   * @param options - { abi?: boolean; recursive?: boolean }
-   * @returns A Promise with a Result containing a boolean or Error
-   */
-  validate<TUri extends Uri | string>(
-    uri: TUri,
-    options?: ValidateOptions
-  ): Promise<Result<true, WrapError>>;
+  ): Promise<Result<Uri[], WrapError>>;
 }
 
 // $end
