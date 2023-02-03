@@ -375,7 +375,7 @@ export const runInvalidTypesTest = async (
       arg: 10,
     },
   });
-  invalidBoolIntSent = invalidBoolIntSent as { ok: false, error: Error };
+  invalidBoolIntSent = invalidBoolIntSent as ErrResult;
   expect(invalidBoolIntSent.error).toBeTruthy();
   expect(invalidBoolIntSent.error?.message).toMatch(
     /Property must be of type 'bool'. Found 'int'./
