@@ -2,11 +2,7 @@ import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ethereumPlugin, Connections } from "../..";
-import {
-  ClientConfig,
-  defaultInterfaces,
-  defaultPackages,
-} from "@polywrap/client-config-builder-js";
+import { defaultInterfaces, defaultPackages } from "@polywrap/client-config-builder-js";
 import { Uri } from "@polywrap/core-js";
 import { ClientConfig } from "@polywrap/client-js";
 
