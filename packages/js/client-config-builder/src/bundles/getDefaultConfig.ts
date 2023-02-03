@@ -1,6 +1,6 @@
-import { BuilderConfig } from "../types/configs/BuilderConfig";
+import { BuilderConfig } from "../types";
 
-import { IUriPackage, Uri, IWrapPackage } from "@polywrap/core-js";
+import { IWrapPackage } from "@polywrap/core-js";
 import {
   ethereumPlugin,
   Connection,
@@ -19,7 +19,6 @@ import * as fs from "fs";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 // $start: getDefaultConfig
-
 export const defaultIpfsProviders = [
   "https://ipfs.wrappers.io",
   "https://ipfs.io",
@@ -54,7 +53,7 @@ export const defaultInterfaces = {
   ipfsHttpClient: "wrap://ens/wrappers.polywrap.eth:ipfs-http-client@1.0.0",
 };
 
-export const getDefaultPlugins = (): Record<string, IWrapPackage> => {
+export const getDefaultPackages = (): Record<string, IWrapPackage> => {
   const ipfsHttpClientPath = defaultEmbeddedWrapperPaths.ipfsHttpClient;
   const ipfsResolverPath = defaultEmbeddedWrapperPaths.ipfsResolver;
 
@@ -89,7 +88,6 @@ export const getDefaultPlugins = (): Record<string, IWrapPackage> => {
     [defaultInterfaces.logger]: loggerPlugin({}) as IWrapPackage,
     [defaultInterfaces.fileSystem]: fileSystemPlugin({}),
     [defaultPackages.fileSystemResolver]: fileSystemResolverPlugin({}),
-    [defaultPackages.ipfsResolver]: ipfsResolverPlugin({}),
     [defaultInterfaces.concurrent]: concurrentPromisePlugin({}),
   };
 };
@@ -97,14 +95,10 @@ export const getDefaultPlugins = (): Record<string, IWrapPackage> => {
 export const getDefaultConfig = (): BuilderConfig => ({
   redirects: {
     // TODO: remove sha3 and uts46 redirects when ethereum wrapper is merged (used by updated ens wrapper)
-    "wrap://ens/sha3.polywrap.eth": "wrap://ipfs/QmThRxFfr7Hj9Mq6WmcGXjkRrgqMG3oD93SLX27tinQWy5",
-    "wrap://ens/uts46.polywrap.eth": "wrap://ipfs/QmPL9Njg3rGkpoJyoy8pZ5fTavjvHxNuuuiGRApzyGESZB",
-    "wrap://ens/graph-node.polywrap.eth": defaultWrappers.graphNode,
-    [defaultInterfaces.logger]: defaultPackages.logger,
-    ["wrap://ens/http.polywrap.eth"]: defaultInterfaces.http,
-    [defaultInterfaces.http]: defaultPackages.http,
-    "wrap://ens/fs.polywrap.eth": defaultInterfaces.fileSystem,
-    [defaultInterfaces.fileSystem]: defaultPackages.fileSystem,
+    "wrap://ens/sha3.polywrap.eth":
+      "wrap://ipfs/QmThRxFfr7Hj9Mq6WmcGXjkRrgqMG3oD93SLX27tinQWy5",
+    "wrap://ens/uts46.polywrap.eth":
+      "wrap://ipfs/QmPL9Njg3rGkpoJyoy8pZ5fTavjvHxNuuuiGRApzyGESZB",
   },
   envs: {
     [defaultWrappers.graphNode]: {
@@ -116,10 +110,10 @@ export const getDefaultConfig = (): BuilderConfig => ({
       retries: { tryResolveUri: 1, getFile: 1 },
     },
   },
-  packages: getDefaultPlugins(),
+  packages: getDefaultPackages(),
   wrappers: {},
   interfaces: {
-    [ExtendableUriResolver.extInterfaceUri]: new Set([
+    [ExtendableUriResolver.extInterfaceUri.uri]: new Set([
       defaultPackages.ipfsResolver,
       defaultPackages.ensResolver,
       defaultPackages.fileSystemResolver,
@@ -128,7 +122,9 @@ export const getDefaultConfig = (): BuilderConfig => ({
     ]),
     [defaultInterfaces.logger]: new Set([defaultInterfaces.logger]),
     [defaultInterfaces.concurrent]: new Set([defaultInterfaces.concurrent]),
-    [defaultInterfaces.ipfsHttpClient]: new Set([defaultInterfaces.ipfsHttpClient]),
+    [defaultInterfaces.ipfsHttpClient]: new Set([
+      defaultInterfaces.ipfsHttpClient,
+    ]),
     [defaultInterfaces.fileSystem]: new Set([defaultInterfaces.fileSystem]),
     [defaultInterfaces.http]: new Set([defaultInterfaces.http]),
   },
