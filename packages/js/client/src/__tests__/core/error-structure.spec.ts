@@ -30,13 +30,11 @@ describe("Error structure", () => {
   let client: PolywrapClient;
 
   beforeAll(async () => {
-    await Promise.all([
-      buildWrapper(simpleWrapperPath),
-      buildWrapper(badUtilWrapperPath),
-      buildWrapper(badMathWrapperPath),
-      buildWrapper(subinvokeErrorWrapperPath),
-      buildWrapper(invalidTypesWrapperPath),
-    ])
+    await buildWrapper(simpleWrapperPath);
+    await buildWrapper(badUtilWrapperPath);
+    await buildWrapper(badMathWrapperPath);
+    await buildWrapper(subinvokeErrorWrapperPath);
+    await buildWrapper(invalidTypesWrapperPath);
 
     client = new PolywrapClient({
       redirects: [
