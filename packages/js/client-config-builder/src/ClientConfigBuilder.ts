@@ -1,6 +1,6 @@
 import { getDefaultConfig } from "./bundles";
 import { BaseClientConfigBuilder } from "./BaseClientConfigBuilder";
-import { IClientConfigBuilder } from "./types/IClientConfigBuilder";
+import { IClientConfigBuilder } from "./types";
 import { BuilderConfig } from "./types";
 
 import {

@@ -93,25 +93,13 @@ export const getDefaultPackages = (): Record<string, IWrapPackage> => {
 };
 
 export const getDefaultConfig = (): BuilderConfig => ({
-  redirects: {
-    // TODO: remove sha3 and uts46 redirects when ethereum wrapper is merged (used by updated ens wrapper)
-    "wrap://ens/sha3.polywrap.eth":
-      "wrap://ipfs/QmThRxFfr7Hj9Mq6WmcGXjkRrgqMG3oD93SLX27tinQWy5",
-    "wrap://ens/uts46.polywrap.eth":
-      "wrap://ipfs/QmPL9Njg3rGkpoJyoy8pZ5fTavjvHxNuuuiGRApzyGESZB",
-  },
   envs: {
-    [defaultWrappers.graphNode]: {
-      provider: "https://api.thegraph.com",
-    },
     [defaultPackages.ipfsResolver]: {
       provider: defaultIpfsProviders[0],
       fallbackProviders: defaultIpfsProviders.slice(1),
       retries: { tryResolveUri: 1, getFile: 1 },
     },
   },
-  packages: getDefaultPackages(),
-  wrappers: {},
   interfaces: {
     [ExtendableUriResolver.extInterfaceUri.uri]: new Set([
       defaultPackages.ipfsResolver,
@@ -128,6 +116,15 @@ export const getDefaultConfig = (): BuilderConfig => ({
     [defaultInterfaces.fileSystem]: new Set([defaultInterfaces.fileSystem]),
     [defaultInterfaces.http]: new Set([defaultInterfaces.http]),
   },
+  redirects: {
+    // TODO: remove sha3 and uts46 redirects when ethereum wrapper is merged (used by updated ens wrapper)
+    "wrap://ens/sha3.polywrap.eth":
+      "wrap://ipfs/QmThRxFfr7Hj9Mq6WmcGXjkRrgqMG3oD93SLX27tinQWy5",
+    "wrap://ens/uts46.polywrap.eth":
+      "wrap://ipfs/QmPL9Njg3rGkpoJyoy8pZ5fTavjvHxNuuuiGRApzyGESZB",
+  },
+  wrappers: {},
+  packages: getDefaultPackages(),
   resolvers: [],
 });
 // $end
