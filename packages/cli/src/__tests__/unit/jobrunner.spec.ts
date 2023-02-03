@@ -1,5 +1,5 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { buildWrapper } from "@polywrap/test-env-js";
+import { Commands } from "@polywrap/cli-js";
 import { testCases } from "./jobrunner-test-cases";
 import { JobRunner } from "../../lib";
 import path from "path";
@@ -11,11 +11,12 @@ describe("workflow JobRunner", () => {
   let configBuilder: IClientConfigBuilder;
 
   beforeAll(async () => {
-    await buildWrapper(
-      path.join(GetPathToTestWrappers(), "wasm-as", "simple-calculator"),
-      undefined,
-      true
-    );
+    await Commands.build({
+      codegen: true,
+      strategy: "vm",
+    }, {
+      cwd: path.join(GetPathToTestWrappers(), "wasm-as", "simple-calculator"),
+    });
     configBuilder = new ClientConfigBuilder().addDefaults();
   });
 

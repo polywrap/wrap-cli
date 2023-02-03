@@ -55,7 +55,6 @@
     "@polywrap/schema-bind": "0.10.0-pre.7",
     "@polywrap/schema-compose": "0.10.0-pre.7",
     "@polywrap/schema-parse": "0.10.0-pre.7",
-    "@polywrap/test-env-js": "0.10.0-pre.7",
     "@polywrap/wasm-js": "0.10.0-pre.7",
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.7",
     "axios": "0.21.2",
@@ -82,6 +81,7 @@
     "yesno": "0.4.0"
   },
   "devDependencies": {
+    "@polywrap/cli-js": "0.10.0-pre.7",
     "@types/copyfiles": "2.4.0",
     "@types/fs-extra": "9.0.12",
     "@types/jest": "26.0.8",
