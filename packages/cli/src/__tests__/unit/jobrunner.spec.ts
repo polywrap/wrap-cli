@@ -3,8 +3,7 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { testCases } from "./jobrunner-test-cases";
 import { JobRunner } from "../../lib";
 import path from "path";
-import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { IClientConfigBuilder } from "@polywrap/client-config-builder-js/build/IClientConfigBuilder";
+import { ClientConfigBuilder, IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 

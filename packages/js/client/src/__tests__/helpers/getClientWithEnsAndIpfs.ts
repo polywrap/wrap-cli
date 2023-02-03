@@ -1,4 +1,4 @@
-import { PolywrapClient } from "../..";
+import { PolywrapClient, Uri } from "../..";
 import { ensAddresses, providers } from "@polywrap/test-env-js";
 import {
   Connection,
@@ -27,7 +27,7 @@ export const getClientWithEnsAndIpfs = () => {
     },
     defaultNetwork: "testnet",
   });
-  return new PolywrapClient(
+  return new PolywrapClient<string>(
     {
       envs: [
         {
@@ -39,7 +39,7 @@ export const getClientWithEnsAndIpfs = () => {
       ],
       interfaces: [
         {
-          interface: ExtendableUriResolver.extInterfaceUri,
+          interface: ExtendableUriResolver.extInterfaceUri.uri,
           implementations: [
             "wrap://ens/ipfs-resolver.polywrap.eth",
             "wrap://ens/ens-resolver.polywrap.eth",
@@ -51,11 +51,11 @@ export const getClientWithEnsAndIpfs = () => {
         PackageToWrapperCacheResolver.from(
           [
             {
-              uri: "wrap://ens/ethereum.polywrap.eth",
+              uri: Uri.from("wrap://ens/ethereum.polywrap.eth"),
               package: ethereumPlugin({ connections }),
             },
             {
-              uri: "wrap://ens/ens-resolver.polywrap.eth",
+              uri: Uri.from("wrap://ens/ens-resolver.polywrap.eth"),
               package: ensResolverPlugin({
                 addresses: {
                   testnet: ensAddresses.ensAddress,
@@ -63,19 +63,19 @@ export const getClientWithEnsAndIpfs = () => {
               }),
             },
             {
-              uri: "wrap://ens/ipfs.polywrap.eth",
+              uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
               package: ipfsPlugin({}),
             },
             {
-              uri: "wrap://ens/ipfs-resolver.polywrap.eth",
+              uri: Uri.from("wrap://ens/ipfs-resolver.polywrap.eth"),
               package: ipfsResolverPlugin({}),
             },
             {
-              uri: defaultInterfaces.fileSystem,
+              uri: Uri.from(defaultInterfaces.fileSystem),
               package: fileSystemPlugin({}),
             },
             {
-              uri: "wrap://ens/fs-resolver.polywrap.eth",
+              uri: Uri.from("wrap://ens/fs-resolver.polywrap.eth"),
               package: fileSystemResolverPlugin({}),
             },
             new ExtendableUriResolver(),

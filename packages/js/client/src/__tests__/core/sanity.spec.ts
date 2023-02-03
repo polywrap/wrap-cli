@@ -11,7 +11,7 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { ResultErr } from "@polywrap/result";
 import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
 import { WasmPackage } from "@polywrap/wasm-js";
-import { defaultInterfaces } from "@polywrap/client-config-builder-js";
+import { defaultWrappers } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 
@@ -36,7 +36,7 @@ describe("sanity", () => {
           implementations: [new Uri("wrap://plugin/logger")],
         },
         {
-          interface: new Uri(defaultInterfaces.concurrent),
+          interface: new Uri(defaultWrappers.concurrentInterface),
           implementations: [new Uri("wrap://plugin/concurrent")],
         },
       ]);
@@ -79,8 +79,8 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
 
-    let fooPackage: IUriPackage<string> = {
-      uri: fooUri,
+    let fooPackage: IUriPackage = {
+      uri: Uri.from(fooUri),
       package: await getPackage("wrapper-a")
     }
 
@@ -106,8 +106,8 @@ describe("sanity", () => {
 
     await buildWrapper(greetingPath, undefined, true);
 
-    let modifiedFooWrapper: IUriPackage<string> = {
-      uri: greetingUri,
+    let modifiedFooWrapper: IUriPackage = {
+      uri: Uri.from(greetingUri),
       package: await getPackage("wrapper-b")
     };
     resolvers.push(modifiedFooWrapper);
@@ -123,9 +123,9 @@ describe("sanity", () => {
     expect(result.ok).toBeTruthy()
 
     await buildWrapper(modifiedFooPath, undefined, true);
-      let redirectUri: IUriRedirect<string> = {
-      from: fooUri,
-      to: modifiedFooUri
+      let redirectUri: IUriRedirect = {
+      from: Uri.from(fooUri),
+      to: Uri.from(modifiedFooUri)
     };
     resolvers.push(redirectUri);
 
