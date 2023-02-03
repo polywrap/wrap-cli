@@ -49,7 +49,7 @@ export interface BuildCommandOptions extends BaseCommandOptions {
   outputDir: string;
   clientConfig: string | false;
   wrapperEnvs: string | false;
-  codegen: boolean; // defaults to false
+  codegen: boolean;
   codegenDir: string;
   watch: boolean;
   strategy: `${SupportedStrategies}`;
@@ -77,7 +77,7 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
-      .option(`--codegen`, `${intlMsg.commands_build_options_codegen()}`)
+      .option(`--no-codegen`, `${intlMsg.commands_build_options_codegen()}`)
       .option(
         `--codegen-dir`,
         `${intlMsg.commands_build_options_codegen_dir({
@@ -171,6 +171,7 @@ async function run(options: Required<BuildCommandOptions>) {
     quiet,
     logFile,
   } = options;
+
   const logger = createLogger({ verbose, quiet, logFile });
 
   const envs = await parseWrapperEnvsOption(wrapperEnvs);
