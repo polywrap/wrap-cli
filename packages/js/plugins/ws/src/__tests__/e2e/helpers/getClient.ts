@@ -5,7 +5,7 @@ import {
   StaticResolver,
   StaticResolverLike,
 } from "@polywrap/uri-resolvers-js";
-import { defaultInterfaces, PolywrapClient, Uri } from "@polywrap/client-js";
+import { PolywrapClient, Uri } from "@polywrap/client-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";

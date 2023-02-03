@@ -10,9 +10,7 @@ import {
   PackageToWrapperCacheResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
-import { PolywrapClient, Uri } from "@polywrap/client-js";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import {
   defaultEmbeddedWrapperPaths, defaultInterfaces,
@@ -30,12 +28,13 @@ export const getClient = () => {
 
   return new PolywrapClient<string>(
     {
-      envs: [
-        [defaultPackages.ipfsResolver]: {
+      envs: [{
+        uri: defaultPackages.ipfsResolver,
+        env: {
           provider: providers.ipfs,
           retries: { tryResolveUri: 1, getFile: 1 },
         },
-      ],
+      }],
       interfaces: [
         {
           interface: ExtendableUriResolver.extInterfaceUri.uri,
