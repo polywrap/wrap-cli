@@ -12,7 +12,10 @@ import {
   InterfaceImplementations,
   Uri,
 } from "@polywrap/core-js";
-import { UriResolverLike as SanitizedUriResolverLike } from "@polywrap/uri-resolvers-js";
+import {
+  IWrapperCache,
+  UriResolverLike as SanitizedUriResolverLike,
+} from "@polywrap/uri-resolvers-js";
 import {
   BuilderConfig,
   ClientConfigBuilder,
@@ -167,7 +170,9 @@ export function buildPolywrapCoreClientConfig<
   }
 
   if (config && "wrapperCache" in config) {
-    return builder.build({ wrapperCache: config.wrapperCache });
+    return builder.build({
+      wrapperCache: config.wrapperCache as IWrapperCache,
+    });
   }
 
   return builder.build();
