@@ -182,3 +182,34 @@ jobs:
               repo: context.repo.repo,
               body: '**[Crates.io Release Published](https://crates.io/search?q=polywrap) `${{env.RELEASE_VERSION}}`** 🎉'
             })
+
+  Publish-Docker-Release:
+    name: hub.docker.com Release
+    if: |
+      github.event.pull_request.user.login == 'polywrap-build-bot' &&
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Cache Build VM Directories
+        run: |
+          echo IMAGE_RS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/rust/vm >> $GITHUB_ENV
+          echo IMAGE_AS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/assemblyscript/rust/vm >> $GITHUB_ENV
+
+      - name: Read Image VERSION into env.IMAGE_..._VERSION
+        run: |
+          echo IMAGE_RS_VM_VERSION=$(cat $IMAGE_RS_VM_DIR/VERSION) >> &GITHUB_ENV
+          echo IMAGE_AS_VM_VERSION=$(cat $IMAGE_AS_VM_DIR/VERSION) >> &GITHUB_ENV
+
+      - name: Build RS VM Image
+        working-directory: ${{env.IMAGE_RS_VM_DIR}}
+        run: |
+        docker build .
+
+      - name: Build AS VM Image
+        working-directory: ${{env.IMAGE_RS_AS_DIR}}
+        run: docker build .
