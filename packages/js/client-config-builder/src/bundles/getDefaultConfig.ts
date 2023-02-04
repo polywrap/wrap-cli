@@ -13,10 +13,10 @@ import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
+import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import path from "path";
 import { WasmPackage } from "@polywrap/wasm-js";
-import * as fs from "fs";
-import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
+import fs from "fs";
 
 // $start: getDefaultConfig
 export const defaultIpfsProviders = [
@@ -24,9 +24,9 @@ export const defaultIpfsProviders = [
   "https://ipfs.io",
 ];
 
-export const defaultEmbeddedWrapperPaths = {
-  ipfsHttpClient: path.join(__dirname, "wrappers", "ipfs-http-client"),
-  ipfsResolver: path.join(__dirname, "wrappers", "ipfs-resolver"),
+export const defaultEmbeddedPackages = {
+  ipfsHttpClient: (): IWrapPackage => getEmbeddedPackage("ipfs-http-client"),
+  ipfsResolver: (): IWrapPackage => getEmbeddedPackage("ipfs-resolver"),
 };
 
 export const defaultWrappers = {
@@ -54,18 +54,9 @@ export const defaultInterfaces = {
 };
 
 export const getDefaultPackages = (): Record<string, IWrapPackage> => {
-  const ipfsHttpClientPath = defaultEmbeddedWrapperPaths.ipfsHttpClient;
-  const ipfsResolverPath = defaultEmbeddedWrapperPaths.ipfsResolver;
-
   return {
-    [defaultInterfaces.ipfsHttpClient]: WasmPackage.from(
-      fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.info")),
-      fs.readFileSync(path.join(ipfsHttpClientPath, "wrap.wasm"))
-    ),
-    [defaultPackages.ipfsResolver]: WasmPackage.from(
-      fs.readFileSync(path.join(ipfsResolverPath, "wrap.info")),
-      fs.readFileSync(path.join(ipfsResolverPath, "wrap.wasm"))
-    ),
+    [defaultInterfaces.ipfsHttpClient]: defaultEmbeddedPackages.ipfsHttpClient(),
+    [defaultPackages.ipfsResolver]: defaultEmbeddedPackages.ipfsResolver(),
     // ENS is required for resolving domain to IPFS hashes
     [defaultPackages.ensResolver]: ensResolverPlugin({}),
     // Ethereum is required for resolving domain to Ethereum addresses
@@ -128,3 +119,11 @@ export const getDefaultConfig = (): BuilderConfig => ({
   resolvers: [],
 });
 // $end
+
+const getEmbeddedPackage = (packageDir: string): IWrapPackage => {
+  const absPath = path.join(__dirname, "wrappers", packageDir);
+  return WasmPackage.from(
+    fs.readFileSync(path.join(absPath, "wrap.info")),
+    fs.readFileSync(path.join(absPath, "wrap.wasm"))
+  );
+};
