@@ -61,7 +61,7 @@ export const getClientWithEnsAndIpfs = () => {
           [
             {
               uri: Uri.from(defaultInterfaces.ipfsHttpClient),
-              package: defaultEmbeddedPackages.ipsHttpClient(),
+              package: defaultEmbeddedPackages.ipfsHttpClient(),
             },
             {
               uri: Uri.from(defaultPackages.ipfsResolver),
