@@ -36,7 +36,6 @@
     "build:client": "lerna run build --scope @polywrap/client-js",
     "build:test-env": "lerna run build --scope @polywrap/test-env-js",
     "build:cli": "lerna run build --scope polywrap && lerna run build --scope @polywrap/cli-js",
-    "build:test-cases": "lerna run generate:wrappers --scope @polywrap/test-cases",
     "link:interface:deps": "yarn link:manifests && yarn link:schema",
     "link:manifests": "yarn link:manifests:polywrap && yarn link:manifests:wrap",
     "link:manifests:polywrap": "cd packages/js/manifests/polywrap && (yarn unlink || true) && yarn link && cd ../../../../dependencies && yarn link @polywrap/polywrap-manifest-types-js && cd ../",

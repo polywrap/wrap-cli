@@ -68,7 +68,7 @@ function getFilePath(
   }
 }
 
-export function fetchWrappers(): void {
+export async function fetchWrappers(): Promise<void> {
   // function to fetch file from GitHub release
   async function fetchFromGithub(url: string) {
     // fetch file
@@ -79,31 +79,27 @@ export function fetchWrappers(): void {
     return response.data;
   }
 
-  async function unzipFile(fileBuffer: Buffer, destination: string) {
+  function unzipFile(fileBuffer: Buffer, destination: string) {
     // create adm-zip instance
     const zip = new admZip(fileBuffer);
     // extract archive
     zip.extractAllTo(destination, /*overwrite*/ true);
   }
 
-    const download = async () => {
-      try {
-        const tag = "0.0.1-pre.1"
-        const repoName = "wasm-test-harness"
-        const url = `https://github.com/polywrap/${repoName}/releases/download/${tag}/wrappers.zip`;
+  const tag = "0.0.1-pre.1"
+  const repoName = "wasm-test-harness"
+  const url = `https://github.com/polywrap/${repoName}/releases/download/${tag}/wrappers.zip`;
 
-        const buffer = await fetchFromGithub(url);
-        const zipBuiltFolder = './output';
-        await unzipFile(buffer, zipBuiltFolder);
-        const wrappersPath = path.join(zipBuiltFolder, "wrappers")
-        shell.exec(`mv ${wrappersPath} ./cases`)
-        shell.exec(`rm -rf ${zipBuiltFolder}`)
-        shell.exec(`rm -rf node_modules`)
-
-        console.log(`Wrappers folder fetch successful`);
-      } catch (error) {
-        console.log(`An error occurred: ${error.message}`);
-      }
-    }
-    download().then().catch(e => console.log(e))
+  try {
+    const buffer = await fetchFromGithub(url);
+    const zipBuiltFolder = './output';
+    unzipFile(buffer, zipBuiltFolder);
+    const wrappersPath = path.join(zipBuiltFolder, "wrappers")
+    shell.exec(`mv ${wrappersPath} ./cases`)
+    shell.exec(`rm -rf ${zipBuiltFolder}`)
+    shell.exec(`rm -rf node_modules`)
+    console.log(`Wrappers folder fetch successful`);
+  } catch (error) {
+    console.log(`An error occurred: ${error.message}`);
+  }
 }

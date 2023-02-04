@@ -143,10 +143,10 @@ export async function buildWrapper(
  *   build? - run build before deploy
  */
 export async function deployWrapper(options: {
-  wrapperAbsPath: string,
-  jobs: DeployManifest["jobs"],
-  codegen?: boolean,
-  build?: boolean,
+  wrapperAbsPath: string;
+  jobs: DeployManifest["jobs"];
+  codegen?: boolean;
+  build?: boolean;
 }): Promise<void | {
   stdout: string;
   stderr: string;

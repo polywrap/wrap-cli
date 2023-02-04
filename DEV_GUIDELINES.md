@@ -44,7 +44,7 @@ Some tests rely on validating `stdout` for which Cue is used. If you need to run
 You can install Cue by following the instructions found [here](https://cuelang.org/docs/install/).
 
 In the test-cases directory, you can find the `wrappers` folder, which is auto generated from the releases of the
-[WASM Test Harness](https://github.com/polywrap/wasm-test-harness), check the `fetchWrappers` function from the [test-env package](./packages/test-cases/index.ts). These tests are used mostly for client tests, if you would like to
+[WASM Test Harness](https://github.com/polywrap/wasm-test-harness), check the `fetchWrappers` function from the [test-cases package](./packages/test-cases/index.ts). These tests are used mostly for client tests, if you would like to
 modify them, [follow the development guide of the wasm test harness](https://github.com/polywrap/wasm-test-harness#build--contribute).
 
 If any PR modifies `packages/wasm`, `packages/cli` or `packages/schema`, it will try to generate wrappers on CI based on the changes

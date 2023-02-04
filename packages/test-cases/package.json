@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "index.ts",
   "scripts": {
-    "generate:wrappers": "npx ts-node -e \"import { fetchWrappers } from './'; fetchWrappers()\""
+    "generate:wrappers": "npx ts-node -e \"import { fetchWrappers } from './'; (async () => await fetchWrappers())()\""
   },
   "dependencies": {
     "@polywrap/os-js": "0.10.0-pre.7"
