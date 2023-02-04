@@ -1,9 +1,10 @@
-import {  PluginPackage } from "@polywrap/plugin-js";
+import { PluginPackage } from "@polywrap/plugin-js";
 import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { PolywrapClient } from "../../../PolywrapClient";
 import { mockPluginRegistration } from "../../helpers";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { Uri } from "@polywrap/core-js";
 
 jest.setTimeout(200000);
 
@@ -11,37 +12,35 @@ export const envTestCases = (implementation: string) => {
   describe("env", () => {
     test(implementation, async () => {
       const externalWrapperPath = `${GetPathToTestWrappers()}/env-type/00-external/implementations/${implementation}`;
-      const externalWrapperUri = `file/${externalWrapperPath}`
+      const { uri: externalWrapperUri } = Uri.from(`file/${externalWrapperPath}`);
 
       const wrapperPath = `${GetPathToTestWrappers()}/env-type/01-main/implementations/${implementation}`;
-      const wrapperUri = `file/${wrapperPath}`
+      const { uri: wrapperUri } = Uri.from(`file/${wrapperPath}`);
 
-      const envs = [
-        {
-          uri: wrapperUri,
-          env: {
-            object: {
-              prop: "object string",
-            },
-            str: "string",
-            optFilledStr: "optional string",
-            number: 10,
-            bool: true,
-            en: "FIRST",
-            array: [32, 23],
+      const envs = {
+        [wrapperUri]: {
+          object: {
+            prop: "object string",
           },
+          str: "string",
+          optFilledStr: "optional string",
+          number: 10,
+          bool: true,
+          en: "FIRST",
+          array: [32, 23],
         },
-        {
-          uri: externalWrapperUri,
-          env: {
-            externalArray: [1, 2, 3],
-            externalString: "iamexternal",
-          },
+        [externalWrapperUri]: {
+          externalArray: [1, 2, 3],
+          externalString: "iamexternal",
         },
-      ]
+      };
+
       const builder = new ClientConfigBuilder();
-      builder.addEnvs(envs).addRedirect("ens/external-env.polywrap.eth", externalWrapperUri)
-      const client = new PolywrapClient(builder.build())
+      builder
+        .addDefaults()
+        .addEnvs(envs)
+        .addRedirect("ens/external-env.polywrap.eth", externalWrapperUri);
+      const client = new PolywrapClient(builder.build());
       const methodRequireEnvResult = await client.invoke({
         uri: wrapperUri,
         method: "methodRequireEnv",
@@ -159,7 +158,7 @@ export const envTestCases = (implementation: string) => {
         optEnum: null,
         array: [32, 23],
       });
-    })
+    });
   });
 
   describe("env client types", () => {
@@ -169,7 +168,7 @@ export const envTestCases = (implementation: string) => {
       const client = new PolywrapClient(
         {
           resolver: RecursiveResolver.from({
-            uri: implementationUri,
+            uri: Uri.from(implementationUri),
             package: envPackage,
           }),
           envs: [
@@ -196,13 +195,14 @@ export const envTestCases = (implementation: string) => {
 
     test("inline plugin env types", async () => {
       const implementationUri = "wrap://ens/some-implementation.eth";
+      type MockPackage = { a: number } & Record<string, unknown>;
       const client = new PolywrapClient(
         {
           resolver: RecursiveResolver.from([
             {
-              uri: implementationUri,
-              package: PluginPackage.from<{ a: number } & Record<string, unknown>>((module) => ({
-                mockEnv: (): { a: number } & Record<string, unknown> => {
+              uri: Uri.from(implementationUri),
+              package: PluginPackage.from<MockPackage>((module) => ({
+                mockEnv: (): MockPackage => {
                   return module.env;
                 },
               })),
@@ -230,4 +230,4 @@ export const envTestCases = (implementation: string) => {
       expect(mockEnv.value).toMatchObject({ arg1: "10" });
     });
   });
-}
+};

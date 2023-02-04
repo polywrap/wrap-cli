@@ -159,10 +159,11 @@ describe("URI resolution", () => {
 
   it("can resolve plugin", async () => {
     const pluginUri = new Uri("ens/plugin.eth");
-
-    const client = new PolywrapClient({
-      resolvers: [UriResolver.from(mockPluginRegistration(pluginUri))],
-    });
+    const client = new PolywrapClient(
+      {
+        resolvers: [UriResolver.from(mockPluginRegistration(pluginUri))],
+      },
+    );
 
     const resolutionContext = new UriResolutionContext();
     const result = await client.tryResolveUri({
@@ -307,8 +308,8 @@ describe("URI resolution", () => {
     const client = new PolywrapClient({
       redirects: [
         {
-          from: resolverRedirectUri.uri,
-          to: finalRedirectedUri.uri,
+          from: resolverRedirectUri,
+          to: finalRedirectedUri,
         },
       ],
       interfaces: [

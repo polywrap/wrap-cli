@@ -1,5 +1,3 @@
-import { PolywrapCoreClientConfig } from "./PolywrapCoreClientConfig";
-
 import {
   Wrapper,
   CoreClient,
@@ -18,46 +16,26 @@ import {
   UriResolutionContext,
   getEnvFromUriHistory,
   InvokeResult,
-  ValidateOptions,
   buildCleanUriHistory,
+  CoreClientConfig,
   WrapError,
   WrapErrorCode,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
-  compareSignature,
   DeserializeManifestOptions,
   WrapManifest,
-  ImportedModuleDefinition,
 } from "@polywrap/wrap-manifest-types-js";
-import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class PolywrapCoreClient implements CoreClient {
-  private _config: PolywrapCoreClientConfig<Uri>;
-
   // $start: PolywrapCoreClient-constructor
   /**
    * Instantiate a PolywrapClient
    *
    * @param config - a core client configuration
    */
-  constructor(config: PolywrapCoreClientConfig) /* $ */ {
-    try {
-      this.setTracingEnabled(config?.tracerConfig);
-
-      Tracer.startSpan("PolywrapClient: constructor");
-
-      this._config = this._buildConfigFromPolywrapCoreClientConfig(config);
-
-      Tracer.setAttribute("config", this._config);
-    } catch (error) {
-      Tracer.recordException(error);
-      throw error;
-    } finally {
-      Tracer.endSpan();
-    }
-  }
+  constructor(private _config: CoreClientConfig) /* $ */ {}
 
   // $start: PolywrapCoreClient-getConfig
   /**
@@ -65,26 +43,8 @@ export class PolywrapCoreClient implements CoreClient {
    *
    * @returns an immutable Polywrap client config
    */
-  public getConfig(): PolywrapCoreClientConfig<Uri> /* $ */ {
+  public getConfig(): CoreClientConfig /* $ */ {
     return this._config;
-  }
-
-  // $start: PolywrapCoreClient-setTracingEnabled
-  /**
-   * Enable tracing for intricate debugging
-   *
-   * @remarks
-   * Tracing uses the @polywrap/tracing-js package
-   *
-   * @param tracerConfig - configure options such as the tracing level
-   * @returns void
-   */
-  public setTracingEnabled(tracerConfig?: Partial<TracerConfig>): void /* $ */ {
-    if (tracerConfig?.consoleEnabled || tracerConfig?.httpEnabled) {
-      Tracer.enableTracing("PolywrapClient", tracerConfig);
-    } else {
-      Tracer.disableTracing();
-    }
   }
 
   // $start: PolywrapCoreClient-getInterfaces
@@ -93,8 +53,9 @@ export class PolywrapCoreClient implements CoreClient {
    *
    * @returns an array of interfaces and their registered implementations
    */
-  @Tracer.traceMethod("PolywrapClient: getInterfaces")
-  public getInterfaces(): readonly InterfaceImplementations<Uri>[] | undefined /* $ */ { // eslint-disable-line
+  public getInterfaces():
+    | readonly InterfaceImplementations[]
+    | undefined /* $ */ {
     return this._config.interfaces;
   }
 
@@ -104,8 +65,7 @@ export class PolywrapCoreClient implements CoreClient {
    *
    * @returns an array of env objects containing wrapper environmental variables
    */
-  @Tracer.traceMethod("PolywrapClient: getEnvs")
-  public getEnvs(): readonly Env<Uri>[] | undefined /* $ */ {
+  public getEnvs(): readonly Env[] | undefined /* $ */ {
     return this._config.envs;
   }
 
@@ -115,7 +75,6 @@ export class PolywrapCoreClient implements CoreClient {
    *
    * @returns an object that implements the IUriResolver interface
    */
-  @Tracer.traceMethod("PolywrapClient: getUriResolver")
   public getResolver(): IUriResolver<unknown> /* $ */ {
     return this._config.resolver;
   }
@@ -127,10 +86,7 @@ export class PolywrapCoreClient implements CoreClient {
    * @param uri - the URI used to register the env
    * @returns an env, or undefined if an env is not found at the given URI
    */
-  @Tracer.traceMethod("PolywrapClient: getEnvByUri")
-  public getEnvByUri<TUri extends Uri | string>(
-    uri: TUri
-  ): Env<Uri> | undefined /* $ */ {
+  public getEnvByUri(uri: Uri): Env | undefined /* $ */ {
     const uriUri = Uri.from(uri);
 
     const envs = this.getEnvs();
@@ -148,9 +104,8 @@ export class PolywrapCoreClient implements CoreClient {
    * @param uri - a wrap URI
    * @returns a Result containing the WrapManifest if the request was successful
    */
-  @Tracer.traceMethod("PolywrapClient: getManifest")
-  public async getManifest<TUri extends Uri | string>(
-    uri: TUri
+  public async getManifest(
+    uri: Uri
   ): Promise<Result<WrapManifest, WrapError>> /* $ */ {
     const load = await this.loadWrapper(Uri.from(uri), undefined);
     if (!load.ok) {
@@ -170,9 +125,8 @@ export class PolywrapCoreClient implements CoreClient {
    * @param options - { path: string; encoding?: "utf-8" | string }
    * @returns a Promise of a Result containing a file if the request was successful
    */
-  @Tracer.traceMethod("PolywrapClient: getFile")
-  public async getFile<TUri extends Uri | string>(
-    uri: TUri,
+  public async getFile(
+    uri: Uri,
     options: GetFileOptions
   ): Promise<Result<string | Uint8Array, WrapError>> /* $ */ {
     const load = await this.loadWrapper(Uri.from(uri), undefined);
@@ -201,12 +155,10 @@ export class PolywrapCoreClient implements CoreClient {
    * @param options - { applyResolution?: boolean; resolutionContext?: IUriResolutionContext }
    * @returns a Result containing URI array if the request was successful
    */
-  @Tracer.traceMethod("PolywrapClient: getImplementations")
-  public async getImplementations<TUri extends Uri | string>(
-    uri: TUri,
+  public async getImplementations(
+    uri: Uri,
     options: GetImplementationsOptions = {}
-  ): Promise<Result<TUri[], WrapError>> /* $ */ {
-    const isUriTypeString = typeof uri === "string";
+  ): Promise<Result<Uri[], WrapError>> /* $ */ {
     const applyResolution = !!options.applyResolution;
 
     const getImplResult = await getImplementations(
@@ -220,9 +172,7 @@ export class PolywrapCoreClient implements CoreClient {
       return getImplResult;
     }
 
-    const uris = isUriTypeString
-      ? (getImplResult.value.map((x: Uri) => x.uri) as TUri[])
-      : (getImplResult.value as TUri[]);
+    const uris = getImplResult.value;
 
     return ResultOk(uris);
   }
@@ -255,15 +205,11 @@ export class PolywrapCoreClient implements CoreClient {
    * }
    * @returns A Promise with a Result containing the return value or an error
    */
-  @Tracer.traceMethod("PolywrapClient: invokeWrapper")
-  public async invokeWrapper<
-    TData = unknown,
-    TUri extends Uri | string = string
-  >(
-    options: InvokerOptions<TUri> & { wrapper: Wrapper }
+  public async invokeWrapper<TData = unknown>(
+    options: InvokerOptions & { wrapper: Wrapper }
   ): Promise<InvokeResult<TData>> /* $ */ {
     try {
-      const typedOptions: InvokeOptions<Uri> = {
+      const typedOptions: InvokeOptions = {
         ...options,
         uri: Uri.from(options.uri),
       };
@@ -319,12 +265,11 @@ export class PolywrapCoreClient implements CoreClient {
    * }
    * @returns A Promise with a Result containing the return value or an error
    */
-  @Tracer.traceMethod("PolywrapClient: invoke")
-  public async invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokerOptions<TUri>
+  public async invoke<TData = unknown>(
+    options: InvokerOptions
   ): Promise<InvokeResult<TData>> /* $ */ {
     try {
-      const typedOptions: InvokeOptions<Uri> = {
+      const typedOptions: InvokeOptions = {
         ...options,
         uri: Uri.from(options.uri),
       };
@@ -343,12 +288,13 @@ export class PolywrapCoreClient implements CoreClient {
       const wrapper = loadWrapperResult.value;
 
       const resolutionPath = resolutionContext.getResolutionPath();
+
       const env = getEnvFromUriHistory(
         resolutionPath.length > 0 ? resolutionPath : [typedOptions.uri],
         this
       );
 
-      const invokeResult = await this.invokeWrapper<TData, Uri>({
+      const invokeResult = await this.invokeWrapper<TData>({
         env: env?.env,
         ...typedOptions,
         wrapper,
@@ -371,9 +317,8 @@ export class PolywrapCoreClient implements CoreClient {
    * @param options - { uri: TUri; resolutionContext?: IUriResolutionContext }
    * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
    */
-  @Tracer.traceMethod("PolywrapClient: tryResolveUri", TracingLevel.High)
-  public async tryResolveUri<TUri extends Uri | string>(
-    options: TryResolveUriOptions<TUri>
+  public async tryResolveUri(
+    options: TryResolveUriOptions
   ): Promise<Result<UriPackageOrWrapper, unknown>> /* $ */ {
     const uri = Uri.from(options.uri);
 
@@ -387,14 +332,6 @@ export class PolywrapCoreClient implements CoreClient {
       this,
       resolutionContext
     );
-
-    if (options.resolutionContext) {
-      Tracer.setAttribute(
-        "label",
-        buildCleanUriHistory(options.resolutionContext.getHistory()),
-        TracingLevel.High
-      );
-    }
 
     return response;
   }
@@ -413,14 +350,11 @@ export class PolywrapCoreClient implements CoreClient {
    * @param options - { noValidate?: boolean }
    * @returns A Promise with a Result containing a Wrapper or Error
    */
-  @Tracer.traceMethod("PolywrapClient: loadWrapper", TracingLevel.High)
   public async loadWrapper(
     uri: Uri,
     resolutionContext?: IUriResolutionContext,
     options?: DeserializeManifestOptions
   ): Promise<Result<Wrapper, WrapError>> /* $ */ {
-    Tracer.setAttribute("label", `Wrapper loaded: ${uri}`, TracingLevel.High);
-
     if (!resolutionContext) {
       resolutionContext = new UriResolutionContext();
     }
@@ -481,145 +415,5 @@ export class PolywrapCoreClient implements CoreClient {
     } else {
       return ResultOk(uriPackageOrWrapper.wrapper);
     }
-  }
-
-  // $start: PolywrapCoreClient-validate
-  /**
-   * Validate a wrapper, given a URI.
-   * Optionally, validate the full ABI and/or recursively validate imports.
-   *
-   * @param uri - the Uri to resolve
-   * @param options - { abi?: boolean; recursive?: boolean }
-   * @returns A Promise with a Result containing a boolean or Error
-   */
-  @Tracer.traceMethod("PolywrapClient: validate")
-  public async validate<TUri extends Uri | string>(
-    uri: TUri,
-    options: ValidateOptions
-  ): Promise<Result<true, WrapError>> /* $ */ {
-    const wrapper = await this.loadWrapper(Uri.from(uri));
-    if (!wrapper.ok) {
-      return wrapper;
-    }
-
-    const { abi } = await wrapper.value.getManifest();
-    const importedModules: ImportedModuleDefinition[] =
-      abi.importedModuleTypes || [];
-
-    const importUri = async (
-      importedModuleType: ImportedModuleDefinition
-    ): Promise<{
-      uri: string;
-      result: Result<UriPackageOrWrapper, unknown>;
-    }> => {
-      const uri = importedModuleType.uri;
-      return {
-        uri,
-        result: await this.tryResolveUri({ uri }),
-      };
-    };
-    const resolvedModules = await Promise.all(importedModules.map(importUri));
-    const modulesNotFound = resolvedModules
-      .filter(({ result }) => !result.ok)
-      .map(({ uri }) => uri);
-
-    if (modulesNotFound.length) {
-      const message = `The following URIs could not be resolved: ${modulesNotFound}`;
-      const error = new WrapError(message, {
-        code: WrapErrorCode.CLIENT_VALIDATE_RESOLUTION_FAIL,
-        uri: uri.toString(),
-      });
-      return ResultErr(error);
-    }
-
-    if (options.abi) {
-      for (const importedModule of importedModules) {
-        const importedModuleManifest = await this.getManifest(
-          importedModule.uri
-        );
-        if (!importedModuleManifest.ok) {
-          return ResultErr(importedModuleManifest.error);
-        }
-        const importedMethods =
-          importedModuleManifest.value.abi.moduleType?.methods || [];
-
-        const expectedMethods = importedModules.find(
-          ({ uri }) => importedModule.uri === uri
-        );
-
-        for (const [i, _] of Object.keys(importedMethods).entries()) {
-          const importedMethod = importedMethods[i];
-
-          if (expectedMethods?.methods && expectedMethods?.methods.length < i) {
-            const expectedMethod = expectedMethods?.methods[i];
-            const areEqual = compareSignature(importedMethod, expectedMethod);
-
-            if (!areEqual) {
-              const message = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
-              const error = new WrapError(message, {
-                code: WrapErrorCode.CLIENT_VALIDATE_ABI_FAIL,
-                uri: uri.toString(),
-              });
-              return ResultErr(error);
-            }
-          } else {
-            const message = `ABI from Uri: ${importedModule.uri} is not compatible with Uri: ${uri}`;
-            const error = new WrapError(message, {
-              code: WrapErrorCode.CLIENT_VALIDATE_ABI_FAIL,
-              uri: uri.toString(),
-            });
-            return ResultErr(error);
-          }
-        }
-      }
-    }
-
-    if (options.recursive) {
-      const validateImportedModules = importedModules.map(({ uri }) =>
-        this.validate(uri, options)
-      );
-      const resolverUris = await Promise.all(validateImportedModules);
-      const invalidUris = resolverUris.filter(({ ok }) => !ok) as {
-        error: WrapError;
-      }[];
-
-      if (invalidUris.length) {
-        let message = "The following URIs failed validation:";
-        for (const { error } of invalidUris) {
-          message += `\n${error.uri} -> ${error.reason}`;
-        }
-        const error = new WrapError(message, {
-          code: WrapErrorCode.CLIENT_VALIDATE_RECURSIVE_FAIL,
-          uri: uri.toString(),
-        });
-        return ResultErr(error);
-      }
-    }
-    return ResultOk(true);
-  }
-
-  private _buildConfigFromPolywrapCoreClientConfig(
-    config: PolywrapCoreClientConfig
-  ): PolywrapCoreClientConfig<Uri> {
-    return {
-      interfaces:
-        config?.interfaces?.map((x) => ({
-          interface: Uri.from(x.interface),
-          implementations: x.implementations.map((y) => Uri.from(y)),
-        })) ?? [],
-      envs:
-        config?.envs?.map((x) => ({
-          uri: Uri.from(x.uri),
-          env: x.env,
-        })) ?? [],
-      resolver: config.resolver,
-      tracerConfig: {
-        consoleEnabled: !!config?.tracerConfig?.consoleEnabled,
-        consoleDetailed: config?.tracerConfig?.consoleDetailed,
-        httpEnabled: !!config?.tracerConfig?.httpEnabled,
-        httpUrl: config?.tracerConfig?.httpUrl,
-        tracingLevel: config?.tracerConfig?.tracingLevel,
-      },
-    };
   }
 }

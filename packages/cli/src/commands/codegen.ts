@@ -18,8 +18,7 @@ import {
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 
-import { Env, PolywrapClient } from "@polywrap/client-js";
-import { Uri } from "@polywrap/core-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
@@ -103,11 +102,11 @@ async function run(options: Required<CodegenCommandOptions>) {
   const configBuilder = await parseClientConfigOption(clientConfig);
 
   if (envs) {
-    configBuilder.addEnvs(envs as Env<Uri>[]);
+    configBuilder.addEnvs(envs);
   }
 
   // Get Client
-  const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
+  const client = new PolywrapClient(configBuilder.build(), {
     noDefaults: true,
   });
 

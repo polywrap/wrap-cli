@@ -6,9 +6,9 @@ import { Result } from "@polywrap/result";
 // $start: UriResolver.ts
 
 /** Options required for URI resolution. */
-export interface TryResolveUriOptions<TUri extends Uri | string> {
+export interface TryResolveUriOptions {
   /** The Wrapper's URI */
-  uri: TUri;
+  uri: Uri;
 
   /** A URI resolution context */
   resolutionContext?: IUriResolutionContext;
@@ -22,8 +22,8 @@ export interface UriResolverHandler<TError = undefined> {
    * @param options - TryResolveUriOptions
    * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
    */
-  tryResolveUri<TUri extends Uri | string>(
-    options?: TryResolveUriOptions<TUri>
+  tryResolveUri(
+    options?: TryResolveUriOptions
   ): Promise<Result<UriPackageOrWrapper, TError>>;
 }
 

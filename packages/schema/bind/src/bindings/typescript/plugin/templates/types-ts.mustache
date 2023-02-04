@@ -8,7 +8,8 @@ import * as Types from "./";
 import {
   CoreClient,{{#interfaceTypes.length}}
   Result,{{/interfaceTypes.length}}
-  InvokeResult
+  InvokeResult,
+  Uri,
 } from "@polywrap/core-js";
 
 export type UInt = number;
@@ -115,7 +116,7 @@ export const {{type}} = {
     client: CoreClient
   ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
-      uri: "{{parent.uri}}",
+      uri: Uri.from("{{parent.uri}}"),
       method: "{{name}}",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -130,8 +131,11 @@ export const {{type}} = {
 {{#isInterface}}
 export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   public static interfaceUri: string = "{{uri}}";
+  public uri: Uri;
 
-  constructor(public uri: string) {}
+  constructor(uri: string) {
+    this.uri = Uri.from(uri);
+  }
 
   {{#methods}}
   public async {{name}}(
@@ -157,15 +161,20 @@ export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
 {{#interfaceTypes}}
 
 export class {{#detectKeyword}}{{namespace}}{{/detectKeyword}} {
-  static uri: string = "{{uri}}";
+  static uri: Uri = Uri.from("{{uri}}");
 
   {{#capabilities}}
   {{#getImplementations}}
   {{#enabled}}
-  public static getImplementations(
+  public static async getImplementations(
     client: CoreClient
-  ): Result<string[], Error> {
-    return client.getImplementations(this.uri, {});
+  ): Promise<Result<string[], Error>> {
+    const impls = await client.getImplementations(this.uri, {});
+    if (!impls.ok) {
+      return { ok: false, error: impls.error};
+    }
+
+    return { ok: true, value: impls.value.map((impl) => (impl.uri))};
   }
   {{/enabled}}
   {{/getImplementations}}

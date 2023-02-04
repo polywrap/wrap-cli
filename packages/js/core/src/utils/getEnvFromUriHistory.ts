@@ -3,7 +3,7 @@ import { Uri, CoreClient, Env } from "../types";
 export const getEnvFromUriHistory = (
   uriHistory: Uri[],
   client: CoreClient
-): Env<Uri> | undefined => {
+): Env | undefined => {
   for (const uri of uriHistory) {
     const env = client.getEnvByUri(uri);
 

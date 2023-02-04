@@ -11,7 +11,7 @@ import { IUriPackage, IUriRedirect } from "@polywrap/core-js";
 import { ResultErr } from "@polywrap/result";
 import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
 import { WasmPackage } from "@polywrap/wasm-js";
-import { defaultInterfaces } from "@polywrap/client-config-builder-js";
+import { defaultWrappers } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 
@@ -36,16 +36,16 @@ describe("sanity", () => {
           implementations: [new Uri("wrap://plugin/logger")],
         },
         {
-          interface: new Uri(defaultInterfaces.concurrent),
+          interface: new Uri(defaultWrappers.concurrentInterface),
           implementations: [new Uri("wrap://plugin/concurrent")],
         },
       ]);
   });
 
   test("validate requested uri is available", async () => {
-    const subinvokeUri = "ens/imported-subinvoke.eth"
-    const invokeUri = "ens/imported-invoke.eth";
-    const consumerUri = "ens/consumer.eth";
+    const subinvokeUri = Uri.from("ens/imported-subinvoke.eth");
+    const invokeUri = Uri.from("ens/imported-invoke.eth");
+    const consumerUri = Uri.from("ens/consumer.eth");
 
     const getPackage = async (name: string) => {
       const manifest = await fs.promises.readFile(
@@ -75,7 +75,7 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
 
-    let fooPackage: IUriPackage<string> = {
+    let fooPackage: IUriPackage = {
       uri: subinvokeUri,
       package: await getPackage("00-subinvoke")
     }
@@ -100,7 +100,7 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Unable to find URI");
 
-    let modifiedFooWrapper: IUriPackage<string> = {
+    let modifiedFooWrapper: IUriPackage = {
       uri: invokeUri,
       package: await getPackage("01-invoke")
     };
@@ -116,7 +116,7 @@ describe("sanity", () => {
 
     expect(result.ok).toBeTruthy()
 
-    let redirectUri: IUriRedirect<string> = {
+    let redirectUri: IUriRedirect = {
       from: subinvokeUri,
       to: consumerUri
     };

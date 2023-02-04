@@ -1,4 +1,3 @@
-import { Tracer } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 // $start: UriConfig
@@ -101,18 +100,6 @@ export class Uri {
     return result.ok;
   }
 
-  // $start: Uri-toString
-  /** @returns Uri string representation */
-  public toString(): string /* $ */ {
-    return this._config.uri;
-  }
-
-  // $start: Uri-toJSON
-  /** @returns Uri string representation */
-  public toJSON(): string /* $ */ {
-    return this._config.uri;
-  }
-
   // $start: Uri-parseUri
   /**
    * Parse a wrap URI string into its authority and path
@@ -120,7 +107,6 @@ export class Uri {
    * @param uri - a string representation of a wrap URI
    * @returns A Result containing a UriConfig, if successful, or an error
    */
-  @Tracer.traceMethod("Uri: parseUri")
   public static parseUri(uri: string): Result<UriConfig, Error> /* $ */ {
     if (!uri) {
       return ResultErr(Error("The provided URI is empty"));
@@ -184,7 +170,6 @@ export class Uri {
    *
    * @param uri - a Uri instance or a string representation of a wrap URI
    */
-  @Tracer.traceMethod("Uri: from")
   public static from(uri: Uri | string): Uri /* $ */ {
     if (typeof uri === "string") {
       return new Uri(uri);
@@ -193,5 +178,17 @@ export class Uri {
     } else {
       throw Error(`Unknown uri type, cannot convert. ${JSON.stringify(uri)}`);
     }
+  }
+
+  // $start: Uri-toString
+  /** @returns Uri string representation */
+  public toString(): string /* $ */ {
+    return this._config.uri;
+  }
+
+  // $start: Uri-toJSON
+  /** @returns Uri string representation */
+  public toJSON(): string /* $ */ {
+    return this._config.uri;
   }
 }

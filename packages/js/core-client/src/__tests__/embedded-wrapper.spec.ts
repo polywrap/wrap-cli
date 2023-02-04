@@ -29,7 +29,7 @@ describe("Embedded wrapper", () => {
     });
 
     const result = await client.invoke<number>({
-      uri: wrapperUri.uri,
+      uri: wrapperUri,
       method: "add",
       args: {
         a: 1,

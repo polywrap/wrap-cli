@@ -28,8 +28,8 @@ describe("Embedded package", () => {
       ])
     });
 
-    const result = await client.invoke<string>({
-      uri: wrapperUri.uri,
+    const result = await client.invoke<number>({
+      uri: wrapperUri,
       method: "add",
       args: {
         a: 1,
