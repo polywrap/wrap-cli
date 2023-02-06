@@ -28,7 +28,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/asyncify`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     const client = new PolywrapClient({
       packages: [
@@ -46,7 +46,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/bigint-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runBigIntTypeTest(new PolywrapClient(), wrapperUri);
   });
@@ -55,7 +55,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/bignumber-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runBigNumberTypeTest(new PolywrapClient(), wrapperUri);
   });
@@ -64,7 +64,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/bytes-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runBytesTypeTest(new PolywrapClient(), wrapperUri);
   });
@@ -73,7 +73,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/enum-types`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runEnumTypesTest(new PolywrapClient(), wrapperUri);
   });
@@ -82,7 +82,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/map-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runMapTypeTest(new PolywrapClient(), wrapperUri);
   });
@@ -96,7 +96,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(interfacePath);
 
-    await buildWrapper(implementationPath, undefined, true);
+    await buildWrapper(implementationPath);
 
     const client = new PolywrapClient({
       interfaces: [
@@ -125,8 +125,8 @@ describe("wasm-rs test cases", () => {
     const aggregatorUri = `fs/${aggregatorPath}/build`;
 
     await buildWrapper(interfacePath);
-    await buildWrapper(implementationPath, undefined, true);
-    await buildWrapper(aggregatorPath, undefined, true);
+    await buildWrapper(implementationPath);
+    await buildWrapper(aggregatorPath);
 
     const client = new PolywrapClient({
       interfaces: [
@@ -149,7 +149,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/invalid-types`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runInvalidTypesTest(new PolywrapClient(), wrapperUri);
   });
@@ -158,7 +158,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/json-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runJsonTypeTest(new PolywrapClient(), wrapperUri, true);
   });
@@ -167,7 +167,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/large-types`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runLargeTypesTest(new PolywrapClient(), wrapperUri);
   });
@@ -176,7 +176,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/number-types`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runNumberTypesTest(new PolywrapClient(), wrapperUri);
   });
@@ -185,7 +185,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/object-types`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runObjectTypesTest(new PolywrapClient(), wrapperUri);
   });
@@ -194,7 +194,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/simple-storage`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runSimpleStorageTest(getClientWithEnsAndIpfs(), wrapperUri);
   });
@@ -203,7 +203,7 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/simple-env-types`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runSimpleEnvTest(
       await new PolywrapClient({
@@ -228,8 +228,8 @@ describe("wasm-rs test cases", () => {
     const wrapperUri = `fs/${wrapperPath}/build`;
     const externalWrapperUri = `fs/${externalWrapperPath}/build`;
 
-    await buildWrapper(externalWrapperPath, undefined, true);
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(externalWrapperPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runComplexEnvs(
       new PolywrapClient({
@@ -270,7 +270,7 @@ describe("wasm-rs test cases", () => {
   it("override rust print macros", async () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/println-logging`;
     const wrapperUri = `fs/${wrapperPath}/build`;
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     console.debug = jest.fn();
     const message = "foo bar baz";

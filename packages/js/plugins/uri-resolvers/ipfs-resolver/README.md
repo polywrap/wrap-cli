@@ -30,7 +30,6 @@ export async function foo({
     ipfsProvider: providers.ipfs,
     ethereumProvider: providers.ethereum,
     ensName: "simple-storage.eth",
-    codegen: true,
   });
 
   // get wrapper CID

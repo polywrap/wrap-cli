@@ -18,7 +18,7 @@ describe("e2e tests for WsPlugin", () => {
     beforeAll(async () => {
       client = getClient();
 
-      await buildWrapper(wrapperPath, undefined, true);
+      await buildWrapper(wrapperPath);
     });
 
     beforeEach(() => {

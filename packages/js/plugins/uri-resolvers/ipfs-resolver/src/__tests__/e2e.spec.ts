@@ -23,7 +23,6 @@ describe("IPFS Plugin", () => {
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
       ensName: "cool.wrapper.eth",
-      codegen: true
     });
 
     wrapperIpfsCid = ipfsCid;
