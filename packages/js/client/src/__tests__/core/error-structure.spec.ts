@@ -5,9 +5,10 @@ import { Uri } from "@polywrap/core-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { PolywrapClient } from "../..";
 import { WrapError, WrapErrorCode } from "@polywrap/core-js";
-import { mockPluginRegistration } from "../helpers";
+import { incompatiblePlugin, mockPluginRegistration } from "../helpers";
 import { defaultPackages } from "@polywrap/client-config-builder-js";
 import { msgpackDecode, msgpackEncode } from "@polywrap/msgpack-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(660000);
 
@@ -199,7 +200,7 @@ describe("Error structure", () => {
       expect(prevOfPrev.source).toEqual({ file: "src/index.ts", row: 8, col: 5 });
     });
 
-    describe("Incompatible version invocation", async () => {
+    describe("Incompatible version invocation", () => {
       beforeAll(async () => {
         const wrapperPath = `${GetPathToTestWrappers()}/subinvoke/00-subinvoke/implementations/as`;
         const manifestBuffer = fs.readFileSync(path.join(wrapperPath, "wrap.info"))
@@ -212,7 +213,7 @@ describe("Error structure", () => {
         fs.writeFileSync("tmp/wrap.info", modifiedManifestBuffer);
         fs.writeFileSync("tmp/wrap.wasm", wasmModuleBuffer);
       })
-      test("Invoke a wrapper of incompatible version", async () => {
+      test("Invoke a wrapper with incompatible version", async () => {
         const client = new PolywrapClient();
         const result = await client.invoke<string>({
           uri: "wrap://fs/tmp",
@@ -225,6 +226,25 @@ describe("Error structure", () => {
         expect(result.error?.name).toEqual("WrapError");
         expect(result.error?.code).toEqual(WrapErrorCode.URI_RESOLVER_ERROR);
         expect(result.error?.uri.endsWith("tmp")).toBeTruthy();
+        expect(result.error?.resolutionStack).toBeDefined();
+        expect(`${result.error?.cause}`).toContain(`Unrecognized WrapManifest schema version "0.0.0.5"`);
+      });
+
+      test.skip("Invoke a plugin with incompatible version", async () => {
+        const builder = new ClientConfigBuilder();
+        const config = builder.addPackage("wrap://ens/plugin.eth", incompatiblePlugin()).build();
+        const client = new PolywrapClient(config);
+        const result = await client.invoke<string>({
+          uri: "wrap://ens/plugin.eth",
+          method: "getData"
+        });
+      
+        expect(result.ok).toBeFalsy();
+        if (result.ok) throw Error("should never happen");
+      
+        expect(result.error?.name).toEqual("WrapError");
+        expect(result.error?.code).toEqual(WrapErrorCode.URI_RESOLVER_ERROR);
+        expect(result.error?.uri.endsWith("plugin.eth")).toBeTruthy();
         expect(result.error?.resolutionStack).toBeDefined();
         expect(`${result.error?.cause}`).toContain(`Unrecognized WrapManifest schema version "0.0.0.5"`);
       });
@@ -293,7 +313,7 @@ describe("Error structure", () => {
       expect(result.error?.reason).toEqual("I'm throwing!");
       expect(result.error?.uri).toEqual("wrap://plugin/mock");
       expect(result.error?.source?.file?.endsWith("packages/js/client/src/__tests__/helpers.ts")).toBeTruthy();
-      expect(result.error?.source?.row).toEqual(49);
+      expect(result.error?.source?.row).toEqual(50);
       expect(result.error?.source?.col).toEqual(17);
     });
 

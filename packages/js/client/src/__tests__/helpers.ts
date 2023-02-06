@@ -37,6 +37,7 @@ export const memoryStoragePlugin = () => {
       `)
   })
 }
+
 export const mockPluginRegistration = (uri: string | Uri) => {
   return {
     uri: Uri.from(uri),
@@ -57,3 +58,21 @@ export const mockPluginRegistration = (uri: string | Uri) => {
 };
 
 export type ErrResult<E = undefined> = { ok: false; error: E | undefined };
+
+export const incompatiblePlugin = () => {
+  class IncompatiblePlugin extends PluginModule<Record<string, unknown>> {
+    async getData(_: {}): Promise<number> {
+      return 0;
+    }
+  }
+  return PluginPackage.from(new IncompatiblePlugin({}), {
+    name: "incompatiblePlugin",
+    type: "plugin",
+    version: "0.0.0.5",
+    abi: parseSchema(`
+        type Module {
+          getData: Int32!
+        }
+      `)
+  })
+}
