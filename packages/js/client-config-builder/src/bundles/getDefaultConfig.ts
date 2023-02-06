@@ -15,6 +15,7 @@ import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
+import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 // $start: getDefaultConfig
 
@@ -46,7 +47,6 @@ export const defaultPackages = {
 };
 
 export const defaultInterfaces = {
-  uriResolver: "wrap://ens/uri-resolver.core.polywrap.eth",
   concurrent: "wrap://ens/wrappers.polywrap.eth:concurrent@1.0.0",
   logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
   http: "wrap://ens/wrappers.polywrap.eth:http@1.1.0",
@@ -107,7 +107,7 @@ export const getDefaultConfig = (): BuilderConfig => ({
   packages: getDefaultPlugins(),
   wrappers: {},
   interfaces: {
-    [defaultInterfaces.uriResolver]: new Set([
+    [ExtendableUriResolver.extInterfaceUri.uri]: new Set([
       defaultPackages.ipfsResolver,
       defaultPackages.ensResolver,
       defaultPackages.fileSystemResolver,

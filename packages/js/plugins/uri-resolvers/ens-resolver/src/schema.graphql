@@ -1,4 +1,4 @@
-#import { Module, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.polywrap.eth"
+#import { Module, MaybeUriOrManifest } into UriResolver from "wrap://ens/wrappers.polywrap.eth:uri-resolver-ext@1.1.0"
 #import { Module } into Ethereum from "ens/ethereum.polywrap.eth"
 
 type Module implements UriResolver_Module { }
