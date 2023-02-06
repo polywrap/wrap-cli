@@ -50,6 +50,7 @@ export interface BuildCommandOptions extends BaseCommandOptions {
   clientConfig: string | false;
   wrapperEnvs: string | false;
   codegen: boolean;
+  noCodegen: boolean;
   codegenDir: string;
   watch: boolean;
   strategy: `${SupportedStrategies}`;
@@ -117,6 +118,7 @@ export const build: Command = {
           verbose: options.verbose || false,
           quiet: options.quiet || false,
           logFile: parseLogFileOption(options.logFile),
+          noCodegen: options.noCodegen || false,
         });
       });
   },
@@ -207,6 +209,7 @@ async function run(options: Required<BuildCommandOptions>) {
   }
 
   let buildStrategy: BuildStrategy<unknown>;
+  let canRunCodegen = true;
 
   if (isPolywrapManifestLanguage(language)) {
     await validateManifestModules(manifest as PolywrapManifest);
@@ -216,6 +219,8 @@ async function run(options: Required<BuildCommandOptions>) {
       outputDir,
       project as PolywrapProject
     );
+
+    canRunCodegen = language != "interface";
   }
 
   const execute = async (): Promise<boolean> => {
@@ -225,7 +230,7 @@ async function run(options: Required<BuildCommandOptions>) {
         client,
       });
 
-      if (codegen) {
+      if (codegen && canRunCodegen) {
         const codeGenerator = new CodeGenerator({
           project,
           schemaComposer,
