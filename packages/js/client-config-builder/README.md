@@ -64,7 +64,6 @@ Finally, build a ClientConfig or CoreClientConfig to pass to the PolywrapClient 
   // or build with a custom resolver
   coreClientConfig = builder.build({
     resolver: RecursiveResolver.from([]),
-    wrapperCache: new WrapperCache(),
   });
 ```
 
