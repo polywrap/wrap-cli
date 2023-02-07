@@ -1,6 +1,6 @@
 {
-  "name": "templates-app-typescript-node",
-  "description": "Polywrap App TypeScript Node Template",
+  "name": "templates-app-typescript",
+  "description": "Polywrap App TypeScript Template",
   "private": true,
   "version": "0.10.0-pre.7",
   "scripts": {
