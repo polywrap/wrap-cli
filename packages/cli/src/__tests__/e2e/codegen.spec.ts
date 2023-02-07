@@ -74,12 +74,11 @@ describe("e2e tests for codegen command", () => {
 
     for (const [option, errorMessage] of Object.entries(missingOptionArgs)) {
       it(`Should throw error if params not specified for ${option} option`, async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCli({
-          args: ["codegen", option],
-          config: {
-            cwd: getTestCaseDir(0),
-            cli: polywrapCli,
-          }
+        const { exitCode: code, stdout: output, stderr: error } = await Commands.codegen({
+          args: [option]
+        }, {
+          cwd: getTestCaseDir(0),
+          cli: polywrapCli,
         });
 
         expect(code).toEqual(1);
