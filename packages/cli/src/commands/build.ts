@@ -27,7 +27,7 @@ import {
   DockerImageBuildStrategy,
   LocalBuildStrategy,
 } from "../lib/build-strategies";
-import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
+import { DEFAULT_CODEGEN_DIR } from "../lib/defaults";
 
 import readline from "readline";
 import { PolywrapClient } from "@polywrap/client-js";
@@ -81,7 +81,7 @@ export const build: Command = {
       .option(
         `--codegen-dir`,
         `${intlMsg.commands_build_options_codegen_dir({
-          default: defaultCodegenDir,
+          default: DEFAULT_CODEGEN_DIR,
         })}`
       )
       .option(
@@ -111,7 +111,7 @@ export const build: Command = {
           wrapperEnvs: options.wrapperEnvs || false,
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
           codegen: options.codegen || false,
-          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
+          codegenDir: parseDirOption(options.codegenDir, DEFAULT_CODEGEN_DIR),
           strategy: options.strategy || defaultStrategy,
           watch: options.watch || false,
           verbose: options.verbose || false,
