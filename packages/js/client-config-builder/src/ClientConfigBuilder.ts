@@ -1,7 +1,6 @@
 import { getDefaultConfig } from "./bundles";
 import { BaseClientConfigBuilder } from "./BaseClientConfigBuilder";
-import { IClientConfigBuilder } from "./types/IClientConfigBuilder";
-import { BuilderConfig } from "./types";
+import { IClientConfigBuilder, BuilderConfig, BuildOptions } from "./types";
 
 import {
   CoreClientConfig,
@@ -9,26 +8,18 @@ import {
   InterfaceImplementations,
   IUriPackage,
   IUriRedirect,
-  IUriResolver,
   IUriWrapper,
   Uri,
 } from "@polywrap/core-js";
 import {
-  IWrapperCache,
   PackageToWrapperCacheResolver,
   RecursiveResolver,
   StaticResolver,
   WrapperCache,
+  InterfaceRedirectResolver,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
-type BuildOptions =
-  | {
-      wrapperCache: IWrapperCache;
-    }
-  | {
-      resolver: IUriResolver<unknown>;
-    };
 export class ClientConfigBuilder extends BaseClientConfigBuilder {
   // $start: ClientConfigBuilder-constructor
   /**
@@ -61,6 +52,7 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
                 ...this.buildPackages(),
               ]),
               ...this._config.resolvers,
+              new InterfaceRedirectResolver(),
               new ExtendableUriResolver(),
             ],
             wrapperCache ?? new WrapperCache()

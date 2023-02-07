@@ -1,7 +1,20 @@
-import { BuilderConfig } from "./configs/BuilderConfig";
+import { BuilderConfig } from "./configs";
 
-import { CoreClientConfig, Wrapper, IWrapPackage } from "@polywrap/core-js";
-import { UriResolverLike } from "@polywrap/uri-resolvers-js";
+import {
+  CoreClientConfig,
+  Wrapper,
+  IWrapPackage,
+  IUriResolver,
+} from "@polywrap/core-js";
+import { IWrapperCache, UriResolverLike } from "@polywrap/uri-resolvers-js";
+
+export type BuildOptions =
+  | {
+      wrapperCache: IWrapperCache;
+    }
+  | {
+      resolver: IUriResolver<unknown>;
+    };
 
 export interface IClientConfigBuilder {
   config: BuilderConfig;
@@ -12,7 +25,7 @@ export interface IClientConfigBuilder {
    *
    * @returns CoreClientConfig that results from applying all the steps in the builder pipeline
    */
-  build(): CoreClientConfig;
+  build(options?: BuildOptions): CoreClientConfig;
   // $end
 
   // $start: IClientConfigBuilder-add

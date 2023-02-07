@@ -24,6 +24,7 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.7"
   },
   "devDependencies": {
+    "@polywrap/plugin-js": "0.10.0-pre.7",
     "@types/jest": "26.0.8",
     "jest": "26.6.3",
     "rimraf": "3.0.2",

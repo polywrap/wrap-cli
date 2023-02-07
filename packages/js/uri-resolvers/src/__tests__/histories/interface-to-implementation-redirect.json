@@ -1,0 +1,11 @@
+[
+  "wrap://ens/wrappers.polywrap.eth:uri-resolver-ext@1.1.0 => UriResolverAggregator => uri (wrap://package/uri-resolver)",
+  [
+    "wrap://ens/wrappers.polywrap.eth:uri-resolver-ext@1.1.0 => Package (wrap://package/uri-resolver)",
+    "wrap://ens/wrappers.polywrap.eth:uri-resolver-ext@1.1.0 => InterfaceRedirect (wrap://ens/wrappers.polywrap.eth:uri-resolver-ext@1.1.0 - wrap://package/uri-resolver) => uri (wrap://package/uri-resolver)"
+  ],
+  "wrap://package/uri-resolver => UriResolverAggregator => package (wrap://package/uri-resolver)",
+  [
+    "wrap://package/uri-resolver => Package (wrap://package/uri-resolver) => package (wrap://package/uri-resolver)"
+  ]
+]

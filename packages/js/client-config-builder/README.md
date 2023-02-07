@@ -430,7 +430,7 @@ A complete example using all or most of the available methods.
    *
    * @returns CoreClientConfig that results from applying all the steps in the builder pipeline
    */
-  build(): CoreClientConfig;
+  build(options?: BuildOptions): CoreClientConfig;
 ```
 
 ## Bundles
