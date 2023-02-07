@@ -4,8 +4,9 @@ import yaml from "yaml";
 
 import { clearStyle, parseOutput, polywrapCli } from "./utils";
 
-import { buildWrapper, runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
+import { Commands } from "@polywrap/cli-js";
+import { TestCommandOptions } from "../../commands";
 
 jest.setTimeout(200000);
 
@@ -39,26 +40,31 @@ describe("e2e tests for test command", () => {
   const getTestCaseDir = (index: number): string =>
     path.join(testCaseRoot, testCases[index]);
 
-  const getCmdArgs = (testCaseDir: string): string[] => {
-    const cmdArgs: string[] = [];
+  const getCmdArgs = (testCaseDir: string): Partial<TestCommandOptions> => {
+    let args: Partial<TestCommandOptions> = {};
     const cmdFile = path.join(testCaseDir, "cmd.json");
     if (fs.existsSync(cmdFile)) {
       const cmdConfig = JSON.parse(fs.readFileSync(cmdFile, "utf-8"));
-      if (cmdConfig.args) {
-        cmdArgs.push(...cmdConfig.args);
+      if (cmdConfig) {
+        args = cmdConfig;
       }
     }
-    return cmdArgs;
+    return args;
   }
 
   beforeAll(async () => {
     const wrapperPath = path.join(testCaseRoot, "run-test-wrapper");
-    await buildWrapper(wrapperPath, undefined, true);
+    await Commands.build({
+      codegen: true
+    }, {
+      cwd: wrapperPath
+    });
   });
 
   it("Should show help text", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["test", "--help"],
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.test({
+      help: true 
+    }, {
       cwd: getTestCaseDir(0),
     });
 
@@ -76,8 +82,9 @@ describe("e2e tests for test command", () => {
 
     for (const [option, errorMessage] of Object.entries(missingOptionArgs)) {
       it(`Should throw error if params not specified for ${option} option`, async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["test", option],
+        const { exitCode: code, stdout: output, stderr: error } = await Commands.test({
+          args: [option],
+        }, {
           cwd: getTestCaseDir(0),
           cli: polywrapCli,
         });
@@ -94,8 +101,7 @@ describe("e2e tests for test command", () => {
   it("Should successfully return response: using yaml workflow", async () => {
     const testCaseDir = getTestCaseDir(0);
     const args = getCmdArgs(testCaseDir);
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["test", ...args],
+    const { exitCode, stdout, stderr } = await Commands.test(args, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -114,8 +120,7 @@ describe("e2e tests for test command", () => {
   it("Should successfully return response: using json workflow", async () => {
     const testCaseDir = getTestCaseDir(1);
     const args = getCmdArgs(testCaseDir);
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["test", ...args],
+    const { exitCode, stdout, stderr } = await Commands.test(args, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -134,8 +139,7 @@ describe("e2e tests for test command", () => {
   it("Should successfully create json output file if specified", async () => {
     const testCaseDir = getTestCaseDir(2);
     const args = getCmdArgs(testCaseDir);
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["test", ...args],
+    const { exitCode, stdout, stderr } = await Commands.test(args, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -158,8 +162,7 @@ describe("e2e tests for test command", () => {
   it("Should successfully create yaml output file if specified", async () => {
     const testCaseDir = getTestCaseDir(3);
     const args = getCmdArgs(testCaseDir);
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["test", ...args],
+    const { exitCode, stdout, stderr } = await Commands.test(args, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -184,8 +187,9 @@ describe("e2e tests for test command", () => {
   });
 
   it("Should suppress the output if --quiet option is specified", async () => {
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["test", "--quiet" ],
+    const { exitCode, stdout, stderr } = await Commands.test({
+      quiet: true
+    }, {
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
@@ -198,8 +202,7 @@ describe("e2e tests for test command", () => {
   it("Should validate output", async () => {
     const testCaseDir = getTestCaseDir(4);
     const args = getCmdArgs(testCaseDir);
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["test", ...args],
+    const { exitCode, stdout, stderr } = await Commands.test(args, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -216,12 +219,10 @@ describe("e2e tests for test command", () => {
   it("Should print error on validation if it fails", async () => {
     const testCaseDir = getTestCaseDir(5);
     const args = getCmdArgs(testCaseDir);
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["test", ...args],
+    const { exitCode, stdout, stderr } = await Commands.test(args, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
-
     expect(exitCode).toEqual(1);
 
     const output = parseOutput(stdout);
@@ -238,8 +239,7 @@ describe("e2e tests for test command", () => {
   it("Should print error on stderr if manifest is invalid", async () => {
     const testCaseDir = getTestCaseDir(6);
     const args = getCmdArgs(testCaseDir);
-    const { exitCode, stderr } = await runCLI({
-      args: ["test", ...args],
+    const { exitCode, stderr } = await Commands.test(args, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -253,8 +253,7 @@ describe("e2e tests for test command", () => {
   it("Should accept custom client configuration", async () => {
     const testCaseDir = getTestCaseDir(7);
     const args = getCmdArgs(testCaseDir);
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["test", ...args],
+    const { exitCode, stdout, stderr } = await Commands.test(args, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -272,8 +271,7 @@ describe("e2e tests for test command", () => {
   it("Should access nested properties of referenced result objects", async () => {
     const testCaseDir = getTestCaseDir(8);
     const args = getCmdArgs(testCaseDir);
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["test", ...args],
+    const { exitCode, stdout, stderr } = await Commands.test(args, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -290,8 +288,7 @@ describe("e2e tests for test command", () => {
   it("Should print error on stderr if job is named 'data' or 'error'", async () => {
     const testCaseDir = getTestCaseDir(9);
     const args = getCmdArgs(testCaseDir);
-    const { exitCode, stderr } = await runCLI({
-      args: ["test", ...args],
+    const { exitCode, stderr } = await Commands.test(args, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -305,12 +302,10 @@ describe("e2e tests for test command", () => {
   it("Should run and validate a subset of ids", async () => {
     const testCaseDir = getTestCaseDir(10);
     const args = getCmdArgs(testCaseDir);
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["test", ...args],
+    const { exitCode, stdout, stderr } = await Commands.test(args, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
-
     expect(stderr).toBe("");
     expect(exitCode).toEqual(0);
     expect(stdout).toBeTruthy();
@@ -324,8 +319,7 @@ describe("e2e tests for test command", () => {
 
   it("Should validate expected error", async () => {
     const testCaseDir = getTestCaseDir(11);
-    const { exitCode, stdout } = await runCLI({
-      args: ["test"],
+    const { exitCode, stdout } = await Commands.test(undefined, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
