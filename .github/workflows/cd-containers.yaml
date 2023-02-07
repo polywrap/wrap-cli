@@ -40,30 +40,18 @@ jobs:
           echo IMAGE_RS_VM_UNPUBLISHED=$(docker manifest inspect $IMAGE_RS_VM_NAME:$IMAGE_RS_VM_VERSION > /dev/null ; echo $?) >> &GITHUB_ENV
           echo IMAGE_AS_VM_UNPUBLISHED=$(docker manifest inspect $IMAGE_AS_VM_NAME:$IMAGE_AS_VM_VERSION > /dev/null ; echo $?) >> &GITHUB_ENV
 
-      - name: Build RS VM Image
+      - name: Build & Publish RS VM Image
         if: ${{env.IMAGE_RS_VM_UNPUBLISHED}}
         working-directory: ${{env.IMAGE_RS_VM_DIR}}
         run: |
-          docker buildx create --use
-          docker buildx build --platform=linux/amd64,linux/arm64 -t $IMAGE_RS_VM_NAME:latest -t $IMAGE_RS_VM_NAME:$IMAGE_RS_VM_VERSION
+          docker buildx create --use --name rs-vm-builder
+          docker buildx build . --platform=linux/amd64,linux/arm64 -t $IMAGE_RS_VM_NAME:latest -t $IMAGE_RS_VM_NAME:$IMAGE_RS_VM_VERSION --output type=registry
+          docker buildx rm rs-vm-builder
 
-      - name: Build AS VM Image
+      - name: Build & Publish AS VM Image
         if: ${{env.IMAGE_AS_VM_UNPUBLISHED}}
         working-directory: ${{env.IMAGE_AS_VM_DIR}}
         run: |
-          docker buildx create --use
-          docker buildx build --platform=linux/amd64,linux/arm64 -t $IMAGE_AS_VM_NAME:latest -t $IMAGE_AS_VM_NAME:$IMAGE_AS_VM_VERSION
-
-      - name: Publish RS Image Tags
-        if: ${{env.IMAGE_RS_VM_UNPUBLISHED}}
-        working-directory: ${{env.IMAGE_RS_VM_DIR}}
-        run: |
-          docker push $IMAGE_RS_VM_NAME:$IMAGE_RS_VM_VERSION
-          docker push $IMAGE_RS_VM_NAME:latest
-
-      - name: Publish AS Image Tags
-        if: ${{env.IMAGE_AS_VM_UNPUBLISHED}}
-        working-directory: ${{env.IMAGE_AS_VM_DIR}}
-        run: |
-          docker push $IMAGE_AS_VM_NAME:$IMAGE_AS_VM_VERSION
-          docker push $IMAGE_AS_VM_NAME:latest
+          docker buildx create --use --name as-vm-builder
+          docker buildx build . --platform=linux/amd64,linux/arm64 -t $IMAGE_AS_VM_NAME:latest -t $IMAGE_AS_VM_NAME:$IMAGE_AS_VM_VERSION --output type=registry
+          docker buildx rm as-vm-builder
