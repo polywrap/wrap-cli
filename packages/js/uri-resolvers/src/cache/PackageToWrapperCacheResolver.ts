@@ -41,7 +41,7 @@ export class PackageToWrapperCacheResolver<TError>
   ): Promise<Result<UriPackageOrWrapper, TError | Error>> {
     const wrapper = await this._cache.get(uri);
 
-    // return from cache if available
+    // Return from cache if available
     if (wrapper) {
       const result = UriResolutionResult.ok(uri, wrapper);
 
@@ -53,7 +53,7 @@ export class PackageToWrapperCacheResolver<TError>
       return result;
     }
 
-    // resolve uri if not in cache
+    // Resolve uri if not in cache
     const subContext = resolutionContext.createSubHistoryContext();
 
     let result = await this._resolverToCache.tryResolveUri(
