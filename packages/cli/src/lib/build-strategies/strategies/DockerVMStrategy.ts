@@ -13,7 +13,6 @@ import {
 } from "../../project";
 import { logActivity } from "../../logging";
 
-import { getArch, Arch } from "@polywrap/os-js";
 import fse from "fs-extra";
 import path from "path";
 import Mustache from "mustache";
@@ -105,7 +104,6 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
       }
 
       // Copy additional includes
-
       CONFIGS[language].defaultIncludes.forEach((include) => {
         if (fse.existsSync(path.join(manifestDir, include))) {
           if (fse.existsSync(path.join(this._volumePaths.project, include))) {
@@ -183,7 +181,6 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
           cacheVolume = `-v ${localCargoCache}:/usr/local/cargo/registry`;
         }
 
-        let buildArch = this._getBuildArch();
         let buildError: Error | undefined = undefined;
 
         try {
@@ -194,7 +191,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
               this._volumePaths.linkedPackages
             )}:/linked-packages ${cacheVolume} ${
               CONFIGS[language].baseImage
-            }:${buildArch}-${CONFIGS[language].version} /bin/bash --verbose /project/polywrap-build.sh`,
+            }:${CONFIGS[language].version} /bin/bash --verbose /project/polywrap-build.sh`,
             this.project.logger,
             undefined,
             undefined,
@@ -213,7 +210,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
               this._volumePaths.linkedPackages
             )}:/linked-packages ${
               CONFIGS[language].baseImage
-            }:${buildArch}-${CONFIGS[language].version} /bin/bash -c "chmod -R 777 /project && chmod -R 777 /linked-packages"`,
+            }:${CONFIGS[language].version} /bin/bash -c "chmod -R 777 /project && chmod -R 777 /linked-packages"`,
             this.project.logger
           );
         } catch (e) {
@@ -250,20 +247,5 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         run();
       }
     );
-  }
-
-  private _getBuildArch(): Arch {
-    const supportedArchs: Arch = [
-      "arm64",
-      "x64"
-    ];
-
-    const arch = getArch();
-
-    if (supportedArchs.indexOf(arch) < 0) {
-      throw Error("...a build vm for this CPU arch was not found...");
-    }
-
-    return arch;
   }
 }
