@@ -15,34 +15,37 @@ import { httpResolverPlugin } from "@polywrap/http-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { PackageToWrapperCacheResolver } from "../../build";
+import { RequestSynchronizerResolver } from "../cache";
 
 jest.setTimeout(200000);
 
 const getClientWithCacheResolver = (): PolywrapClient => {
   const resolver = RecursiveResolver.from(
-    PackageToWrapperCacheResolver.from(
-      [
-        StaticResolver.from([
-          {
-            uri: defaultPackages.ipfs,
-            package: ipfsPlugin({}),
-          },
-          {
-            uri: defaultPackages.ipfsResolver,
-            package: ipfsResolverPlugin({}),
-          },
-          {
-            uri: defaultPackages.http,
-            package: httpPlugin({})
-          },
-          {
-            uri: defaultPackages.httpResolver,
-            package: httpResolverPlugin({})
-          }
-        ]),
-        new ExtendableUriResolver(),
-      ],
-      new WrapperCache()
+    RequestSynchronizerResolver.from(
+      PackageToWrapperCacheResolver.from(
+        [
+          StaticResolver.from([
+            {
+              uri: defaultPackages.ipfs,
+              package: ipfsPlugin({}),
+            },
+            {
+              uri: defaultPackages.ipfsResolver,
+              package: ipfsResolverPlugin({}),
+            },
+            {
+              uri: defaultPackages.http,
+              package: httpPlugin({})
+            },
+            {
+              uri: defaultPackages.httpResolver,
+              package: httpResolverPlugin({})
+            }
+          ]),
+          new ExtendableUriResolver(),
+        ],
+        new WrapperCache()
+      ) 
     )
   );
 
