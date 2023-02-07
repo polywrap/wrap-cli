@@ -11,8 +11,11 @@ export class InterfaceRedirectResolver extends ResolverWithHistory {
   private redirects: Map<string, Uri> = new Map();
   private initialized: boolean;
 
-  protected getStepDescription = (uri: Uri): string =>
-    `InterfaceRedirect (${uri.uri} - ${this.redirects.get(uri.uri)})`;
+  protected getStepDescription = (uri: Uri): string => {
+    const redirect = this.redirects.get(uri.uri);
+    if (!redirect) return "InterfaceRedirect - Miss";
+    return `InterfaceRedirect (${uri.uri} - ${redirect})`;
+  };
 
   protected async _tryResolveUri(
     uri: Uri,
