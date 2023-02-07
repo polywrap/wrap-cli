@@ -1,0 +1,69 @@
+name: CD-Containers
+on:
+  # When Pull Request is merged
+  pull_request_target:
+    types: [closed]
+
+jobs:
+  Publish-Docker-Hub:
+    name: Publish container images to Docker Hub
+    if: |
+      github.event.pull_request.user.login == 'polywrap-build-bot' &&
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: polywrapbuildbot
+          password: ${{ secrets.POLYWRAP_BUILD_BOT_DOCKERHUB_PAT }}
+
+      - name: Cache Image Directories
+        run: |
+          echo IMAGE_RS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/rust/vm >> $GITHUB_ENV
+          echo IMAGE_AS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/assemblyscript/rust/vm >> $GITHUB_ENV
+
+      - name: Read Image VERSION & NAME into env.IMAGE_..._VERSION/NAME
+        run: |
+          echo IMAGE_RS_VM_NAME=$(cat $IMAGE_RS_VM_DIR/NAME) >> &GITHUB_ENV
+          echo IMAGE_RS_VM_VERSION=$(cat $IMAGE_RS_VM_DIR/VERSION) >> &GITHUB_ENV
+          echo IMAGE_AS_VM_NAME=$(cat $IMAGE_AS_VM_DIR/NAME) >> &GITHUB_ENV
+          echo IMAGE_AS_VM_VERSION=$(cat $IMAGE_AS_VM_DIR/VERSION) >> &GITHUB_ENV
+
+      - name: Check if image tags already exist
+        run: |
+          echo IMAGE_RS_VM_UNPUBLISHED=$(docker manifest inspect $IMAGE_RS_VM_NAME:$IMAGE_RS_VM_VERSION > /dev/null ; echo $?) >> &GITHUB_ENV
+          echo IMAGE_AS_VM_UNPUBLISHED=$(docker manifest inspect $IMAGE_AS_VM_NAME:$IMAGE_AS_VM_VERSION > /dev/null ; echo $?) >> &GITHUB_ENV
+
+      - name: Build RS VM Image
+        if: ${{env.IMAGE_RS_VM_UNPUBLISHED}}
+        working-directory: ${{env.IMAGE_RS_VM_DIR}}
+        run: |
+          docker buildx create --use
+          docker buildx build --platform=linux/amd64,linux/arm64 -t $IMAGE_RS_VM_NAME:latest -t $IMAGE_RS_VM_NAME:$IMAGE_RS_VM_VERSION
+
+      - name: Build AS VM Image
+        if: ${{env.IMAGE_AS_VM_UNPUBLISHED}}
+        working-directory: ${{env.IMAGE_AS_VM_DIR}}
+        run: |
+          docker buildx create --use
+          docker buildx build --platform=linux/amd64,linux/arm64 -t $IMAGE_AS_VM_NAME:latest -t $IMAGE_AS_VM_NAME:$IMAGE_AS_VM_VERSION
+
+      - name: Publish RS Image Tags
+        if: ${{env.IMAGE_RS_VM_UNPUBLISHED}}
+        working-directory: ${{env.IMAGE_RS_VM_DIR}}
+        run: |
+          docker push $IMAGE_RS_VM_NAME:$IMAGE_RS_VM_VERSION
+          docker push $IMAGE_RS_VM_NAME:latest
+
+      - name: Publish AS Image Tags
+        if: ${{env.IMAGE_AS_VM_UNPUBLISHED}}
+        working-directory: ${{env.IMAGE_AS_VM_DIR}}
+        run: |
+          docker push $IMAGE_AS_VM_NAME:$IMAGE_AS_VM_VERSION
+          docker push $IMAGE_AS_VM_NAME:latest
