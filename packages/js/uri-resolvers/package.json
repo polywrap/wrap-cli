@@ -21,8 +21,7 @@
   "dependencies": {
     "@polywrap/core-js": "0.10.0-pre.7",
     "@polywrap/result": "0.10.0-pre.7",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.7",
-    "async-mutex": "0.4.0"
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.7"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
