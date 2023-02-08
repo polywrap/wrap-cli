@@ -1,20 +1,3 @@
 [
-  "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F6 => PackageToWrapperCacheResolver => wrapper (wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F6)",
-  [
-    "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F6 => UriResolverAggregator => package (wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F6)",
-    [
-      "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F6 => StaticResolver - Miss",
-      "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F6 => ExtendableUriResolver => package (wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F6)",
-      [
-        "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
-        [
-          "wrap://ens/ipfs-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/ipfs-resolver.polywrap.eth)",
-          [
-            "wrap://ens/ipfs-resolver.polywrap.eth => StaticResolver - Package (wrap://ens/ipfs-resolver.polywrap.eth) => package (wrap://ens/ipfs-resolver.polywrap.eth)"
-          ]
-        ],
-        "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F6 => ResolverExtension (wrap://ens/ipfs-resolver.polywrap.eth) => package (wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F6)"
-      ]
-    ]
-  ]
+  "wrap://test/should-redirect => SimpleAsyncRedirectResolver => uri (wrap://test/redirected)"
 ]

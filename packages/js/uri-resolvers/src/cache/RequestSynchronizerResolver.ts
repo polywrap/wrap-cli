@@ -9,25 +9,30 @@ import {
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 
-export class RequestSynchronizerResolver<TError>
-  implements IUriResolver<TError | Error> {
+// Uri resolver that synchronizes requests to the same URI
+// Multiple requests to the same URI will be resolved only once
+// and the result will be cached for subsequent requests
+// Can use the `shouldRetry` option to determine whether a request should be retried in case of an error
+export class RequestSynchronizerResolver<TError> implements IUriResolver<TError> {
   private requestCache: Map<
     string,
-    Promise<Result<UriPackageOrWrapper, TError | Error>>
+    Promise<Result<UriPackageOrWrapper, TError>>
   > = new Map();
 
   constructor(
     private resolverToSynchronize: IUriResolver<TError>,
-    private shouldRetry?: (error: TError | Error | undefined) => boolean
+    private options?: {
+      shouldRetry?: (error: TError | undefined) => boolean;
+    }
   ) {}
 
   static from<TResolverError = unknown>(
     resolver: UriResolverLike,
-    shouldRetry?: (error: TResolverError | undefined) => boolean
+    options?: { shouldRetry?: (error: TResolverError | undefined) => boolean }
   ): RequestSynchronizerResolver<TResolverError> {
     return new RequestSynchronizerResolver(
       UriResolver.from<TResolverError>(resolver),
-      shouldRetry
+      options
     );
   }
 
@@ -35,7 +40,7 @@ export class RequestSynchronizerResolver<TError>
     uri: Uri,
     client: CoreClient,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TError | Error>> {
+  ): Promise<Result<UriPackageOrWrapper, TError>> {
     const existingRequest = this.requestCache.get(uri.uri);
 
     if (existingRequest) {
@@ -52,12 +57,12 @@ export class RequestSynchronizerResolver<TError>
           }
 
           // Handle error case
-          if (!this.shouldRetry) {
+          if (!this.options?.shouldRetry) {
             // In case of an error and no shouldRetry error handler, we try to resolve the URI again.
             // This is because the error might be caused by a network issue or something similar,
             // and we don't want all the requests to fail.
             return this.tryResolveUri(uri, client, resolutionContext);
-          } else if (this.shouldRetry(result.error)) {
+          } else if (this.options.shouldRetry(result.error)) {
             // In case of an error and the shouldRetry error handler returns true, we try to resolve the URI again.
             return this.tryResolveUri(uri, client, resolutionContext);
           } else {
@@ -84,25 +89,25 @@ export class RequestSynchronizerResolver<TError>
     uri: Uri,
     client: CoreClient,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TError | Error>> {
-    const resolutionRequest = new Promise<
-      Result<UriPackageOrWrapper, TError | Error>
-    >((resolve, reject) => {
-      this.resolverToSynchronize
-        .tryResolveUri(uri, client, resolutionContext)
-        .then(
-          (data) => {
-            resolve(data);
-          },
-          (error) => {
-            reject(error);
-          }
-        )
-        .finally(() => {
-          // After every listener has been notified with the above resolve or reject, remove the request from the cache.
-          this.requestCache.delete(uri.uri);
-        });
-    });
+  ): Promise<Result<UriPackageOrWrapper, TError>> {
+    const resolutionRequest = new Promise<Result<UriPackageOrWrapper, TError>>(
+      (resolve, reject) => {
+        this.resolverToSynchronize
+          .tryResolveUri(uri, client, resolutionContext)
+          .then(
+            (data) => {
+              resolve(data);
+            },
+            (error) => {
+              reject(error);
+            }
+          )
+          .finally(() => {
+            // After every listener has been notified with the above resolve or reject, remove the request from the cache.
+            this.requestCache.delete(uri.uri);
+          });
+      }
+    );
 
     this.requestCache.set(uri.uri, resolutionRequest);
 
