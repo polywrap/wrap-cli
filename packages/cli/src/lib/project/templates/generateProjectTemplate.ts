@@ -85,7 +85,7 @@ export const generateProjectTemplate = (
   type: string,
   lang: string,
   projectDir: string
-): Promise<boolean | { command: string }> => {
+): Promise<void> => {
   return new Promise((resolve, reject) => {
     let command = "";
     let args: string[] = [];
@@ -152,7 +152,7 @@ export const generateProjectTemplate = (
             }
           )
           .then(() => {
-            resolve(true);
+            resolve();
           })
           .catch(() => {
             reject({

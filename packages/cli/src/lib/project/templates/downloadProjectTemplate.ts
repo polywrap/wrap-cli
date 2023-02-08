@@ -23,43 +23,47 @@ function createCacheDir(): string {
   return cacheDir;
 }
 
-export const downloadProjectTemplate = (
+function downloadGitTemplate(
+  url: string,
+  projectDir: string,
+  logger: Logger,
+  cacheDir: string
+): Promise<void> {
+  const command = "git clone";
+  const args = ["--depth", "1", "--single-branch", url];
+  const repoName = path.basename(url, ".git");
+  const repoDir = path.join(cacheDir, repoName);
+  const dotGitPath = path.join(repoDir, "/.git/");
+
+  return new Promise((resolve, reject) => {
+    // clone repo
+    runCommand(command, args, logger, undefined, cacheDir)
+      .catch(() => reject({ command: `${command} ${args.join(" ")}` }))
+      // remove .git data
+      .then(() => fse.remove(dotGitPath))
+      .catch(() => reject({ command: `rm ${dotGitPath}` }))
+      // copy files from cache to project dir
+      .then(() => fse.copy(repoDir, projectDir, { overwrite: true }))
+      .catch(() => reject({ command: `copy ${repoDir} ${projectDir}` }))
+      .then(() => resolve())
+      // remove cache dir
+      .finally(() =>
+        fse.remove(cacheDir).catch(() => reject({ command: `rm ${cacheDir}` }))
+      );
+  });
+}
+
+export const downloadProjectTemplate = async (
   url: string,
   projectDir: string,
   logger: Logger
-): Promise<boolean | { command: string }> => {
-  return new Promise((resolve, reject) => {
-    const cacheDir = createCacheDir();
-    const format = parseUrlFormat(url);
+): Promise<void> => {
+  const cacheDir = createCacheDir();
+  const format = parseUrlFormat(url);
 
-    if (format === UrlFormat.git) {
-      const command = "git clone";
-      const args = ["--depth", "1", "--single-branch", url];
-      const repoName = path.basename(url, ".git");
-      const repoDir = path.join(cacheDir, repoName);
-      const dotGitPath = path.join(repoDir, "/.git/");
-
-      runCommand(command, args, logger, undefined, cacheDir)
-        .then(() => fse.rm(dotGitPath, { recursive: true, force: true }))
-        .then(() => {
-          fse
-            .copy(repoDir, projectDir, {
-              overwrite: true,
-            })
-            .then(() => {
-              resolve(true);
-            })
-            .catch(() => {
-              reject({
-                command: `copy ${repoDir} ${projectDir}`,
-              });
-            });
-        })
-        .catch(() => {
-          reject({ command: `${command} ${args.join(" ")}` });
-        });
-    } else {
-      reject(`Invalid URL format: ${url}`);
-    }
-  });
+  if (format === UrlFormat.git) {
+    return downloadGitTemplate(url, projectDir, logger, cacheDir);
+  } else {
+    throw Error(`Invalid URL format: ${url}`);
+  }
 };
