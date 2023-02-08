@@ -16,13 +16,18 @@ export class RequestSynchronizerResolver<TError>
     Promise<Result<UriPackageOrWrapper, TError | Error>>
   > = new Map();
 
-  constructor(private resolverToSynchronize: IUriResolver<TError>) {}
+  constructor(
+    private resolverToSynchronize: IUriResolver<TError>,
+    private shouldRetry?: (error: TError | Error | undefined) => boolean
+  ) {}
 
   static from<TResolverError = unknown>(
-    resolver: UriResolverLike
+    resolver: UriResolverLike,
+    shouldRetry?: (error: TResolverError | undefined) => boolean
   ): RequestSynchronizerResolver<TResolverError> {
     return new RequestSynchronizerResolver(
-      UriResolver.from<TResolverError>(resolver)
+      UriResolver.from<TResolverError>(resolver),
+      shouldRetry
     );
   }
 
@@ -36,19 +41,38 @@ export class RequestSynchronizerResolver<TError>
     if (existingRequest) {
       return existingRequest.then(
         (result) => {
-          resolutionContext.trackStep({
-            sourceUri: uri,
-            result,
-            description: "RequestSynchronizerResolver (Cache)",
-          });
+          if (result.ok) {
+            resolutionContext.trackStep({
+              sourceUri: uri,
+              result,
+              description: "RequestSynchronizerResolver (Cache)",
+            });
 
-          return result;
+            return result;
+          }
+
+          // Handle error case
+          if (!this.shouldRetry) {
+            // In case of an error and no shouldRetry error handler, we try to resolve the URI again.
+            // This is because the error might be caused by a network issue or something similar,
+            // and we don't want all the requests to fail.
+            return this.tryResolveUri(uri, client, resolutionContext);
+          } else if (this.shouldRetry(result.error)) {
+            // In case of an error and the shouldRetry error handler returns true, we try to resolve the URI again.
+            return this.tryResolveUri(uri, client, resolutionContext);
+          } else {
+            resolutionContext.trackStep({
+              sourceUri: uri,
+              result: result,
+              description: "RequestSynchronizerResolver (Cache)",
+            });
+
+            return result;
+          }
         },
-        () => {
-          // In case of an error, we try to resolve the URI again.
-          // This is because the error might be caused by a network issue or something similar,
-          // and we don't want all the requests to fail.
-          return this.tryResolveUri(uri, client, resolutionContext);
+        (error: unknown) => {
+          // In case of a promise error (not a resolution one) we throw for all of the listeners
+          throw error;
         }
       );
     }
