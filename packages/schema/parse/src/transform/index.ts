@@ -1,4 +1,4 @@
-import { Abi, AnyType, ArgumentDef, ArrayType, Def, EnumDef, EnvDef, FunctionDef, MapKeyTypeName, MapType, ObjectDef, PropertyDef, RefType, ResultDef, ScalarType, Type } from "../definitions";
+import { Abi, AnyType, ArgumentDef, ArrayType, Def, EnumDef, FunctionDef, MapKeyTypeName, MapType, ObjectDef, PropertyDef, RefType, ResultDef, ScalarType, Type } from "../definitions";
 
 export interface AbiTransforms {
   enter?: AbiTransformer;
@@ -9,7 +9,6 @@ type TypeToTransform =
   | FunctionDef
   | ObjectDef
   | EnumDef
-  | EnvDef
   | ArgumentDef
   | ResultDef
   | PropertyDef
@@ -22,7 +21,6 @@ export interface AbiTransformer {
   FunctionDefinition?: (def: FunctionDef) => FunctionDef
   ObjectDefinition?: (def: ObjectDef) => ObjectDef
   EnumDefinition?: (def: EnumDef) => EnumDef
-  EnvDefinition?: (def: EnvDef) => EnvDef
 
   ArgumentDefinition?: (def: ArgumentDef) => ArgumentDef
   ResultDefinition?: (def: ResultDef) => ResultDef
@@ -47,7 +45,6 @@ export const transformAbi = (abi: Abi, transforms: AbiTransforms): Abi => {
   result.enums = result.enums?.map(def => visitEnumDefinition(def, transforms))
   result.objects = result.objects?.map(def => visitObjectDefinition(def, transforms))
   result.functions = result.functions?.map(def => visitFunctionDefinition(def, transforms))
-  result.env = result.env ? visitEnvDefinition(result.env, transforms) : undefined
 
   if (transforms.leave && transforms.leave.Abi) {
     result = transforms.leave.Abi(result);
@@ -66,7 +63,6 @@ const transformType = <T extends TypeToTransform>(type: T, transform?: AbiTransf
     FunctionDefinition,
     ObjectDefinition,
     EnumDefinition,
-    EnvDefinition,
     ArgumentDefinition,
     ResultDefinition,
     PropertyDefinition,
@@ -91,10 +87,6 @@ const transformType = <T extends TypeToTransform>(type: T, transform?: AbiTransf
   
   if (EnumDefinition && result.kind === "Enum") {
     result = Object.assign(result, EnumDefinition(result))
-  }
-  
-  if (EnvDefinition && result.kind === "Env") {
-    result = Object.assign(result, EnvDefinition(result))
   }
   
   if (ArgumentDefinition && result.kind === "Argument") {
@@ -177,17 +169,6 @@ const visitPropertyDefinition = (def: PropertyDef, transforms: AbiTransforms) =>
 }
 
 const visitObjectDefinition = (def: ObjectDef, transforms: AbiTransforms) => {
-  let result = Object.assign({}, def);
-  result = transformType(result, transforms.enter);
-
-  result.props.forEach((prop, i) => {
-    result.props[i] = visitPropertyDefinition(prop, transforms)
-  })
-
-  return transformType(result, transforms.leave)
-}
-
-const visitEnvDefinition = (def: EnvDef, transforms: AbiTransforms) => {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
 
