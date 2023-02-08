@@ -38,6 +38,9 @@ export const commands: CommandFns<CommandTypings> = {
     wasm: execCommandWithArgsFn<CommandTypings["create"]["wasm"]>(
       "create wasm"
     ),
+    template: execCommandWithArgsFn<CommandTypings["create"]["template"]>(
+      "create template"
+    ),
   },
   deploy: execCommandFn<CommandTypings["deploy"]>("deploy"),
   docgen: execCommandWithArgsFn<CommandTypings["docgen"]>("docgen"),
