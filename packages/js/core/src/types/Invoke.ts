@@ -6,9 +6,9 @@ import { Result } from "@polywrap/result";
 // $start: Invoke.ts
 
 /** Options required for an Wrapper invocation. */
-export interface InvokeOptions<TUri extends Uri | string = string> {
+export interface InvokeOptions {
   /** The Wrapper's URI */
-  uri: TUri;
+  uri: Uri;
 
   /** Method to be executed. */
   method: string;
@@ -34,8 +34,7 @@ export type InvokeResult<TData = unknown> = Result<TData, WrapError>;
  * Provides options for the invoker to set based on the state of the invocation.
  * Extends InvokeOptions.
  */
-export interface InvokerOptions<TUri extends Uri | string = string>
-  extends InvokeOptions<TUri> {
+export interface InvokerOptions extends InvokeOptions {
   /** If true, the InvokeResult will (if successful) contain a Msgpack-encoded byte array */
   encodeResult?: boolean;
 }
@@ -52,8 +51,8 @@ export interface Invoker {
    * @param options - invoker options and a wrapper instance to invoke
    * @returns A Promise with a Result containing the return value or an error
    */
-  invokeWrapper<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokerOptions<TUri> & { wrapper: Wrapper }
+  invokeWrapper<TData = unknown>(
+    options: InvokerOptions & { wrapper: Wrapper }
   ): Promise<InvokeResult<TData>>;
 
   /**
@@ -65,8 +64,8 @@ export interface Invoker {
    * @param options - invoker options
    * @returns A Promise with a Result containing the return value or an error
    */
-  invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokerOptions<TUri>
+  invoke<TData = unknown>(
+    options: InvokerOptions
   ): Promise<InvokeResult<TData>>;
 }
 
@@ -90,7 +89,7 @@ export interface Invocable {
    * @returns A Promise with a Result containing the return value or an error
    */
   invoke(
-    options: InvokeOptions<Uri>,
+    options: InvokeOptions,
     invoker: Invoker
   ): Promise<InvocableResult<unknown>>;
 }

@@ -1,4 +1,4 @@
-import { Result, WrapError } from "@polywrap/core-js";
+import { Result, Uri, WrapError } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   providers,
@@ -39,7 +39,7 @@ describe("IPFS Plugin", () => {
           },
         ],
         resolver: UriResolver.from({
-          uri: "wrap://ens/ipfs.polywrap.eth",
+          uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
           package: ipfsPlugin({}),
         }),
       },
@@ -121,7 +121,7 @@ describe("IPFS Plugin", () => {
           },
         ],
         resolver: UriResolver.from({
-          uri: "wrap://ens/ipfs.polywrap.eth",
+          uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
           package: ipfsPlugin({}),
         }),
       },
@@ -180,7 +180,7 @@ describe("IPFS Plugin", () => {
           },
         ],
         resolver: UriResolver.from({
-          uri: "wrap://ens/ipfs.polywrap.eth",
+          uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
           package: ipfsPlugin({}),
         }),
       },
@@ -225,7 +225,7 @@ describe("IPFS Plugin", () => {
           },
         ],
         resolver: UriResolver.from({
-          uri: "wrap://ens/ipfs.polywrap.eth",
+          uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
           package: ipfsPlugin({}),
         }),
       },

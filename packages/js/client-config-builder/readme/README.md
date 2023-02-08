@@ -46,12 +46,6 @@ $snippet: quickstart-example
 
 # Reference
 
-## Types
-
-```ts
-$snippet: ClientConfig
-```
-
 ## ClientConfigBuilder
 
 ### Constructor
@@ -162,11 +156,6 @@ $snippet: IClientConfigBuilder-addDefaults
 ### build
 ```ts
 $snippet: IClientConfigBuilder-build
-```
-
-### buildCoreConfig
-```ts
-$snippet: IClientConfigBuilder-buildCoreConfig
 ```
 
 ## Bundles

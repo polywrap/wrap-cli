@@ -6,7 +6,6 @@ import {
   CoreClient,
   InvokeOptions,
   InvocableResult,
-  Uri,
   GetFileOptions,
   isBuffer,
   WrapError,
@@ -14,20 +13,13 @@ import {
 } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
-import { Tracer, TracingLevel } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class PluginWrapper implements Wrapper {
   constructor(
     private _manifest: WrapManifest,
     private _module: PluginModule<unknown>
-  ) {
-    Tracer.startSpan("PluginWrapper: constructor");
-    Tracer.setAttribute("args", {
-      plugin: this._module,
-    });
-    Tracer.endSpan();
-  }
+  ) {}
 
   public async getFile(
     _: GetFileOptions
@@ -37,21 +29,14 @@ export class PluginWrapper implements Wrapper {
     );
   }
 
-  @Tracer.traceMethod("PluginWrapper: getManifest")
   public getManifest(): WrapManifest {
     return this._manifest;
   }
 
-  @Tracer.traceMethod("PluginWrapper: invoke", TracingLevel.High)
   public async invoke(
-    options: InvokeOptions<Uri>,
+    options: InvokeOptions,
     client: CoreClient
   ): Promise<InvocableResult<unknown>> {
-    Tracer.setAttribute(
-      "label",
-      `Plugin Wrapper invoked: ${options.uri.uri}, with method ${options.method}`,
-      TracingLevel.High
-    );
     const { method } = options;
     const args = options.args || {};
 
@@ -72,8 +57,6 @@ export class PluginWrapper implements Wrapper {
     // If the args are a msgpack buffer, deserialize it
     if (isBuffer(args)) {
       const result = msgpackDecode(args);
-
-      Tracer.addEvent("msgpack-decoded", result);
 
       if (typeof result !== "object") {
         const error = new WrapError(
@@ -98,8 +81,6 @@ export class PluginWrapper implements Wrapper {
 
     if (result.ok) {
       const data = result.value;
-
-      Tracer.addEvent("Result", data);
 
       return {
         ...ResultOk(data),

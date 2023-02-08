@@ -11,12 +11,12 @@ A TypeScript / JavaScript implementation of the WRAP standard, including all fun
 ```ts
 
 /** Core Client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors */
-export interface CoreClientConfig<TUri extends Uri | string = Uri | string> {
+export interface CoreClientConfig {
   /** set environmental variables for a wrapper */
-  readonly interfaces?: Readonly<InterfaceImplementations<TUri>[]>;
+  readonly interfaces?: Readonly<InterfaceImplementations[]>;
 
   /** register interface implementations */
-  readonly envs?: Readonly<Env<TUri>[]>;
+  readonly envs?: Readonly<Env[]>;
 
   /** configure URI resolution for redirects, packages, and wrappers */
   readonly resolver: Readonly<IUriResolver<unknown>>;
@@ -56,21 +56,21 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    *
    * @returns an immutable core client config
    */
-  getConfig(): CoreClientConfig<Uri>;
+  getConfig(): CoreClientConfig;
 
   /**
    * returns all interfaces from the configuration used to instantiate the client
    *
    * @returns an array of interfaces and their registered implementations
    */
-  getInterfaces(): readonly InterfaceImplementations<Uri>[] | undefined;
+  getInterfaces(): readonly InterfaceImplementations[] | undefined;
 
   /**
    * returns all env registrations from the configuration used to instantiate the client
    *
    * @returns an array of env objects containing wrapper environmental variables
    */
-  getEnvs(): readonly Env<Uri>[] | undefined;
+  getEnvs(): readonly Env[] | undefined;
 
   /**
    * returns an env (a set of environmental variables) from the configuration used to instantiate the client
@@ -78,7 +78,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    * @param uri - the URI used to register the env
    * @returns an env, or undefined if an env is not found at the given URI
    */
-  getEnvByUri<TUri extends Uri | string>(uri: TUri): Env<Uri> | undefined;
+  getEnvByUri(uri: Uri): Env | undefined;
 
   /**
    * returns the URI resolver from the configuration used to instantiate the client
@@ -93,9 +93,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    * @param uri - a wrap URI
    * @returns a Result containing the WrapManifest if the request was successful
    */
-  getManifest<TUri extends Uri | string>(
-    uri: TUri
-  ): Promise<Result<WrapManifest, WrapError>>;
+  getManifest(uri: Uri): Promise<Result<WrapManifest, WrapError>>;
 
   /**
    * returns a file contained in a wrap package
@@ -104,8 +102,8 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    * @param options - { path: string; encoding?: "utf-8" | string }
    * @returns a Promise of a Result containing a file if the request was successful
    */
-  getFile<TUri extends Uri | string>(
-    uri: TUri,
+  getFile(
+    uri: Uri,
     options: GetFileOptions
   ): Promise<Result<string | Uint8Array, WrapError>>;
 
@@ -117,23 +115,10 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    * @param options - { applyResolution?: boolean; resolutionContext?: IUriResolutionContext }
    * @returns a Result containing URI array if the request was successful
    */
-  getImplementations<TUri extends Uri | string>(
-    uri: TUri,
+  getImplementations(
+    uri: Uri,
     options: GetImplementationsOptions
-  ): Promise<Result<TUri[], WrapError>>;
-
-  /**
-   * Validate a wrapper, given a URI.
-   * Optionally, validate the full ABI and/or recursively validate imports.
-   *
-   * @param uri: the Uri to resolve
-   * @param options - { abi?: boolean; recursive?: boolean }
-   * @returns A Promise with a Result containing a boolean or Error
-   */
-  validate<TUri extends Uri | string>(
-    uri: TUri,
-    options?: ValidateOptions
-  ): Promise<Result<true, WrapError>>;
+  ): Promise<Result<Uri[], WrapError>>;
 }
 
 ```
@@ -143,14 +128,13 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
 ```ts
 
 /** A map of string-indexed, Msgpack-serializable environmental variables associated with a wrapper */
-export interface Env<TUri extends Uri | string = string> {
+export interface Env {
   /** Uri of wrapper */
-  uri: TUri;
+  uri: Uri;
 
   /** Env variables used by the module */
   env: Record<string, unknown>;
 }
-
 ```
 
 ### InterfaceImplementations
@@ -158,12 +142,12 @@ export interface Env<TUri extends Uri | string = string> {
 ```ts
 
 /** An interface and a list of wrappers that implement the interface */
-export interface InterfaceImplementations<TUri extends Uri | string = string> {
+export interface InterfaceImplementations {
   /** Uri of interface */
-  interface: TUri;
+  interface: Uri;
 
   /** Uris of implementations */
-  implementations: TUri[];
+  implementations: Uri[];
 }
 
 ```
@@ -173,9 +157,9 @@ export interface InterfaceImplementations<TUri extends Uri | string = string> {
 ```ts
 
 /** Options required for an Wrapper invocation. */
-export interface InvokeOptions<TUri extends Uri | string = string> {
+export interface InvokeOptions {
   /** The Wrapper's URI */
-  uri: TUri;
+  uri: Uri;
 
   /** Method to be executed. */
   method: string;
@@ -201,8 +185,7 @@ export type InvokeResult<TData = unknown> = Result<TData, WrapError>;
  * Provides options for the invoker to set based on the state of the invocation.
  * Extends InvokeOptions.
  */
-export interface InvokerOptions<TUri extends Uri | string = string>
-  extends InvokeOptions<TUri> {
+export interface InvokerOptions extends InvokeOptions {
   /** If true, the InvokeResult will (if successful) contain a Msgpack-encoded byte array */
   encodeResult?: boolean;
 }
@@ -219,8 +202,8 @@ export interface Invoker {
    * @param options - invoker options and a wrapper instance to invoke
    * @returns A Promise with a Result containing the return value or an error
    */
-  invokeWrapper<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokerOptions<TUri> & { wrapper: Wrapper }
+  invokeWrapper<TData = unknown>(
+    options: InvokerOptions & { wrapper: Wrapper }
   ): Promise<InvokeResult<TData>>;
 
   /**
@@ -232,8 +215,8 @@ export interface Invoker {
    * @param options - invoker options
    * @returns A Promise with a Result containing the return value or an error
    */
-  invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokerOptions<TUri>
+  invoke<TData = unknown>(
+    options: InvokerOptions
   ): Promise<InvokeResult<TData>>;
 }
 
@@ -257,7 +240,7 @@ export interface Invocable {
    * @returns A Promise with a Result containing the return value or an error
    */
   invoke(
-    options: InvokeOptions<Uri>,
+    options: InvokeOptions,
     invoker: Invoker
   ): Promise<InvocableResult<unknown>>;
 }
@@ -269,9 +252,9 @@ export interface Invocable {
 ```ts
 
 /** Associates a URI with an embedded wrap package */
-export interface IUriPackage<TUri extends Uri | string> {
+export interface IUriPackage {
   /** The package's URI */
-  uri: TUri;
+  uri: Uri;
 
   /** The wrap package */
   package: IWrapPackage;
@@ -284,12 +267,12 @@ export interface IUriPackage<TUri extends Uri | string> {
 ```ts
 
 /** Redirect invocations from one URI to another */
-export interface IUriRedirect<TUri extends Uri | string> {
+export interface IUriRedirect {
   /** URI to redirect from */
-  from: TUri;
+  from: Uri;
 
   /** URI to redirect to */
-  to: TUri;
+  to: Uri;
 }
 
 ```
@@ -299,9 +282,9 @@ export interface IUriRedirect<TUri extends Uri | string> {
 ```ts
 
 /** Associates a URI with an embedded wrapper */
-export interface IUriWrapper<TUri extends Uri | string> {
+export interface IUriWrapper {
   /** The URI to resolve to the wrapper */
-  uri: TUri;
+  uri: Uri;
 
   /** A wrapper instance */
   wrapper: Wrapper;
@@ -467,7 +450,6 @@ export class Uri {
    * @param uri - a string representation of a wrap URI
    * @returns A Result containing a UriConfig, if successful, or an error
    */
-  @Tracer.traceMethod("Uri: parseUri")
   public static parseUri(uri: string): Result<UriConfig, Error> 
 ```
 
@@ -481,7 +463,6 @@ export class Uri {
    *
    * @param uri - a Uri instance or a string representation of a wrap URI
    */
-  @Tracer.traceMethod("Uri: from")
   public static from(uri: Uri | string): Uri 
 ```
 
@@ -490,9 +471,9 @@ export class Uri {
 ```ts
 
 /** Options required for URI resolution. */
-export interface TryResolveUriOptions<TUri extends Uri | string> {
+export interface TryResolveUriOptions {
   /** The Wrapper's URI */
-  uri: TUri;
+  uri: Uri;
 
   /** A URI resolution context */
   resolutionContext?: IUriResolutionContext;
@@ -506,8 +487,8 @@ export interface UriResolverHandler<TError = undefined> {
    * @param options - TryResolveUriOptions
    * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
    */
-  tryResolveUri<TUri extends Uri | string>(
-    options?: TryResolveUriOptions<TUri>
+  tryResolveUri(
+    options?: TryResolveUriOptions
   ): Promise<Result<UriPackageOrWrapper, TError>>;
 }
 
@@ -532,7 +513,7 @@ export interface Wrapper extends Invocable {
    * This client will be used for any sub-invokes that occur.
    */
   invoke(
-    options: InvokeOptions<Uri>,
+    options: InvokeOptions,
     invoker: Invoker
   ): Promise<InvocableResult<unknown>>;
 
@@ -576,13 +557,11 @@ export interface MaybeUriOrManifest {
    * @param wrapper - URI for wrapper that implements the UriResolver interface
    * @param uri - the URI to resolve
    */
-  tryResolveUri: Tracer.traceFunc(
-    "core: uri-resolver: tryResolveUri",
-    async (
-      invoker: Invoker,
-      wrapper: Uri,
-      uri: Uri
-    ): Promise<Result<MaybeUriOrManifest, WrapError>> 
+  tryResolveUri: async (
+    invoker: Invoker,
+    wrapper: Uri,
+    uri: Uri
+  ): Promise<Result<MaybeUriOrManifest, WrapError>> 
 ```
 
 #### getFile
@@ -594,13 +573,11 @@ export interface MaybeUriOrManifest {
    * @param wrapper - URI for wrapper that implements the UriResolver interface
    * @param path - a filepath, the format of which depends on the UriResolver
    */
-  getFile: Tracer.traceFunc(
-    "core: uri-resolver: getFile",
-    async (
-      invoker: Invoker,
-      wrapper: Uri,
-      path: string
-    ): Promise<Result<Uint8Array | null, WrapError>> 
+  getFile: async (
+    invoker: Invoker,
+    wrapper: Uri,
+    path: string
+  ): Promise<Result<Uint8Array | undefined, WrapError>> 
 ```
 
 ## Uri Resolution
@@ -712,12 +689,12 @@ export type UriValue = {
 };
 
 /** Indicates that a URI resolved to a wrap package */
-export type UriPackageValue = IUriPackage<Uri> & {
+export type UriPackageValue = IUriPackage & {
   type: "package";
 };
 
 /** Indicates that a URI resolved to a wrapper */
-export type UriWrapperValue = IUriWrapper<Uri> & {
+export type UriWrapperValue = IUriWrapper & {
   type: "wrapper";
 };
 

@@ -34,7 +34,7 @@ describe("Embedded wrapper", () => {
     });
 
     const result = await client.invoke<string>({
-      uri: simpleWrapperUri.uri,
+      uri: simpleWrapperUri,
       method: "simpleMethod",
       args: {
         arg: "test",

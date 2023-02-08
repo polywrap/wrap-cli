@@ -1,34 +1,9 @@
-import { BaseClientConfigBuilder, getDefaultConfig, IClientConfigBuilder, CoreClientConfig, ExtendableUriResolver, PackageToWrapperCacheResolver, RecursiveResolver, StaticResolver, Uri, WrapperCache } from "@polywrap/client-js";
+import {
+  IClientConfigBuilder,
+  ClientConfigBuilder,
+} from "@polywrap/client-js";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import { latestWrapManifestVersion } from "@polywrap/wrap-manifest-types-js";
-
-export class CustomConfigBuilder extends BaseClientConfigBuilder {
-  addDefaults(): CustomConfigBuilder {
-    return this.add(getDefaultConfig());
-  }
-
-  buildCoreConfig(): CoreClientConfig<Uri> {
-    return {
-      envs: this.config.envs,
-      interfaces: this.config.interfaces,
-      resolver:
-        RecursiveResolver.from(
-          PackageToWrapperCacheResolver.from(
-            [
-              StaticResolver.from([
-                ...this.config.redirects,
-                ...this.config.wrappers,
-                ...this.config.packages,
-              ]),
-              ...this.config.resolvers,
-              new ExtendableUriResolver(),
-            ],
-            new WrapperCache()
-          )
-        ),
-    };
-  }
-}
 
 interface Config extends Record<string, unknown> {
   val: number;
@@ -142,16 +117,13 @@ const mockPlugin = () => {
           imports: [],
           interfaces: [],
         },
-      }
+      },
     }
   );
 };
 
 export function configure(_: IClientConfigBuilder): IClientConfigBuilder {
-  return new CustomConfigBuilder()
+  return new ClientConfigBuilder()
     .addDefaults()
-    .addPackage({
-      uri: "wrap://ens/mock.eth",
-      package: mockPlugin(),
-    });
+    .addPackage("wrap://ens/mock.eth", mockPlugin());
 }

@@ -10,17 +10,17 @@ import {
   PackageToWrapperCacheResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
-import { PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient, Uri } from "@polywrap/client-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 export const getClient = () => {
-  return new PolywrapClient(
+  return new PolywrapClient<string>(
     {
       interfaces: [
         {
-          interface: ExtendableUriResolver.extInterfaceUri,
+          interface: ExtendableUriResolver.extInterfaceUri.uri,
           implementations: [
             "wrap://ens/ipfs-resolver.polywrap.eth",
             "wrap://ens/ens-resolver.polywrap.eth",
@@ -32,15 +32,15 @@ export const getClient = () => {
         PackageToWrapperCacheResolver.from(
           [
             {
-              uri: "wrap://ens/ipfs-resolver.polywrap.eth",
+              uri: Uri.from("wrap://ens/ipfs-resolver.polywrap.eth"),
               package: ipfsResolverPlugin({}),
             },
             {
-              uri: "wrap://ens/ipfs.polywrap.eth",
+              uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
               package: ipfsPlugin({}),
             },
             {
-              uri: "wrap://ens/ethereum.polywrap.eth",
+              uri: Uri.from("wrap://ens/ethereum.polywrap.eth"),
               package: ethereumPlugin({
                 connections: new Connections({
                   networks: {
@@ -53,7 +53,7 @@ export const getClient = () => {
               }),
             },
             {
-              uri: "wrap://ens/ens-resolver.polywrap.eth",
+              uri: Uri.from("wrap://ens/ens-resolver.polywrap.eth"),
               package: ensResolverPlugin({
                 addresses: {
                   testnet: ensAddresses.ensAddress,

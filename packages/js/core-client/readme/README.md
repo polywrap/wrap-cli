@@ -33,12 +33,6 @@ $snippet: quickstart-invoke
 
 # Reference
 
-## Types
-
-```ts
-$snippet: PolywrapCoreClientConfig
-```
-
 ## PolywrapCoreClient
 
 ### Constructor
@@ -49,11 +43,6 @@ $snippet: PolywrapCoreClient-constructor
 ### getConfig
 ```ts
 $snippet: PolywrapCoreClient-getConfig
-```
-
-### setTracingEnabled
-```ts
-$snippet: PolywrapCoreClient-setTracingEnabled
 ```
 
 ### getInterfaces
@@ -109,11 +98,6 @@ $snippet: PolywrapCoreClient-tryResolveUri
 ### loadWrapper
 ```ts
 $snippet: PolywrapCoreClient-loadWrapper
-```
-
-### validate
-```ts
-$snippet: PolywrapCoreClient-validate
 ```
 
 ## Development
