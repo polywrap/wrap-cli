@@ -58,14 +58,14 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
             PackageToWrapperCacheResolver.from(
               [
                 StaticResolver.from([
-                ...this.buildRedirects(),
-                ...this.buildWrappers(),
-                ...this.buildPackages(),
+                  ...this.buildRedirects(),
+                  ...this.buildWrappers(),
+                  ...this.buildPackages(),
                 ]),
-              ...this._config.resolvers,
+                ...this._config.resolvers,
                 new ExtendableUriResolver(),
               ],
-            wrapperCache ?? new WrapperCache()
+              wrapperCache ?? new WrapperCache()
             )
           )
         ),

@@ -170,9 +170,9 @@ describe("RequestSynchronizerResolver", () => {
       const resolutionContext = new UriResolutionContext();
       const result = client.tryResolveUri({ uri, resolutionContext });
       invocations.push(new Promise<void>(resolve => {
-        result.then(r => {
+        result.then((r: unknown) => {
           throw new Error("Should not have resolved");
-        }, e => {
+        }, (e: Error) => {
           expect(e.message).toEqual("Test thrown exception");
           resolve();
         })
@@ -229,7 +229,7 @@ describe("RequestSynchronizerResolver", () => {
       )
     });
 
-    // shouldUseCache is truthy, so this should retry (act without using cache)
+    // shouldUseCache is false, so this should retry (act without using cache)
     const uri = new Uri("wrap://test/should-error");
     const invocations: Promise<Result<UriPackageOrWrapper, unknown>>[] = [];
     const resolutionContexts: IUriResolutionContext[] = []
@@ -254,7 +254,7 @@ describe("RequestSynchronizerResolver", () => {
       expect(result.ok).toBeFalsy();
     }
 
-    // shouldUseCache is falsy, so this should not retry (use the error from cache)
+    // shouldUseCache is truthy, so this should not retry (use the error from cache)
     const uri2 = new Uri("wrap://test/should-error-2");
     const invocations2: Promise<Result<UriPackageOrWrapper, unknown>>[] = [];
     const resolutionContexts2: IUriResolutionContext[] = []
