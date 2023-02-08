@@ -1,13 +1,12 @@
-import { ArgumentDef, ArrayType, EnumDef, EnvDef, FunctionDef, MapType, ObjectDef, PropertyDef, RefType, ScalarType } from "../definitions";
+import { AnyType, ArgumentDef, EnumDef, FunctionDef, ObjectDef, PropertyDef } from "../definitions";
 
 function applyRequired(type: string, required: boolean | undefined): string {
   return `${type}${required ? "!" : ""}`;
 }
 
-export function toGraphQL(def: ObjectDef | FunctionDef | ArgumentDef | ScalarType | EnvDef | EnumDef | PropertyDef | ArrayType | MapType | RefType, required: boolean): string {
+export function toGraphQL(def: ObjectDef | FunctionDef | ArgumentDef | EnumDef | PropertyDef | AnyType, required: boolean): string {
   switch (def.kind) {
     case "Object":
-    case "Env":
       return applyRequired(def.name, required);
     case "Scalar":
       return applyRequired(def.scalar, required);
@@ -17,11 +16,11 @@ export function toGraphQL(def: ObjectDef | FunctionDef | ArgumentDef | ScalarTyp
       return toGraphQL(def.type, def.required);
     case "Array":
       return applyRequired(
-        `[${toGraphQL(def.item, def.required)}]`,
+        `[${toGraphQL(def.item.type, def.item.required)}]`,
         required
       );
     case "Map": {
-      return `Map<${def.key}!, ${toGraphQL(def.value, def.required)}>`
+      return `Map<${def.key}!, ${toGraphQL(def.value.type, def.value.required)}>`
     }
     case "Function": {
 

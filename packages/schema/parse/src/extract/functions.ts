@@ -5,7 +5,7 @@ import { parseAnnotateDirective, parseDirectivesInField } from "./directives";
 import { VisitorBuilder } from "./types";
 import { extractType } from "./utils";
 
-export class ModuleVisitorBuilder implements VisitorBuilder {
+export class FunctionsVisitorBuilder implements VisitorBuilder {
   constructor(protected readonly uniqueDefs: Map<string, UniqueDefKind>) { }
 
   private extractMethodFromFieldDefNode(node: FieldDefinitionNode): FunctionDef {

@@ -1,21 +1,9 @@
-import { Abi, AnyType, ArgumentDef, ArrayType, Def, EnumDef, FunctionDef, MapKeyTypeName, MapType, ObjectDef, PropertyDef, RefType, ResultDef, ScalarType, Type } from "../definitions";
+import { Abi, AnyType, AnyTypeOrDef, ArgumentDef, ArrayType, Def, EnumDef, FunctionDef, ImportRefType, MapKeyTypeName, MapType, ObjectDef, PropertyDef, RefType, ResultDef, ScalarType, Type } from "../definitions";
 
 export interface AbiTransforms {
   enter?: AbiTransformer;
   leave?: AbiTransformer;
 }
-
-type TypeToTransform =
-  | FunctionDef
-  | ObjectDef
-  | EnumDef
-  | ArgumentDef
-  | ResultDef
-  | PropertyDef
-  | ScalarType
-  | ArrayType
-  | MapType
-  | RefType
 
 export interface AbiTransformer {
   FunctionDefinition?: (def: FunctionDef) => FunctionDef
@@ -30,6 +18,7 @@ export interface AbiTransformer {
   ArrayType?: (type: ArrayType) => ArrayType
   MapType?: (type: MapType) => MapType
   RefType?: (type: RefType) => RefType
+  ImportRefType?: (type: ImportRefType) => ImportRefType
 
   DefinitionOrType?: <T extends Def | Type>(def: T) => T
   Abi?: (abi: Abi) => Abi
@@ -53,7 +42,7 @@ export const transformAbi = (abi: Abi, transforms: AbiTransforms): Abi => {
   return result;
 }
 
-const transformType = <T extends TypeToTransform>(type: T, transform?: AbiTransformer): T => {
+const transformType = <T extends AnyTypeOrDef>(type: T, transform?: AbiTransformer): T => {
   if (!transform) {
     return type;
   }
@@ -70,7 +59,8 @@ const transformType = <T extends TypeToTransform>(type: T, transform?: AbiTransf
     ArrayType,
     MapType,
     RefType,
-    DefinitionOrType
+    DefinitionOrType,
+    ImportRefType,
   } = transform;
 
   if (DefinitionOrType) {
@@ -78,49 +68,60 @@ const transformType = <T extends TypeToTransform>(type: T, transform?: AbiTransf
   }
 
   if (FunctionDefinition && result.kind === "Function") {
-    result = Object.assign(result, FunctionDefinition(result))
+    result = Object.assign(result, FunctionDefinition(result as FunctionDef))
   }
   
   if (ObjectDefinition && result.kind === "Object") {
-    result = Object.assign(result, ObjectDefinition(result))
+    result = Object.assign(result, ObjectDefinition(result as ObjectDef))
   }
   
   if (EnumDefinition && result.kind === "Enum") {
-    result = Object.assign(result, EnumDefinition(result))
+    result = Object.assign(result, EnumDefinition(result as EnumDef))
   }
   
   if (ArgumentDefinition && result.kind === "Argument") {
-    result = Object.assign(result, ArgumentDefinition(result))
+    result = Object.assign(result, ArgumentDefinition(result as ArgumentDef))
   }
   
   if (ResultDefinition && result.kind === "Result") {
-    result = Object.assign(result, ResultDefinition(result))
+    result = Object.assign(result, ResultDefinition(result as ResultDef))
   }
   
   if (PropertyDefinition && result.kind === "Property") {
-    result = Object.assign(result, PropertyDefinition(result))
+    result = Object.assign(result, PropertyDefinition(result as PropertyDef))
   }
   
   if (ScalarType && result.kind === "Scalar") {
-    result = Object.assign(result, ScalarType(result))
+    result = Object.assign(result, ScalarType(result as ScalarType))
   }
   
   if (ArrayType && result.kind === "Array") {
-    result = Object.assign(result, ArrayType(result))
+    result = Object.assign(result, ArrayType(result as ArrayType))
   }
   
   if (MapType && result.kind === "Map") {
-    result = Object.assign(result, MapType(result))
+    result = Object.assign(result, MapType(result as MapType))
   }
   
   if (RefType && result.kind === "Ref") {
-    result = Object.assign(result, RefType(result))
+    result = Object.assign(result, RefType(result as RefType))
+  }
+
+  if (ImportRefType && result.kind === "ImportRef") {
+    result = Object.assign(result, ImportRefType(result as ImportRefType))
   }
 
   return result;
 }
 
 const visitRefType = (type: RefType, transforms: AbiTransforms) => {
+  let result = Object.assign({}, type);
+  result = transformType(result, transforms.enter)
+
+  return transformType(result, transforms.leave)
+}
+
+const visitImportRefType = (type: ImportRefType, transforms: AbiTransforms) => {
   let result = Object.assign({}, type);
   result = transformType(result, transforms.enter)
 
@@ -138,7 +139,7 @@ const visitArrayType = (type: ArrayType, transforms: AbiTransforms) => {
   let result = Object.assign({}, type);
   result = transformType(result, transforms.enter)
 
-  result.item = visitAnyType(result.item, transforms)
+  result.item.type = visitAnyType(result.item.type, transforms)
   return transformType(result, transforms.leave);
 }
 
@@ -147,7 +148,7 @@ const visitMapType = (type: MapType, transforms: AbiTransforms) => {
   result = transformType(result, transforms.enter)
 
   result.key = visitScalarType(result.key, transforms) as ScalarType<MapKeyTypeName>
-  result.value = visitAnyType(result.value, transforms)
+  result.value.type = visitAnyType(result.value.type, transforms)
   return transformType(result, transforms.leave);
 }
 
@@ -157,6 +158,7 @@ const visitAnyType = (type: AnyType, transforms: AbiTransforms) => {
     case "Array": return visitArrayType(type, transforms);
     case "Scalar": return visitScalarType(type, transforms);
     case "Map": return visitMapType(type, transforms);
+    case "ImportRef": return visitImportRefType(type, transforms);
   }
 }
 

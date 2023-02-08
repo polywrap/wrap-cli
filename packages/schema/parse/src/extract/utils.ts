@@ -8,8 +8,10 @@ export const extractType = (node: TypeNode, uniqueDefs: Map<string, UniqueDefKin
     case "ListType":
       return {
         kind: "Array",
-        required: node.type.kind === "NonNullType",
-        item: extractType(node.type, uniqueDefs)
+        item: {
+          required: node.type.kind === "NonNullType",
+          type: extractType(node.type, uniqueDefs)
+        }
       }
     case "NamedType":
       if (isScalarType(node.name.value)) {
@@ -46,8 +48,10 @@ export const parseMapString = (mapString: string, uniqueDefs: Map<string, Unique
       const required = mapString[closeSquareBracketIdx + 1] === "!"
       return {
         kind: "Array",
-        required,
-        item: extractType(mapString.substring(1, closeSquareBracketIdx))
+        item: {
+          type: extractType(mapString.substring(1, closeSquareBracketIdx)),
+          required
+        }
       };
     } else if (isMap(mapString)) {
       return parseMapString(mapString, uniqueDefs)
@@ -103,8 +107,10 @@ export const parseMapString = (mapString: string, uniqueDefs: Map<string, Unique
       kind: "Scalar",
       scalar: keyType as MapKeyTypeName
     },
-    value: extractType(valType),
-    required: valType.endsWith("!"),
+    value: {
+      type: extractType(valType),
+      required: valType.endsWith("!"),
+    }
   }
 
 }

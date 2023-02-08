@@ -1,3 +1,3 @@
 export * from "./object";
 export * from "./enum";
-export * from "./module";
+export * from "./functions";

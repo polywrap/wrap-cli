@@ -2,12 +2,12 @@ import { createAbi, isModuleType } from "./abi";
 import { AbiTransforms, transformAbi } from "./transform";
 import { validators, SchemaValidatorBuilder } from "./validate";
 
-import { DocumentNode, parse, visit, visitInParallel } from "graphql";
+import { ASTVisitor, DocumentNode, parse, visit, visitInParallel } from "graphql";
 import { Abi, UniqueDefKind } from "./definitions";
 import { ExternalVisitorBuilder, VisitorBuilder } from "./extract/types";
 import { ObjectVisitorBuilder } from "./extract";
 import { EnumVisitorBuilder } from "./extract";
-import { ModuleVisitorBuilder } from "./extract";
+import { FunctionsVisitorBuilder } from "./extract";
 
 export * from "./abi";
 export * from "./transform";
@@ -53,7 +53,7 @@ export function parseSchema(
   const defaultExtractors: VisitorBuilder[] = [
     new ObjectVisitorBuilder(uniqueDefs),
     new EnumVisitorBuilder(),
-    new ModuleVisitorBuilder(uniqueDefs)
+    new FunctionsVisitorBuilder(uniqueDefs)
   ]
 
   // Validate GraphQL Schema
@@ -66,7 +66,7 @@ export function parseSchema(
   let info = createAbi();
 
   const extracts = options.extractors?.map(extractorBuilder => extractorBuilder(info, uniqueDefs)) ?? defaultExtractors.map(e => e.build(info));
-  extract(astNode, info, extracts);
+  extract(astNode, extracts);
 
   if (options && options.transforms) {
     for (const transform of options.transforms) {
@@ -102,10 +102,7 @@ const validate = (
 
 const extract = (
   astNode: DocumentNode,
-  abi: Abi,
-  extractors: SchemaExtractorBuilder[]
+  extractors: ASTVisitor[]
 ) => {
-  const allVisitors = extractors.map((getVisitor) => getVisitor(abi));
-
-  visit(astNode, visitInParallel(allVisitors));
+  visit(astNode, visitInParallel(extractors));
 };

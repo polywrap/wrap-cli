@@ -25,6 +25,8 @@ export interface ImportedAbi extends AbiDefs {
 
 /// Definitions (user-defined)
 
+export type AnyDef = FunctionDef | ObjectDef | EnumDef | PropertyDef | ArgumentDef | ResultDef;
+
 export type UniqueDefKind =
   | "Function"
   | "Object"
@@ -169,3 +171,5 @@ export const mapKeyTypeSet = {
 export type MapKeyTypeSet = typeof mapKeyTypeSet;
 
 export type MapKeyTypeName = keyof MapKeyTypeSet;
+
+export type AnyTypeOrDef = AnyType | AnyDef;
