@@ -26,7 +26,7 @@ describe("Unit tests for Project", () => {
         }
       }
     }
-    let loadedScheme =  loadEnvironmentVariables(simpleDeploySchema)
+    let loadedScheme = loadEnvironmentVariables(simpleDeploySchema)
     expect(loadedScheme).toEqual({
       ...simpleDeploySchema,
       from_deploy: {
