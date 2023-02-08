@@ -26,7 +26,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -51,13 +50,11 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: subwrapperPath,
     })
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -80,7 +77,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -94,7 +90,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -107,7 +102,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -120,7 +114,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -133,7 +126,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -148,7 +140,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     })
@@ -183,7 +174,6 @@ describe("wasm-as test cases", () => {
     });
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: implementationPath,
     });
@@ -219,13 +209,11 @@ describe("wasm-as test cases", () => {
     });
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: implementationPath,
     });
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: aggregatorPath,
     });
@@ -258,7 +246,6 @@ describe("wasm-as test cases", () => {
     });
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: implementationPath,
     });
@@ -276,7 +263,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -305,7 +291,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -318,7 +303,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -331,7 +315,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -344,7 +327,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -357,7 +339,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -370,7 +351,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -383,7 +363,6 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -412,13 +391,11 @@ describe("wasm-as test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: externalWrapperPath,
     });
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });

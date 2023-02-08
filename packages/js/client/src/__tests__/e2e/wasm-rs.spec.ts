@@ -30,7 +30,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -53,7 +52,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -67,7 +65,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -81,7 +78,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -95,7 +91,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -109,7 +104,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -130,7 +124,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: implementationPath,
     });
@@ -167,14 +160,12 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: implementationPath,
     });
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: aggregatorPath,
     });
@@ -202,7 +193,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -216,7 +206,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -230,7 +219,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -244,7 +232,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -258,7 +245,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -272,7 +258,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -286,7 +271,6 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -316,14 +300,12 @@ describe("wasm-rs test cases", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: externalWrapperPath,
     });
@@ -373,7 +355,6 @@ describe("wasm-rs test cases", () => {
     const wrapperUri = `fs/${wrapperPath}/build`;
     await Commands.build({
       codegen: true,
-      strategy: "vm",
     }, {
       cwd: wrapperPath,
     });
@@ -430,7 +411,6 @@ describe.skip("Wasm-rs benchmarking", () => {
 
     await Commands.build({
       codegen: true,
-      strategy: "vm",
       manifestFile: name === "current" ? "./polywrap-current.yaml" : "./polywrap.yaml",
     }, {
       cwd: wrapperPath,
