@@ -1,5 +1,6 @@
-import { isScalarType, TypeNode } from "graphql";
-import { UniqueDefKind, RefType, AnyType, MapKeyTypeName, mapKeyTypeSet, MapType, ScalarTypeName } from "../definitions";
+import { TypeNode } from "graphql";
+import { isScalarType } from "../abi/utils";
+import { UniqueDefKind, RefType, AnyType, MapKeyTypeName, mapKeyTypeSet, MapType, ScalarTypeName, ArrayType, ScalarType } from "../definitions";
 
 export const extractType = (node: TypeNode, uniqueDefs: Map<string, UniqueDefKind>): AnyType => {
   switch (node.kind) {
@@ -41,82 +42,121 @@ export const parseRef = (refName: string, uniqueDefs: Map<string, UniqueDefKind>
 
 // TODO: Make sure map also works for imported types and modules
 
+const extractRequired = (typeString: string): { required: boolean, innerString: string } => {
+  const required = typeString.endsWith("!");
+
+  return {
+    required: required,
+    innerString: required ? typeString.slice(0, -1) : typeString
+  }
+}
+
+const parseScalarString = (scalarString: string): ScalarType => {
+  return {
+    kind: "Scalar",
+    scalar: scalarString as ScalarTypeName,
+  }
+}
+
+const parseRefString = (refString: string, uniqueDefs: Map<string, UniqueDefKind>): RefType => {
+  const ref_kind = uniqueDefs.get(refString);
+
+  if (!ref_kind) {
+    throw new Error(`Found ref to unknown definition '${refString}'`)
+  }
+
+  return {
+    kind: "Ref",
+    ref_kind,
+    ref_name: refString
+  }
+}
+
+const parseArrayString = (arrayString: string, uniqueDefs: Map<string, UniqueDefKind>): ArrayType => {
+  if (!arrayString.startsWith("[") || !arrayString.endsWith("]")) {
+    throw new Error(`Invalid array type: ${arrayString}`);
+  }
+
+  const { required: isInnerTypeRequired, innerString: innerTypeString } = extractRequired(arrayString.slice(1, -1));
+
+  let innerType: AnyType;
+
+  if (isArray(innerTypeString)) {
+    innerType = parseArrayString(innerTypeString, uniqueDefs)
+  } else if (isMap(innerTypeString)) {
+    innerType = parseMapString(innerTypeString, uniqueDefs)
+  } else if (isScalarType(innerTypeString)) {
+    innerType = parseScalarString(innerTypeString)
+  } else {
+    innerType = parseRefString(innerTypeString, uniqueDefs)
+  }
+
+  const item = {
+    required: isInnerTypeRequired,
+    type: innerType
+  }
+
+  return {
+    kind: "Array",
+    item
+  }
+}
+
 export const parseMapString = (mapString: string, uniqueDefs: Map<string, UniqueDefKind>): MapType => {
-  const extractType = (mapString: string): AnyType => {
-    if (isArray(mapString)) {
-      const closeSquareBracketIdx = mapString.lastIndexOf("]");
-      const required = mapString[closeSquareBracketIdx + 1] === "!"
-      return {
-        kind: "Array",
-        item: {
-          type: extractType(mapString.substring(1, closeSquareBracketIdx)),
-          required
-        }
-      };
-    } else if (isMap(mapString)) {
-      return parseMapString(mapString, uniqueDefs)
-    } else if (isScalarType(mapString)) {
-      return {
-        kind: "Scalar",
-        scalar: mapString as ScalarTypeName,
-      }
-    } else {
-      return parseRef(mapString, uniqueDefs)
-    }
-    // TODO: is this case necessary?
-    // else {
-    //   throw new Error(`Unrecognized reference type '${mapString}'`)
-    // }
-  }
-
-  const openAngleBracketIdx = mapString.indexOf("<");
-  const closeAngleBracketIdx = mapString.lastIndexOf(">");
-
-  if (
-    closeAngleBracketIdx === -1
-  ) {
+  if (!mapString.startsWith("Map<") || !mapString.endsWith(">")) {
     throw new Error(`Invalid map value type: ${mapString}`);
   }
 
-  const subtype = mapString.substring(openAngleBracketIdx + 1, closeAngleBracketIdx);
+  const innerMapString = mapString.slice(4, -1);
+  const mapStringSplit = innerMapString.split(",");
 
-  const firstDelimiter = subtype.indexOf(",");
-
-  const _keyType = subtype.substring(0, firstDelimiter).trim();
-  const _valType = subtype.substring(firstDelimiter + 1).trim();
-
-  if (!_keyType || !_valType) {
+  if (mapStringSplit.length !== 2) {
     throw new Error(`Invalid map value type: ${mapString}`);
   }
 
-  // TODO: Is there a better way to enforce this -> Map key should always be required
-  // TODO: Should we throw an error if it's not?
-  // const keyRequired = true;
-  const keyType = _keyType.endsWith("!") ? _keyType.slice(0, -1) : _keyType;
-  const valType = _valType.endsWith("!") ? _valType.slice(0, -1) : _valType;
+  const [keyTypeString, valTypeString] = mapStringSplit;
 
-  if (!isMapKey(keyType)) {
+  // If key contains !, remove it. It will always be required anyways
+  const innerKeyString = keyTypeString.endsWith("!") ? keyTypeString.slice(0, -1) : keyTypeString;
+
+  if (!isMapKey(innerKeyString)) {
     throw new Error(
-      `Found invalid map key type: ${keyType} while parsing ${mapString}`
+      `Found invalid map key type: ${innerKeyString} while parsing ${mapString}`
     );
+  }
+
+  const key = {
+    kind: "Scalar" as const,
+    scalar: innerKeyString as MapKeyTypeName
+  }
+
+  const { required: isValueRequired, innerString: innerValueString } = extractRequired(valTypeString);
+
+  let valueType: AnyType;
+
+  if (isArray(innerValueString)) {
+    valueType = parseArrayString(innerValueString, uniqueDefs)
+  } else if (isMap(innerValueString)) {
+    valueType = parseMapString(innerValueString, uniqueDefs)
+  } else if (isScalarType(innerValueString)) {
+    valueType = parseScalarString(innerValueString)
+  } else {
+    valueType = parseRef(innerValueString, uniqueDefs)
+  }
+
+  const value = {
+    type: valueType,
+    required: isValueRequired,
   }
 
   return {
     kind: "Map",
-    key: {
-      kind: "Scalar",
-      scalar: keyType as MapKeyTypeName
-    },
-    value: {
-      type: extractType(valType),
-      required: valType.endsWith("!"),
-    }
+    key,
+    value
   }
-
 }
 
 const isMap = (typeName: string): boolean => {
-  //TODO: would this be the right condition?
   return typeName.startsWith("Map<")
 }
 
