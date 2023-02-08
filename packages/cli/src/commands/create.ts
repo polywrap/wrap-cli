@@ -1,6 +1,11 @@
 import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
-import { generateProjectTemplate, intlMsg, parseLogFileOption } from "../lib";
+import {
+  downloadProjectTemplate,
+  generateProjectTemplate,
+  intlMsg,
+  parseLogFileOption,
+} from "../lib";
 
 import fse from "fs-extra";
 import path from "path";
@@ -11,15 +16,23 @@ import { Argument } from "commander";
 const nameStr = intlMsg.commands_create_options_projectName();
 const langStr = intlMsg.commands_create_options_lang();
 const langsStr = intlMsg.commands_create_options_langs();
+const formatsStr = intlMsg.commands_create_options_formats();
 const createProjStr = intlMsg.commands_create_options_createProject();
 const createAppStr = intlMsg.commands_create_options_createApp();
 const createPluginStr = intlMsg.commands_create_options_createPlugin();
+const createTemplateStr = intlMsg.commands_create_options_t();
 const pathStr = intlMsg.commands_create_options_o_path();
+const urlStr = intlMsg.commands_create_options_t_url();
+
+export enum UrlFormat {
+  git = ".git",
+}
 
 export const supportedLangs = {
   wasm: ["assemblyscript", "rust", "interface"] as const,
   app: ["typescript-node", "typescript-react"] as const,
   plugin: ["typescript"] as const,
+  template: Object.values(UrlFormat),
 };
 
 export type ProjectType = keyof typeof supportedLangs;
@@ -137,12 +150,40 @@ export const create: Command = {
           });
         }
       );
+
+    createCommand
+      .command("template")
+      .description(
+        `${createTemplateStr} ${formatsStr}: ${supportedLangs.template.join(
+          ", "
+        )}`
+      )
+      .addArgument(new Argument("<url>", urlStr).argRequired())
+      .addArgument(new Argument("<name>", nameStr))
+      .option(
+        `-o, --output-dir <${pathStr}>`,
+        `${intlMsg.commands_create_options_o()}`
+      )
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
+      .action(async (url, name, options: Partial<CreateCommandOptions>) => {
+        await run("template", url, name, {
+          outputDir: options.outputDir || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
+          logFile: parseLogFileOption(options.logFile),
+        });
+      });
   },
 };
 
 async function run(
   command: ProjectType,
-  language: SupportedLangs,
+  languageOrUrl: SupportedLangs | string,
   name: string,
   options: Required<CreateCommandOptions>
 ) {
@@ -174,20 +215,17 @@ async function run(
     }
   }
 
-  await generateProjectTemplate(command, language, projectDir)
+  const produceTemplate =
+    command === "template"
+      ? downloadProjectTemplate(languageOrUrl, projectDir, logger)
+      : generateProjectTemplate(command, languageOrUrl, projectDir);
+
+  await produceTemplate
     .then(() => {
-      let readyMessage;
-      if (command === "wasm") {
-        readyMessage = intlMsg.commands_create_readyProtocol();
-      } else if (command === "app") {
-        readyMessage = intlMsg.commands_create_readyApp();
-      } else if (command === "plugin") {
-        readyMessage = intlMsg.commands_create_readyPlugin();
-      }
-      logger.info(`🔥 ${readyMessage} 🔥`);
+      logger.info(`🔥 ${intlMsg.commands_create_ready()} 🔥`);
       process.exit(0);
     })
-    .catch((err) => {
+    .catch((err: unknown) => {
       const commandFailError = intlMsg.commands_create_error_commandFail({
         error: JSON.stringify(err, null, 2),
       });
