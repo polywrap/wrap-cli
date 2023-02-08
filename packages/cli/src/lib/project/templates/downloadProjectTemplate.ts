@@ -7,7 +7,6 @@ import path from "path";
 import fse from "fs-extra";
 
 function parseUrlFormat(url: string): UrlFormat | undefined {
-  // TODO: better url validation
   if (url.startsWith("http") && url.endsWith(".git")) {
     return UrlFormat.git;
   } else {
