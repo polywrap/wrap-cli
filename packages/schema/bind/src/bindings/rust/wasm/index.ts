@@ -50,19 +50,6 @@ export const generateBinding: GenerateBindingFn = (
     }
   }
 
-  // Generate env type folders
-  if (abi.envType) {
-    output.entries.push({
-      type: "Directory",
-      name: Functions.detectKeyword()(toLower(abi.envType.type), (str) => str),
-      data: renderTemplates(
-        templatePath("env-type"),
-        abi.envType,
-        subTemplates
-      ),
-    });
-  }
-
   // Generate imported folder
   const importEntries: OutputEntry[] = [];
 
@@ -111,24 +98,6 @@ export const generateBinding: GenerateBindingFn = (
         data: renderTemplates(
           templatePath("imported/object-type"),
           importedObectType,
-          subTemplates
-        ),
-      });
-    }
-  }
-
-  // Generate imported env type folders
-  if (abi.importedEnvTypes) {
-    for (const importedEnvType of abi.importedEnvTypes) {
-      importEntries.push({
-        type: "Directory",
-        name: Functions.detectKeyword()(
-          toLower(importedEnvType.type),
-          (str) => str
-        ),
-        data: renderTemplates(
-          templatePath("imported/env-type"),
-          importedEnvType,
           subTemplates
         ),
       });

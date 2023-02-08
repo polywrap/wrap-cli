@@ -33,9 +33,6 @@ export { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./imported/{{type}
 {{#importedObjectTypes}}
 export { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./imported/{{type}}";
 {{/importedObjectTypes}}
-{{#importedEnvTypes}}
-export { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./imported/{{type}}";
-{{/importedEnvTypes}}
 {{#importedEnumTypes}}
 export {
   {{#detectKeyword}}{{type}}{{/detectKeyword}},
@@ -47,6 +44,3 @@ export {
 {{#interfaceTypes}}
 export { {{#detectKeyword}}{{namespace}}{{/detectKeyword}} } from "./{{namespace}}";
 {{/interfaceTypes}}
-{{#envType}}
-export { Env } from "./Env";
-{{/envType}}
