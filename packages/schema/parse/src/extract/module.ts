@@ -9,7 +9,7 @@ export class ModuleVisitorBuilder implements VisitorBuilder {
   constructor(protected readonly uniqueDefs: Map<string, UniqueDefKind>) { }
 
   private extractMethodFromFieldDefNode(node: FieldDefinitionNode): FunctionDef {
-    const { map, env } = parseDirectivesInField(node, this.uniqueDefs);
+    const { map } = parseDirectivesInField(node, this.uniqueDefs);
 
     const resultDef: ResultDef = {
       kind: "Result",
@@ -40,19 +40,6 @@ export class ModuleVisitorBuilder implements VisitorBuilder {
         type: extractType(inputNode.type, this.uniqueDefs)
       }
     }) ?? [];
-
-    if (env) {
-      args.push({
-        kind: "Argument",
-        name: "env",
-        required: env.required,
-        type: {
-          kind: "Ref",
-          ref_kind: "Env",
-          ref_name: "Env",
-        }
-      })
-    }
 
     const method: FunctionDef = {
       kind: "Function",

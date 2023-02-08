@@ -1,4 +1,4 @@
-import { createAbi, isEnvType, isModuleType } from "./abi";
+import { createAbi, isModuleType } from "./abi";
 import { AbiTransforms, transformAbi } from "./transform";
 import { validators, SchemaValidatorBuilder } from "./validate";
 
@@ -6,7 +6,6 @@ import { DocumentNode, parse, visit, visitInParallel } from "graphql";
 import { Abi, UniqueDefKind } from "./definitions";
 import { ExternalVisitorBuilder, VisitorBuilder } from "./extract/types";
 import { ObjectVisitorBuilder } from "./extract";
-import { EnvVisitorBuilder } from "./extract";
 import { EnumVisitorBuilder } from "./extract";
 import { ModuleVisitorBuilder } from "./extract";
 
@@ -33,7 +32,7 @@ const extractUniqueDefinitionNames = (document: DocumentNode): Map<string, Uniqu
     ObjectTypeDefinition: (node) => {
       const name = node.name.value;
 
-      if (!isModuleType(name) && !isEnvType(name)) {
+      if (!isModuleType(name)) {
         uniqueDefs.set(name, "Object")
       }
     },
@@ -53,7 +52,6 @@ export function parseSchema(
   const uniqueDefs = extractUniqueDefinitionNames(astNode);
   const defaultExtractors: VisitorBuilder[] = [
     new ObjectVisitorBuilder(uniqueDefs),
-    new EnvVisitorBuilder(uniqueDefs),
     new EnumVisitorBuilder(),
     new ModuleVisitorBuilder(uniqueDefs)
   ]
@@ -77,26 +75,11 @@ export function parseSchema(
   }
 
   return {
-    version: "0.1",
-    objectTypes: info.objectTypes?.length ? info.objectTypes : undefined,
-    moduleType: info.moduleType ? info.moduleType : undefined,
-    enumTypes: info.enumTypes?.length ? info.enumTypes : undefined,
-    interfaceTypes: info.interfaceTypes?.length
-      ? info.interfaceTypes
-      : undefined,
-    importedObjectTypes: info.importedObjectTypes?.length
-      ? info.importedObjectTypes
-      : undefined,
-    importedModuleTypes: info.importedModuleTypes?.length
-      ? info.importedModuleTypes
-      : undefined,
-    importedEnumTypes: info.importedEnumTypes?.length
-      ? info.importedEnumTypes
-      : undefined,
-    importedEnvTypes: info.importedEnvTypes?.length
-      ? info.importedEnvTypes
-      : undefined,
-    envType: info.envType ? info.envType : undefined,
+    version: "0.2",
+    objects: info.objects?.length ? info.objects : undefined,
+    functions: info.functions?.length ? info.functions : undefined,
+    enums: info.enums?.length ? info.enums : undefined,
+    imports: info.imports?.length ? info.imports : undefined,
   };
 }
 
@@ -119,7 +102,7 @@ const validate = (
 
 const extract = (
   astNode: DocumentNode,
-  abi: WrapAbi,
+  abi: Abi,
   extractors: SchemaExtractorBuilder[]
 ) => {
   const allVisitors = extractors.map((getVisitor) => getVisitor(abi));

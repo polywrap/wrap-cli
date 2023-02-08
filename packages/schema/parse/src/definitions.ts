@@ -1,20 +1,26 @@
 /// ABIs
 
+export interface AbiDefs {
+  functions?: FunctionDef[];
+  objects?: ObjectDef[];
+  enums?: EnumDef[];
+}
+
 export interface Abi extends AbiDefs {
   version: "0.2";
   imports?: ImportedAbi[];
 }
 
-export interface ImportedAbi extends AbiDefs {
-  namespace: string;
-  uri: string;
-}
+export type ImportAbiType =
+  | "wasm"
+  | "interface";
 
-export interface AbiDefs {
-  functions?: FunctionDef[];
-  objects?: ObjectDef[];
-  enums?: EnumDef[];
-  env?: EnvDef;
+export interface ImportedAbi extends AbiDefs {
+  id: string;
+  uri: string;
+  type: ImportAbiType;
+  namespace: string;
+  imports?: ImportedAbi[];
 }
 
 /// Definitions (user-defined)
@@ -23,7 +29,6 @@ export type UniqueDefKind =
   | "Function"
   | "Object"
   | "Enum"
-  | "Env";
 
 export type DefKind =
   | UniqueDefKind
@@ -37,15 +42,11 @@ export interface Def {
 
 export interface NamedDef extends Def {
   name: string;
-  comment?: string;
 }
 
-export interface TypeDef extends Def {
-  required: boolean;
-  type: AnyType;
-}
+export interface InlinedTypeDef extends Def, OptionalType { }
 
-export interface NamedTypeDef extends NamedDef, TypeDef { }
+export interface NamedTypeDef extends NamedDef, InlinedTypeDef { }
 
 export interface FunctionDef extends NamedDef {
   kind: "Function";
@@ -57,7 +58,7 @@ export interface ArgumentDef extends NamedTypeDef {
   kind: "Argument";
 }
 
-export interface ResultDef extends TypeDef {
+export interface ResultDef extends InlinedTypeDef {
   kind: "Result";
 }
 
@@ -75,25 +76,21 @@ export interface EnumDef extends NamedDef {
   constants: string[];
 }
 
-export interface EnvDef extends NamedDef {
-  kind: "Env";
-  name: "Env";
-  props: PropertyDef[];
-}
-
 /// Types (built-ins)
 
 export type AnyType =
   | ScalarType
   | ArrayType
   | MapType
-  | RefType;
+  | RefType
+  | ImportRefType;
 
 export type TypeKind =
   | "Scalar"
   | "Array"
   | "Map"
-  | "Ref";
+  | "Ref"
+  | "ImportRef";
 
 export interface Type {
   kind: TypeKind;
@@ -108,21 +105,31 @@ export interface ScalarType<
 
 export interface ArrayType extends Type {
   kind: "Array";
-  required: boolean;
-  item: AnyType;
+  item: OptionalType;
 }
 
 export interface MapType extends Type {
   kind: "Map";
   key: ScalarType<MapKeyTypeName>;
-  required: boolean;
-  value: AnyType;
+  value: OptionalType;
 }
 
 export interface RefType extends Type {
   kind: "Ref";
   ref_kind: UniqueDefKind;
   ref_name: string;
+}
+
+export interface ImportRefType extends Type {
+  kind: "ImportRef";
+  import_id: string;
+  ref_kind: UniqueDefKind;
+  ref_name: string;
+}
+
+export interface OptionalType {
+  required: boolean;
+  type: AnyType;
 }
 
 /// Constants

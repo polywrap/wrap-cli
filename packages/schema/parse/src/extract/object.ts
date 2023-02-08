@@ -1,5 +1,5 @@
 import { ASTVisitor, FieldDefinitionNode, ObjectTypeDefinitionNode } from "graphql";
-import { isModuleType, isEnvType } from "../abi";
+import { isModuleType } from "../abi";
 import { Abi, ObjectDef, PropertyDef, UniqueDefKind } from "../definitions";
 import { parseDirectivesInField } from "./directives";
 import { VisitorBuilder } from "./types";
@@ -26,19 +26,13 @@ export class ObjectVisitorBuilder implements VisitorBuilder {
           const typeName = node.name.value;
       
           // Skip non-custom types
-          if (isModuleType(typeName) || isEnvType(typeName)) {
+          if (isModuleType(typeName)) {
             return;
           }
-
-          // TODO: restore interfaces support
-          // const interfaces = node.interfaces?.map((x) =>
-          //   createInterfaceImplementedDefinition({ type: x.name.value })
-          // );
       
           // Create a new TypeDefinition
           const def: ObjectDef = {
             kind: "Object",
-            comment: node.description?.value,
             name: typeName,
             props: node.fields?.map(fieldNode => this.extractPropertyDef(fieldNode, this.uniqueDefs)) ?? []
           };
