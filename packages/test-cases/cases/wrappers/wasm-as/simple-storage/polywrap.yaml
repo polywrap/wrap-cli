@@ -7,6 +7,6 @@ source:
   module: ./src/index.ts
   import_abis:
     - uri: "wrap://ens/ethereum.polywrap.eth"
-      abi: ../../../../../js/plugins/ethereum/build/wrap.info
+      abi: ../../../../../js/plugins/ethereum/src/schema.graphql
 extensions:
   build: ./polywrap.build.yaml
