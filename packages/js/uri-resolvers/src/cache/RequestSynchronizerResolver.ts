@@ -12,8 +12,10 @@ import { Result } from "@polywrap/result";
 // Uri resolver that synchronizes requests to the same URI
 // Multiple requests to the same URI will be resolved only once
 // and the result will be cached for subsequent requests
-// Can use the `shouldRetry` option to determine whether a request should be retried in case of an error
-export class RequestSynchronizerResolver<TError> implements IUriResolver<TError> {
+// Can use the `shouldUseCache` option to determine whether to use the cached request in case of an error
+// (default is not to use the cache)
+export class RequestSynchronizerResolver<TError>
+  implements IUriResolver<TError> {
   private requestCache: Map<
     string,
     Promise<Result<UriPackageOrWrapper, TError>>
@@ -22,13 +24,15 @@ export class RequestSynchronizerResolver<TError> implements IUriResolver<TError>
   constructor(
     private resolverToSynchronize: IUriResolver<TError>,
     private options?: {
-      shouldRetry?: (error: TError | undefined) => boolean;
+      shouldUseCache?: (error: TError | undefined) => boolean;
     }
   ) {}
 
   static from<TResolverError = unknown>(
     resolver: UriResolverLike,
-    options?: { shouldRetry?: (error: TResolverError | undefined) => boolean }
+    options?: {
+      shouldUseCache?: (error: TResolverError | undefined) => boolean;
+    }
   ): RequestSynchronizerResolver<TResolverError> {
     return new RequestSynchronizerResolver(
       UriResolver.from<TResolverError>(resolver),
@@ -57,15 +61,13 @@ export class RequestSynchronizerResolver<TError> implements IUriResolver<TError>
           }
 
           // Handle error case
-          if (!this.options?.shouldRetry) {
-            // In case of an error and no shouldRetry error handler, we try to resolve the URI again.
+          if (!this.options?.shouldUseCache) {
+            // In case of an error and no shouldUseCache error handler, we try to resolve the URI again.
             // This is because the error might be caused by a network issue or something similar,
             // and we don't want all the requests to fail.
             return this.tryResolveUri(uri, client, resolutionContext);
-          } else if (this.options.shouldRetry(result.error)) {
-            // In case of an error and the shouldRetry error handler returns true, we try to resolve the URI again.
-            return this.tryResolveUri(uri, client, resolutionContext);
-          } else {
+          } else if (this.options.shouldUseCache(result.error)) {
+            // In case of an error and the shouldUseCache error handler returns true, we use the cached result.
             resolutionContext.trackStep({
               sourceUri: uri,
               result: result,
@@ -73,6 +75,9 @@ export class RequestSynchronizerResolver<TError> implements IUriResolver<TError>
             });
 
             return result;
+          } else {
+            // In case of an error and the shouldUseCache error handler returns false, we try to resolve the URI again.
+            return this.tryResolveUri(uri, client, resolutionContext);
           }
         },
         (error: unknown) => {

@@ -13,7 +13,6 @@ import { Result } from "@polywrap/result";
 
 export class PackageToWrapperCacheResolver<TError>
   implements IUriResolver<TError | Error> {
-
   constructor(
     private _resolverToCache: IUriResolver<TError>,
     private _cache: IWrapperCache,

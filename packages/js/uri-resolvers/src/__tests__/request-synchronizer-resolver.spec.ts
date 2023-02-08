@@ -216,20 +216,20 @@ describe("RequestSynchronizerResolver", () => {
     }
   });
 
-  it("parallel requests resulting in a resolution error retry if shouldRetry is truthy", async () => {
+  it("parallel requests resulting in a resolution error respect shouldUseCache", async () => {
     const client = new PolywrapCoreClient({
       resolver: RequestSynchronizerResolver.from(
         new SimpleAsyncRedirectResolver(),
         { 
-          shouldRetry: (error: Error) => {
-            if (error.message === "Test resolution error") return true;
-            return false;
+          shouldUseCache: (error: Error) => {
+            if (error.message === "Test resolution error") return false;
+            return true;
           } 
         }
       )
     });
 
-    // shouldRetry is truthy, so this should retry (act without using cache)
+    // shouldUseCache is truthy, so this should retry (act without using cache)
     const uri = new Uri("wrap://test/should-error");
     const invocations: Promise<Result<UriPackageOrWrapper, unknown>>[] = [];
     const resolutionContexts: IUriResolutionContext[] = []
@@ -254,7 +254,7 @@ describe("RequestSynchronizerResolver", () => {
       expect(result.ok).toBeFalsy();
     }
 
-    // shouldRetry is falsy, so this should not retry (use the error from cache)
+    // shouldUseCache is falsy, so this should not retry (use the error from cache)
     const uri2 = new Uri("wrap://test/should-error-2");
     const invocations2: Promise<Result<UriPackageOrWrapper, unknown>>[] = [];
     const resolutionContexts2: IUriResolutionContext[] = []
