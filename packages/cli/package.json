@@ -51,6 +51,7 @@
     "@polywrap/ipfs-plugin-js": "0.10.0-pre.7",
     "@polywrap/logging-js": "0.10.0-pre.7",
     "@polywrap/os-js": "0.10.0-pre.7",
+    "@polywrap/test-env-js": "0.10.0-pre.7",
     "@polywrap/polywrap-manifest-types-js": "0.10.0-pre.7",
     "@polywrap/schema-bind": "0.10.0-pre.7",
     "@polywrap/schema-compose": "0.10.0-pre.7",

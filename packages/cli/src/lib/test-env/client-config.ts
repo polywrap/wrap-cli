@@ -1,5 +1,5 @@
 import { getTestEnvProviders } from "./providers";
-import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "../../lib"
+import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "../../lib";
 
 import {
   BuilderConfig,
