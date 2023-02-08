@@ -6,7 +6,7 @@ import {
 import { PolywrapClient, Uri } from "@polywrap/client-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
-import { providers } from "@polywrap/test-env-js";
+import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "@polywrap/cli-js";
 import { ipfsResolverPlugin } from "../..";
 
 export const getClient = (env: Record<string, unknown>) => {
@@ -16,7 +16,7 @@ export const getClient = (env: Record<string, unknown>) => {
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
           env: {
-            provider: providers.ipfs,
+            provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,
           },
         },
         {

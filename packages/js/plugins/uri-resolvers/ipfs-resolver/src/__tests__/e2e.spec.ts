@@ -1,13 +1,12 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { getClient } from "./helpers/getClient";
-import { Result } from "@polywrap/core-js";
+import { Result, Uri } from "@polywrap/core-js";
 import { ResultOk } from "@polywrap/result";
-import {
-  buildAndDeployWrapper,
-  initTestEnvironment,
-  providers,
-  stopTestEnvironment,
-} from "@polywrap/test-env-js";
+import { Commands, ETH_ENS_IPFS_MODULE_CONSTANTS } from "@polywrap/cli-js";
+import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
+import fs from "fs";
+import path from "path";
+import yaml from "yaml";
 
 jest.setTimeout(300000);
 
@@ -16,21 +15,61 @@ describe("IPFS Plugin", () => {
   let wrapperIpfsCid: string;
 
   beforeAll(async () => {
-    await initTestEnvironment();
+    await Commands.infra("up", {
+      modules: ["eth-ens-ipfs"],
+    })
 
-    let { ipfsCid } = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
-      ipfsProvider: providers.ipfs,
-      ethereumProvider: providers.ethereum,
-      ensName: "cool.wrapper.eth",
-      codegen: true
+    const wrapperAbsPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
+    await Commands.build({ codegen: true }, { cwd: wrapperAbsPath })
+    const tempDeployManifestName = "polywrap.deploy-temp.yaml";
+    const tempDeployManifestPath = path.join(
+      wrapperAbsPath,
+      tempDeployManifestName
+    );
+    const tempDeployManifest: Omit<DeployManifest, "__type"> = {
+      format: '0.2.0',
+      jobs: {
+        deployToIpfs: {
+          steps: [
+            {
+              name: "ipfsDeploy",
+              package: "ipfs",
+              uri: `fs/${wrapperAbsPath}/build`,
+              config: {
+                gatewayUri: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider
+              }
+            }
+          ]
+        }
+      }
+    }
+    fs.writeFileSync(
+      tempDeployManifestPath,
+      yaml.stringify(tempDeployManifest, null, 2)
+    );
+    const { stdout } = await Commands.deploy({
+      manifestFile: tempDeployManifestPath,
+    }, {
+      cwd: wrapperAbsPath
     });
+    // remove manually configured manifests
+    fs.unlinkSync(tempDeployManifestPath);
 
-    wrapperIpfsCid = ipfsCid;
+    // get the IPFS CID of the published package
+    const extractCID = /(wrap:\/\/ipfs\/[A-Za-z0-9]+)/;
+    const result = stdout.match(extractCID);
+    if (!result) {
+      throw Error(
+        `polywrap CLI output missing IPFS CID.\nOutput: ${stdout}`
+      );
+    }
+    wrapperIpfsCid = new Uri(result[1]).path;
   });
 
   afterAll(async () => {
-    await stopTestEnvironment();
+    await Commands.infra("down", {
+      modules: ["eth-ens-ipfs"],
+    })
   });
 
   it("Should successfully resolve a deployed wrapper - e2e", async () => {

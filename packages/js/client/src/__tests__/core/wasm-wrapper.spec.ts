@@ -1,5 +1,5 @@
-import { buildWrapper } from "@polywrap/test-env-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
+import { Commands } from "@polywrap/cli-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
 import { Uri, PolywrapClient, IWrapPackage } from "../..";
@@ -17,7 +17,7 @@ const simpleWrapperUri = new Uri(`fs/${simpleWrapperPath}/build`);
 
 describe("wasm-wrapper", () => {
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath, undefined, true);
+    await Commands.build({ codegen: true }, { cwd: simpleWrapperPath });
   });
 
   const mockPlugin = (): IWrapPackage => {

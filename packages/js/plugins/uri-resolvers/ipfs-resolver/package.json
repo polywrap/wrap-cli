@@ -27,6 +27,7 @@
     "is-ipfs": "1.0.3"
   },
   "devDependencies": {
+    "@polywrap/cli-js": "0.10.0-pre.7",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "abort-controller": "3.0.0",

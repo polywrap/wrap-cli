@@ -52,16 +52,6 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
     const ensWrapperUri = embeddedWrappers.ens;
 
     const client = new PolywrapClient({
-      redirects: [
-        {
-          from: "wrap://ens/uts46.polywrap.eth",
-          to: embeddedWrappers.uts46,
-        },
-        {
-          from: "wrap://ens/sha3.polywrap.eth",
-          to: embeddedWrappers.sha3,
-        },
-      ],
       packages: [
         {
           uri: ethereumPluginUri,

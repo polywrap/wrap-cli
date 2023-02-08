@@ -1,6 +1,6 @@
-import { buildWrapper, stopTestEnvironment } from "@polywrap/test-env-js";
 import { Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
+import { Commands } from "@polywrap/cli-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
 import { getClient } from "./helpers/getClient";
@@ -14,13 +14,8 @@ describe("Filesystem Resolver plugin", () => {
   let client: PolywrapClient;
 
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath, undefined, true);
-
+    await Commands.build({ codegen: true }, { cwd: simpleWrapperPath });
     client = getClient();
-  });
-
-  afterAll(async () => {
-    await stopTestEnvironment();
   });
 
   it("invokes simple wrapper on local file system", async () => {

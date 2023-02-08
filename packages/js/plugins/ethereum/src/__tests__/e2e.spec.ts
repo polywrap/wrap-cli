@@ -2,13 +2,7 @@
 import * as Schema from "../wrap";
 
 import { PolywrapClient, ClientConfig } from "@polywrap/client-js";
-import {
-  initTestEnvironment,
-  stopTestEnvironment,
-  buildWrapper,
-  ensAddresses,
-  providers,
-} from "@polywrap/test-env-js";
+import { ETH_ENS_IPFS_MODULE_CONSTANTS, Commands } from "@polywrap/cli-js";
 import {
   deployStorage,
   addPrimitiveToArrayStorage,
@@ -60,16 +54,17 @@ describe("Ethereum Plugin", () => {
   const uri = `fs/${wrapperPath}/build`;
 
   beforeAll(async () => {
-    await initTestEnvironment();
-
-    ensAddress = ensAddresses.ensAddress;
-    resolverAddress = ensAddresses.resolverAddress;
-    registrarAddress = ensAddresses.registrarAddress;
+    await Commands.infra("up", {
+      modules: ["eth-ens-ipfs"],
+    })
+    ensAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress;
+    resolverAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.resolverAddress;
+    registrarAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.registrarAddress;
 
     const connections = new Connections({
       networks: {
         testnet: new Connection({
-          provider: providers.ethereum,
+          provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider,
           signer: new Wallet(
             "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
           ),
@@ -80,7 +75,7 @@ describe("Ethereum Plugin", () => {
 
     defaultConfig = getDefaultConfig(connections);
     client = new PolywrapClient(defaultConfig);
-    await buildWrapper(wrapperPath, undefined, true);
+    await Commands.build({ codegen: true }, { cwd: wrapperPath });
 
     const response = await client.invoke<string>({
       uri,
@@ -96,7 +91,9 @@ describe("Ethereum Plugin", () => {
   });
 
   afterAll(async () => {
-    await stopTestEnvironment();
+    await Commands.infra("down", {
+      modules: ["eth-ens-ipfs"],
+    })
   });
 
   it("callContractView", async () => {

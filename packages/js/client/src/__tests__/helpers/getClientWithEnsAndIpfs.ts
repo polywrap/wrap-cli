@@ -1,5 +1,4 @@
 import { PolywrapClient, Uri } from "../..";
-import { ensAddresses, providers } from "@polywrap/test-env-js";
 import {
   Connection,
   Connections,
@@ -17,12 +16,13 @@ import {
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { defaultInterfaces } from "@polywrap/client-config-builder-js";
+import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "@polywrap/cli-js";
 
 export const getClientWithEnsAndIpfs = () => {
   const connections: Connections = new Connections({
     networks: {
       testnet: new Connection({
-        provider: providers.ethereum,
+        provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider,
       }),
     },
     defaultNetwork: "testnet",
@@ -33,7 +33,7 @@ export const getClientWithEnsAndIpfs = () => {
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
           env: {
-            provider: providers.ipfs,
+            provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,
           },
         },
       ],
@@ -58,7 +58,7 @@ export const getClientWithEnsAndIpfs = () => {
               uri: Uri.from("wrap://ens/ens-resolver.polywrap.eth"),
               package: ensResolverPlugin({
                 addresses: {
-                  testnet: ensAddresses.ensAddress,
+                  testnet: ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress,
                 },
               }),
             },

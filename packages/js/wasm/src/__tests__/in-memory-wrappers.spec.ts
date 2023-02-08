@@ -1,4 +1,3 @@
-import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
 import { InMemoryFileReader } from "../InMemoryFileReader";

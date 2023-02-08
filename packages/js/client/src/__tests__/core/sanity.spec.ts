@@ -7,7 +7,7 @@ import {
 import fs from "fs";
 
 import { IUriPackage, IUriRedirect } from "@polywrap/core-js";
-import { buildWrapper } from "@polywrap/test-env-js";
+import { Commands } from "@polywrap/cli-js";
 import { ResultErr } from "@polywrap/result";
 import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
 import { WasmPackage } from "@polywrap/wasm-js";
@@ -71,7 +71,7 @@ describe("sanity", () => {
       envs: undefined
     }
 
-    await buildWrapper(fooPath, undefined, true);
+    await Commands.build({ codegen: true }, { cwd: fooPath });
     let client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
     let result = await client.validate(fooUri, {});
     expect(result.ok).toBeFalsy();
@@ -104,8 +104,7 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Unable to find URI");
 
-    await buildWrapper(greetingPath, undefined, true);
-
+    await Commands.build({ codegen: true }, { cwd: greetingPath });
     let modifiedFooWrapper: IUriPackage = {
       uri: Uri.from(greetingUri),
       package: await getPackage("wrapper-b")
@@ -122,8 +121,8 @@ describe("sanity", () => {
 
     expect(result.ok).toBeTruthy()
 
-    await buildWrapper(modifiedFooPath, undefined, true);
-      let redirectUri: IUriRedirect = {
+    await Commands.build({ codegen: true }, { cwd: modifiedFooPath });
+    let redirectUri: IUriRedirect = {
       from: Uri.from(fooUri),
       to: Uri.from(modifiedFooUri)
     };

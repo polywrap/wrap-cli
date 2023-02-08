@@ -1,4 +1,5 @@
 import { getTestEnvProviders } from "./providers";
+import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "../../lib"
 
 import {
   BuilderConfig,
@@ -11,7 +12,6 @@ import {
   Connection,
 } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ensAddresses } from "@polywrap/test-env-js";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   // TODO: move this into its own package, since it's being used everywhere?
@@ -24,7 +24,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
     throw Error("Test environment not found.");
   }
 
-  const ensAddress = ensAddresses.ensAddress;
+  const ensAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress;
 
   return {
     envs: {

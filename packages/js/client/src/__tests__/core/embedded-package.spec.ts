@@ -1,11 +1,11 @@
 import fs from "fs";
 import path from "path";
-import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { InMemoryFileReader, WasmPackage } from "@polywrap/wasm-js";
 import { IWrapPackage, Uri } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 import { PolywrapClient } from "../../PolywrapClient";
+import { Commands } from "@polywrap/cli-js";
 
 jest.setTimeout(200000);
 
@@ -14,7 +14,11 @@ const simpleWrapperUri = new Uri(`fs/${simpleWrapperPath}/build`);
 
 describe("Embedded package", () => {
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath);
+    await Commands.build({
+      codegen: true
+    }, {
+      cwd: simpleWrapperPath
+    });
   });
 
   it("can invoke an embedded package", async () => {

@@ -27,7 +27,7 @@
     "@polywrap/client-js": "0.10.0-pre.7",
     "@polywrap/fs-plugin-js": "0.10.0-pre.7",
     "@polywrap/fs-resolver-plugin-js": "0.10.0-pre.7",
-    "@polywrap/test-env-js": "0.10.0-pre.7",
+    "@polywrap/cli-js": "0.10.0-pre.7",
     "@polywrap/uri-resolvers-js": "0.10.0-pre.7",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",

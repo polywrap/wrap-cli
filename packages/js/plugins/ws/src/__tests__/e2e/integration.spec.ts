@@ -1,5 +1,5 @@
 import { CoreClient, Uri } from "@polywrap/core-js";
-import { buildWrapper } from "@polywrap/test-env-js";
+import { Commands } from "@polywrap/cli-js";
 import WS from "jest-websocket-mock";
 import { PluginPackage } from "@polywrap/plugin-js";
 import { getClient } from "./helpers/getClient";
@@ -17,8 +17,7 @@ describe("e2e tests for WsPlugin", () => {
 
     beforeAll(async () => {
       client = getClient();
-
-      await buildWrapper(wrapperPath, undefined, true);
+      await Commands.build({ codegen: true }, { cwd: wrapperPath });
     });
 
     beforeEach(() => {

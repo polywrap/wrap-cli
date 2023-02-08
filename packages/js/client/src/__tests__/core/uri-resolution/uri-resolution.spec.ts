@@ -1,4 +1,4 @@
-import { buildWrapper } from "@polywrap/test-env-js";
+import { Commands } from "@polywrap/cli-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
   Uri,
@@ -106,11 +106,9 @@ function replaceAll(str: string, strToReplace: string, replaceStr: string) {
 
 describe("URI resolution", () => {
   beforeAll(async () => {
-    await Promise.all([
-      buildWrapper(wrapperPath, undefined, true),
-      buildWrapper(simpleFsResolverWrapperPath, undefined, true),
-      buildWrapper(simpleRedirectResolverWrapperPath, undefined, true)
-    ]);
+    await Commands.build({ codegen: true }, { cwd: wrapperPath });
+    await Commands.build({ codegen: true }, { cwd: simpleFsResolverWrapperPath });
+    await Commands.build({ codegen: true }, { cwd: simpleRedirectResolverWrapperPath });
   });
 
   it("sanity", async () => {

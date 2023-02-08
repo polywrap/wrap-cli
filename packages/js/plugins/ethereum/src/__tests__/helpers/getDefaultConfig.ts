@@ -2,7 +2,7 @@ import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ethereumPlugin, Connections } from "../..";
-import { providers } from "@polywrap/test-env-js";
+import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "@polywrap/cli-js";
 import {
   defaultIpfsProviders,
 } from "@polywrap/client-config-builder-js";
@@ -17,7 +17,7 @@ export const getDefaultConfig = (
       {
         uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
         env: {
-          provider: providers.ipfs,
+          provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,
           fallbackProviders: defaultIpfsProviders,
         },
       },

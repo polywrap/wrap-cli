@@ -1,10 +1,10 @@
-import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
 import { WasmPackage } from "../WasmPackage";
 import { InMemoryFileReader } from "../InMemoryFileReader";
 import { deserializeWrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { ResultErr, ResultOk } from "@polywrap/result";
+import { Commands } from "@polywrap/cli-js";
 import { WRAP_MANIFEST_PATH, WRAP_MODULE_PATH } from "../constants";
 
 jest.setTimeout(200000);
@@ -13,7 +13,7 @@ const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 
 describe("In-memory packages", () => {
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath, undefined, true);
+    await Commands.build({ codegen: true }, { cwd: simpleWrapperPath })
   });
 
   it("can create in-memory packages from buffers", async () => {

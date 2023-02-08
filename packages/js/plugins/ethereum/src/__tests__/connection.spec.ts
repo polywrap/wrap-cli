@@ -1,5 +1,5 @@
 import { Connection } from "..";
-import { initTestEnvironment, stopTestEnvironment, providers } from "@polywrap/test-env-js";
+import { Commands,  ETH_ENS_IPFS_MODULE_CONSTANTS } from "@polywrap/cli-js"
 import { Wallet } from "ethers";
 
 jest.setTimeout(60000);
@@ -15,9 +15,11 @@ describe("Connection", () => {
   let testnet: Connection;
 
   beforeAll(async () => {
-    await initTestEnvironment();
+    await Commands.infra("up", {
+      modules: ["eth-ens-ipfs"],
+    });
     testnet = new Connection({
-      provider: providers.ethereum,
+      provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider,
       signer: new Wallet(
         "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
       ),
@@ -25,7 +27,9 @@ describe("Connection", () => {
   });
 
   afterAll(async () => {
-    await stopTestEnvironment();
+    await Commands.infra("down", {
+      modules: ["eth-ens-ipfs"],
+    });
   });
 
   it("Constructs from Networkish", () => {
@@ -48,8 +52,8 @@ describe("Connection", () => {
     const goerliUri = getRpcUri("goerli");
     const connection = new Connection({ provider: goerliUri });
     expect(connection.getProvider().connection.url).toEqual(goerliUri);
-    connection.setProvider(providers.ethereum);
-    expect(connection.getProvider().connection.url).toEqual(providers.ethereum);
+    connection.setProvider(ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider);
+    expect(connection.getProvider().connection.url).toEqual(ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider);
     expect(connection.getSigner()).toBeDefined();
   });
 
@@ -61,7 +65,7 @@ describe("Connection", () => {
     });
 
     it("gets signer from provider", async () => {
-      const connection = new Connection({ provider: providers.ethereum });
+      const connection = new Connection({ provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider });
       const signer = connection.getSigner();
       expect(signer).toBeDefined();
     });
@@ -69,7 +73,7 @@ describe("Connection", () => {
 
   describe("setSigner", () => {
     it ("sets signer from ethers Signer", async () => {
-      const connection = new Connection({ provider: providers.ethereum });
+      const connection = new Connection({ provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider });
       connection.setSigner(new Wallet(
         "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
       ));
@@ -87,7 +91,7 @@ describe("Connection", () => {
     });
 
     it("sets signer from address", async () => {
-      const connection = new Connection({ provider: providers.ethereum });
+      const connection = new Connection({ provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider });
       connection.setSigner(signerAddress);
       const signer = connection.getSigner();
       expect(signer).toBeDefined();

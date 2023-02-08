@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { buildWrapper } from "@polywrap/test-env-js";
+import { Commands } from "@polywrap/cli-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { WasmWrapper, InMemoryFileReader } from "@polywrap/wasm-js";
@@ -15,7 +15,7 @@ const simpleWrapperUri = new Uri(`fs/${simpleWrapperPath}/build`);
 
 describe("Embedded wrapper", () => {
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath);
+    await Commands.build({ codegen: true }, { cwd: simpleWrapperPath });
   });
 
   it("can invoke an embedded wrapper", async () => {

@@ -1,12 +1,6 @@
-import { Result, Uri, WrapError } from "@polywrap/core-js";
-import {
-  initTestEnvironment,
-  providers,
-  stopTestEnvironment,
-} from "@polywrap/test-env-js";
-
 import { Ipfs_Module } from "../wrap";
-import { CoreClient } from "@polywrap/core-js";
+import { CoreClient, Result, Uri, WrapError } from "@polywrap/core-js";
+import { Commands, ETH_ENS_IPFS_MODULE_CONSTANTS } from "@polywrap/cli-js";
 import { ResultOk } from "@polywrap/result";
 import { PolywrapClient } from "@polywrap/client-js";
 import createIpfsClient, {
@@ -27,15 +21,17 @@ describe("IPFS Plugin", () => {
   const sampleFileBuffer = Buffer.from(sampleFileTextContents, "utf-8");
 
   beforeAll(async () => {
-    await initTestEnvironment();
-    ipfs = createIpfsClient(providers.ipfs);
+    await Commands.infra("up", {
+      modules: ["eth-ens-ipfs"],
+    });
+    ipfs = createIpfsClient(ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider);
 
     client = new PolywrapClient(
       {
         envs: [
           {
             uri: "wrap://ens/ipfs.polywrap.eth",
-            env: { provider: providers.ipfs },
+            env: { provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider },
           },
         ],
         resolver: UriResolver.from({
@@ -51,7 +47,9 @@ describe("IPFS Plugin", () => {
   });
 
   afterAll(async () => {
-    await stopTestEnvironment();
+    await Commands.infra("down", {
+      modules: ["eth-ens-ipfs"],
+    });
   });
 
   it("Should cat a file successfully", async () => {
@@ -79,7 +77,7 @@ describe("IPFS Plugin", () => {
 
     expect(result.value).toEqual({
       cid: `/ipfs/${sampleFileIpfsInfo.hash.toString()}`,
-      provider: providers.ipfs,
+      provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,
     });
   });
 
@@ -115,7 +113,7 @@ describe("IPFS Plugin", () => {
           {
             uri: "wrap://ens/ipfs.polywrap.eth",
             env: {
-              provider: providers.ipfs,
+              provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,
               timeout: 1000,
             },
           },
@@ -190,7 +188,7 @@ describe("IPFS Plugin", () => {
     const catResult = await Ipfs_Module.cat(
       {
         cid: sampleFileIpfsInfo.hash.toString(),
-        options: { provider: providers.ipfs },
+        options: { provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider },
       },
       clientWithBadProvider
     );
@@ -201,7 +199,7 @@ describe("IPFS Plugin", () => {
     const resolveResult = await Ipfs_Module.resolve(
       {
         cid: sampleFileIpfsInfo.hash.toString(),
-        options: { provider: providers.ipfs },
+        options: { provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider },
       },
       clientWithBadProvider
     );
@@ -209,7 +207,7 @@ describe("IPFS Plugin", () => {
     if (!resolveResult.ok) fail(resolveResult.error);
     expect(resolveResult.value).toEqual({
       cid: `/ipfs/${sampleFileIpfsInfo.hash.toString()}`,
-      provider: providers.ipfs,
+      provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,
     });
   });
 
@@ -237,7 +235,7 @@ describe("IPFS Plugin", () => {
         cid: sampleFileIpfsInfo.hash.toString(),
         options: {
           provider: "this-provider-also-doesnt-exist",
-          fallbackProviders: [providers.ipfs],
+          fallbackProviders: [ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider],
         },
       },
       clientWithBadProvider
@@ -251,7 +249,7 @@ describe("IPFS Plugin", () => {
         cid: sampleFileIpfsInfo.hash.toString(),
         options: {
           provider: "this-provider-also-doesnt-exist",
-          fallbackProviders: [providers.ipfs],
+          fallbackProviders: [ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider],
         },
       },
       clientWithBadProvider
@@ -260,7 +258,7 @@ describe("IPFS Plugin", () => {
     if (!resolveResult.ok) fail(resolveResult.error);
     expect(resolveResult.value).toEqual({
       cid: `/ipfs/${sampleFileIpfsInfo.hash.toString()}`,
-      provider: providers.ipfs,
+      provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,
     });
   });
 });

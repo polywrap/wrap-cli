@@ -1,6 +1,6 @@
 import { Connection } from "@polywrap/ethereum-plugin-js";
 import { ContractFactory, Contract, Signer, ethers } from "ethers";
-import { providers } from "@polywrap/test-env-js";
+import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "@polywrap/cli-js"
 
 export async function deployStorage(
   abi: string[],
@@ -48,6 +48,6 @@ export async function setPrimitiveToStorage(
 }
 
 function getSigner(): Signer {
-  const connection = new Connection({ provider: providers.ethereum });
+  const connection = new Connection({ provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider });
   return connection.getSigner();
 }
