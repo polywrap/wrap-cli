@@ -18,6 +18,11 @@ describe("Connection", () => {
     await Commands.infra("up", {
       modules: ["eth-ens-ipfs"],
     });
+    function sleep(ms: number) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+    // wait ten seconds for the Ganache node to start
+    await sleep(10000);
     testnet = new Connection({
       provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider,
       signer: new Wallet(
