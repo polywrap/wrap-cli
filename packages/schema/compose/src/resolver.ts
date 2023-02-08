@@ -1,5 +1,5 @@
-import { createImportedEnumDefinition, createImportedEnvDefinition, createImportedModuleDefinition, createImportedObjectDefinition, DefinitionKind, visitEnumDefinition, visitEnvDefinition, visitModuleDefinition, visitObjectDefinition } from "@polywrap/schema-parse";
-import { EnumDefinition, EnvDefinition, GenericDefinition, ImportedEnumDefinition, ImportedEnvDefinition, ImportedModuleDefinition, ImportedObjectDefinition, ModuleDefinition, ObjectDefinition, WrapAbi } from "@polywrap/wrap-manifest-types-js";
+import { createImportedEnumDefinition, createImportedModuleDefinition, createImportedObjectDefinition, DefinitionKind, visitEnumDefinition, visitModuleDefinition, visitObjectDefinition } from "@polywrap/schema-parse";
+import { EnumDefinition, GenericDefinition, ImportedEnumDefinition, ImportedModuleDefinition, ImportedObjectDefinition, ModuleDefinition, ObjectDefinition, WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 type UriStr = string;
 interface ImportStatement {
@@ -14,7 +14,7 @@ interface Namespaced {
     namespace: string;
 }
 
-type ResolvedType = (ImportedModuleDefinition | ImportedObjectDefinition | ImportedEnumDefinition | ImportedEnvDefinition) & Namespaced;
+type ResolvedType = (ImportedModuleDefinition | ImportedObjectDefinition | ImportedEnumDefinition) & Namespaced;
 
 type ImportMap = Map<
     string, ResolvedType
@@ -23,9 +23,6 @@ type ImportMap = Map<
 type ImportDefWithKind = {
     extDefinition: ImportedModuleDefinition,
     kind: "ImportedModule"
-} | {
-    extDefinition: ImportedEnvDefinition,
-    kind: "ImportedEnv"
 } | {
     extDefinition: ImportedObjectDefinition,
     kind: "ImportedObject"
@@ -37,9 +34,6 @@ type ImportDefWithKind = {
 type LocalDefWithKind = {
     extDefinition: ModuleDefinition,
     kind: "Module"
-} | {
-    extDefinition: EnvDefinition,
-    kind: "Env"
 } | {
     extDefinition: ObjectDefinition,
     kind: "Object"
@@ -83,16 +77,6 @@ export abstract class ImportsResolver<TImportStatement extends ImportStatement> 
         const extModuleImport = importAbi.importedModuleTypes?.find(def => def.type == importType);
         if (extModuleImport) {
             return { extDefinition: extModuleImport, kind: "ImportedModule" }
-        }
-
-        const extEnv = importAbi.envType;
-        if (extEnv && extEnv.type == importType) {
-            return { extDefinition: extEnv, kind: "Env" }
-        }
-
-        const extImportEnv = importAbi.importedEnvTypes?.find(def => def.type == importType);
-        if (extImportEnv) {
-            return { extDefinition: extImportEnv, kind: "ImportedEnv" }
         }
 
         throw new Error(`Could not determine kind of imported type '${importType}'`)
@@ -166,23 +150,7 @@ export abstract class ImportsResolver<TImportStatement extends ImportStatement> 
                     },
                     visitor: visitModuleDefinition
                 };
-            case "Env":
-                return {
-                    unnamespacedResolvedType: {
-                        ...createImportedEnvDefinition({
-                            ...extDefWithKind.extDefinition,
-                            name: undefined,
-                            required: undefined,
-                            nativeType: extDefWithKind.extDefinition.type,
-                            uri: "",
-                            namespace: "",
-                        }),
-                        properties: extDefWithKind.extDefinition.properties,
-                    },
-                    visitor: visitEnvDefinition
-                };
             case "ImportedModule":
-            case "ImportedEnv":
                 throw new Error(`Cannot import an import's imported ${extDefWithKind.kind}. Tried to import ${importType}`)
         }
     }
