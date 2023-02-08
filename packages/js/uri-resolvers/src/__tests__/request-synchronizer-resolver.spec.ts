@@ -105,7 +105,7 @@ describe("RequestSynchronizerResolver", () => {
       if (!foundFirst) {
         await expectHistory(
           resolutionContext.getHistory(),
-          "resolve-ipfs-without-cache"
+          "synchronizer-without-cache"
         );
         expect(result.value.type).toEqual("uri");
         foundFirst = true;
@@ -114,7 +114,7 @@ describe("RequestSynchronizerResolver", () => {
 
       await expectHistory(
         resolutionContext.getHistory(),
-        "resolve-ipfs-with-cache"
+        "synchronizer-with-cache"
       );
 
       expect(result.value.type).toEqual("uri");
@@ -148,7 +148,7 @@ describe("RequestSynchronizerResolver", () => {
 
       await expectHistory(
         resolutionContext.getHistory(),
-        "resolve-ipfs-without-cache"
+        "synchronizer-without-cache"
       );
       expect(result.value.type).toEqual("uri");
     }
@@ -210,7 +210,7 @@ describe("RequestSynchronizerResolver", () => {
 
       await expectHistory(
         resolutionContext.getHistory(),
-        "resolve-ipfs-with-error-without-cache"
+        "synchronizer-with-error-without-cache"
       );
       expect(result.ok).toBeFalsy();
     }
@@ -249,7 +249,7 @@ describe("RequestSynchronizerResolver", () => {
 
       await expectHistory(
         resolutionContext.getHistory(),
-        "resolve-ipfs-with-error-without-cache"
+        "synchronizer-with-error-without-cache"
       );
       expect(result.ok).toBeFalsy();
     }
@@ -277,7 +277,7 @@ describe("RequestSynchronizerResolver", () => {
       if (!foundFirst) {
         await expectHistory(
           resolutionContext.getHistory(),
-          "resolve-ipfs-with-error-without-cache"
+          "synchronizer-with-error-without-cache"
         );
         expect(result.ok).toBeFalsy();
         foundFirst = true;
@@ -286,7 +286,7 @@ describe("RequestSynchronizerResolver", () => {
 
       await expectHistory(
         resolutionContext.getHistory(),
-        "resolve-ipfs-with-error-and-cache"
+        "synchronizer-with-error-and-cache"
       );
       expect(result.ok).toBeFalsy();
     }
