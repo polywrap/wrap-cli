@@ -24,6 +24,11 @@ describe("IPFS Plugin", () => {
     await Commands.infra("up", {
       modules: ["eth-ens-ipfs"],
     });
+    function sleep(ms: number) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+    // wait ten seconds for the IPFS node to start
+    await sleep(10000);
     ipfs = createIpfsClient(ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider);
 
     client = new PolywrapClient(
@@ -42,8 +47,15 @@ describe("IPFS Plugin", () => {
       { noDefaults: true }
     );
 
-    let ipfsAddResult = await ipfs.add(sampleFileBuffer);
-    sampleFileIpfsInfo = ipfsAddResult[0];
+    try {
+
+      let ipfsAddResult = await ipfs.add(sampleFileBuffer);
+      
+      console.log(ipfsAddResult)
+      sampleFileIpfsInfo = ipfsAddResult[0];
+    } catch (e) {
+      console.log(e)
+    }
   });
 
   afterAll(async () => {
