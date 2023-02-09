@@ -72,23 +72,24 @@ const parseRefString = (refString: string, uniqueDefs: Map<string, UniqueDefKind
   }
 }
 
-const parseArrayString = (arrayString: string, uniqueDefs: Map<string, UniqueDefKind>): ArrayType => {
+export const parseArrayString = (arrayString: string, uniqueDefs: Map<string, UniqueDefKind>): ArrayType => {
   if (!arrayString.startsWith("[") || !arrayString.endsWith("]")) {
     throw new Error(`Invalid array type: ${arrayString}`);
   }
 
   const { required: isInnerTypeRequired, innerString: innerTypeString } = extractRequired(arrayString.slice(1, -1));
 
+  const trimmedInnerTypeString = innerTypeString.trim();
   let innerType: AnyType;
 
-  if (isArray(innerTypeString)) {
-    innerType = parseArrayString(innerTypeString, uniqueDefs)
-  } else if (isMap(innerTypeString)) {
-    innerType = parseMapString(innerTypeString, uniqueDefs)
-  } else if (isScalarType(innerTypeString)) {
-    innerType = parseScalarString(innerTypeString)
+  if (isArray(trimmedInnerTypeString)) {
+    innerType = parseArrayString(trimmedInnerTypeString, uniqueDefs)
+  } else if (isMap(trimmedInnerTypeString)) {
+    innerType = parseMapString(trimmedInnerTypeString, uniqueDefs)
+  } else if (isScalarType(trimmedInnerTypeString)) {
+    innerType = parseScalarString(trimmedInnerTypeString)
   } else {
-    innerType = parseRefString(innerTypeString, uniqueDefs)
+    innerType = parseRefString(trimmedInnerTypeString, uniqueDefs)
   }
 
   const item = {
@@ -108,16 +109,18 @@ export const parseMapString = (mapString: string, uniqueDefs: Map<string, Unique
   }
 
   const innerMapString = mapString.slice(4, -1);
-  const mapStringSplit = innerMapString.split(",");
+  const trimmedInnerMapString = innerMapString.trim();
 
-  if (mapStringSplit.length !== 2) {
+  if (!trimmedInnerMapString.includes(",")) {
     throw new Error(`Invalid map value type: ${mapString}`);
   }
 
-  const [keyTypeString, valTypeString] = mapStringSplit;
+  const mapStringSplit = trimmedInnerMapString.split(",");
+  const trimmedKeyString = mapStringSplit[0].trim();
+  const trimmedValString = mapStringSplit.slice(1).join(",").trim();
 
   // If key contains !, remove it. It will always be required anyways
-  const innerKeyString = keyTypeString.endsWith("!") ? keyTypeString.slice(0, -1) : keyTypeString;
+  const innerKeyString = trimmedKeyString.endsWith("!") ? trimmedKeyString.slice(0, -1) : trimmedKeyString;
 
   if (!isMapKey(innerKeyString)) {
     throw new Error(
@@ -130,18 +133,19 @@ export const parseMapString = (mapString: string, uniqueDefs: Map<string, Unique
     scalar: innerKeyString as MapKeyTypeName
   }
 
-  const { required: isValueRequired, innerString: innerValueString } = extractRequired(valTypeString);
+  const { required: isValueRequired, innerString: innerValueString } = extractRequired(trimmedValString);
+  const trimmedInnerValueString = innerValueString.trim();
 
   let valueType: AnyType;
 
-  if (isArray(innerValueString)) {
-    valueType = parseArrayString(innerValueString, uniqueDefs)
-  } else if (isMap(innerValueString)) {
-    valueType = parseMapString(innerValueString, uniqueDefs)
-  } else if (isScalarType(innerValueString)) {
-    valueType = parseScalarString(innerValueString)
+  if (isArray(trimmedInnerValueString)) {
+    valueType = parseArrayString(trimmedInnerValueString, uniqueDefs)
+  } else if (isMap(trimmedInnerValueString)) {
+    valueType = parseMapString(trimmedInnerValueString, uniqueDefs)
+  } else if (isScalarType(trimmedInnerValueString)) {
+    valueType = parseScalarString(trimmedInnerValueString)
   } else {
-    valueType = parseRef(innerValueString, uniqueDefs)
+    valueType = parseRef(trimmedInnerValueString, uniqueDefs)
   }
 
   const value = {
