@@ -8,14 +8,26 @@ jobs:
   Publish-Docker-Hub:
     name: Publish container images to Docker Hub
     if: |
-      github.event.pull_request.user.login == 'polywrap-build-bot' &&
-      github.event.pull_request.merged == true
+      github.event.pull_request.merged &&
+      endsWith(github.event.pull_request.title, '/workflows/cd-containers') &&
+      github.event.pull_request.user.login != 'polywrap-build-bot'
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Pull-Request Creator Is Publisher?
+        run: |
+          exists=$(echo $(grep -Fxcs ${CREATOR} .github/PUBLISHERS))
+          if [ "$exists" == "1" ] ; then
+            echo IS_PUBLISHER=true >> $GITHUB_ENV
+          else
+            echo IS_PUBLISHER=false >> $GITHUB_ENV
+          fi
+        env:
+          CREATOR: ${{github.event.pull_request.user.login}}
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -29,14 +41,14 @@ jobs:
           echo IMAGE_AS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/assemblyscript/rust/vm >> $GITHUB_ENV
       - name: Read Image VERSION & NAME into env.IMAGE_..._VERSION/NAME
         run: |
-          echo IMAGE_RS_VM_NAME=$(cat $IMAGE_RS_VM_DIR/NAME) >> &GITHUB_ENV
-          echo IMAGE_RS_VM_VERSION=$(cat $IMAGE_RS_VM_DIR/VERSION) >> &GITHUB_ENV
-          echo IMAGE_AS_VM_NAME=$(cat $IMAGE_AS_VM_DIR/NAME) >> &GITHUB_ENV
-          echo IMAGE_AS_VM_VERSION=$(cat $IMAGE_AS_VM_DIR/VERSION) >> &GITHUB_ENV
+          echo IMAGE_RS_VM_NAME=$(cat $IMAGE_RS_VM_DIR/NAME) >> $GITHUB_ENV
+          echo IMAGE_RS_VM_VERSION=$(cat $IMAGE_RS_VM_DIR/VERSION) >> $GITHUB_ENV
+          echo IMAGE_AS_VM_NAME=$(cat $IMAGE_AS_VM_DIR/NAME) >> $GITHUB_ENV
+          echo IMAGE_AS_VM_VERSION=$(cat $IMAGE_AS_VM_DIR/VERSION) >> $GITHUB_ENV
       - name: Check if image tags already exist
         run: |
-          echo IMAGE_RS_VM_UNPUBLISHED=$(docker manifest inspect $IMAGE_RS_VM_NAME:$IMAGE_RS_VM_VERSION > /dev/null ; echo $?) >> &GITHUB_ENV
-          echo IMAGE_AS_VM_UNPUBLISHED=$(docker manifest inspect $IMAGE_AS_VM_NAME:$IMAGE_AS_VM_VERSION > /dev/null ; echo $?) >> &GITHUB_ENV
+          echo IMAGE_RS_VM_UNPUBLISHED=$(docker manifest inspect $IMAGE_RS_VM_NAME:$IMAGE_RS_VM_VERSION > /dev/null ; echo $?) >> $GITHUB_ENV
+          echo IMAGE_AS_VM_UNPUBLISHED=$(docker manifest inspect $IMAGE_AS_VM_NAME:$IMAGE_AS_VM_VERSION > /dev/null ; echo $?) >> $GITHUB_ENV
       - name: Build & Publish RS VM Image
         if: ${{env.IMAGE_RS_VM_UNPUBLISHED}}
         working-directory: ${{env.IMAGE_RS_VM_DIR}}
