@@ -5,6 +5,7 @@ import {
   generateProjectTemplate,
   intlMsg,
   parseLogFileOption,
+  parseUrlFormat,
 } from "../lib";
 
 import fse from "fs-extra";
@@ -32,7 +33,6 @@ export const supportedLangs = {
   wasm: ["assemblyscript", "rust", "interface"] as const,
   app: ["typescript-node", "typescript-react"] as const,
   plugin: ["typescript"] as const,
-  template: Object.values(UrlFormat),
 };
 
 export type ProjectType = keyof typeof supportedLangs;
@@ -154,7 +154,7 @@ export const create: Command = {
     createCommand
       .command("template")
       .description(
-        `${createTemplateStr} ${formatsStr}: ${supportedLangs.template.join(
+        `${createTemplateStr} ${formatsStr}: ${Object.values(UrlFormat).join(
           ", "
         )}`
       )
@@ -182,13 +182,24 @@ export const create: Command = {
 };
 
 async function run(
-  command: ProjectType,
+  command: ProjectType | "template",
   languageOrUrl: SupportedLangs | string,
   name: string,
   options: Required<CreateCommandOptions>
 ) {
   const { outputDir, verbose, quiet, logFile } = options;
   const logger = createLogger({ verbose, quiet, logFile });
+
+  // if using custom template, check url validity before creating project dir
+  let urlFormat: UrlFormat | undefined;
+  if (command === "template") {
+    try {
+      urlFormat = parseUrlFormat(languageOrUrl);
+    } catch (e) {
+      logger.error(e.message);
+      process.exit(1);
+    }
+  }
 
   const projectDir = path.resolve(outputDir ? `${outputDir}/${name}` : name);
 
@@ -217,7 +228,7 @@ async function run(
 
   const produceTemplate =
     command === "template"
-      ? downloadProjectTemplate(languageOrUrl, projectDir, logger)
+      ? downloadProjectTemplate(languageOrUrl, projectDir, logger, urlFormat)
       : generateProjectTemplate(command, languageOrUrl, projectDir);
 
   await produceTemplate

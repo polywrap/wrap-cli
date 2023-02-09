@@ -111,6 +111,7 @@
   "commands_create_error_outputDirMissingPath": "{option} option missing {argument} argument",
   "commands_create_error_unrecognizedCommand": "Unrecognized command",
   "commands_create_error_unrecognizedLanguage": "Unrecognized language",
+  "commands_create_error_badUrl": "URL {url} uses an invalid format. Valid URL formats: {formats}",
   "commands_create_options_command": "command",
   "commands_create_options_commands": "Commands",
   "commands_create_options_createApp": "Create a Polywrap application.",
