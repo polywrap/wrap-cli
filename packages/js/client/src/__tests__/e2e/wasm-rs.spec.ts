@@ -11,6 +11,7 @@ import fse from "fs-extra";
 import path from "path";
 import { execSync } from "child_process";
 import { PolywrapClient } from "../../PolywrapClient";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 const { performance } = require("perf_hooks");
 
 jest.setTimeout(1200000);
@@ -30,14 +31,15 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath, undefined, true);
 
-    const client = new PolywrapClient({
-      packages: [
-        {
-          uri: "wrap://ens/memory-storage.polywrap.eth",
-          package: makeMemoryStoragePlugin({}),
-        },
-      ],
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addPackage(
+        "wrap://ens/memory-storage.polywrap.eth",
+        makeMemoryStoragePlugin({})
+      )
+      .build();
+
+    const client = new PolywrapClient(config);
 
     await TestCases.runAsyncifyTest(client, wrapperUri);
   });
@@ -98,14 +100,12 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(implementationPath, undefined, true);
 
-    const client = new PolywrapClient({
-      interfaces: [
-        {
-          interface: interfaceUri,
-          implementations: [implementationUri],
-        },
-      ],
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addInterfaceImplementation(interfaceUri, implementationUri)
+      .build();
+
+    const client = new PolywrapClient(config);
 
     await TestCases.runImplementationsTest(
       client,
@@ -128,14 +128,12 @@ describe("wasm-rs test cases", () => {
     await buildWrapper(implementationPath, undefined, true);
     await buildWrapper(aggregatorPath, undefined, true);
 
-    const client = new PolywrapClient({
-      interfaces: [
-        {
-          interface: interfaceUri,
-          implementations: [implementationUri],
-        },
-      ],
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addInterfaceImplementation(interfaceUri, implementationUri)
+      .build();
+
+    const client = new PolywrapClient(config);
 
     await TestCases.runGetImplementationsTest(
       client,
@@ -205,20 +203,12 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath, undefined, true);
 
-    await TestCases.runSimpleEnvTest(
-      await new PolywrapClient({
-        envs: [
-          {
-            uri: wrapperUri,
-            env: {
-              str: "module string",
-              requiredInt: 1,
-            },
-          },
-        ],
-      }),
-      wrapperUri
-    );
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addEnv(wrapperUri, { str: "module string", requiredInt: 1 })
+      .build();
+
+    await TestCases.runSimpleEnvTest(new PolywrapClient(config), wrapperUri);
   });
 
   it("complex env", async () => {
@@ -231,40 +221,29 @@ describe("wasm-rs test cases", () => {
     await buildWrapper(externalWrapperPath, undefined, true);
     await buildWrapper(wrapperPath, undefined, true);
 
-    await TestCases.runComplexEnvs(
-      new PolywrapClient({
-        envs: [
-          {
-            uri: wrapperUri,
-            env: {
-              object: {
-                prop: "object string",
-              },
-              str: "string",
-              optFilledStr: "optional string",
-              number: 10,
-              bool: true,
-              en: "FIRST",
-              array: [32, 23],
-            },
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addEnvs({
+        [wrapperUri]: {
+          object: {
+            prop: "object string",
           },
-          {
-            uri: externalWrapperUri,
-            env: {
-              externalArray: [1, 2, 3],
-              externalString: "iamexternal",
-            },
-          },
-        ],
-        redirects: [
-          {
-            from: "ens/externalenv.polywrap.eth",
-            to: externalWrapperUri,
-          },
-        ],
-      }),
-      wrapperUri
-    );
+          str: "string",
+          optFilledStr: "optional string",
+          number: 10,
+          bool: true,
+          en: "FIRST",
+          array: [32, 23],
+        },
+        [externalWrapperUri]: {
+          externalArray: [1, 2, 3],
+          externalString: "iamexternal",
+        },
+      })
+      .addRedirect("ens/externalenv.polywrap.eth", externalWrapperUri)
+      .build();
+
+    await TestCases.runComplexEnvs(new PolywrapClient(config), wrapperUri);
   });
 
   it("override rust print macros", async () => {

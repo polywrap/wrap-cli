@@ -9,6 +9,7 @@ import {
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { getClientWithEnsAndIpfs } from "../helpers/getClientWithEnsAndIpfs";
 import { PolywrapClient } from "../../PolywrapClient";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(300000);
 
@@ -27,19 +28,20 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath, undefined, true);
 
-    const client = new PolywrapClient({
-      packages: [
-        {
-          uri: "wrap://ens/memory-storage.polywrap.eth",
-          package: makeMemoryStoragePlugin({}),
-        },
-      ],
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addPackage(
+        "wrap://ens/memory-storage.polywrap.eth",
+        makeMemoryStoragePlugin({})
+      )
+      .build();
+
+    const client = new PolywrapClient(config);
 
     await TestCases.runAsyncifyTest(client, wrapperUri);
   });
 
-  it("subinvoke", async() => {
+  it("subinvoke", async () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-subinvoke/invoke`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
@@ -49,17 +51,15 @@ describe("wasm-as test cases", () => {
     await buildWrapper(subwrapperPath, undefined, true);
     await buildWrapper(wrapperPath, undefined, true);
 
-    const client = new PolywrapClient({
-      redirects: [
-        {
-          from: "ens/add.eth",
-          to: subwrapperUri
-        }
-      ]
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addRedirect("ens/add.eth", subwrapperUri)
+      .build();
+
+    const client = new PolywrapClient(config);
 
     await TestCases.runSubinvokeTest(client, wrapperUri);
-  })
+  });
 
   it("bigint-type", async () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/bigint-type`;
@@ -142,14 +142,12 @@ describe("wasm-as test cases", () => {
     await buildWrapper(interfacePath);
     await buildWrapper(implementationPath, undefined, true);
 
-    const client = new PolywrapClient({
-      interfaces: [
-        {
-          interface: interfaceUri,
-          implementations: [implementationUri],
-        },
-      ],
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addInterfaceImplementation(interfaceUri, implementationUri)
+      .build();
+
+    const client = new PolywrapClient(config);
 
     await TestCases.runImplementationsTest(
       client,
@@ -172,14 +170,12 @@ describe("wasm-as test cases", () => {
     await buildWrapper(implementationPath, undefined, true);
     await buildWrapper(aggregatorPath, undefined, true);
 
-    const client = new PolywrapClient({
-      interfaces: [
-        {
-          interface: interfaceUri,
-          implementations: [implementationUri],
-        },
-      ],
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addInterfaceImplementation(interfaceUri, implementationUri)
+      .build();
+
+    const client = new PolywrapClient(config);
 
     await TestCases.runGetImplementationsTest(
       client,
@@ -203,14 +199,12 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(implementationPath, undefined, true);
 
-    const client = new PolywrapClient({
-      interfaces: [
-        {
-          interface: interfaceUri,
-          implementations: [implementationUri],
-        },
-      ],
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addInterfaceImplementation(interfaceUri, implementationUri)
+      .build();
+
+    const client = new PolywrapClient(config);
 
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`;
     const wrapperUri = `fs/${wrapperPath}/build`;
@@ -296,20 +290,15 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath, undefined, true);
 
-    await TestCases.runSimpleEnvTest(
-      new PolywrapClient({
-        envs: [
-          {
-            uri: wrapperUri,
-            env: {
-              str: "module string",
-              requiredInt: 1,
-            },
-          },
-        ],
-      }),
-      wrapperUri
-    );
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addEnv(wrapperUri, {
+        str: "module string",
+        requiredInt: 1,
+      })
+      .build();
+
+    await TestCases.runSimpleEnvTest(new PolywrapClient(config), wrapperUri);
   });
 
   it("complex env", async () => {
@@ -322,43 +311,33 @@ describe("wasm-as test cases", () => {
     await buildWrapper(externalWrapperPath, undefined, true);
     await buildWrapper(wrapperPath, undefined, true);
 
-    await TestCases.runComplexEnvs(
-      new PolywrapClient<string>({
-        envs: [
-          {
-            uri: wrapperUri,
-            env: {
-              object: {
-                prop: "object string",
-              },
-              str: "string",
-              optFilledStr: "optional string",
-              number: 10,
-              bool: true,
-              en: "FIRST",
-              array: [32, 23],
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .add({
+        envs: {
+          [wrapperUri]: {
+            object: {
+              prop: "object string",
             },
+            str: "string",
+            optFilledStr: "optional string",
+            number: 10,
+            bool: true,
+            en: "FIRST",
+            array: [32, 23],
           },
-          {
-            uri: "ens/externalenv.polywrap.eth",
-            env: {
-              externalArray: [1, 2, 3],
-              externalString: "iamexternal",
-            },
+          "ens/externalenv.polywrap.eth": {
+            externalArray: [1, 2, 3],
+            externalString: "iamexternal",
           },
-        ],
-        redirects: [
-          {
-            from: "ens/externalenv.polywrap.eth",
-            to: externalWrapperUri,
-          },
-          {
-            from: "ens/hello.eth",
-            to: wrapperUri,
-          }
-        ],
-      }),
-      wrapperUri
-    );
+        },
+        redirects: {
+          "ens/externalenv.polywrap.eth": externalWrapperUri,
+          "ens/hello.eth": wrapperUri,
+        },
+      })
+      .build();
+
+    await TestCases.runComplexEnvs(new PolywrapClient(config), wrapperUri);
   });
 });

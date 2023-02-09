@@ -32,7 +32,7 @@ Use the `@polywrap/client-config-builder-js` package to build a custom configura
 ```ts
   const config = new ClientConfigBuilder().addDefaults().build();
 
-  const client = new PolywrapClient(config, { noDefaults: true });
+  const client = new PolywrapClient(config);
 ```
 
 ### Invoke
@@ -151,26 +151,5 @@ export interface PolywrapClientConfig<TUri extends Uri | string = string> {
    * @param config - a whole or partial client configuration
    * @param options - { noDefaults?: boolean }
    */
-  constructor(
-    config?: Partial<PolywrapClientConfig<TUri>>,
-    options?: { noDefaults?: boolean }
-  );
-  constructor(config: CoreClientConfig, options?: { noDefaults?: boolean });
-  constructor(
-    config: Partial<ClientConfig>,
-    options?: { noDefaults?: boolean }
-  );
-  constructor(
-    config: PolywrapCoreClientConfig<TUri>,
-    options?: { noDefaults: boolean }
-  );
-  constructor(
-    config:
-      | Partial<PolywrapClientConfig<TUri>>
-      | undefined
-      | PolywrapCoreClientConfig<TUri>
-      | CoreClientConfig
-      | Partial<ClientConfig>,
-    options?: { noDefaults?: boolean }
-  ) 
+  constructor(config?: CoreClientConfig) 
 ```

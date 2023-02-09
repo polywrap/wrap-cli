@@ -25,26 +25,23 @@ describe("env", () => {
     test("plugin env types", async () => {
       const implementationUri = Uri.from("wrap://ens/some-implementation.eth");
       const envPlugin = mockEnvPlugin();
-      const client = new PolywrapClient(
-        {
-          resolver: RecursiveResolver.from([
-            {
-              uri: implementationUri,
-              package: envPlugin,
+      const client = new PolywrapClient({
+        resolver: RecursiveResolver.from([
+          {
+            uri: implementationUri,
+            package: envPlugin,
+          },
+          { from: Uri.from("ens/hello.eth"), to: implementationUri },
+        ]),
+        envs: [
+          {
+            uri: Uri.from("ens/hello.eth"),
+            env: {
+              arg1: "10",
             },
-            { from: Uri.from("ens/hello.eth"), to: implementationUri },
-          ]),
-          envs: [
-            {
-              uri: Uri.from("ens/hello.eth"),
-              env: {
-                arg1: "10",
-              },
-            },
-          ],
-        },
-        { noDefaults: true }
-      );
+          },
+        ],
+      });
 
       const mockEnv = await client.invoke({
         uri: Uri.from("ens/hello.eth"),
@@ -58,29 +55,26 @@ describe("env", () => {
 
     test("inline plugin env types", async () => {
       const implementationUri = Uri.from("wrap://ens/some-implementation.eth");
-      const client = new PolywrapClient(
-        {
-          resolver: RecursiveResolver.from([
-            {
-              uri: implementationUri,
-              package: PluginPackage.from<MockEnv>((module) => ({
-                mockEnv: (): MockEnv => {
-                  return module.env;
-                },
-              })),
-            },
-          ]),
-          envs: [
-            {
-              uri: implementationUri,
-              env: {
-                arg1: "10",
+      const client = new PolywrapClient({
+        resolver: RecursiveResolver.from([
+          {
+            uri: implementationUri,
+            package: PluginPackage.from<MockEnv>((module) => ({
+              mockEnv: (): MockEnv => {
+                return module.env;
               },
+            })),
+          },
+        ]),
+        envs: [
+          {
+            uri: implementationUri,
+            env: {
+              arg1: "10",
             },
-          ],
-        },
-        { noDefaults: true }
-      );
+          },
+        ],
+      });
 
       const mockEnv = await client.invoke({
         uri: implementationUri,
