@@ -40,35 +40,16 @@ async function downloadGitTemplate(
   const repoDir = path.join(cacheDir, repoName);
   const dotGitPath = path.join(repoDir, "/.git/");
 
-  // clone repo
   try {
+    // clone repo
     await runCommand(command, args, logger, undefined, cacheDir);
-  } catch {
-    await fse.remove(cacheDir);
-    throw Error(JSON.stringify({ command: `${command} ${args.join(" ")}` }));
-  }
-
-  // remove .git data
-  try {
+    // remove .git data
     await fse.remove(dotGitPath);
-  } catch {
-    await fse.remove(cacheDir);
-    throw Error(JSON.stringify({ command: `rm ${dotGitPath}` }));
-  }
-
-  // copy files from cache to project dir
-  try {
+    // copy files from cache to project dir
     await fse.copy(repoDir, projectDir, { overwrite: true });
-  } catch {
+  } finally {
+    // remove cache dir
     await fse.remove(cacheDir);
-    throw Error(JSON.stringify({ command: `copy ${repoDir} ${projectDir}` }));
-  }
-
-  // remove cache dir
-  try {
-    await fse.remove(cacheDir);
-  } catch {
-    throw Error(JSON.stringify({ command: `rm ${cacheDir}` }));
   }
 }
 
