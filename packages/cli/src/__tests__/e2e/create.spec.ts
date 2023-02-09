@@ -2,7 +2,8 @@ import { clearStyle, polywrapCli } from "./utils";
 
 import { runCLI } from "@polywrap/test-env-js";
 import rimraf from "rimraf";
-import { ProjectType, supportedLangs, UrlFormat } from "../../commands";
+import { ProjectType, supportedLangs } from "../../commands";
+import { UrlFormat } from "../../lib";
 
 const HELP = `Usage: polywrap create|c [options] [command]
 

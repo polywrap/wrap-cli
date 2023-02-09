@@ -1,4 +1,3 @@
-import { UrlFormat } from "../../../commands";
 import { createUUID } from "../../helpers";
 import { runCommand } from "../../system";
 import { Logger } from "../../logging";
@@ -6,6 +5,10 @@ import { intlMsg } from "../../intl";
 
 import path from "path";
 import fse from "fs-extra";
+
+export enum UrlFormat {
+  git = ".git",
+}
 
 export function parseUrlFormat(url: string): UrlFormat {
   if (url.startsWith("http") && url.endsWith(".git")) {

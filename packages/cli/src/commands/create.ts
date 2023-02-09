@@ -6,6 +6,7 @@ import {
   intlMsg,
   parseLogFileOption,
   parseUrlFormat,
+  UrlFormat,
 } from "../lib";
 
 import fse from "fs-extra";
@@ -24,10 +25,6 @@ const createPluginStr = intlMsg.commands_create_options_createPlugin();
 const createTemplateStr = intlMsg.commands_create_options_t();
 const pathStr = intlMsg.commands_create_options_o_path();
 const urlStr = intlMsg.commands_create_options_t_url();
-
-export enum UrlFormat {
-  git = ".git",
-}
 
 export const supportedLangs = {
   wasm: ["assemblyscript", "rust", "interface"] as const,
