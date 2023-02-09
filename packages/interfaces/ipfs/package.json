@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/ipfs-interface",
   "description": "Polywrap Ipfs Interface",
-  "version": "0.10.0-pre.7",
+  "version": "0.10.0-pre.8",
   "scripts": {
     "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",
     "lint": "eslint --color -c ../../../.eslintrc.js .",
@@ -10,7 +10,7 @@
     "deploy": "node ../../../dependencies/node_modules/polywrap/bin/polywrap deploy"
   },
   "devDependencies": {
-    "polywrap": "0.10.0-pre.7"
+    "polywrap": "0.10.0-pre.8"
   },
   "publishConfig": {
     "access": "public"
