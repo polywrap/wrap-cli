@@ -4,12 +4,10 @@ import {
   Uri,
   CoreClient,
   IUriResolver,
-  getImplementations,
-  coreInterfaceUris,
   IUriResolutionContext,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
-import { Result, ResultOk } from "@polywrap/result";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 import {
   UriResolverAggregatorBase,
   UriResolutionResult,
@@ -19,11 +17,20 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
   Error,
   Error
 > {
-  private readonly resolverName: string;
+  public static extInterfaceUri: Uri = new Uri(
+    "wrap://ens/uri-resolver.core.polywrap.eth"
+  );
 
-  constructor(resolverName?: string) {
+  public readonly extInterfaceUri: Uri;
+  private readonly _resolverName: string;
+
+  constructor(
+    extInterfaceUri: Uri = ExtendableUriResolver.extInterfaceUri,
+    resolverName = "ExtendableUriResolver"
+  ) {
     super();
-    this.resolverName = resolverName ?? "ExtendableUriResolver";
+    this.extInterfaceUri = extInterfaceUri;
+    this._resolverName = resolverName;
   }
 
   async getUriResolvers(
@@ -31,14 +38,15 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<IUriResolver<unknown>[], Error>> {
-    const getImplementationsResult = getImplementations(
-      coreInterfaceUris.uriResolver,
-      client.getInterfaces() ?? [],
-      client.getRedirects() ?? []
+    const getImplementationsResult = await client.getImplementations(
+      this.extInterfaceUri,
+      {
+        resolutionContext: resolutionContext.createSubContext(),
+      }
     );
 
     if (!getImplementationsResult.ok) {
-      return getImplementationsResult;
+      return ResultErr(getImplementationsResult.error);
     }
 
     const uriResolverImpls = getImplementationsResult.value;
@@ -73,5 +81,5 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     );
   }
 
-  protected getStepDescription = (): string => `${this.resolverName}`;
+  protected getStepDescription = (): string => `${this._resolverName}`;
 }

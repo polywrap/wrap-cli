@@ -13,7 +13,7 @@ const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 
 describe("In-memory packages", () => {
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath);
+    await buildWrapper(simpleWrapperPath, undefined, true);
   });
 
   it("can create in-memory packages from buffers", async () => {

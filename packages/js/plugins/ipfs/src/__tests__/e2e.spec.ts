@@ -1,4 +1,4 @@
-import { Result } from "@polywrap/core-js";
+import { Result, Uri, WrapError } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   providers,
@@ -39,7 +39,7 @@ describe("IPFS Plugin", () => {
           },
         ],
         resolver: UriResolver.from({
-          uri: "wrap://ens/ipfs.polywrap.eth",
+          uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
           package: ipfsPlugin({}),
         }),
       },
@@ -121,7 +121,7 @@ describe("IPFS Plugin", () => {
           },
         ],
         resolver: UriResolver.from({
-          uri: "wrap://ens/ipfs.polywrap.eth",
+          uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
           package: ipfsPlugin({}),
         }),
       },
@@ -138,10 +138,10 @@ describe("IPFS Plugin", () => {
 
     expect(result).toBeTruthy();
     expect(result.ok).toBeFalsy();
-    result = result as { ok: false; error: Error | undefined };
+    result = result as { ok: false; error: WrapError | undefined };
     expect(result.error).toBeTruthy();
-    expect(result.error?.stack).toMatch("Timeout has been reached");
-    expect(result.error?.stack).toMatch("Timeout: 1000");
+    expect(result.error?.message).toMatch("Timeout has been reached");
+    expect(result.error?.message).toMatch("Timeout: 1000");
 
     const catPromiseWithTimeoutOverride = Ipfs_Module.cat(
       {
@@ -164,8 +164,8 @@ describe("IPFS Plugin", () => {
       error: Error | undefined;
     };
     expect(resultForOverride.error).toBeTruthy();
-    expect(resultForOverride.error?.stack).toMatch("Timeout has been reached");
-    expect(resultForOverride.error?.stack).toMatch("Timeout: 500");
+    expect(resultForOverride.error?.message).toMatch("Timeout has been reached");
+    expect(resultForOverride.error?.message).toMatch("Timeout: 500");
   });
 
   it("Should use provider from method options", async () => {
@@ -180,7 +180,7 @@ describe("IPFS Plugin", () => {
           },
         ],
         resolver: UriResolver.from({
-          uri: "wrap://ens/ipfs.polywrap.eth",
+          uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
           package: ipfsPlugin({}),
         }),
       },
@@ -225,7 +225,7 @@ describe("IPFS Plugin", () => {
           },
         ],
         resolver: UriResolver.from({
-          uri: "wrap://ens/ipfs.polywrap.eth",
+          uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
           package: ipfsPlugin({}),
         }),
       },

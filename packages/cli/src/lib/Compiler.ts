@@ -5,27 +5,25 @@ import {
   displayPath,
   generateWrapFile,
   intlMsg,
-  outputManifest,
-  outputMetadata,
   PolywrapProject,
+  PluginProject,
   resetDir,
   SchemaComposer,
   logActivity,
 } from "./";
 import { BuildStrategy } from "./build-strategies/BuildStrategy";
-import { CodeGenerator } from "./codegen/CodeGenerator";
 
 import { WasmWrapper, WrapImports } from "@polywrap/wasm-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath } from "@polywrap/os-js";
 import fs from "fs";
+import fse from "fs-extra";
 import path from "path";
 
 export interface CompilerConfig {
   outputDir: string;
-  project: PolywrapProject;
-  codeGenerator?: CodeGenerator;
-  buildStrategy: BuildStrategy;
+  project: PolywrapProject | PluginProject;
+  buildStrategy?: BuildStrategy;
   schemaComposer: SchemaComposer;
 }
 
@@ -33,7 +31,7 @@ export class Compiler {
   constructor(private _config: CompilerConfig) {}
 
   public async compile(): Promise<boolean> {
-    const { project, codeGenerator } = this._config;
+    const { project } = this._config;
 
     const run = async (): Promise<void> => {
       // Init & clean output directory
@@ -42,18 +40,13 @@ export class Compiler {
       // Output: wrap.info
       await this._outputWrapManifest();
 
-      if (!(await this._isInterface())) {
-        // Generate the bindings
-        if (codeGenerator) {
-          await codeGenerator.generate();
-        }
-
-        // Compile the Wrapper
+      if (await this._isWasm()) {
+        // Build & Output: wasm.wrap
         await this._buildModules();
-      }
 
-      // Output Polywrap Metadata
-      await this._outputPolywrapMetadata();
+        // Copy: Resources folder
+        await this._copyResourcesFolder();
+      }
     };
 
     try {
@@ -72,17 +65,26 @@ export class Compiler {
     }
   }
 
-  private async _isInterface(): Promise<boolean> {
+  private async _isWasm(): Promise<boolean> {
     const { project } = this._config;
     const manifest = await project.getManifest();
-    return manifest.project.type === "interface";
+    return manifest.project.type.startsWith("wasm/");
   }
 
   private async _buildModules(): Promise<void> {
-    const { outputDir } = this._config;
+    const { outputDir, project } = this._config;
 
-    if (await this._isInterface()) {
-      throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules());
+    if (!this._config.buildStrategy) {
+      throw Error(intlMsg.lib_compiler_missingBuildStrategy());
+    }
+
+    if (!(await this._isWasm())) {
+      const manifest = await project.getManifest();
+      throw Error(
+        intlMsg.lib_compiler_cannotBuildModule({
+          project: manifest.project.type,
+        })
+      );
     }
 
     // Build the sources
@@ -98,7 +100,7 @@ export class Compiler {
     const run = async () => {
       const manifest = await project.getManifest();
 
-      const type = (await this._isInterface()) ? "interface" : "wasm";
+      const type = manifest.project.type.split("/")[0];
       const abi = await schemaComposer.getComposedAbis();
       await generateWrapFile(
         abi,
@@ -127,26 +129,32 @@ export class Compiler {
     );
   }
 
-  private async _outputPolywrapMetadata(): Promise<void> {
+  private async _copyResourcesFolder(): Promise<void> {
     const { outputDir, project } = this._config;
 
-    const projectMetaManifest = await project.getMetaManifest();
+    const projectManifest = await (project as PolywrapProject).getManifest();
 
-    if (!projectMetaManifest) {
-      return undefined;
+    if (!projectManifest || !projectManifest.resources) {
+      return Promise.resolve();
     }
 
-    const builtMetaManifest = await outputMetadata(
-      projectMetaManifest,
-      outputDir,
-      project.getManifestDir(),
-      project.logger
-    );
+    const logger = project.logger;
 
-    await outputManifest(
-      builtMetaManifest,
-      path.join(outputDir, "polywrap.meta.json"),
-      project.logger
+    const folder = projectManifest.resources;
+    const folderPath = path.resolve(projectManifest.resources);
+
+    await logActivity(
+      logger,
+      intlMsg.lib_compiler_copyResourcesFolderText({ folder }),
+      intlMsg.lib_compiler_copyResourcesFolderError({ folder }),
+      intlMsg.lib_compiler_copyResourcesFolderWarning({ folder }),
+      async () => {
+        if (!fs.existsSync(folderPath)) {
+          throw Error(`Resource can't be found.`);
+        }
+
+        await fse.copy(folderPath, outputDir, { recursive: true });
+      }
     );
   }
 

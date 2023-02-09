@@ -1,4 +1,4 @@
-import { coreInterfaceUris, Uri, PolywrapClient } from "../..";
+import { ExtendableUriResolver, Uri, PolywrapClient } from "../..";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
@@ -6,10 +6,10 @@ import { mockPluginRegistration } from "../helpers/mockPluginRegistration";
 jest.setTimeout(200000);
 
 describe("interface-impls", () => {
-  it("should register interface implementations successfully", () => {
-    const interfaceUri = "wrap://ens/some-interface1.eth";
-    const implementation1Uri = "wrap://ens/some-implementation1.eth";
-    const implementation2Uri = "wrap://ens/some-implementation2.eth";
+  it("should register interface implementations successfully", async () => {
+    const interfaceUri = Uri.from("wrap://ens/some-interface1.eth");
+    const implementation1Uri = Uri.from("wrap://ens/some-implementation1.eth");
+    const implementation2Uri = Uri.from("wrap://ens/some-implementation2.eth");
 
     const client = new PolywrapClient(
       {
@@ -20,8 +20,8 @@ describe("interface-impls", () => {
           },
         ],
         resolver: UriResolver.from({
-          from: "uri/foo",
-          to: "uri/bar"
+          from: Uri.from("uri/foo"),
+          to: Uri.from("uri/bar")
         })
       },
       { noDefaults: true }
@@ -31,16 +31,16 @@ describe("interface-impls", () => {
 
     expect(interfaces).toEqual([
       {
-        interface: new Uri(interfaceUri),
+        interface: interfaceUri,
         implementations: [
-          new Uri(implementation1Uri),
-          new Uri(implementation2Uri),
+          implementation1Uri,
+          implementation2Uri,
         ],
       },
     ]);
 
-    const implementations = client.getImplementations(interfaceUri, {
-      applyRedirects: false,
+    const implementations = await client.getImplementations(interfaceUri, {
+      applyResolution: false,
     });
 
     if (!implementations.ok) fail(implementations.error);
@@ -51,18 +51,18 @@ describe("interface-impls", () => {
   });
 
   it("should get all implementations of interface", async () => {
-    const interface1Uri = "wrap://ens/some-interface1.eth";
-    const interface2Uri = "wrap://ens/some-interface2.eth";
-    const interface3Uri = "wrap://ens/some-interface3.eth";
+    const interface1Uri = Uri.from("wrap://ens/some-interface1.eth");
+    const interface2Uri = Uri.from("wrap://ens/some-interface2.eth");
+    const interface3Uri = Uri.from("wrap://ens/some-interface3.eth");
 
-    const implementation1Uri = "wrap://ens/some-implementation.eth";
-    const implementation2Uri = "wrap://ens/some-implementation2.eth";
-    const implementation3Uri = "wrap://ens/some-implementation3.eth";
-    const implementation4Uri = "wrap://ens/some-implementation4.eth";
+    const implementation1Uri = Uri.from("wrap://ens/some-implementation.eth");
+    const implementation2Uri = Uri.from("wrap://ens/some-implementation2.eth");
+    const implementation3Uri = Uri.from("wrap://ens/some-implementation3.eth");
+    const implementation4Uri = Uri.from("wrap://ens/some-implementation4.eth");
 
     const client = new PolywrapClient(
       {
-        redirects: [
+        resolver: UriResolver.from([
           {
             from: interface1Uri,
             to: interface2Uri,
@@ -75,8 +75,6 @@ describe("interface-impls", () => {
             from: implementation2Uri,
             to: implementation3Uri,
           },
-        ],
-        resolver: UriResolver.from([
           mockPluginRegistration(implementation4Uri),
         ]),
         interfaces: [
@@ -99,14 +97,14 @@ describe("interface-impls", () => {
       }
     );
 
-    const implementations1 = client.getImplementations(interface1Uri, {
-      applyRedirects: true,
+    const implementations1 = await client.getImplementations(interface1Uri, {
+      applyResolution: true,
     });
-    const implementations2 = client.getImplementations(interface2Uri, {
-      applyRedirects: true,
+    const implementations2 = await client.getImplementations(interface2Uri, {
+      applyResolution: true,
     });
-    const implementations3 = client.getImplementations(interface3Uri, {
-      applyRedirects: true,
+    const implementations3 = await client.getImplementations(interface3Uri, {
+      applyResolution: true,
     });
 
     if (!implementations1.ok) fail(implementations1.error);
@@ -131,9 +129,9 @@ describe("interface-impls", () => {
   });
 
   it("should merge user-defined interface implementations with each other", async () => {
-    const interfaceUri = "wrap://ens/interface.eth";
-    const implementationUri1 = "wrap://ens/implementation1.eth";
-    const implementationUri2 = "wrap://ens/implementation2.eth";
+    const interfaceUri = Uri.from("wrap://ens/interface.eth");
+    const implementationUri1 = Uri.from("wrap://ens/implementation1.eth");
+    const implementationUri2 = Uri.from("wrap://ens/implementation2.eth");
 
     const client = new PolywrapClient({
       interfaces: [
@@ -149,21 +147,21 @@ describe("interface-impls", () => {
     });
 
     const interfaces = (client.getInterfaces() || [])
-      .filter((x) => x.interface.uri === interfaceUri);
+      .filter((x) => x.interface.uri === interfaceUri.uri);
     expect(interfaces.length).toEqual(1);
 
     const implementationUris = interfaces[0].implementations;
 
     expect(implementationUris).toEqual([
-      new Uri(implementationUri1),
-      new Uri(implementationUri2),
+      implementationUri1,
+      implementationUri2,
     ]);
   });
 
   it("should merge user-defined interface implementations with defaults", async () => {
-    const interfaceUri = coreInterfaceUris.uriResolver.uri;
-    const implementationUri1 = "wrap://ens/implementation1.eth";
-    const implementationUri2 = "wrap://ens/implementation2.eth";
+    const interfaceUri = ExtendableUriResolver.extInterfaceUri;
+    const implementationUri1 = Uri.from("wrap://ens/implementation1.eth");
+    const implementationUri2 = Uri.from("wrap://ens/implementation2.eth");
 
     const client = new PolywrapClient({
       interfaces: [
@@ -179,24 +177,24 @@ describe("interface-impls", () => {
     });
 
     const interfaces = (client.getInterfaces() || [])
-      .filter((x) => x.interface.uri === interfaceUri);
+      .filter((x) => x.interface.uri === interfaceUri.uri);
     expect(interfaces.length).toEqual(1);
 
     const implementationUris = interfaces[0].implementations;
 
     const builder = new ClientConfigBuilder();
-    const defaultClientConfig = builder.addDefaults().buildCoreConfig();
+    const defaultClientConfig = builder.addDefaults().build();
 
     expect(implementationUris).toEqual([
       ...(defaultClientConfig.interfaces || []).find(
-        (x) => x.interface.uri === interfaceUri
+        (x) => x.interface.uri === interfaceUri.uri
       )!.implementations,
-      new Uri(implementationUri1),
-      new Uri(implementationUri2),
+      implementationUri1,
+      implementationUri2,
     ]);
   });
 
-  test("get implementations - do not return plugins that are not explicitly registered", () => {
+  test("get implementations - do not return plugins that are not explicitly registered", async () => {
     const interfaceUri = "wrap://ens/some-interface.eth";
 
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
@@ -219,9 +217,9 @@ describe("interface-impls", () => {
       }
     );
 
-    const getImplementationsResult = client.getImplementations(
+    const getImplementationsResult = await client.getImplementations(
       new Uri(interfaceUri),
-      { applyRedirects: true }
+      { applyResolution: true }
     );
 
     if (!getImplementationsResult.ok) fail(getImplementationsResult.error);
@@ -230,7 +228,7 @@ describe("interface-impls", () => {
     ]);
   });
 
-  test("get implementations - return implementations for plugins which don't have interface stated in manifest", () => {
+  test("get implementations - return implementations for plugins which don't have interface stated in manifest", async () => {
     const interfaceUri = "wrap://ens/some-interface.eth";
 
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
@@ -251,9 +249,9 @@ describe("interface-impls", () => {
       { noDefaults: true }
     );
 
-    const getImplementationsResult = client.getImplementations(
+    const getImplementationsResult = await client.getImplementations(
       new Uri(interfaceUri),
-      { applyRedirects: true }
+      { applyResolution: true }
     );
 
     if (!getImplementationsResult.ok) fail(getImplementationsResult.error);
@@ -264,11 +262,11 @@ describe("interface-impls", () => {
   });
 
   test("getImplementations - pass string or Uri", async () => {
-    const oldInterfaceUri = "ens/old.eth";
-    const newInterfaceUri = "ens/new.eth";
+    const oldInterfaceUri = Uri.from("ens/old.eth");
+    const newInterfaceUri = Uri.from("ens/new.eth");
 
-    const implementation1Uri = "wrap://ens/some-implementation1.eth";
-    const implementation2Uri = "wrap://ens/some-implementation2.eth";
+    const implementation1Uri = Uri.from("wrap://ens/some-implementation1.eth");
+    const implementation2Uri = Uri.from("wrap://ens/some-implementation2.eth");
 
     const client = new PolywrapClient({
       redirects: [
@@ -289,31 +287,31 @@ describe("interface-impls", () => {
       ],
     });
 
-    let result = client.getImplementations(oldInterfaceUri, {
-      applyRedirects: false,
+    let result = await client.getImplementations(oldInterfaceUri, {
+      applyResolution: false,
     });
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual([implementation1Uri]);
 
-    result = client.getImplementations(oldInterfaceUri, {
-      applyRedirects: true,
+    result = await client.getImplementations(oldInterfaceUri, {
+      applyResolution: true,
     });
     if (!result.ok) fail(result.error);
     expect(result.value).toEqual([implementation1Uri, implementation2Uri]);
 
-    let result2 = client.getImplementations(new Uri(oldInterfaceUri), {
-      applyRedirects: false,
+    let result2 = await client.getImplementations(oldInterfaceUri, {
+      applyResolution: false,
     });
     if (!result2.ok) fail(result2.error);
-    expect(result2.value).toEqual([new Uri(implementation1Uri)]);
+    expect(result2.value).toEqual([implementation1Uri]);
 
-    result2 = client.getImplementations(new Uri(oldInterfaceUri), {
-      applyRedirects: true,
+    result2 = await client.getImplementations(oldInterfaceUri, {
+      applyResolution: true,
     });
     if (!result2.ok) fail(result2.error);
     expect(result2.value).toEqual([
-      new Uri(implementation1Uri),
-      new Uri(implementation2Uri),
+      implementation1Uri,
+      implementation2Uri,
     ]);
   });
 });

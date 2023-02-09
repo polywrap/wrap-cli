@@ -1,0 +1,12 @@
+format: 0.2.0
+project:
+  name: FileSystemResolver
+  type: plugin/typescript
+source:
+  module: ./src/index.ts
+  schema: ./src/schema.graphql
+  import_abis:
+    - uri: "ens/uri-resolver.core.polywrap.eth"
+      abi: ../../../../interfaces/uri-resolver/build/wrap.info
+    - uri: "wrap://ens/wrappers.polywrap.eth:file-system@1.0.0"
+      abi: ./schema.interface.graphql

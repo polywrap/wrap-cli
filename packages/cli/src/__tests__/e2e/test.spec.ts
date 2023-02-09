@@ -19,6 +19,8 @@ Options:
                                         polywrap.test.yml)
   -c, --client-config <config-path>     Add custom configuration to the
                                         PolywrapClient
+  --wrapper-envs <envs-path>            Path to a JSON file containing wrapper
+                                        envs
   -o, --output-file <output-file-path>  Output file path for the test result
   -j, --jobs <jobs...>                  Specify ids of jobs that you want to
                                         run
@@ -51,7 +53,7 @@ describe("e2e tests for test command", () => {
 
   beforeAll(async () => {
     const wrapperPath = path.join(testCaseRoot, "run-test-wrapper");
-    await buildWrapper(wrapperPath);
+    await buildWrapper(wrapperPath, undefined, true);
   });
 
   it("Should show help text", async () => {

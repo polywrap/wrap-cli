@@ -9,8 +9,9 @@ import {
   defaultProjectManifestFiles,
   getProjectFromManifest,
   parseLogFileOption,
+  parseWrapperEnvsOption,
 } from "../lib";
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
 import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
@@ -20,7 +21,6 @@ import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { PolywrapClient } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
-import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 const commandToPathMap: Record<string, string> = {
   schema: schemaScriptPath,
@@ -28,36 +28,34 @@ const commandToPathMap: Record<string, string> = {
   jsdoc: jsdocScriptPath,
 };
 
-export type DocType = keyof typeof commandToPathMap;
-
 const defaultDocgenDir = "./docs";
 const pathStr = intlMsg.commands_codegen_options_o_path();
 
-type DocgenCommandOptions = {
-  manifestFile: string;
-  docgenDir: string;
-  configBuilder: IClientConfigBuilder;
-  imports: boolean;
-  verbose?: boolean;
-  quiet?: boolean;
-  logFile?: string;
-};
-
-enum Actions {
+export enum DocgenActions {
   SCHEMA = "schema",
   DOCUSAURUS = "docusaurus",
   JSDOC = "jsdoc",
 }
 
+export interface DocgenCommandOptions extends BaseCommandOptions {
+  manifestFile: string;
+  docgenDir: string;
+  clientConfig: string | false;
+  wrapperEnvs: string | false;
+  imports: boolean;
+}
+
 const argumentsDescription = `
-  ${chalk.bold(Actions.SCHEMA)}      ${intlMsg.commands_docgen_options_schema()}
   ${chalk.bold(
-    Actions.DOCUSAURUS
+    DocgenActions.SCHEMA
+  )}      ${intlMsg.commands_docgen_options_schema()}
+  ${chalk.bold(
+    DocgenActions.DOCUSAURUS
   )}    ${intlMsg.commands_docgen_options_markdown({
   framework: "Docusaurus",
 })}
   ${chalk.bold(
-    Actions.JSDOC
+    DocgenActions.JSDOC
   )}         ${intlMsg.commands_docgen_options_markdown({
   framework: "JSDoc",
 })}
@@ -72,9 +70,9 @@ export const docgen: Command = {
       .usage("<action> [options]")
       .addArgument(
         new Argument("<action>", argumentsDescription).choices([
-          Actions.SCHEMA,
-          Actions.DOCUSAURUS,
-          Actions.JSDOC,
+          DocgenActions.SCHEMA,
+          DocgenActions.DOCUSAURUS,
+          DocgenActions.JSDOC,
         ])
       )
       .option(
@@ -93,6 +91,10 @@ export const docgen: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(
+        `--wrapper-envs <${intlMsg.commands_common_options_wrapperEnvsPath()}>`,
+        `${intlMsg.commands_common_options_wrapperEnvs()}`
+      )
       .option(`-i, --imports`, `${intlMsg.commands_docgen_options_i()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
@@ -100,32 +102,46 @@ export const docgen: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (action, options) => {
+      .action(async (action, options: Partial<DocgenCommandOptions>) => {
         await run(action, {
-          ...options,
           manifestFile: parseManifestFileOption(
             options.manifestFile,
             defaultProjectManifestFiles
           ),
           docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
-          configBuilder: await parseClientConfigOption(options.clientConfig),
+          clientConfig: options.clientConfig || false,
+          wrapperEnvs: options.wrapperEnvs || false,
+          imports: options.imports || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
           logFile: parseLogFileOption(options.logFile),
         });
       });
   },
 };
 
-async function run(command: DocType, options: DocgenCommandOptions) {
+async function run(
+  action: DocgenActions,
+  options: Required<DocgenCommandOptions>
+) {
   const {
     manifestFile,
+    clientConfig,
+    wrapperEnvs,
     docgenDir,
-    configBuilder,
     imports,
     verbose,
     quiet,
     logFile,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
+
+  const envs = await parseWrapperEnvsOption(wrapperEnvs);
+  const configBuilder = await parseClientConfigOption(clientConfig);
+
+  if (envs) {
+    configBuilder.addEnvs(envs);
+  }
 
   let project = await getProjectFromManifest(manifestFile, logger);
 
@@ -142,9 +158,9 @@ async function run(command: DocType, options: DocgenCommandOptions) {
   await project.validate();
 
   // Resolve custom script
-  const customScript = require.resolve(commandToPathMap[command]);
+  const customScript = require.resolve(commandToPathMap[action]);
 
-  const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
+  const client = new PolywrapClient(configBuilder.build(), {
     noDefaults: true,
   });
 

@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/uri-resolver-extensions-js",
   "description": "Polywrap URI resolver extensions",
-  "version": "0.10.0-pre.3",
+  "version": "0.10.0-pre.7",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,11 +19,11 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.10.0-pre.3",
-    "@polywrap/result": "0.10.0-pre.3",
-    "@polywrap/uri-resolvers-js": "0.10.0-pre.3",
-    "@polywrap/wasm-js": "0.10.0-pre.3",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.3"
+    "@polywrap/core-js": "0.10.0-pre.7",
+    "@polywrap/result": "0.10.0-pre.7",
+    "@polywrap/uri-resolvers-js": "0.10.0-pre.7",
+    "@polywrap/wasm-js": "0.10.0-pre.7",
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.7"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

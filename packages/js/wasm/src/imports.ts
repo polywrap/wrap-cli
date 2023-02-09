@@ -5,15 +5,22 @@ import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { State } from "./WasmWrapper";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { CoreClient } from "@polywrap/core-js";
+import { CoreClient, Uri, ErrorSource } from "@polywrap/core-js";
 
 export const createImports = (config: {
   client: CoreClient;
   memory: WebAssembly.Memory;
   state: State;
-  abort: (message: string) => never;
+  abortWithInvokeAborted: (message: string, source: ErrorSource) => never;
+  abortWithInternalError: (message: string) => never;
 }): WrapImports => {
-  const { memory, state, client, abort } = config;
+  const {
+    memory,
+    state,
+    client,
+    abortWithInvokeAborted,
+    abortWithInternalError,
+  } = config;
 
   return {
     wrap: {
@@ -34,7 +41,7 @@ export const createImports = (config: {
         const args = readBytes(memory.buffer, argsPtr, argsLen);
 
         const result = await client.invoke<Uint8Array>({
-          uri: uri,
+          uri: Uri.from(uri),
           method: method,
           args: new Uint8Array(args),
           encodeResult: true,
@@ -51,7 +58,9 @@ export const createImports = (config: {
       // Give WASM the size of the result
       __wrap_subinvoke_result_len: (): u32 => {
         if (!state.subinvoke.result) {
-          abort("__wrap_subinvoke_result_len: subinvoke.result is not set");
+          abortWithInternalError(
+            "__wrap_subinvoke_result_len: subinvoke.result is not set"
+          );
           return 0;
         }
         return state.subinvoke.result.byteLength;
@@ -59,7 +68,9 @@ export const createImports = (config: {
       // Copy the subinvoke result into WASM
       __wrap_subinvoke_result: (ptr: u32): void => {
         if (!state.subinvoke.result) {
-          abort("__wrap_subinvoke_result: subinvoke.result is not set");
+          abortWithInternalError(
+            "__wrap_subinvoke_result: subinvoke.result is not set"
+          );
           return;
         }
         writeBytes(state.subinvoke.result, memory.buffer, ptr);
@@ -67,7 +78,9 @@ export const createImports = (config: {
       // Give WASM the size of the error
       __wrap_subinvoke_error_len: (): u32 => {
         if (!state.subinvoke.error) {
-          abort("__wrap_subinvoke_error_len: subinvoke.error is not set");
+          abortWithInternalError(
+            "__wrap_subinvoke_error_len: subinvoke.error is not set"
+          );
           return 0;
         }
         return state.subinvoke.error.length;
@@ -75,7 +88,9 @@ export const createImports = (config: {
       // Copy the subinvoke error into WASM
       __wrap_subinvoke_error: (ptr: u32): void => {
         if (!state.subinvoke.error) {
-          abort("__wrap_subinvoke_error: subinvoke.error is not set");
+          abortWithInternalError(
+            "__wrap_subinvoke_error: subinvoke.error is not set"
+          );
           return;
         }
         writeString(state.subinvoke.error, memory.buffer, ptr);
@@ -100,7 +115,7 @@ export const createImports = (config: {
         state.subinvokeImplementation.args = [implUri, method, args];
 
         const result = await client.invoke<Uint8Array>({
-          uri: implUri,
+          uri: Uri.from(implUri),
           method: method,
           args: new Uint8Array(args),
           encodeResult: true,
@@ -116,7 +131,7 @@ export const createImports = (config: {
       },
       __wrap_subinvokeImplementation_result_len: (): u32 => {
         if (!state.subinvokeImplementation.result) {
-          abort(
+          abortWithInternalError(
             "__wrap_subinvokeImplementation_result_len: subinvokeImplementation.result is not set"
           );
           return 0;
@@ -125,7 +140,7 @@ export const createImports = (config: {
       },
       __wrap_subinvokeImplementation_result: (ptr: u32): void => {
         if (!state.subinvokeImplementation.result) {
-          abort(
+          abortWithInternalError(
             "__wrap_subinvokeImplementation_result: subinvokeImplementation.result is not set"
           );
           return;
@@ -134,7 +149,7 @@ export const createImports = (config: {
       },
       __wrap_subinvokeImplementation_error_len: (): u32 => {
         if (!state.subinvokeImplementation.error) {
-          abort(
+          abortWithInternalError(
             "__wrap_subinvokeImplementation_error_len: subinvokeImplementation.error is not set"
           );
           return 0;
@@ -143,7 +158,7 @@ export const createImports = (config: {
       },
       __wrap_subinvokeImplementation_error: (ptr: u32): void => {
         if (!state.subinvokeImplementation.error) {
-          abort(
+          abortWithInternalError(
             "__wrap_subinvokeImplementation_error: subinvokeImplementation.error is not set"
           );
           return;
@@ -153,11 +168,11 @@ export const createImports = (config: {
       // Copy the invocation's method & args into WASM
       __wrap_invoke_args: (methodPtr: u32, argsPtr: u32): void => {
         if (!state.method) {
-          abort("__wrap_invoke_args: method is not set");
+          abortWithInternalError("__wrap_invoke_args: method is not set");
           return;
         }
         if (!state.args) {
-          abort("__wrap_invoke_args: args is not set");
+          abortWithInternalError("__wrap_invoke_args: args is not set");
           return;
         }
         writeString(state.method, memory.buffer, methodPtr);
@@ -173,27 +188,34 @@ export const createImports = (config: {
       __wrap_invoke_error: (ptr: u32, len: u32): void => {
         state.invoke.error = readString(memory.buffer, ptr, len);
       },
-      __wrap_getImplementations: (uriPtr: u32, uriLen: u32): boolean => {
+      __wrap_getImplementations: async (
+        uriPtr: u32,
+        uriLen: u32
+      ): Promise<boolean> => {
         const uri = readString(memory.buffer, uriPtr, uriLen);
-        const result = client.getImplementations(uri, {});
+        const result = await client.getImplementations(Uri.from(uri), {});
         if (!result.ok) {
-          abort(result.error?.message as string);
+          abortWithInternalError(result.error?.message as string);
           return false;
         }
-        const implementations = result.value;
+        const implementations = result.value.map((i) => i.uri);
         state.getImplementationsResult = msgpackEncode(implementations);
         return implementations.length > 0;
       },
       __wrap_getImplementations_result_len: (): u32 => {
         if (!state.getImplementationsResult) {
-          abort("__wrap_getImplementations_result_len: result is not set");
+          abortWithInternalError(
+            "__wrap_getImplementations_result_len: result is not set"
+          );
           return 0;
         }
         return state.getImplementationsResult.byteLength;
       },
       __wrap_getImplementations_result: (ptr: u32): void => {
         if (!state.getImplementationsResult) {
-          abort("__wrap_getImplementations_result: result is not set");
+          abortWithInternalError(
+            "__wrap_getImplementations_result: result is not set"
+          );
           return;
         }
         writeBytes(state.getImplementationsResult, memory.buffer, ptr);
@@ -212,9 +234,11 @@ export const createImports = (config: {
         const msg = readString(memory.buffer, msgPtr, msgLen);
         const file = readString(memory.buffer, filePtr, fileLen);
 
-        abort(
-          `__wrap_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`
-        );
+        abortWithInvokeAborted(`__wrap_abort: ${msg}`, {
+          file,
+          row: line,
+          col: column,
+        });
       },
       __wrap_debug_log: (ptr: u32, len: u32): void => {
         const msg = readString(memory.buffer, ptr, len);

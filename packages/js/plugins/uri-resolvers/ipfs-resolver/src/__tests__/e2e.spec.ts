@@ -23,6 +23,7 @@ describe("IPFS Plugin", () => {
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
       ensName: "cool.wrapper.eth",
+      codegen: true
     });
 
     wrapperIpfsCid = ipfsCid;
@@ -47,7 +48,7 @@ describe("IPFS Plugin", () => {
       fail("Expected response to be a wrapper");
     }
 
-    const manifest = await result.value.wrapper.getManifest({});
+    const manifest = await result.value.wrapper.getManifest();
 
     expect(manifest?.name).toBe("SimpleStorage");
   });

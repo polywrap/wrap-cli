@@ -29,16 +29,19 @@ const DEFAULTS_DIR = path.join(
 export interface VMConfig {
   defaultIncludes: string[];
   baseImage: string;
+  version: string;
 }
 
 const CONFIGS: Record<BuildableLanguage, VMConfig> = {
   "wasm/rust": {
     defaultIncludes: ["Cargo.toml", "Cargo.lock"],
     baseImage: "polywrap/vm-base-rs",
+    version: "0.2.0",
   },
   "wasm/assemblyscript": {
     defaultIncludes: ["package.json", "package-lock.json", "yarn.lock"],
     baseImage: "polywrap/vm-base-as",
+    version: "0.1.0",
   },
 };
 
@@ -183,13 +186,22 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
         try {
           await runCommand(
-            `docker run --rm -v ${path.resolve(
-              this._volumePaths.project
-            )}:/project -v ${path.resolve(
-              this._volumePaths.linkedPackages
-            )}:/linked-packages ${cacheVolume} ${
-              CONFIGS[language].baseImage
-            }:latest /bin/bash --verbose /project/polywrap-build.sh`,
+            "docker",
+            [
+              "run",
+              "--rm",
+              "-v",
+              `${path.resolve(this._volumePaths.project)}:/project`,
+              "-v",
+              `${path.resolve(
+                this._volumePaths.linkedPackages
+              )}:/linked-packages`,
+              cacheVolume,
+              `${CONFIGS[language].baseImage}:${process.arch}-${CONFIGS[language].version}`,
+              "/bin/bash",
+              "--verbose",
+              "/project/polywrap-build.sh",
+            ],
             this.project.logger,
             undefined,
             undefined,
@@ -202,13 +214,21 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
           }
 
           await runCommand(
-            `docker run --rm -v ${path.resolve(
-              this._volumePaths.project
-            )}:/project -v ${path.resolve(
-              this._volumePaths.linkedPackages
-            )}:/linked-packages ${
-              CONFIGS[language].baseImage
-            }:latest /bin/bash -c "chmod -R 777 /project && chmod -R 777 /linked-packages"`,
+            "docker",
+            [
+              "run",
+              "--rm",
+              "-v",
+              `${path.resolve(this._volumePaths.project)}:/project`,
+              "-v",
+              `${path.resolve(
+                this._volumePaths.linkedPackages
+              )}:/linked-packages`,
+              `${CONFIGS[language].baseImage}:${process.arch}-${CONFIGS[language].version}`,
+              "/bin/bash",
+              "-c",
+              '"chmod -R 777 /project && chmod -R 777 /linked-packages"',
+            ],
             this.project.logger
           );
         } catch (e) {

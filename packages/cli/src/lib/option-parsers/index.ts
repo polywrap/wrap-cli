@@ -4,3 +4,4 @@ export * from "./dir";
 export * from "./test";
 export * from "./manifestFile";
 export * from "./log-file";
+export * from "./wrapper-envs";

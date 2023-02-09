@@ -27,10 +27,10 @@ export class StaticResolver<TError = undefined>
           uriMap.set(uri, uriPackageOrWrapper);
         }
       } else if (
-        (staticResolverLike as IUriRedirect<Uri | string>).from !== undefined &&
-        (staticResolverLike as IUriRedirect<Uri | string>).to !== undefined
+        (staticResolverLike as IUriRedirect).from !== undefined &&
+        (staticResolverLike as IUriRedirect).to !== undefined
       ) {
-        const uriRedirect = staticResolverLike as IUriRedirect<Uri | string>;
+        const uriRedirect = staticResolverLike as IUriRedirect;
         const from = Uri.from(uriRedirect.from);
 
         uriMap.set(from.uri, {
@@ -38,10 +38,10 @@ export class StaticResolver<TError = undefined>
           uri: Uri.from(uriRedirect.to),
         });
       } else if (
-        (staticResolverLike as IUriPackage<Uri | string>).uri !== undefined &&
-        (staticResolverLike as IUriPackage<Uri | string>).package !== undefined
+        (staticResolverLike as IUriPackage).uri !== undefined &&
+        (staticResolverLike as IUriPackage).package !== undefined
       ) {
-        const uriPackage = staticResolverLike as IUriPackage<Uri | string>;
+        const uriPackage = staticResolverLike as IUriPackage;
         const uri = Uri.from(uriPackage.uri);
 
         uriMap.set(uri.uri, {
@@ -50,10 +50,10 @@ export class StaticResolver<TError = undefined>
           package: uriPackage.package,
         });
       } else if (
-        (staticResolverLike as IUriWrapper<Uri | string>).uri !== undefined &&
-        (staticResolverLike as IUriWrapper<Uri | string>).wrapper !== undefined
+        (staticResolverLike as IUriWrapper).uri !== undefined &&
+        (staticResolverLike as IUriWrapper).wrapper !== undefined
       ) {
-        const uriWrapper = staticResolverLike as IUriWrapper<Uri | string>;
+        const uriWrapper = staticResolverLike as IUriWrapper;
         const uri = Uri.from(uriWrapper.uri);
 
         uriMap.set(uri.uri, {

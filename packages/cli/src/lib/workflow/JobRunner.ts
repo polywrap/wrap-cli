@@ -1,34 +1,37 @@
 import { JobResult, Status, Step } from "./types";
 
-import { PolywrapClient } from "@polywrap/client-js";
-import { CoreClient, CoreClientConfig, MaybeAsync } from "@polywrap/core-js";
-import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
 import {
-  ClientConfig,
   IClientConfigBuilder,
-} from "@polywrap/client-config-builder-js";
+  PolywrapClient,
+  buildPolywrapCoreClientConfig,
+} from "@polywrap/client-js";
+import { CoreClient, MaybeAsync, Uri } from "@polywrap/core-js";
+import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
 
 export class JobRunner {
-  private jobOutput: Map<string, JobResult>;
-  private client: CoreClient;
+  private _jobOutput: Map<string, JobResult>;
+  private _client: CoreClient;
 
   constructor(
-    private configBuilder: IClientConfigBuilder,
-    private onExecution?: (id: string, JobResult: JobResult) => MaybeAsync<void>
+    private _configBuilder: IClientConfigBuilder,
+    private _onExecution?: (
+      id: string,
+      JobResult: JobResult
+    ) => MaybeAsync<void>
   ) {
-    this.jobOutput = new Map();
-    this.client = new PolywrapClient(this.configBuilder.buildCoreConfig(), {
+    this._jobOutput = new Map();
+    this._client = new PolywrapClient(this._configBuilder.build(), {
       noDefaults: true,
     });
   }
 
   async run(jobs: WorkflowJobs, ids: string[]): Promise<void> {
     const running = ids.map(async (absJobId) => {
-      const jobId = this.getJobId(absJobId);
+      const jobId = this._getJobId(absJobId);
 
       const steps: Step[] | undefined = jobs[jobId].steps as Step[];
       if (steps) {
-        await this.executeSteps(absJobId, steps);
+        await this._executeSteps(absJobId, steps);
       }
 
       const subJobs: WorkflowJobs | undefined = jobs[jobId].jobs;
@@ -40,7 +43,7 @@ export class JobRunner {
     await Promise.all(running);
   }
 
-  private getJobId(absJobId: string): string {
+  private _getJobId(absJobId: string): string {
     const dotIdx = absJobId.lastIndexOf(".");
     if (dotIdx > -1) {
       return absJobId.substring(dotIdx + 1);
@@ -48,7 +51,7 @@ export class JobRunner {
     return absJobId;
   }
 
-  private followAccessors(
+  private _followAccessors(
     jobResult: JobResult,
     accessors: string[],
     referenceId: string,
@@ -69,7 +72,7 @@ export class JobRunner {
     return val;
   }
 
-  private resolveReference(
+  private _resolveReference(
     absJobId: string,
     stepId: number,
     reference: string
@@ -87,12 +90,12 @@ export class JobRunner {
 
     // get reference job output
     const referenceId: string = reference.substring(1, dataOrErrorIdx);
-    if (!this.jobOutput.has(referenceId)) {
+    if (!this._jobOutput.has(referenceId)) {
       throw new Error(
         `Could not resolve reference id ${referenceId} for step ${absJobId}.${stepId}`
       );
     }
-    const refJobResult = this.jobOutput.get(referenceId) as JobResult;
+    const refJobResult = this._jobOutput.get(referenceId) as JobResult;
 
     // parse and validate accessors
     const accessors: string[] = reference
@@ -119,7 +122,7 @@ export class JobRunner {
     }
 
     // follow accessors through reference output to get requested data
-    return this.followAccessors(
+    return this._followAccessors(
       refJobResult,
       accessors,
       referenceId,
@@ -128,43 +131,43 @@ export class JobRunner {
     );
   }
 
-  private resolveRecord(
+  private _resolveRecord(
     absJobId: string,
     stepId: number,
     record: Record<string, unknown>
   ): Record<string, unknown> {
     const resolved: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(record)) {
-      resolved[key] = this.resolveValue(absJobId, stepId, value);
+      resolved[key] = this._resolveValue(absJobId, stepId, value);
     }
     return resolved;
   }
 
-  private resolveArray(
+  private _resolveArray(
     absJobId: string,
     stepId: number,
     array: Array<unknown>
   ): Array<unknown> {
-    return array.map((v) => this.resolveValue(absJobId, stepId, v));
+    return array.map((v) => this._resolveValue(absJobId, stepId, v));
   }
 
-  private resolveValue(
+  private _resolveValue(
     absJobId: string,
     stepId: number,
     value: unknown
   ): unknown {
-    if (this.isReference(value)) {
-      return this.resolveReference(absJobId, stepId, value);
+    if (this._isReference(value)) {
+      return this._resolveReference(absJobId, stepId, value);
     } else if (Array.isArray(value)) {
-      return this.resolveArray(absJobId, stepId, value);
-    } else if (this.isRecord(value)) {
-      return this.resolveRecord(absJobId, stepId, value);
+      return this._resolveArray(absJobId, stepId, value);
+    } else if (this._isRecord(value)) {
+      return this._resolveRecord(absJobId, stepId, value);
     } else {
       return value;
     }
   }
 
-  private async execStep(
+  private async _execStep(
     absJobId: string,
     stepId: number,
     step: Step
@@ -172,7 +175,7 @@ export class JobRunner {
     let args: Record<string, unknown> | undefined;
     if (step.args) {
       try {
-        args = this.resolveRecord(absJobId, stepId, step.args);
+        args = this._resolveRecord(absJobId, stepId, step.args);
       } catch (e) {
         return {
           error: e,
@@ -181,20 +184,15 @@ export class JobRunner {
       }
     }
 
-    let finalClient = this.client;
+    let finalClient = this._client;
 
     if (step.config) {
-      const finalConfig = (step.config as Partial<CoreClientConfig>).resolver
-        ? (step.config as CoreClientConfig)
-        : this.configBuilder
-            .add(step.config as Partial<ClientConfig>)
-            .buildCoreConfig();
-
+      const finalConfig = buildPolywrapCoreClientConfig(step.config);
       finalClient = new PolywrapClient(finalConfig, { noDefaults: true });
     }
 
     const invokeResult = await finalClient.invoke({
-      uri: step.uri,
+      uri: Uri.from(step.uri),
       method: step.method,
       args: args,
     });
@@ -206,26 +204,26 @@ export class JobRunner {
     }
   }
 
-  private async executeSteps(absJobId: string, steps: Step[]) {
+  private async _executeSteps(absJobId: string, steps: Step[]) {
     for (let i = 0; i < steps.length; i++) {
       const step = steps[i];
       const absId = `${absJobId}.${i}`;
 
-      const result: JobResult = await this.execStep(absJobId, i, step);
+      const result: JobResult = await this._execStep(absJobId, i, step);
 
-      this.jobOutput.set(absId, result);
+      this._jobOutput.set(absId, result);
 
-      if (this.onExecution) {
-        await this.onExecution(absId, result);
+      if (this._onExecution) {
+        await this._onExecution(absId, result);
       }
     }
   }
 
-  private isReference(value: unknown): value is string {
+  private _isReference(value: unknown): value is string {
     return typeof value === "string" && value.startsWith("$");
   }
 
-  private isRecord(value: unknown): value is Record<string, unknown> {
+  private _isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null;
   }
 }

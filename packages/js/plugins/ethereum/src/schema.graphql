@@ -249,6 +249,11 @@ type Module {
         connection: Connection
     ): String!
 
+    signTypedData(
+        payload: JSON!
+        connection: Connection
+    ): String
+
     sendRPC(
         method: String!
         params: [String!]!

@@ -10,7 +10,7 @@ license = "MIT"
 edition = "2021"
 
 [dependencies]
-polywrap-wasm-rs = { path = "../../../../../../../wasm/rs" }
+polywrap-wasm-rs = { path = "../../../../../../wasm/rs" }
 serde = { version = "1.0", features = ["derive"] }
 
 [lib]

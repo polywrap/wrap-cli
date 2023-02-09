@@ -14,14 +14,14 @@ Generate Code For Polywrap Projects
 Options:
   -m, --manifest-file <path>         Path to the Polywrap manifest file
                                      (default: polywrap.yaml | polywrap.yml)
-  -g, --codegen-dir <path>            Output directory for the generated code
+  -g, --codegen-dir <path>           Output directory for the generated code
                                      (default: ./src/wrap)
-  -p, --publish-dir <path>           Output path for the built schema and
-                                     manifest (default: ./build)
   -s, --script <path>                Path to a custom generation script
                                      (JavaScript | TypeScript)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
+  --wrapper-envs <envs-path>         Path to a JSON file containing wrapper
+                                     envs
   -v, --verbose                      Verbose output (default: false)
   -q, --quiet                        Suppress output (default: false)
   -l, --log-file [path]              Log file to save console output to

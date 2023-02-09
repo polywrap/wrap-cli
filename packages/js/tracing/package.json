@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/tracing-js",
   "description": "Polywrap Core Tracing",
-  "version": "0.10.0-pre.3",
+  "version": "0.10.0-pre.7",
   "license": "MIT",
   "repository": {
     "type": "git",

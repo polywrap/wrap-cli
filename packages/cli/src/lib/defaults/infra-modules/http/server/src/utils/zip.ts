@@ -8,7 +8,7 @@ export class Zip {
     this._zip = new JSZip();
   }
 
-  private generateNodeZip(filePath: string) {
+  private _generateNodeZip(filePath: string) {
     return new Promise<boolean>((res, rej) => {
       this._zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true })
           .pipe(fse.createWriteStream(filePath))
@@ -25,6 +25,6 @@ export class Zip {
     fse.readdirSync(sourceDir).forEach(file => {
       this._zip.file(file, fse.readFileSync(`${sourceDir}/${file}`))
     })
-    return this.generateNodeZip(outputPath);
+    return this._generateNodeZip(outputPath);
   }
 }

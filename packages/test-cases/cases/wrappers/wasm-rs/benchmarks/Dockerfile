@@ -1,4 +1,4 @@
-FROM rust:1.60.0 as base
+FROM rust:1.65.0 as base
 
 # Install the wasm32 rust build target
 RUN rustup target add wasm32-unknown-unknown

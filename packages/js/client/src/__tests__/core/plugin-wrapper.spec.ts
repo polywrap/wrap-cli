@@ -1,4 +1,5 @@
 import { PolywrapClient } from "../..";
+import { Uri } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PluginPackage, PluginModule } from "@polywrap/plugin-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
@@ -36,7 +37,7 @@ describe("plugin-wrapper", () => {
   };
 
   it("plugin map types", async () => {
-    const implementationUri = "wrap://ens/some-implementation.eth";
+    const implementationUri = Uri.from("wrap://ens/some-implementation.eth");
     const mockPlugin = mockMapPlugin();
     const client = new PolywrapClient(
       {
@@ -80,7 +81,7 @@ describe("plugin-wrapper", () => {
     const client = new PolywrapClient(
       {
         resolver: UriResolver.from([
-          { uri: "ens/ipfs.polywrap.eth", package: ipfsPlugin({}) },
+          { uri: Uri.from("ens/ipfs.polywrap.eth"), package: ipfsPlugin({}) },
         ]),
       },
       { noDefaults: true }

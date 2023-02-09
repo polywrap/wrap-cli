@@ -1,8 +1,7 @@
 
 import * as Schema from "../wrap";
 
-import { PolywrapClient } from "@polywrap/client-js";
-import { ClientConfig } from "@polywrap/client-config-builder-js";
+import { PolywrapClient, ClientConfig } from "@polywrap/client-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -22,6 +21,7 @@ import { keccak256 } from "js-sha3";
 import { Connections } from "../Connections";
 import { Connection } from "../Connection";
 import { getDefaultConfig } from "./helpers/getDefaultConfig";
+import { WrapError } from "@polywrap/core-js";
 
 const { hash: namehash } = require("eth-ens-namehash");
 const contracts = {
@@ -80,7 +80,7 @@ describe("Ethereum Plugin", () => {
 
     defaultConfig = getDefaultConfig(connections);
     client = new PolywrapClient(defaultConfig);
-    await buildWrapper(wrapperPath);
+    await buildWrapper(wrapperPath, undefined, true);
 
     const response = await client.invoke<string>({
       uri,
@@ -935,7 +935,7 @@ describe("Ethereum Plugin", () => {
       uri,
       method: "requestAccounts",
     });
-    result = result as { ok: false; error: Error | undefined };
+    result = result as { ok: false; error: WrapError | undefined };
     // eth_requestAccounts is not supported by Ganache
     // this RPC error indicates that the method call was attempted
       expect(
@@ -1062,6 +1062,65 @@ describe("Ethereum Plugin", () => {
     if (!response.ok) fail(response.error);
     expect(response.value).toBe(
       "0xa4708243bf782c6769ed04d83e7192dbcf4fc131aa54fde9d889d8633ae39dab03d7babd2392982dff6bc20177f7d887e27e50848c851320ee89c6c63d18ca761c"
+    );
+  });
+  
+  it("signTypedData", async () => {
+    
+    const domain = {
+      name: 'Ether Mail',
+      version: '1',
+      chainId: 1,
+      verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC'
+  };
+  
+  // The named list of all type definitions
+  const types = {
+    EIP712Domain: [
+      {
+        type: "uint256",
+        name: "chainId",
+      },
+      {
+        type: "address",
+        name: "verifyingContract",
+      },
+    ],
+      Person: [
+          { name: 'name', type: 'string' },
+          { name: 'wallet', type: 'address' }
+      ],
+      Mail: [
+          { name: 'from', type: 'Person' },
+          { name: 'to', type: 'Person' },
+          { name: 'contents', type: 'string' }
+      ]
+  };
+  
+  // The data to sign
+  const message = {
+      from: {
+          name: 'Cow',
+          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826'
+      },
+      to: {
+          name: 'Bob',
+          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB'
+      },
+      contents: 'Hello, Bob!'
+  };
+
+    const response = await client.invoke<string>({
+      uri,
+      method: "signTypedData",
+      args: {
+        payload: JSON.stringify({ domain, primaryType:'Mail', types, message })
+      }
+    });
+    console.log('signTypedData', response)
+    if (!response.ok) fail(response.error);
+    expect(response.value).toBe(
+      "0x0a5c8f973cd8605ac5743c271b60e34d76186f29d6de319f9792b5d66fb63e372df3018c984a52d1cfb4bf29eb645198b54acf4ea7bec94a023c463bebb992091c"
     );
   });
 

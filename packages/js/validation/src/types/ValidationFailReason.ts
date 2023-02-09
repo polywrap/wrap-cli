@@ -3,7 +3,6 @@ export enum ValidationFailReason {
   MultipleWrapManifests,
   WrapManifestNotFound,
   InvalidBuildManifest,
-  InvalidMetaManifest,
   FileTooLarge,
   PackageTooLarge,
   ModuleTooLarge,

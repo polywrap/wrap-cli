@@ -9,10 +9,10 @@ describe("e2e", () => {
   beforeAll(() => {
     // Add the samplePlugin to the PolywrapClient
     client = new PolywrapClient({
-      plugins: [
+      packages: [
         {
           uri: uri,
-          plugin: samplePlugin({
+          package: samplePlugin({
             defaultValue: "foo bar"
           })
         }
@@ -29,8 +29,9 @@ describe("e2e", () => {
       },
     });
 
-    expect(result.error).toBeFalsy();
-    expect(result.data).toBeTruthy();
-    expect(result.data).toBe("fuz baz foo bar");
+    expect(result.ok).toBeTruthy();
+    if (!result.ok) throw result.error;
+    expect(result.value).toBeTruthy();
+    expect(result.value).toBe("fuz baz foo bar");
   });
 });
