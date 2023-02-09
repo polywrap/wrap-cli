@@ -11,7 +11,7 @@ import {
   ethereumPlugin,
 } from "@polywrap/ethereum-plugin-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
-import { PolywrapClient } from "@polywrap/client-js";
+import { ClientConfigBuilder, PolywrapClient } from "@polywrap/client-js";
 
 const contentHash = require("content-hash");
 
@@ -48,21 +48,15 @@ class ENSPublisher implements DeployModule {
     const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
     const ensWrapperUri = embeddedWrappers.ens;
 
-    const client = new PolywrapClient({
-      redirects: [
-        {
-          from: "wrap://ens/uts46.polywrap.eth",
-          to: embeddedWrappers.uts46,
+    const clientConfig = new ClientConfigBuilder()
+      .addDefaults()
+      .add({
+        redirects: {
+          "wrap://ens/uts46.polywrap.eth": embeddedWrappers.uts46,
+          "wrap://ens/sha3.polywrap.eth": embeddedWrappers.sha3,
         },
-        {
-          from: "wrap://ens/sha3.polywrap.eth",
-          to: embeddedWrappers.sha3,
-        },
-      ],
-      packages: [
-        {
-          uri: ethereumPluginUri,
-          package: ethereumPlugin({
+        packages: {
+          [ethereumPluginUri]: ethereumPlugin({
             connections: new Connections({
               networks: {
                 [network]: new Connection({
@@ -74,8 +68,10 @@ class ENSPublisher implements DeployModule {
             }),
           }),
         },
-      ],
-    });
+      })
+      .build();
+
+    const client = new PolywrapClient(clientConfig);
 
     const resolver = await client.invoke<string>({
       method: "getResolver",
