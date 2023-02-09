@@ -1,0 +1,50 @@
+name: CD-Rust
+on:
+  # When Pull Request is merged
+  pull_request_target:
+    types: [closed]
+
+jobs:
+  Publish-Crates-IO:
+    name: Publish rust crates to crates.io
+    if: |
+      github.event.pull_request.user.login == 'polywrap-build-bot' &&
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Read VERSION into env.RELEASE_VERSION
+        run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+
+      - name: Build RS crates
+        working-directory: ./packages/wasm/rs
+        run: cargo build --release
+
+      - name: Verify & Generate RS Documentation
+        working-directory: ./packages/wasm/rs
+        run: cargo doc --no-deps
+
+      - name: Upload Rust Crates To Crates.io
+        working-directory: ./packages/wasm/rs
+        run: cargo publish --token ${{secrets.POLYWRAP_BUILD_BOT_CRATES_PAT}}
+
+      - uses: actions/github-script@0.8.0
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '**[Crates.io Release Published](https://crates.io/search?q=polywrap) `${{env.RELEASE_VERSION}}`** 🎉'
+            })

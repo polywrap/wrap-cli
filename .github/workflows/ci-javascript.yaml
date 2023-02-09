@@ -1,4 +1,4 @@
-name: JS-CI
+name: CI-Javascript
 
 on: 
   push:
