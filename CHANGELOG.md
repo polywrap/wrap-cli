@@ -27,6 +27,8 @@
   * `createPolywrapClient` function has been deprecated.
 
 **`@polywrap/client-config-builder-js`:**
+* [PR-1480](https://github.com/polywrap/toolchain/pull/1480) **ClientConfigBuilder-specific `BuilderConfig` Object**
+  * The `ClientConfigBuilder` now uses a specific `BuilderConfig` that is easier for users to work with. It will then be turned into a `CoreClientConfig` through the use of the `build()` method.
 * [PR-1498](https://github.com/polywrap/toolchain/pull/1498) **Refactor `ClientConfigBuilder.build()`**
   * Rename `buildCoreConfig()` to `build()`, which returns a `CoreClientConfig` instance.
 * [PR-1494](https://github.com/polywrap/toolchain/pull/1494) **Deprecate Legacy HTTP URIs in Default Config Bundle**
@@ -134,6 +136,8 @@
     * For users who do not need those packages and are using noDefaults there will be a separate PR that refactor core client functionality into a core-client package that does not depend on the config builder and uri-resolvers packages, but has no defaults.
 
 **`@polywrap/client-config-builder-js`:**
+* [PR-1518](https://github.com/polywrap/toolchain/pull/1518) **Optional Build Method Arguments**
+  * The `build(...)` method now accepts a single argument of type `BuildOptions`.
 * [PR-1496](https://github.com/polywrap/toolchain/pull/1496) **Use New Concurrent Wrapper**
   * The default config bundle now uses the `wrap://ens/wrappers.polywrap.eth:concurrent@1.0.0` interface, and adds the `concurrent-plugin-js` package @ `wrap://plugin/concurrent` as an implementation.
 * [PR-1468](https://github.com/polywrap/toolchain/pull/1468) **Export Default Config Bundle URIs**
