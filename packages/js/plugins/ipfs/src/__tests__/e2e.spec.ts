@@ -30,21 +30,18 @@ describe("IPFS Plugin", () => {
     await initTestEnvironment();
     ipfs = createIpfsClient(providers.ipfs);
 
-    client = new PolywrapClient(
-      {
-        envs: [
-          {
-            uri: "wrap://ens/ipfs.polywrap.eth",
-            env: { provider: providers.ipfs },
-          },
-        ],
-        resolver: UriResolver.from({
+    client = new PolywrapClient({
+      envs: [
+        {
           uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
-          package: ipfsPlugin({}),
-        }),
-      },
-      { noDefaults: true }
-    );
+          env: { provider: providers.ipfs },
+        },
+      ],
+      resolver: UriResolver.from({
+        uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
+        package: ipfsPlugin({}),
+      }),
+    });
 
     let ipfsAddResult = await ipfs.add(sampleFileBuffer);
     sampleFileIpfsInfo = ipfsAddResult[0];
@@ -109,24 +106,21 @@ describe("IPFS Plugin", () => {
       );
     };
 
-    const altClient = new PolywrapClient(
-      {
-        envs: [
-          {
-            uri: "wrap://ens/ipfs.polywrap.eth",
-            env: {
-              provider: providers.ipfs,
-              timeout: 1000,
-            },
-          },
-        ],
-        resolver: UriResolver.from({
+    const altClient = new PolywrapClient({
+      envs: [
+        {
           uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
-          package: ipfsPlugin({}),
-        }),
-      },
-      { noDefaults: true }
-    );
+          env: {
+            provider: providers.ipfs,
+            timeout: 1000,
+          },
+        },
+      ],
+      resolver: UriResolver.from({
+        uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
+        package: ipfsPlugin({}),
+      }),
+    });
 
     const nonExistentFileCid = "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
@@ -164,28 +158,27 @@ describe("IPFS Plugin", () => {
       error: Error | undefined;
     };
     expect(resultForOverride.error).toBeTruthy();
-    expect(resultForOverride.error?.message).toMatch("Timeout has been reached");
+    expect(resultForOverride.error?.message).toMatch(
+      "Timeout has been reached"
+    );
     expect(resultForOverride.error?.message).toMatch("Timeout: 500");
   });
 
   it("Should use provider from method options", async () => {
-    const clientWithBadProvider = new PolywrapClient(
-      {
-        envs: [
-          {
-            uri: "wrap://ens/ipfs.polywrap.eth",
-            env: {
-              provider: "this-provider-doesnt-exist",
-            },
-          },
-        ],
-        resolver: UriResolver.from({
+    const clientWithBadProvider = new PolywrapClient({
+      envs: [
+        {
           uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
-          package: ipfsPlugin({}),
-        }),
-      },
-      { noDefaults: true }
-    );
+          env: {
+            provider: "this-provider-doesnt-exist",
+          },
+        },
+      ],
+      resolver: UriResolver.from({
+        uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
+        package: ipfsPlugin({}),
+      }),
+    });
 
     const catResult = await Ipfs_Module.cat(
       {
@@ -214,23 +207,20 @@ describe("IPFS Plugin", () => {
   });
 
   it("Should use fallback provider from method options", async () => {
-    const clientWithBadProvider = new PolywrapClient(
-      {
-        envs: [
-          {
-            uri: "wrap://ens/ipfs.polywrap.eth",
-            env: {
-              provider: "this-provider-doesnt-exist",
-            },
-          },
-        ],
-        resolver: UriResolver.from({
+    const clientWithBadProvider = new PolywrapClient({
+      envs: [
+        {
           uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
-          package: ipfsPlugin({}),
-        }),
-      },
-      { noDefaults: true }
-    );
+          env: {
+            provider: "this-provider-doesnt-exist",
+          },
+        },
+      ],
+      resolver: UriResolver.from({
+        uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
+        package: ipfsPlugin({}),
+      }),
+    });
 
     const catResult = await Ipfs_Module.cat(
       {
