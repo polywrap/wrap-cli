@@ -49,7 +49,7 @@ jobs:
 
       - name: Check if image tags already exist
         run: |
-          echo IMAGE_RS_VM_UNPUBLISHED=$(docker manifest inspect $IMAGE_RS_VM_NAME:$IMAGE_RS_VM_VERSION > /dev/null ; echo $?) >> $GITHUB_ENV
+          echo IMAGE_RS_VM_UNPUBLISHED=$(docker manifest inspect polywrap/vm-base-rs:0.2.0 > /dev/null ; echo $?) >> $GITHUB_ENV
           echo IMAGE_AS_VM_UNPUBLISHED=$(docker manifest inspect $IMAGE_AS_VM_NAME:$IMAGE_AS_VM_VERSION > /dev/null ; echo $?) >> $GITHUB_ENV
 
       - name: Build & Publish RS VM Image
