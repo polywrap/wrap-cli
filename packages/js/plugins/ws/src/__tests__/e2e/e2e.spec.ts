@@ -23,8 +23,7 @@ describe("WebSocket plugin", () => {
             package: wsPlugin({}),
           },
         ]),
-      },
-      { noDefaults: true }
+      }
     );
     server = new WS("ws://localhost:1234");
     t1 = setTimeout(() => {
@@ -155,8 +154,7 @@ describe("WebSocket plugin", () => {
               package: callbackPlugin,
             },
           ]),
-        },
-        { noDefaults: true }
+        }
       );
     });
 
