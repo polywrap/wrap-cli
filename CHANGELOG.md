@@ -1,3 +1,7 @@
+# Polywrap Origin (0.9.5)
+## Bugs
+* [PR-1541](https://github.com/polywrap/toolchain/pull/1541) `polywrap` CLI: Update build images to use the latest multi-platform versions.
+
 # Polywrap Origin (0.9.4)
 ## Bugs
 * [PR-1372](https://github.com/polywrap/toolchain/pull/1372) `@polywrap/schema-parse`, `@polywrap/schema-compose`: Fixed a bug when importing type with map properties that use imported types.
