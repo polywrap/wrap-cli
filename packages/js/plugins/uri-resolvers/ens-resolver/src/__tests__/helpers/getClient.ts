@@ -16,15 +16,15 @@ import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
 export const getClient = () => {
-  return new PolywrapClient<string>(
+  return new PolywrapClient(
     {
       interfaces: [
         {
-          interface: ExtendableUriResolver.extInterfaceUri.uri,
+          interface: ExtendableUriResolver.extInterfaceUri,
           implementations: [
-            "wrap://ens/ipfs-resolver.polywrap.eth",
-            "wrap://ens/ens-resolver.polywrap.eth",
-            "wrap://ens/fs-resolver.polywrap.eth",
+            Uri.from("wrap://ens/ipfs-resolver.polywrap.eth"),
+            Uri.from("wrap://ens/ens-resolver.polywrap.eth"),
+            Uri.from("wrap://ens/fs-resolver.polywrap.eth"),
           ],
         },
       ],
@@ -65,7 +65,6 @@ export const getClient = () => {
           new WrapperCache()
         )
       ),
-    },
-    { noDefaults: true }
+    }
   );
 };
