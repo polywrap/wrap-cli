@@ -1,6 +1,7 @@
 set -e
 
 {{#polywrap_linked_packages.length}}
+# Link any local packages
 {{#polywrap_linked_packages}}
 toml set ./{{#polywrap_module}}{{dir}}{{/polywrap_module}}/Cargo.toml dependencies.{{name}}.path /linked-packages/{{name}} > ./{{#polywrap_module}}{{dir}}{{/polywrap_module}}/Cargo-local.toml
   rm -rf ./{{#polywrap_module}}{{dir}}{{/polywrap_module}}/Cargo.toml
@@ -9,26 +10,39 @@ toml set ./{{#polywrap_module}}{{dir}}{{/polywrap_module}}/Cargo.toml dependenci
 {{/polywrap_linked_packages.length}}
 
 {{#polywrap_module}}
+# Ensure the module at {{dir}} has the crate-type = ["cdylib"]
 toml set ./{{dir}}/Cargo.toml lib.crate-type ["cdylib"] > ./{{dir}}/Cargo-local.toml
 rm -rf ./{{dir}}/Cargo.toml
 mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml
+
+# Clean up artifacts left by the toml CLI program ("["cdylib"]" -> ["cdylib"])
 sed -i 's/\"\[cdylib\]\"/\[\"cdylib\"\]/g' ./{{dir}}/Cargo.toml
 
+# Ensure the package name = "module"
 toml set ./{{dir}}/Cargo.toml package.name "module" > ./{{dir}}/Cargo-local.toml
 rm -rf ./{{dir}}/Cargo.toml
 mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml
 
+# Build the module
 cargo build --manifest-path ./{{dir}}/Cargo.toml \
     --target wasm32-unknown-unknown --release
 
+# Make the build directory
 rm -rf ./build
 mkdir ./build
 
+# Run wasm-bindgen over the module, replacing all placeholder __wbindgen_... imports
 wasm-bindgen ./{{dir}}/target/wasm32-unknown-unknown/release/module.wasm --out-dir ./build --out-name bg_module.wasm
 
-wasm-snip ./build/bg_module.wasm -o ./build/snipped_module.wasm
+# Run wasm-tools strip to remove the wasm-interface-types custom section
+wasm-tools strip ./build/bg_module.wasm -d wasm-interface-types -o ./build/strip_module.wasm
 rm -rf ./build/bg_module.wasm
 
+# Run wasm-snip to trip down the size of the binary, removing any dead code
+wasm-snip ./build/strip_module.wasm -o ./build/snipped_module.wasm
+rm -rf ./build/strip_module.wasm
+
+# Use wasm-opt to perform the "asyncify" post-processing step over all modules
 wasm-opt --asyncify -Os ./build/snipped_module.wasm -o ./build/wrap.wasm
 rm -rf ./build/snipped_module.wasm
 {{/polywrap_module}}
