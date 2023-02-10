@@ -11,7 +11,7 @@ jobs:
       github.event.pull_request.merged &&
       endsWith(github.event.pull_request.title, '/workflows/cd-containers') &&
       github.event.pull_request.user.login != 'polywrap-build-bot'
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -28,6 +28,9 @@ jobs:
           fi
         env:
           CREATOR: ${{github.event.pull_request.user.login}}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -49,7 +52,7 @@ jobs:
 
       - name: Check if image tags already exist
         run: |
-          echo IMAGE_RS_VM_UNPUBLISHED=$(docker manifest inspect polywrap/vm-base-rs:0.2.0 > /dev/null ; echo $?) >> $GITHUB_ENV
+          echo IMAGE_RS_VM_UNPUBLISHED=$(docker manifest inspect $IMAGE_RS_VM_NAME:$IMAGE_RS_VM_VERSION > /dev/null ; echo $?) >> $GITHUB_ENV
           echo IMAGE_AS_VM_UNPUBLISHED=$(docker manifest inspect $IMAGE_AS_VM_NAME:$IMAGE_AS_VM_VERSION > /dev/null ; echo $?) >> $GITHUB_ENV
 
       - name: Build & Publish RS VM Image
