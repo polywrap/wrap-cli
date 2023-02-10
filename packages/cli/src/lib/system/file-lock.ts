@@ -16,7 +16,7 @@ export class FileLock {
         this._lockFilePath,
         "utf8"
       );
-      const isRunning: boolean = this.isRunning(parseInt(lockPid));
+      const isRunning: boolean = this._isRunning(parseInt(lockPid));
       // if process is not running and file exists, the lock is orphaned and can be destroyed
       if (!isRunning) {
         try {
@@ -53,7 +53,7 @@ export class FileLock {
   }
 
   // check if process is running
-  private isRunning(pid: number): boolean {
+  private _isRunning(pid: number): boolean {
     try {
       process.kill(pid, 0);
       return true;

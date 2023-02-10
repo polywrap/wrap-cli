@@ -1,9 +1,9 @@
-import { CoreClient, Uri } from "../../";
+import { PolywrapClient, Uri } from "../../";
 import { BigNumber } from "bignumber.js";
 import { ErrResult } from "../utils/resultTypes";
 
 export const runAsyncifyTest = async (
-  client: CoreClient,
+  client: PolywrapClient,
   wrapperUri: string
 ) => {
   const subsequentInvokes = await client.invoke<string>({
@@ -118,7 +118,7 @@ export const runAsyncifyTest = async (
   expect(setDataWithManyStructuredArgs.value).toBe(true);
 };
 
-export const runBigIntTypeTest = async (client: CoreClient, uri: string) => {
+export const runBigIntTypeTest = async (client: PolywrapClient, uri: string) => {
   {
     const response = await client.invoke({
       uri,
@@ -164,7 +164,7 @@ export const runBigIntTypeTest = async (client: CoreClient, uri: string) => {
   }
 };
 
-export const runBigNumberTypeTest = async (client: CoreClient, uri: string) => {
+export const runBigNumberTypeTest = async (client: PolywrapClient, uri: string) => {
   {
     const response = await client.invoke({
       uri,
@@ -212,7 +212,7 @@ export const runBigNumberTypeTest = async (client: CoreClient, uri: string) => {
   }
 };
 
-export const runBytesTypeTest = async (client: CoreClient, uri: string) => {
+export const runBytesTypeTest = async (client: PolywrapClient, uri: string) => {
   const response = await client.invoke({
     uri,
     method: "bytesMethod",
@@ -230,7 +230,7 @@ export const runBytesTypeTest = async (client: CoreClient, uri: string) => {
   );
 };
 
-export const runEnumTypesTest = async (client: CoreClient, uri: string) => {
+export const runEnumTypesTest = async (client: PolywrapClient, uri: string) => {
   let method1a = await client.invoke({
     uri,
     method: "method1",
@@ -287,7 +287,7 @@ export const runEnumTypesTest = async (client: CoreClient, uri: string) => {
 };
 
 export const runImplementationsTest = async (
-  client: CoreClient,
+  client: PolywrapClient,
   interfaceUri: string,
   implementationUri: string
 ) => {
@@ -295,7 +295,7 @@ export const runImplementationsTest = async (
     applyResolution: false,
   });
   if (!implResult.ok) fail(implResult.error);
-  expect(implResult.value).toEqual([new Uri(implementationUri).uri]);
+  expect(implResult.value).toEqual([new Uri(implementationUri)]);
 
   const results = await Promise.all([
     client.invoke({
@@ -332,7 +332,7 @@ export const runImplementationsTest = async (
 };
 
 export const runGetImplementationsTest = async (
-  client: CoreClient,
+  client: PolywrapClient,
   aggregatorUri: string,
   interfaceUri: string,
   implementationUri: string
@@ -342,7 +342,7 @@ export const runGetImplementationsTest = async (
     applyResolution: false,
   });
   if (!implResult.ok) fail(implResult.error);
-  expect(implResult.value).toEqual([implUri.uri]);
+  expect(implResult.value).toEqual([implUri]);
 
   const result = await client.invoke({
     uri: aggregatorUri,
@@ -366,7 +366,7 @@ export const runGetImplementationsTest = async (
   expect(moduleMethodResult.value).toEqual("Test String 2");
 };
 
-export const runInvalidTypesTest = async (client: CoreClient, uri: string) => {
+export const runInvalidTypesTest = async (client: PolywrapClient, uri: string) => {
   let invalidBoolIntSent = await client.invoke({
     uri,
     method: "boolMethod",
@@ -438,7 +438,7 @@ export const runInvalidTypesTest = async (client: CoreClient, uri: string) => {
 };
 
 export const runJsonTypeTest = async (
-  client: CoreClient,
+  client: PolywrapClient,
   uri: string,
   testReserved: boolean = false
 ) => {
@@ -532,7 +532,7 @@ export const runJsonTypeTest = async (
   }
 };
 
-export const runLargeTypesTest = async (client: CoreClient, uri: string) => {
+export const runLargeTypesTest = async (client: PolywrapClient, uri: string) => {
   const largeStr = new Array(5000).join("polywrap ");
   const largeBytes = new Uint8Array(Buffer.from(largeStr));
   const largeStrArray = [];
@@ -566,7 +566,7 @@ export const runLargeTypesTest = async (client: CoreClient, uri: string) => {
   });
 };
 
-export const runNumberTypesTest = async (client: CoreClient, uri: string) => {
+export const runNumberTypesTest = async (client: PolywrapClient, uri: string) => {
   let i8Underflow = await client.invoke({
     uri,
     method: "i8Method",
@@ -653,7 +653,7 @@ export const runNumberTypesTest = async (client: CoreClient, uri: string) => {
   );
 };
 
-export const runObjectTypesTest = async (client: CoreClient, uri: string) => {
+export const runObjectTypesTest = async (client: PolywrapClient, uri: string) => {
   const method1a = await client.invoke({
     uri,
     method: "method1",
@@ -803,7 +803,7 @@ export const runObjectTypesTest = async (client: CoreClient, uri: string) => {
   });
 };
 
-export const runMapTypeTest = async (client: CoreClient, uri: string) => {
+export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
   const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
   const nestedMapClass = new Map<string, Map<string, number>>().set(
     "Nested",
@@ -898,7 +898,7 @@ export const runMapTypeTest = async (client: CoreClient, uri: string) => {
 };
 
 export const runSimpleStorageTest = async (
-  client: CoreClient,
+  client: PolywrapClient,
   wrapperUri: string
 ) => {
   const deploy = await client.invoke<string>({
@@ -948,7 +948,7 @@ export const runSimpleStorageTest = async (
 };
 
 export const runSimpleEnvTest = async (
-  client: CoreClient,
+  client: PolywrapClient,
   wrapperUri: string
 ) => {
   const getEnvResult = await client.invoke({
@@ -996,7 +996,7 @@ export const runSimpleEnvTest = async (
 };
 
 export const runComplexEnvs = async (
-  client: CoreClient,
+  client: PolywrapClient,
   wrapperUri: string
 ) => {
   const methodRequireEnvResult = await client.invoke({
@@ -1118,7 +1118,7 @@ export const runComplexEnvs = async (
   });
 };
 
-export const runSubinvokeTest = async (client: CoreClient, uri: string) => {
+export const runSubinvokeTest = async (client: PolywrapClient, uri: string) => {
   {
     const response = await client.invoke({
       uri,

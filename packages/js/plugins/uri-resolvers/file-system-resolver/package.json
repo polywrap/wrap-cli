@@ -24,6 +24,7 @@
     "@polywrap/plugin-js": "0.10.0-pre.7"
   },
   "devDependencies": {
+    "@polywrap/client-config-builder-js": "0.10.0-pre.7",
     "@polywrap/client-js": "0.10.0-pre.7",
     "@polywrap/fs-plugin-js": "0.10.0-pre.7",
     "@types/jest": "26.0.8",

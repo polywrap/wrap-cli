@@ -1,0 +1,129 @@
+name: CI-Rust
+
+on: 
+  push:
+    branches:
+      - origin
+      - origin-dev
+  pull_request:
+
+jobs:
+  Lint-and-Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+      
+      - name: Install Clippy
+        run:  rustup component add clippy --toolchain nightly-x86_64-unknown-linux-gnu
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/
+            ./target/
+          key: cargo-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            cargo-${{ runner.os }}-${{ github.job }}
+
+      - name: Build
+        working-directory: ./packages/wasm/rs
+        run: cargo build
+
+      - name: List Artifacts
+        working-directory: ./packages/wasm/rs
+        run: ls target/debug
+
+      - name: Test
+        working-directory: ./packages/wasm/rs
+        run: cargo test
+
+      - name: Lint
+        working-directory: ./packages/wasm/rs
+        run: cargo clippy
+
+      - name: Verify & Generate Documentation
+        working-directory: ./packages/wasm/rs
+        run: cargo doc --workspace --no-deps
+
+  Test-Cases:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Read .nvmrc
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+        id: nvm
+
+      - name: Setup Node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: '${{ steps.nvm.outputs.NVMRC }}'
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: yarn install --nonInteractive --frozen-lockfile --prefer-offline
+
+      - name: Build
+        run: yarn build
+
+      - name: Test
+        run: yarn test:rust
+        working-directory: ./packages/js/client
+
+  Test-Cli:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Read .nvmrc
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+        id: nvm
+
+      - name: Setup Node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: '${{ steps.nvm.outputs.NVMRC }}'
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: yarn install --nonInteractive --frozen-lockfile --prefer-offline
+
+      - name: Build
+        run: yarn build
+
+      - name: Test
+        run: yarn test:rust
+        working-directory: ./packages/cli

@@ -14,7 +14,7 @@ import {
 
 export class RecursiveResolver<TError = undefined>
   implements IUriResolver<TError | InfiniteLoopError> {
-  constructor(private resolver: IUriResolver<TError>) {}
+  constructor(private _resolver: IUriResolver<TError>) {}
 
   static from<TResolverError = unknown>(
     resolver: UriResolverLike
@@ -35,13 +35,13 @@ export class RecursiveResolver<TError = undefined>
 
     resolutionContext.startResolving(uri);
 
-    const resolverResult = await this.resolver.tryResolveUri(
+    const resolverResult = await this._resolver.tryResolveUri(
       uri,
       client,
       resolutionContext
     );
 
-    const result = await this.tryResolveAgainIfRedirect(
+    const result = await this._tryResolveAgainIfRedirect(
       resolverResult,
       uri,
       client,
@@ -53,7 +53,7 @@ export class RecursiveResolver<TError = undefined>
     return result;
   }
 
-  private async tryResolveAgainIfRedirect(
+  private async _tryResolveAgainIfRedirect(
     result: Result<UriPackageOrWrapper, TError | InfiniteLoopError>,
     uri: Uri,
     client: CoreClient,

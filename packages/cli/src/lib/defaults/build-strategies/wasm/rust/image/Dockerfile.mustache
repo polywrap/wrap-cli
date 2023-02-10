@@ -1,4 +1,4 @@
-FROM rust:1.65.0 as base
+FROM rust:1.66-alpine as base
 
 # Install the wasm32 rust build target
 RUN rustup target add wasm32-unknown-unknown
@@ -6,8 +6,10 @@ RUN rustup target add wasm32-unknown-unknown
 WORKDIR /build-deps
 
 # Install curl
-RUN apt-get update
-RUN apt-get -y install curl clang llvm build-essential
+RUN apk add curl pkgconfig openssl-dev bash
+
+# Install clang
+RUN apk add clang llvm build-base
 
 # Install wasm-opt
 RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_101/binaryen-version_101-x86_64-linux.tar.gz | tar -xz \

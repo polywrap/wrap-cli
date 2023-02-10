@@ -1,14 +1,15 @@
-import { CoreClient } from "@polywrap/core-js";
+import { CoreClient, Uri } from "@polywrap/core-js";
 import { buildWrapper } from "@polywrap/test-env-js";
 import WS from "jest-websocket-mock";
 import { PluginPackage } from "@polywrap/plugin-js";
 import { getClient } from "./helpers/getClient";
+import { PolywrapClient } from "@polywrap/client-js";
 
 jest.setTimeout(360000);
 
 describe("e2e tests for WsPlugin", () => {
   describe("integration", () => {
-    let client: CoreClient;
+    let client: PolywrapClient;
     let server: WS;
 
     const wrapperPath = `${__dirname}/integration`;
@@ -53,7 +54,7 @@ describe("e2e tests for WsPlugin", () => {
 
       client = getClient([
         {
-          uri: "wrap://ens/memory.polywrap.eth",
+          uri: Uri.from("wrap://ens/memory.polywrap.eth"),
           package: memoryPlugin,
         },
       ]);
@@ -100,7 +101,7 @@ describe("e2e tests for WsPlugin", () => {
       client = getClient([
         [
           {
-            uri: "wrap://ens/memory.polywrap.eth",
+            uri: Uri.from("wrap://ens/memory.polywrap.eth"),
             package: memoryPlugin,
           },
         ],
@@ -128,20 +129,20 @@ describe("e2e tests for WsPlugin", () => {
     it("cache", async () => {
       let t1 = setTimeout(() => {
         server.send("1");
-      }, 10);
+      }, 100);
       let t2 = setTimeout(() => {
         server.send("2");
-      }, 20);
+      }, 200);
       let t3 = setTimeout(() => {
         server.send("3");
-      }, 50);
+      }, 500);
 
       const response = await client.invoke<boolean>({
         uri,
         method: "get",
         args: {
           url: "ws://localhost:1234",
-          timeout: 20,
+          timeout: 210,
         },
       });
       if (!response.ok) fail(response.error);

@@ -1,5 +1,4 @@
 import {
-  Uri,
   IUriResolver,
   IUriRedirect,
   IUriPackage,
@@ -8,7 +7,7 @@ import {
 
 export type UriResolverLike =
   | IUriResolver<unknown>
-  | IUriRedirect<Uri | string>
-  | IUriPackage<Uri | string>
-  | IUriWrapper<Uri | string>
+  | IUriRedirect
+  | IUriPackage
+  | IUriWrapper
   | UriResolverLike[];

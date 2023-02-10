@@ -1,13 +1,20 @@
-import { Tracer } from "@polywrap/tracing-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
+// $start: UriConfig
 /** URI configuration */
 export interface UriConfig {
+  /** URI Authority: allows the Polywrap URI resolution algorithm to determine an authoritative URI resolver. */
   authority: string;
+
+  /** URI Path: tells the Authority where the Wrapper resides. */
   path: string;
+
+  /** Full string representation of URI */
   uri: string;
 }
+// $end
 
+// $start: Uri
 /**
  * A Polywrap URI. Some examples of valid URIs are:
  * wrap://ipfs/QmHASH
@@ -22,21 +29,37 @@ export interface UriConfig {
  * **sub.domain.eth** - URI Path: tells the Authority where the Wrapper resides.
  */
 export class Uri {
+  // $end
   private _config: UriConfig;
 
-  public get authority(): string {
+  // $start: Uri-authority
+  /** @returns Uri authority */
+  public get authority(): string /* $ */ {
     return this._config.authority;
   }
 
-  public get path(): string {
+  // $start: Uri-path
+  /** @returns Uri path */
+  public get path(): string /* $ */ {
     return this._config.path;
   }
 
-  public get uri(): string {
+  // $start: Uri-uri
+  /** @returns Uri string representation */
+  public get uri(): string /* $ */ {
     return this._config.uri;
   }
 
-  constructor(uri: string) {
+  // $start: Uri-constructor
+  /**
+   * Construct a Uri instance from a wrap URI string
+   *
+   * @remarks
+   * Throws if URI string is invalid
+   *
+   * @param uri - a string representation of a wrap URI
+   */
+  constructor(uri: string) /* $ */ {
     const result = Uri.parseUri(uri);
     if (!result.ok) {
       throw result.error;
@@ -44,15 +67,30 @@ export class Uri {
     this._config = result.value;
   }
 
-  public static equals(a: Uri, b: Uri): boolean {
+  // $start: Uri-equals
+  /** Test two Uri instances for equality */
+  public static equals(a: Uri, b: Uri): boolean /* $ */ {
     return a.uri === b.uri;
   }
 
-  public static isUri(value: unknown): value is Uri {
+  // $start: Uri-isUri
+  /**
+   * Check if a value is an instance of Uri
+   *
+   * @param value - value to check
+   * @returns true if value is a Uri instance */
+  public static isUri(value: unknown): value is Uri /* $ */ {
     return typeof value === "object" && (value as Uri).uri !== undefined;
   }
 
-  public static isValidUri(uri: string, parsed?: UriConfig): boolean {
+  // $start: Uri-isValidUri
+  /**
+   * Test if a URI string is a valid wrap URI
+   *
+   * @param uri - URI string
+   * @param parsed? - UriConfig to update (mutate) with content of URI string
+   * @returns true if input string is a valid wrap URI */
+  public static isValidUri(uri: string, parsed?: UriConfig): boolean /* $ */ {
     const result = Uri.parseUri(uri);
 
     if (parsed && result.ok) {
@@ -62,16 +100,14 @@ export class Uri {
     return result.ok;
   }
 
-  public toString(): string {
-    return this._config.uri;
-  }
-
-  public toJSON(): string {
-    return this._config.uri;
-  }
-
-  @Tracer.traceMethod("Uri: parseUri")
-  public static parseUri(uri: string): Result<UriConfig, Error> {
+  // $start: Uri-parseUri
+  /**
+   * Parse a wrap URI string into its authority and path
+   *
+   * @param uri - a string representation of a wrap URI
+   * @returns A Result containing a UriConfig, if successful, or an error
+   */
+  public static parseUri(uri: string): Result<UriConfig, Error> /* $ */ {
     if (!uri) {
       return ResultErr(Error("The provided URI is empty"));
     }
@@ -125,8 +161,16 @@ export class Uri {
     });
   }
 
-  @Tracer.traceMethod("Uri: from")
-  public static from(uri: Uri | string): Uri {
+  // $start: Uri-from
+  /**
+   * Construct a Uri instance from a Uri or a wrap URI string
+   *
+   * @remarks
+   * Throws if URI string is invalid
+   *
+   * @param uri - a Uri instance or a string representation of a wrap URI
+   */
+  public static from(uri: Uri | string): Uri /* $ */ {
     if (typeof uri === "string") {
       return new Uri(uri);
     } else if (Uri.isUri(uri)) {
@@ -134,5 +178,17 @@ export class Uri {
     } else {
       throw Error(`Unknown uri type, cannot convert. ${JSON.stringify(uri)}`);
     }
+  }
+
+  // $start: Uri-toString
+  /** @returns Uri string representation */
+  public toString(): string /* $ */ {
+    return this._config.uri;
+  }
+
+  // $start: Uri-toJSON
+  /** @returns Uri string representation */
+  public toJSON(): string /* $ */ {
+    return this._config.uri;
   }
 }

@@ -12,11 +12,14 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json",
+    "build": "yarn build:fast && yarn build:snippets && yarn build:readme",
+    "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose"
+    "test:watch": "jest --watch --passWithNoTests --verbose",
+    "build:snippets": "tsc --project ./examples/tsconfig.examples.json",
+    "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
     "@polywrap/core-js": "0.10.0-pre.7",
@@ -31,9 +34,11 @@
     "@polywrap/logger-plugin-js": "0.10.0",
     "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.7",
     "@polywrap/uri-resolvers-js": "0.10.0-pre.7",
-    "concurrent-plugin-js": "0.1.1"
+    "concurrent-plugin-js": "0.1.2",
+    "doc-snippets": "^1.0.0"
   },
   "devDependencies": {
+    "@polywrap/wasm-js": "0.10.0-pre.7",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "jest": "26.6.3",
@@ -45,5 +50,44 @@
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {
     "access": "public"
+  },
+  "doc-snippets": {
+    "extract": {
+      "include": [
+        "./src/**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}",
+        "./examples/**/*.{ts,tsx,json,yaml,txt,md,graphql,cue}"
+      ],
+      "ignore": [
+        "./**/node_modules/**",
+        "./**/.polywrap/**",
+        "./**/__tests__/**"
+      ],
+      "dir": "./"
+    },
+    "inject": {
+      "dir": "./readme",
+      "include": "./README.md"
+    },
+    "startTokens": [
+      {
+        "pattern": "$start: ",
+        "inline": false
+      },
+      {
+        "pattern": "/* $: {SNIPPET_NAME} */",
+        "inline": true
+      }
+    ],
+    "endTokens": [
+      {
+        "pattern": "$end",
+        "inline": false
+      },
+      {
+        "pattern": "/* $ */",
+        "inline": true
+      }
+    ],
+    "outputDir": "./"
   }
 }

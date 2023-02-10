@@ -1,8 +1,7 @@
 
 import * as Schema from "../wrap";
 
-import { PolywrapClient } from "@polywrap/client-js";
-import { ClientConfig } from "@polywrap/client-config-builder-js";
+import { PolywrapClient, ClientConfig } from "@polywrap/client-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,

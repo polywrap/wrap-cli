@@ -1,6 +1,14 @@
 import { Uri } from ".";
 
-export interface IUriRedirect<TUri extends Uri | string> {
-  from: TUri;
-  to: TUri;
+// $start: IUriRedirect.ts
+
+/** Redirect invocations from one URI to another */
+export interface IUriRedirect {
+  /** URI to redirect from */
+  from: Uri;
+
+  /** URI to redirect to */
+  to: Uri;
 }
+
+// $end

@@ -10,7 +10,7 @@ import { Result, ResultErr, ResultOk } from "@polywrap/result";
 export class PluginModuleWithMethods<
   TEnv extends Record<string, unknown> = Record<string, unknown>
 > extends PluginModule<never, TEnv> {
-  constructor(private getPluginMethods: GetPluginMethodsFunc<TEnv>) {
+  constructor(private _getPluginMethods: GetPluginMethodsFunc<TEnv>) {
     super({} as never);
   }
 
@@ -47,7 +47,7 @@ export class PluginModuleWithMethods<
     TArgs extends Record<string, unknown> = Record<string, unknown>,
     TResult = unknown
   >(method: string): PluginMethod<TArgs, TResult> | undefined {
-    const fn: PluginMethod<TArgs, TResult> | undefined = this.getPluginMethods(
+    const fn: PluginMethod<TArgs, TResult> | undefined = this._getPluginMethods(
       this
     )[method] as PluginMethod<TArgs, TResult>;
 

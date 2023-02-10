@@ -1,5 +1,4 @@
 import {
-  Uri,
   GetFileOptions,
   InvokeOptions,
   Invocable,
@@ -9,6 +8,8 @@ import {
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
+
+// $start: Wrapper.ts
 
 /**
  * The Wrapper definition, which can be used to spawn
@@ -25,7 +26,7 @@ export interface Wrapper extends Invocable {
    * This client will be used for any sub-invokes that occur.
    */
   invoke(
-    options: InvokeOptions<Uri>,
+    options: InvokeOptions,
     invoker: Invoker
   ): Promise<InvocableResult<unknown>>;
 
@@ -41,3 +42,5 @@ export interface Wrapper extends Invocable {
    */
   getManifest(): WrapManifest;
 }
+
+// $end

@@ -3391,6 +3391,14 @@
     "@polywrap/core-js" "0.10.0-pre.6"
     "@polywrap/plugin-js" "0.10.0-pre.6"
 
+"@polywrap/fs-plugin-js@0.10.0-pre.7":
+  version "0.10.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polywrap/fs-plugin-js/-/fs-plugin-js-0.10.0-pre.7.tgz#d066fac96869363de512978bb66204b589ffa9a1"
+  integrity sha512-zhNOrzaK+X95orrD9FgHRt6etUMq2kjzfZtbPGHcBxN3JR81rtO+7UsVfCdz1U2VoHXsKOZ6t59JhHVfvVRP/g==
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.7"
+    "@polywrap/plugin-js" "0.10.0-pre.7"
+
 "@polywrap/fs-resolver-plugin-js@0.10.0-pre.6":
   version "0.10.0-pre.6"
   resolved "https://registry.yarnpkg.com/@polywrap/fs-resolver-plugin-js/-/fs-resolver-plugin-js-0.10.0-pre.6.tgz#94b48d2eb87d940a2b1cf5822b3b6cc8ca7f606c"
@@ -3407,6 +3415,16 @@
     "@polywrap/core-js" "0.10.0-pre.6"
     "@polywrap/plugin-js" "0.10.0-pre.6"
     axios "0.21.4"
+
+"@polywrap/http-plugin-js@0.10.0-pre.7":
+  version "0.10.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polywrap/http-plugin-js/-/http-plugin-js-0.10.0-pre.7.tgz#2ce3106f1e32c78e68b71d58f2331bd79b88f659"
+  integrity sha512-1WXrx9etHq2qd88XzxC1ofqZA+RI4f5rz8BzH2e9lIzxiBQf4m8zj00dIB2xm+IaEAMq48l9u18CNiYDowIXUg==
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.7"
+    "@polywrap/plugin-js" "0.10.0-pre.7"
+    axios "0.21.4"
+    form-data "4.0.0"
 
 "@polywrap/http-resolver-plugin-js@0.10.0-pre.6":
   version "0.10.0-pre.6"
@@ -6165,6 +6183,11 @@ commander@^4.1.1:
   resolved "https://registry.yarnpkg.com/commander/-/commander-4.1.1.tgz#9fd602bd936294e9e9ef46a3f4d6964044b18068"
   integrity sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==
 
+commander@^9.4.1:
+  version "9.4.1"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-9.4.1.tgz#d1dd8f2ce6faf93147295c0df13c7c21141cfbdd"
+  integrity sha512-5EEkTNyHNGFPD2H+c/dXXfQZYa/scCKasxWcXJaWnNJ99pnQN9Vnmqow+p+PlFPE63Q6mThaZws1T+HxfpgtPw==
+
 common-tags@^1.8.0:
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/common-tags/-/common-tags-1.8.2.tgz#94ebb3c076d26032745fd54face7f688ef5ac9c6"
@@ -6247,6 +6270,14 @@ concurrent-plugin-js@0.1.1:
   dependencies:
     "@polywrap/core-js" "0.10.0-pre.5"
     "@polywrap/msgpack-js" "0.10.0-pre.5"
+
+concurrent-plugin-js@0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/concurrent-plugin-js/-/concurrent-plugin-js-0.1.2.tgz#206b9f12723fb99d79a4c03c0f28b427deca6ff4"
+  integrity sha512-MWpw9uuQtQ/IerG2CtGjFm+UTmDy0D+D7HZh4hW5PYTk4SbcYBVJtK6n7Yk3tg8NE3rcXLnRxLBoW7UbO2o5hw==
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.7"
+    "@polywrap/msgpack-js" "0.10.0-pre.7"
 
 config-chain@^1.1.12:
   version "1.1.13"
@@ -7199,6 +7230,14 @@ dns-txt@^2.0.2:
   integrity sha512-Ix5PrWjphuSoUXV/Zv5gaFHjnaJtb02F2+Si3Ht9dyJ87+Z/lMmy+dpNHtTGraNK958ndXq2i+GLkWsWHcKaBQ==
   dependencies:
     buffer-indexof "^1.0.0"
+
+doc-snippets@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/doc-snippets/-/doc-snippets-1.0.0.tgz#5921d52c6cfe6de0ab9b28f9594232cb6876c37e"
+  integrity sha512-4wVSd7jxhliPvqZ3sdhKhRla/EYy6DKlflWYd+E7JTGYXy1xBWyMnbSkWshGUiVK8TgZAF45iE4Y6eSo5F2lqg==
+  dependencies:
+    commander "^9.4.1"
+    glob "^8.0.3"
 
 docker-compose@0.23.17:
   version "0.23.17"
@@ -8931,6 +8970,17 @@ glob@^7.0.3, glob@^7.0.5, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4, gl
     minimatch "^3.1.1"
     once "^1.3.0"
     path-is-absolute "^1.0.0"
+
+glob@^8.0.3:
+  version "8.0.3"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-8.0.3.tgz#415c6eb2deed9e502c68fa44a272e6da6eeca42e"
+  integrity sha512-ull455NHSHI/Y1FqGaaYFaLGkNMMJbavMrEGFXG/PGrg6y7sutWHUHrz6gy6WEBH6akM1M414dWKCNs+IhKdiQ==
+  dependencies:
+    fs.realpath "^1.0.0"
+    inflight "^1.0.4"
+    inherits "2"
+    minimatch "^5.0.1"
+    once "^1.3.0"
 
 global-modules@2.0.0:
   version "2.0.0"
@@ -11879,11 +11929,6 @@ lodash.merge@4.6.2:
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
 
-lodash.set@^4.3.2:
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/lodash.set/-/lodash.set-4.3.2.tgz#d8757b1da807dde24816b0d6a84bea1a76230b23"
-  integrity sha512-4hNPN5jlm/N/HLMCO43v8BXKq9Z7QdAGc/VGrRD61w8gN9g/6jF9A4L1pbUgBLCffi0w9VsXfTOij5x8iTyFvg==
-
 lodash.sortby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
@@ -12302,7 +12347,7 @@ minimalistic-crypto-utils@^1.0.1:
   resolved "https://registry.yarnpkg.com/minimalistic-crypto-utils/-/minimalistic-crypto-utils-1.0.1.tgz#f6c00c1c0b082246e5c4d99dfb8c7c083b2b582a"
   integrity sha512-JIYlbt6g8i5jKfJ3xz7rF0LXmv2TkDxBLUkiBeZ7bAx4GnnNMr8xFpGnOxn6GhTEHx3SjRrZEoU+j04prX1ktg==
 
-minimatch@*:
+minimatch@*, minimatch@^5.0.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.2.tgz#0939d7d6f0898acbd1508abe534d1929368a8fff"
   integrity sha512-bNH9mmM9qsJ2X4r2Nat1B//1dJVcn3+iBLa3IgqJ7EbGaDNepL9QSHOxN4ng33s52VMMhhIfgCYDk3C4ZmlDAg==
@@ -12818,16 +12863,6 @@ no-case@^3.0.4:
   dependencies:
     lower-case "^2.0.2"
     tslib "^2.0.3"
-
-nock@13.0.7:
-  version "13.0.7"
-  resolved "https://registry.yarnpkg.com/nock/-/nock-13.0.7.tgz#9bc718c66bd0862dfa14601a9ba678a406127910"
-  integrity sha512-WBz73VYIjdbO6BwmXODRQLtn7B5tldA9pNpWJe5QTtTEscQlY5KXU4srnGzBOK2fWakkXj69gfTnXGzmrsaRWw==
-  dependencies:
-    debug "^4.1.0"
-    json-stringify-safe "^5.0.1"
-    lodash.set "^4.3.2"
-    propagate "^2.0.0"
 
 node-fetch@^2.6.0, node-fetch@^2.6.1, node-fetch@^2.6.7:
   version "2.6.7"
@@ -14698,11 +14733,6 @@ prop-types@^15.6.2, prop-types@^15.7.2:
     loose-envify "^1.4.0"
     object-assign "^4.1.1"
     react-is "^16.13.1"
-
-propagate@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/propagate/-/propagate-2.0.1.tgz#40cdedab18085c792334e64f0ac17256d38f9a45"
-  integrity sha512-vGrhOavPSTz4QVNuBNdcNXePNdNMaO1xj9yBeH1ScQPjk/rhg9sSlCXPhMkFuaNNW/syTvYqsnbIJxMBfRbbag==
 
 proto-list@~1.2.1:
   version "1.2.4"

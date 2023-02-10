@@ -7,7 +7,8 @@ import * as Types from "./";
 // @ts-ignore
 import {
   CoreClient,
-  InvokeResult
+  InvokeResult,
+  Uri,
 } from "@polywrap/core-js";
 
 export type UInt = number;
@@ -57,7 +58,7 @@ export const Interface_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: "my/import",
+      uri: Uri.from("my/import"),
       method: "methodA",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -68,7 +69,7 @@ export const Interface_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.Boolean>> => {
     return client.invoke<Types.Boolean>({
-      uri: "my/import",
+      uri: Uri.from("my/import"),
       method: "methodB",
       args: (args as unknown) as Record<string, unknown>,
     });

@@ -126,13 +126,8 @@ describe("wasm-wrapper", () => {
 
   it("should allow clone + reconfigure of redirects", async () => {
     let builder = new ClientConfigBuilder().add({
-      packages: [
-        {
-          uri: "wrap://ens/mock.polywrap.eth",
-          package: mockPlugin(),
-        },
-      ],
-    });
+      packages: { "wrap://ens/mock.polywrap.eth": mockPlugin() },
+    }).addDefaults();
 
     const client = new PolywrapClient(builder.build());
 
@@ -148,12 +143,9 @@ describe("wasm-wrapper", () => {
     expect(clientResult.value).toBeTruthy();
     expect(clientResult.value).toEqual("test");
 
-    const redirects = [
-      {
-        from: simpleWrapperUri.uri,
-        to: "wrap://ens/mock.polywrap.eth",
-      },
-    ];
+    const redirects = {
+      [simpleWrapperUri.uri]: "wrap://ens/mock.polywrap.eth",
+    };
 
     builder = builder.add({ redirects });
 

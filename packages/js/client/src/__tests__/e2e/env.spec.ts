@@ -1,3 +1,4 @@
+import { Uri } from "@polywrap/core-js";
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
 import { RecursiveResolver } from "@polywrap/uri-resolvers-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -22,17 +23,20 @@ describe("env", () => {
 
   describe("env client types", () => {
     test("plugin env types", async () => {
-      const implementationUri = "wrap://ens/some-implementation.eth";
+      const implementationUri = Uri.from("wrap://ens/some-implementation.eth");
       const envPlugin = mockEnvPlugin();
       const client = new PolywrapClient(
         {
-          resolver: RecursiveResolver.from({
-            uri: implementationUri,
-            package: envPlugin,
-          }),
-          envs: [
+          resolver: RecursiveResolver.from([
             {
               uri: implementationUri,
+              package: envPlugin,
+            },
+            { from: Uri.from("ens/hello.eth"), to: implementationUri },
+          ]),
+          envs: [
+            {
+              uri: Uri.from("ens/hello.eth"),
               env: {
                 arg1: "10",
               },
@@ -43,7 +47,7 @@ describe("env", () => {
       );
 
       const mockEnv = await client.invoke({
-        uri: implementationUri,
+        uri: Uri.from("ens/hello.eth"),
         method: "mockEnv",
       });
 
@@ -53,7 +57,7 @@ describe("env", () => {
     });
 
     test("inline plugin env types", async () => {
-      const implementationUri = "wrap://ens/some-implementation.eth";
+      const implementationUri = Uri.from("wrap://ens/some-implementation.eth");
       const client = new PolywrapClient(
         {
           resolver: RecursiveResolver.from([
