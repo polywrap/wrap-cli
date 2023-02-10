@@ -56,68 +56,6 @@ const TYPE_NAME_REGEX = `[a-zA-Z0-9_]+`;
 type UriStr = string;
 type SchemaPath = string;
 
-export async function resolveUseStatements(
-  schema: string,
-  schemaPath: string,
-  abi: WrapAbi
-): Promise<ModuleCapability[]> {
-  const useKeywordCapture = /^(?:#|""")*use[ \n\t]/gm;
-  const useCapture = /(?:#|""")*use[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*for[ \n\t]*(\w+)[ \n\t]/g;
-
-  const keywords = [...schema.matchAll(useKeywordCapture)];
-  const useStatements = [...schema.matchAll(useCapture)];
-
-  if (keywords.length !== useStatements.length) {
-    throw Error(
-      `Invalid use statement found in file ${schemaPath}.\nPlease use one of the following syntaxes...\n${SYNTAX_REFERENCE}`
-    );
-  }
-
-  const importedModuleByNamespace: Record<
-    string,
-    ImportedModuleDefinition
-  > = {};
-
-  abi.importedModuleTypes &&
-    abi.importedModuleTypes.forEach((value) => {
-      importedModuleByNamespace[value.namespace] = value;
-    });
-
-  // TODO: come back to this
-  const capabilitiesExt: ModuleCapability[] = [];
-
-  const parsedUses = parseUse(useStatements);
-  for (const parsedUse of parsedUses) {
-    const importedModule = importedModuleByNamespace[parsedUse.namespace];
-    if (!importedModule) {
-      throw Error(`Invalid use statement: namespace used hasn't been imported`);
-    }
-
-    const capabilities = parsedUse.usedTypes
-      .map((type) => {
-        capabilitiesExt.push({
-          type,
-          uri: importedModule.uri,
-          namespace: parsedUse.namespace,
-        });
-        return createCapability({ type, enabled: true });
-      })
-      .reduce((o1, o2) => ({ ...o1, ...o2 }));
-
-    const interfaceType = createInterfaceDefinition({
-      type: parsedUse.namespace,
-      uri: importedModule.uri,
-      namespace: parsedUse.namespace,
-      capabilities: capabilities,
-    });
-
-    abi.interfaceTypes = abi.interfaceTypes
-      ? [...abi.interfaceTypes, interfaceType]
-      : [interfaceType];
-  }
-  return capabilitiesExt;
-}
-
 export async function resolveImportsAndParseSchemas(
   schema: string,
   schemaPath: string,

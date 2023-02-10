@@ -1,29 +1,7 @@
-export const MapKeyTypes = {
-  UInt: "UInt",
-  UInt8: "UInt8",
-  UInt16: "UInt16",
-  UInt32: "UInt32",
-  Int: "Int",
-  Int8: "Int8",
-  Int16: "Int16",
-  Int32: "Int32",
-  String: "String",
-};
-
-export const ScalarTypes = {
-  ...MapKeyTypes,
-  Boolean: "Boolean",
-  Bytes: "Bytes",
-  BigInt: "BigInt",
-  BigNumber: "BigNumber",
-  JSON: "JSON",
-};
-
-export type ScalarType = keyof typeof ScalarTypes;
-export type MapKeyType = keyof typeof MapKeyTypes;
+import { mapKeyTypeSet, scalarTypeSet } from "../definitions";
 
 export function isMapKeyType(type: string): boolean {
-  return type in MapKeyTypes;
+  return type in mapKeyTypeSet;
 }
 
 export const MODULE_NAME = "Module";
@@ -37,7 +15,5 @@ export function isImportedModuleType(type: string): boolean {
 }
 
 export function isScalarType(type: string): boolean {
-  return type in ScalarTypes;
+  return type in scalarTypeSet;
 }
-
-export const scalarTypeNames = Object.keys(ScalarTypes);
