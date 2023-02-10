@@ -56,7 +56,7 @@ jobs:
           echo IMAGE_AS_VM_UNPUBLISHED=$(! curl -s "https://hub.docker.com/v2/repositories/$IMAGE_AS_VM_NAME/tags/$IMAGE_AS_VM_VERSION" | grep -q "error 404" > /dev/null ; echo $?) >> $GITHUB_ENV
 
       - name: Build & Publish RS VM Image
-        if: ${{env.IMAGE_RS_VM_UNPUBLISHED}}
+        if: env.IMAGE_RS_VM_UNPUBLISHED == '1'
         working-directory: ${{env.IMAGE_RS_VM_DIR}}
         run: |
           docker buildx create --use --name rs-vm-builder
@@ -64,7 +64,7 @@ jobs:
           docker buildx rm rs-vm-builder
 
       - name: Build & Publish AS VM Image
-        if: ${{env.IMAGE_AS_VM_UNPUBLISHED}}
+        if: env.IMAGE_AS_VM_UNPUBLISHED == '1'
         working-directory: ${{env.IMAGE_AS_VM_DIR}}
         run: |
           docker buildx create --use --name as-vm-builder
