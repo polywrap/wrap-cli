@@ -1,6 +1,5 @@
 import { CleanResolutionStep } from "./CleanResolutionStep";
-
-import { IUriResolutionStep } from "@polywrap/core-js";
+import { IUriResolutionStep } from "../..";
 
 export const buildCleanUriHistory = (
   history: IUriResolutionStep<unknown>[],

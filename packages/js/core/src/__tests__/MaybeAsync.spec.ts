@@ -1,4 +1,4 @@
-import { MaybeAsync, isPromise } from "..";
+import { MaybeAsync } from "..";
 
 interface IClassInterface {
   normalMethod(arg: string): MaybeAsync<string>;

@@ -1,4 +1,4 @@
-import { Uri, InvokeOptions } from "./";
+import { Uri, InvokeOptions, WrapError } from "./";
 
 import { Tracer } from "@polywrap/tracing-js";
 import { DocumentNode } from "graphql";
@@ -57,7 +57,7 @@ export interface QueryResult<
   data?: TData;
 
   /** Errors encountered during the query. */
-  errors?: Error[];
+  errors?: WrapError[];
 }
 
 export interface QueryInvocations<TUri extends Uri | string = string> {

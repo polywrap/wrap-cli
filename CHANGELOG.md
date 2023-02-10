@@ -1,3 +1,10 @@
+# Polywrap Origin (0.9.5)
+## Bugs
+* [PR-1541](https://github.com/polywrap/toolchain/pull/1541) `polywrap` CLI: Update build images to use the latest multi-platform versions.
+* [PR-1517](https://github.com/polywrap/toolchain/pull/1517) `polywrap` CLI: Fix the `build` command's `--watch` option.
+* [PR-1512](https://github.com/polywrap/toolchain/pull/1512) `@polywrap/client-js`, `@polywrap/core-js`: Created a custom `WrapError` structure that improves debugging ability for common client error scenarios.
+* [PR-1509](https://github.com/polywrap/toolchain/pull/1509) `@polywrap/core-js`: Correct typings for the URI resolver interface, and handle null return values.
+
 # Polywrap Origin (0.9.4)
 ## Bugs
 * [PR-1372](https://github.com/polywrap/toolchain/pull/1372) `@polywrap/schema-parse`, `@polywrap/schema-compose`: Fixed a bug when importing type with map properties that use imported types.

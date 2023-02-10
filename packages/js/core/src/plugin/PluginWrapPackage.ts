@@ -1,4 +1,4 @@
-import { IWrapPackage, PluginPackage, Uri, Wrapper } from "../types";
+import { IWrapPackage, PluginPackage, Uri, Wrapper, WrapError } from "../types";
 import { PluginWrapper } from "./PluginWrapper";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -11,11 +11,11 @@ export class PluginWrapPackage implements IWrapPackage {
     private readonly pluginPackage: PluginPackage<unknown>
   ) {}
 
-  async getManifest(): Promise<Result<WrapManifest, Error>> {
+  async getManifest(): Promise<Result<WrapManifest, WrapError>> {
     return ResultOk(this.pluginPackage.manifest);
   }
 
-  async createWrapper(): Promise<Result<Wrapper, Error>> {
+  async createWrapper(): Promise<Result<Wrapper, never>> {
     return ResultOk(new PluginWrapper(this.pluginPackage));
   }
 }
