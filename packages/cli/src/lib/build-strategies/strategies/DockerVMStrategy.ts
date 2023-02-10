@@ -190,9 +190,9 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
               this._volumePaths.project
             )}:/project -v ${path.resolve(
               this._volumePaths.linkedPackages
-            )}:/linked-packages ${cacheVolume} ${
-              CONFIGS[language].baseImage
-            }:${CONFIGS[language].version} /bin/bash --verbose /project/polywrap-build.sh`,
+            )}:/linked-packages ${cacheVolume} ${CONFIGS[language].baseImage}:${
+              CONFIGS[language].version
+            } /bin/bash --verbose /project/polywrap-build.sh`,
             this.project.logger,
             undefined,
             undefined,
@@ -209,9 +209,9 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
               this._volumePaths.project
             )}:/project -v ${path.resolve(
               this._volumePaths.linkedPackages
-            )}:/linked-packages ${
-              CONFIGS[language].baseImage
-            }:${CONFIGS[language].version} /bin/bash -c "chmod -R 777 /project && chmod -R 777 /linked-packages"`,
+            )}:/linked-packages ${CONFIGS[language].baseImage}:${
+              CONFIGS[language].version
+            } /bin/bash -c "chmod -R 777 /project && chmod -R 777 /linked-packages"`,
             this.project.logger
           );
         } catch (e) {
