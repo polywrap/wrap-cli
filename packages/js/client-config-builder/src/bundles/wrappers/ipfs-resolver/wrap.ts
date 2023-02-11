@@ -12,6 +12,6 @@ const wrap_info = toUint8Array(
 );
 
 export const wasmPackage = WasmPackage.from(
-  wrap_wasm,
-  wrap_info
+  wrap_info,
+  wrap_wasm
 );

@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { WasmPackage } from "@polywrap/wasm-js";
 
 async function main() {
 
@@ -22,6 +23,18 @@ async function main() {
       path.join(wrapperDir, "wrap.info")
     );
 
+    try {
+      // Make sure we can load the wasm module
+      const tryLoad = WasmPackage.from(
+        infoBytes,
+        wasmBytes
+      );
+      const result = await tryLoad.getManifest();
+      if (!result.ok) throw result.error;
+    } catch (err) {
+      throw Error(`Unable to load wrapper at ${wrapperDir}`);
+    }
+
     fs.writeFileSync(
       path.join(wrapperDir, "wrap.ts"),
 `// NOTE: This file is auto-generated, do not modify by hand!
@@ -38,8 +51,8 @@ const wrap_info = toUint8Array(
 );
 
 export const wasmPackage = WasmPackage.from(
-  wrap_wasm,
-  wrap_info
+  wrap_info,
+  wrap_wasm
 );
 `
     );
