@@ -97,7 +97,7 @@ const testData: CommandTestCaseData<CommandTypings> = {
   create: {
     app: [{
       cwd: fs.mkdtempSync(path.join(os.tmpdir(), "cli-js-create-test")),
-      arguments: ["typescript-node", "test-app"],
+      arguments: ["typescript", "test-app"],
       after: (test) => {
         if (!test.cwd)
           throw Error("This shouldn't happen");
