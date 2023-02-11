@@ -6,14 +6,14 @@ import {
   Args_callback,
   Args_subscribeAndSend,
   Args_get,
-  IModule
+  ModuleBase
 } from "./wrap";
 import { Box } from "@polywrap/wasm-as";
 
 
 
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   send(args: Args_send): boolean {
     const id = WS_Module.open({
       url: args.url

@@ -35,12 +35,12 @@ import {
   Args_signMessageBytes,
   Args_signTypedData,
   Args_requestAccounts,
-  IModule,
+  ModuleBase,
 } from "./wrap";
 import { BigInt } from "@polywrap/wasm-as";
 
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   callContractView(
     args: Args_callContractView
   ): string {
