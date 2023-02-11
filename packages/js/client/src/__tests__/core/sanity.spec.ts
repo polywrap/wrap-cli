@@ -82,7 +82,7 @@ describe("sanity", () => {
       envs: undefined
     }
 
-    await buildWrapper(fooPath, undefined, true);
+    await buildWrapper(fooPath);
     let client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
     let result = await client.validate(fooUri, {});
     expect(result.ok).toBeFalsy();
@@ -115,7 +115,7 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Unable to find URI");
 
-    await buildWrapper(greetingPath, undefined, true);
+    await buildWrapper(greetingPath);
 
     let modifiedFooWrapper: IUriPackage = {
       uri: Uri.from(greetingUri),
@@ -133,7 +133,7 @@ describe("sanity", () => {
 
     expect(result.ok).toBeTruthy()
 
-    await buildWrapper(modifiedFooPath, undefined, true);
+    await buildWrapper(modifiedFooPath);
       let redirectUri: IUriRedirect = {
       from: Uri.from(fooUri),
       to: Uri.from(modifiedFooUri)

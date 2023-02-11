@@ -25,7 +25,6 @@ describe("ENS Resolver Plugin", () => {
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
       ensName: "cool.wrapper.eth",
-      codegen: true
     });
 
     wrapperEnsDomain = ensDomain;
