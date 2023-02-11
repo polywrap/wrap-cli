@@ -49,7 +49,6 @@ export interface BuildCommandOptions extends BaseCommandOptions {
   outputDir: string;
   clientConfig: string | false;
   wrapperEnvs: string | false;
-  codegen: boolean;
   noCodegen: boolean;
   codegenDir: string;
   watch: boolean;
@@ -111,14 +110,13 @@ export const build: Command = {
           clientConfig: options.clientConfig || false,
           wrapperEnvs: options.wrapperEnvs || false,
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
-          codegen: options.codegen || false,
+          noCodegen: options.noCodegen || false,
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           strategy: options.strategy || defaultStrategy,
           watch: options.watch || false,
           verbose: options.verbose || false,
           quiet: options.quiet || false,
           logFile: parseLogFileOption(options.logFile),
-          noCodegen: options.noCodegen || false,
         });
       });
   },
@@ -167,7 +165,7 @@ async function run(options: Required<BuildCommandOptions>) {
     wrapperEnvs,
     outputDir,
     strategy,
-    codegen,
+    noCodegen,
     codegenDir,
     verbose,
     quiet,
@@ -230,7 +228,7 @@ async function run(options: Required<BuildCommandOptions>) {
         client,
       });
 
-      if (codegen && canRunCodegen) {
+      if (canRunCodegen && !noCodegen) {
         const codeGenerator = new CodeGenerator({
           project,
           schemaComposer,

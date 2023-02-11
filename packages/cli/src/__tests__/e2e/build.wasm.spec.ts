@@ -18,7 +18,7 @@ Options:
                                        (default: ./build)
   -c, --client-config <config-path>    Add custom configuration to the
                                        PolywrapClient
-  --no-codegen                         Skip code generation before build
+  -n, --no-codegen                     Skip code generation before build
   --codegen-dir                        Codegen output directory (default:
                                        ./src/wrap)
   --wrapper-envs <envs-path>           Path to a JSON file containing wrapper
