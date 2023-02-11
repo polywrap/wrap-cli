@@ -1,4 +1,4 @@
-import { createAbi, isModuleType } from "./abi";
+import { createAbi } from "./abi";
 import { AbiTransforms, transformAbi } from "./transform";
 import { validators, SchemaValidatorBuilder } from "./validate";
 
@@ -27,7 +27,7 @@ interface ParserOptions {
   transforms?: AbiTransforms[];
 }
 
-const parseSchemaAndImports = async (schema: string, schemaPath: string): Promise<{ abi: Abi, imports: Map<string, Abi> }> => {
+export const parseSchemaAndImports = async (schema: string, schemaPath: string): Promise<{ abi: Abi, imports: Map<string, Abi> }> => {
   const importsRegistry = await getImportedAbisRegistry(schema, schemaPath);
   let allUniqueDefinitions = new Map<string, UniqueDefKind>();
   
