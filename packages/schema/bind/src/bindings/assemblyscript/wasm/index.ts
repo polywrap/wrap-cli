@@ -63,21 +63,6 @@ export const generateBinding: GenerateBindingFn = (
     }
   }
 
-  // Generate imported env type folders
-  if (abi.importedEnvTypes) {
-    for (const importedEnvType of abi.importedEnvTypes) {
-      importEntries.push({
-        type: "Directory",
-        name: importedEnvType.type,
-        data: renderTemplates(
-          templatePath("imported/env-type"),
-          importedEnvType,
-          subTemplates
-        ),
-      });
-    }
-  }
-
   // Generate imported enum type folders
   if (abi.importedEnumTypes) {
     for (const importedEnumType of abi.importedEnumTypes) {
@@ -160,19 +145,6 @@ export const generateBinding: GenerateBindingFn = (
         ),
       });
     }
-  }
-
-  // Generate env type folders
-  if (abi.envType) {
-    output.entries.push({
-      type: "Directory",
-      name: abi.envType.type,
-      data: renderTemplates(
-        templatePath("env-type"),
-        abi.envType,
-        subTemplates
-      ),
-    });
   }
 
   // Generate root entry file

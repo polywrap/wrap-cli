@@ -1,8 +1,5 @@
 {{#moduleType}}
 {{#methods.length}}
-use polywrap_wasm_rs::{
-  wrap_load_env
-};
 
 use crate::{
     {{#methods}}
@@ -15,33 +12,9 @@ use crate::{
 {{/methods.length}}
 {{/moduleType}}
 
-{{#envType}}
-use crate::Env;
-{{/envType}}
-
 {{#moduleType}}
 {{#methods}}
-pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
-    {{#env}}
-    {{#required}}
-    if env_size == 0 {
-        panic!("Environment is not set, and it is required by method 'objectMethod'");
-    }
-
-    let env_buf = wrap_load_env(env_size);
-    let env = Env::from_buffer(&env_buf).unwrap();
-
-    {{/required}}
-    {{^required}}
-    let mut env: Option<Env> = None;
-
-    if env_size > 0 {
-      let env_buf = wrap_load_env(env_size);
-      env = Some(Env::from_buffer(&env_buf).unwrap());
-    }
-
-    {{/required}}
-    {{/env}}
+pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(args: &[u8]) -> Vec<u8> {
     {{#arguments.length}}
     match deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args) {
         Ok(args) => {
@@ -50,7 +23,7 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(args: &[u8], env_size: u32) -> V
                 {{#arguments}}
                 {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}},
                 {{/arguments}}
-            }{{#env}}, env{{/env}});
+            });
             serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}result).unwrap()
     {{#arguments.length}}
         }

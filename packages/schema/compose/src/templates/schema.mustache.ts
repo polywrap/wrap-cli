@@ -106,7 +106,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
     {{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
-  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}{{#env}} @env(required: {{required}}){{/env}}
+  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
   {{^last}}
 
   {{/last}}
@@ -155,30 +155,6 @@ enum {{type}} @imported(
 }
 
 {{/importedEnumTypes}}
-### Imported Objects END ###
-
-### Imported Envs START ###
-
-{{#importedEnvTypes}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
-type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} @imported(
-  uri: "{{uri}}",
-  namespace: "{{namespace}}",
-  nativeType: "{{nativeType}}"
-){{#properties.length}} {
-  {{#properties}}{{#comment}}
-  """
-  {{comment}}
-  """
-  {{/comment}}
-  {{name}}: {{toGraphQLType}}
-  {{/properties}}
-}{{/properties.length}}
-
-{{/importedEnvTypes}}
-### Imported Envs END ###{{/abi}}`;
+### Imported Objects END ###{{/abi}}`;
 
 export { template };

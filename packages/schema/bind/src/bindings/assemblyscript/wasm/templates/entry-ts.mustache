@@ -15,7 +15,7 @@ import {
 {{/methods.length}}
 {{/moduleType}}
 
-export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): bool {
+export function _wrap_invoke(method_size: u32, args_size: u32): bool {
   const args: InvokeArgs = wrap_invoke_args(
     method_size,
     args_size
@@ -24,12 +24,12 @@ export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): b
   {{#moduleType}}
   {{#methods}}
   {{^first}}else {{/first}}if (args.method == "{{name}}") {
-    return wrap_invoke(args, env_size, {{name}}Wrapped);
+    return wrap_invoke(args, {{name}}Wrapped);
   }
   {{/methods}}
   {{/moduleType}}
   else {
-    return wrap_invoke(args, env_size, null);
+    return wrap_invoke(args, null);
   }
 }
 

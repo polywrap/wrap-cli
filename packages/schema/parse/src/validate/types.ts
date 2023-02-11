@@ -1,4 +1,4 @@
-import { isScalarType, isModuleType, scalarTypeNames } from "..";
+import { isScalarType, isModuleType } from "..";
 import { SchemaValidator } from "./";
 
 import {
@@ -15,6 +15,7 @@ import {
   UnionTypeDefinitionNode,
 } from "graphql";
 import { getSchemaCycles } from "@dorgjelli/graphql-schema-cycles";
+import { scalarTypeSet } from "../definitions";
 
 const operationTypeNames = ["Mutation", "Subscription", "Query"];
 
@@ -63,7 +64,7 @@ export const getTypeDefinitionsValidator = (): SchemaValidator => {
         ScalarTypeDefinition: (node: ScalarTypeDefinitionNode) => {
           if (node.name.value !== "Map" && !isScalarType(node.name.value)) {
             throw Error(
-              `Custom scalar types are not supported. Found: "${node.name.value}". Supported scalars: ${scalarTypeNames}`
+              `Custom scalar types are not supported. Found: "${node.name.value}". Supported scalars: ${Object.keys(scalarTypeSet).join(", ")}`
             );
           }
         },

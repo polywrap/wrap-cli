@@ -18,7 +18,7 @@ export interface Args_{{name}} {
 {{/methods}}
 {{/moduleType}}
 
-export abstract class Module<TConfig> extends PluginModule<TConfig{{#envType}}, Types.Env{{/envType}}> {
+export abstract class Module<TConfig> extends PluginModule<TConfig> {
   {{#moduleType}}
   {{#methods}}
   abstract {{name}}(

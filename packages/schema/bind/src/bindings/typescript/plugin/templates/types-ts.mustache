@@ -27,16 +27,6 @@ export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
-/// Env START ///
-{{#envType}}
-export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} extends Record<string, unknown> {
-  {{#properties}}
-  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
-  {{/properties}}
-}
-{{/envType}}
-/// Env END ///
-
 /// Objects START ///
 {{#objectTypes}}
 export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} {

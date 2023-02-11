@@ -1,10 +1,8 @@
 import { AbiTransforms } from ".";
 
-import { Abi, GenericDefinition } from "@polywrap/wrap-manifest-types-js";
-
 export const addFirstLast: AbiTransforms = {
   enter: {
-    GenericDefinition: (def: GenericDefinition): GenericDefinition => {
+    DefinitionOrType: (def) => {
       const arrays: Record<string, unknown[]> = {};
 
       for (const key of Object.keys(def)) {
@@ -20,12 +18,13 @@ export const addFirstLast: AbiTransforms = {
         ...arrays,
       };
     },
-    Abi: (abi: Abi): Abi => ({
+    Abi: (abi) => ({
       ...abi,
-      objectTypes: setFirstLast(abi.objectTypes),
-      importedObjectTypes: setFirstLast(abi.importedObjectTypes),
-      importedModuleTypes: setFirstLast(abi.importedModuleTypes),
-      importedEnvTypes: setFirstLast(abi.importedEnvTypes),
+      objectTypes: setFirstLast(abi.objects),
+      // TODO: why only local objects?
+      // importedObjectTypes: setFirstLast(abi.importedObjectTypes),
+      // importedModuleTypes: setFirstLast(abi.importedModuleTypes),
+      // importedEnvTypes: setFirstLast(abi.importedEnvTypes),
     }),
   },
 };
