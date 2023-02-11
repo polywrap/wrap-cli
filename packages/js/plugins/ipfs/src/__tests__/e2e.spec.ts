@@ -1,4 +1,4 @@
-import { Result } from "@polywrap/core-js";
+import { Result, WrapError } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import {
   initTestEnvironment,
@@ -134,10 +134,10 @@ describe("IPFS Plugin", () => {
     let result = await Promise.race([catPromise, racePromise]);
 
     expect(result).toBeTruthy();
-    result = result as { ok: false; error: Error | undefined };
+    result = result as { ok: false; error: WrapError | undefined };
     expect(result.error).toBeTruthy();
-    expect(result.error?.stack).toMatch("Timeout has been reached");
-    expect(result.error?.stack).toMatch("Timeout: 1000");
+    expect(result.error?.message).toMatch("Timeout has been reached");
+    expect(result.error?.message).toMatch("Timeout: 1000");
 
     const catPromiseWithTimeoutOverride = Ipfs_Module.cat(
       {
@@ -157,8 +157,8 @@ describe("IPFS Plugin", () => {
     expect(resultForOverride).toBeTruthy();
     resultForOverride = resultForOverride as { ok: false; error: Error | undefined };
     expect(resultForOverride.error).toBeTruthy();
-    expect(resultForOverride.error?.stack).toMatch("Timeout has been reached");
-    expect(resultForOverride.error?.stack).toMatch("Timeout: 500");
+    expect(resultForOverride.error?.message).toMatch("Timeout has been reached");
+    expect(resultForOverride.error?.message).toMatch("Timeout: 500");
   });
 
   it("Should use provider from method options", async () => {

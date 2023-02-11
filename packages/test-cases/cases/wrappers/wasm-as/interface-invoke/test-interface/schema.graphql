@@ -6,6 +6,7 @@ type Module {
 
 type Argument {
   str: String!
+  map: Map @annotate(type: "Map<String!, [InterfaceType!]!>")
 }
 
 type InterfaceType {

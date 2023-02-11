@@ -8,6 +8,7 @@ import {
   InterfaceImplementations,
   Env,
   PluginPackage,
+  WrapError,
 } from "./";
 import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
@@ -62,15 +63,15 @@ export interface Client
   getManifest<TUri extends Uri | string>(
     uri: TUri,
     options: GetManifestOptions
-  ): Promise<Result<WrapManifest, Error>>;
+  ): Promise<Result<WrapManifest, WrapError>>;
 
   getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<Result<string | Uint8Array, Error>>;
+  ): Promise<Result<string | Uint8Array, WrapError>>;
 
   getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions
-  ): Result<TUri[], Error>;
+  ): Result<TUri[], WrapError>;
 }

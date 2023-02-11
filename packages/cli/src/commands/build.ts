@@ -12,6 +12,7 @@ import {
   parseDirOption,
   parseClientConfigOption,
   parseManifestFileOption,
+  Logger,
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen";
 import {
@@ -20,6 +21,7 @@ import {
   SupportedStrategies,
   DockerImageBuildStrategy,
   LocalBuildStrategy,
+  EmptyBuildStrategy,
 } from "../lib/build-strategies";
 
 import path from "path";
@@ -108,11 +110,20 @@ async function validateManifestModules(polywrapManifest: PolywrapManifest) {
   }
 }
 
-function createBuildStrategy(
+async function createBuildStrategy(
   strategy: BuildCommandOptions["strategy"],
   outputDir: string,
-  project: PolywrapProject
-): BuildStrategy {
+  project: PolywrapProject,
+  logger: Logger
+): Promise<BuildStrategy> {
+  const isInterfaceProject =
+    (await project.getManifest()).project.type === "interface";
+
+  if (isInterfaceProject) {
+    logger.info(intlMsg.commands_build_info_interface_no_strategy());
+    return new EmptyBuildStrategy({ outputDir, project });
+  }
+
   switch (strategy) {
     case SupportedStrategies.LOCAL:
       return new LocalBuildStrategy({ outputDir, project });
@@ -151,7 +162,12 @@ async function run(options: BuildCommandOptions) {
   const polywrapManifest = await project.getManifest();
   await validateManifestModules(polywrapManifest);
 
-  const buildStrategy = createBuildStrategy(strategy, outputDir, project);
+  const buildStrategy = await createBuildStrategy(
+    strategy,
+    outputDir,
+    project,
+    logger
+  );
 
   const schemaComposer = new SchemaComposer({
     project,
@@ -186,6 +202,8 @@ async function run(options: BuildCommandOptions) {
     if (!result) {
       process.exit(1);
     }
+
+    process.exit(0);
   } else {
     // Execute
     await execute();
@@ -237,6 +255,4 @@ async function run(options: BuildCommandOptions) {
       },
     });
   }
-
-  process.exit(0);
 }

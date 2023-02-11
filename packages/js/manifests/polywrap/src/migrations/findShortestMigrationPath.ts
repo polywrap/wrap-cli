@@ -1,4 +1,4 @@
-import { Migrator } from "./migration";
+import { Migrator } from "./Migrator";
 
 type MigrationWithSearchHistory = [Migrator, Migrator[]];
 

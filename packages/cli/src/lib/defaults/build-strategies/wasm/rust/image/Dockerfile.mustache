@@ -1,4 +1,4 @@
-FROM rust:1.60.0 as base
+FROM rust:1.66-alpine as base
 
 # Install the wasm32 rust build target
 RUN rustup target add wasm32-unknown-unknown
@@ -6,8 +6,10 @@ RUN rustup target add wasm32-unknown-unknown
 WORKDIR /build-deps
 
 # Install curl
-RUN apt-get update
-RUN apt-get -y install curl clang llvm build-essential
+RUN apk add curl pkgconfig openssl-dev bash
+
+# Install clang
+RUN apk add clang llvm build-base
 
 # Install wasm-opt
 RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_101/binaryen-version_101-x86_64-linux.tar.gz | tar -xz \
@@ -16,16 +18,19 @@ RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_10
     && rm -rf binary-version_101
 
 # Install the toml-cli
-RUN cargo install -f toml-cli
+RUN cargo install toml-cli
 
 # Install wasm-snip
-RUN cargo install -f wasm-snip
+RUN cargo install wasm-snip
 
 # Install wasm-bindgen
-RUN cargo install -f wasm-bindgen-cli
+RUN cargo install wasm-bindgen-cli
+
+# Install wasm-tools
+RUN cargo install wasm-tools
 
 # Install cargo-build-deps
-RUN cargo install -f cargo-build-deps
+RUN cargo install cargo-build-deps
 
 {{#polywrap_linked_packages.length}}
 WORKDIR /linked-packages
@@ -107,8 +112,13 @@ ENV WASM_INTERFACE_TYPES=1
 # Run wasm-bindgen over the module, replacing all placeholder __wbindgen_... imports
 RUN wasm-bindgen ./{{dir}}/target/wasm32-unknown-unknown/release/module.wasm --out-dir ./build --out-name bg_module.wasm
 
-RUN wasm-snip ./build/bg_module.wasm -o ./build/snipped_module.wasm && \
+# Run wasm-tools strip to remove the wasm-interface-types custom section
+RUN wasm-tools strip ./build/bg_module.wasm -d wasm-interface-types -o ./build/strip_module.wasm && \
     rm -rf ./build/bg_module.wasm
+
+# Run wasm-snip to trip down the size of the binary, removing any dead code
+RUN wasm-snip ./build/strip_module.wasm -o ./build/snipped_module.wasm && \
+    rm -rf ./build/strip_module.wasm
 
 # Use wasm-opt to perform the "asyncify" post-processing step over all modules
 RUN wasm-opt --asyncify -Os ./build/snipped_module.wasm -o ./build/wrap.wasm && \

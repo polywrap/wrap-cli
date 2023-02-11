@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Read .nvmrc
         run: echo ::set-output name=NVMRC::$(cat .nvmrc)
@@ -49,7 +49,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Read .nvmrc
         run: echo ::set-output name=NVMRC::$(cat .nvmrc)
@@ -85,7 +85,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Read .nvmrc
         run: echo ::set-output name=NVMRC::$(cat .nvmrc)
@@ -121,7 +121,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Read .nvmrc
         run: echo ::set-output name=NVMRC::$(cat .nvmrc)
@@ -157,7 +157,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Read .nvmrc
         run: echo ::set-output name=NVMRC::$(cat .nvmrc)
@@ -209,7 +209,7 @@ jobs:
 #    timeout-minutes: 20
 #    steps:
 #      - name: Checkout repository
-#        uses: actions/checkout@v2
+#        uses: actions/checkout@v3
 #
 #      - name: Read .nvmrc
 #        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
@@ -248,7 +248,7 @@ jobs:
 #    timeout-minutes: 20
 #    steps:
 #      - name: Checkout repository
-#        uses: actions/checkout@v2
+#        uses: actions/checkout@v3
 #
 #      - name: Read .nvmrc
 #        run: iex "echo '::set-output name=NVMRC::$(type .nvmrc)'"

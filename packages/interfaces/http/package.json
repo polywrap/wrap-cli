@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/http-interface",
   "description": "Polywrap Http Interface",
-  "version": "0.9.3",
+  "version": "0.9.5",
   "scripts": {
     "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",
     "lint": "eslint --color -c ../../../.eslintrc.js .",
@@ -10,7 +10,7 @@
     "deploy": "node ../../../dependencies/node_modules/polywrap/bin/polywrap deploy"
   },
   "devDependencies": {
-    "polywrap": "0.9.3"
+    "polywrap": "0.9.5"
   },
   "publishConfig": {
     "access": "public"

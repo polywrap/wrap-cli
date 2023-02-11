@@ -1,3 +1,18 @@
+# Polywrap Origin (0.9.5)
+## Bugs
+* [PR-1541](https://github.com/polywrap/toolchain/pull/1541) `polywrap` CLI: Update build images to use the latest multi-platform versions.
+* [PR-1517](https://github.com/polywrap/toolchain/pull/1517) `polywrap` CLI: Fix the `build` command's `--watch` option.
+* [PR-1512](https://github.com/polywrap/toolchain/pull/1512) `@polywrap/client-js`, `@polywrap/core-js`: Created a custom `WrapError` structure that improves debugging ability for common client error scenarios.
+* [PR-1509](https://github.com/polywrap/toolchain/pull/1509) `@polywrap/core-js`: Correct typings for the URI resolver interface, and handle null return values.
+
+# Polywrap Origin (0.9.4)
+## Bugs
+* [PR-1372](https://github.com/polywrap/toolchain/pull/1372) `@polywrap/schema-parse`, `@polywrap/schema-compose`: Fixed a bug when importing type with map properties that use imported types.
+* [PR-1380](https://github.com/polywrap/toolchain/pull/1380) `polywrap` CLI: Add informative logging when manifests are automatically migrated.
+* [PR-1356](https://github.com/polywrap/toolchain/pull/1356) `polywrap` CLI: Building interface projects should not require docker.
+* [PR-1374](https://github.com/polywrap/toolchain/pull/1374) `@polywrap/ethereum-plugin-js`: Update README.
+* [PR-1381](https://github.com/polywrap/toolchain/pull/1381) `@polywrap/templates`: Add https://ipfs.wrappers.io gateway to IPFS deployment step for interface project.
+
 # Polywrap Origin (0.9.3)
 ## Bugs
 * [PR-1344](https://github.com/polywrap/toolchain/pull/1344) `@polywrap/cli`: Improve workflow validation.

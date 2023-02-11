@@ -46,8 +46,11 @@ export function deserializeBuildManifest(
   );
 
   if (versionCompare === -1) {
+    // Warn user to migrate their manifest
+    options?.logger?.warn(`BuildManifest is using an older version of the manifest format (${anyBuildManifest.format}). Please update your manifest to the latest version (${latestBuildManifestFormat}) by using the "polywrap manifest migrate <type>" command.`);
+
     // Upgrade
-    return migrateBuildManifest(anyBuildManifest, latestBuildManifestFormat);
+    return migrateBuildManifest(anyBuildManifest, latestBuildManifestFormat, options?.logger);
   } else if (versionCompare === 1) {
     // Downgrade
     throw Error(

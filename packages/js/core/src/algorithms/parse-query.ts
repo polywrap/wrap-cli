@@ -10,19 +10,18 @@ export const parseQuery = Tracer.traceFunc(
     uri: Uri,
     doc: QueryDocument,
     variables?: Record<string, unknown>
-  ): Result<QueryInvocations<Uri>, Error> => {
+  ): Result<QueryInvocations<Uri>, string> => {
     if (doc.definitions.length === 0) {
-      return ResultErr(Error("Empty query document found."));
+      return ResultErr("Empty query document found.");
     }
 
     const queryInvocations: QueryInvocations<Uri> = {};
 
     for (const def of doc.definitions) {
       if (def.kind !== "OperationDefinition") {
-        const error = Error(
+        const error =
           `Unrecognized root level definition type: ${def.kind}\n` +
-            "Please use a 'query' or 'mutation' operations."
-        );
+          "Please use a 'query' or 'mutation' operations.";
         return ResultErr(error);
       }
 
@@ -31,18 +30,16 @@ export const parseQuery = Tracer.traceFunc(
       const selections = selectionSet.selections;
 
       if (selections.length === 0) {
-        const error = Error(
-          "Empty selection set found. Please include the name of a method you'd like to query."
-        );
+        const error =
+          "Empty selection set found. Please include the name of a method you'd like to query.";
         return ResultErr(error);
       }
 
       for (const selection of selections) {
         if (selection.kind !== "Field") {
-          const error = Error(
+          const error =
             `Unsupported selection type found: ${selection.kind}\n` +
-              "Please query a method."
-          );
+            "Please query a method.";
           return ResultErr(error);
         }
 
@@ -50,9 +47,7 @@ export const parseQuery = Tracer.traceFunc(
         const invocationName = selection.alias ? selection.alias.value : method;
 
         if (queryInvocations[invocationName]) {
-          const error = Error(
-            `Duplicate query name found "${invocationName}". Please use GraphQL aliases that each have unique names.`
-          );
+          const error = `Duplicate query name found "${invocationName}". Please use GraphQL aliases that each have unique names.`;
           return ResultErr(error);
         }
 
@@ -65,7 +60,7 @@ export const parseQuery = Tracer.traceFunc(
             const name = arg.name.value;
 
             if (args[name]) {
-              return ResultErr(Error(`Duplicate arguments found: ${name}`));
+              return ResultErr(`Duplicate arguments found: ${name}`);
             }
 
             const extractionResult = extractValue(arg.value, variables);
@@ -93,18 +88,16 @@ const extractValue = Tracer.traceFunc(
   (
     node: ValueNode,
     variables?: Record<string, unknown>
-  ): Result<unknown, Error> => {
+  ): Result<unknown, string> => {
     if (node.kind === "Variable") {
       // Get the argument's value from the variables object
       if (!variables) {
-        const error = Error(
-          `Variables were not specified, tried to resolve variable from query. Name: ${node.name.value}\n`
-        );
+        const error = `Variables were not specified, tried to resolve variable from query. Name: ${node.name.value}\n`;
         return ResultErr(error);
       }
 
       if (variables[node.name.value] === undefined) {
-        return ResultErr(Error(`Missing variable: ${node.name.value}`));
+        return ResultErr(`Missing variable: ${node.name.value}`);
       }
 
       return ResultOk(variables[node.name.value]);
@@ -148,28 +141,26 @@ const extractValue = Tracer.traceFunc(
 
       return ResultOk(object);
     } else {
-      return ResultErr(Error(`Unsupported value node: ${node}`));
+      return ResultErr(`Unsupported value node: ${node}`);
     }
   }
 );
 
 export const extractSelections = Tracer.traceFunc(
   "core: extractSelections",
-  (node: SelectionSetNode): Result<Record<string, unknown>, Error> => {
+  (node: SelectionSetNode): Result<Record<string, unknown>, string> => {
     const result: Record<string, unknown> = {};
 
     for (const selection of node.selections) {
       if (selection.kind !== "Field") {
-        const error = Error(
-          `Unsupported result selection type found: ${selection.kind}`
-        );
+        const error = `Unsupported result selection type found: ${selection.kind}`;
         return ResultErr(error);
       }
 
       const name = selection.name.value;
 
       if (result[name]) {
-        return ResultErr(Error(`Duplicate result selections found: ${name}`));
+        return ResultErr(`Duplicate result selections found: ${name}`);
       }
 
       if (selection.selectionSet) {

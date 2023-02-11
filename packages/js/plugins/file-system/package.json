@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/fs-plugin-js",
   "description": "Polywrap File System Javascript Plugin",
-  "version": "0.9.3",
+  "version": "0.9.5",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,15 +20,15 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.9.3"
+    "@polywrap/core-js": "0.9.5"
   },
   "devDependencies": {
-    "@polywrap/client-js": "0.9.3",
-    "@polywrap/ens-resolver-plugin-js": "0.9.3",
-    "@polywrap/ethereum-plugin-js": "0.9.3",
-    "@polywrap/ipfs-plugin-js": "0.9.3",
-    "@polywrap/test-cases": "0.9.3",
-    "@polywrap/test-env-js": "0.9.3",
+    "@polywrap/client-js": "0.9.5",
+    "@polywrap/ens-resolver-plugin-js": "0.9.5",
+    "@polywrap/ethereum-plugin-js": "0.9.5",
+    "@polywrap/ipfs-plugin-js": "0.9.5",
+    "@polywrap/test-cases": "0.9.5",
+    "@polywrap/test-env-js": "0.9.5",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "jest": "26.6.3",

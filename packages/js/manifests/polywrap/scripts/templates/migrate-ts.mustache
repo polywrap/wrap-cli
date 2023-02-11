@@ -11,10 +11,12 @@ import {
 } from ".";
 import { findShortestMigrationPath } from "../../migrations";
 import { migrators } from "./migrators";
+import { ILogger } from "@polywrap/logging-js";
 
 export function migrate{{#latest}}{{type}}{{/latest}}(
   manifest: Any{{#latest}}{{type}}{{/latest}},
-  to: {{#latest}}{{type}}{{/latest}}Formats
+  to: {{#latest}}{{type}}{{/latest}}Formats,
+  logger?: ILogger
 ): {{#latest}}{{type}}{{/latest}} {
   let from = manifest.format as {{#latest}}{{type}}{{/latest}}Formats;
 
@@ -36,7 +38,7 @@ export function migrate{{#latest}}{{type}}{{/latest}}(
   let newManifest = manifest;
 
   for(const migrator of migrationPath){
-    newManifest = migrator.migrate(newManifest) as Any{{#latest}}{{type}}{{/latest}};
+    newManifest = migrator.migrate(newManifest, logger) as Any{{#latest}}{{type}}{{/latest}};
   }
 
   return newManifest as {{#latest}}{{type}}{{/latest}};

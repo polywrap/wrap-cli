@@ -1,2 +1,2 @@
 export * from "./findShortestMigrationPath";
-export * from "./migration";
+export * from "./Migrator";
