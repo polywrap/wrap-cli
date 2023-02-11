@@ -1,4 +1,4 @@
-# @polywrap/core-client-js
+# @polywrap/uri-resolver-extensions-js
 <a href="https://www.npmjs.com/package/@polywrap/uri-resolver-extensions-js" target="_blank" rel="noopener noreferrer">
 <img src="https://img.shields.io/npm/v/@polywrap/uri-resolver-extensions-js.svg" alt="npm"/>
 </a>
@@ -20,14 +20,14 @@ If you build a configuration for the Polywrap client using the `ClientConfigBuil
 Otherwise, you must also add the `ExtendableUriResolver` to your resolver.
 
 ```ts
-  const clientConfig = {
+  const clientConfig: CoreClientConfig = {
     interfaces: [
       {
-        interface: "wrap://ens/uri-resolver.core.polywrap.eth",
+        interface: Uri.from("wrap://ens/uri-resolver.core.polywrap.eth"),
         implementations: [
-          "wrap://ens/fs-resolver.polywrap.eth",
-          "wrap://ens/ipfs-resolver.polywrap.eth",
-          "wrap://ens/ens-resolver.polywrap.eth"
+          Uri.from("wrap://ens/fs-resolver.polywrap.eth"),
+          Uri.from("wrap://ens/ipfs-resolver.polywrap.eth"),
+          Uri.from("wrap://ens/ens-resolver.polywrap.eth")
         ]
       }
     ],

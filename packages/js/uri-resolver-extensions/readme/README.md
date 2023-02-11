@@ -1,4 +1,4 @@
-# @polywrap/core-client-js
+# @polywrap/uri-resolver-extensions-js
 <a href="https://www.npmjs.com/package/@polywrap/uri-resolver-extensions-js" target="_blank" rel="noopener noreferrer">
 <img src="https://img.shields.io/npm/v/@polywrap/uri-resolver-extensions-js.svg" alt="npm"/>
 </a>
