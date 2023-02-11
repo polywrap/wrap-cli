@@ -1,6 +1,6 @@
-import { Args_getData, Args_setData, MemoryStorage_Module, IModule } from "./wrap";
+import { Args_getData, Args_setData, MemoryStorage_Module, ModuleBase } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   getData(args: Args_getData): i32 {
     const result = MemoryStorage_Module.getData({});
     return result.unwrap();

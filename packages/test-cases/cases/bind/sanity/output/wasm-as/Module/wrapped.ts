@@ -9,10 +9,10 @@ import {
   deserializeifArgs,
   serializeifResult
 } from "./serialization";
-import { IModule } from "./module";
+import { ModuleBase } from "./module";
 import * as Types from "..";
 
-export function moduleMethodWrapped(module: IModule, argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
+export function moduleMethodWrapped(module: ModuleBase, argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
   const args = deserializemoduleMethodArgs(argsBuf);
 
   const result = module.moduleMethod(
@@ -33,13 +33,13 @@ export function moduleMethodWrapped(module: IModule, argsBuf: ArrayBuffer, env_s
   return serializemoduleMethodResult(result);
 }
 
-export function objectMethodWrapped(module: IModule, argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
+export function objectMethodWrapped(module: ModuleBase, argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
   if (env_size == 0) {
     throw new Error("Environment is not set, and it is required by method 'objectMethod'")
   }
   
   const envBuf = wrap_load_env(env_size);
-  module.__setEnv__(Types.Env.fromBuffer(envBuf));
+  const env = Types.Env.fromBuffer(envBuf);
   const args = deserializeobjectMethodArgs(argsBuf);
 
   const result = module.objectMethod(
@@ -48,15 +48,17 @@ export function objectMethodWrapped(module: IModule, argsBuf: ArrayBuffer, env_s
       optObject: args.optObject,
       objectArray: args.objectArray,
       optObjectArray: args.optObjectArray
-    }
+    },
+    env
   );
   return serializeobjectMethodResult(result);
 }
 
-export function optionalEnvMethodWrapped(module: IModule, argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
+export function optionalEnvMethodWrapped(module: ModuleBase, argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
+  let env: Types.Env | null = null;
   if (env_size > 0) {
     const envBuf = wrap_load_env(env_size);
-    module.__setEnv__(Types.Env.fromBuffer(envBuf));
+    env = Types.Env.fromBuffer(envBuf);
   }
   const args = deserializeoptionalEnvMethodArgs(argsBuf);
 
@@ -66,12 +68,13 @@ export function optionalEnvMethodWrapped(module: IModule, argsBuf: ArrayBuffer, 
       optObject: args.optObject,
       objectArray: args.objectArray,
       optObjectArray: args.optObjectArray
-    }
+    },
+    env
   );
   return serializeoptionalEnvMethodResult(result);
 }
 
-export function ifWrapped(module: IModule, argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
+export function ifWrapped(module: ModuleBase, argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
   const args = deserializeifArgs(argsBuf);
 
   const result = module._if(

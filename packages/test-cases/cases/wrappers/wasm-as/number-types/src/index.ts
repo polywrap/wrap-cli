@@ -5,10 +5,10 @@ import {
   Args_u16Method,
   Args_i32Method,
   Args_u32Method,
-  IModule
+  ModuleBase
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   i8Method(args: Args_i8Method): i8 {
     const firstInt = args.first;
     const secondInt = args.second;

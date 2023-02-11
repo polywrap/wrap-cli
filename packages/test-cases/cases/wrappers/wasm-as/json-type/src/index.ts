@@ -3,11 +3,11 @@ import {
   Args_stringify,
   Args_stringifyObject,
   Args_methodJSON,
-  IModule
+  ModuleBase
 } from "./wrap";
 import { JSON } from "@polywrap/wasm-as";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   parse(args: Args_parse): JSON.Value {
     return JSON.parse(args.value);
   }

@@ -1,6 +1,6 @@
-import { Args_moduleMethod, Args_abstractModuleMethod, ImplementationType, IModule } from "./wrap";
+import { Args_moduleMethod, Args_abstractModuleMethod, ImplementationType, ModuleBase } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   moduleMethod(args: Args_moduleMethod): ImplementationType {
     return args.arg;
   }

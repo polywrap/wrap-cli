@@ -5,10 +5,10 @@ import {
   Args_method5,
   Output,
   Arg2,
-  IModule
+  ModuleBase
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   method1(args: Args_method1): Output[] {
     return [
       {

@@ -4,10 +4,10 @@ import {
   Args_arrayMethod,
   Args_intMethod,
   Args_uIntMethod,
-  IModule
+  ModuleBase
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   boolMethod(args: Args_boolMethod): bool {
     return args.arg;
   }

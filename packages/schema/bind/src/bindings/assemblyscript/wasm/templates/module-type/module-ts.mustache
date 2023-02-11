@@ -1,40 +1,17 @@
 import * as Types from "..";
 
-{{> serialization_imports}}
-
 import {
-{{#methods}}
-  deserialize{{name}}Args,
-  serialize{{name}}Result{{^last}},{{/last}}
-{{/methods}}
-} from "./serialization";
-
-import {
-  wrap_invoke_args,
-  wrap_invoke_result,
-  wrap_invoke_error,
-  wrap_load_env,
-  InvokeArgs,
+  BigInt,
+  BigNumber,
+  Box,
+  JSON,
 } from "@polywrap/wasm-as";
 
-export abstract class IModule {
-  {{#hasEnv}}private __env__: Types.Env | null = null;
-
-  public get env(): Types.Env {
-    if (this.__env__ === null) {
-      throw new Error("Environment is not set, and it is required by this module");
-    }
-    return this.__env__ as Types.Env;
-  }
-
-  public __setEnv__(env: Types.Env): void {
-    this.__env__ = env;
-  }
-  {{/hasEnv}}
-
+export abstract class ModuleBase {
   {{#methods}}
   abstract {{#detectKeyword}}{{name}}{{/detectKeyword}}(
-    args: Types.Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}
+    args: Types.Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}{{#env}},
+    env: {{#required}}Types.Env{{/required}}{{^required}}Types.Env | null{{/required}}{{/env}}
   ): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}};
   {{^last}}
 

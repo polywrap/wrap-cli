@@ -5,10 +5,10 @@ import {
   _while,
   _Box,
   getwhileKey,
-  IModule
+  ModuleBase
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   _if(args: Args__if): _else {
     return {
       _else: args._if._else

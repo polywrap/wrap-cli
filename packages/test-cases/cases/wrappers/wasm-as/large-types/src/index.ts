@@ -1,10 +1,10 @@
 import {
   Args_method,
   LargeCollection,
-  IModule
+  ModuleBase
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   method(args: Args_method): LargeCollection {
     return args.largeCollection;
   }

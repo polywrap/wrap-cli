@@ -7,12 +7,12 @@ import {
   Args_setDataWithManyArgs,
   Args_setDataWithManyStructuredArgs,
   Storage_Module,
-  IModule,
+  ModuleBase,
 } from "./wrap";
 
 let globalValue = false;
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   getData(args: Args_getData): u32 {
     const res = Storage_Module.getData({}).unwrap();
   

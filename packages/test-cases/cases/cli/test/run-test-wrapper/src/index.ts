@@ -5,10 +5,10 @@ import {
   Args_returnMap,
   Num,
   Env,
-  IModule,
+  ModuleBase,
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   add(args: Args_add): i32 {
     return args.x + args.y;
   }
@@ -17,8 +17,8 @@ export class Module extends IModule {
     return { value: args.x + args.y };
   }
 
-  addFromEnv(args: Args_addFromEnv): i32 {
-    return args.x + this.env.value;
+  addFromEnv(args: Args_addFromEnv, env: Env): i32 {
+    return args.x + env.value;
   }
 
   returnMap(args: Args_returnMap): Map<string, Map<string, i32>> {

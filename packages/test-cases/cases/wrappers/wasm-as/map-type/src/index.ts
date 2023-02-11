@@ -4,10 +4,10 @@ import {
   Args_returnCustomMap,
   Args_returnNestedMap,
   CustomMap,
-  IModule
+  ModuleBase
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   getKey(args: Args_getKey): i32 {
     return args.foo.map.get(args.key);
   }

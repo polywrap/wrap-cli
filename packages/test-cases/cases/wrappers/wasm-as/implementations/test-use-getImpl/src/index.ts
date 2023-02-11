@@ -4,10 +4,10 @@ import {
   Args_abstractModuleMethod,
   ImplementationType,
   Interface,
-  IModule,
+  ModuleBase,
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   moduleImplementations(_: Args_moduleImplementations): string[] {
     return Interface.getImplementations();
   }

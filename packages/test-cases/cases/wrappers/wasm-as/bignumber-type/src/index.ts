@@ -1,10 +1,10 @@
 import {
   Args_method,
-  IModule,
+  ModuleBase,
 } from "./wrap";
 import { BigNumber } from "@polywrap/wasm-as";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   method(args: Args_method): BigNumber {
     let result = args.arg1.mul(args.obj.prop1);
   

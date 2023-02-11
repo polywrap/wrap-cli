@@ -2,10 +2,10 @@ import {
   SanityEnum,
   Args_method1,
   Args_method2,
-  IModule
+  ModuleBase
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   method1(args: Args_method1): SanityEnum {
     return args.en;
   }

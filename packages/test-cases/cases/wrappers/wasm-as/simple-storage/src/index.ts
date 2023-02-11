@@ -5,10 +5,10 @@ import {
   Args_throwGetData,
   Args_setData,
   Args_deployContract,
-  IModule
+  ModuleBase
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   getData(args: Args_getData): u32 {
     const res = Ethereum_Module.callContractView({
       address: args.address,

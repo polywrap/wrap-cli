@@ -1,7 +1,7 @@
-import { Env, Args_getEnv, IModule } from "./wrap";
+import { Env, Args_getEnv, ModuleBase } from "./wrap";
 
-export class Module extends IModule {
-  getEnv(_: Args_getEnv): Env | null {
-    return this.env;
+export class Module extends ModuleBase {
+  getEnv(_: Args_getEnv, env: Env): Env | null {
+    return env;
   }
 }

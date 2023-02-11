@@ -1,9 +1,9 @@
 import {
   Args_foo,
-  IModule
+  ModuleBase
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   foo(args: Args_foo): string {
     return args.bar
   }

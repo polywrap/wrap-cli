@@ -1,6 +1,6 @@
-import { Args_add, IModule } from "./wrap";
+import { Args_add, ModuleBase } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   add(args: Args_add): i32 {
     return args.a + args.b;
   }

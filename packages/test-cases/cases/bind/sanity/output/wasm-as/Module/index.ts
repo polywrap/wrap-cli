@@ -11,4 +11,4 @@ export {
   Args_optionalEnvMethod,
   Args__if
 };
-export { IModule } from "./module";
+export { ModuleBase } from "./module";

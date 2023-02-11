@@ -1,11 +1,11 @@
 import {
   Env,
   Args_externalEnvMethod,
-  IModule
+  ModuleBase
 } from "./wrap";
 
-export class Module extends IModule {
-  externalEnvMethod(args: Args_externalEnvMethod): Env {
-    return this.env;
+export class Module extends ModuleBase {
+  externalEnvMethod(args: Args_externalEnvMethod, env: Env): Env {
+    return env;
   }
 }

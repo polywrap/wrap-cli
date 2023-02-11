@@ -1,9 +1,9 @@
 import {
   Args_bytesMethod,
-  IModule
+  ModuleBase
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   bytesMethod(args: Args_bytesMethod): ArrayBuffer {
     const argStr = String.UTF8.decode(args.arg.prop);
     const sanityStr = argStr + " Sanity!";

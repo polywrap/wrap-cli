@@ -2,10 +2,10 @@ import {
   Args_getFile,
   Args_tryResolveUri,
   UriResolver_MaybeUriOrManifest,
-  IModule,
+  ModuleBase,
 } from "./wrap";
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   tryResolveUri(
     args: Args_tryResolveUri
   ): UriResolver_MaybeUriOrManifest {

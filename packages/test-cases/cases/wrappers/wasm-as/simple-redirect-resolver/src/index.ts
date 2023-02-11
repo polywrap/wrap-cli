@@ -2,7 +2,7 @@ import {
   Args_getFile,
   Args_tryResolveUri,
   UriResolver_MaybeUriOrManifest,
-  IModule
+  ModuleBase
 } from "./wrap";
 
 export function tryResolveUri(
@@ -25,7 +25,7 @@ export function getFile(args: Args_getFile): ArrayBuffer | null {
   return null;
 }
 
-export class Module extends IModule {
+export class Module extends ModuleBase {
   tryResolveUri(
     args: Args_tryResolveUri
   ): UriResolver_MaybeUriOrManifest {
