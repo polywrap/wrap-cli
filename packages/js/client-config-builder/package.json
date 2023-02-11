@@ -12,9 +12,9 @@
     "build"
   ],
   "scripts": {
-    "build": "yarn build:fast && yarn build:snippets && yarn build:readme && yarn copy:wrappers",
+    "build": "yarn embed:wrappers && yarn build:fast && yarn build:snippets && yarn build:readme",
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
-    "copy:wrappers": "copyfiles ./src/bundles/wrappers/**/**/* ./build/bundles/wrappers/ -u 3",
+    "embed:wrappers": "ts-node ./scripts/embed-wrappers.ts",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",

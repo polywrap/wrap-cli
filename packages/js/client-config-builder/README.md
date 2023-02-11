@@ -443,8 +443,8 @@ export const defaultIpfsProviders = [
 ];
 
 export const defaultEmbeddedPackages = {
-  ipfsHttpClient: (): IWrapPackage => getEmbeddedPackage("ipfs-http-client"),
-  ipfsResolver: (): IWrapPackage => getEmbeddedPackage("ipfs-resolver"),
+  ipfsHttpClient: (): IWrapPackage => ipfsHttpClient.wasmPackage,
+  ipfsResolver: (): IWrapPackage => ipfsResolver.wasmPackage,
 };
 
 export const defaultWrappers = {

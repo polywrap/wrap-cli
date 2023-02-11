@@ -1,4 +1,6 @@
 import { BuilderConfig } from "../types";
+import * as ipfsHttpClient from "./wrappers/ipfs-http-client";
+import * as ipfsResolver from "./wrappers/ipfs-resolver";
 
 import { IWrapPackage } from "@polywrap/core-js";
 import {
@@ -14,9 +16,6 @@ import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
-import path from "path";
-import { WasmPackage } from "@polywrap/wasm-js";
-import fs from "fs";
 
 // $start: getDefaultConfig
 export const defaultIpfsProviders = [
@@ -25,8 +24,8 @@ export const defaultIpfsProviders = [
 ];
 
 export const defaultEmbeddedPackages = {
-  ipfsHttpClient: (): IWrapPackage => getEmbeddedPackage("ipfs-http-client"),
-  ipfsResolver: (): IWrapPackage => getEmbeddedPackage("ipfs-resolver"),
+  ipfsHttpClient: (): IWrapPackage => ipfsHttpClient.wasmPackage,
+  ipfsResolver: (): IWrapPackage => ipfsResolver.wasmPackage,
 };
 
 export const defaultWrappers = {
@@ -119,11 +118,3 @@ export const getDefaultConfig = (): BuilderConfig => ({
   resolvers: [],
 });
 // $end
-
-const getEmbeddedPackage = (packageDir: string): IWrapPackage => {
-  const absPath = path.join(__dirname, "wrappers", packageDir);
-  return WasmPackage.from(
-    fs.readFileSync(path.join(absPath, "wrap.info")),
-    fs.readFileSync(path.join(absPath, "wrap.wasm"))
-  );
-};
