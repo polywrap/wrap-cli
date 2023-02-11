@@ -2,32 +2,14 @@ import {
   Args_getFile,
   Args_tryResolveUri,
   UriResolver_MaybeUriOrManifest,
-  ModuleBase
+  ModuleBase,
+  Env
 } from "./wrap";
-
-export function tryResolveUri(
-  args: Args_tryResolveUri
-): UriResolver_MaybeUriOrManifest {
-  if (args.authority != "simple-redirect") {
-    return {
-      uri: "wrap://" + args.authority + "/" + args.path,
-      manifest: null,
-    };
-  }
-
-  return {
-    uri: "wrap://simple/" + args.path,
-    manifest: null,
-  };
-}
-
-export function getFile(args: Args_getFile): ArrayBuffer | null {
-  return null;
-}
 
 export class Module extends ModuleBase {
   tryResolveUri(
-    args: Args_tryResolveUri
+    args: Args_tryResolveUri,
+    _env: Env | null
   ): UriResolver_MaybeUriOrManifest {
     if (args.authority != "simple-redirect") {
       return {
@@ -41,8 +23,9 @@ export class Module extends ModuleBase {
       manifest: null,
     };
   }
-
-  getFile(args: Args_getFile): ArrayBuffer | null {
+  
+  getFile(args: Args_getFile, _env: Env | null): ArrayBuffer | null {
     return null;
   }
 }
+

@@ -14,7 +14,7 @@ describe("Filesystem Resolver plugin", () => {
   let client: PolywrapClient;
 
   beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath, undefined, true);
+    await buildWrapper(simpleWrapperPath);
 
     client = getClient();
   });

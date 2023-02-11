@@ -3,11 +3,13 @@ import {
   Args_tryResolveUri,
   UriResolver_MaybeUriOrManifest,
   ModuleBase,
+  Env
 } from "./wrap";
 
 export class Module extends ModuleBase {
   tryResolveUri(
-    args: Args_tryResolveUri
+    args: Args_tryResolveUri,
+    _env: Env | null
   ): UriResolver_MaybeUriOrManifest {
     if (args.authority != "simple") {
       return {
@@ -21,8 +23,9 @@ export class Module extends ModuleBase {
       manifest: null,
     };
   }
-
-  getFile(args: Args_getFile): ArrayBuffer | null {
+  
+  getFile(args: Args_getFile, _env: Env | null): ArrayBuffer | null {
     return null;
-  }  
+  }
 }
+

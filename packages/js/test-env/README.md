@@ -33,7 +33,7 @@ Build a local wrapper project.
   const wrapperPath: string = path.join(path.resolve(__dirname), "..");
 
   // build current wrapper with CLI, invoking codegen before build
-  await buildWrapper(wrapperPath, undefined, true);
+  await buildWrapper(wrapperPath);
 
   // get URI to the local wrapper build
   const wrapperUri = `wrap://fs/${wrapperPath}/build`;
@@ -121,12 +121,12 @@ export const stopTestEnvironment = async (
  *
  * @param wrapperAbsPath - absolute path of wrapper to build
  * @param manifestPathOverride? - path to polywrap manifest
- * @param codegen? - run codegen before build
+ * @param noCodegen? - don't run codegen before build
  */
 export async function buildWrapper(
   wrapperAbsPath: string,
   manifestPathOverride?: string,
-  codegen?: boolean
+  noCodegen?: boolean
 ): Promise<void> 
 ```
 
@@ -150,7 +150,6 @@ export async function buildAndDeployWrapper({
   ipfsProvider,
   ethereumProvider,
   ensName,
-  codegen,
 }: {
   wrapperAbsPath: string;
   ipfsProvider: string;
@@ -181,7 +180,6 @@ export async function buildAndDeployWrapperToHttp({
   wrapperAbsPath,
   httpProvider,
   name,
-  codegen,
 }: {
   wrapperAbsPath: string;
   httpProvider: string;

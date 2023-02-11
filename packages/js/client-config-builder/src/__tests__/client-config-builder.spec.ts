@@ -167,7 +167,7 @@ describe("Client config builder", () => {
     expect(clientConfig).toBeTruthy();
 
     const expectedBuilderConfig = getDefaultConfig();
-    expect(builderConfig).toEqual(expectedBuilderConfig);
+    expect(JSON.stringify(builderConfig)).toBe(JSON.stringify(expectedBuilderConfig));
   });
 
   it("should successfully add an env", () => {
