@@ -1,53 +1,23 @@
-import { WrapAbi } from "..";
+import { SYNTAX_REFERENCE } from "./constants";
+import { getDuplicates } from "./utils";
 
 import Path from "path";
-import { isModuleType } from "../abi";
-import { DocumentNode, Kind, parse, visit, Visitor } from "graphql";
-import { parseAnnotateDirective } from "./directives";
 
-const TYPE_NAME_REGEX = `[a-zA-Z0-9_]+`;
-const SYNTAX_REFERENCE =
-  "External Import:\n" +
-  `import { Type, Module } into Namespace from "external.uri"\n` +
-  `import * into Namespace from "external.uri"\n` +
-  "Local Import:\n" +
-  `import { Type } from "./local/path/file.graphql"\n` +
-  `import * from "./local/path/file.graphql"`;
-
-interface AbiImport {
-  kind: "external" | "local";
-  uriOrPath: string;
-}
-
-export interface ExternalImport extends AbiImport {
-  kind: "external";
+export interface ExternalImportStatement {
   importedTypes: string[];
   namespace: string;
   uri: string;
 }
 
-export interface LocalImport extends AbiImport {
-  kind: "local";
+export interface LocalImportStatement {
   importedTypes: string[];
   path: string;
 }
 
-const countDuplicates = (array: string[]): Record<string, number> =>
-  array.reduce(
-    (a: Record<string, number>, b: string) => ({ ...a, [b]: (a[b] || 0) + 1 }),
-    {}
-  );
-
-const getDuplicates = (array: string[]): string[] => {
-  const counts = countDuplicates(array);
-  return Object.keys(counts).filter((a) => counts[a] > 1);
-};
-
-
 export function parseExternalImports(
   imports: RegExpMatchArray[]
-): ExternalImport[] {
-  const externalImports: ExternalImport[] = [];
+): ExternalImportStatement[] {
+  const externalImports: ExternalImportStatement[] = [];
 
   for (const importStatement of imports) {
     if (importStatement.length !== 4) {
@@ -86,8 +56,6 @@ export function parseExternalImports(
     const uri = importStatement[3];
 
     externalImports.push({
-      kind: "external",
-      uriOrPath: uri,
       importedTypes,
       namespace,
       uri,
@@ -123,8 +91,8 @@ export function parseExternalImports(
 export function parseLocalImports(
   imports: RegExpMatchArray[],
   schemaPath: string
-): LocalImport[] {
-  const localImports: LocalImport[] = [];
+): LocalImportStatement[] {
+  const localImports: LocalImportStatement[] = [];
 
   for (const importStatement of imports) {
     if (importStatement.length !== 3) {
@@ -152,10 +120,8 @@ export function parseLocalImports(
     }
 
     localImports.push({
-      kind: "local",
       importedTypes: importTypes,
       path,
-      uriOrPath: path
     });
   }
 
@@ -190,11 +156,11 @@ export function parseImportStatements(
     );
   }
 
-  const externalImportsToResolve: ExternalImport[] = parseExternalImports(
+  const externalImportsToResolve: ExternalImportStatement[] = parseExternalImports(
     externalImportStatements
   );
 
-  const localImportsToResolve: LocalImport[] = parseLocalImports(
+  const localImportsToResolve: LocalImportStatement[] = parseLocalImports(
     localImportStatements,
     schemaPath
   );
@@ -224,78 +190,9 @@ export function parseExternalImportStatements(
     );
   }
 
-  const externalImportsToResolve: ExternalImport[] = parseExternalImports(
+  const externalImportsToResolve: ExternalImportStatement[] = parseExternalImports(
     externalImportStatements
   );
 
   return externalImportsToResolve;
-}
-
-const fetchExternalSchema = async (uri: string): Promise<string> => {
-  throw new Error("Not implemented")
-}
-
-const resolveImportStatement = async (importStatement: ExternalImport, importedSchemasRegistry: Map<string, DocumentNode>) => {
-  const schemaString = await fetchExternalSchema(importStatement.uri);
-  const importsOfTheImport = parseExternalImportStatements(schemaString)
-
-  const astNode = parse(schemaString);
-  importedSchemasRegistry.set(importStatement.uri, astNode)
-
-  // TODO: Maps are missing from this logic
-  const state: {
-    currentObject?: string,
-  } = {}
-
-  const nextImportStatementsToSearch: ExternalImport[] = [];
-
-  visit(astNode, {
-    enter: {
-      ObjectTypeDefinition: (node) => {
-        const name = node.name.value;
-
-        if (importStatement && importStatement.importedTypes.includes(name)) {
-          state.currentObject = node.name.value;
-        }
-      },
-      NamedType: (node) => {
-        if (!state.currentObject) {
-          return
-        }
-
-        importsOfTheImport.forEach((extImportStatement) => {
-          if (extImportStatement.importedTypes.includes(node.name.value)) {
-            nextImportStatementsToSearch.push(extImportStatement)
-          }
-        })
-      }
-    },
-    leave: {
-      ObjectTypeDefinition: () => {
-        state.currentObject = undefined;
-      },
-    },
-  })
-
-  nextImportStatementsToSearch.forEach((nextImportStatement) => {
-    resolveImportStatement(nextImportStatement, importedSchemasRegistry)
-  })
-}
-
-const discoverImportAbis = (
-  schema: string,
-  schemaPath: string,
-): Map <string, DocumentNode > => {
-  const importedSchemasRegistry = new Map<string, DocumentNode>();
-
-  const {
-    externalImportStatements,
-    localImportStatements
-  } = parseImportStatements(schema, schemaPath);
-
-  externalImportStatements.forEach((importStatement) => {
-    resolveImportStatement(importStatement, importedSchemasRegistry)
-  })
-
-  return importedSchemasRegistry;
 }

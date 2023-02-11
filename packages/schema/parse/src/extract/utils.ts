@@ -1,5 +1,5 @@
-import { TypeNode } from "graphql";
-import { isScalarType } from "../abi/utils";
+import { DocumentNode, TypeNode, visit } from "graphql";
+import { isModuleType, isScalarType } from "../abi/utils";
 import { UniqueDefKind, RefType, AnyType, MapKeyTypeName, mapKeyTypeSet, MapType, ScalarTypeName, ArrayType, ScalarType } from "../definitions";
 
 export const extractType = (node: TypeNode, uniqueDefs: Map<string, UniqueDefKind>): AnyType => {
@@ -170,4 +170,23 @@ const isMapKey = (typeName: string): boolean => {
 
 const isArray = (typeName: string): boolean => {
   return typeName.startsWith("[")
+}
+
+export const extractUniqueDefinitionNames = (document: DocumentNode): Map<string, UniqueDefKind> => {
+  const uniqueDefs = new Map<string, UniqueDefKind>();
+
+  visit(document, {
+    ObjectTypeDefinition: (node) => {
+      const name = node.name.value;
+
+      if (!isModuleType(name)) {
+        uniqueDefs.set(name, "Object")
+      }
+    },
+    EnumTypeDefinition: (node) => {
+      uniqueDefs.set(node.name.value, "Enum")
+    }
+  });
+
+  return uniqueDefs;
 }

@@ -8,6 +8,8 @@ import { ExternalVisitorBuilder, VisitorBuilder } from "./extract/types";
 import { ObjectVisitorBuilder } from "./extract";
 import { EnumVisitorBuilder } from "./extract";
 import { FunctionsVisitorBuilder } from "./extract";
+import { extractUniqueDefinitionNames } from "./extract/utils";
+import { getImportedAbisRegistry } from "./extract/imports/registry";
 
 export * from "./abi";
 export * from "./transform";
@@ -25,35 +27,36 @@ interface ParserOptions {
   transforms?: AbiTransforms[];
 }
 
-const extractUniqueDefinitionNames = (document: DocumentNode): Map<string, UniqueDefKind> => {
-  const uniqueDefs = new Map<string, UniqueDefKind>();
+const parseSchemaAndImports = async (schema: string, schemaPath: string): Promise<{ abi: Abi, imports: Map<string, Abi> }> => {
+  const importsRegistry = await getImportedAbisRegistry(schema, schemaPath);
+  let allUniqueDefinitions = new Map<string, UniqueDefKind>();
+  
+  for (const importedAbi of importsRegistry.values()) {
+    allUniqueDefinitions = new Map([...allUniqueDefinitions, ...extractUniqueDefinitionNames(importedAbi)]);
+  }
 
-  visit(document, {
-    ObjectTypeDefinition: (node) => {
-      const name = node.name.value;
+  const importedAbis = new Map<string, Abi>();
 
-      if (!isModuleType(name)) {
-        uniqueDefs.set(name, "Object")
-      }
-    },
-    EnumTypeDefinition: (node) => {
-      uniqueDefs.set(node.name.value, "Enum")
-    }
-  });
+  for (const [importPath, importedAbi] of importsRegistry.entries()) {
+    importedAbis.set(importPath, transformSchemaToAbi(importedAbi, allUniqueDefinitions));
+  }
 
-  return uniqueDefs;
+  return {
+    abi: transformSchemaToAbi(parse(schema), allUniqueDefinitions),
+    imports: importedAbis
+  }
 }
 
-export function parseSchema(
-  schema: string,
+function transformSchemaToAbi(
+  astNode: DocumentNode,
+  uniqueDefinitions: Map<string, UniqueDefKind>,
   options: ParserOptions = {}
 ): Abi {
-  const astNode = parse(schema);
-  const uniqueDefs = extractUniqueDefinitionNames(astNode);
+  
   const defaultExtractors: VisitorBuilder[] = [
-    new ObjectVisitorBuilder(uniqueDefs),
+    new ObjectVisitorBuilder(uniqueDefinitions),
     new EnumVisitorBuilder(),
-    new FunctionsVisitorBuilder(uniqueDefs)
+    new FunctionsVisitorBuilder(uniqueDefinitions)
   ]
 
   // Validate GraphQL Schema
@@ -65,7 +68,7 @@ export function parseSchema(
   // Extract & Build Abi
   let info = createAbi();
 
-  const extracts = options.extractors?.map(extractorBuilder => extractorBuilder(info, uniqueDefs)) ?? defaultExtractors.map(e => e.build(info));
+  const extracts = options.extractors?.map(extractorBuilder => extractorBuilder(info, uniqueDefinitions)) ?? defaultExtractors.map(e => e.build(info));
   extract(astNode, extracts);
 
   if (options && options.transforms) {
