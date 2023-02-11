@@ -35,10 +35,10 @@
     "@polywrap/logger-plugin-js": "0.10.0",
     "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.7",
     "@polywrap/uri-resolvers-js": "0.10.0-pre.7",
+    "@polywrap/wasm-js": "0.10.0-pre.7",
     "base64-to-uint8array": "1.0.0",
     "concurrent-plugin-js": "0.1.2",
-    "doc-snippets": "^1.0.0",
-    "@polywrap/wasm-js": "0.10.0-pre.7"
+    "doc-snippets": "^1.0.0"
   },
   "devDependencies": {
     "@polywrap/wasm-js": "0.10.0-pre.7",
