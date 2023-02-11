@@ -8,13 +8,13 @@ import { ExternalVisitorBuilder, VisitorBuilder } from "./extract/types";
 import { ObjectVisitorBuilder } from "./extract";
 import { EnumVisitorBuilder } from "./extract";
 import { FunctionsVisitorBuilder } from "./extract";
-import { extractUniqueDefinitionNames } from "./extract/utils";
-import { getImportedAbisRegistry } from "./extract/imports/registry";
+import { SchemaParser } from "./types";
 
 export * from "./abi";
 export * from "./transform";
 export * from "./validate";
 export * from "./header";
+export * from "./types";
 
 interface ParserOptions {
   // Disable schema validation
@@ -27,22 +27,22 @@ interface ParserOptions {
   transforms?: AbiTransforms[];
 }
 
-export const parseSchemaAndImports = async (schema: string, schemaPath: string): Promise<{ abi: Abi, imports: Map<string, Abi> }> => {
-  const importsRegistry = await getImportedAbisRegistry(schema, schemaPath);
+export const parseSchemaAndImports = async (schema: string, schemaPath: string, parser: SchemaParser): Promise<{ abi: Abi, imports: Map<string, Abi> }> => {
+  const importsRegistry = await parser.getImportedSchemasTable(schema, schemaPath);
   let allUniqueDefinitions = new Map<string, UniqueDefKind>();
   
   for (const importedAbi of importsRegistry.values()) {
-    allUniqueDefinitions = new Map([...allUniqueDefinitions, ...extractUniqueDefinitionNames(importedAbi)]);
+    allUniqueDefinitions = new Map([...allUniqueDefinitions, ...parser.getUniqueDefinitionsTable(importedAbi)]);
   }
 
   const importedAbis = new Map<string, Abi>();
 
   for (const [importPath, importedAbi] of importsRegistry.entries()) {
-    importedAbis.set(importPath, transformSchemaToAbi(importedAbi, allUniqueDefinitions));
+    importedAbis.set(importPath, parser.parse(importedAbi, allUniqueDefinitions));
   }
 
   return {
-    abi: transformSchemaToAbi(parse(schema), allUniqueDefinitions),
+    abi: parser.parse(schema, allUniqueDefinitions),
     imports: importedAbis
   }
 }
