@@ -85,7 +85,7 @@ Currently, `build` can be run for Wasm, Plugin and Interface projects.
 - `--wrapper-envs <envs-path>`
   Configure wrapper environment values using the provided file.
 
-- `--no-codegen`
+- `-n, --no-codegen`
   Skip codegen before building.
   By default, `build` performs a `codegen` step before building your Project. This option skips this step.
 
@@ -176,8 +176,8 @@ polywrap create wasm assemblyscript my-wrapper
 # Create an interface project using assemblyscript called "my-project"
 polywrap create wasm interface my-interface
 
-# Create a React app project using Typescript called "my-react-app"
-polywrap create app typescript-react my-react-app
+# Create a project using Typescript called "my-react-app"
+polywrap create app typescript my-app
 
 # Create a Plugin wrapper project using Typescript called "my-plugin"
 polywrap create plugin typescript my-plugin

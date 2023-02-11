@@ -81,87 +81,79 @@ const executeCommand = (
   });
 };
 
-export const generateProjectTemplate = (
+export const generateProjectTemplate = async (
   type: string,
   lang: string,
   projectDir: string
 ): Promise<boolean | { command: string }> => {
-  return new Promise((resolve, reject) => {
-    let command = "";
-    let args: string[] = [];
+  let command = "";
+  let args: string[] = [];
 
-    const useYarn = shouldUseYarn();
-    const isOnline = checkIfOnline(useYarn);
+  const useYarn = shouldUseYarn();
+  const isOnline = checkIfOnline(useYarn);
 
-    const root = path.resolve(projectDir);
-    const dependencies: string[] = ["@polywrap/templates"];
+  const root = path.resolve(projectDir);
+  const dependencies: string[] = ["@polywrap/templates"];
 
-    fs.writeFileSync(
-      path.join(root, "package.json"),
-      `
+  fs.writeFileSync(
+    path.join(root, "package.json"),
+    `
 {
   "name": "template"
 }
     `
-    );
+  );
 
-    if (useYarn) {
-      command = "yarnpkg";
-      args = ["add", "--exact"];
+  if (useYarn) {
+    command = "yarnpkg";
+    args = ["add", "--exact"];
 
-      if (!isOnline) {
-        args.push("--offline");
-      }
-
-      args.push(...dependencies);
-
-      // Explicitly set cwd() to work around issues like
-      // https://github.com/facebook/create-react-app/issues/3326.
-      // Unfortunately we can only do this for Yarn because npm support for
-      // equivalent --prefix flag doesn't help with this issue.
-      // This is why for npm, we run checkThatNpmCanReadCwd() early instead.
-      args.push("--cwd");
-      args.push(root);
-
-      if (!isOnline) {
-        const offlineMessage = intlMsg.lib_generators_projectGenerator_offline();
-        const fallbackMessage = intlMsg.lib_generators_projectGenerator_fallback();
-        console.log(chalk.yellow(offlineMessage));
-        console.log(chalk.yellow(fallbackMessage));
-        console.log();
-      }
-    } else {
-      command = "npm";
-      args = [
-        "install",
-        "--save",
-        "--save-exact",
-        "--loglevel",
-        "error",
-      ].concat(dependencies);
+    if (!isOnline) {
+      args.push("--offline");
     }
 
-    executeCommand(command, args, root)
-      .then(() => {
-        fse
-          .copy(
-            `${root}/node_modules/@polywrap/templates/${type}/${lang}`,
-            `${root}`,
-            {
-              overwrite: true,
-            }
-          )
-          .then(() => {
-            resolve(true);
-          })
-          .catch(() => {
-            reject({
-              command: `copy ${root}/node_modules/@polywrap/templates/${type}/${lang} ${root}`,
-            });
-          });
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
+    args.push(...dependencies);
+
+    // Explicitly set cwd() to work around issues like
+    // https://github.com/facebook/create-react-app/issues/3326.
+    // Unfortunately we can only do this for Yarn because npm support for
+    // equivalent --prefix flag doesn't help with this issue.
+    // This is why for npm, we run checkThatNpmCanReadCwd() early instead.
+    args.push("--cwd");
+    args.push(root);
+
+    if (!isOnline) {
+      const offlineMessage = intlMsg.lib_generators_projectGenerator_offline();
+      const fallbackMessage = intlMsg.lib_generators_projectGenerator_fallback();
+      console.log(chalk.yellow(offlineMessage));
+      console.log(chalk.yellow(fallbackMessage));
+      console.log();
+    }
+  } else {
+    command = "npm";
+    args = ["install", "--save", "--save-exact", "--loglevel", "error"].concat(
+      dependencies
+    );
+  }
+
+  try {
+    await executeCommand(command, args, root);
+  } catch (e) {
+    return e;
+  }
+
+  try {
+    await fse.copy(
+      `${root}/node_modules/@polywrap/templates/${type}/${lang}`,
+      `${root}`,
+      {
+        overwrite: true,
+      }
+    );
+    return true;
+  } catch (e) {
+    return {
+      command: `copy ${root}/node_modules/@polywrap/templates/${type}/${lang} ${root}`,
+    };
+  }
 };

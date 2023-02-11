@@ -78,7 +78,7 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
-      .option(`--no-codegen`, `${intlMsg.commands_build_options_codegen()}`)
+      .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_codegen()}`)
       .option(
         `--codegen-dir`,
         `${intlMsg.commands_build_options_codegen_dir({
