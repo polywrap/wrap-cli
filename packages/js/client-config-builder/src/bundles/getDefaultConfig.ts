@@ -1,6 +1,6 @@
 import { BuilderConfig } from "../types";
-import * as ipfsHttpClient from "./wrappers/ipfs-http-client";
-import * as ipfsResolver from "./wrappers/ipfs-resolver";
+import * as ipfsHttpClient from "./wrappers/ipfs-http-client/wrap";
+import * as ipfsResolver from "./wrappers/ipfs-resolver/wrap";
 
 import { IWrapPackage } from "@polywrap/core-js";
 import {

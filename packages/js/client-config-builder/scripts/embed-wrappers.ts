@@ -23,14 +23,19 @@ async function main() {
     );
 
     fs.writeFileSync(
-      path.join(wrapperDir, "index.ts"),
+      path.join(wrapperDir, "wrap.ts"),
 `// NOTE: This file is auto-generated, do not modify by hand!
 // See: ./scripts/embed-wrappers.ts
 import { WasmPackage } from "@polywrap/wasm-js";
+import toUint8Array from "base64-to-uint8array";
 
-const wrap_wasm = new Uint8Array([${wasmBytes.toJSON().data}]);
+const wrap_wasm = toUint8Array(
+  "${wasmBytes.toString("base64")}"
+);
 
-const wrap_info = new Uint8Array([${infoBytes.toJSON().data}]);
+const wrap_info = toUint8Array(
+  "${infoBytes.toString("base64")}"
+);
 
 export const wasmPackage = WasmPackage.from(
   wrap_wasm,
