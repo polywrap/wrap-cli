@@ -2,10 +2,10 @@ pub mod wrap;
 use polywrap_wasm_rs::JSON;
 use wrap::imported::storage_module;
 use wrap::module;
-use wrap::module::{IModule, Module};
+use wrap::module::{ModuleTrait, Module};
 pub use wrap::*;
 
-impl IModule for Module {
+impl ModuleTrait for Module {
     fn get_data(&self, args: module::ArgsGetData) -> Result<u32, String> {
         match StorageModule::get_data(&storage_module::ArgsGetData {}) {
             Ok(v) => Ok(v as u32),

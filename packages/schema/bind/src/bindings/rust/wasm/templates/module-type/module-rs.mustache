@@ -34,7 +34,7 @@ pub trait EnvTrait {
 }
 {{/hasEnv}}
 
-pub trait IModule {
+pub trait ModuleTrait {
   {{#methods}}
   fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(&self, args: Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String>;
   {{^last}}

@@ -1,8 +1,8 @@
 pub mod wrap;
 pub use wrap::*;
-use wrap::module::{IModule, Module};
+use wrap::module::{ModuleTrait, Module};
 
-impl IModule for Module {
+impl ModuleTrait for Module {
     fn _if(&self, args: ArgsIf) -> Result<Else, String> {
         Ok(Else {
             _else: args._if._else

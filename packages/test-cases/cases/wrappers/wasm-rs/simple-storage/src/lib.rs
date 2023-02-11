@@ -2,9 +2,9 @@ pub mod wrap;
 use polywrap_wasm_rs::JSON;
 use wrap::imported::ethereum_module;
 pub use wrap::*;
-use wrap::module::{IModule, Module};
+use wrap::module::{ModuleTrait, Module};
 
-impl IModule for Module {
+impl ModuleTrait for Module {
     fn get_data(&self, args: ArgsGetData) -> Result<i32, String> {
         Ok(EthereumModule::call_contract_view(&ethereum_module::ArgsCallContractView {
             address: args.address,

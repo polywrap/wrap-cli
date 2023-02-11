@@ -1,9 +1,9 @@
 pub mod wrap;
 pub use wrap::*;
 use polywrap_wasm_rs::Map;
-use wrap::module::{IModule, Module};
+use wrap::module::{ModuleTrait, Module};
 
-impl IModule for Module {
+impl ModuleTrait for Module {
     fn get_key(&self, args: ArgsGetKey) -> Result<i32, String> {
         Ok(*args.foo.map.get(&args.key).unwrap())
     }

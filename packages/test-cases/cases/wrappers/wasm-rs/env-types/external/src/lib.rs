@@ -1,8 +1,8 @@
 pub mod wrap;
 pub use wrap::*;
-use wrap::module::{IModule, Module, EnvTrait};
+use wrap::module::{ModuleTrait, Module, EnvTrait};
 
-impl IModule for Module {
+impl ModuleTrait for Module {
   fn external_env_method(&self, _: ArgsExternalEnvMethod) -> Result<Env, String> {
     match self.env.clone() {
       Some(env) => Ok(env),

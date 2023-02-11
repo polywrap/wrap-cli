@@ -17,7 +17,7 @@ use crate::{
     serialize_if_result
 };
 
-use crate::module::{IModule, Module};
+use crate::module::{ModuleTrait, Module};
 use crate::Env;
 use crate::module::EnvTrait;
 

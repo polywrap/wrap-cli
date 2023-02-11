@@ -2,9 +2,9 @@ pub mod wrap;
 pub use wrap::*;
 use polywrap_wasm_rs::JSON;
 use serde_json::json;
-use wrap::module::{IModule, Module};
+use wrap::module::{ModuleTrait, Module};
 
-impl IModule for Module {
+impl ModuleTrait for Module {
     fn stringify(&self, args: ArgsStringify) -> Result<String, String> {
         let mut new_string = String::from("");
         for object in &args.values {

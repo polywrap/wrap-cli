@@ -3,9 +3,9 @@ use std::ops::Mul;
 use polywrap_wasm_rs::BigInt;
 pub mod wrap;
 pub use wrap::*;
-use wrap::module::{IModule, Module};
+use wrap::module::{ModuleTrait, Module};
 
-impl IModule for Module {
+impl ModuleTrait for Module {
     fn method(&self, args: ArgsMethod) -> Result<BigInt, String> {
         let mut result = args.arg1.mul(args.obj.prop1);
     

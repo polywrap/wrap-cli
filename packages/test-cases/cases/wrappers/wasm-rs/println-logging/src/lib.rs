@@ -1,8 +1,8 @@
 pub mod wrap;
 pub use wrap::*;
-use wrap::module::{IModule, Module};
+use wrap::module::{ModuleTrait, Module};
 
-impl IModule for Module {
+impl ModuleTrait for Module {
     fn log_message(&self, args: ArgsLogMessage) -> Result<bool, String> {
         let message = args.message.as_str();
     

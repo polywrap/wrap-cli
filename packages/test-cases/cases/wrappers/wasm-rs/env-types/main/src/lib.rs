@@ -1,5 +1,5 @@
 pub mod wrap;
-use wrap::module::{EnvTrait, IModule, Module};
+use wrap::module::{EnvTrait, ModuleTrait, Module};
 pub use wrap::*;
 
 fn create_env(env: Option<Env>) -> Result<Env, String> {
@@ -22,7 +22,7 @@ fn create_env(env: Option<Env>) -> Result<Env, String> {
     }
 }
 
-impl IModule for Module {
+impl ModuleTrait for Module {
     fn method_no_env(&self, args: ArgsMethodNoEnv) -> Result<String, String> {
         Ok(args.arg)
     }
@@ -37,7 +37,7 @@ impl IModule for Module {
 
     fn subinvoke_env_method(&self, _: ArgsSubinvokeEnvMethod) -> Result<CompoundEnv, String> {
         match self.env.clone() {
-            Some(env) => match ExternalEnvApiModule::external_env_method(&(imported::ArgsExternalEnvMethod {})) {
+            Some(env) => match ExternalEnvApModuleTrait::external_env_method(&(imported::ArgsExternalEnvMethod {})) {
                 Ok(external_env) => Ok(CompoundEnv {
                     local: env,
                     external: external_env,

@@ -1,8 +1,8 @@
 pub mod wrap;
 pub use wrap::*;
-pub use wrap::module::{Module, IModule};
+pub use wrap::module::{Module, ModuleTrait};
 
-impl IModule for Module {
+impl ModuleTrait for Module {
   fn method(&self, args: wrap::module::ArgsMethod) -> Result<String, String> {
     Ok(args.arg)
   }

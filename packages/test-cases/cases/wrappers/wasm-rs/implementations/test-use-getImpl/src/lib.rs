@@ -1,10 +1,10 @@
 pub mod wrap;
 pub use wrap::imported::interface_argument;
 pub use wrap::imported::interface_module;
-use wrap::module::{IModule, Module};
+use wrap::module::{ModuleTrait, Module};
 pub use wrap::*;
 
-impl IModule for Module {
+impl ModuleTrait for Module {
     fn module_implementations(&self, args: ArgsModuleImplementations) -> Result<Vec<String>, String> {
         Ok(Interface::get_implementations())
     }

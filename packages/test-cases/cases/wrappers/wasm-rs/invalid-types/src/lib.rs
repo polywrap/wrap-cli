@@ -1,8 +1,8 @@
 pub mod wrap;
 pub use wrap::*;
-use wrap::module::{IModule, Module};
+use wrap::module::{ModuleTrait, Module};
 
-impl IModule for Module {
+impl ModuleTrait for Module {
     fn bool_method(&self, args: ArgsBoolMethod) -> Result<bool, String> {
         Ok(args.arg)
     }

@@ -25,7 +25,7 @@ pub trait EnvTrait {
   fn __set_env__(&mut self, env: Env) -> ();
 }
 
-pub trait IModule {
+pub trait ModuleTrait {
   fn module_method(&self, args: ArgsModuleMethod) -> Result<i32, String>;
 
   fn object_method(&self, args: ArgsObjectMethod) -> Result<Option<AnotherType>, String>;
