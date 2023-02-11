@@ -544,9 +544,9 @@ export class UriResolver
  * */
 export type UriResolverLike =
   | IUriResolver<unknown>
-  | IUriRedirect<Uri | string>
-  | IUriPackage<Uri | string>
-  | IUriWrapper<Uri | string>
+  | IUriRedirect
+  | IUriPackage
+  | IUriWrapper
   | UriResolverLike[];
 ```
 
@@ -747,9 +747,9 @@ export class StaticResolver<TError = undefined>
  * - An array of StaticResolverLike
  * */
 export type StaticResolverLike =
-  | IUriRedirect<Uri | string>
-  | IUriPackage<Uri | string>
-  | IUriWrapper<Uri | string>
+  | IUriRedirect
+  | IUriPackage
+  | IUriWrapper
   | StaticResolverLike[];
 ```
 
