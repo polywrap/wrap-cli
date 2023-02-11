@@ -42,7 +42,7 @@ describe("ENS Resolver Plugin", () => {
     const result = await client.tryResolveUri({ uri: wrapperUri });
 
     if (!result.ok) {
-      fail("Expected response to not be an error");
+      throw result.error;
     }
 
     if (result.value.type !== "wrapper") {
