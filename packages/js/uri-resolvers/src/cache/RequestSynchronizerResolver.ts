@@ -11,9 +11,9 @@ import { Result } from "@polywrap/result";
 
 // Uri resolver that synchronizes requests to the same URI
 // Multiple requests to the same URI will be resolved only once
-// and the result will be cached for subsequent requests
-// Can use the `shouldIgnoreCache` option to determine whether to use the cached request in case of an error
-// (default is not to use the cache)
+// and the result will be cached for subsequent requests (only for the duration of that first request)
+// Can use the `shouldIgnoreCache` option to determine whether to ignore the cached request in case of an error
+// (default is to use the cache)
 export class RequestSynchronizerResolver<TError>
   implements IUriResolver<TError> {
   private requestCache: Map<
@@ -45,25 +45,28 @@ export class RequestSynchronizerResolver<TError>
     client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError>> {
+    const subContext = resolutionContext.createSubHistoryContext();
+
     const existingRequest = this.requestCache.get(uri.uri);
 
     if (existingRequest) {
       return existingRequest.then(
         (result) => {
-          console.log(uri.uri, result.ok, !!this.options?.shouldIgnoreCache)
           // In case of an error and the shouldIgnoreCache error handler returns true, we try to resolve the URI again.
           if (
             !result.ok &&
             this.options?.shouldIgnoreCache &&
             this.options.shouldIgnoreCache(result.error)
           ) {
-            return this.tryResolveUri(uri, client, resolutionContext);
+            return this.tryResolveUri(uri, client, subContext).then(
+              trackStep(uri, resolutionContext, subContext)
+            );
           }
 
           // Otherwise, we use the cached result.
           resolutionContext.trackStep({
             sourceUri: uri,
-            result: result,
+            result,
             description: "RequestSynchronizerResolver (Cache)",
           });
 
@@ -76,7 +79,9 @@ export class RequestSynchronizerResolver<TError>
       );
     }
 
-    return this.resolveAndCacheRequest(uri, client, resolutionContext);
+    return this.resolveAndCacheRequest(uri, client, subContext).then(
+      trackStep(uri, resolutionContext, subContext)
+    );
   }
 
   resolveAndCacheRequest(
@@ -90,16 +95,16 @@ export class RequestSynchronizerResolver<TError>
           .tryResolveUri(uri, client, resolutionContext)
           .then(
             (data) => {
+              // Delete from cache before resolve, so that retries don't get the same promise (that ended)
+              this.requestCache.delete(uri.uri);
               resolve(data);
             },
             (error) => {
+              // Delete from cache before reject, so that retries don't get the same promise (that ended)
+              this.requestCache.delete(uri.uri);
               reject(error);
             }
-          )
-          .finally(() => {
-            // After every listener has been notified with the above resolve or reject, remove the request from the cache.
-            this.requestCache.delete(uri.uri);
-          });
+          );
       }
     );
 
@@ -108,3 +113,18 @@ export class RequestSynchronizerResolver<TError>
     return resolutionRequest;
   }
 }
+
+const trackStep = (
+  uri: Uri,
+  resolutionContext: IUriResolutionContext,
+  subContext: IUriResolutionContext
+) => <TError>(result: Result<UriPackageOrWrapper, TError>) => {
+  resolutionContext.trackStep({
+    sourceUri: uri,
+    result,
+    subHistory: subContext.getHistory(),
+    description: "RequestSynchronizerResolver",
+  });
+
+  return result;
+};

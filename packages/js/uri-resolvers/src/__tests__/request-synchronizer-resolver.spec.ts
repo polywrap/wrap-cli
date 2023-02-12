@@ -273,10 +273,25 @@ describe("RequestSynchronizerResolver", () => {
       const result = resolutionResults[i];
       const resolutionContext = resolutionContexts[i];
 
-      await expectHistory(
-        resolutionContext.getHistory(),
-        "synchronizer-with-error-without-cache"
-      );
+      console.log(i);
+      if (i === 0) {
+        await expectHistory(
+          resolutionContext.getHistory(),
+          "synchronizer-with-error-without-cache"
+        );
+      } else if (i === 1) {
+        await expectHistory(
+          resolutionContext.getHistory(),
+          "synchronizer-with-error-without-cache-2"
+        );
+      } else {
+        await expectHistory(
+          resolutionContext.getHistory(),
+          "synchronizer-with-error-without-cache-3"
+        );
+      }
+      console.log(i)
+
       expect(result.ok).toBeFalsy();
     }
 
