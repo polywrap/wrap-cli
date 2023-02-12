@@ -16,7 +16,6 @@ use crate::{
 use crate::module::{ModuleTrait, Module};
 {{#hasEnv}}
 use crate::Env;
-use crate::module::EnvTrait;
 {{/hasEnv}}
 
 {{#methods}}
@@ -28,13 +27,14 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(module: &mut Module, args: &[u8]
     }
 
     let env_buf = wrap_load_env(env_size);
-    module.__set_env__(Env::from_buffer(&env_buf).unwrap());
+    let env = Env::from_buffer(&env_buf).unwrap();
 
     {{/required}}
     {{^required}}
+    let mut env: Option<Env> = None;
     if env_size > 0 {
       let env_buf = wrap_load_env(env_size);
-      module.__set_env__(Env::from_buffer(&env_buf).unwrap());
+      env = Some(Env::from_buffer(&env_buf).unwrap());
     }
 
     {{/required}}
@@ -47,7 +47,7 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(module: &mut Module, args: &[u8]
                 {{#arguments}}
                 {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}},
                 {{/arguments}}
-            });
+            }{{#env}}, env{{/env}});
             match result {
                 Ok(res) => {
             serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}res).unwrap()

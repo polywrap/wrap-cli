@@ -27,16 +27,16 @@ impl ModuleTrait for Module {
         Ok(args.arg)
     }
 
-    fn method_require_env(&self, _: ArgsMethodRequireEnv) -> Result<Env, String> {
-        create_env(self.env.clone())
+    fn method_require_env(&self, _: ArgsMethodRequireEnv, env: Env) -> Result<Env, String> {
+        create_env(env)
     }
 
-    fn method_optional_env(&self, _: ArgsMethodOptionalEnv) -> Result<Option<Env>, String> {
-        Ok(self.env.clone())
+    fn method_optional_env(&self, _: ArgsMethodOptionalEnv, env: Option<Env>) -> Result<Option<Env>, String> {
+        Ok(env)
     }
 
-    fn subinvoke_env_method(&self, _: ArgsSubinvokeEnvMethod) -> Result<CompoundEnv, String> {
-        match self.env.clone() {
+    fn subinvoke_env_method(&self, _: ArgsSubinvokeEnvMethod, env: Option<Env>) -> Result<CompoundEnv, String> {
+        match env {
             Some(env) => match ExternalEnvApModuleTrait::external_env_method(&(imported::ArgsExternalEnvMethod {})) {
                 Ok(external_env) => Ok(CompoundEnv {
                     local: env,

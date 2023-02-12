@@ -19,7 +19,6 @@ use crate::{
 
 use crate::module::{ModuleTrait, Module};
 use crate::Env;
-use crate::module::EnvTrait;
 
 pub fn module_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) -> Vec<u8> {
     match deserialize_module_method_args(args) {
@@ -58,7 +57,7 @@ pub fn object_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) ->
     }
 
     let env_buf = wrap_load_env(env_size);
-    module.__set_env__(Env::from_buffer(&env_buf).unwrap());
+    let env = Env::from_buffer(&env_buf).unwrap();
 
     match deserialize_object_method_args(args) {
         Ok(args) => {
@@ -67,7 +66,7 @@ pub fn object_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) ->
                 opt_object: args.opt_object,
                 object_array: args.object_array,
                 opt_object_array: args.opt_object_array,
-            });
+            }, env);
             match result {
                 Ok(res) => {
             serialize_object_method_result(&res).unwrap()
@@ -84,9 +83,10 @@ pub fn object_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) ->
 }
 
 pub fn optional_env_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) -> Vec<u8> {
+    let mut env: Option<Env> = None;
     if env_size > 0 {
       let env_buf = wrap_load_env(env_size);
-      module.__set_env__(Env::from_buffer(&env_buf).unwrap());
+      env = Some(Env::from_buffer(&env_buf).unwrap());
     }
 
     match deserialize_optional_env_method_args(args) {
@@ -96,7 +96,7 @@ pub fn optional_env_method_wrapped(module: &mut Module, args: &[u8], env_size: u
                 opt_object: args.opt_object,
                 object_array: args.object_array,
                 opt_object_array: args.opt_object_array,
-            });
+            }, env);
             match result {
                 Ok(res) => {
             serialize_optional_env_method_result(&res).unwrap()
