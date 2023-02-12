@@ -12,7 +12,7 @@ import { Result } from "@polywrap/result";
 // Uri resolver that synchronizes requests to the same URI
 // Multiple requests to the same URI will be resolved only once
 // and the result will be cached for subsequent requests
-// Can use the `shouldUseCache` option to determine whether to use the cached request in case of an error
+// Can use the `shouldIgnoreCache` option to determine whether to use the cached request in case of an error
 // (default is not to use the cache)
 export class RequestSynchronizerResolver<TError>
   implements IUriResolver<TError> {
@@ -24,14 +24,14 @@ export class RequestSynchronizerResolver<TError>
   constructor(
     private resolverToSynchronize: IUriResolver<TError>,
     private options?: {
-      shouldUseCache?: (error: TError | undefined) => boolean;
+      shouldIgnoreCache?: (error: TError | undefined) => boolean;
     }
   ) {}
 
   static from<TResolverError = unknown>(
     resolver: UriResolverLike,
     options?: {
-      shouldUseCache?: (error: TResolverError | undefined) => boolean;
+      shouldIgnoreCache?: (error: TResolverError | undefined) => boolean;
     }
   ): RequestSynchronizerResolver<TResolverError> {
     return new RequestSynchronizerResolver(
@@ -50,35 +50,24 @@ export class RequestSynchronizerResolver<TError>
     if (existingRequest) {
       return existingRequest.then(
         (result) => {
-          if (result.ok) {
-            resolutionContext.trackStep({
-              sourceUri: uri,
-              result,
-              description: "RequestSynchronizerResolver (Cache)",
-            });
-
-            return result;
-          }
-
-          // Handle error case
-          if (!this.options?.shouldUseCache) {
-            // In case of an error and no shouldUseCache error handler, we try to resolve the URI again.
-            // This is because the error might be caused by a network issue or something similar,
-            // and we don't want all the requests to fail.
-            return this.tryResolveUri(uri, client, resolutionContext);
-          } else if (this.options.shouldUseCache(result.error)) {
-            // In case of an error and the shouldUseCache error handler returns true, we use the cached result.
-            resolutionContext.trackStep({
-              sourceUri: uri,
-              result: result,
-              description: "RequestSynchronizerResolver (Cache)",
-            });
-
-            return result;
-          } else {
-            // In case of an error and the shouldUseCache error handler returns false, we try to resolve the URI again.
+          console.log(uri.uri, result.ok, !!this.options?.shouldIgnoreCache)
+          // In case of an error and the shouldIgnoreCache error handler returns true, we try to resolve the URI again.
+          if (
+            !result.ok &&
+            this.options?.shouldIgnoreCache &&
+            this.options.shouldIgnoreCache(result.error)
+          ) {
             return this.tryResolveUri(uri, client, resolutionContext);
           }
+
+          // Otherwise, we use the cached result.
+          resolutionContext.trackStep({
+            sourceUri: uri,
+            result: result,
+            description: "RequestSynchronizerResolver (Cache)",
+          });
+
+          return result;
         },
         (error: unknown) => {
           // In case of a promise error (not a resolution one) we throw for all of the listeners
