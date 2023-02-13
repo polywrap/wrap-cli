@@ -452,7 +452,9 @@ export const defaultWrappers = {
   uts46: "wrap://ens/wrappers.polywrap.eth:uts46@1.0.0",
   graphNode: "wrap://ens/wrappers.polywrap.eth:graph-node@1.0.0",
   ensTextRecordResolver:
-    "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
+    "wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W",
+  ethereum: "wrap://ipfs/QmPV4sG9zaVVv686Z9bXDFcysUEFfQwME5ayneWQTabNUe",
+  ens: "wrap://ipfs/QmUKsxcf3cAjBa4SUMg9fuGyNHRWa1qvu41o66wBE5vLKd",
 };
 
 export const defaultPackages = {
@@ -469,6 +471,7 @@ export const defaultInterfaces = {
   http: "wrap://ens/wrappers.polywrap.eth:http@1.1.0",
   fileSystem: "wrap://ens/wrappers.polywrap.eth:file-system@1.0.0",
   ipfsHttpClient: "wrap://ens/wrappers.polywrap.eth:ipfs-http-client@1.0.0",
+  ethereumProvider: "wrap://ens/wrappers.polywrap.eth:ethereum-provider@1.0.0",
 };
 
 export const getDefaultPackages = (): Record<string, IWrapPackage> => {
@@ -478,7 +481,7 @@ export const getDefaultPackages = (): Record<string, IWrapPackage> => {
     // ENS is required for resolving domain to IPFS hashes
     [defaultPackages.ensResolver]: ensResolverPlugin({}),
     // Ethereum is required for resolving domain to Ethereum addresses
-    [defaultPackages.ethereum]: ethereumPlugin({
+    [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
       connections: new Connections({
         networks: {
           mainnet: new Connection({
@@ -524,6 +527,7 @@ export const getDefaultConfig = (): BuilderConfig => ({
     ]),
     [defaultInterfaces.fileSystem]: new Set([defaultInterfaces.fileSystem]),
     [defaultInterfaces.http]: new Set([defaultInterfaces.http]),
+    [defaultInterfaces.ethereumProvider]: new Set([defaultInterfaces.ethereumProvider])
   },
   redirects: {
     // TODO: remove sha3 and uts46 redirects when ethereum wrapper is merged (used by updated ens wrapper)

@@ -11,11 +11,10 @@ import {
   Connection,
   ethereumProviderPlugin,
 } from "ethereum-provider-js";
-import { embeddedWrappers } from "@polywrap/test-env-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import {
-  defaultIpfsProviders,
-  defaultPackages,
+  defaultInterfaces,
+  defaultWrappers,
 } from "@polywrap/client-config-builder-js";
 
 class ENSRecursiveNameRegisterPublisher implements DeployModule {
@@ -117,7 +116,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
         client,
         {
           method: "awaitTransaction",
-          uri: defaultWrappers.ethereum,
+          uri: Uri.from(defaultWrappers.ethereum),
           args: {
             txHash: registerData.value[0].tx.hash,
             connection: {

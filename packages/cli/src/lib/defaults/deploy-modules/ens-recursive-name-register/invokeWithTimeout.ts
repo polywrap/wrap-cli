@@ -29,7 +29,7 @@ export async function invokeWithTimeout<TResult>(
     controller.signal.addEventListener("abort", () => {
       const wrapError = new WrapError("Timeout has been reached", {
         code: WrapErrorCode.WRAPPER_INVOKE_ABORTED,
-        uri: options.uri,
+        uri: options.uri.uri,
         method: options.method,
         args: JSON.stringify(options.args, null, 2),
       });
@@ -42,7 +42,7 @@ export async function invokeWithTimeout<TResult>(
         // the client threw an error (this should never happen)
         const wrapError = new WrapError(error.message, {
           code: WrapErrorCode.WRAPPER_INVOKE_FAIL,
-          uri: options.uri,
+          uri: options.uri.uri,
           method: options.method,
           args: JSON.stringify(options.args, null, 2),
         });

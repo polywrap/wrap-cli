@@ -13,8 +13,8 @@ import {
 } from "ethereum-provider-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import {
-  defaultIpfsProviders,
-  defaultPackages,
+  defaultInterfaces,
+  defaultWrappers,
 } from "@polywrap/client-config-builder-js";
 
 const contentHash = require("content-hash");
@@ -49,9 +49,6 @@ class ENSPublisher implements DeployModule {
       ? new Wallet(config.privateKey).connect(connectionProvider)
       : undefined;
 
-    const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
-    const ensWrapperUri = embeddedWrappers.ens;
-
     const client = new PolywrapClient({
       packages: [
         {
@@ -73,7 +70,7 @@ class ENSPublisher implements DeployModule {
 
     const resolver = await client.invoke<string>({
       method: "getResolver",
-      uri: defaultWrappers.ens
+      uri: defaultWrappers.ens,
       args: {
         registryAddress: config.ensRegistryAddress,
         domain: config.domainName,
@@ -114,7 +111,7 @@ class ENSPublisher implements DeployModule {
       client,
       {
         method: "awaitTransaction",
-        uri: defaultWrappers.ethereum;
+        uri: Uri.from(defaultWrappers.ethereum),
         args: {
           txHash: setContenthashData.value.hash,
           connection: {

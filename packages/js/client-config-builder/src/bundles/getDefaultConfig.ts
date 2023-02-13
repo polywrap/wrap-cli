@@ -33,8 +33,9 @@ export const defaultWrappers = {
   uts46: "wrap://ens/wrappers.polywrap.eth:uts46@1.0.0",
   graphNode: "wrap://ens/wrappers.polywrap.eth:graph-node@1.0.0",
   ensTextRecordResolver:
-    "wrap://ipfs/QmbaqqUVaKiQSX7YbhwWzZC5NsUgwMVwXnARDfG6dbQgKy",
+    "wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W",
   ethereum: "wrap://ipfs/QmPV4sG9zaVVv686Z9bXDFcysUEFfQwME5ayneWQTabNUe",
+  ens: "wrap://ipfs/QmUKsxcf3cAjBa4SUMg9fuGyNHRWa1qvu41o66wBE5vLKd",
 };
 
 export const defaultPackages = {
@@ -43,7 +44,7 @@ export const defaultPackages = {
   httpResolver: "wrap://package/http-resolver",
   fileSystemResolver: "wrap://package/fs-resolver",
   ipfsResolver: "wrap://package/ipfs-resolver",
- };
+};
 
 export const defaultInterfaces = {
   concurrent: "wrap://ens/wrappers.polywrap.eth:concurrent@1.0.0",
@@ -107,7 +108,9 @@ export const getDefaultConfig = (): BuilderConfig => ({
     ]),
     [defaultInterfaces.fileSystem]: new Set([defaultInterfaces.fileSystem]),
     [defaultInterfaces.http]: new Set([defaultInterfaces.http]),
-    [defaultInterfaces.ethereumProvider]: new Set([defaultInterfaces.ethereumProvider])
+    [defaultInterfaces.ethereumProvider]: new Set([
+      defaultInterfaces.ethereumProvider,
+    ]),
   },
   redirects: {
     // TODO: remove sha3 and uts46 redirects when ethereum wrapper is merged (used by updated ens wrapper)

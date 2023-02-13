@@ -38,19 +38,19 @@
           ]
         ],
         "wrap://ens/uri.eth => ResolverExtension (wrap://package/http-resolver)",
-        "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => PackageToWrapperCacheResolver => wrapper (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+        "wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W => PackageToWrapperCacheResolver => wrapper (wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W)",
         [
-          "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => UriResolverAggregator => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+          "wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W => UriResolverAggregator => package (wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W)",
           [
-            "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => StaticResolver - Miss",
-            "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ExtendableUriResolver => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+            "wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W => StaticResolver - Miss",
+            "wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W => ExtendableUriResolver => package (wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W)",
             [
               "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ipfs-resolver)",
-              "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ResolverExtension (wrap://package/ipfs-resolver) => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)"
+              "wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W => ResolverExtension (wrap://package/ipfs-resolver) => package (wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W)"
             ]
           ]
         ],
-        "wrap://ens/uri.eth => ResolverExtension (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)"
+        "wrap://ens/uri.eth => ResolverExtension (wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W)"
       ]
     ]
   ]

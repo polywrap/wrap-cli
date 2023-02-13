@@ -2,6 +2,7 @@ import { getTestEnvProviders } from "./providers";
 
 import {
   BuilderConfig,
+  defaultInterfaces,
   defaultIpfsProviders,
   defaultPackages,
 } from "@polywrap/client-config-builder-js";
@@ -35,7 +36,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
       },
     },
     packages: {
-      [defaultPackages.ethereumProvider]: ethereumProviderPlugin({
+      [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({
