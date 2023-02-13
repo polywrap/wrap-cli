@@ -42,10 +42,6 @@
           "description": "Wrapper method arguments",
           "type": "object",
           "additionalProperties": true
-        },
-        "config": {
-          "description": "Path to a client config file.",
-          "type": "string"
         }
       }
     },

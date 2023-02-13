@@ -56,8 +56,4 @@ export interface Step {
   args?: {
     [k: string]: unknown;
   };
-  /**
-   * Path to a client config file.
-   */
-  config?: string;
 }
