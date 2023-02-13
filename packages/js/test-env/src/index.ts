@@ -241,33 +241,27 @@ export const runCLI = async (options: {
  *
  * @param wrapperAbsPath - absolute path of wrapper to build
  * @param manifestPathOverride? - path to polywrap manifest
- * @param codegen? - run codegen before build
+ * @param noCodegen? - don't run codegen before build
  */
 export async function buildWrapper(
   wrapperAbsPath: string,
   manifestPathOverride?: string,
-  codegen?: boolean
+  noCodegen?: boolean
 ): Promise<void> /* $ */ {
   const manifestPath = manifestPathOverride
     ? path.join(wrapperAbsPath, manifestPathOverride)
     : `${wrapperAbsPath}/polywrap.yaml`;
 
-  if (codegen) {
-    const {
-      exitCode: codegenExitCode,
-      stdout: codegenStdout,
-      stderr: codegenStderr,
-    } = await runCLI({
-      args: ["codegen", "--manifest-file", manifestPath],
-      cwd: wrapperAbsPath,
-    });
+  const args = [
+    "build",
+    "--manifest-file",
+    manifestPath,
+    "--output-dir",
+    `${wrapperAbsPath}/build`,
+  ];
 
-    if (codegenExitCode != 0) {
-      console.error(`polywrap exited with code: ${codegenExitCode}`);
-      console.log(`stderr:\n${codegenStdout}`);
-      console.log(`stdout:\n${codegenStderr}`);
-      throw Error("polywrap CLI failed");
-    }
+  if (noCodegen) {
+    args.push("--no-codegen");
   }
 
   const {
@@ -275,13 +269,8 @@ export async function buildWrapper(
     stdout: buildStdout,
     stderr: buildStderr,
   } = await runCLI({
-    args: [
-      "build",
-      "--manifest-file",
-      manifestPath,
-      "--output-dir",
-      `${wrapperAbsPath}/build`,
-    ],
+    args,
+    cwd: wrapperAbsPath,
   });
 
   if (buildExitCode !== 0) {
@@ -310,7 +299,6 @@ export async function buildAndDeployWrapper({
   ipfsProvider,
   ethereumProvider,
   ensName,
-  codegen,
 }: {
   wrapperAbsPath: string;
   ipfsProvider: string;
@@ -330,7 +318,7 @@ export async function buildAndDeployWrapper({
   // create a new ENS domain
   const wrapperEns = ensName ?? `${generateName()}.eth`;
 
-  await buildWrapper(wrapperAbsPath, undefined, codegen);
+  await buildWrapper(wrapperAbsPath);
 
   const deployManifest: Omit<DeployManifest, "__type"> = {
     format: "0.2.0",
@@ -427,7 +415,6 @@ export async function buildAndDeployWrapperToHttp({
   wrapperAbsPath,
   httpProvider,
   name,
-  codegen,
 }: {
   wrapperAbsPath: string;
   httpProvider: string;
@@ -443,7 +430,7 @@ export async function buildAndDeployWrapperToHttp({
   const wrapperName = name ?? generateName();
   const postUrl = `${httpProvider}/wrappers/local/${wrapperName}`;
 
-  await buildWrapper(wrapperAbsPath, undefined, codegen);
+  await buildWrapper(wrapperAbsPath);
   const deployManifest: Omit<DeployManifest, "__type"> = {
     format: "0.2.0",
     jobs: {

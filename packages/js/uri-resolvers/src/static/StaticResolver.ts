@@ -12,13 +12,32 @@ import {
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 
+// $start: StaticResolver
+/**
+ * An IUriResolver implementation that efficiently delegates URI resolution to
+ * static resolvers--i.e. those that resolve to embedded URIs, Wrappers, and Packages
+ * */
 export class StaticResolver<TError = undefined>
-  implements IUriResolver<TError> {
-  constructor(public uriMap: Map<string, UriPackageOrWrapper>) {}
+  implements IUriResolver<TError> /* $ */ {
+  // $start: StaticResolver-constructor
+  /**
+   * Construct a Static Resolver
+   *
+   * @param uriMap - a mapping of URI to embedded URI, package, or wrapper
+   * */
+  constructor(public uriMap: Map<string, UriPackageOrWrapper>) /* $ */ {}
 
+  // $start: StaticResolver-from
+  /**
+   * Create a StaticResolver from a static-resolver-like object
+   *
+   * @param staticResolverLikes - an array of resolver-like objects to delegate resolution to
+   *
+   * @returns a StaticResolver
+   * */
   static from<TError = undefined>(
     staticResolverLikes: UriResolverLike[]
-  ): StaticResolver<TError> {
+  ): StaticResolver<TError> /* $ */ {
     const uriMap = new Map<string, UriPackageOrWrapper>();
     for (const staticResolverLike of staticResolverLikes) {
       if (Array.isArray(staticResolverLike)) {
@@ -69,11 +88,20 @@ export class StaticResolver<TError = undefined>
     return new StaticResolver(uriMap);
   }
 
+  // $start: StaticResolver-tryResolveUri
+  /**
+   * Resolve a URI to a wrap package, a wrapper, or a URI.
+   *
+   * @param uri - the URI to resolve
+   * @param _ - not used
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
   async tryResolveUri(
     uri: Uri,
     _: CoreClient,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TError>> {
+  ): Promise<Result<UriPackageOrWrapper, TError>> /* $ */ {
     const uriPackageOrWrapper = this.uriMap.get(uri.uri);
 
     let result: Result<UriPackageOrWrapper, TError>;

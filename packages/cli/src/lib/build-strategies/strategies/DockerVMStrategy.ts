@@ -197,7 +197,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
                 this._volumePaths.linkedPackages
               )}:/linked-packages`,
               cacheVolume,
-              `${CONFIGS[language].baseImage}:${process.arch}-${CONFIGS[language].version}`,
+              `${CONFIGS[language].baseImage}:${CONFIGS[language].version}`,
               "/bin/bash",
               "--verbose",
               "/project/polywrap-build.sh",
@@ -224,7 +224,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
               `${path.resolve(
                 this._volumePaths.linkedPackages
               )}:/linked-packages`,
-              `${CONFIGS[language].baseImage}:${process.arch}-${CONFIGS[language].version}`,
+              `${CONFIGS[language].baseImage}:${CONFIGS[language].version}`,
               "/bin/bash",
               "-c",
               '"chmod -R 777 /project && chmod -R 777 /linked-packages"',

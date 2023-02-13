@@ -49,7 +49,7 @@ export interface BuildCommandOptions extends BaseCommandOptions {
   outputDir: string;
   clientConfig: string | false;
   wrapperEnvs: string | false;
-  codegen: boolean; // defaults to false
+  noCodegen: boolean;
   codegenDir: string;
   watch: boolean;
   strategy: `${SupportedStrategies}`;
@@ -77,7 +77,7 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
-      .option(`--codegen`, `${intlMsg.commands_build_options_codegen()}`)
+      .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_codegen()}`)
       .option(
         `--codegen-dir`,
         `${intlMsg.commands_build_options_codegen_dir({
@@ -110,7 +110,7 @@ export const build: Command = {
           clientConfig: options.clientConfig || false,
           wrapperEnvs: options.wrapperEnvs || false,
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
-          codegen: options.codegen || false,
+          noCodegen: options.noCodegen || false,
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           strategy: options.strategy || defaultStrategy,
           watch: options.watch || false,
@@ -165,12 +165,13 @@ async function run(options: Required<BuildCommandOptions>) {
     wrapperEnvs,
     outputDir,
     strategy,
-    codegen,
+    noCodegen,
     codegenDir,
     verbose,
     quiet,
     logFile,
   } = options;
+
   const logger = createLogger({ verbose, quiet, logFile });
 
   const envs = await parseWrapperEnvsOption(wrapperEnvs);
@@ -204,6 +205,7 @@ async function run(options: Required<BuildCommandOptions>) {
   }
 
   let buildStrategy: BuildStrategy<unknown>;
+  let canRunCodegen = true;
 
   if (isPolywrapManifestLanguage(language)) {
     await validateManifestModules(manifest as PolywrapManifest);
@@ -213,6 +215,8 @@ async function run(options: Required<BuildCommandOptions>) {
       outputDir,
       project as PolywrapProject
     );
+
+    canRunCodegen = language != "interface";
   }
 
   const execute = async (): Promise<boolean> => {
@@ -222,7 +226,7 @@ async function run(options: Required<BuildCommandOptions>) {
         client,
       });
 
-      if (codegen) {
+      if (canRunCodegen && !noCodegen) {
         const codeGenerator = new CodeGenerator({
           project,
           schemaComposer,
