@@ -27,10 +27,6 @@ describe("sanity", () => {
       },
       {
         interface: new Uri(defaultInterfaces.logger),
-        implementations: [new Uri("wrap://plugin/logger")],
-      },
-      {
-        interface: new Uri(defaultWrappers.concurrentInterface),
         implementations: [new Uri(defaultInterfaces.logger)],
       },
       {
