@@ -1,4 +1,4 @@
-import { composeSchema, renderSchema } from "../";
+import { composeSchema, renderSchema } from "..";
 import { fetchTestCases } from "./index";
 
 import { diff } from "jest-diff";

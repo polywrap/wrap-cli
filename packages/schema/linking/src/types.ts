@@ -1,4 +1,4 @@
-import { Abi, CapabilityType } from "@polywrap/schema-parse";
+import { Abi } from "@polywrap/schema-parse";
 
 export interface SchemaFile {
   schema: string;
@@ -12,13 +12,4 @@ export interface AbiResolvers {
   external: AbiResolver;
   local: SchemaResolver;
 }
-
-
-
-export interface Use {
-  usedTypes: CapabilityType[];
-  namespace: string;
-}
-
-
 
