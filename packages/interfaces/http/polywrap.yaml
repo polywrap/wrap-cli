@@ -1,8 +1,0 @@
-format: 0.2.0
-project:
-  name: http-interface
-  type: interface
-source:
-  schema: ./src/schema.graphql
-extensions:
-  deploy: ./polywrap.deploy.yaml

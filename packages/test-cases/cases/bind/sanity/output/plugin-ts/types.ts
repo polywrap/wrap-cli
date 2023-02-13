@@ -8,7 +8,8 @@ import * as Types from "./";
 import {
   CoreClient,
   Result,
-  InvokeResult
+  InvokeResult,
+  Uri,
 } from "@polywrap/core-js";
 
 export type UInt = number;
@@ -198,8 +199,11 @@ export interface TestImport_Module_Args_returnsArrayOfEnums {
 /* URI: "testimport.uri.eth" */
 export class TestImport_Module {
   public static interfaceUri: string = "testimport.uri.eth";
+  public uri: Uri;
 
-  constructor(public uri: string) {}
+  constructor(uri: string) {
+    this.uri = Uri.from(uri);
+  }
 
   public async importedMethod(
     args: TestImport_Module_Args_importedMethod,
@@ -238,11 +242,16 @@ export class TestImport_Module {
 /// Imported Modules END ///
 
 export class TestImport {
-  static uri: string = "testimport.uri.eth";
+  static uri: Uri = Uri.from("testimport.uri.eth");
 
-  public static getImplementations(
+  public static async getImplementations(
     client: CoreClient
-  ): Result<string[], Error> {
-    return client.getImplementations(this.uri, {});
+  ): Promise<Result<string[], Error>> {
+    const impls = await client.getImplementations(this.uri, {});
+    if (!impls.ok) {
+      return { ok: false, error: impls.error};
+    }
+
+    return { ok: true, value: impls.value.map((impl) => (impl.uri))};
   }
 }

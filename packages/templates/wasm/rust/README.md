@@ -7,7 +7,8 @@ A simple starter template for a Rust Wasm wrapper. For more information on how t
 `nvm install && nvm use`  
 `yarn`  
 
-## Build
+## Codegen & Build
+`yarn codegen`  
 `yarn build`  
 
 ## Test

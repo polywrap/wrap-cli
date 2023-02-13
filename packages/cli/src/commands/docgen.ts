@@ -18,10 +18,9 @@ import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 
-import { Env, PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
-import { Uri } from "@polywrap/core-js";
 
 const commandToPathMap: Record<string, string> = {
   schema: schemaScriptPath,
@@ -141,7 +140,7 @@ async function run(
   const configBuilder = await parseClientConfigOption(clientConfig);
 
   if (envs) {
-    configBuilder.addEnvs(envs as Env<Uri>[]);
+    configBuilder.addEnvs(envs);
   }
 
   let project = await getProjectFromManifest(manifestFile, logger);
@@ -161,7 +160,7 @@ async function run(
   // Resolve custom script
   const customScript = require.resolve(commandToPathMap[action]);
 
-  const client = new PolywrapClient(configBuilder.buildCoreConfig(), {
+  const client = new PolywrapClient(configBuilder.build(), {
     noDefaults: true,
   });
 

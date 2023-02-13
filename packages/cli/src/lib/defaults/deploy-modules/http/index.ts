@@ -61,7 +61,7 @@ class HTTPDeployer implements DeployModule {
       throw new Error(response.data.error);
     }
 
-    return new Uri(`http/${response.data.uri}`);
+    return new Uri(`http/${config.postUrl}`);
   }
 }
 

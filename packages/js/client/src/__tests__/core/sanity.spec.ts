@@ -20,29 +20,41 @@ describe("sanity", () => {
     const client = new PolywrapClient();
 
     expect(client.getInterfaces()).toStrictEqual([
-      {
-        interface: ExtendableUriResolver.extInterfaceUri,
-        implementations: [
-          new Uri(defaultPackages.ipfsResolver),
-          new Uri(defaultPackages.ensResolver),
-          new Uri(defaultPackages.fileSystemResolver),
-          new Uri(defaultPackages.httpResolver),
-          new Uri(defaultWrappers.ensTextRecordResolver),
-        ],
-      },
-      {
-        interface: new Uri(defaultInterfaces.logger),
-        implementations: [new Uri(defaultPackages.logger)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.concurrent),
-        implementations: [new Uri(defaultPackages.concurrent)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.ethereumProvider),
-        implementations: [new Uri(defaultPackages.ethereumProvider)],
-      },
-    ]);
+        {
+          interface: ExtendableUriResolver.extInterfaceUri,
+          implementations: [
+            new Uri(defaultPackages.ipfsResolver),
+            new Uri(defaultPackages.ensResolver),
+            new Uri(defaultPackages.fileSystemResolver),
+            new Uri(defaultPackages.httpResolver),
+            new Uri(defaultWrappers.ensTextRecordResolver),
+          ],
+        },
+        {
+          interface: new Uri(defaultInterfaces.logger),
+          implementations: [new Uri(defaultInterfaces.logger)],
+        },
+        {
+          interface: new Uri(defaultInterfaces.concurrent),
+          implementations: [new Uri(defaultInterfaces.concurrent)],
+        },
+        {
+          interface: new Uri(defaultInterfaces.ipfsHttpClient),
+          implementations: [new Uri(defaultInterfaces.ipfsHttpClient)],
+        },
+        {
+          interface: new Uri(defaultInterfaces.fileSystem),
+          implementations: [new Uri(defaultInterfaces.fileSystem)],
+        },
+        {
+          interface: new Uri(defaultInterfaces.http),
+          implementations: [new Uri(defaultInterfaces.http)],
+        },
+        {
+          interface: new Uri(defaultInterfaces.ethereumProvider),
+          implementations: [new Uri(defaultInterfaces.ethereumProvider)],
+        },
+      ]);
   });
 
   test("validate requested uri is available", async () => {
@@ -74,7 +86,7 @@ describe("sanity", () => {
       envs: undefined
     }
 
-    await buildWrapper(fooPath, undefined, true);
+    await buildWrapper(fooPath);
     let client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
     let result = await client.validate(fooUri, {});
     expect(result.ok).toBeFalsy();
@@ -82,8 +94,8 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Error resolving URI");
 
-    let fooPackage: IUriPackage<string> = {
-      uri: fooUri,
+    let fooPackage: IUriPackage = {
+      uri: Uri.from(fooUri),
       package: await getPackage("wrapper-a")
     }
 
@@ -107,10 +119,10 @@ describe("sanity", () => {
     expect(resultError).toBeTruthy();
     expect(resultError.message).toContain("Unable to find URI");
 
-    await buildWrapper(greetingPath, undefined, true);
+    await buildWrapper(greetingPath);
 
-    let modifiedFooWrapper: IUriPackage<string> = {
-      uri: greetingUri,
+    let modifiedFooWrapper: IUriPackage = {
+      uri: Uri.from(greetingUri),
       package: await getPackage("wrapper-b")
     };
     resolvers.push(modifiedFooWrapper);
@@ -125,10 +137,10 @@ describe("sanity", () => {
 
     expect(result.ok).toBeTruthy()
 
-    await buildWrapper(modifiedFooPath, undefined, true);
-      let redirectUri: IUriRedirect<string> = {
-      from: fooUri,
-      to: modifiedFooUri
+    await buildWrapper(modifiedFooPath);
+      let redirectUri: IUriRedirect = {
+      from: Uri.from(fooUri),
+      to: Uri.from(modifiedFooUri)
     };
     resolvers.push(redirectUri);
 

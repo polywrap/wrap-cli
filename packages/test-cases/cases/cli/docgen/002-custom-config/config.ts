@@ -29,10 +29,7 @@ const mockPlugin = () => {
 };
 
 export function configure(builder: IClientConfigBuilder): IClientConfigBuilder {
-  return builder.addPackage({
-    uri: "wrap://ens/mock.eth",
-    package: mockPlugin(),
-  });
+  return builder.addPackage("wrap://ens/mock.eth", mockPlugin());
 }
 
 export const mockPluginManifest: WrapManifest = {

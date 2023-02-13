@@ -6,17 +6,16 @@ import { invokeWithTimeout } from "./invokeWithTimeout";
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
-import { embeddedWrappers } from "@polywrap/test-env-js";
 import {
   Connections,
   Connection,
   ethereumProviderPlugin,
 } from "ethereum-provider-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import {
-  ClientConfigBuilder,
+  defaultIpfsProviders,
   defaultPackages,
 } from "@polywrap/client-config-builder-js";
-import { PolywrapClient } from "@polywrap/client-js";
 
 const contentHash = require("content-hash");
 
@@ -50,41 +49,31 @@ class ENSPublisher implements DeployModule {
       ? new Wallet(config.privateKey).connect(connectionProvider)
       : undefined;
 
-    const clientConfig = new ClientConfigBuilder()
-      .addRedirects([
-        {
-          from: "wrap://ens/uts46.polywrap.eth",
-          to: embeddedWrappers.uts46,
-        },
-        {
-          from: "wrap://ens/sha3.polywrap.eth",
-          to: embeddedWrappers.sha3,
-        },
-      ])
-      .addPackage({
-        uri: defaultPackages.ethereumProvider,
-        package: ethereumProviderPlugin({
-          connections: new Connections({
-            networks: {
-              [network]: new Connection({
-                provider: config.provider,
-                signer,
-              }),
-            },
-            defaultNetwork: network,
-          }),
-        }),
-      })
-      .setEnv(defaultPackages.ipfsResolver, {
-        retries: { tryResolveUri: 2, getFile: 2 },
-      })
-      .build();
+    const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
+    const ensWrapperUri = embeddedWrappers.ens;
 
-    const client = new PolywrapClient(clientConfig);
+    const client = new PolywrapClient({
+      packages: [
+        {
+          uri: defaultInterfaces.ethereumProvider,
+          package: ethereumProviderPlugin({
+            connections: new Connections({
+              networks: {
+                [network]: new Connection({
+                  provider: config.provider,
+                  signer,
+                }),
+              },
+              defaultNetwork: network,
+            }),
+          }),
+        },
+      ],
+    });
 
     const resolver = await client.invoke<string>({
       method: "getResolver",
-      uri: embeddedWrappers.ens,
+      uri: defaultWrappers.ens
       args: {
         registryAddress: config.ensRegistryAddress,
         domain: config.domainName,
@@ -95,11 +84,7 @@ class ENSPublisher implements DeployModule {
     });
 
     if (!resolver.ok) {
-      throw new Error(
-        `Could not get resolver for '${
-          config.domainName
-        }'. Exception encountered:\n${resolver.error?.toString()}`
-      );
+      throw new Error(`Could not get resolver for '${config.domainName}'`);
     }
 
     if (resolver.value === "0x0000000000000000000000000000000000000000") {
@@ -110,7 +95,7 @@ class ENSPublisher implements DeployModule {
 
     const setContenthashData = await client.invoke<{ hash: string }>({
       method: "setContentHash",
-      uri: embeddedWrappers.ens,
+      uri: defaultWrappers.ens,
       args: {
         domain: config.domainName,
         cid: hash,
@@ -122,18 +107,14 @@ class ENSPublisher implements DeployModule {
     });
 
     if (!setContenthashData.ok) {
-      throw new Error(
-        `Could not set contentHash for '${
-          config.domainName
-        }'. Exception encountered:\n${setContenthashData.error?.toString()}`
-      );
+      throw new Error(`Could not set contentHash for '${config.domainName}'`);
     }
 
     await invokeWithTimeout(
       client,
       {
         method: "awaitTransaction",
-        uri: "wrap://ens/ethereum.polywrap.eth",
+        uri: defaultWrappers.ethereum;
         args: {
           txHash: setContenthashData.value.hash,
           connection: {

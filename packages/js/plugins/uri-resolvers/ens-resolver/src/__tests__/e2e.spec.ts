@@ -25,7 +25,6 @@ describe("ENS Resolver Plugin", () => {
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
       ensName: "cool.wrapper.eth",
-      codegen: true
     });
 
     wrapperEnsDomain = ensDomain;
@@ -42,7 +41,7 @@ describe("ENS Resolver Plugin", () => {
     const result = await client.tryResolveUri({ uri: wrapperUri });
 
     if (!result.ok) {
-      throw (result.error ?? new Error("Expected response to not be an error"));
+      throw result.error;
     }
 
     if (result.value.type !== "wrapper") {

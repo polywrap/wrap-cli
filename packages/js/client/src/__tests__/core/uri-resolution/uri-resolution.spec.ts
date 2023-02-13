@@ -17,7 +17,7 @@ import { Result } from "@polywrap/result";
 import { mockPluginRegistration } from "../../helpers/mockPluginRegistration";
 import { PolywrapClient, ExtendableUriResolver } from "../../../";
 
-jest.setTimeout(200000);
+jest.setTimeout(300000);
 
 const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 const wrapperUri = new Uri(`wrap://file/${wrapperPath}/build`);
@@ -107,9 +107,9 @@ function replaceAll(str: string, strToReplace: string, replaceStr: string) {
 describe("URI resolution", () => {
   beforeAll(async () => {
     await Promise.all([
-      buildWrapper(wrapperPath, undefined, true),
-      buildWrapper(simpleFsResolverWrapperPath, undefined, true),
-      buildWrapper(simpleRedirectResolverWrapperPath, undefined, true)
+      buildWrapper(wrapperPath),
+      buildWrapper(simpleFsResolverWrapperPath),
+      buildWrapper(simpleRedirectResolverWrapperPath)
     ]);
   });
 
@@ -169,10 +169,11 @@ describe("URI resolution", () => {
 
   it("can resolve plugin", async () => {
     const pluginUri = new Uri("ens/plugin.eth");
-
-    const client = new PolywrapClient({
-      resolvers: [UriResolver.from(mockPluginRegistration(pluginUri))],
-    });
+    const client = new PolywrapClient(
+      {
+        resolvers: [UriResolver.from(mockPluginRegistration(pluginUri))],
+      },
+    );
 
     const resolutionContext = new UriResolutionContext();
     const result = await client.tryResolveUri({
@@ -317,8 +318,8 @@ describe("URI resolution", () => {
     const client = new PolywrapClient({
       redirects: [
         {
-          from: resolverRedirectUri.uri,
-          to: finalRedirectedUri.uri,
+          from: resolverRedirectUri,
+          to: finalRedirectedUri,
         },
       ],
       interfaces: [

@@ -10,7 +10,7 @@
   "scripts": {
     "wasm-linked:up": "cp ./polywrap.wasm-linked* ./wasm/assemblyscript/",
     "wasm-linked:down": "rm ./wasm/assemblyscript/polywrap.wasm-linked*",
-    "test": "yarn wasm-linked:up; jest --passWithNoTests --runInBand --verbose; yarn wasm-linked:down",
+    "test": "yarn wasm-linked:up && jest --passWithNoTests --runInBand --verbose && yarn wasm-linked:down",
     "test:ci": "yarn test"
   },
   "devDependencies": {

@@ -14,11 +14,20 @@ import {
   IUriWrapper,
 } from "@polywrap/core-js";
 
-export class UriResolver {
+// $start: UriResolver
+/** An IUriResolver factory */
+export class UriResolver /* $ */ {
+  // $start: UriResolver-from
+  /**
+   * Create an IUriResolver instance
+   *
+   * @param resolverLike - an object that can be transformed into a resolver
+   * @param resolverName - a name to assign to the resolver in resolution history output
+   * */
   static from<TError = undefined>(
     resolverLike: UriResolverLike,
     resolverName?: string
-  ): IUriResolver<TError> {
+  ): IUriResolver<TError> /* $ */ {
     if (Array.isArray(resolverLike)) {
       return new UriResolverAggregator(
         (resolverLike as UriResolverLike[]).map((x) =>
@@ -37,28 +46,28 @@ export class UriResolver {
     } else if ((resolverLike as IUriResolver).tryResolveUri !== undefined) {
       return resolverLike as IUriResolver<TError>;
     } else if (
-      (resolverLike as IUriRedirect<Uri | string>).from !== undefined &&
-      (resolverLike as IUriRedirect<Uri | string>).to !== undefined
+      (resolverLike as IUriRedirect).from !== undefined &&
+      (resolverLike as IUriRedirect).to !== undefined
     ) {
-      const uriRedirect = resolverLike as IUriRedirect<Uri | string>;
+      const uriRedirect = resolverLike as IUriRedirect;
       return (new RedirectResolver(
         uriRedirect.from,
         uriRedirect.to
       ) as unknown) as IUriResolver<TError>;
     } else if (
-      (resolverLike as IUriPackage<Uri | string>).uri !== undefined &&
-      (resolverLike as IUriPackage<Uri | string>).package !== undefined
+      (resolverLike as IUriPackage).uri !== undefined &&
+      (resolverLike as IUriPackage).package !== undefined
     ) {
-      const uriPackage = resolverLike as IUriPackage<Uri | string>;
+      const uriPackage = resolverLike as IUriPackage;
       return (new PackageResolver(
         Uri.from(uriPackage.uri),
         uriPackage.package
       ) as unknown) as IUriResolver<TError>;
     } else if (
-      (resolverLike as IUriWrapper<Uri | string>).uri !== undefined &&
-      (resolverLike as IUriWrapper<Uri | string>).wrapper !== undefined
+      (resolverLike as IUriWrapper).uri !== undefined &&
+      (resolverLike as IUriWrapper).wrapper !== undefined
     ) {
-      const uriWrapper = resolverLike as IUriWrapper<Uri | string>;
+      const uriWrapper = resolverLike as IUriWrapper;
       return (new WrapperResolver(
         Uri.from(uriWrapper.uri),
         uriWrapper.wrapper
