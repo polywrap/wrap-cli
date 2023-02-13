@@ -62,7 +62,6 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
           env: {
             provider: defaultIpfsProviders[0],
             fallbackProviders: defaultIpfsProviders.slice(1),
-            retries: { tryResolveUri: 2, getFile: 2 },
           },
         },
       ],

@@ -8,7 +8,7 @@ import {
 import {
   RecursiveResolver,
   PackageToWrapperCacheResolver,
-  WrapperCache,
+  WrapperCache, RetryResolver,
 } from "@polywrap/uri-resolvers-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
@@ -27,7 +27,6 @@ export const getClient = () => {
         uri: defaultPackages.ipfsResolver,
         env: {
           provider: providers.ipfs,
-          retries: { tryResolveUri: 1, getFile: 1 },
         },
       }],
       interfaces: [
@@ -79,7 +78,9 @@ export const getClient = () => {
               uri: Uri.from(defaultInterfaces.http),
               package: httpPlugin({}),
             },
-            new ExtendableUriResolver(),
+            new RetryResolver(new ExtendableUriResolver(), {
+              ipfs: { retries: 1, interval: 100 },
+            }),
           ],
           new WrapperCache()
         )

@@ -6,3 +6,4 @@ export * from "./RecursiveResolver";
 export * from "./ResolverWithLoopGuard";
 export * from "./UriResolver";
 export * from "./getUriResolutionPath";
+export * from "./RetryResolver";

@@ -17,6 +17,7 @@ import {
   IWrapperCache,
   PackageToWrapperCacheResolver,
   RecursiveResolver,
+  RetryResolver,
   StaticResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
@@ -61,7 +62,9 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
                 ...this.buildPackages(),
               ]),
               ...this._config.resolvers,
-              new ExtendableUriResolver(),
+              new RetryResolver(new ExtendableUriResolver(), {
+                ipfs: { retries: 1, interval: 100 },
+              }),
             ],
             wrapperCache ?? new WrapperCache()
           )

@@ -87,7 +87,6 @@ export const getDefaultConfig = (): BuilderConfig => ({
     [defaultPackages.ipfsResolver]: {
       provider: defaultIpfsProviders[0],
       fallbackProviders: defaultIpfsProviders.slice(1),
-      retries: { tryResolveUri: 1, getFile: 1 },
     },
   },
   interfaces: {

@@ -31,7 +31,6 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
       [defaultPackages.ipfsResolver]: {
         provider: ipfsProvider,
         fallbackProviders: defaultIpfsProviders,
-        retries: { tryResolveUri: 1, getFile: 1 },
       },
     },
     packages: {

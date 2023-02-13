@@ -1,4 +1,4 @@
-import { PolywrapClient, Uri } from "../..";
+import { PolywrapClient, RetryResolver, Uri } from "../..";
 import { ensAddresses, providers } from "@polywrap/test-env-js";
 import {
   Connection,
@@ -38,7 +38,6 @@ export const getClientWithEnsAndIpfs = () => {
           uri: defaultPackages.ipfsResolver,
           env: {
             provider: providers.ipfs,
-            retries: { tryResolveUri: 1, getFile: 1 },
           },
         },
       ],
@@ -91,7 +90,9 @@ export const getClientWithEnsAndIpfs = () => {
               uri: Uri.from(defaultInterfaces.http),
               package: httpPlugin({}),
             },
-            new ExtendableUriResolver(),
+            new RetryResolver(new ExtendableUriResolver(), {
+              ipfs: { retries: 1, interval: 100 },
+            }),
           ],
           new WrapperCache()
         )
