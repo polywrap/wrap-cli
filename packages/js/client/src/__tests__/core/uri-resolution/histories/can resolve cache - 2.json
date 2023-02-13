@@ -1,3 +1,6 @@
 [
-  "wrap://file/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://file/$root-wrapper-dir/simple/build)"
+  "wrap://file/$root-wrapper-dir/simple/build => RequestSynchronizerResolver => wrapper (wrap://file/$root-wrapper-dir/simple/build)",
+  [
+    "wrap://file/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://file/$root-wrapper-dir/simple/build)"
+  ]
 ]
