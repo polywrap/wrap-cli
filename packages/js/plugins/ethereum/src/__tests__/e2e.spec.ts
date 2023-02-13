@@ -82,7 +82,7 @@ describe("Ethereum Plugin", () => {
 
     defaultConfig = getDefaultConfig(connections);
     client = new PolywrapClient(defaultConfig);
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     const response = await client.invoke<string>({
       uri,

@@ -3,7 +3,8 @@ import { Uri } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PluginPackage, PluginModule } from "@polywrap/plugin-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
-import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
+import { defaultPackages } from "@polywrap/client-config-builder-js";
+import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 jest.setTimeout(200000);
 
 describe("plugin-wrapper", () => {
@@ -80,13 +81,13 @@ describe("plugin-wrapper", () => {
     const client = new PolywrapClient(
       {
         resolver: UriResolver.from([
-          { uri: Uri.from("ens/ipfs.polywrap.eth"), package: ipfsPlugin({}) },
+          { uri: Uri.from(defaultPackages.fileSystemResolver), package: fileSystemResolverPlugin({}) },
         ]),
       }
     );
-    const manifest = await client.getManifest("ens/ipfs.polywrap.eth");
+    const manifest = await client.getManifest(defaultPackages.fileSystemResolver);
     if (!manifest.ok) fail(manifest.error);
     expect(manifest.value.type).toEqual("plugin");
-    expect(manifest.value.name).toEqual("Ipfs");
+    expect(manifest.value.name).toEqual("FileSystemResolver");
   });
 });

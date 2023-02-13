@@ -6,6 +6,16 @@ import {
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
+/*
+ * load a URI Resolver Extension wrapper, given a URI that resolves to it
+ *
+ * @param currentUri - The URI currently being resolved
+ * @param resolverExtensionUri - A URI that resolves to the Resolver Extension
+ * @param client - A CoreClient instance
+ * @param resolutionContext - The current URI resolution context
+ *
+ * @returns a Result containing a Wrapper or an error
+ * */
 export const loadResolverExtension = async (
   currentUri: Uri,
   resolverExtensionUri: Uri,

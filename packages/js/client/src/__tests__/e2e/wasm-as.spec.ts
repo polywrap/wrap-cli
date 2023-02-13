@@ -26,7 +26,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/asyncify`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     const config = new ClientConfigBuilder()
       .addDefaults()
@@ -48,8 +48,8 @@ describe("wasm-as test cases", () => {
     const subwrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-subinvoke/subinvoke`;
     const subwrapperUri = `fs/${subwrapperPath}/build`;
 
-    await buildWrapper(subwrapperPath, undefined, true);
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(subwrapperPath);
+    await buildWrapper(wrapperPath);
 
     const config = new ClientConfigBuilder()
       .addDefaults()
@@ -65,7 +65,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/bigint-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runBigIntTypeTest(new PolywrapClient(), wrapperUri);
   });
@@ -74,7 +74,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/bignumber-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runBigNumberTypeTest(new PolywrapClient(), wrapperUri);
   });
@@ -83,7 +83,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/bytes-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runBytesTypeTest(new PolywrapClient(), wrapperUri);
   });
@@ -92,7 +92,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/enum-types`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runEnumTypesTest(new PolywrapClient(), wrapperUri);
   });
@@ -101,7 +101,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/map-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runMapTypeTest(new PolywrapClient(), wrapperUri);
   });
@@ -112,7 +112,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/reserved-words`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
     const ensUri = wrapperUri;
 
     const result = await client.invoke({
@@ -140,7 +140,7 @@ describe("wasm-as test cases", () => {
     const implementationUri = `wrap://fs/${implementationPath}/build`;
 
     await buildWrapper(interfacePath);
-    await buildWrapper(implementationPath, undefined, true);
+    await buildWrapper(implementationPath);
 
     const config = new ClientConfigBuilder()
       .addDefaults()
@@ -167,8 +167,8 @@ describe("wasm-as test cases", () => {
     const aggregatorUri = `fs/${aggregatorPath}/build`;
 
     await buildWrapper(interfacePath);
-    await buildWrapper(implementationPath, undefined, true);
-    await buildWrapper(aggregatorPath, undefined, true);
+    await buildWrapper(implementationPath);
+    await buildWrapper(aggregatorPath);
 
     const config = new ClientConfigBuilder()
       .addDefaults()
@@ -197,7 +197,7 @@ describe("wasm-as test cases", () => {
       cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
     });
 
-    await buildWrapper(implementationPath, undefined, true);
+    await buildWrapper(implementationPath);
 
     const config = new ClientConfigBuilder()
       .addDefaults()
@@ -209,7 +209,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     const result = await client.invoke({
       uri: wrapperUri,
@@ -234,7 +234,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/invalid-types`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runInvalidTypesTest(new PolywrapClient(), wrapperUri);
   });
@@ -243,7 +243,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/json-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runJsonTypeTest(new PolywrapClient(), wrapperUri);
   });
@@ -252,7 +252,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/large-types`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runLargeTypesTest(new PolywrapClient(), wrapperUri);
   });
@@ -261,7 +261,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/number-types`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runNumberTypesTest(new PolywrapClient(), wrapperUri);
   });
@@ -270,7 +270,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/object-types`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runObjectTypesTest(new PolywrapClient(), wrapperUri);
   });
@@ -279,7 +279,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runSimpleStorageTest(getClientWithEnsAndIpfs(), wrapperUri);
   });
@@ -288,7 +288,7 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
 
     const config = new ClientConfigBuilder()
       .addDefaults()
@@ -308,8 +308,8 @@ describe("wasm-as test cases", () => {
     const wrapperUri = `fs/${wrapperPath}/build`;
     const externalWrapperUri = `fs/${externalWrapperPath}/build`;
 
-    await buildWrapper(externalWrapperPath, undefined, true);
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(externalWrapperPath);
+    await buildWrapper(wrapperPath);
 
     const config = new ClientConfigBuilder()
       .addDefaults()
