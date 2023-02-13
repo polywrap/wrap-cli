@@ -33,14 +33,13 @@ export const defaultWrappers = {
   uts46: "wrap://ens/wrappers.polywrap.eth:uts46@1.0.0",
   graphNode: "wrap://ens/wrappers.polywrap.eth:graph-node@1.0.0",
   ensTextRecordResolver:
-    "wrap://ipfs/QmQT6s8aAvcc1YKMahpKrzCAH9mzhWBGkXKCXq4uKGiP3W",
+    "wrap://ipfs/Qmae5BDZtdqzqurfVW3eE68s5pCUtVxdTtNZt9UnxFtF8X",
   ethereum: "wrap://ipfs/QmPV4sG9zaVVv686Z9bXDFcysUEFfQwME5ayneWQTabNUe",
-  ens: "wrap://ipfs/QmUKsxcf3cAjBa4SUMg9fuGyNHRWa1qvu41o66wBE5vLKd",
+  ens: "wrap://ipfs/Qmez2b7nXaqhZhkfd25bdAkhPQgzJEZBtaUC5eM9gFdhHA",
 };
 
 export const defaultPackages = {
   ensResolver: "wrap://package/ens-resolver",
-  ethereum: "wrap://ens/ethereum.polywrap.eth",
   httpResolver: "wrap://package/http-resolver",
   fileSystemResolver: "wrap://package/fs-resolver",
   ipfsResolver: "wrap://package/ipfs-resolver",
@@ -112,13 +111,7 @@ export const getDefaultConfig = (): BuilderConfig => ({
       defaultInterfaces.ethereumProvider,
     ]),
   },
-  redirects: {
-    // TODO: remove sha3 and uts46 redirects when ethereum wrapper is merged (used by updated ens wrapper)
-    "wrap://ens/sha3.polywrap.eth":
-      "wrap://ipfs/QmThRxFfr7Hj9Mq6WmcGXjkRrgqMG3oD93SLX27tinQWy5",
-    "wrap://ens/uts46.polywrap.eth":
-      "wrap://ipfs/QmPL9Njg3rGkpoJyoy8pZ5fTavjvHxNuuuiGRApzyGESZB",
-  },
+  redirects: {},
   wrappers: {},
   packages: getDefaultPackages(),
   resolvers: [],
