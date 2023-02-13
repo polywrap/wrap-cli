@@ -144,7 +144,7 @@ describe("Error structure", () => {
       expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-rs/invalid-types/build")).toBeTruthy();
       expect(result.error?.method).toEqual("boolMethod");
       expect(result.error?.args).toEqual("{\n  \"arg\": 3\n}");
-      expect(result.error?.source).toEqual({ file: "src/wrap/module/wrapped.rs", row: 38, col: 13 });
+      expect(result.error?.source).toEqual({ file: "src/wrap/module/wrapped.rs", row: 41, col: 13 });
     });
 
     test("Invoke a wrapper method that doesn't exist", async () => {

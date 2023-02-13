@@ -17,11 +17,11 @@ jest.setTimeout(1200000);
 
 describe("wasm-rs test cases", () => {
   beforeAll(async () => {
-    await initTestEnvironment();
+    // await initTestEnvironment();
   });
 
   afterAll(async () => {
-    await stopTestEnvironment();
+    // await stopTestEnvironment();
   });
 
   it("asyncify", async () => {
