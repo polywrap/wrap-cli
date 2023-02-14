@@ -10,11 +10,11 @@ import {
 import { Result } from "@polywrap/result";
 
 /* Uri resolver that synchronizes requests to the same URI
-* Multiple requests to the same URI will be resolved only once
-* and the result will be cached for subsequent requests (only for the duration of that first request)
-* Can use the `shouldIgnoreCache` option to determine whether to ignore the cached request in case of an error
-* (default is to use the cache)
-*/
+ * Multiple requests to the same URI will be resolved only once
+ * and the result will be cached for subsequent requests (only for the duration of that first request)
+ * Can use the `shouldIgnoreCache` option to determine whether to ignore the cached request in case of an error
+ * (default is to use the cache)
+ */
 export class RequestSynchronizerResolver<TError>
   implements IUriResolver<TError> {
   private requestCache: Map<
