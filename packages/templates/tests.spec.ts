@@ -20,7 +20,7 @@ describe("Templates", () => {
     },
     rust: {
       codegen: "yarn codegen",
-      build: "yarn build -m ./polywrap.wasm-rust-linked.yaml",
+      build: "yarn build",
       test: "yarn test",
     },
     interface: { build: "yarn build" },
@@ -68,18 +68,51 @@ describe("Templates", () => {
             );
           }
 
+          let originalCargoFile: string;
+          let cargoFilePath: string;
+
           beforeAll(() => {
             // Copy test configs
-            execSync(
-              `cp ${rootDir}/polywrap.${projectType}-${language}-linked* ${rootDir}/${projectType}/${language}/`
-            );
+            if (projectType === "wasm") {
+              execSync(
+                `cp ${rootDir}/polywrap.${projectType}-${language}-linked* ${rootDir}/${projectType}/${language}/`
+              );
+
+              if (language === "rust") {
+                cargoFilePath = path.join(
+                  rootDir,
+                  projectType,
+                  language,
+                  "Cargo.toml"
+                );
+
+                originalCargoFile = fs.readFileSync(cargoFilePath, {
+                  encoding: "utf-8",
+                });
+                const cargoFile = originalCargoFile.replace(
+                  /polywrap-wasm-rs = \{ version = "0.1.0" \}/,
+                  `polywrap-wasm-rs = { path = ${path.join(
+                    rootDir,
+                    "..",
+                    "wasm",
+                    "rs"
+                  )} }`
+                );
+                fs.writeFileSync(cargoFilePath, cargoFile);
+              }
+            }
           });
 
           afterAll(() => {
             // Remove test configs
-            execSync(
-              `rm ${rootDir}/${projectType}/${language}/polywrap.${projectType}-${language}-linked*`
-            );
+            if (projectType === "wasm") {
+              if (language === "rust") {
+                fs.writeFileSync(cargoFilePath, originalCargoFile);
+              }
+              execSync(
+                `rm ${rootDir}/${projectType}/${language}/polywrap.${projectType}-${language}-linked*`
+              );
+            }
           });
 
           // run all commands
