@@ -23,7 +23,7 @@ interface IAbiVisitorEnterAndLeave {
 }
 
 export class AbiVisitor {
-  constructor(private readonly visitor: IAbiVisitorEnterAndLeave) {}
+  constructor(private readonly visitor: IAbiVisitorEnterAndLeave) { }
 
   private _Abi(node: Abi) {
     if (this.visitor.enter?.Abi) {
