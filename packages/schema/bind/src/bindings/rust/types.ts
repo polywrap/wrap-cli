@@ -92,8 +92,6 @@ const keywords = {
   try: "try",
   macro_rules: "macro_rules",
   union: "union",
-  // Polywrap bindings
-  env: "env",
 };
 
 export type Keywords = typeof keywords;
