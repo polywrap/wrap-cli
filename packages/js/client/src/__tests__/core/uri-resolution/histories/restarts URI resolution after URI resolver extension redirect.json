@@ -7,43 +7,43 @@
       [
         "wrap://simple-redirect/$root-wrapper-dir/simple/build => ExtendableUriResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
         [
-          "wrap://ens/ipfs-resolver.polywrap.eth => RequestSynchronizerResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
+          "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
           [
-            "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
+            "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver => wrapper (wrap://package/ipfs-resolver)",
             [
-              "wrap://ens/ipfs-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/ipfs-resolver.polywrap.eth)",
+              "wrap://package/ipfs-resolver => UriResolverAggregator => package (wrap://package/ipfs-resolver)",
               [
-                "wrap://ens/ipfs-resolver.polywrap.eth => StaticResolver - Package (wrap://ens/ipfs-resolver.polywrap.eth) => package (wrap://ens/ipfs-resolver.polywrap.eth)"
+                "wrap://package/ipfs-resolver => StaticResolver - Package (wrap://package/ipfs-resolver) => package (wrap://package/ipfs-resolver)"
               ]
             ]
           ],
-          "wrap://ens/ens-resolver.polywrap.eth => RequestSynchronizerResolver => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
+          "wrap://package/ens-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ens-resolver)",
           [
-            "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
+            "wrap://package/ens-resolver => PackageToWrapperCacheResolver => wrapper (wrap://package/ens-resolver)",
             [
-              "wrap://ens/ens-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/ens-resolver.polywrap.eth)",
+              "wrap://package/ens-resolver => UriResolverAggregator => package (wrap://package/ens-resolver)",
               [
-                "wrap://ens/ens-resolver.polywrap.eth => StaticResolver - Package (wrap://ens/ens-resolver.polywrap.eth) => package (wrap://ens/ens-resolver.polywrap.eth)"
+                "wrap://package/ens-resolver => StaticResolver - Package (wrap://package/ens-resolver) => package (wrap://package/ens-resolver)"
               ]
             ]
           ],
-          "wrap://ens/fs-resolver.polywrap.eth => RequestSynchronizerResolver => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
+          "wrap://package/fs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/fs-resolver)",
           [
-            "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
+            "wrap://package/fs-resolver => PackageToWrapperCacheResolver => wrapper (wrap://package/fs-resolver)",
             [
-              "wrap://ens/fs-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/fs-resolver.polywrap.eth)",
+              "wrap://package/fs-resolver => UriResolverAggregator => package (wrap://package/fs-resolver)",
               [
-                "wrap://ens/fs-resolver.polywrap.eth => StaticResolver - Package (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://ens/fs-resolver.polywrap.eth)"
+                "wrap://package/fs-resolver => StaticResolver - Package (wrap://package/fs-resolver) => package (wrap://package/fs-resolver)"
               ]
             ]
           ],
-          "wrap://ens/http-resolver.polywrap.eth => RequestSynchronizerResolver => wrapper (wrap://ens/http-resolver.polywrap.eth)",
+          "wrap://package/http-resolver => RequestSynchronizerResolver => wrapper (wrap://package/http-resolver)",
           [
-            "wrap://ens/http-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/http-resolver.polywrap.eth)",
+            "wrap://package/http-resolver => PackageToWrapperCacheResolver => wrapper (wrap://package/http-resolver)",
             [
-              "wrap://ens/http-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/http-resolver.polywrap.eth)",
+              "wrap://package/http-resolver => UriResolverAggregator => package (wrap://package/http-resolver)",
               [
-                "wrap://ens/http-resolver.polywrap.eth => StaticResolver - Package (wrap://ens/http-resolver.polywrap.eth) => package (wrap://ens/http-resolver.polywrap.eth)"
+                "wrap://package/http-resolver => StaticResolver - Package (wrap://package/http-resolver) => package (wrap://package/http-resolver)"
               ]
             ]
           ],
@@ -55,11 +55,11 @@
               [
                 "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ExtendableUriResolver => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
                 [
-                  "wrap://ens/ipfs-resolver.polywrap.eth => RequestSynchronizerResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
+                  "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
                   [
-                    "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)"
+                    "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ipfs-resolver)"
                   ],
-                  "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ResolverExtension (wrap://ens/ipfs-resolver.polywrap.eth) => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)"
+                  "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ResolverExtension (wrap://package/ipfs-resolver) => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)"
                 ]
               ]
             ]
@@ -72,19 +72,19 @@
               [
                 "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
                 [
-                  "wrap://ens/ipfs-resolver.polywrap.eth => RequestSynchronizerResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
+                  "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
                   [
-                    "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)"
+                    "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ipfs-resolver)"
                   ],
-                  "wrap://ens/ens-resolver.polywrap.eth => RequestSynchronizerResolver => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
+                  "wrap://package/ens-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ens-resolver)",
                   [
-                    "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)"
+                    "wrap://package/ens-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ens-resolver)"
                   ],
-                  "wrap://ens/fs-resolver.polywrap.eth => RequestSynchronizerResolver => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
+                  "wrap://package/fs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/fs-resolver)",
                   [
-                    "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)"
+                    "wrap://package/fs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/fs-resolver)"
                   ],
-                  "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)"
+                  "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)"
                 ]
               ]
             ]
@@ -97,19 +97,19 @@
               [
                 "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
                 [
-                  "wrap://ens/ipfs-resolver.polywrap.eth => RequestSynchronizerResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
+                  "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
                   [
-                    "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)"
+                    "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ipfs-resolver)"
                   ],
-                  "wrap://ens/ens-resolver.polywrap.eth => RequestSynchronizerResolver => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
+                  "wrap://package/ens-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ens-resolver)",
                   [
-                    "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)"
+                    "wrap://package/ens-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ens-resolver)"
                   ],
-                  "wrap://ens/fs-resolver.polywrap.eth => RequestSynchronizerResolver => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
+                  "wrap://package/fs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/fs-resolver)",
                   [
-                    "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)"
+                    "wrap://package/fs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/fs-resolver)"
                   ],
-                  "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)"
+                  "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)"
                 ]
               ]
             ]
