@@ -2,10 +2,12 @@ import {
   Args_getFile,
   Args_tryResolveUri,
   UriResolver_MaybeUriOrManifest,
+  Env
 } from "./wrap";
 
 export function tryResolveUri(
-  args: Args_tryResolveUri
+  args: Args_tryResolveUri,
+  _env: Env | null
 ): UriResolver_MaybeUriOrManifest {
   if (args.authority != "simple-redirect") {
     return {
@@ -20,6 +22,6 @@ export function tryResolveUri(
   };
 }
 
-export function getFile(args: Args_getFile): ArrayBuffer | null {
+export function getFile(args: Args_getFile, _env: Env | null): ArrayBuffer | null {
   return null;
 }

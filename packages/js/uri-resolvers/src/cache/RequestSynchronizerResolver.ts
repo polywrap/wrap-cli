@@ -9,11 +9,12 @@ import {
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 
-// Uri resolver that synchronizes requests to the same URI
-// Multiple requests to the same URI will be resolved only once
-// and the result will be cached for subsequent requests (only for the duration of that first request)
-// Can use the `shouldIgnoreCache` option to determine whether to ignore the cached request in case of an error
-// (default is to use the cache)
+/* Uri resolver that synchronizes requests to the same URI
+* Multiple requests to the same URI will be resolved only once
+* and the result will be cached for subsequent requests (only for the duration of that first request)
+* Can use the `shouldIgnoreCache` option to determine whether to ignore the cached request in case of an error
+* (default is to use the cache)
+*/
 export class RequestSynchronizerResolver<TError>
   implements IUriResolver<TError> {
   private requestCache: Map<
@@ -21,6 +22,12 @@ export class RequestSynchronizerResolver<TError>
     Promise<Result<UriPackageOrWrapper, TError>>
   > = new Map();
 
+  /**
+   * Construct a RequestSynchronizerResolver
+   *
+   * @param resolverToSynchronize - the inner resolve whose resolution will be synchronized
+   * @param options - the optional options containing the `shouldIgnoreCache` error handler
+   * */
   constructor(
     private resolverToSynchronize: IUriResolver<TError>,
     private options?: {
@@ -28,6 +35,14 @@ export class RequestSynchronizerResolver<TError>
     }
   ) {}
 
+  /**
+   * Create a RequestSynchronizerResolver from a static-resolver-like object
+   *
+   * @param resolver - a resolver-like object whose resolution will be synchronized
+   * @param options - the optional options containing the `shouldIgnoreCache` error handler
+   *
+   * @returns a RequestSynchronizerResolver
+   * */
   static from<TResolverError = unknown>(
     resolver: UriResolverLike,
     options?: {
@@ -40,6 +55,15 @@ export class RequestSynchronizerResolver<TError>
     );
   }
 
+  /**
+   * Resolve a URI to a wrap package, a wrapper, or a URI.
+   * Attempts to resolve the URI using each of the aggregated resolvers sequentially.
+   *
+   * @param uri - the URI to resolve
+   * @param client - a CoreClient instance that may be used to invoke a wrapper that implements the UriResolver interface
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
   async tryResolveUri(
     uri: Uri,
     client: CoreClient,
@@ -84,7 +108,15 @@ export class RequestSynchronizerResolver<TError>
     );
   }
 
-  resolveAndCacheRequest(
+  /**
+   * A function that resolves a URI and caches the promise of that resolution for subsequent requests
+   *
+   * @param uri - the URI to resolve
+   * @param client - a CoreClient instance that may be used to invoke a wrapper that implements the UriResolver interface
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   * */
+  private resolveAndCacheRequest(
     uri: Uri,
     client: CoreClient,
     resolutionContext: IUriResolutionContext

@@ -12,6 +12,10 @@ import {
 } from "@polywrap/ethereum-plugin-js";
 import { embeddedWrappers } from "@polywrap/test-env-js";
 import { PolywrapClient } from "@polywrap/client-js";
+import {
+  defaultIpfsProviders,
+  defaultPackages,
+} from "@polywrap/client-config-builder-js";
 
 const contentHash = require("content-hash");
 
@@ -49,6 +53,16 @@ class ENSPublisher implements DeployModule {
     const ensWrapperUri = embeddedWrappers.ens;
 
     const client = new PolywrapClient({
+      envs: [
+        {
+          uri: defaultPackages.ipfsResolver,
+          env: {
+            provider: defaultIpfsProviders[0],
+            fallbackProviders: defaultIpfsProviders.slice(1),
+            retries: { tryResolveUri: 2, getFile: 2 },
+          },
+        },
+      ],
       redirects: [
         {
           from: "wrap://ens/uts46.polywrap.eth",

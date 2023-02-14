@@ -25,7 +25,6 @@ export async function foo({
     wrapperAbsPath: `/path/to/simple-storage`,
     httpProvider: providers.http,
     name: "simple-storage",
-    codegen: true,
   });
 
   // get wrapper HTTP URI
