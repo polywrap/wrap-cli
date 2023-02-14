@@ -1,0 +1,9 @@
+format: 0.3.0
+project:
+  name: template-wasm-rs
+  type: wasm/rust
+source:
+  module: ./src/lib.rs
+  schema: ./src/schema.graphql
+extensions:
+  build: ./polywrap.wasm-rs-linked.build.yaml

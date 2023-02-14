@@ -15,12 +15,12 @@ describe("Templates", () => {
     typescript: { build: "yarn build", test: "yarn test" },
     assemblyscript: {
       codegen: "yarn codegen",
-      build: "npx polywrap build -m ./polywrap.wasm-linked.yaml",
+      build: "npx polywrap build -m ./polywrap.wasm-as-linked.yaml",
       test: "yarn test",
     },
     rust: {
       codegen: "yarn codegen",
-      build: "yarn build",
+      build: "yarn build -m ./polywrap.wasm-rs-linked.yaml",
       test: "yarn test",
     },
     interface: { build: "yarn build" },
