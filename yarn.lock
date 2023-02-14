@@ -6489,7 +6489,7 @@ jest-config@^26.6.3:
     micromatch "^4.0.2"
     pretty-format "^26.6.2"
 
-jest-diff@28.1.3, jest-diff@^28.0.2:
+jest-diff@28.1.3:
   version "28.1.3"
   resolved "https://registry.yarnpkg.com/jest-diff/-/jest-diff-28.1.3.tgz#948a192d86f4e7a64c5264ad4da4877133d8792f"
   integrity sha512-8RqP1B/OXzjjTWkqMX67iqgwBVJRgCyKD3L9nq+6ZqJMdvjE8RgHktqZ6jNrkdMT+dJuYNI3rhQpxaz7drJHfw==
@@ -6821,14 +6821,6 @@ jest-watcher@^26.6.2:
     chalk "^4.0.0"
     jest-util "^26.6.2"
     string-length "^4.0.1"
-
-jest-websocket-mock@^2.3.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/jest-websocket-mock/-/jest-websocket-mock-2.4.0.tgz#95ab1f89f809e57d2714427736ab7b1094fb1c3c"
-  integrity sha512-AOwyuRw6fgROXHxMOiTDl1/T4dh3fV4jDquha5N0csS/PNp742HeTZWPAuKppVRSQ8s3fUGgJHoyZT9JDO0hMA==
-  dependencies:
-    jest-diff "^28.0.2"
-    mock-socket "^9.1.0"
 
 jest-worker@^26.6.2:
   version "26.6.2"
@@ -7644,11 +7636,6 @@ mkdirp@^0.5.1, mkdirp@^0.5.5:
   integrity sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==
   dependencies:
     minimist "^1.2.6"
-
-mock-socket@^9.1.0:
-  version "9.1.5"
-  resolved "https://registry.yarnpkg.com/mock-socket/-/mock-socket-9.1.5.tgz#2c4e44922ad556843b6dfe09d14ed8041fa2cdeb"
-  integrity sha512-3DeNIcsQixWHHKk6NdoBhWI4t1VMj5/HzfnI1rE/pLl5qKx7+gd4DNA07ehTaZ6MoUU053si6Hd+YtiM/tQZfg==
 
 modify-values@^1.0.0:
   version "1.0.1"
