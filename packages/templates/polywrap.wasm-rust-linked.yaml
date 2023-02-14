@@ -3,7 +3,7 @@ project:
   name: template-wasm-rs
   type: wasm/rust
 source:
-  module: ./src/lib.rs
+  module: ./Cargo.toml
   schema: ./src/schema.graphql
 extensions:
   build: ./polywrap.wasm-rust-linked.build.yaml

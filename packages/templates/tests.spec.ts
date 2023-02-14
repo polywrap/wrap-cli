@@ -20,7 +20,7 @@ describe("Templates", () => {
     },
     rust: {
       codegen: "yarn codegen",
-      build: "yarn build",
+      build: "yarn build -m ./polywrap.wasm-rust-linked.yaml",
       test: "yarn test",
     },
     interface: { build: "yarn build" },
@@ -91,12 +91,12 @@ describe("Templates", () => {
                 });
                 const cargoFile = originalCargoFile.replace(
                   /polywrap-wasm-rs = \{ version = "0.1.0" \}/,
-                  `polywrap-wasm-rs = { path = ${path.join(
+                  `polywrap-wasm-rs = { path = "${path.join(
                     rootDir,
                     "..",
                     "wasm",
                     "rs"
-                  )} }`
+                  )}" }`
                 );
                 fs.writeFileSync(cargoFilePath, cargoFile);
               }
