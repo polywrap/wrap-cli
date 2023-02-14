@@ -34,8 +34,8 @@ export const defaultWrappers = {
   graphNode: "wrap://ens/wrappers.polywrap.eth:graph-node@1.0.0",
   ensTextRecordResolver:
     "wrap://ipfs/Qmae5BDZtdqzqurfVW3eE68s5pCUtVxdTtNZt9UnxFtF8X",
-  ethereum: "wrap://ipfs/QmPV4sG9zaVVv686Z9bXDFcysUEFfQwME5ayneWQTabNUe",
-  ens: "wrap://ipfs/Qmez2b7nXaqhZhkfd25bdAkhPQgzJEZBtaUC5eM9gFdhHA",
+  ethereum: "wrap://ens/wraps.eth:ethereum@1.0.0",
+  ens: "wrap://ens/wraps.eth:ens@1.0.0",
 };
 
 export const defaultPackages = {

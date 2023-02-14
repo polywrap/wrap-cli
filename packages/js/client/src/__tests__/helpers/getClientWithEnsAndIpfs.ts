@@ -72,7 +72,7 @@ export const getClientWithEnsAndIpfs = () => {
               package: defaultEmbeddedPackages.ipfsResolver(),
             },
             {
-              uri: defaultPackages.ethereumProvider,
+              uri: Uri.from(defaultInterfaces.ethereumProvider),
               package: ethereumProviderPlugin({ connections }),
             },
             {
