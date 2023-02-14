@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { exec } from "child_process";
+import { exec, execSync } from "child_process";
 
 jest.setTimeout(800000);
 
@@ -15,12 +15,12 @@ describe("Templates", () => {
     typescript: { build: "yarn build", test: "yarn test" },
     assemblyscript: {
       codegen: "yarn codegen",
-      build: "npx polywrap build -m ./polywrap.wasm-as-linked.yaml",
+      build: "npx polywrap build -m ./polywrap.wasm-assemblyscript-linked.yaml",
       test: "yarn test",
     },
     rust: {
       codegen: "yarn codegen",
-      build: "yarn build -m ./polywrap.wasm-rs-linked.yaml",
+      build: "yarn build -m ./polywrap.wasm-rust-linked.yaml",
       test: "yarn test",
     },
     interface: { build: "yarn build" },
@@ -67,6 +67,20 @@ describe("Templates", () => {
               `Unknown project language ${projectType}/${language}, no test commands found. Please update this script's configuration.`
             );
           }
+
+          beforeAll(() => {
+            // Copy test configs
+            execSync(
+              `cp ${rootDir}/polywrap.${projectType}-${language}-linked* ${rootDir}/${projectType}/${language}/`
+            );
+          });
+
+          afterAll(() => {
+            // Remove test configs
+            execSync(
+              `rm ${rootDir}/${projectType}/${language}/polywrap.${projectType}-${language}-linked*`
+            );
+          });
 
           // run all commands
           for (const command of Object.keys(commands)) {

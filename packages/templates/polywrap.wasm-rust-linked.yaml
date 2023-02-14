@@ -6,4 +6,4 @@ source:
   module: ./src/lib.rs
   schema: ./src/schema.graphql
 extensions:
-  build: ./polywrap.wasm-rs-linked.build.yaml
+  build: ./polywrap.wasm-rust-linked.build.yaml
