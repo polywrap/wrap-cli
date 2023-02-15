@@ -1,1 +1,1 @@
-#import * into HTTP from "wrap://ens/wraps.eth:http@1.0.0"
+#import * into HTTP from "wrap://ens/wraps.eth:http@1.1.0"
