@@ -1,6 +1,6 @@
 import { DependencyTree } from "./DependencyTree";
 import { ExternalImportStatement, SchemaParser } from "./types";
-import { AbiVisitor } from "./visitor";
+import { UnlinkedAbiVisitor } from "./visitor";
 
 export class ImportsParser {
   private _schemaDependencyTree = new DependencyTree<string>()
@@ -25,7 +25,7 @@ export class ImportsParser {
       const transitiveImportDeps = new Set<ExternalImportStatement>()
 
       const state: { currentObject?: string } = {}
-      const externalAbiVisitor = new AbiVisitor({
+      const externalAbiVisitor = new UnlinkedAbiVisitor({
         enter: {
           ObjectDef: (def) => {
             if (importedTypes.includes(def.name)) {

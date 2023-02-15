@@ -1,47 +1,34 @@
-import { AbiTransforms, transformAbi } from "./transform";
-
-import { Abi, UniqueDefKind } from "./definitions";
-import { SchemaParser } from "./types";
+import { Abi } from "./definitions";
+import { ParserOptions, SchemaParser } from "./types";
 
 export * from "./abi";
-export * from "./transform";
-export * from "./header";
 export * from "./types";
 
-interface ParserOptions {
-  // Disable schema validation
-  noValidate?: boolean;
-  // Use custom transformations
-  transforms?: AbiTransforms[];
-}
-
 export const parseSchemaAndImports = async (schema: string, schemaPath: string, parser: SchemaParser, options: ParserOptions = {}): Promise<{ abi: Abi, imports: Map<string, Abi> }> => {
-  const importsRegistry = await parser.getImportedSchemasTable(schema, schemaPath);
-  let allUniqueDefinitions = new Map<string, UniqueDefKind>();
+  throw new Error("Unimplemented")
   
-  for (const importedAbi of importsRegistry.values()) {
-    allUniqueDefinitions = new Map([...allUniqueDefinitions, ...parser.getUniqueDefinitionsTable(importedAbi)]);
-  }
+  // const importsRegistry = await parser.getImportedSchemasTable(schema, schemaPath);
+  // let allUniqueDefinitions = new Map<string, UniqueDefKind>();
+  
+  // for await (const importedAbi of importsRegistry.values()) {
+  //   const importedAbiUniqueDefs = await parser.getUniqueDefinitionsTable(importedAbi);
+  //   allUniqueDefinitions = new Map([...allUniqueDefinitions, ...importedAbiUniqueDefs]);
+  // }
 
-  const importedAbis = new Map<string, Abi>();
+  // const importedAbis = new Map<string, Abi>();
 
-  for (const [importPath, importedAbi] of importsRegistry.entries()) {
-    importedAbis.set(importPath, parser.parse(importedAbi, allUniqueDefinitions));
-  }
+  // for await (const [importPath, importedSchemaString] of importsRegistry.entries()) {
+  //   const importedAbi = await parser.parse(importedSchemaString, allUniqueDefinitions);
+  //   importedAbis.set(importPath, importedAbi);
+  // }
 
-  // TODO: should this happen before or after linking?
-  // TODO: where does validation happen?
-  let abi = parser.parse(schema, allUniqueDefinitions);
+  // // TODO: should this happen before or after linking?
+  // // TODO: where does validation happen?
+  // let abi = await parser.parse(schema, allUniqueDefinitions);
 
-  if (options && options.transforms) {
-    for (const transform of options.transforms) {
-      abi = transformAbi(abi, transform);
-    }
-  }
-
-  return {
-    abi,
-    imports: importedAbis
-  }
+  // return {
+  //   abi,
+  //   imports: importedAbis
+  // }
 }
 

@@ -1,39 +1,44 @@
-import { Abi, ImportedAbi, FunctionDef, ArgumentDef, ResultDef, ObjectDef, PropertyDef, EnumDef, ScalarType, RefType, ImportRefType, ArrayType, MapType, AnyType } from "@polywrap/schema-parse/build/definitions";
+import { EnumDef, ScalarType, RefType } from "./definitions";
+import {
+  UnlinkedAbiDefs,
+  UnlinkedFunctionDef,
+  UnlinkedArgumentDef,
+  UnlinkedResultDef,
+  UnlinkedObjectDef,
+  UnlinkedPropertyDef,
+  UnlinkedImportRefType,
+  UnlinkedAnyType,
+  UnlinkedArrayType,
+  UnlinkedMapType
+} from "./UnlinkedDefs";
 
-interface IAbiVisitor {
-  Abi?: (node: Abi) => void;
-  ImportedAbi?: (node: ImportedAbi) => void;
-  FunctionDef?: (node: FunctionDef) => void;
-  ArgumentDef?: (node: ArgumentDef) => void;
-  ResultDef?: (node: ResultDef) => void;
-  ObjectDef?: (node: ObjectDef) => void;
-  PropertyDef?: (node: PropertyDef) => void;
+interface IUnlinkedAbiVisitor {
+  Abi?: (node: UnlinkedAbiDefs) => void;
+  FunctionDef?: (node: UnlinkedFunctionDef) => void;
+  ArgumentDef?: (node: UnlinkedArgumentDef) => void;
+  ResultDef?: (node: UnlinkedResultDef) => void;
+  ObjectDef?: (node: UnlinkedObjectDef) => void;
+  PropertyDef?: (node: UnlinkedPropertyDef) => void;
   EnumDef?: (node: EnumDef) => void;
   ScalarType?: (node: ScalarType) => void;
   RefType?: (node: RefType) => void;
-  ImportRefType?: (node: ImportRefType) => void;
-  ArrayType?: (node: ArrayType) => void;
-  MapType?: (node: MapType) => void;
-  AnyType?: (node: AnyType) => void;
+  ImportRefType?: (node: UnlinkedImportRefType) => void;
+  ArrayType?: (node: UnlinkedArrayType) => void;
+  MapType?: (node: UnlinkedMapType) => void;
+  AnyType?: (node: UnlinkedAnyType) => void;
 }
 
-interface IAbiVisitorEnterAndLeave {
-  enter?: IAbiVisitor;
-  leave?: IAbiVisitor;
+interface IUnlinkedAbiVisitorEnterAndLeave {
+  enter?: IUnlinkedAbiVisitor;
+  leave?: IUnlinkedAbiVisitor;
 }
 
-export class AbiVisitor {
-  constructor(private readonly visitor: IAbiVisitorEnterAndLeave) { }
+export class UnlinkedAbiVisitor {
+  constructor(private readonly visitor: IUnlinkedAbiVisitorEnterAndLeave) { }
 
-  private _Abi(node: Abi) {
+  private _Abi(node: UnlinkedAbiDefs) {
     if (this.visitor.enter?.Abi) {
       this.visitor.enter.Abi(node);
-    }
-
-    if (node.imports) {
-      for (const importNode of node.imports) {
-        this._ImportedAbi(importNode);
-      }
     }
 
     if (node.functions) {
@@ -59,35 +64,7 @@ export class AbiVisitor {
     }
   }
 
-  private _ImportedAbi(node: ImportedAbi) {
-    if (this.visitor.enter?.ImportedAbi) {
-      this.visitor.enter.ImportedAbi(node);
-    }
-
-    if (node.functions) {
-      for (const functionNode of node.functions) {
-        this._FunctionDef(functionNode);
-      }
-    }
-
-    if (node.objects) {
-      for (const objectNode of node.objects) {
-        this._ObjectDef(objectNode);
-      }
-    }
-
-    if (node.enums) {
-      for (const enumNode of node.enums) {
-        this._EnumDef(enumNode);
-      }
-    }
-
-    if (this.visitor.leave?.ImportedAbi) {
-      this.visitor.leave.ImportedAbi(node);
-    }
-  }
-
-  private _FunctionDef(node: FunctionDef) {
+  private _FunctionDef(node: UnlinkedFunctionDef) {
     if (this.visitor.enter?.FunctionDef) {
       this.visitor.enter.FunctionDef(node);
     }
@@ -105,7 +82,7 @@ export class AbiVisitor {
     }
   }
 
-  private _ArgumentDef(node: ArgumentDef) {
+  private _ArgumentDef(node: UnlinkedArgumentDef) {
     if (this.visitor.enter?.ArgumentDef) {
       this.visitor.enter.ArgumentDef(node);
     }
@@ -116,7 +93,7 @@ export class AbiVisitor {
     }
   }
 
-  private _ResultDef(node: ResultDef) {
+  private _ResultDef(node: UnlinkedResultDef) {
     if (this.visitor.enter?.ResultDef) {
       this.visitor.enter.ResultDef(node);
     }
@@ -127,7 +104,7 @@ export class AbiVisitor {
     }
   }
 
-  private _ObjectDef(node: ObjectDef) {
+  private _ObjectDef(node: UnlinkedObjectDef) {
     if (this.visitor.enter?.ObjectDef) {
       this.visitor.enter.ObjectDef(node);
     }
@@ -141,7 +118,7 @@ export class AbiVisitor {
     }
   }
 
-  private _PropertyDef(node: PropertyDef) {
+  private _PropertyDef(node: UnlinkedPropertyDef) {
     if (this.visitor.enter?.PropertyDef) {
       this.visitor.enter.PropertyDef(node);
     }
@@ -161,7 +138,7 @@ export class AbiVisitor {
     }
   }
 
-  private _AnyType(node: AnyType) {
+  private _AnyType(node: UnlinkedAnyType) {
     if (this.visitor.enter?.AnyType) {
       this.visitor.enter.AnyType(node);
     }
@@ -179,7 +156,7 @@ export class AbiVisitor {
       case "Ref":
         this._RefType(node);
         break;
-      case "ImportRef":
+      case "UnlinkedImportRef":
         this._ImportRefType(node);
         break;
     }
@@ -209,7 +186,7 @@ export class AbiVisitor {
     }
   }
 
-  private _ImportRefType(node: ImportRefType) {
+  private _ImportRefType(node: UnlinkedImportRefType) {
     if (this.visitor.enter?.ImportRefType) {
       this.visitor.enter.ImportRefType(node);
     }
@@ -219,7 +196,7 @@ export class AbiVisitor {
     }
   }
 
-  private _ArrayType(node: ArrayType) {
+  private _ArrayType(node: UnlinkedArrayType) {
     if (this.visitor.enter?.ArrayType) {
       this.visitor.enter.ArrayType(node);
     }
@@ -230,7 +207,7 @@ export class AbiVisitor {
     }
   }
 
-  private _MapType(node: MapType) {
+  private _MapType(node: UnlinkedMapType) {
     if (this.visitor.enter?.MapType) {
       this.visitor.enter.MapType(node);
     }
@@ -241,7 +218,7 @@ export class AbiVisitor {
     }
   }
 
-  visit(node: Abi) {
+  visit(node: UnlinkedAbiDefs) {
     this._Abi(node);
   }
 }
