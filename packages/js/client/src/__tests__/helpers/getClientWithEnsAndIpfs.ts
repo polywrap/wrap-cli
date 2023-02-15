@@ -19,6 +19,7 @@ import {
   defaultEmbeddedPackages,
   defaultPackages,
   defaultIpfsProviders,
+  defaultWrappers,
 } from "@polywrap/client-config-builder-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 
@@ -51,6 +52,7 @@ export const getClientWithEnsAndIpfs = () => {
             defaultPackages.ipfsResolver,
             defaultPackages.ensResolver,
             defaultPackages.fileSystemResolver,
+            defaultWrappers.ensTextRecordResolver,
           ],
         },
         {
