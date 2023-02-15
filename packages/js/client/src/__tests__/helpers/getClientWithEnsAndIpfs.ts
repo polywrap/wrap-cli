@@ -41,7 +41,7 @@ export const getClientWithEnsAndIpfs = () => {
           env: {
             provider: providers.ipfs,
             fallbackProviders: defaultIpfsProviders,
-            retries: { tryResolveUri: 1, getFile: 1 },
+            retries: { tryResolveUri: 2, getFile: 2 },
           },
         },
       ],
