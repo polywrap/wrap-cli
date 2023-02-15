@@ -46,13 +46,13 @@ export interface Object {
 
 /// Imported Objects START ///
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Connection {
   node?: Types.String | null;
   networkNameOrChainId?: Types.String | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_TxOptions {
   gasLimit?: Types.BigInt | null;
   maxFeePerGas?: Types.BigInt | null;
@@ -62,19 +62,19 @@ export interface Ethereum_TxOptions {
   nonce?: Types.UInt32 | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_StaticTxResult {
   result: Types.String;
   error: Types.Boolean;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Eip1559FeesEstimate {
   maxFeePerGas: Types.BigInt;
   maxPriorityFeePerGas: Types.BigInt;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_TxRequest {
   to?: Types.String | null;
   from?: Types.String | null;
@@ -90,13 +90,13 @@ export interface Ethereum_TxRequest {
   nonce?: Types.UInt32 | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_AccessItem {
   address: Types.String;
   storageKeys: Array<Types.String>;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_TxReceipt {
   to: Types.String;
   from: Types.String;
@@ -116,7 +116,7 @@ export interface Ethereum_TxReceipt {
   status?: Types.UInt32 | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Log {
   blockNumber: Types.BigInt;
   blockHash: Types.String;
@@ -129,7 +129,7 @@ export interface Ethereum_Log {
   logIndex: Types.UInt32;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_TxResponse {
   hash: Types.String;
   to?: Types.String | null;
@@ -155,12 +155,12 @@ export interface Ethereum_TxResponse {
 
 /// Imported Modules START ///
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_getChainId {
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_callContractView {
   address: Types.String;
   method: Types.String;
@@ -168,7 +168,7 @@ export interface Ethereum_Module_Args_callContractView {
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_callContractStatic {
   address: Types.String;
   method: Types.String;
@@ -177,109 +177,109 @@ export interface Ethereum_Module_Args_callContractStatic {
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_encodeParams {
   types: Array<Types.String>;
   values: Array<Types.String>;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_encodeFunction {
   method: Types.String;
   args?: Array<Types.String> | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_decodeFunction {
   method: Types.String;
   data: Types.String;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_getSignerAddress {
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_getSignerBalance {
   blockTag?: Types.BigInt | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_getBalance {
   address: Types.String;
   blockTag?: Types.BigInt | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_getGasPrice {
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_estimateEip1559Fees {
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_sendRpc {
   method: Types.String;
   params: Array<Types.String>;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_getSignerTransactionCount {
   blockTag?: Types.BigInt | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_checkAddress {
   address: Types.String;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_toWei {
   eth: Types.String;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_toEth {
   wei: Types.String;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_estimateTransactionGas {
   tx: Types.Ethereum_TxRequest;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_awaitTransaction {
   txHash: Types.String;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_sendTransaction {
   tx: Types.Ethereum_TxRequest;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_sendTransactionAndWait {
   tx: Types.Ethereum_TxRequest;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_deployContract {
   abi: Types.String;
   bytecode: Types.String;
@@ -288,7 +288,7 @@ export interface Ethereum_Module_Args_deployContract {
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_estimateContractCallGas {
   address: Types.String;
   method: Types.String;
@@ -297,7 +297,7 @@ export interface Ethereum_Module_Args_estimateContractCallGas {
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_callContractMethod {
   address: Types.String;
   method: Types.String;
@@ -306,7 +306,7 @@ export interface Ethereum_Module_Args_callContractMethod {
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_callContractMethodAndWait {
   address: Types.String;
   method: Types.String;
@@ -315,26 +315,26 @@ export interface Ethereum_Module_Args_callContractMethodAndWait {
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_signMessage {
   message: Types.String;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export interface Ethereum_Module_Args_signMessageBytes {
   bytes: Types.Bytes;
   connection?: Types.Ethereum_Connection | null;
 }
 
-/* URI: "ens/ethereum.polywrap.eth" */
+/* URI: "ens/wraps.eth:ethereum@1.0.0" */
 export const Ethereum_Module = {
   getChainId: async (
     args: Ethereum_Module_Args_getChainId,
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: "ens/ethereum.polywrap.eth",
+      uri: "ens/wraps.eth:ethereum@1.0.0",
       method: "getChainId",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -345,7 +345,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "callContractView",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -356,7 +356,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_StaticTxResult>> => {
     return client.invoke<Types.Ethereum_StaticTxResult>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "callContractStatic",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -367,7 +367,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "encodeParams",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -378,7 +378,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "encodeFunction",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -389,7 +389,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Array<Types.String>>> => {
     return client.invoke<Array<Types.String>>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "decodeFunction",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -400,7 +400,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "getSignerAddress",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -411,7 +411,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "getSignerBalance",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -422,7 +422,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "getBalance",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -433,7 +433,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "getGasPrice",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -444,7 +444,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_Eip1559FeesEstimate>> => {
     return client.invoke<Types.Ethereum_Eip1559FeesEstimate>({
-      uri: "ens/ethereum.polywrap.eth",
+      uri: "ens/wraps.eth:ethereum@1.0.0",
       method: "estimateEip1559Fees",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -455,7 +455,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "sendRpc",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -466,7 +466,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "getSignerTransactionCount",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -477,7 +477,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.Boolean>> => {
     return client.invoke<Types.Boolean>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "checkAddress",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -488,7 +488,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "toWei",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -499,7 +499,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "toEth",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -510,7 +510,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "estimateTransactionGas",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -521,7 +521,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_TxReceipt>> => {
     return client.invoke<Types.Ethereum_TxReceipt>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "awaitTransaction",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -532,7 +532,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_TxResponse>> => {
     return client.invoke<Types.Ethereum_TxResponse>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "sendTransaction",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -543,7 +543,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_TxReceipt>> => {
     return client.invoke<Types.Ethereum_TxReceipt>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "sendTransactionAndWait",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -554,7 +554,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "deployContract",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -565,7 +565,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "estimateContractCallGas",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -576,7 +576,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_TxResponse>> => {
     return client.invoke<Types.Ethereum_TxResponse>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "callContractMethod",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -587,7 +587,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_TxReceipt>> => {
     return client.invoke<Types.Ethereum_TxReceipt>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "callContractMethodAndWait",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -598,7 +598,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "signMessage",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -609,7 +609,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: Uri.from("ens/ethereum.polywrap.eth"),
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "signMessageBytes",
       args: (args as unknown) as Record<string, unknown>,
     });

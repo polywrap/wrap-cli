@@ -1424,7 +1424,7 @@ export const manifest: WrapManifest = {
       "namespace": "Ethereum",
       "nativeType": "Module",
       "type": "Ethereum_Module",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     }
   ],
   "importedObjectTypes": [
@@ -1455,7 +1455,7 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_Connection",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -1530,7 +1530,7 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_TxOptions",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -1563,7 +1563,7 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_StaticTxResult",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -1596,7 +1596,7 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_Eip1559FeesEstimate",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -1743,7 +1743,7 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_TxRequest",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -1788,7 +1788,7 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_AccessItem",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -1997,7 +1997,7 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_TxReceipt",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -2126,7 +2126,7 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_Log",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -2339,7 +2339,7 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_TxResponse",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     }
   ],
   "moduleType": {
