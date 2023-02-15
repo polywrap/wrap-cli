@@ -334,7 +334,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: "ens/wraps.eth:ethereum@1.0.0",
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "getChainId",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -444,7 +444,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_Eip1559FeesEstimate>> => {
     return client.invoke<Types.Ethereum_Eip1559FeesEstimate>({
-      uri: "ens/wraps.eth:ethereum@1.0.0",
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "estimateEip1559Fees",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -510,7 +510,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
-      uri: "ens/wraps.eth:ethereum@1.0.0",
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "estimateTransactionGas",
       args: (args as unknown) as Record<string, unknown>,
     });
@@ -532,7 +532,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.Ethereum_TxResponse>> => {
     return client.invoke<Types.Ethereum_TxResponse>({
-      uri: "ens/wraps.eth:ethereum@1.0.0",
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "sendTransaction",
       args: (args as unknown) as Record<string, unknown>,
     });

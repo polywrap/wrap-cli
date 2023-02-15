@@ -334,7 +334,7 @@ export const Ethereum_Module = {
     client: CoreClient
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
-      uri: "ens/wraps.eth:ethereum@1.0.0",
+      uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
       method: "getChainId",
       args: (args as unknown) as Record<string, unknown>,
     });
