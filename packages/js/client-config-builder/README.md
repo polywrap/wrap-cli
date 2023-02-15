@@ -448,11 +448,11 @@ export const defaultEmbeddedPackages = {
 };
 
 export const defaultWrappers = {
-  sha3: "wrap://ens/wrappers.polywrap.eth:sha3@1.0.0",
-  uts46: "wrap://ens/wrappers.polywrap.eth:uts46@1.0.0",
-  graphNode: "wrap://ens/wrappers.polywrap.eth:graph-node@1.0.0",
+  sha3: "wrap://ens/wraps.eth:sha3@1.0.0",
+  uts46: "wrap://ens/wraps.eth:uts46@1.0.0",
+  graphNode: "wrap://ens/wraps.eth:graph-node@1.0.0",
   ensTextRecordResolver:
-    "wrap://ipfs/Qmae5BDZtdqzqurfVW3eE68s5pCUtVxdTtNZt9UnxFtF8X",
+    "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p",
   ethereum: "wrap://ens/wraps.eth:ethereum@1.0.0",
   ens: "wrap://ens/wraps.eth:ens@1.0.0",
 };
@@ -465,12 +465,12 @@ export const defaultPackages = {
 };
 
 export const defaultInterfaces = {
-  concurrent: "wrap://ens/wrappers.polywrap.eth:concurrent@1.0.0",
-  logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
-  http: "wrap://ens/wrappers.polywrap.eth:http@1.1.0",
-  fileSystem: "wrap://ens/wrappers.polywrap.eth:file-system@1.0.0",
-  ipfsHttpClient: "wrap://ens/wrappers.polywrap.eth:ipfs-http-client@1.0.0",
-  ethereumProvider: "wrap://ens/wrappers.polywrap.eth:ethereum-provider@1.0.0",
+  concurrent: "wrap://ens/wraps.eth:concurrent@1.0.0",
+  logger: "wrap://ens/wraps.eth:logger@1.0.0",
+  http: "wrap://ens/wraps.eth:http@1.1.0",
+  fileSystem: "wrap://ens/wraps.eth:file-system@1.0.0",
+  ipfsHttpClient: "wrap://ens/wraps.eth:ipfs-http-client@1.0.0",
+  ethereumProvider: "wrap://ens/wraps.eth:ethereum-provider@1.0.0",
 };
 
 export const getDefaultPackages = (): Record<string, IWrapPackage> => {
