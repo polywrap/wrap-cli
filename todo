@@ -1,0 +1,5 @@
+- [ ] create legacy & new binding repos
+- [ ] create codegen manifest
+- [ ] create init new versioning scheme "origin-0.1"
+- [ ] create cli command `polywrap project upgrade`
+- - [ ] upgrade root manifest (`polywrap.yaml` -> `polywrap.yaml` + `polywrap.codegen.yaml`) + show helpful tips for upgrading rest of project (ex: `polywrap manifest upgrade infra`).
