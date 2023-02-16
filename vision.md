@@ -35,6 +35,8 @@ https://github.com/polywrap/wrap-rust-bindings
 With:
 https://github.com/polywrap/wrap-rust-bindings/legacy
 
+`/legacy` is a git tag. Could also have old versions if you don't want latest `wasm-rust-bindings`. This allows developers to generate runnable source code for their "now old" wrappers.
+
 NOTE: If a user runs `polywrap project upgrade` we can add the legacy URL to the source directory.
 
 ### Conclusion
