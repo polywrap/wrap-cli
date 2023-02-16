@@ -57,8 +57,8 @@ export const getClientWithEnsAndIpfs = () => {
         implementations: [Uri.from(defaultInterfaces.ipfsHttpClient)],
       },
       {
-        interface: defaultInterfaces.ethereumProvider,
-        implementations: [defaultInterfaces.ethereumProvider],
+        interface: Uri.from(defaultInterfaces.ethereumProvider),
+        implementations: [Uri.from(defaultInterfaces.ethereumProvider)],
       },
     ],
     resolver: RecursiveResolver.from([
