@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/core-client-js",
   "description": "Polywrap Javascript Core Client",
-  "version": "0.10.0-pre.8",
+  "version": "0.10.0-pre.7",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,14 +20,14 @@
     "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.10.0-pre.8",
-    "@polywrap/msgpack-js": "0.10.0-pre.8",
-    "@polywrap/result": "0.10.0-pre.8",
-    "@polywrap/tracing-js": "0.10.0-pre.8",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.8"
+    "@polywrap/core-js": "0.10.0-pre.7",
+    "@polywrap/msgpack-js": "0.10.0-pre.7",
+    "@polywrap/result": "0.10.0-pre.7",
+    "@polywrap/tracing-js": "0.10.0-pre.7",
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.7"
   },
   "devDependencies": {
-    "@polywrap/uri-resolvers-js": "0.10.0-pre.8",
+    "@polywrap/uri-resolvers-js": "0.10.0-pre.7",
     "@types/jest": "26.0.8",
     "@types/uuid": "8.3.0",
     "doc-snippets": "~1.0.0",

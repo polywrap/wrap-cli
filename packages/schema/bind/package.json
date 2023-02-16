@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/schema-bind",
   "description": "Polywrap Schema Binding",
-  "version": "0.10.0-pre.8",
+  "version": "0.10.0-pre.7",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,13 +20,13 @@
     "copy:templates": "copyfiles -u 1 src/**/*.mustache build/"
   },
   "dependencies": {
-    "@polywrap/os-js": "0.10.0-pre.8",
-    "@polywrap/schema-parse": "0.10.0-pre.8",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.8",
+    "@polywrap/os-js": "0.10.0-pre.7",
+    "@polywrap/schema-parse": "0.10.0-pre.7",
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.7",
     "mustache": "4.0.1"
   },
   "devDependencies": {
-    "@polywrap/test-cases": "0.10.0-pre.8",
+    "@polywrap/test-cases": "0.10.0-pre.7",
     "@types/jest": "26.0.8",
     "@types/lodash": "4.14.178",
     "@types/mustache": "4.0.1",
