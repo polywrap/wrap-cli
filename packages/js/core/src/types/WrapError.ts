@@ -89,7 +89,7 @@ export class WrapError extends Error {
 
   private static re = new RegExp(
     [
-      /^(?:[A-Za-z_: ]*; )?WrapError: (?<reason>(?:.|\r|\n)*)/.source,
+      /^(?:[A-Za-z_:()` ]*;? "?)?WrapError: (?<reason>(?:.|\r|\n)*)/.source,
       // there is some padding added to the number of words expected in an error code
       /(?:\r\n|\r|\n)code: (?<code>1?[0-9]{1,2}|2[0-4][0-9]|25[0-5]) (?:[A-Z]+ ?){1,5}/
         .source,
@@ -101,12 +101,14 @@ export class WrapError extends Error {
         .source,
       /(?:(?:\r\n|\r|\n)uriResolutionStack: (?<resolutionStack>\[(?:.|\r|\n)+]))?/
         .source,
-      /(?:(?:\r\n|\r|\n){2}This exception was caused by the following exception:(?:\r\n|\r|\n)(?<cause>(?:.|\r|\n)+))?$/
+      /(?:(?:\r\n|\r|\n){2}This exception was caused by the following exception:(?:\r\n|\r|\n)(?<cause>(?:.|\r|\n)+))?/
         .source,
+      /"?$/.source,
     ].join("")
   );
 
   static parse(error: string): WrapError | undefined {
+    error = WrapError.sanitizeUnwrappedRustResult(error);
     const delim = "\n\nAnother exception was encountered during execution:\n";
     const errorStrings = error.split(delim);
 
@@ -137,6 +139,19 @@ export class WrapError extends Error {
 
   toString(): string {
     return `${this.name}: ${this.message}`;
+  }
+
+  // remove escape characters that may have been added by Rust
+  private static sanitizeUnwrappedRustResult(error: string): string {
+    if (
+      error.startsWith(
+        '__wrap_abort: called `Result::unwrap()` on an `Err` value: "'
+      )
+    ) {
+      error = error.replace(/\\"/g, '"');
+      error = error.replace(/\\n/g, "\n");
+    }
+    return error;
   }
 
   // parse a single WrapError, where the 'prev' property is undefined

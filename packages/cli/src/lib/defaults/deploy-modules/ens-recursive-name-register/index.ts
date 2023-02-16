@@ -1,22 +1,24 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { DeployModule } from "../../../deploy";
+import { invokeWithTimeout } from "./invokeWithTimeout";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
 import {
-  ethereumPlugin,
-  Connections,
-  Connection,
-} from "@polywrap/ethereum-plugin-js";
-import { embeddedWrappers } from "@polywrap/test-env-js";
-import {
   ClientConfigBuilder,
+  defaultInterfaces,
   defaultIpfsProviders,
   defaultPackages,
+  defaultWrappers,
   PolywrapClient,
 } from "@polywrap/client-js";
+import {
+  Connection,
+  Connections,
+  ethereumProviderPlugin,
+} from "ethereum-provider-js";
 
 class ENSRecursiveNameRegisterPublisher implements DeployModule {
   async execute(
@@ -53,9 +55,6 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
       ? new Wallet(config.privateKey).connect(connectionProvider)
       : undefined;
 
-    const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
-    const ensWrapperUri = embeddedWrappers.ens;
-
     const clientConfig = new ClientConfigBuilder()
       .addDefaults()
       .add({
@@ -67,11 +66,11 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
           },
         },
         redirects: {
-          "wrap://ens/uts46.polywrap.eth": embeddedWrappers.uts46,
-          "wrap://ens/sha3.polywrap.eth": embeddedWrappers.sha3,
+          "wrap://ens/uts46.polywrap.eth": defaultWrappers.uts46,
+          "wrap://ens/sha3.polywrap.eth": defaultWrappers.sha3,
         },
         packages: {
-          [ethereumPluginUri]: ethereumPlugin({
+          [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
             connections: new Connections({
               networks: {
                 [network]: new Connection({
@@ -90,7 +89,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
 
     const signerAddress = await client.invoke<string>({
       method: "getSignerAddress",
-      uri: ethereumPluginUri,
+      uri: defaultWrappers.ethereum,
       args: {
         connection: {
           networkNameOrChainId: network,
@@ -102,9 +101,11 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
       throw new Error("Could not get signer");
     }
 
-    const registerData = await client.invoke<{ hash: string }>({
+    const registerData = await client.invoke<
+      { tx: { hash: string }; didRegister: boolean }[]
+    >({
       method: "registerDomainAndSubdomainsRecursively",
-      uri: ensWrapperUri,
+      uri: defaultWrappers.ens,
       args: {
         domain: ensDomain,
         owner: signerAddress.value,
@@ -125,18 +126,23 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
       );
     }
 
-    await client.invoke({
-      method: "awaitTransaction",
-      uri: ethereumPluginUri,
-      args: {
-        txHash: registerData.value.hash,
-        confirmations: 1,
-        timeout: 15000,
-        connection: {
-          networkNameOrChainId: network,
+    // didRegister can be false if the ens domain is already registered, in which case there is no transaction
+    if (registerData.value[0].didRegister) {
+      await invokeWithTimeout(
+        client,
+        {
+          method: "awaitTransaction",
+          uri: Uri.from(defaultWrappers.ethereum),
+          args: {
+            txHash: registerData.value[0].tx.hash,
+            connection: {
+              networkNameOrChainId: network,
+            },
+          },
         },
-      },
-    });
+        15000
+      );
+    }
 
     return new Uri(`ens/${network}/${ensDomain}`);
   }

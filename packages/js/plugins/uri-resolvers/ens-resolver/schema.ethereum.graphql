@@ -1,0 +1,268 @@
+#import { Module } into IProvider from "wrap://ens/wraps.eth:ethereum-provider@1.0.0"
+#use { getImplementations } for IProvider
+
+type Connection {
+    node: String
+    networkNameOrChainId: String
+}
+
+type TxRequest {
+    to: String
+    from: String
+    data: String
+    type: UInt32
+    chainId: BigInt
+    accessList: [AccessItem!]
+    """Gas supplied for the transaction"""
+    gasLimit: BigInt
+    """
+    The max total fee to pay per unit of gas.
+    The difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.
+    This property is ignored when gasPrice is not null.
+    """
+    maxFeePerGas: BigInt
+    """
+    The gas price paid is baseFeePerGas + maxPriorityFeePerGas.
+    The difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.
+    This property is ignored when gasPrice is not null.
+    """
+    maxPriorityFeePerGas: BigInt
+    """
+    The gas price for legacy transactions.
+    If this property is not null, a legacy transaction will be sent and maxFeePerGas and maxPriorityFeePerGas will be ignored.
+    """
+    gasPrice: BigInt
+    """Ether value sent with transaction"""
+    value: BigInt
+    """Override default nonce"""
+    nonce: UInt32
+}
+
+type AccessItem {
+    address: String!
+    storageKeys: [String!]!
+}
+
+type TxResponse {
+    hash: String!
+    to: String
+    from: String!
+    nonce: UInt32!
+    gasLimit: BigInt!
+    maxFeePerGas: BigInt
+    maxPriorityFeePerGas: BigInt
+    gasPrice: BigInt
+    value: BigInt!
+    chainId: BigInt!
+    blockNumber: BigInt
+    blockHash: String
+    timestamp: UInt32
+    r: String
+    s: String
+    v: UInt32
+    type: UInt32
+    accessList: [AccessItem!]
+}
+
+type Log {
+    blockNumber: BigInt!
+    blockHash: String!
+    transactionIndex: UInt32!
+    removed: Boolean!
+    address: String!
+    data: String!
+    topics: [String!]!
+    transactionHash: String!
+    logIndex: UInt32!
+}
+
+type TxReceipt {
+    to: String!
+    from: String!
+    contractAddress: String!
+    transactionIndex: UInt32!
+    root: String
+    gasUsed: BigInt!
+    logsBloom: String!
+    transactionHash: String!
+    logs: [Log!]!
+    blockNumber: BigInt!
+    blockHash: String!
+    confirmations: UInt32!
+    cumulativeGasUsed: BigInt!
+    effectiveGasPrice: BigInt!
+    type: UInt32!
+    status: UInt32
+}
+
+type TxOptions {
+    """Gas supplied for the transaction"""
+    gasLimit: BigInt
+    """
+    The max total fee to pay per unit of gas.
+    The difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.
+    This property is ignored when gasPrice is not null.
+    """
+    maxFeePerGas: BigInt
+    """
+    The gas price paid is baseFeePerGas + maxPriorityFeePerGas.
+    The difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.
+    This property is ignored when gasPrice is not null.
+    """
+    maxPriorityFeePerGas: BigInt
+    """
+    The gas price for legacy transactions.
+    If this property is not null, a legacy transaction will be sent and maxFeePerGas and maxPriorityFeePerGas will be ignored.
+    """
+    gasPrice: BigInt
+    """Ether value sent with transaction"""
+    value: BigInt
+    """Override default nonce"""
+    nonce: UInt32
+}
+
+type StaticTxResult {
+    result: String!
+    error: Boolean!
+}
+
+type Eip1559FeesEstimate {
+    maxFeePerGas: BigInt!
+    maxPriorityFeePerGas: BigInt!
+}
+
+type Module {
+  getChainId(connection: Connection): String!
+
+  callContractView(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Connection
+  ): String!
+
+  callContractStatic(
+    address: String!
+    method: String!
+    args: [String!]
+    options: TxOptions
+    connection: Connection
+  ): StaticTxResult!
+
+  encodeParams(
+    types: [String!]!
+    values: [String!]!
+    connection: Connection
+  ): String!
+
+  encodeFunction(
+    method: String!
+    args: [String!]
+    connection: Connection
+  ): String!
+
+  decodeFunction(
+    method: String!
+    data: String!
+    connection: Connection
+  ): [String!]!
+
+  getSignerAddress(connection: Connection): String!
+
+  getSignerBalance(
+    blockTag: BigInt
+    connection: Connection
+  ): BigInt!
+
+  getBalance(
+    address: String!
+    blockTag: BigInt
+    connection: Connection
+  ): BigInt!
+
+  getGasPrice(connection: Connection): BigInt!
+
+  estimateEip1559Fees(connection: Connection): Eip1559FeesEstimate!
+
+  sendRpc(
+    method: String!
+    params: [String!]!
+    connection: Connection
+  ): String!
+
+  getSignerTransactionCount(
+    blockTag: BigInt
+    connection: Connection
+  ): BigInt!
+
+  checkAddress(
+    address: String!
+    connection: Connection
+  ): Boolean!
+
+  toWei(eth: String!): String!
+
+  toEth(wei: String!): String!
+
+  estimateTransactionGas(
+    tx: TxRequest!
+    connection: Connection
+  ): BigInt!
+
+  awaitTransaction(
+    txHash: String!
+    connection: Connection
+  ): TxReceipt!
+
+  sendTransaction(
+    tx: TxRequest!
+    connection: Connection
+  ): TxResponse!
+
+  sendTransactionAndWait(
+    tx: TxRequest!
+    connection: Connection
+  ): TxReceipt!
+
+  deployContract(
+    abi: String!
+    bytecode: String!
+    args: [String!]
+    options: TxOptions
+    connection: Connection
+  ): String!
+
+  estimateContractCallGas(
+    address: String!
+    method: String!
+    args: [String!]
+    options: TxOptions
+    connection: Connection
+  ): BigInt!
+
+  callContractMethod(
+    address: String!
+    method: String!
+    args: [String!]
+    options: TxOptions
+    connection: Connection
+  ): TxResponse!
+
+  callContractMethodAndWait(
+    address: String!
+    method: String!
+    args: [String!]
+    options: TxOptions
+    connection: Connection
+  ): TxReceipt!
+
+  signMessage(
+    message: String!
+    connection: Connection
+  ): String!
+
+  signMessageBytes(
+    bytes: Bytes!
+    connection: Connection
+  ): String!
+}

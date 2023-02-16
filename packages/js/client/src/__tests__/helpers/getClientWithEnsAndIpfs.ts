@@ -3,8 +3,8 @@ import { ensAddresses, providers } from "@polywrap/test-env-js";
 import {
   Connection,
   Connections,
-  ethereumPlugin,
-} from "@polywrap/ethereum-plugin-js";
+  ethereumProviderPlugin,
+} from "ethereum-provider-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
@@ -18,6 +18,7 @@ import {
   defaultInterfaces,
   defaultEmbeddedPackages,
   defaultPackages,
+  defaultWrappers,
 } from "@polywrap/client-config-builder-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 
@@ -37,7 +38,7 @@ export const getClientWithEnsAndIpfs = () => {
         uri: Uri.from(defaultPackages.ipfsResolver),
         env: {
           provider: providers.ipfs,
-          retries: { tryResolveUri: 1, getFile: 1 },
+          retries: { tryResolveUri: 2, getFile: 2 },
         },
       },
     ],
@@ -48,11 +49,16 @@ export const getClientWithEnsAndIpfs = () => {
           Uri.from(defaultPackages.ipfsResolver),
           Uri.from(defaultPackages.ensResolver),
           Uri.from(defaultPackages.fileSystemResolver),
+          Uri.from(defaultWrappers.ensTextRecordResolver),
         ],
       },
       {
         interface: Uri.from(defaultInterfaces.ipfsHttpClient),
         implementations: [Uri.from(defaultInterfaces.ipfsHttpClient)],
+      },
+      {
+        interface: defaultInterfaces.ethereumProvider,
+        implementations: [defaultInterfaces.ethereumProvider],
       },
     ],
     resolver: RecursiveResolver.from([
@@ -67,8 +73,8 @@ export const getClientWithEnsAndIpfs = () => {
             package: defaultEmbeddedPackages.ipfsResolver(),
           },
           {
-            uri: Uri.from(defaultPackages.ethereum),
-            package: ethereumPlugin({ connections }),
+            uri: Uri.from(defaultInterfaces.ethereumProvider),
+            package: ethereumProviderPlugin({ connections }),
           },
           {
             uri: Uri.from(defaultPackages.ensResolver),

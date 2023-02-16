@@ -33,7 +33,7 @@ export async function foo({
         plugin: fileSystemResolverPlugin({}),
       },
       {
-        uri: "wrap://ens/wrappers.polywrap.eth:file-system@1.0.0",
+        uri: "wrap://ens/wraps.eth:file-system@1.0.0",
         plugin: filesystemPlugin({}),
       }
     ],

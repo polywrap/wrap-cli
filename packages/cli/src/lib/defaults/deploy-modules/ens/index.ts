@@ -1,22 +1,24 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { DeployModule } from "../../../deploy";
+import { invokeWithTimeout } from "./invokeWithTimeout";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
 import {
-  Connections,
-  Connection,
-  ethereumPlugin,
-} from "@polywrap/ethereum-plugin-js";
-import { embeddedWrappers } from "@polywrap/test-env-js";
-import {
   ClientConfigBuilder,
+  defaultInterfaces,
+  defaultWrappers,
   defaultIpfsProviders,
   defaultPackages,
   PolywrapClient,
 } from "@polywrap/client-js";
+import {
+  Connection,
+  Connections,
+  ethereumProviderPlugin,
+} from "ethereum-provider-js";
 
 const contentHash = require("content-hash");
 
@@ -50,9 +52,6 @@ class ENSPublisher implements DeployModule {
       ? new Wallet(config.privateKey).connect(connectionProvider)
       : undefined;
 
-    const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
-    const ensWrapperUri = embeddedWrappers.ens;
-
     const clientConfig = new ClientConfigBuilder()
       .addDefaults()
       .add({
@@ -64,11 +63,11 @@ class ENSPublisher implements DeployModule {
           },
         },
         redirects: {
-          "wrap://ens/uts46.polywrap.eth": embeddedWrappers.uts46,
-          "wrap://ens/sha3.polywrap.eth": embeddedWrappers.sha3,
+          "wrap://ens/uts46.polywrap.eth": defaultWrappers.uts46,
+          "wrap://ens/sha3.polywrap.eth": defaultWrappers.sha3,
         },
         packages: {
-          [ethereumPluginUri]: ethereumPlugin({
+          [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
             connections: new Connections({
               networks: {
                 [network]: new Connection({
@@ -87,7 +86,7 @@ class ENSPublisher implements DeployModule {
 
     const resolver = await client.invoke<string>({
       method: "getResolver",
-      uri: ensWrapperUri,
+      uri: defaultWrappers.ens,
       args: {
         registryAddress: config.ensRegistryAddress,
         domain: config.domainName,
@@ -109,7 +108,7 @@ class ENSPublisher implements DeployModule {
 
     const setContenthashData = await client.invoke<{ hash: string }>({
       method: "setContentHash",
-      uri: ensWrapperUri,
+      uri: defaultWrappers.ens,
       args: {
         domain: config.domainName,
         cid: hash,
@@ -124,18 +123,20 @@ class ENSPublisher implements DeployModule {
       throw new Error(`Could not set contentHash for '${config.domainName}'`);
     }
 
-    await client.invoke({
-      method: "awaitTransaction",
-      uri: ethereumPluginUri,
-      args: {
-        txHash: setContenthashData.value.hash,
-        confirmations: 1,
-        timeout: 15000,
-        connection: {
-          networkNameOrChainId: network,
+    await invokeWithTimeout(
+      client,
+      {
+        method: "awaitTransaction",
+        uri: Uri.from(defaultWrappers.ethereum),
+        args: {
+          txHash: setContenthashData.value.hash,
+          connection: {
+            networkNameOrChainId: network,
+          },
         },
       },
-    });
+      15000
+    );
 
     return new Uri(`ens/${network}/${config.domainName}`);
   }

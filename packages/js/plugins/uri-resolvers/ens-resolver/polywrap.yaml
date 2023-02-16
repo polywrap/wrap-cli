@@ -8,3 +8,7 @@ source:
   import_abis:
     - uri: "ens/uri-resolver.core.polywrap.eth"
       abi: ../../../../interfaces/uri-resolver/build/wrap.info
+    - uri: "ens/wraps.eth:ethereum@1.0.0"
+      abi: ./schema.ethereum.graphql
+    - uri: "ens/wraps.eth:ethereum-provider@1.0.0"
+      abi: ./schema.ethereum-provider.graphql

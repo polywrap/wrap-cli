@@ -54,12 +54,6 @@ $snippet: providers
 $snippet: ensAddresses
 ```
 
-### embeddedWrappers
-
-```typescript
-$snippet: embeddedWrappers
-```
-
 ## Methods
 
 ### initTestEnvironment
