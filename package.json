@@ -74,7 +74,7 @@
   "resolutions": {
     "@types/react": "16.9.0",
     "@types/react-dom": "16.9.0",
-    "@polywrap/core-js": "0.10.0-pre.7",
-    "@polywrap/plugin-js": "0.10.0-pre.7"
+    "@polywrap/core-js": "0.10.0-pre.8",
+    "@polywrap/plugin-js": "0.10.0-pre.8"
   }
 }

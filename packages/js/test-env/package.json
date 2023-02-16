@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/test-env-js",
   "description": "Polywrap Test Helpers",
-  "version": "0.10.0-pre.7",
+  "version": "0.10.0-pre.8",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,8 +20,8 @@
     "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.10.0-pre.7",
-    "@polywrap/polywrap-manifest-types-js": "0.10.0-pre.7",
+    "@polywrap/core-js": "0.10.0-pre.8",
+    "@polywrap/polywrap-manifest-types-js": "0.10.0-pre.8",
     "axios": "0.21.2",
     "spawn-command": "0.0.2-1",
     "yaml": "2.1.3"

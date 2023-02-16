@@ -2152,11 +2152,18 @@
   integrity sha512-aPfcBeLErM/PPiAuAbNFLN5sNbZLc3KZlar27uohllN8Zs6jJbHyJU1y7cMA6W/zuq+thkaG8mujiS+3iD/FWQ==
 
 "@polywrap/core-js@0.10.0-pre.5":
-  version "0.10.0-pre.7"
+  version "0.10.0-pre.8"
   dependencies:
-    "@polywrap/result" "0.10.0-pre.7"
-    "@polywrap/tracing-js" "0.10.0-pre.7"
-    "@polywrap/wrap-manifest-types-js" "0.10.0-pre.7"
+    "@polywrap/result" "0.10.0-pre.8"
+    "@polywrap/tracing-js" "0.10.0-pre.8"
+    "@polywrap/wrap-manifest-types-js" "0.10.0-pre.8"
+
+"@polywrap/core-js@0.10.0-pre.7":
+  version "0.10.0-pre.8"
+  dependencies:
+    "@polywrap/result" "0.10.0-pre.8"
+    "@polywrap/tracing-js" "0.10.0-pre.8"
+    "@polywrap/wrap-manifest-types-js" "0.10.0-pre.8"
 
 "@polywrap/fs-plugin-js@~0.10.0-pre":
   version "0.10.0-pre.7"
@@ -2223,14 +2230,30 @@
     "@polywrap/core-js" "0.10.0-pre.5"
     "@polywrap/plugin-js" "0.10.0-pre.5"
 
-"@polywrap/plugin-js@0.10.0-pre.5":
+"@polywrap/msgpack-js@0.10.0-pre.7":
   version "0.10.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polywrap/msgpack-js/-/msgpack-js-0.10.0-pre.7.tgz#b3b48639e04874f9881a1423d375e927e5b72da0"
+  integrity sha512-P1Htd76w7fBNM5/aRUaPpKGcfO/tkRo6FImRo8vFM5hvMKaxlc5yO48r/4O6LOlCBSG7mWce5+9QXg/rCWzfZw==
   dependencies:
-    "@polywrap/core-js" "0.10.0-pre.7"
-    "@polywrap/msgpack-js" "0.10.0-pre.7"
-    "@polywrap/result" "0.10.0-pre.7"
-    "@polywrap/tracing-js" "0.10.0-pre.7"
-    "@polywrap/wrap-manifest-types-js" "0.10.0-pre.7"
+    "@msgpack/msgpack" "2.7.2"
+
+"@polywrap/plugin-js@0.10.0-pre.5":
+  version "0.10.0-pre.8"
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.8"
+    "@polywrap/msgpack-js" "0.10.0-pre.8"
+    "@polywrap/result" "0.10.0-pre.8"
+    "@polywrap/tracing-js" "0.10.0-pre.8"
+    "@polywrap/wrap-manifest-types-js" "0.10.0-pre.8"
+
+"@polywrap/plugin-js@0.10.0-pre.7":
+  version "0.10.0-pre.8"
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.8"
+    "@polywrap/msgpack-js" "0.10.0-pre.8"
+    "@polywrap/result" "0.10.0-pre.8"
+    "@polywrap/tracing-js" "0.10.0-pre.8"
+    "@polywrap/wrap-manifest-types-js" "0.10.0-pre.8"
 
 "@polywrap/wrap-manifest-schemas@0.9.3":
   version "0.9.3"
