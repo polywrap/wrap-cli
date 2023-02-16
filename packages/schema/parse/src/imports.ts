@@ -1,21 +1,28 @@
 import { DependencyTree } from "./DependencyTree";
-import { ExternalImportStatement, SchemaParser } from "./types";
-import { UnlinkedAbiDefs } from "./UnlinkedDefs";
+import { AbiMerger } from "./AbiMerger";
+import { ExternalImportStatement, LocalImportStatement, SchemaParser } from "./types";
+import { UnlinkedAbiDefs, UnlinkedFunctionDef, UnlinkedObjectDef } from "./UnlinkedDefs";
 import { UnlinkedAbiVisitor } from "./visitor";
+import { EnumDef, RefType } from "./definitions";
 
 export class ImportsParser {
   private _schemaDependencyTree = new DependencyTree<UnlinkedAbiDefs>()
   private _defintionDependencyTree = new DependencyTree<string>()
 
   constructor(private _schemaParser: SchemaParser, private _fetchers: {
-    external: (uri: string) => Promise<string>
-  }) { }
+    external: (uri: string) => Promise<string>;
+    local: (path: string) => Promise<string>;
+  }, private _abiMerger: AbiMerger) { }
 
-  private _extractAdditionaAndTransitiveDeps(typesToVisit: string[], transitiveImports: ExternalImportStatement[], abiToVisitUri: string, abiToVisit: UnlinkedAbiDefs, typesToSkip: string[] = []): {
+  private _extractAdditionaAndTransitiveDeps(abiToVisit: {
+    uri: string,
+    abi: UnlinkedAbiDefs,
+    extImports: ExternalImportStatement[],
+  }, typesToVisit: string[], typesVisited: string[] = []): {
     typesToImport: Set<[string, string]>,
     transitiveImportDeps: Set<ExternalImportStatement>,
   } {
-    typesToVisit = typesToVisit.filter(t => !typesToSkip.includes(t))
+    typesToVisit = typesToVisit.filter(t => !typesVisited.includes(t))
     const typesToImport = new Set<[string, string]>()
     const transitiveImportDeps = new Set<ExternalImportStatement>()
 
@@ -39,13 +46,13 @@ export class ImportsParser {
             !typesToVisit.includes(ref.ref_name)) {
             typesToImport.add([state.currentObject, ref.ref_name])
 
-            this._defintionDependencyTree.addNode(ref.ref_name, abiToVisitUri)
+            this._defintionDependencyTree.addNode(ref.ref_name, abiToVisit.uri)
             this._defintionDependencyTree.addEdge(state.currentObject, ref.ref_name)
           }
         },
         ImportRefType: (ref) => {
           if (state.currentObject) {
-            const transitiveDependency = transitiveImports.find(t => t.importedTypes.includes(ref.ref_name))
+            const transitiveDependency = abiToVisit.extImports.find(t => t.importedTypes.includes(ref.ref_name))
 
             if (!transitiveDependency) {
               throw new Error(`Found import reference to '${ref.ref_name}' which isn't an imported definition`)
@@ -53,9 +60,9 @@ export class ImportsParser {
 
             transitiveImportDeps.add(transitiveDependency)
 
-            this._defintionDependencyTree.addNode(ref.ref_name, abiToVisitUri)
+            this._defintionDependencyTree.addNode(ref.ref_name, abiToVisit.uri)
             this._defintionDependencyTree.addEdge(state.currentObject, ref.ref_name)
-            this._schemaDependencyTree.addEdge(abiToVisitUri, transitiveDependency.uriOrPath)
+            this._schemaDependencyTree.addEdge(abiToVisit.uri, transitiveDependency.uriOrPath)
           }
         }
       },
@@ -65,12 +72,12 @@ export class ImportsParser {
         }
       }
     })
-    externalAbiVisitor.visit(abiToVisit)
+    externalAbiVisitor.visit(abiToVisit.abi)
 
     const {
       typesToImport: resultingTypesToImport,
       transitiveImportDeps: resultingTransitiveImportDeps,
-    } = this._extractAdditionaAndTransitiveDeps([...typesToImport.values()].map(([_, dep]) => dep), transitiveImports, abiToVisitUri, abiToVisit, [...typesToSkip, ...typesToVisit])
+    } = this._extractAdditionaAndTransitiveDeps(abiToVisit, Array.from(typesToImport).map(([_, dep]) => dep), [...typesVisited, ...typesToVisit])
 
     return {
       typesToImport: new Set([...typesToImport, ...resultingTypesToImport]),
@@ -91,24 +98,129 @@ export class ImportsParser {
       const transitiveImports = await this._schemaParser.parseExternalImportStatements(externalSchema)
       const {
         transitiveImportDeps,
-      } = this._extractAdditionaAndTransitiveDeps(importedTypes, transitiveImports, extImportUri, externalAbi)
+      } = this._extractAdditionaAndTransitiveDeps({
+        uri: extImportUri,
+        extImports: transitiveImports,
+        abi: externalAbi,
+      }, importedTypes)
 
       await this._getTransitiveDependencies([...transitiveImportDeps])
     }
+  }
+
+  findDefFromRef(abi: UnlinkedAbiDefs, ref: RefType): UnlinkedObjectDef | EnumDef {
+    let result: UnlinkedObjectDef | EnumDef | undefined;
+
+    switch (ref.ref_kind) {
+      case "Object":
+        result = abi.objects?.find(o => o.name === ref.ref_name)
+        break;
+      case "Enum":
+        result = abi.enums?.find(o => o.name === ref.ref_name)
+        break;
+      default:
+        throw new Error(`Unknown kind ${ref.kind}`)
+    }
+
+    if (!result) {
+      throw new Error(`Could not find ${ref.ref_kind} ${ref.ref_name}`)
+    }
+
+    return result
+  }
+
+  async extractLocalDefs(localImportStatements: LocalImportStatement[]): Promise<{
+    locallyImportedDefs: UnlinkedAbiDefs,
+    additionalExternalImports: ExternalImportStatement[]
+  }> {
+    const objectsToMerge = new Set<UnlinkedObjectDef>()
+    const enumsToMerge = new Set<EnumDef>()
+    const functionsToMerge = new Set<UnlinkedFunctionDef>()
+    const additionalExternalImports = new Set<ExternalImportStatement>()
+
+    for await (const localImportStatement of localImportStatements) {
+      const localSchema = await this._fetchers.local(localImportStatement.uriOrPath);
+      const localAbi = await this._schemaParser.parse(localSchema)
+      const transitiveExtImports = await this._schemaParser.parseExternalImportStatements(localSchema)
+
+      const state: { currentObject?: string; currentFunction?: string } = {}
+      const localAbiVisitor = new UnlinkedAbiVisitor({
+        enter: {
+          ObjectDef: (def) => {
+            if (localImportStatement.importedTypes.includes(def.name)) {
+              state.currentObject = def.name
+              objectsToMerge.add(def)
+            }
+          },
+          EnumDef: (def) => {
+            if (localImportStatement.importedTypes.includes(def.name)) {
+              enumsToMerge.add(def)
+            }
+          },
+          FunctionDef: (def) => {
+            if (localImportStatement.importedTypes.includes(def.name)) {
+              state.currentFunction = def.name
+              functionsToMerge.add(def)
+            }
+          },
+          RefType: (ref) => {
+            const containingDefName = state.currentObject || state.currentFunction as string
+            if (containingDefName && !localImportStatement.importedTypes.includes(ref.ref_name)) {
+              
+              const referencedDef = this.findDefFromRef(localAbi, ref)
+              if (referencedDef.kind === "Object") {
+                objectsToMerge.add(referencedDef)
+              } else {
+                enumsToMerge.add(referencedDef)
+              }
+            }
+          },
+          ImportRefType: (ref) => {
+            const containingDefName = state.currentObject || state.currentFunction as string
+            // TODO: namespaced re-exported ext import?
+            if (containingDefName) {
+              const referencedTransitiveImport = transitiveExtImports.find(t => t.importedTypes.includes(ref.ref_name))
+
+              if (!referencedTransitiveImport) {
+                throw new Error(`Could not find transitive import for ${ref.ref_name}`)
+              }
+              additionalExternalImports.add(referencedTransitiveImport)
+            }
+          }
+        },
+        leave: {
+          ObjectDef: () => {
+            state.currentObject = undefined
+          },
+          FunctionDef: () => {
+            state.currentFunction = undefined
+          }
+        }
+      })
+
+      localAbiVisitor.visit(localAbi)
+    }
 
     return {
-      definitionDependencyTree: this._defintionDependencyTree,
-      schemaDependencyTree: this._schemaDependencyTree
+      locallyImportedDefs: {objects: [...objectsToMerge], enums: [...enumsToMerge], functions: [...functionsToMerge]},
+      additionalExternalImports: [...additionalExternalImports]
     }
   }
 
-  async getImports(rootSchema: string, parser: SchemaParser) {
-    const rootAbi = await parser.parse(rootSchema)
-    this._schemaDependencyTree.addNode("root", rootAbi)
+  async getImports(rootSchema: string) {
+    const rootAbi = await this._schemaParser.parse(rootSchema)
+    const localImportStatements = await this._schemaParser.parseLocalImportStatements(rootSchema);
+
+    const { locallyImportedDefs, additionalExternalImports } = await this.extractLocalDefs(localImportStatements)
+
+    const externalImportStatementsFromRoot = await this._schemaParser.parseExternalImportStatements(rootSchema);
+    const externalImportStatements = [...externalImportStatementsFromRoot, ...additionalExternalImports]
+
+    const mergedRootAbi = this._abiMerger.merge([rootAbi, locallyImportedDefs])
+
+    this._schemaDependencyTree.addNode("root", mergedRootAbi)
 
     const state: { currentObject?: string; currentFunction?: string } = {}
-    const externalImportStatements = await parser.parseExternalImportStatements(rootSchema);
-
     const rootAbiVisitor = new UnlinkedAbiVisitor({
       enter: {
         ObjectDef: (def) => {
