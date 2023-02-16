@@ -30,7 +30,7 @@
     "@polywrap/client-config-builder-js": "0.10.0-pre.8",
     "@polywrap/client-js": "0.10.0-pre.8",
     "@polywrap/ethereum-plugin-js": "0.10.0-pre.8",
-    "@polywrap/http-plugin-js": "~0.10.0",
+    "@polywrap/http-plugin-js": "~0.10.0-pre",
     "@polywrap/wasm-js": "0.10.0-pre.8",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",

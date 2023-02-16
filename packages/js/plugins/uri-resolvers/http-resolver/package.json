@@ -26,7 +26,7 @@
     "abort-controller": "3.0.0"
   },
   "devDependencies": {
-    "@polywrap/http-plugin-js": "~0.10.0",
+    "@polywrap/http-plugin-js": "~0.10.0-pre",
     "@polywrap/test-env-js": "0.10.0-pre.8",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
