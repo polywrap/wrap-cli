@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import path from "path";
-import spawn from "spawn-command";
 import axios from "axios";
 import fs from "fs";
 import yaml from "yaml";
+import * as PolywrapCli from "@polywrap/cli-js";
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 
 // $start: ensAddresses
@@ -33,9 +33,6 @@ export const embeddedWrappers = {
   sha3: `wrap://fs/${path.join(__dirname, "wrappers", "sha3")}`,
 };
 // $end: embeddedWrappers
-
-const monorepoCli = `${__dirname}/../../../cli/bin/polywrap`;
-const npmCli = `${__dirname}/../../../polywrap/bin/polywrap`;
 
 async function awaitResponse(
   url: string,
@@ -82,10 +79,14 @@ export const initTestEnvironment = async (
   cli?: string
 ): Promise<void> /* $ */ => {
   // Start the test environment
-  const { exitCode, stderr, stdout } = await runCLI({
-    args: ["infra", "up", "--modules=eth-ens-ipfs", "--verbose"],
-    cli,
-  });
+  const cliResp = await PolywrapCli.Commands.infra(
+    "up", {
+      modules: ["eth-ens-ipfs"],
+      verbose: true
+    }
+  );
+
+  const { exitCode, stdout, stderr } = cliResp;
 
   if (exitCode) {
     throw Error(
@@ -148,10 +149,13 @@ export const stopTestEnvironment = async (
   cli?: string
 ): Promise<void> /* $ */ => {
   // Stop the test environment
-  const { exitCode, stderr } = await runCLI({
-    args: ["infra", "down", "--modules=eth-ens-ipfs"],
-    cli,
-  });
+  const cliResp = await PolywrapCli.Commands.infra(
+    "down", {
+      modules: ["eth-ens-ipfs"]
+    }
+  );
+
+  const { exitCode, stderr } = cliResp;
 
   if (exitCode) {
     throw Error(
@@ -160,76 +164,6 @@ export const stopTestEnvironment = async (
   }
 
   return Promise.resolve();
-};
-
-// $start: runCLI
-/**
- * Runs the polywrap CLI programmatically.
- *
- * @param options - an object containing:
- *   args - an array of command line arguments
- *   cwd? - a current working directory
- *   cli? - a path to a Polywrap CLI binary
- *   env? - a map of environmental variables
- *
- * @returns exit code, standard output, and standard error logs
- */
-export const runCLI = async (options: {
-  args: string[];
-  cwd?: string;
-  cli?: string;
-  env?: Record<string, string>;
-}): Promise<{
-  exitCode: number;
-  stdout: string;
-  stderr: string;
-}> /* $ */ => {
-  const [exitCode, stdout, stderr] = await new Promise((resolve, reject) => {
-    if (!options.cwd) {
-      // Make sure to set an absolute working directory
-      const cwd = process.cwd();
-      options.cwd = cwd[0] !== "/" ? path.resolve(__dirname, cwd) : cwd;
-    }
-
-    // Resolve the CLI
-    if (!options.cli) {
-      if (fs.existsSync(monorepoCli)) {
-        options.cli = monorepoCli;
-      } else if (fs.existsSync(npmCli)) {
-        options.cli = npmCli;
-      } else {
-        throw Error(`runCli is missing a valid CLI path, please provide one`);
-      }
-    }
-
-    const command = `node ${options.cli} ${options.args.join(" ")}`;
-    const child = spawn(command, { cwd: options.cwd, env: options.env });
-
-    let stdout = "";
-    let stderr = "";
-
-    child.on("error", (error: Error) => {
-      reject(error);
-    });
-
-    child.stdout?.on("data", (data: string) => {
-      stdout += data.toString();
-    });
-
-    child.stderr?.on("data", (data: string) => {
-      stderr += data.toString();
-    });
-
-    child.on("exit", (exitCode: number) => {
-      resolve([exitCode, stdout, stderr]);
-    });
-  });
-
-  return {
-    exitCode,
-    stdout,
-    stderr,
-  };
 };
 
 // $start: buildWrapper
@@ -249,31 +183,18 @@ export async function buildWrapper(
     ? path.join(wrapperAbsPath, manifestPathOverride)
     : `${wrapperAbsPath}/polywrap.yaml`;
 
-  const args = [
-    "build",
-    "--manifest-file",
-    manifestPath,
-    "--output-dir",
-    `${wrapperAbsPath}/build`,
-  ];
-
-  if (noCodegen) {
-    args.push("--no-codegen");
-  }
-
-  const {
-    exitCode: buildExitCode,
-    stdout: buildStdout,
-    stderr: buildStderr,
-  } = await runCLI({
-    args,
-    cwd: wrapperAbsPath,
+  const cliResp = await PolywrapCli.Commands.build({
+    manifestFile: manifestPath,
+    outputDir: `${wrapperAbsPath}/build`,
+    noCodegen: noCodegen
+  }, {
+    cwd: wrapperAbsPath
   });
 
-  if (buildExitCode !== 0) {
-    console.error(`polywrap exited with code: ${buildExitCode}`);
-    console.log(`stderr:\n${buildStderr}`);
-    console.log(`stdout:\n${buildStdout}`);
+  if (cliResp.exitCode !== 0) {
+    console.error(`polywrap exited with code: ${cliResp.exitCode}`);
+    console.log(`stderr:\n${cliResp.stderr}`);
+    console.log(`stdout:\n${cliResp.stdout}`);
     throw Error("polywrap CLI failed");
   }
 }
@@ -318,18 +239,14 @@ export async function deployWrapper(options: {
   );
 
   // deploy Wrapper
-  const {
-    exitCode: deployExitCode,
-    stdout: deployStdout,
-    stderr: deployStderr,
-  } = await runCLI({
-    args: ["deploy", "--manifest-file", tempDeployManifestPath],
+  const cliResp = await PolywrapCli.Commands.deploy({
+    manifestFile: tempDeployManifestPath
   });
 
-  if (deployExitCode !== 0) {
-    console.error(`polywrap exited with code: ${deployExitCode}`);
-    console.log(`stderr:\n${deployStderr}`);
-    console.log(`stdout:\n${deployStdout}`);
+  if (cliResp.exitCode !== 0) {
+    console.error(`polywrap exited with code: ${cliResp.exitCode}`);
+    console.log(`stderr:\n${cliResp.stderr}`);
+    console.log(`stdout:\n${cliResp.stdout}`);
     throw Error("polywrap CLI failed");
   }
 
@@ -337,7 +254,7 @@ export async function deployWrapper(options: {
   fs.unlinkSync(tempDeployManifestPath);
 
   return {
-    stdout: deployStdout,
-    stderr: deployStderr,
+    stdout: cliResp.stdout,
+    stderr: cliResp.stderr,
   };
 }

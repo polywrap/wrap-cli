@@ -39,16 +39,6 @@ Build a local wrapper project.
   const wrapperUri = `wrap://fs/${wrapperPath}/build`;
 ```
 
-## Execute the CLI
-
-Execute a command with the Polywrap CLI.
-
-``` typescript
-  const { exitCode, stderr, stdout } = await runCLI({
-    args: ["infra", "up", "--verbose"],
-  });
-```
-
 ## Constants
 
 ### providers
@@ -148,32 +138,6 @@ export async function deployWrapper(options: {
   codegen?: boolean;
   build?: boolean;
 }): Promise<void | {
-  stdout: string;
-  stderr: string;
-}> 
-```
-
-### runCLI
-
-```typescript
-/**
- * Runs the polywrap CLI programmatically.
- *
- * @param options - an object containing:
- *   args - an array of command line arguments
- *   cwd? - a current working directory
- *   cli? - a path to a Polywrap CLI binary
- *   env? - a map of environmental variables
- *
- * @returns exit code, standard output, and standard error logs
- */
-export const runCLI = async (options: {
-  args: string[];
-  cwd?: string;
-  cli?: string;
-  env?: Record<string, string>;
-}): Promise<{
-  exitCode: number;
   stdout: string;
   stderr: string;
 }> 

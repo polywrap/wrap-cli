@@ -1,9 +1,8 @@
 import {
   buildWrapper,
   initTestEnvironment,
-  runCLI,
   stopTestEnvironment,
-} from "../build";
+} from "../";
 
 import path from "path";
 
@@ -32,18 +31,4 @@ export async function build(): Promise<string> {
   // $end
 
   return wrapperUri;
-}
-
-export async function cli(): Promise<{
-  exitCode: number;
-  stdout: string;
-  stderr: string;
-}> {
-  // $start: quickstart-runCLI
-  const { exitCode, stderr, stdout } = await runCLI({
-    args: ["infra", "up", "--verbose"],
-  });
-  // $end
-
-  return { exitCode, stderr, stdout };
 }

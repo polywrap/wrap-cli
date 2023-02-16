@@ -32,14 +32,6 @@ Build a local wrapper project.
 $snippet: quickstart-build
 ```
 
-## Execute the CLI
-
-Execute a command with the Polywrap CLI.
-
-``` typescript
-$snippet: quickstart-runCLI
-```
-
 ## Constants
 
 ### providers
@@ -84,10 +76,4 @@ $snippet: buildWrapper
 
 ```typescript
 $snippet: deployWrapper
-```
-
-### runCLI
-
-```typescript
-$snippet: runCLI
 ```

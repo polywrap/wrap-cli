@@ -20,10 +20,10 @@
     "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
+    "@polywrap/cli-js": "0.10.0-pre.7",
     "@polywrap/core-js": "0.10.0-pre.7",
     "@polywrap/polywrap-manifest-types-js": "0.10.0-pre.7",
     "axios": "0.21.2",
-    "spawn-command": "0.0.2-1",
     "yaml": "2.1.3"
   },
   "devDependencies": {
