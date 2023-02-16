@@ -19,13 +19,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: polywrap/wasm-test-harness
-          ref: ${{ github.event.pull_request.base.ref }}
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
       - name: Checkout Repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.base.ref }}
+          ref: ${{ github.event.pull_request.head.ref }}
           path: toolchain
           fetch-depth: 0
 
