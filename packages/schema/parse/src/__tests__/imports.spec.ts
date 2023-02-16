@@ -33,7 +33,11 @@ describe("Imports parser", () => {
 
     const barSchema = `
       type Bar {
-        propBar: String!
+        propBar: Transitive!
+      }
+
+      type Transitive {
+        propTransitive: String!
       }
     `
 
@@ -124,6 +128,19 @@ describe("Imports parser", () => {
                 name: "propBar",
                 required: true,
                 type: {
+                  kind: "Ref",
+                  ref_kind: "Object",
+                  ref_name: "Transitive"
+                }
+              }]
+            }, {
+              kind: "Object",
+              name: "Transitive",
+              props: [{
+                kind: "Property",
+                name: "propTransitive",
+                required: true,
+                type: {
                   kind: "Scalar",
                   scalar: "String"
                 }
@@ -158,5 +175,7 @@ describe("Imports parser", () => {
     
     console.log(JSON.stringify(definitionDependencyTree, null, 2))
     console.log(JSON.stringify(schemaDependencyTree, null, 2))
+
+    console.log(definitionDependencyTree.getAllDependencies(["Foo"]))
   })
 })

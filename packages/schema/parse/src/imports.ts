@@ -1,5 +1,6 @@
 import { DependencyTree } from "./DependencyTree";
 import { ExternalImportStatement, SchemaParser } from "./types";
+import { UnlinkedAbiDefs } from "./UnlinkedDefs";
 import { UnlinkedAbiVisitor } from "./visitor";
 
 export class ImportsParser {
@@ -9,6 +10,73 @@ export class ImportsParser {
   constructor(private _schemaParser: SchemaParser, private _fetchers: {
     external: (uri: string) => Promise<string>
   }) { }
+
+  private _extractAdditionaAndTransitiveDeps(typesToVisit: string[], transitiveImports: ExternalImportStatement[], abiToVisitUri: string, abiToVisit: UnlinkedAbiDefs, typesToSkip: string[] = []): {
+    typesToImport: Set<[string, string]>,
+    transitiveImportDeps: Set<ExternalImportStatement>,
+  } {
+    typesToVisit = typesToVisit.filter(t => !typesToSkip.includes(t))
+    const typesToImport = new Set<[string, string]>()
+    const transitiveImportDeps = new Set<ExternalImportStatement>()
+
+    if (!typesToVisit.length) {
+      return {
+        typesToImport,
+        transitiveImportDeps
+      }
+    }
+
+    const state: { currentObject?: string } = {}
+    const externalAbiVisitor = new UnlinkedAbiVisitor({
+      enter: {
+        ObjectDef: (def) => {
+          if (typesToVisit.includes(def.name)) {
+            state.currentObject = def.name
+          }
+        },
+        RefType: (ref) => {
+          if (state.currentObject &&
+            !typesToVisit.includes(ref.ref_name)) {
+            typesToImport.add([state.currentObject, ref.ref_name])
+
+            this._defintionDependencyTree.addNode(ref.ref_name, abiToVisitUri)
+            this._defintionDependencyTree.addEdge(state.currentObject, ref.ref_name)
+          }
+        },
+        ImportRefType: (ref) => {
+          if (state.currentObject) {
+            const transitiveDependency = transitiveImports.find(t => t.importedTypes.includes(ref.ref_name))
+
+            if (!transitiveDependency) {
+              throw new Error(`Found import reference to '${ref.ref_name}' which isn't an imported definition`)
+            }
+
+            transitiveImportDeps.add(transitiveDependency)
+
+            this._defintionDependencyTree.addNode(ref.ref_name, abiToVisitUri)
+            this._defintionDependencyTree.addEdge(state.currentObject, ref.ref_name)
+            this._schemaDependencyTree.addEdge(abiToVisitUri, transitiveDependency.uriOrPath)
+          }
+        }
+      },
+      leave: {
+        ObjectDef: () => {
+          state.currentObject = undefined
+        }
+      }
+    })
+    externalAbiVisitor.visit(abiToVisit)
+
+    const {
+      typesToImport: resultingTypesToImport,
+      transitiveImportDeps: resultingTransitiveImportDeps,
+    } = this._extractAdditionaAndTransitiveDeps([...typesToImport.values()].map(([_, dep]) => dep), transitiveImports, abiToVisitUri, abiToVisit, [...typesToSkip, ...typesToVisit])
+
+    return {
+      typesToImport: new Set([...typesToImport, ...resultingTypesToImport]),
+      transitiveImportDeps: new Set([...transitiveImportDeps, ...resultingTransitiveImportDeps]),
+    }
+  }
 
   private async _getTransitiveDependencies(extImportStatements: ExternalImportStatement[]) {
     for await (const externalImportStatement of extImportStatements) {
@@ -21,51 +89,9 @@ export class ImportsParser {
 
       const externalAbi = await this._schemaParser.parse(externalSchema)
       const transitiveImports = await this._schemaParser.parseExternalImportStatements(externalSchema)
-      const additionalImports = new Set<[string, string]>()
-      const transitiveImportDeps = new Set<ExternalImportStatement>()
-
-      const state: { currentObject?: string } = {}
-      const externalAbiVisitor = new UnlinkedAbiVisitor({
-        enter: {
-          ObjectDef: (def) => {
-            if (importedTypes.includes(def.name)) {
-              state.currentObject = def.name
-            }
-          },
-          RefType: (ref) => {
-            if (state.currentObject &&
-              !importedTypes.includes(ref.ref_name)) {
-              additionalImports.add([state.currentObject, ref.ref_name])
-            }
-          },
-          ImportRefType: (ref) => {
-            if (state.currentObject) {
-              const transitiveDependency = transitiveImports.find(t => t.importedTypes.includes(ref.ref_name))
-
-              if (!transitiveDependency) {
-                throw new Error(`Found import reference to '${ref.ref_name}' which isn't an imported definition`)
-              }
-
-              transitiveImportDeps.add(transitiveDependency)
-            }
-          }
-        },
-        leave: {
-          ObjectDef: () => {
-            state.currentObject = undefined
-          }
-        }
-      })
-      externalAbiVisitor.visit(externalAbi)
-
-      additionalImports.forEach(([dependentType, dependencyType]) => {
-        this._defintionDependencyTree.addNode(dependencyType, extImportUri)
-        this._defintionDependencyTree.addEdge(dependentType, dependencyType)
-      })
-
-      transitiveImportDeps.forEach(transitiveDep => {
-        this._schemaDependencyTree.addEdge(extImportUri, transitiveDep.uriOrPath)
-      })
+      const {
+        transitiveImportDeps,
+      } = this._extractAdditionaAndTransitiveDeps(importedTypes, transitiveImports, extImportUri, externalAbi)
 
       await this._getTransitiveDependencies([...transitiveImportDeps])
     }
