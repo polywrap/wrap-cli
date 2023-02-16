@@ -73,7 +73,7 @@ describe("Templates", () => {
 
           beforeAll(() => {
             // Copy test configs
-            if (projectType === "wasm") {
+            if (projectType === "wasm" && language !== "interface") {
               execSync(
                 `cp ${rootDir}/polywrap.${projectType}-${language}-linked* ${rootDir}/${projectType}/${language}/`
               );
@@ -105,7 +105,7 @@ describe("Templates", () => {
 
           afterAll(() => {
             // Remove test configs
-            if (projectType === "wasm") {
+            if (projectType === "wasm" && language !== "interface") {
               if (language === "rust") {
                 fs.writeFileSync(cargoFilePath, originalCargoFile);
               }

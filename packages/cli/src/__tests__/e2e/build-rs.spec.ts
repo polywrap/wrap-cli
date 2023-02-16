@@ -19,13 +19,16 @@ describe("e2e tests for build command", () => {
 
   describe("Image strategy", () => {
     it("Builds for rust", async () => {
-      const { exitCode: code, stdout: output } = await runCLI({
+      const out= await runCLI({
         args: ["build", "-v", "-s", "image"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
+      const { exitCode: code, stdout: output } = out;
   
       const buildDir = `./build`;
+
+      console.log(out)
   
       expect(code).toEqual(0);
       expect(output).toContain(`Artifacts written to ${buildDir}`);
