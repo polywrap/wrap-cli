@@ -1,7 +1,6 @@
 import {
   Wrapper,
   CoreClient,
-  Env,
   GetFileOptions,
   GetImplementationsOptions,
   InterfaceImplementations,
@@ -20,6 +19,8 @@ import {
   CoreClientConfig,
   WrapError,
   WrapErrorCode,
+  Envs,
+  WrapperEnv,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
@@ -65,7 +66,7 @@ export class PolywrapCoreClient implements CoreClient {
    *
    * @returns an array of env objects containing wrapper environmental variables
    */
-  public getEnvs(): readonly Env[] | undefined /* $ */ {
+  public getEnvs(): Readonly<Envs> | undefined /* $ */ {
     return this._config.envs;
   }
 
@@ -86,15 +87,13 @@ export class PolywrapCoreClient implements CoreClient {
    * @param uri - the URI used to register the env
    * @returns an env, or undefined if an env is not found at the given URI
    */
-  public getEnvByUri(uri: Uri): Env | undefined /* $ */ {
-    const uriUri = Uri.from(uri);
-
+  public getEnvByUri(uri: Uri): Readonly<WrapperEnv> | undefined /* $ */ {
     const envs = this.getEnvs();
     if (!envs) {
       return undefined;
     }
 
-    return envs.find((environment) => Uri.equals(environment.uri, uriUri));
+    return envs[uri.uri];
   }
 
   // $start: PolywrapCoreClient-getManifest
@@ -295,7 +294,7 @@ export class PolywrapCoreClient implements CoreClient {
       );
 
       const invokeResult = await this.invokeWrapper<TData>({
-        env: env?.env,
+        env: env,
         ...typedOptions,
         wrapper,
       });

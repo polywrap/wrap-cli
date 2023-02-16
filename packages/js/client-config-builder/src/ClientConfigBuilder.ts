@@ -5,7 +5,7 @@ import { BuilderConfig } from "./types";
 
 import {
   CoreClientConfig,
-  Env,
+  Envs,
   InterfaceImplementations,
   IUriPackage,
   IUriRedirect,
@@ -73,14 +73,8 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
     return this._config;
   }
 
-  private buildEnvs(): Env[] {
-    const envs: Env[] = [];
-
-    for (const [uri, env] of Object.entries(this._config.envs)) {
-      envs.push({ uri: Uri.from(uri), env });
-    }
-
-    return envs;
+  private buildEnvs(): Envs {
+    return this._config.envs;
   }
 
   private buildInterfaces(): InterfaceImplementations[] {

@@ -79,7 +79,7 @@ describe("Client config builder", () => {
   it("should build an empty partial config", () => {
     const clientConfig = new ClientConfigBuilder().build();
 
-    expect(clientConfig.envs).toStrictEqual([]);
+    expect(clientConfig.envs).toStrictEqual({});
     expect(clientConfig.interfaces).toStrictEqual([]);
   });
 
@@ -97,12 +97,7 @@ describe("Client config builder", () => {
     const builderConfig = builder.config;
 
     expect(clientConfig).toBeTruthy();
-    expect(clientConfig.envs).toStrictEqual(
-      Object.entries(testEnvs).map(([uri, env]) => ({
-        uri: Uri.from(uri),
-        env: env,
-      }))
-    );
+    expect(clientConfig.envs).toStrictEqual(testEnvs);
     expect(clientConfig.interfaces).toStrictEqual(
       Object.entries(testInterfaces).map(([uri, interfaces]) => ({
         interface: Uri.from(uri),
@@ -134,12 +129,10 @@ describe("Client config builder", () => {
     const builderConfig = builder.config;
 
     expect(clientConfig).toBeTruthy();
-    expect(clientConfig.envs).toStrictEqual(
-      Object.entries(testEnvs).map(([uri, env]) => ({
-        uri: Uri.from(uri),
-        env: env,
-      }))
-    );
+    expect(clientConfig.envs).toStrictEqual({
+      ...testEnv1,
+      ...testEnv2,
+    });
     expect(clientConfig.interfaces).toStrictEqual(
       Object.entries(testInterfaces).map(([uri, interfaces]) => ({
         interface: Uri.from(uri),
@@ -167,7 +160,9 @@ describe("Client config builder", () => {
     expect(clientConfig).toBeTruthy();
 
     const expectedBuilderConfig = getDefaultConfig();
-    expect(JSON.stringify(builderConfig)).toBe(JSON.stringify(expectedBuilderConfig));
+    expect(JSON.stringify(builderConfig)).toBe(
+      JSON.stringify(expectedBuilderConfig)
+    );
   });
 
   it("should successfully add an env", () => {
@@ -181,12 +176,11 @@ describe("Client config builder", () => {
 
     const config = new ClientConfigBuilder().addEnv(envUri, env).build();
 
-    if (!config.envs || config.envs.length !== 1) {
+    if (!config.envs || Object.keys(config.envs).length !== 1) {
       fail(["Expected 1 env, received:", config.envs]);
     }
 
-    expect(config.envs[0].uri).toStrictEqual(Uri.from(envUri));
-    expect(config.envs[0].env).toStrictEqual(env);
+    expect(config.envs[envUri]).toEqual(env);
   });
 
   it("should successfully add to an existing env", () => {
@@ -207,12 +201,11 @@ describe("Client config builder", () => {
 
     const expectedEnv = { ...env1, ...env2 };
 
-    if (!config.envs || config.envs.length !== 1) {
+    if (!config.envs || Object.keys(config.envs).length !== 1) {
       fail(["Expected 1 env, received:", config.envs]);
     }
 
-    expect(config.envs[0].uri).toStrictEqual(Uri.from(envUri));
-    expect(config.envs[0].env).toStrictEqual(expectedEnv);
+    expect(config.envs[envUri]).toEqual(expectedEnv);
   });
 
   it("should succesfully add two separate envs", () => {
@@ -221,18 +214,16 @@ describe("Client config builder", () => {
       .addEnv(Object.keys(testEnvs)[1], Object.values(testEnvs)[1])
       .build();
 
-    if (!config.envs || config.envs.length !== 2) {
+    if (!config.envs || Object.keys(config.envs).length !== 2) {
       fail(["Expected 2 envs, received:", config.envs]);
     }
 
-    expect(config.envs).toContainEqual({
-      uri: Uri.from(Object.keys(testEnvs)[0]),
-      env: Object.values(testEnvs)[0],
-    });
-    expect(config.envs).toContainEqual({
-      uri: Uri.from(Object.keys(testEnvs)[1]),
-      env: Object.values(testEnvs)[1],
-    });
+    expect(config.envs[Object.keys(testEnvs)[0]]).toEqual(
+      Object.values(testEnvs)[0]
+    );
+    expect(config.envs[Object.keys(testEnvs)[0]]).toEqual(
+      Object.values(testEnvs)[1]
+    );
   });
 
   it("should remove an env", () => {
@@ -242,14 +233,13 @@ describe("Client config builder", () => {
       .removeEnv(Object.keys(testEnvs)[0])
       .build();
 
-    if (!config.envs || config.envs.length !== 1) {
+    if (!config.envs || Object.keys(config.envs).length !== 1) {
       fail(["Expected 1 env, received:", config.envs]);
     }
 
-    expect(config.envs).toContainEqual({
-      uri: Uri.from(Object.keys(testEnvs)[1]),
-      env: Object.values(testEnvs)[1],
-    });
+    expect(config.envs[Object.keys(testEnvs)[1]]).toEqual(
+      Object.values(testEnvs)[1]
+    );
   });
 
   it("should set an env", () => {
@@ -261,14 +251,11 @@ describe("Client config builder", () => {
 
     const config = new ClientConfigBuilder().setEnv(envUri, env).build();
 
-    if (!config.envs || config.envs.length !== 1) {
+    if (!config.envs || Object.keys(config.envs).length !== 1) {
       fail(["Expected 1 env, received:", config.envs]);
     }
 
-    expect(config.envs[0]).toEqual({
-      uri: Uri.from(envUri),
-      env: env,
-    });
+    expect(config.envs[envUri]).toEqual(env);
   });
 
   it("should set an env over an existing env", () => {
@@ -286,14 +273,11 @@ describe("Client config builder", () => {
       .setEnv(envUri, env2)
       .build();
 
-    if (!config.envs || config.envs.length !== 1) {
+    if (!config.envs || Object.keys(config.envs).length !== 1) {
       fail(["Expected 1 env, received:", config.envs]);
     }
 
-    expect(config.envs[0]).toEqual({
-      uri: Uri.from(envUri),
-      env: env2,
-    });
+    expect(config.envs[envUri]).toEqual(env2);
   });
 
   it("should add an interface implementation for a non-existent interface", () => {
