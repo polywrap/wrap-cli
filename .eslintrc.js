@@ -6,7 +6,8 @@ module.exports = {
     "**/build/**/*.*",
     "**/__tests__/**/*.*",
     "**/node_modules/**/*.*",
-    "**/coverage/**/*.*"
+    "**/coverage/**/*.*",
+    "**/wrap.ts"
   ],
   overrides: [
     {

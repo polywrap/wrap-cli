@@ -6,9 +6,8 @@ import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { PolywrapClient } from "../..";
 import { WrapError, WrapErrorCode } from "@polywrap/core-js";
 import { incompatiblePlugin, mockPluginRegistration } from "../helpers";
-import { defaultPackages } from "@polywrap/client-config-builder-js";
 import { msgpackDecode, msgpackEncode } from "@polywrap/msgpack-js";
-import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { ClientConfigBuilder, defaultInterfaces } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(660000);
 
@@ -261,7 +260,7 @@ describe("Error structure", () => {
     });
     test("Invoke a plugin wrapper with malformed args", async () => {
       const result = await client.invoke<Uint8Array>({
-        uri: defaultPackages.fileSystem,
+        uri: defaultInterfaces.fileSystem,
         method: "readFile",
         args: {
           pathh:  "packages/js/client/src/__tests__/core/index.ts",
@@ -274,7 +273,7 @@ describe("Error structure", () => {
       expect(result.error?.name).toEqual("WrapError");
       expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
       expect(result.error?.reason).toEqual("The \"path\" argument must be of type string or an instance of Buffer or URL. Received undefined");
-      expect(result.error?.uri).toEqual(defaultPackages.fileSystem);
+      expect(result.error?.uri).toEqual(defaultInterfaces.fileSystem);
       expect(result.error?.method).toEqual("readFile");
       expect(result.error?.args).toContain("{\n  \"pathh\": \"packages/js/client/src/__tests__/core/index.ts\"\n}");
       expect(result.error?.source).toEqual({ file: "node:internal/fs/promises", row: 450, col: 10 });
@@ -282,7 +281,7 @@ describe("Error structure", () => {
 
     test("Invoke a plugin wrapper with a method that doesn't exist", async () => {
       const result = await client.invoke<Uint8Array>({
-        uri: defaultPackages.fileSystem,
+        uri: defaultInterfaces.fileSystem,
         method: "readFileNotFound",
         args: {
           path: __dirname + "/index.ts",
@@ -295,7 +294,7 @@ describe("Error structure", () => {
       expect(result.error?.name).toEqual("WrapError");
       expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_METHOD_NOT_FOUND);
       expect(result.error?.reason.startsWith("Plugin missing method ")).toBeTruthy();
-      expect(result.error?.uri).toEqual(defaultPackages.fileSystem);
+      expect(result.error?.uri).toEqual(defaultInterfaces.fileSystem);
       expect(result.error?.method).toEqual("readFileNotFound");
     });
 
@@ -319,7 +318,7 @@ describe("Error structure", () => {
 
     test("Invoke a plugin wrapper that throws unexpectedly", async () => {
       const result = await client.invoke<Uint8Array>({
-        uri: defaultPackages.fileSystem,
+        uri: defaultInterfaces.fileSystem,
         method: "readFile",
         args: {
           path: "./this/path/does/not/exist.ts",
@@ -332,7 +331,7 @@ describe("Error structure", () => {
       expect(result.error?.name).toEqual("WrapError");
       expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
       expect(result.error?.reason.startsWith("ENOENT: no such file or directory")).toBeTruthy();
-      expect(result.error?.uri).toEqual(defaultPackages.fileSystem);
+      expect(result.error?.uri).toEqual(defaultInterfaces.fileSystem);
       expect(result.error?.method).toEqual("readFile");
       expect(result.error?.args).toEqual("{\n  \"path\": \"./this/path/does/not/exist.ts\"\n}");
     });

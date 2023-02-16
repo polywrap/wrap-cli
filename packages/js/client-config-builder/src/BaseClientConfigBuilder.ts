@@ -1,5 +1,4 @@
-import { BuilderConfig } from "./types/configs/BuilderConfig";
-import { IClientConfigBuilder } from "./types/IClientConfigBuilder";
+import { BuilderConfig, IClientConfigBuilder } from "./types";
 
 import { CoreClientConfig, Wrapper, IWrapPackage } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";

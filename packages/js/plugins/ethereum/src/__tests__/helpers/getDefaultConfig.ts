@@ -2,10 +2,7 @@ import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ethereumPlugin, Connections } from "../..";
-import { providers } from "@polywrap/test-env-js";
-import {
-  defaultIpfsProviders,
-} from "@polywrap/client-config-builder-js";
+import { defaultInterfaces, defaultPackages } from "@polywrap/client-config-builder-js";
 import { Uri } from "@polywrap/core-js";
 import { ClientConfig } from "@polywrap/client-js";
 
@@ -13,32 +10,23 @@ export const getDefaultConfig = (
   connections: Connections
 ): Partial<ClientConfig> => {
   return {
-    envs: [
-      {
-        uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
-        env: {
-          provider: providers.ipfs,
-          fallbackProviders: defaultIpfsProviders,
-        },
-      },
-    ],
     interfaces: [
       {
         interface: ExtendableUriResolver.extInterfaceUri,
-        implementations: [Uri.from("wrap://ens/fs-resolver.polywrap.eth")],
+        implementations: [Uri.from(defaultPackages.fileSystemResolver)],
       },
     ],
     packages: [
       {
-        uri: Uri.from("wrap://ens/ethereum.polywrap.eth"),
+        uri: Uri.from(defaultPackages.ethereum),
         package: ethereumPlugin({ connections }),
       },
       {
-        uri: Uri.from("wrap://ens/fs-resolver.polywrap.eth"),
+        uri: Uri.from(defaultPackages.fileSystemResolver),
         package: fileSystemResolverPlugin({}),
       },
       {
-        uri: Uri.from("wrap://ens/fs.polywrap.eth"),
+        uri: Uri.from(defaultInterfaces.fileSystem),
         package: fileSystemPlugin({}),
       },
     ],

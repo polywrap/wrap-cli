@@ -4,7 +4,7 @@ ENS Resolver Plugin allows the Polywrap JS Client to resolve URIs from the [Ethe
 
 ## Usage
 
-``` typescript
+```typescript
 import {
   initTestEnvironment,
   providers,

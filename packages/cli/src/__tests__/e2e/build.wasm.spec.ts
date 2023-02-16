@@ -18,7 +18,7 @@ Options:
                                        (default: ./build)
   -c, --client-config <config-path>    Add custom configuration to the
                                        PolywrapClient
-  --codegen                            Perform code generation before build
+  -n, --no-codegen                     Skip code generation before build
   --codegen-dir                        Codegen output directory (default:
                                        ./src/wrap)
   --wrapper-envs <envs-path>           Path to a JSON file containing wrapper
@@ -160,7 +160,7 @@ describe("e2e tests for build command", () => {
     );
     const testCaseDir = getTestCaseDir(0);
     const { exitCode: code, stdout: output } = await runCLI({
-      args: ["build", "-v", "--output-dir", outputDir, "--codegen"],
+      args: ["build", "-v", "--output-dir", outputDir],
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -235,7 +235,7 @@ describe("e2e tests for build command", () => {
 
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v", "-s", "local", "--codegen"],
+        args: ["build", "-v", "-s", "local"],
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
@@ -264,7 +264,7 @@ describe("e2e tests for build command", () => {
 
       test(testCaseName, async () => {
         let { exitCode, stdout, stderr } = await runCLI({
-          args: ["build", "-v", "--codegen", ...cmdArgs],
+          args: ["build", "-v", ...cmdArgs],
           cwd: testCaseDir,
           cli: polywrapCli,
         });

@@ -18,7 +18,7 @@ const pathStr = intlMsg.commands_create_options_o_path();
 
 export const supportedLangs = {
   wasm: ["assemblyscript", "rust", "interface"] as const,
-  app: ["typescript-node", "typescript-react"] as const,
+  app: ["typescript"] as const,
   plugin: ["typescript"] as const,
 };
 
@@ -174,24 +174,23 @@ async function run(
     }
   }
 
-  await generateProjectTemplate(command, language, projectDir)
-    .then(() => {
-      let readyMessage;
-      if (command === "wasm") {
-        readyMessage = intlMsg.commands_create_readyProtocol();
-      } else if (command === "app") {
-        readyMessage = intlMsg.commands_create_readyApp();
-      } else if (command === "plugin") {
-        readyMessage = intlMsg.commands_create_readyPlugin();
-      }
-      logger.info(`🔥 ${readyMessage} 🔥`);
-      process.exit(0);
-    })
-    .catch((err) => {
-      const commandFailError = intlMsg.commands_create_error_commandFail({
-        error: JSON.stringify(err, null, 2),
-      });
-      logger.error(commandFailError);
-      process.exit(1);
+  try {
+    await generateProjectTemplate(command, language, projectDir);
+    let readyMessage;
+    if (command === "wasm") {
+      readyMessage = intlMsg.commands_create_readyProtocol();
+    } else if (command === "app") {
+      readyMessage = intlMsg.commands_create_readyApp();
+    } else if (command === "plugin") {
+      readyMessage = intlMsg.commands_create_readyPlugin();
+    }
+    logger.info(`🔥 ${readyMessage} 🔥`);
+    process.exit(0);
+  } catch (err) {
+    const commandFailError = intlMsg.commands_create_error_commandFail({
+      error: JSON.stringify(err, null, 2),
     });
+    logger.error(commandFailError);
+    process.exit(1);
+  }
 }

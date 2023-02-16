@@ -11,7 +11,7 @@ import { IUriPackage, IUriRedirect } from "@polywrap/core-js";
 import { ResultErr } from "@polywrap/result";
 import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
 import { WasmPackage } from "@polywrap/wasm-js";
-import { defaultWrappers } from "@polywrap/client-config-builder-js";
+import { defaultInterfaces, defaultPackages, defaultWrappers } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 
@@ -19,25 +19,36 @@ describe("sanity", () => {
   test("default client config", () => {
     const client = new PolywrapClient();
 
-    new Uri("wrap://ens/http-resolver.polywrap.eth"),
-      expect(client.getInterfaces()).toStrictEqual([
+    expect(client.getInterfaces()).toStrictEqual([
         {
           interface: ExtendableUriResolver.extInterfaceUri,
           implementations: [
-            new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-            new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-            new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-            new Uri("wrap://ens/http-resolver.polywrap.eth"),
-            new Uri("wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY"),
+            new Uri(defaultPackages.ipfsResolver),
+            new Uri(defaultPackages.ensResolver),
+            new Uri(defaultPackages.fileSystemResolver),
+            new Uri(defaultPackages.httpResolver),
+            new Uri(defaultWrappers.ensTextRecordResolver),
           ],
         },
         {
-          interface: new Uri("wrap://ens/wrappers.polywrap.eth:logger@1.0.0"),
-          implementations: [new Uri("wrap://plugin/logger")],
+          interface: new Uri(defaultInterfaces.logger),
+          implementations: [new Uri(defaultInterfaces.logger)],
         },
         {
-          interface: new Uri(defaultWrappers.concurrentInterface),
-          implementations: [new Uri("wrap://plugin/concurrent")],
+          interface: new Uri(defaultInterfaces.concurrent),
+          implementations: [new Uri(defaultInterfaces.concurrent)],
+        },
+        {
+          interface: new Uri(defaultInterfaces.ipfsHttpClient),
+          implementations: [new Uri(defaultInterfaces.ipfsHttpClient)],
+        },
+        {
+          interface: new Uri(defaultInterfaces.fileSystem),
+          implementations: [new Uri(defaultInterfaces.fileSystem)],
+        },
+        {
+          interface: new Uri(defaultInterfaces.http),
+          implementations: [new Uri(defaultInterfaces.http)],
         },
       ]);
   });
