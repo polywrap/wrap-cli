@@ -34,6 +34,36 @@ export const manifest: WrapManifest = {
           "arguments": [
             {
               "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "getChainId",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "getChainId",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "getChainId",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
               "name": "address",
               "required": true,
               "scalar": {
@@ -156,6 +186,16 @@ export const manifest: WrapManifest = {
             },
             {
               "kind": 34,
+              "name": "options",
+              "object": {
+                "kind": 8192,
+                "name": "options",
+                "type": "Ethereum_TxOptions"
+              },
+              "type": "Ethereum_TxOptions"
+            },
+            {
+              "kind": 34,
               "name": "connection",
               "object": {
                 "kind": 8192,
@@ -163,16 +203,6 @@ export const manifest: WrapManifest = {
                 "type": "Ethereum_Connection"
               },
               "type": "Ethereum_Connection"
-            },
-            {
-              "kind": 34,
-              "name": "txOverrides",
-              "object": {
-                "kind": 8192,
-                "name": "txOverrides",
-                "type": "Ethereum_TxOverrides"
-              },
-              "type": "Ethereum_TxOverrides"
             }
           ],
           "kind": 64,
@@ -189,58 +219,6 @@ export const manifest: WrapManifest = {
             },
             "required": true,
             "type": "Ethereum_StaticTxResult"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "kind": 34,
-              "name": "address",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "address",
-                "required": true,
-                "type": "String"
-              },
-              "type": "String"
-            },
-            {
-              "kind": 34,
-              "name": "blockTag",
-              "scalar": {
-                "kind": 4,
-                "name": "blockTag",
-                "type": "BigInt"
-              },
-              "type": "BigInt"
-            },
-            {
-              "kind": 34,
-              "name": "connection",
-              "object": {
-                "kind": 8192,
-                "name": "connection",
-                "type": "Ethereum_Connection"
-              },
-              "type": "Ethereum_Connection"
-            }
-          ],
-          "kind": 64,
-          "name": "getBalance",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "getBalance",
-            "required": true,
-            "scalar": {
-              "kind": 4,
-              "name": "getBalance",
-              "required": true,
-              "type": "BigInt"
-            },
-            "type": "BigInt"
           },
           "type": "Method"
         },
@@ -293,6 +271,16 @@ export const manifest: WrapManifest = {
               "name": "values",
               "required": true,
               "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
             }
           ],
           "kind": 64,
@@ -347,6 +335,16 @@ export const manifest: WrapManifest = {
               "kind": 34,
               "name": "args",
               "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
             }
           ],
           "kind": 64,
@@ -369,204 +367,66 @@ export const manifest: WrapManifest = {
         {
           "arguments": [
             {
-              "array": {
-                "item": {
-                  "kind": 4,
-                  "name": "types",
-                  "required": true,
-                  "type": "String"
-                },
-                "kind": 18,
-                "name": "types",
-                "required": true,
-                "scalar": {
-                  "kind": 4,
-                  "name": "types",
-                  "required": true,
-                  "type": "String"
-                },
-                "type": "[String]"
-              },
               "kind": 34,
-              "name": "types",
+              "name": "method",
               "required": true,
-              "type": "[String]"
+              "scalar": {
+                "kind": 4,
+                "name": "method",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
             },
             {
-              "array": {
-                "item": {
-                  "kind": 4,
-                  "name": "values",
-                  "required": true,
-                  "type": "String"
-                },
-                "kind": 18,
-                "name": "values",
-                "required": true,
-                "scalar": {
-                  "kind": 4,
-                  "name": "values",
-                  "required": true,
-                  "type": "String"
-                },
-                "type": "[String]"
-              },
               "kind": 34,
-              "name": "values",
+              "name": "data",
               "required": true,
-              "type": "[String]"
+              "scalar": {
+                "kind": 4,
+                "name": "data",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
             }
           ],
           "kind": 64,
-          "name": "solidityPack",
+          "name": "decodeFunction",
           "required": true,
           "return": {
+            "array": {
+              "item": {
+                "kind": 4,
+                "name": "decodeFunction",
+                "required": true,
+                "type": "String"
+              },
+              "kind": 18,
+              "name": "decodeFunction",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "decodeFunction",
+                "required": true,
+                "type": "String"
+              },
+              "type": "[String]"
+            },
             "kind": 34,
-            "name": "solidityPack",
+            "name": "decodeFunction",
             "required": true,
-            "scalar": {
-              "kind": 4,
-              "name": "solidityPack",
-              "required": true,
-              "type": "String"
-            },
-            "type": "String"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "array": {
-                "item": {
-                  "kind": 4,
-                  "name": "types",
-                  "required": true,
-                  "type": "String"
-                },
-                "kind": 18,
-                "name": "types",
-                "required": true,
-                "scalar": {
-                  "kind": 4,
-                  "name": "types",
-                  "required": true,
-                  "type": "String"
-                },
-                "type": "[String]"
-              },
-              "kind": 34,
-              "name": "types",
-              "required": true,
-              "type": "[String]"
-            },
-            {
-              "array": {
-                "item": {
-                  "kind": 4,
-                  "name": "values",
-                  "required": true,
-                  "type": "String"
-                },
-                "kind": 18,
-                "name": "values",
-                "required": true,
-                "scalar": {
-                  "kind": 4,
-                  "name": "values",
-                  "required": true,
-                  "type": "String"
-                },
-                "type": "[String]"
-              },
-              "kind": 34,
-              "name": "values",
-              "required": true,
-              "type": "[String]"
-            }
-          ],
-          "kind": 64,
-          "name": "solidityKeccak256",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "solidityKeccak256",
-            "required": true,
-            "scalar": {
-              "kind": 4,
-              "name": "solidityKeccak256",
-              "required": true,
-              "type": "String"
-            },
-            "type": "String"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "array": {
-                "item": {
-                  "kind": 4,
-                  "name": "types",
-                  "required": true,
-                  "type": "String"
-                },
-                "kind": 18,
-                "name": "types",
-                "required": true,
-                "scalar": {
-                  "kind": 4,
-                  "name": "types",
-                  "required": true,
-                  "type": "String"
-                },
-                "type": "[String]"
-              },
-              "kind": 34,
-              "name": "types",
-              "required": true,
-              "type": "[String]"
-            },
-            {
-              "array": {
-                "item": {
-                  "kind": 4,
-                  "name": "values",
-                  "required": true,
-                  "type": "String"
-                },
-                "kind": 18,
-                "name": "values",
-                "required": true,
-                "scalar": {
-                  "kind": 4,
-                  "name": "values",
-                  "required": true,
-                  "type": "String"
-                },
-                "type": "[String]"
-              },
-              "kind": 34,
-              "name": "values",
-              "required": true,
-              "type": "[String]"
-            }
-          ],
-          "kind": 64,
-          "name": "soliditySha256",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "soliditySha256",
-            "required": true,
-            "scalar": {
-              "kind": 4,
-              "name": "soliditySha256",
-              "required": true,
-              "type": "String"
-            },
-            "type": "String"
+            "type": "[String]"
           },
           "type": "Method"
         },
@@ -644,6 +504,184 @@ export const manifest: WrapManifest = {
           "arguments": [
             {
               "kind": 34,
+              "name": "address",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "blockTag",
+              "scalar": {
+                "kind": 4,
+                "name": "blockTag",
+                "type": "BigInt"
+              },
+              "type": "BigInt"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "getBalance",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "getBalance",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "getBalance",
+              "required": true,
+              "type": "BigInt"
+            },
+            "type": "BigInt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "getGasPrice",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "getGasPrice",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "getGasPrice",
+              "required": true,
+              "type": "BigInt"
+            },
+            "type": "BigInt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "estimateEip1559Fees",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "estimateEip1559Fees",
+            "object": {
+              "kind": 8192,
+              "name": "estimateEip1559Fees",
+              "required": true,
+              "type": "Ethereum_Eip1559FeesEstimate"
+            },
+            "required": true,
+            "type": "Ethereum_Eip1559FeesEstimate"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "method",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "method",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "params",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "params",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "params",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "params",
+              "required": true,
+              "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "sendRpc",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "sendRpc",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "sendRpc",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
               "name": "blockTag",
               "scalar": {
                 "kind": 4,
@@ -684,6 +722,18 @@ export const manifest: WrapManifest = {
           "arguments": [
             {
               "kind": 34,
+              "name": "address",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
               "name": "connection",
               "object": {
                 "kind": 8192,
@@ -694,19 +744,83 @@ export const manifest: WrapManifest = {
             }
           ],
           "kind": 64,
-          "name": "getGasPrice",
+          "name": "checkAddress",
           "required": true,
           "return": {
             "kind": 34,
-            "name": "getGasPrice",
+            "name": "checkAddress",
             "required": true,
             "scalar": {
               "kind": 4,
-              "name": "getGasPrice",
+              "name": "checkAddress",
               "required": true,
-              "type": "BigInt"
+              "type": "Boolean"
             },
-            "type": "BigInt"
+            "type": "Boolean"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "eth",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "eth",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            }
+          ],
+          "kind": 64,
+          "name": "toWei",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "toWei",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "toWei",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "wei",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "wei",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            }
+          ],
+          "kind": 64,
+          "name": "toEth",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "toEth",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "toEth",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
           },
           "type": "Method"
         },
@@ -756,188 +870,6 @@ export const manifest: WrapManifest = {
           "arguments": [
             {
               "kind": 34,
-              "name": "address",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "address",
-                "required": true,
-                "type": "String"
-              },
-              "type": "String"
-            },
-            {
-              "kind": 34,
-              "name": "method",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "method",
-                "required": true,
-                "type": "String"
-              },
-              "type": "String"
-            },
-            {
-              "array": {
-                "item": {
-                  "kind": 4,
-                  "name": "args",
-                  "required": true,
-                  "type": "String"
-                },
-                "kind": 18,
-                "name": "args",
-                "scalar": {
-                  "kind": 4,
-                  "name": "args",
-                  "required": true,
-                  "type": "String"
-                },
-                "type": "[String]"
-              },
-              "kind": 34,
-              "name": "args",
-              "type": "[String]"
-            },
-            {
-              "kind": 34,
-              "name": "connection",
-              "object": {
-                "kind": 8192,
-                "name": "connection",
-                "type": "Ethereum_Connection"
-              },
-              "type": "Ethereum_Connection"
-            },
-            {
-              "kind": 34,
-              "name": "txOverrides",
-              "object": {
-                "kind": 8192,
-                "name": "txOverrides",
-                "type": "Ethereum_TxOverrides"
-              },
-              "type": "Ethereum_TxOverrides"
-            }
-          ],
-          "kind": 64,
-          "name": "estimateContractCallGas",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "estimateContractCallGas",
-            "required": true,
-            "scalar": {
-              "kind": 4,
-              "name": "estimateContractCallGas",
-              "required": true,
-              "type": "BigInt"
-            },
-            "type": "BigInt"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "kind": 34,
-              "name": "address",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "address",
-                "required": true,
-                "type": "String"
-              },
-              "type": "String"
-            }
-          ],
-          "kind": 64,
-          "name": "checkAddress",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "checkAddress",
-            "required": true,
-            "scalar": {
-              "kind": 4,
-              "name": "checkAddress",
-              "required": true,
-              "type": "Boolean"
-            },
-            "type": "Boolean"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "kind": 34,
-              "name": "eth",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "eth",
-                "required": true,
-                "type": "String"
-              },
-              "type": "String"
-            }
-          ],
-          "kind": 64,
-          "name": "toWei",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "toWei",
-            "required": true,
-            "scalar": {
-              "kind": 4,
-              "name": "toWei",
-              "required": true,
-              "type": "BigInt"
-            },
-            "type": "BigInt"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "kind": 34,
-              "name": "wei",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "wei",
-                "required": true,
-                "type": "BigInt"
-              },
-              "type": "BigInt"
-            }
-          ],
-          "kind": 64,
-          "name": "toEth",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "toEth",
-            "required": true,
-            "scalar": {
-              "kind": 4,
-              "name": "toEth",
-              "required": true,
-              "type": "String"
-            },
-            "type": "String"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "kind": 34,
               "name": "txHash",
               "required": true,
               "scalar": {
@@ -947,30 +879,6 @@ export const manifest: WrapManifest = {
                 "type": "String"
               },
               "type": "String"
-            },
-            {
-              "kind": 34,
-              "name": "confirmations",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "confirmations",
-                "required": true,
-                "type": "UInt32"
-              },
-              "type": "UInt32"
-            },
-            {
-              "kind": 34,
-              "name": "timeout",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "timeout",
-                "required": true,
-                "type": "UInt32"
-              },
-              "type": "UInt32"
             },
             {
               "kind": 34,
@@ -992,336 +900,6 @@ export const manifest: WrapManifest = {
             "object": {
               "kind": 8192,
               "name": "awaitTransaction",
-              "required": true,
-              "type": "Ethereum_TxReceipt"
-            },
-            "required": true,
-            "type": "Ethereum_TxReceipt"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "kind": 34,
-              "name": "address",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "address",
-                "required": true,
-                "type": "String"
-              },
-              "type": "String"
-            },
-            {
-              "kind": 34,
-              "name": "event",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "event",
-                "required": true,
-                "type": "String"
-              },
-              "type": "String"
-            },
-            {
-              "array": {
-                "item": {
-                  "kind": 4,
-                  "name": "args",
-                  "required": true,
-                  "type": "String"
-                },
-                "kind": 18,
-                "name": "args",
-                "scalar": {
-                  "kind": 4,
-                  "name": "args",
-                  "required": true,
-                  "type": "String"
-                },
-                "type": "[String]"
-              },
-              "kind": 34,
-              "name": "args",
-              "type": "[String]"
-            },
-            {
-              "kind": 34,
-              "name": "timeout",
-              "scalar": {
-                "kind": 4,
-                "name": "timeout",
-                "type": "UInt32"
-              },
-              "type": "UInt32"
-            },
-            {
-              "kind": 34,
-              "name": "connection",
-              "object": {
-                "kind": 8192,
-                "name": "connection",
-                "type": "Ethereum_Connection"
-              },
-              "type": "Ethereum_Connection"
-            }
-          ],
-          "kind": 64,
-          "name": "waitForEvent",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "waitForEvent",
-            "object": {
-              "kind": 8192,
-              "name": "waitForEvent",
-              "required": true,
-              "type": "Ethereum_EventNotification"
-            },
-            "required": true,
-            "type": "Ethereum_EventNotification"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "kind": 34,
-              "name": "connection",
-              "object": {
-                "kind": 8192,
-                "name": "connection",
-                "type": "Ethereum_Connection"
-              },
-              "type": "Ethereum_Connection"
-            }
-          ],
-          "kind": 64,
-          "name": "getNetwork",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "getNetwork",
-            "object": {
-              "kind": 8192,
-              "name": "getNetwork",
-              "required": true,
-              "type": "Ethereum_Network"
-            },
-            "required": true,
-            "type": "Ethereum_Network"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "kind": 34,
-              "name": "connection",
-              "object": {
-                "kind": 8192,
-                "name": "connection",
-                "type": "Ethereum_Connection"
-              },
-              "type": "Ethereum_Connection"
-            }
-          ],
-          "kind": 64,
-          "name": "requestAccounts",
-          "required": true,
-          "return": {
-            "array": {
-              "item": {
-                "kind": 4,
-                "name": "requestAccounts",
-                "required": true,
-                "type": "String"
-              },
-              "kind": 18,
-              "name": "requestAccounts",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "requestAccounts",
-                "required": true,
-                "type": "String"
-              },
-              "type": "[String]"
-            },
-            "kind": 34,
-            "name": "requestAccounts",
-            "required": true,
-            "type": "[String]"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "kind": 34,
-              "name": "address",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "address",
-                "required": true,
-                "type": "String"
-              },
-              "type": "String"
-            },
-            {
-              "kind": 34,
-              "name": "method",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "method",
-                "required": true,
-                "type": "String"
-              },
-              "type": "String"
-            },
-            {
-              "array": {
-                "item": {
-                  "kind": 4,
-                  "name": "args",
-                  "required": true,
-                  "type": "String"
-                },
-                "kind": 18,
-                "name": "args",
-                "scalar": {
-                  "kind": 4,
-                  "name": "args",
-                  "required": true,
-                  "type": "String"
-                },
-                "type": "[String]"
-              },
-              "kind": 34,
-              "name": "args",
-              "type": "[String]"
-            },
-            {
-              "kind": 34,
-              "name": "connection",
-              "object": {
-                "kind": 8192,
-                "name": "connection",
-                "type": "Ethereum_Connection"
-              },
-              "type": "Ethereum_Connection"
-            },
-            {
-              "kind": 34,
-              "name": "txOverrides",
-              "object": {
-                "kind": 8192,
-                "name": "txOverrides",
-                "type": "Ethereum_TxOverrides"
-              },
-              "type": "Ethereum_TxOverrides"
-            }
-          ],
-          "kind": 64,
-          "name": "callContractMethod",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "callContractMethod",
-            "object": {
-              "kind": 8192,
-              "name": "callContractMethod",
-              "required": true,
-              "type": "Ethereum_TxResponse"
-            },
-            "required": true,
-            "type": "Ethereum_TxResponse"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "kind": 34,
-              "name": "address",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "address",
-                "required": true,
-                "type": "String"
-              },
-              "type": "String"
-            },
-            {
-              "kind": 34,
-              "name": "method",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "method",
-                "required": true,
-                "type": "String"
-              },
-              "type": "String"
-            },
-            {
-              "array": {
-                "item": {
-                  "kind": 4,
-                  "name": "args",
-                  "required": true,
-                  "type": "String"
-                },
-                "kind": 18,
-                "name": "args",
-                "scalar": {
-                  "kind": 4,
-                  "name": "args",
-                  "required": true,
-                  "type": "String"
-                },
-                "type": "[String]"
-              },
-              "kind": 34,
-              "name": "args",
-              "type": "[String]"
-            },
-            {
-              "kind": 34,
-              "name": "connection",
-              "object": {
-                "kind": 8192,
-                "name": "connection",
-                "type": "Ethereum_Connection"
-              },
-              "type": "Ethereum_Connection"
-            },
-            {
-              "kind": 34,
-              "name": "txOverrides",
-              "object": {
-                "kind": 8192,
-                "name": "txOverrides",
-                "type": "Ethereum_TxOverrides"
-              },
-              "type": "Ethereum_TxOverrides"
-            }
-          ],
-          "kind": 64,
-          "name": "callContractMethodAndWait",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "callContractMethodAndWait",
-            "object": {
-              "kind": 8192,
-              "name": "callContractMethodAndWait",
               "required": true,
               "type": "Ethereum_TxReceipt"
             },
@@ -1464,6 +1042,16 @@ export const manifest: WrapManifest = {
             },
             {
               "kind": 34,
+              "name": "options",
+              "object": {
+                "kind": 8192,
+                "name": "options",
+                "type": "Ethereum_TxOptions"
+              },
+              "type": "Ethereum_TxOptions"
+            },
+            {
+              "kind": 34,
               "name": "connection",
               "object": {
                 "kind": 8192,
@@ -1487,6 +1075,264 @@ export const manifest: WrapManifest = {
               "type": "String"
             },
             "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "address",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "method",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "method",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "args",
+                "scalar": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "args",
+              "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "options",
+              "object": {
+                "kind": 8192,
+                "name": "options",
+                "type": "Ethereum_TxOptions"
+              },
+              "type": "Ethereum_TxOptions"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "estimateContractCallGas",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "estimateContractCallGas",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "estimateContractCallGas",
+              "required": true,
+              "type": "BigInt"
+            },
+            "type": "BigInt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "address",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "method",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "method",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "args",
+                "scalar": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "args",
+              "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "options",
+              "object": {
+                "kind": 8192,
+                "name": "options",
+                "type": "Ethereum_TxOptions"
+              },
+              "type": "Ethereum_TxOptions"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "callContractMethod",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "callContractMethod",
+            "object": {
+              "kind": 8192,
+              "name": "callContractMethod",
+              "required": true,
+              "type": "Ethereum_TxResponse"
+            },
+            "required": true,
+            "type": "Ethereum_TxResponse"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "address",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "method",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "method",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "args",
+                "scalar": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "args",
+              "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "options",
+              "object": {
+                "kind": 8192,
+                "name": "options",
+                "type": "Ethereum_TxOptions"
+              },
+              "type": "Ethereum_TxOptions"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "callContractMethodAndWait",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "callContractMethodAndWait",
+            "object": {
+              "kind": 8192,
+              "name": "callContractMethodAndWait",
+              "required": true,
+              "type": "Ethereum_TxReceipt"
+            },
+            "required": true,
+            "type": "Ethereum_TxReceipt"
           },
           "type": "Method"
         },
@@ -1573,116 +1419,12 @@ export const manifest: WrapManifest = {
             "type": "String"
           },
           "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "kind": 34,
-              "name": "payload",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "payload",
-                "required": true,
-                "type": "JSON"
-              },
-              "type": "JSON"
-            },
-            {
-              "kind": 34,
-              "name": "connection",
-              "object": {
-                "kind": 8192,
-                "name": "connection",
-                "type": "Ethereum_Connection"
-              },
-              "type": "Ethereum_Connection"
-            }
-          ],
-          "kind": 64,
-          "name": "signTypedData",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "signTypedData",
-            "scalar": {
-              "kind": 4,
-              "name": "signTypedData",
-              "type": "String"
-            },
-            "type": "String"
-          },
-          "type": "Method"
-        },
-        {
-          "arguments": [
-            {
-              "kind": 34,
-              "name": "method",
-              "required": true,
-              "scalar": {
-                "kind": 4,
-                "name": "method",
-                "required": true,
-                "type": "String"
-              },
-              "type": "String"
-            },
-            {
-              "array": {
-                "item": {
-                  "kind": 4,
-                  "name": "params",
-                  "required": true,
-                  "type": "String"
-                },
-                "kind": 18,
-                "name": "params",
-                "required": true,
-                "scalar": {
-                  "kind": 4,
-                  "name": "params",
-                  "required": true,
-                  "type": "String"
-                },
-                "type": "[String]"
-              },
-              "kind": 34,
-              "name": "params",
-              "required": true,
-              "type": "[String]"
-            },
-            {
-              "kind": 34,
-              "name": "connection",
-              "object": {
-                "kind": 8192,
-                "name": "connection",
-                "type": "Ethereum_Connection"
-              },
-              "type": "Ethereum_Connection"
-            }
-          ],
-          "kind": 64,
-          "name": "sendRPC",
-          "required": true,
-          "return": {
-            "kind": 34,
-            "name": "sendRPC",
-            "scalar": {
-              "kind": 4,
-              "name": "sendRPC",
-              "type": "String"
-            },
-            "type": "String"
-          },
-          "type": "Method"
         }
       ],
       "namespace": "Ethereum",
       "nativeType": "Module",
       "type": "Ethereum_Module",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     }
   ],
   "importedObjectTypes": [
@@ -1713,14 +1455,15 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_Connection",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
       "namespace": "Ethereum",
-      "nativeType": "TxOverrides",
+      "nativeType": "TxOptions",
       "properties": [
         {
+          "comment": "Gas supplied for the transaction",
           "kind": 34,
           "name": "gasLimit",
           "scalar": {
@@ -1731,6 +1474,29 @@ export const manifest: WrapManifest = {
           "type": "BigInt"
         },
         {
+          "comment": "  The max total fee to pay per unit of gas.\nThe difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.\nThis property is ignored when gasPrice is not null.",
+          "kind": 34,
+          "name": "maxFeePerGas",
+          "scalar": {
+            "kind": 4,
+            "name": "maxFeePerGas",
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        },
+        {
+          "comment": "  The gas price paid is baseFeePerGas + maxPriorityFeePerGas.\nThe difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.\nThis property is ignored when gasPrice is not null.",
+          "kind": 34,
+          "name": "maxPriorityFeePerGas",
+          "scalar": {
+            "kind": 4,
+            "name": "maxPriorityFeePerGas",
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        },
+        {
+          "comment": "  The gas price for legacy transactions.\nIf this property is not null, a legacy transaction will be sent and maxFeePerGas and maxPriorityFeePerGas will be ignored.",
           "kind": 34,
           "name": "gasPrice",
           "scalar": {
@@ -1741,6 +1507,7 @@ export const manifest: WrapManifest = {
           "type": "BigInt"
         },
         {
+          "comment": "Ether value sent with transaction",
           "kind": 34,
           "name": "value",
           "scalar": {
@@ -1749,10 +1516,21 @@ export const manifest: WrapManifest = {
             "type": "BigInt"
           },
           "type": "BigInt"
+        },
+        {
+          "comment": "Override default nonce",
+          "kind": 34,
+          "name": "nonce",
+          "scalar": {
+            "kind": 4,
+            "name": "nonce",
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         }
       ],
-      "type": "Ethereum_TxOverrides",
-      "uri": "ens/ethereum.polywrap.eth"
+      "type": "Ethereum_TxOptions",
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -1785,7 +1563,40 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_StaticTxResult",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
+    },
+    {
+      "kind": 1025,
+      "namespace": "Ethereum",
+      "nativeType": "Eip1559FeesEstimate",
+      "properties": [
+        {
+          "kind": 34,
+          "name": "maxFeePerGas",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "maxFeePerGas",
+            "required": true,
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        },
+        {
+          "kind": 34,
+          "name": "maxPriorityFeePerGas",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "maxPriorityFeePerGas",
+            "required": true,
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        }
+      ],
+      "type": "Ethereum_Eip1559FeesEstimate",
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -1814,36 +1625,6 @@ export const manifest: WrapManifest = {
         },
         {
           "kind": 34,
-          "name": "nonce",
-          "scalar": {
-            "kind": 4,
-            "name": "nonce",
-            "type": "UInt32"
-          },
-          "type": "UInt32"
-        },
-        {
-          "kind": 34,
-          "name": "gasLimit",
-          "scalar": {
-            "kind": 4,
-            "name": "gasLimit",
-            "type": "BigInt"
-          },
-          "type": "BigInt"
-        },
-        {
-          "kind": 34,
-          "name": "gasPrice",
-          "scalar": {
-            "kind": 4,
-            "name": "gasPrice",
-            "type": "BigInt"
-          },
-          "type": "BigInt"
-        },
-        {
-          "kind": 34,
           "name": "data",
           "scalar": {
             "kind": 4,
@@ -1854,13 +1635,13 @@ export const manifest: WrapManifest = {
         },
         {
           "kind": 34,
-          "name": "value",
+          "name": "type",
           "scalar": {
             "kind": 4,
-            "name": "value",
-            "type": "BigInt"
+            "name": "type",
+            "type": "UInt32"
           },
-          "type": "BigInt"
+          "type": "UInt32"
         },
         {
           "kind": 34,
@@ -1873,18 +1654,141 @@ export const manifest: WrapManifest = {
           "type": "BigInt"
         },
         {
+          "array": {
+            "item": {
+              "kind": 8192,
+              "name": "accessList",
+              "required": true,
+              "type": "Ethereum_AccessItem"
+            },
+            "kind": 18,
+            "name": "accessList",
+            "object": {
+              "kind": 8192,
+              "name": "accessList",
+              "required": true,
+              "type": "Ethereum_AccessItem"
+            },
+            "type": "[Ethereum_AccessItem]"
+          },
           "kind": 34,
-          "name": "type",
+          "name": "accessList",
+          "type": "[Ethereum_AccessItem]"
+        },
+        {
+          "comment": "Gas supplied for the transaction",
+          "kind": 34,
+          "name": "gasLimit",
           "scalar": {
             "kind": 4,
-            "name": "type",
+            "name": "gasLimit",
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        },
+        {
+          "comment": "  The max total fee to pay per unit of gas.\nThe difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.\nThis property is ignored when gasPrice is not null.",
+          "kind": 34,
+          "name": "maxFeePerGas",
+          "scalar": {
+            "kind": 4,
+            "name": "maxFeePerGas",
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        },
+        {
+          "comment": "  The gas price paid is baseFeePerGas + maxPriorityFeePerGas.\nThe difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.\nThis property is ignored when gasPrice is not null.",
+          "kind": 34,
+          "name": "maxPriorityFeePerGas",
+          "scalar": {
+            "kind": 4,
+            "name": "maxPriorityFeePerGas",
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        },
+        {
+          "comment": "  The gas price for legacy transactions.\nIf this property is not null, a legacy transaction will be sent and maxFeePerGas and maxPriorityFeePerGas will be ignored.",
+          "kind": 34,
+          "name": "gasPrice",
+          "scalar": {
+            "kind": 4,
+            "name": "gasPrice",
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        },
+        {
+          "comment": "Ether value sent with transaction",
+          "kind": 34,
+          "name": "value",
+          "scalar": {
+            "kind": 4,
+            "name": "value",
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        },
+        {
+          "comment": "Override default nonce",
+          "kind": 34,
+          "name": "nonce",
+          "scalar": {
+            "kind": 4,
+            "name": "nonce",
             "type": "UInt32"
           },
           "type": "UInt32"
         }
       ],
       "type": "Ethereum_TxRequest",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
+    },
+    {
+      "kind": 1025,
+      "namespace": "Ethereum",
+      "nativeType": "AccessItem",
+      "properties": [
+        {
+          "kind": 34,
+          "name": "address",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "address",
+            "required": true,
+            "type": "String"
+          },
+          "type": "String"
+        },
+        {
+          "array": {
+            "item": {
+              "kind": 4,
+              "name": "storageKeys",
+              "required": true,
+              "type": "String"
+            },
+            "kind": 18,
+            "name": "storageKeys",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "storageKeys",
+              "required": true,
+              "type": "String"
+            },
+            "type": "[String]"
+          },
+          "kind": 34,
+          "name": "storageKeys",
+          "required": true,
+          "type": "[String]"
+        }
+      ],
+      "type": "Ethereum_AccessItem",
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -2071,18 +1975,6 @@ export const manifest: WrapManifest = {
         },
         {
           "kind": 34,
-          "name": "byzantium",
-          "required": true,
-          "scalar": {
-            "kind": 4,
-            "name": "byzantium",
-            "required": true,
-            "type": "Boolean"
-          },
-          "type": "Boolean"
-        },
-        {
-          "kind": 34,
           "name": "type",
           "required": true,
           "scalar": {
@@ -2105,7 +1997,7 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_TxReceipt",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -2234,95 +2126,7 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "Ethereum_Log",
-      "uri": "ens/ethereum.polywrap.eth"
-    },
-    {
-      "kind": 1025,
-      "namespace": "Ethereum",
-      "nativeType": "EventNotification",
-      "properties": [
-        {
-          "kind": 34,
-          "name": "data",
-          "required": true,
-          "scalar": {
-            "kind": 4,
-            "name": "data",
-            "required": true,
-            "type": "String"
-          },
-          "type": "String"
-        },
-        {
-          "kind": 34,
-          "name": "address",
-          "required": true,
-          "scalar": {
-            "kind": 4,
-            "name": "address",
-            "required": true,
-            "type": "String"
-          },
-          "type": "String"
-        },
-        {
-          "kind": 34,
-          "name": "log",
-          "object": {
-            "kind": 8192,
-            "name": "log",
-            "required": true,
-            "type": "Ethereum_Log"
-          },
-          "required": true,
-          "type": "Ethereum_Log"
-        }
-      ],
-      "type": "Ethereum_EventNotification",
-      "uri": "ens/ethereum.polywrap.eth"
-    },
-    {
-      "kind": 1025,
-      "namespace": "Ethereum",
-      "nativeType": "Network",
-      "properties": [
-        {
-          "kind": 34,
-          "name": "name",
-          "required": true,
-          "scalar": {
-            "kind": 4,
-            "name": "name",
-            "required": true,
-            "type": "String"
-          },
-          "type": "String"
-        },
-        {
-          "kind": 34,
-          "name": "chainId",
-          "required": true,
-          "scalar": {
-            "kind": 4,
-            "name": "chainId",
-            "required": true,
-            "type": "BigInt"
-          },
-          "type": "BigInt"
-        },
-        {
-          "kind": 34,
-          "name": "ensAddress",
-          "scalar": {
-            "kind": 4,
-            "name": "ensAddress",
-            "type": "String"
-          },
-          "type": "String"
-        }
-      ],
-      "type": "Ethereum_Network",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     },
     {
       "kind": 1025,
@@ -2389,6 +2193,26 @@ export const manifest: WrapManifest = {
         },
         {
           "kind": 34,
+          "name": "maxFeePerGas",
+          "scalar": {
+            "kind": 4,
+            "name": "maxFeePerGas",
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        },
+        {
+          "kind": 34,
+          "name": "maxPriorityFeePerGas",
+          "scalar": {
+            "kind": 4,
+            "name": "maxPriorityFeePerGas",
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        },
+        {
+          "kind": 34,
           "name": "gasPrice",
           "scalar": {
             "kind": 4,
@@ -2396,18 +2220,6 @@ export const manifest: WrapManifest = {
             "type": "BigInt"
           },
           "type": "BigInt"
-        },
-        {
-          "kind": 34,
-          "name": "data",
-          "required": true,
-          "scalar": {
-            "kind": 4,
-            "name": "data",
-            "required": true,
-            "type": "String"
-          },
-          "type": "String"
         },
         {
           "kind": 34,
@@ -2465,28 +2277,6 @@ export const manifest: WrapManifest = {
         },
         {
           "kind": 34,
-          "name": "confirmations",
-          "required": true,
-          "scalar": {
-            "kind": 4,
-            "name": "confirmations",
-            "required": true,
-            "type": "UInt32"
-          },
-          "type": "UInt32"
-        },
-        {
-          "kind": 34,
-          "name": "raw",
-          "scalar": {
-            "kind": 4,
-            "name": "raw",
-            "type": "String"
-          },
-          "type": "String"
-        },
-        {
-          "kind": 34,
           "name": "r",
           "scalar": {
             "kind": 4,
@@ -2531,7 +2321,7 @@ export const manifest: WrapManifest = {
               "kind": 8192,
               "name": "accessList",
               "required": true,
-              "type": "Ethereum_Access"
+              "type": "Ethereum_AccessItem"
             },
             "kind": 18,
             "name": "accessList",
@@ -2539,62 +2329,17 @@ export const manifest: WrapManifest = {
               "kind": 8192,
               "name": "accessList",
               "required": true,
-              "type": "Ethereum_Access"
+              "type": "Ethereum_AccessItem"
             },
-            "type": "[Ethereum_Access]"
+            "type": "[Ethereum_AccessItem]"
           },
           "kind": 34,
           "name": "accessList",
-          "type": "[Ethereum_Access]"
+          "type": "[Ethereum_AccessItem]"
         }
       ],
       "type": "Ethereum_TxResponse",
-      "uri": "ens/ethereum.polywrap.eth"
-    },
-    {
-      "kind": 1025,
-      "namespace": "Ethereum",
-      "nativeType": "Access",
-      "properties": [
-        {
-          "kind": 34,
-          "name": "address",
-          "required": true,
-          "scalar": {
-            "kind": 4,
-            "name": "address",
-            "required": true,
-            "type": "String"
-          },
-          "type": "String"
-        },
-        {
-          "array": {
-            "item": {
-              "kind": 4,
-              "name": "storageKeys",
-              "required": true,
-              "type": "String"
-            },
-            "kind": 18,
-            "name": "storageKeys",
-            "required": true,
-            "scalar": {
-              "kind": 4,
-              "name": "storageKeys",
-              "required": true,
-              "type": "String"
-            },
-            "type": "[String]"
-          },
-          "kind": 34,
-          "name": "storageKeys",
-          "required": true,
-          "type": "[String]"
-        }
-      ],
-      "type": "Ethereum_Access",
-      "uri": "ens/ethereum.polywrap.eth"
+      "uri": "ens/wraps.eth:ethereum@1.0.0"
     }
   ],
   "moduleType": {
@@ -2606,13 +2351,19 @@ export const manifest: WrapManifest = {
         "type": "Ethereum_Connection"
       },
       {
-        "type": "Ethereum_TxOverrides"
+        "type": "Ethereum_TxOptions"
       },
       {
         "type": "Ethereum_StaticTxResult"
       },
       {
+        "type": "Ethereum_Eip1559FeesEstimate"
+      },
+      {
         "type": "Ethereum_TxRequest"
+      },
+      {
+        "type": "Ethereum_AccessItem"
       },
       {
         "type": "Ethereum_TxReceipt"
@@ -2621,16 +2372,7 @@ export const manifest: WrapManifest = {
         "type": "Ethereum_Log"
       },
       {
-        "type": "Ethereum_EventNotification"
-      },
-      {
-        "type": "Ethereum_Network"
-      },
-      {
         "type": "Ethereum_TxResponse"
-      },
-      {
-        "type": "Ethereum_Access"
       }
     ],
     "kind": 128,

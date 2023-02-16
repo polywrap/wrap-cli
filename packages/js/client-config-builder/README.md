@@ -448,27 +448,29 @@ export const defaultEmbeddedPackages = {
 };
 
 export const defaultWrappers = {
-  sha3: "wrap://ens/wrappers.polywrap.eth:sha3@1.0.0",
-  uts46: "wrap://ens/wrappers.polywrap.eth:uts46@1.0.0",
-  graphNode: "wrap://ens/wrappers.polywrap.eth:graph-node@1.0.0",
+  sha3: "wrap://ens/wraps.eth:sha3@1.0.0",
+  uts46: "wrap://ens/wraps.eth:uts46@1.0.0",
+  graphNode: "wrap://ens/wraps.eth:graph-node@1.0.0",
   ensTextRecordResolver:
-    "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
+    "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p",
+  ethereum: "wrap://ens/wraps.eth:ethereum@1.0.0",
+  ens: "wrap://ens/wraps.eth:ens@1.0.0",
 };
 
 export const defaultPackages = {
   ensResolver: "wrap://package/ens-resolver",
-  ethereum: "wrap://ens/ethereum.polywrap.eth",
   httpResolver: "wrap://package/http-resolver",
   fileSystemResolver: "wrap://package/fs-resolver",
   ipfsResolver: "wrap://package/ipfs-resolver",
 };
 
 export const defaultInterfaces = {
-  concurrent: "wrap://ens/wrappers.polywrap.eth:concurrent@1.0.0",
-  logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
-  http: "wrap://ens/wrappers.polywrap.eth:http@1.1.0",
-  fileSystem: "wrap://ens/wrappers.polywrap.eth:file-system@1.0.0",
-  ipfsHttpClient: "wrap://ens/wrappers.polywrap.eth:ipfs-http-client@1.0.0",
+  concurrent: "wrap://ens/wraps.eth:concurrent@1.0.0",
+  logger: "wrap://ens/wraps.eth:logger@1.0.0",
+  http: "wrap://ens/wraps.eth:http@1.1.0",
+  fileSystem: "wrap://ens/wraps.eth:file-system@1.0.0",
+  ipfsHttpClient: "wrap://ens/wraps.eth:ipfs-http-client@1.0.0",
+  ethereumProvider: "wrap://ens/wraps.eth:ethereum-provider@1.0.0",
 };
 
 export const getDefaultPackages = (): Record<string, IWrapPackage> => {
@@ -478,7 +480,7 @@ export const getDefaultPackages = (): Record<string, IWrapPackage> => {
     // ENS is required for resolving domain to IPFS hashes
     [defaultPackages.ensResolver]: ensResolverPlugin({}),
     // Ethereum is required for resolving domain to Ethereum addresses
-    [defaultPackages.ethereum]: ethereumPlugin({
+    [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
       connections: new Connections({
         networks: {
           mainnet: new Connection({
@@ -506,7 +508,7 @@ export const getDefaultConfig = (): BuilderConfig => ({
     [defaultPackages.ipfsResolver]: {
       provider: defaultIpfsProviders[0],
       fallbackProviders: defaultIpfsProviders.slice(1),
-      retries: { tryResolveUri: 1, getFile: 1 },
+      retries: { tryResolveUri: 2, getFile: 2 },
     },
   },
   interfaces: {
@@ -524,14 +526,11 @@ export const getDefaultConfig = (): BuilderConfig => ({
     ]),
     [defaultInterfaces.fileSystem]: new Set([defaultInterfaces.fileSystem]),
     [defaultInterfaces.http]: new Set([defaultInterfaces.http]),
+    [defaultInterfaces.ethereumProvider]: new Set([
+      defaultInterfaces.ethereumProvider,
+    ]),
   },
-  redirects: {
-    // TODO: remove sha3 and uts46 redirects when ethereum wrapper is merged (used by updated ens wrapper)
-    "wrap://ens/sha3.polywrap.eth":
-      "wrap://ipfs/QmThRxFfr7Hj9Mq6WmcGXjkRrgqMG3oD93SLX27tinQWy5",
-    "wrap://ens/uts46.polywrap.eth":
-      "wrap://ipfs/QmPL9Njg3rGkpoJyoy8pZ5fTavjvHxNuuuiGRApzyGESZB",
-  },
+  redirects: {},
   wrappers: {},
   packages: getDefaultPackages(),
   resolvers: [],

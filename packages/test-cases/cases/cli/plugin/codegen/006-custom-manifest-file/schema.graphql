@@ -1,4 +1,4 @@
-#import { Module } into Ethereum from "ens/ethereum.polywrap.eth"
+#import { Module } into Ethereum from "ens/wraps.eth:ethereum@1.0.0"
 
 type Module {
     methodOne(

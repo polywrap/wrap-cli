@@ -3,8 +3,8 @@ import { ensAddresses, providers } from "@polywrap/test-env-js";
 import {
   Connection,
   Connections,
-  ethereumPlugin,
-} from "@polywrap/ethereum-plugin-js";
+  ethereumProviderPlugin,
+} from "ethereum-provider-js";
 import {
   RecursiveResolver,
   PackageToWrapperCacheResolver,
@@ -16,6 +16,8 @@ import {
   defaultEmbeddedPackages,
   defaultInterfaces,
   defaultPackages,
+  defaultIpfsProviders,
+  defaultWrappers,
 } from "@polywrap/client-config-builder-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { Uri } from "@polywrap/core-js";
@@ -27,6 +29,7 @@ export const getClient = () => {
         uri: Uri.from(defaultPackages.ipfsResolver),
         env: {
           provider: providers.ipfs,
+          fallbackProviders: defaultIpfsProviders,
           retries: { tryResolveUri: 1, getFile: 1 },
         },
       },
@@ -37,11 +40,16 @@ export const getClient = () => {
         implementations: [
           Uri.from(defaultPackages.ipfsResolver),
           Uri.from(defaultPackages.ensResolver),
+          Uri.from(defaultWrappers.ensTextRecordResolver),
         ],
       },
       {
         interface: Uri.from(defaultInterfaces.ipfsHttpClient),
         implementations: [Uri.from(defaultInterfaces.ipfsHttpClient)],
+      },
+      {
+        interface: Uri.from(defaultInterfaces.ethereumProvider),
+        implementations: [Uri.from(defaultInterfaces.ethereumProvider)],
       },
     ],
     resolver: RecursiveResolver.from(
@@ -56,8 +64,8 @@ export const getClient = () => {
             package: defaultEmbeddedPackages.ipfsResolver(),
           },
           {
-            uri: Uri.from(defaultPackages.ethereum),
-            package: ethereumPlugin({
+            uri: Uri.from(defaultInterfaces.ethereumProvider),
+            package: ethereumProviderPlugin({
               connections: new Connections({
                 networks: {
                   testnet: new Connection({

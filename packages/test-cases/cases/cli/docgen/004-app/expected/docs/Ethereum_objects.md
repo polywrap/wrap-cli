@@ -5,10 +5,10 @@ sidebar_position: 2
 ---
 
 
-### Ethereum_Access 
+### Ethereum_AccessItem 
 
 ```graphql
-type Ethereum_Access {
+type Ethereum_AccessItem {
   address: String! 
   storageKeys: String[]! 
 }
@@ -23,13 +23,12 @@ type Ethereum_Connection {
 }
 ```
 
-### Ethereum_EventNotification 
+### Ethereum_Eip1559FeesEstimate 
 
 ```graphql
-type Ethereum_EventNotification {
-  data: String! 
-  address: String! 
-  log: Ethereum_Log! 
+type Ethereum_Eip1559FeesEstimate {
+  maxFeePerGas: BigInt! 
+  maxPriorityFeePerGas: BigInt! 
 }
 ```
 
@@ -49,16 +48,6 @@ type Ethereum_Log {
 }
 ```
 
-### Ethereum_Network 
-
-```graphql
-type Ethereum_Network {
-  name: String! 
-  chainId: BigInt! 
-  ensAddress: String 
-}
-```
-
 ### Ethereum_StaticTxResult 
 
 ```graphql
@@ -68,13 +57,21 @@ type Ethereum_StaticTxResult {
 }
 ```
 
-### Ethereum_TxOverrides 
+### Ethereum_TxOptions 
 
 ```graphql
-type Ethereum_TxOverrides {
-  gasLimit: BigInt 
-  gasPrice: BigInt 
-  value: BigInt 
+type Ethereum_TxOptions {
+  gasLimit: BigInt # Gas supplied for the transaction
+  maxFeePerGas: BigInt #   The max total fee to pay per unit of gas.
+The difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.
+This property is ignored when gasPrice is not null.
+  maxPriorityFeePerGas: BigInt #   The gas price paid is baseFeePerGas + maxPriorityFeePerGas.
+The difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.
+This property is ignored when gasPrice is not null.
+  gasPrice: BigInt #   The gas price for legacy transactions.
+If this property is not null, a legacy transaction will be sent and maxFeePerGas and maxPriorityFeePerGas will be ignored.
+  value: BigInt # Ether value sent with transaction
+  nonce: UInt32 # Override default nonce
 }
 ```
 
@@ -96,7 +93,6 @@ type Ethereum_TxReceipt {
   confirmations: UInt32! 
   cumulativeGasUsed: BigInt! 
   effectiveGasPrice: BigInt! 
-  byzantium: Boolean! 
   type: UInt32! 
   status: UInt32 
 }
@@ -108,13 +104,21 @@ type Ethereum_TxReceipt {
 type Ethereum_TxRequest {
   to: String 
   from: String 
-  nonce: UInt32 
-  gasLimit: BigInt 
-  gasPrice: BigInt 
   data: String 
-  value: BigInt 
-  chainId: BigInt 
   type: UInt32 
+  chainId: BigInt 
+  accessList: Ethereum_AccessItem[] 
+  gasLimit: BigInt # Gas supplied for the transaction
+  maxFeePerGas: BigInt #   The max total fee to pay per unit of gas.
+The difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.
+This property is ignored when gasPrice is not null.
+  maxPriorityFeePerGas: BigInt #   The gas price paid is baseFeePerGas + maxPriorityFeePerGas.
+The difference between maxFeePerGas and baseFeePerGas + maxPriorityFeePerGas is “refunded” to the user.
+This property is ignored when gasPrice is not null.
+  gasPrice: BigInt #   The gas price for legacy transactions.
+If this property is not null, a legacy transaction will be sent and maxFeePerGas and maxPriorityFeePerGas will be ignored.
+  value: BigInt # Ether value sent with transaction
+  nonce: UInt32 # Override default nonce
 }
 ```
 
@@ -127,20 +131,19 @@ type Ethereum_TxResponse {
   from: String! 
   nonce: UInt32! 
   gasLimit: BigInt! 
+  maxFeePerGas: BigInt 
+  maxPriorityFeePerGas: BigInt 
   gasPrice: BigInt 
-  data: String! 
   value: BigInt! 
   chainId: BigInt! 
   blockNumber: BigInt 
   blockHash: String 
   timestamp: UInt32 
-  confirmations: UInt32! 
-  raw: String 
   r: String 
   s: String 
   v: UInt32 
   type: UInt32 
-  accessList: Ethereum_Access[] 
+  accessList: Ethereum_AccessItem[] 
 }
 ```
 
