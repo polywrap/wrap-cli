@@ -121,6 +121,8 @@ describe("URI resolution", () => {
     const resolutionContext = new UriResolutionContext();
     const result = await client.tryResolveUri({ uri, resolutionContext });
 
+    console.log(JSON.stringify(buildCleanUriHistory(resolutionContext.getHistory()), null, 2));
+
     await expectResultWithHistory(
       result,
       UriResolutionResult.ok(uri),
