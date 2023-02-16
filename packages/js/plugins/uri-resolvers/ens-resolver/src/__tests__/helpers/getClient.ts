@@ -16,7 +16,8 @@ import {
   defaultEmbeddedPackages,
   defaultInterfaces,
   defaultPackages,
-  defaultIpfsProviders
+  defaultIpfsProviders,
+  defaultWrappers
 } from "@polywrap/client-config-builder-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { Uri } from "@polywrap/core-js";
@@ -38,6 +39,7 @@ export const getClient = () => {
           implementations: [
             defaultPackages.ipfsResolver,
             defaultPackages.ensResolver,
+            defaultWrappers.ensTextRecordResolver,
           ],
         },
         {
