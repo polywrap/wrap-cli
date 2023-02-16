@@ -33,14 +33,14 @@
             "wrap://package/http-resolver => StaticResolver - Package (wrap://package/http-resolver) => package (wrap://package/http-resolver)"
           ]
         ],
-        "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => PackageToWrapperCacheResolver => wrapper (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+        "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => PackageToWrapperCacheResolver => wrapper (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)",
         [
-          "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => UriResolverAggregator => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+          "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => UriResolverAggregator => package (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)",
           [
-            "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ExtendableUriResolver => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+            "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => ExtendableUriResolver => package (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)",
             [
               "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ipfs-resolver)",
-              "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ResolverExtension (wrap://package/ipfs-resolver) => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)"
+              "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => ResolverExtension (wrap://package/ipfs-resolver) => package (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)"
             ]
           ]
         ],

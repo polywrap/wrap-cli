@@ -28,15 +28,6 @@ export const providers = {
 };
 // $end
 
-// $start: embeddedWrappers
-/** Wasm wrappers embedded in the package */
-export const embeddedWrappers = {
-  ens: `wrap://fs/${path.join(__dirname, "wrappers", "ens")}`,
-  uts46: `wrap://fs/${path.join(__dirname, "wrappers", "uts46")}`,
-  sha3: `wrap://fs/${path.join(__dirname, "wrappers", "sha3")}`,
-};
-// $end: embeddedWrappers
-
 const monorepoCli = `${__dirname}/../../../cli/bin/polywrap`;
 const npmCli = `${__dirname}/../../../polywrap/bin/polywrap`;
 
