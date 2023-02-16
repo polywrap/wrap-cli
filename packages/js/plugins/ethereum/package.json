@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@polywrap/client-js": "0.10.0-pre.8",
-    "@polywrap/fs-plugin-js": "~0.10.0",
+    "@polywrap/fs-plugin-js": "~0.10.0-pre",
     "@polywrap/fs-resolver-plugin-js": "0.10.0-pre.8",
     "@polywrap/test-env-js": "0.10.0-pre.8",
     "@types/jest": "26.0.8",
