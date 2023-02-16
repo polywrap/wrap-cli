@@ -218,14 +218,14 @@ describe("Error structure", () => {
     });
   });
 
-  describe.only("Wasm wrapper - RS", () => {
+  describe("Wasm wrapper - RS", () => {
     let client: PolywrapClient;
 
     beforeAll(async () => {
-      await buildWrapper(invalidTypesWrapperRSPath);
-      await buildWrapper(badUtilWrapperRSPath);
-      await buildWrapper(badMathWrapperRSPath);
-      await buildWrapper(subinvokeErrorWrapperRSPath);
+      // await buildWrapper(invalidTypesWrapperRSPath);
+      // await buildWrapper(badUtilWrapperRSPath);
+      // await buildWrapper(badMathWrapperRSPath);
+      // await buildWrapper(subinvokeErrorWrapperRSPath);
 
       client = new PolywrapClient({
         redirects: [
@@ -241,7 +241,7 @@ describe("Error structure", () => {
       })
     });
 
-    test.only("Subinvoke a wrapper that is not found", async () => {
+    test("Subinvoke a wrapper that is not found", async () => {
       const result = await client.invoke<number>({
         uri: subinvokeErrorWrapperRSUri.uri,
         method: "subWrapperNotFound",
@@ -254,15 +254,13 @@ describe("Error structure", () => {
       expect(result.ok).toBeFalsy();
       if (result.ok) throw Error("should never happen");
 
-      console.log(JSON.stringify(result.error, null, 2));
-
       expect(result.error?.name).toEqual("WrapError");
       expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
       expect(result.error?.reason.startsWith("SubInvocation exception encountered")).toBeTruthy();
-      expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/subinvoke-error/invoke/build")).toBeTruthy();
+      expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-rs/subinvoke-error/invoke/build")).toBeTruthy();
       expect(result.error?.method).toEqual("subWrapperNotFound");
       expect(result.error?.args).toEqual("{\n  \"a\": 1,\n  \"b\": 1\n}");
-      expect(result.error?.source).toEqual({ file: "~lib/@polywrap/wasm-as/containers/Result.ts", row: 171, col: 13 });
+      expect(result.error?.source).toEqual({ file: "src/lib.rs", row: 17, col: 57 });
 
       expect(result.error?.innerError instanceof WrapError).toBeTruthy();
       const prev = result.error?.innerError as WrapError;
@@ -334,10 +332,10 @@ describe("Error structure", () => {
       expect(result.error?.name).toEqual("WrapError");
       expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
       expect(result.error?.reason.startsWith("SubInvocation exception encountered")).toBeTruthy();
-      expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-as/subinvoke-error/invoke/build")).toBeTruthy();
+      expect(result.error?.uri.endsWith("packages/test-cases/cases/wrappers/wasm-rs/subinvoke-error/invoke/build")).toBeTruthy();
       expect(result.error?.method).toEqual("throwsInTwoSubinvokeLayers");
       expect(result.error?.args).toEqual("{\n  \"a\": 1,\n  \"b\": 1\n}");
-      expect(result.error?.source).toEqual({ file: "~lib/@polywrap/wasm-as/containers/Result.ts", row: 171, col: 13 });
+      expect(result.error?.source).toEqual({ file: "src/lib.rs", row: 9, col: 56 });
 
       expect(result.error?.innerError instanceof WrapError).toBeTruthy();
       const prev = result.error?.innerError as WrapError;
@@ -347,7 +345,7 @@ describe("Error structure", () => {
       expect(prev.uri).toEqual("wrap://ens/bad-math.eth");
       expect(prev.method).toEqual("subInvokeWillThrow");
       expect(prev.args).toEqual("{\n  \"0\": 130,\n  \"1\": 161,\n  \"2\": 97,\n  \"3\": 1,\n  \"4\": 161,\n  \"5\": 98,\n  \"6\": 1\n}");
-      expect(prev.source).toEqual({ file: "~lib/@polywrap/wasm-as/containers/Result.ts", row: 171, col: 13 });
+      expect(prev.source).toEqual({ file: "src/lib.rs", row: 5, col: 75 });
 
       expect(prev.innerError instanceof WrapError).toBeTruthy();
       const prevOfPrev = prev.innerError as WrapError;
@@ -357,7 +355,7 @@ describe("Error structure", () => {
       expect(prevOfPrev.uri.endsWith("wrap://ens/bad-util.eth")).toBeTruthy();
       expect(prevOfPrev.method).toEqual("iThrow");
       expect(prevOfPrev.args).toEqual("{\n  \"0\": 129,\n  \"1\": 161,\n  \"2\": 97,\n  \"3\": 0\n}");
-      expect(prevOfPrev.source).toEqual({ file: "src/index.ts", row: 5, col: 5 });
+      expect(prevOfPrev.source).toEqual({ file: "src/lib.rs", row: 6, col: 5 });
     });
   });
 
