@@ -86,17 +86,14 @@ export async function fetchWrappers(): Promise<void> {
     zip.extractAllTo(destination, /*overwrite*/ true);
   }
 
-  const tag = "0.0.1-pre.1"
+  const tag = "0.0.1-pre.5"
   const repoName = "wasm-test-harness"
-  const url = `https://github.com/polywrap/${repoName}/releases/download/${tag}/wrappers.zip`;
+  const url = `https://github.com/polywrap/${repoName}/releases/download/${tag}/wrappers`;
 
   try {
     const buffer = await fetchFromGithub(url);
-    const zipBuiltFolder = './output';
+    const zipBuiltFolder = './cases/wrappers';
     unzipFile(buffer, zipBuiltFolder);
-    const wrappersPath = path.join(zipBuiltFolder, "wrappers")
-    shell.exec(`mv ${wrappersPath} ./cases`)
-    shell.exec(`rm -rf ${zipBuiltFolder}`)
     shell.exec(`rm -rf node_modules`)
     console.log(`Wrappers folder fetch successful`);
   } catch (error) {
