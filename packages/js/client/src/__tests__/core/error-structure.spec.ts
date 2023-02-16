@@ -222,10 +222,10 @@ describe("Error structure", () => {
     let client: PolywrapClient;
 
     beforeAll(async () => {
-      // await buildWrapper(invalidTypesWrapperRSPath);
-      // await buildWrapper(badUtilWrapperRSPath);
-      // await buildWrapper(badMathWrapperRSPath);
-      // await buildWrapper(subinvokeErrorWrapperRSPath);
+      await buildWrapper(invalidTypesWrapperRSPath);
+      await buildWrapper(badUtilWrapperRSPath);
+      await buildWrapper(badMathWrapperRSPath);
+      await buildWrapper(subinvokeErrorWrapperRSPath);
 
       client = new PolywrapClient({
         redirects: [
