@@ -4,7 +4,7 @@ import { UnlinkedAbiDefs } from "./UnlinkedDefs";
 import { UnlinkedAbiVisitor } from "./visitor";
 
 export class ImportsParser {
-  private _schemaDependencyTree = new DependencyTree<string>()
+  private _schemaDependencyTree = new DependencyTree<UnlinkedAbiDefs>()
   private _defintionDependencyTree = new DependencyTree<string>()
 
   constructor(private _schemaParser: SchemaParser, private _fetchers: {
@@ -83,11 +83,11 @@ export class ImportsParser {
       const extImportUri = externalImportStatement.uriOrPath
       const externalSchema = await this._fetchers.external(extImportUri)
       const importedTypes = externalImportStatement.importedTypes;
+      const externalAbi = await this._schemaParser.parse(externalSchema)
 
-      this._schemaDependencyTree.addNode(extImportUri, externalSchema)
+      this._schemaDependencyTree.addNode(extImportUri, externalAbi)
       externalImportStatement.importedTypes.forEach(importedType => this._defintionDependencyTree.addNode(importedType, extImportUri))
 
-      const externalAbi = await this._schemaParser.parse(externalSchema)
       const transitiveImports = await this._schemaParser.parseExternalImportStatements(externalSchema)
       const {
         transitiveImportDeps,
@@ -103,7 +103,48 @@ export class ImportsParser {
   }
 
   async getImports(rootSchema: string, parser: SchemaParser) {
+    const rootAbi = await parser.parse(rootSchema)
+    this._schemaDependencyTree.addNode("root", rootAbi)
+
+    const state: { currentObject?: string; currentFunction?: string } = {}
     const externalImportStatements = await parser.parseExternalImportStatements(rootSchema);
+
+    const rootAbiVisitor = new UnlinkedAbiVisitor({
+      enter: {
+        ObjectDef: (def) => {
+          state.currentObject = def.name
+        },
+        FunctionDef: (def) => {
+          state.currentFunction = def.name
+        },
+        ImportRefType: (ref) => {
+          if (!state.currentObject && !state.currentFunction) {
+            throw new Error(`Found import reference to '${ref.ref_name}' outside of an object or function definition`)
+          }
+          const containingDefName = state.currentObject || state.currentFunction as string
+          const correspondingAbiImport = externalImportStatements.find(t => t.importedTypes.includes(ref.ref_name))
+
+          if (!correspondingAbiImport) {
+            throw new Error(`Found import reference to '${ref.ref_name}' which isn't an imported definition`)
+          }
+
+          this._defintionDependencyTree.addNode(containingDefName, "root")
+          this._defintionDependencyTree.addEdge(containingDefName, ref.ref_name)
+          this._schemaDependencyTree.addEdge("root", correspondingAbiImport.uriOrPath)
+        }
+      },
+      leave: {
+        ObjectDef: () => {
+          state.currentObject = undefined
+        },
+        FunctionDef: () => {
+          state.currentFunction = undefined
+        }
+      }
+    })
+
+    rootAbiVisitor.visit(rootAbi)
+
     return this._getTransitiveDependencies(externalImportStatements)
   }
 }

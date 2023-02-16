@@ -28,6 +28,7 @@ describe("Imports parser", () => {
 
       type Foo {
         propFoo: Additional!
+        prop2: Some!
       }
     `
 
@@ -116,6 +117,15 @@ describe("Imports parser", () => {
                   ref_kind: "Object",
                   ref_name: "Additional",
                 }
+              }, {
+                kind: "Property",
+                name: "prop2",
+                required: true,
+                type: {
+                  kind: "Ref",
+                  ref_kind: "Object",
+                  ref_name: "Some",
+                }
               }]
             }]
           }
@@ -172,10 +182,5 @@ describe("Imports parser", () => {
 
     const importsParser = new ImportsParser(mockSchemaParser, fetchers)
     const { definitionDependencyTree, schemaDependencyTree } = await importsParser.getImports(rootSchema, mockSchemaParser)
-    
-    console.log(JSON.stringify(definitionDependencyTree, null, 2))
-    console.log(JSON.stringify(schemaDependencyTree, null, 2))
-
-    console.log(definitionDependencyTree.getAllDependencies(["Foo"]))
   })
 })
