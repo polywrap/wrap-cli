@@ -428,9 +428,10 @@ A complete example using all or most of the available methods.
   /**
    * Build a sanitized core client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors
    *
+   * @param options - Use a custom wrapper cache or resolver
    * @returns CoreClientConfig that results from applying all the steps in the builder pipeline
    */
-  build(): CoreClientConfig;
+  build(options?: BuildOptions): CoreClientConfig;
 ```
 
 ## Bundles
