@@ -3,12 +3,13 @@ import { ensAddresses, providers } from "@polywrap/test-env-js";
 import {
   Connection,
   Connections,
-  ethereumPlugin,
-} from "@polywrap/ethereum-plugin-js";
+  ethereumProviderPlugin,
+} from "ethereum-provider-js";
 import {
   RecursiveResolver,
   PackageToWrapperCacheResolver,
-  WrapperCache, RetryResolver,
+  WrapperCache,
+  RetryResolver,
 } from "@polywrap/uri-resolvers-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
@@ -16,6 +17,8 @@ import {
   defaultEmbeddedPackages,
   defaultInterfaces,
   defaultPackages,
+  defaultIpfsProviders,
+  defaultWrappers
 } from "@polywrap/client-config-builder-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { Uri } from "@polywrap/core-js";
@@ -27,6 +30,7 @@ export const getClient = () => {
         uri: defaultPackages.ipfsResolver,
         env: {
           provider: providers.ipfs,
+          fallbackProviders: defaultIpfsProviders,
         },
       }],
       interfaces: [
@@ -35,11 +39,16 @@ export const getClient = () => {
           implementations: [
             defaultPackages.ipfsResolver,
             defaultPackages.ensResolver,
+            defaultWrappers.ensTextRecordResolver,
           ],
         },
         {
           interface: defaultInterfaces.ipfsHttpClient,
           implementations: [defaultInterfaces.ipfsHttpClient],
+        },
+        {
+          interface: defaultInterfaces.ethereumProvider,
+          implementations: [defaultInterfaces.ethereumProvider],
         },
       ],
       resolver: RecursiveResolver.from(
@@ -54,8 +63,8 @@ export const getClient = () => {
               package: defaultEmbeddedPackages.ipfsResolver(),
             },
             {
-              uri: Uri.from(defaultPackages.ethereum),
-              package: ethereumPlugin({
+              uri: Uri.from(defaultInterfaces.ethereumProvider),
+              package: ethereumProviderPlugin({
                 connections: new Connections({
                   networks: {
                     testnet: new Connection({

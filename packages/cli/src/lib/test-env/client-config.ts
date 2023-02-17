@@ -2,15 +2,16 @@ import { getTestEnvProviders } from "./providers";
 
 import {
   BuilderConfig,
+  defaultInterfaces,
   defaultIpfsProviders,
   defaultPackages,
 } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
-  ethereumPlugin,
+  ethereumProviderPlugin,
   Connections,
   Connection,
-} from "@polywrap/ethereum-plugin-js";
+} from "ethereum-provider-js";
 import { ensAddresses } from "@polywrap/test-env-js";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
@@ -34,7 +35,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
       },
     },
     packages: {
-      [defaultPackages.ethereum]: ethereumPlugin({
+      [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({

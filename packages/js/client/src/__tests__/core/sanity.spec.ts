@@ -50,6 +50,10 @@ describe("sanity", () => {
           interface: new Uri(defaultInterfaces.http),
           implementations: [new Uri(defaultInterfaces.http)],
         },
+        {
+          interface: new Uri(defaultInterfaces.ethereumProvider),
+          implementations: [new Uri(defaultInterfaces.ethereumProvider)],
+        },
       ]);
   });
 
