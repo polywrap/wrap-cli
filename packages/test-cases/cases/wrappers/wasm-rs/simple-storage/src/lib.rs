@@ -41,7 +41,7 @@ pub fn set_data(args: ArgsSetData) -> String {
         method: "function set(uint256 value)".to_string(),
         args: Some(vec![args.value.to_string()]),
         connection: args.connection,
-        tx_overrides: None,
+        options: None,
     }) {
         Ok(res) => res.hash,
         Err(e) => panic!("{}", e),
@@ -56,6 +56,7 @@ pub fn deploy_contract(args: ArgsDeployContract) -> String {
         bytecode,
         args: None,
         connection: args.connection,
+        options: None,
     })
     .unwrap()
 }
