@@ -20,6 +20,7 @@ export function migrate(old: OldManifest): NewManifest {
     format: "0.3.0",
     strategies: {
       image: {
+        ...old.strategies?.image,
         buildx: newBuildx,
       },
     },
