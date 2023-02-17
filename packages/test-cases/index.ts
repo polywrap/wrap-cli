@@ -86,7 +86,7 @@ export async function fetchWrappers(): Promise<void> {
     zip.extractAllTo(destination, /*overwrite*/ true);
   }
 
-  const tag = "0.0.1-pre.5"
+  const tag = "0.0.1-pre.7"
   const repoName = "wasm-test-harness"
   const url = `https://github.com/polywrap/${repoName}/releases/download/${tag}/wrappers`;
 

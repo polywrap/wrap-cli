@@ -26,7 +26,7 @@
             "wrap://package/fs-resolver => StaticResolver - Package (wrap://package/fs-resolver) => package (wrap://package/fs-resolver)"
           ]
         ],
-        "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)"
+        "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)"
       ]
     ]
   ]

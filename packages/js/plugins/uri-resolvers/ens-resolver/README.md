@@ -37,7 +37,7 @@ export async function foo({
   client = new PolywrapClient({
     plugins: [
       {
-        uri: "wrap://ens/ethereum.polywrap.eth",
+        uri: "wrap://ens/wraps.eth:ethereum@1.0.0",
         plugin: ethereumPlugin({ connections }),
       },
       {

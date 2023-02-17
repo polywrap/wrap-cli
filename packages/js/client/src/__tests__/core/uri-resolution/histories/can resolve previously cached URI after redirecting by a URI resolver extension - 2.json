@@ -9,7 +9,7 @@
         "wrap://package/ens-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ens-resolver)",
         "wrap://package/fs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/fs-resolver)",
         "wrap://package/http-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/http-resolver)",
-        "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+        "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)",
         "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
         "wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as)",
         [
@@ -17,10 +17,10 @@
           [
             "wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as)",
             [
-              "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
-              "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
-              "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
-              "wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as => ResolverExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as)"
+              "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ipfs-resolver)",
+              "wrap://package/ens-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ens-resolver)",
+              "wrap://package/fs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/fs-resolver)",
+              "wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as)"
             ]
           ]
         ],

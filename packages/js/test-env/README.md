@@ -74,17 +74,6 @@ export const ensAddresses = {
 } as const;
 ```
 
-### embeddedWrappers
-
-```typescript
-/** Wasm wrappers embedded in the package */
-export const embeddedWrappers = {
-  ens: `wrap://fs/${path.join(__dirname, "wrappers", "ens")}`,
-  uts46: `wrap://fs/${path.join(__dirname, "wrappers", "uts46")}`,
-  sha3: `wrap://fs/${path.join(__dirname, "wrappers", "sha3")}`,
-};
-```
-
 ## Methods
 
 ### initTestEnvironment

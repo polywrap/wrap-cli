@@ -3,8 +3,8 @@ import { ensAddresses, providers } from "@polywrap/test-env-js";
 import {
   Connection,
   Connections,
-  ethereumPlugin,
-} from "@polywrap/ethereum-plugin-js";
+  ethereumProviderPlugin,
+} from "ethereum-provider-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
@@ -18,6 +18,8 @@ import {
   defaultInterfaces,
   defaultEmbeddedPackages,
   defaultPackages,
+  defaultIpfsProviders,
+  defaultWrappers,
 } from "@polywrap/client-config-builder-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 
@@ -38,7 +40,8 @@ export const getClientWithEnsAndIpfs = () => {
           uri: defaultPackages.ipfsResolver,
           env: {
             provider: providers.ipfs,
-            retries: { tryResolveUri: 1, getFile: 1 },
+            fallbackProviders: defaultIpfsProviders,
+            retries: { tryResolveUri: 2, getFile: 2 },
           },
         },
       ],
@@ -49,11 +52,16 @@ export const getClientWithEnsAndIpfs = () => {
             defaultPackages.ipfsResolver,
             defaultPackages.ensResolver,
             defaultPackages.fileSystemResolver,
+            defaultWrappers.ensTextRecordResolver,
           ],
         },
         {
           interface: defaultInterfaces.ipfsHttpClient,
           implementations: [defaultInterfaces.ipfsHttpClient],
+        },
+        {
+          interface: defaultInterfaces.ethereumProvider,
+          implementations: [defaultInterfaces.ethereumProvider],
         },
       ],
       resolver: RecursiveResolver.from([
@@ -68,8 +76,8 @@ export const getClientWithEnsAndIpfs = () => {
               package: defaultEmbeddedPackages.ipfsResolver(),
             },
             {
-              uri: Uri.from(defaultPackages.ethereum),
-              package: ethereumPlugin({ connections }),
+              uri: Uri.from(defaultInterfaces.ethereumProvider),
+              package: ethereumProviderPlugin({ connections }),
             },
             {
               uri: Uri.from(defaultPackages.ensResolver),
