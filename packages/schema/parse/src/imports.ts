@@ -92,7 +92,9 @@ export class Parser {
       const localAbi = await this._schemaParser.parse(localSchema)
       const transitiveLocalImports = await this._schemaParser.parseLocalImportStatements(localSchema)
       const transitiveExtImports = await this._schemaParser.parseExternalImportStatements(localSchema)
+      transitiveExternalImports.push(...transitiveExtImports)
 
+      // TODO: not tree shaking transitive local imports yet
       const state: { currentObject?: string; currentFunction?: string } = {}
       const localAbiVisitor = new UnlinkedAbiVisitor({
         enter: {
@@ -116,7 +118,6 @@ export class Parser {
           RefType: (ref) => {
             const containingDefName = state.currentObject || state.currentFunction as string
             if (containingDefName && !localImportStatement.importedTypes.includes(ref.ref_name)) {
-
               const referencedDef = this.findDefinitionFromReference(localAbi, ref)
               if (referencedDef.kind === "Object") {
                 treeShakenLocalAbi.objects.push(referencedDef)
@@ -125,18 +126,6 @@ export class Parser {
               }
             }
           },
-          ImportRefType: (ref) => {
-            const containingDefName = state.currentObject || state.currentFunction as string
-            // TODO: namespaced re-exported ext import?
-            if (containingDefName) {
-              const referencedTransitiveImport = transitiveExtImports.find(t => t.importedTypes.includes(ref.ref_name))
-
-              if (!referencedTransitiveImport) {
-                throw new Error(`Could not find transitive import for ${ref.ref_name}`)
-              }
-              transitiveExternalImports.push(referencedTransitiveImport)
-            }
-          }
         },
         leave: {
           ObjectDef: () => {
