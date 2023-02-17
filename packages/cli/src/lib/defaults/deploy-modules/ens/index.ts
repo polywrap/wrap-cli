@@ -62,10 +62,6 @@ class ENSPublisher implements DeployModule {
             retries: { tryResolveUri: 2, getFile: 2 },
           },
         },
-        redirects: {
-          "wrap://ens/uts46.polywrap.eth": defaultWrappers.uts46,
-          "wrap://ens/sha3.polywrap.eth": defaultWrappers.sha3,
-        },
         packages: {
           [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
             connections: new Connections({
