@@ -1,9 +1,9 @@
 import { Def, EnumDef, MapKeyTypeName, NamedDef, RefType, ScalarType } from "./definitions";
 
 export interface UnlinkedAbiDefs {
-  functions?: UnlinkedFunctionDef[];
-  objects?: UnlinkedObjectDef[];
-  enums?: EnumDef[];
+  functions: UnlinkedFunctionDef[];
+  objects: UnlinkedObjectDef[];
+  enums: EnumDef[];
 }
 
 export type UnlinkedAnyDef = 
