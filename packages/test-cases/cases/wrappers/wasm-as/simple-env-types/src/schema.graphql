@@ -1,8 +1,0 @@
-type Module {
-  getEnv(arg: String!): Env @env(required: false)
-}
-
-type Env {
-  str: String
-  requiredInt: Int!
-}

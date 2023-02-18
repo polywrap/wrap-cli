@@ -1,3 +1,0 @@
-type Module {
-    foo(bar: Int!): String!
-}

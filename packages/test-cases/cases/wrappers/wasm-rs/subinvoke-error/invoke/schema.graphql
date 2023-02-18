@@ -1,7 +1,0 @@
-#import * into BadMath from "ens/bad-math.eth"
-#import * into NotFound from "ens/not-found.eth"
-
-type Module {
-  throwsInTwoSubinvokeLayers(a: Int!, b: Int!): Int!
-  subWrapperNotFound(a: Int!, b: Int!): Int!
-}

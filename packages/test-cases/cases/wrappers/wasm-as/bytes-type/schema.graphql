@@ -1,9 +1,0 @@
-type Module {
-  bytesMethod(
-    arg: Args!
-  ): Bytes!
-}
-
-type Args {
-  prop: Bytes!
-}

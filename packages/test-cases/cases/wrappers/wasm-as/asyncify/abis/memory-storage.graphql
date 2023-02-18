@@ -1,5 +1,0 @@
-type Module {
-  getData: Int32!
-
-  setData(value: Int32!): Boolean!
-}
