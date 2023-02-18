@@ -11,7 +11,7 @@ import {
   providers,
   ensAddresses,
   stopTestEnvironment,
-  buildAndDeployWrapper,
+  buildWrapper,
 } from "@polywrap/test-env-js";
 import { filesystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { filesystemPlugin } from "@polywrap/fs-plugin-js";
@@ -19,7 +19,7 @@ import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 
-// query a local wrapper
+// invoke a local wrapper
 export async function foo({
 
   // spin up docker containers with Ganache and IPFS.
@@ -43,7 +43,7 @@ export async function foo({
   const wrapperPath = `/path/to/simple-storage`;
 
   // build locally
-  await buildWrapper(wrapperPath);
+  await buildWrapper(wrapperPath, undefined, true);
   const buildPath = `${wrapperPath}/build`;
 
   // get filesystem URI
@@ -60,7 +60,7 @@ export async function foo({
     },
   });
 
-  // query the wrapper
+  // invoke the wrapper
   const schemaFS = await client.getManifest(wrapperUriFS)
 
   await stopTestEnvironment();
@@ -71,4 +71,4 @@ For more usage examples see `src/__tests__`.
 
 ## API
 
-Filesystem Resolver Plugin conforms to a generic UriResolver interface that provides tryResolveUri and getFile methods to the Polywrap client and adds filesystem resolution capability to every client method, e.g. getSchema, getManifest, resolveUri.
+Filesystem Resolver Plugin conforms to a generic UriResolver interface that provides tryResolveUri and getFile methods to the Polywrap client and adds filesystem resolution capability to every client method, e.g. getManifest, resolveUri.

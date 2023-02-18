@@ -31,8 +31,7 @@ export class PolywrapClient extends PolywrapCoreClient {
   /**
    * Instantiate a PolywrapClient
    *
-   * @param config - a whole or partial client configuration
-   * @param options - { noDefaults?: boolean }
+   * @param config - a client configuration
    */
   constructor(config?: CoreClientConfig) /* $ */ {
     super(config ?? new ClientConfigBuilder().addDefaults().build());

@@ -1,5 +1,0 @@
-#import * into BadUtil from "ens/bad-util.eth"
-
-type Module {
-  subInvokeWillThrow(a: Int!, b: Int!): Int!
-}

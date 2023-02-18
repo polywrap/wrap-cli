@@ -1,9 +1,0 @@
-format: 0.3.0
-project:
-  name: EnvTypeExternal
-  type: wasm/assemblyscript
-source:
-  schema: ./src/schema.graphql
-  module: ./src/index.ts
-extensions:
-  build: ./polywrap.build.yaml

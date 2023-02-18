@@ -1,5 +1,0 @@
-type Module {
-  logMessage(
-    message: String!
-  ): Boolean!
-}
