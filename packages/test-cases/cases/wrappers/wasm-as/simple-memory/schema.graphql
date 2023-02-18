@@ -1,9 +1,0 @@
-#import { Module } into MemoryStorage from "wrap://ens/memory-storage.polywrap.eth"
-
-type Module {
-  getData: Int!
-
-  setData(
-    value: Int!
-  ): Boolean!
-}

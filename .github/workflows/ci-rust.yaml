@@ -56,8 +56,36 @@ jobs:
         working-directory: ./packages/wasm/rs
         run: cargo doc --workspace --no-deps
 
-  Test-Cases:
+  Check-Changed-Folders:
     runs-on: ubuntu-latest
+    outputs:
+      should-generate: ${{ env.should-generate }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Check changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+        with:
+          files: |
+            packages/cli/*
+            packages/schema/*
+            packages/wasm/*
+      - id: set-output
+        run: echo "should-generate=${{steps.changed-files.outputs.any_changed}}" >> $GITHUB_ENV
+
+  Generate-Test-Wrappers:
+    needs: Check-Changed-Folders
+    if: ${{ needs.Check-Changed-Folders.outputs.should-generate == 'true' }}
+    uses: ./.github/workflows/generate-modified-test-wrappers.yaml
+    with:
+      cli-path: /toolchain/packages/cli
+      wasm-path: /toolchain/packages/wasm
+
+  Test-Cases:
+    needs: Generate-Test-Wrappers
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -87,6 +115,18 @@ jobs:
 
       - name: Build
         run: yarn build
+
+
+      - name: Get updated wrappers
+        uses: actions/download-artifact@v2
+        id: get-wrappers
+        with:
+          name: wrappers
+
+      - name: If wrappers exists, update them
+        if: steps.get-wrappers.outputs.exists == 'true'
+        run: rm -rf packages/test-cases/wrappers |
+          mv wrappers packages/test-cases/wrappers
 
       - name: Test
         run: yarn test:rust
@@ -94,6 +134,8 @@ jobs:
 
   Test-Cli:
     runs-on: ubuntu-latest
+    needs: Generate-Test-Wrappers
+    if: ${{ always() }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -123,6 +165,17 @@ jobs:
 
       - name: Build
         run: yarn build
+
+      - name: Get updated wrappers
+        uses: actions/download-artifact@v2
+        id: get-wrappers
+        with:
+          name: wrappers
+
+      - name: If wrappers exists, update them
+        if: steps.get-wrappers.outputs.exists == 'true'
+        run: rm -rf packages/test-cases/wrappers |
+          mv wrappers packages/test-cases/wrappers
 
       - name: Test
         run: yarn test:rust

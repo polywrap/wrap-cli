@@ -1,7 +1,0 @@
-format: 0.2.0
-strategies:
-  image:
-    name: object-types-wasm-rs
-linked_packages:
-  - name: polywrap-wasm-rs
-    path: ../../../../../wasm/rs
