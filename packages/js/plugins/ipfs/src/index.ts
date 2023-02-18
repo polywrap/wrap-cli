@@ -134,6 +134,7 @@ export class IpfsPlugin extends Module<NoConfig> {
         ? createIpfsClient({
             apiUrl: options.provider,
             headers: {
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               Authorization: auth,
             },
           })
