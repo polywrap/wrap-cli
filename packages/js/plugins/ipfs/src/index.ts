@@ -125,11 +125,19 @@ export class IpfsPlugin extends Module<NoConfig> {
     let providers = [this.env.provider, ...(this.env.fallbackProviders || [])];
     let ipfs = defaultIpfsClient;
     let defaultProvider = this.env.provider;
+    const auth = this.env.auth;
 
     // Use the provider default override specified
     if (options.provider) {
       providers = [options.provider, ...providers];
-      ipfs = createIpfsClient(options.provider);
+      ipfs = auth
+        ? createIpfsClient({
+            apiUrl: options.provider,
+            headers: {
+              Authorization: auth,
+            },
+          })
+        : createIpfsClient(options.provider);
       defaultProvider = options.provider;
     }
 
