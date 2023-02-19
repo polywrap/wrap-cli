@@ -1,6 +1,7 @@
 # Polywrap Origin (0.9.6)
 ## Bugs
 * [PR-1558](https://github.com/polywrap/toolchain/pull/1558) `@polywrap/core-js` WrapError now correctly parsing Rust unwrap errors.
+* [PR-1559](https://github.com/polywrap/toolchain/pull/1559) `@polywrap/client-config-builder-js`, `@polywrap/ipfs-resolver-plugin-js`: Add the concept of configurable retries to the IPFS resolver.
 
 # Polywrap Origin (0.9.5)
 ## Bugs
