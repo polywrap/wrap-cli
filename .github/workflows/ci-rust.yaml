@@ -118,13 +118,14 @@ jobs:
 
 
       - name: Get updated wrappers
+        if: ${{ env.should-generate == 'true'}}
         uses: actions/download-artifact@v2
         id: get-wrappers
         with:
           name: wrappers
 
       - name: If wrappers exists, update them
-        if: steps.get-wrappers.outputs.exists == 'true'
+        if: ${{ env.should-generate == 'true' }}
         run: rm -rf packages/test-cases/wrappers |
           mv wrappers packages/test-cases/wrappers
 
@@ -167,13 +168,14 @@ jobs:
         run: yarn build
 
       - name: Get updated wrappers
+        if: ${{ env.should-generate == 'true'}}
         uses: actions/download-artifact@v2
         id: get-wrappers
         with:
           name: wrappers
 
       - name: If wrappers exists, update them
-        if: steps.get-wrappers.outputs.exists == 'true'
+        if: ${{ env.should-generate == 'true' }}
         run: rm -rf packages/test-cases/wrappers |
           mv wrappers packages/test-cases/wrappers
 
