@@ -44,36 +44,41 @@ jobs:
       - name: Build
         run: yarn build
 
-  Check-Changed-Folders:
+  Should-Generate-Test-Wrappers:
     runs-on: ubuntu-latest
     outputs:
-      should-generate: ${{ env.should-generate }}
+      should_generate: ${{ env.should_generate }}
+      wrappers_branch: ${{ env.wrappers_branch }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Check changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v35
+      - name: Extract Origin Dev
+        id: extract
+        uses: actions/github-script@v5
         with:
-          files: |
-            packages/cli/*
-            packages/schema/*
-            packages/wasm/*
-      - id: set-output
-        run: echo "should-generate=${{steps.changed-files.outputs.any_changed}}" >> $GITHUB_ENV
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prDescription = context.payload.pull_request.body;
+            const regex = /\/generate-test-cases\s+(\S+)/;
+            const match = regex.exec(prDescription);
+            if (match) {
+              console.log(`Extracted text: ${match[1]}`);
+              core.exportVariable('wrappers_branch', match[1]);
+              core.exportVariable('should_generate', 'true');
+            } else {
+              core.exportVariable('should_generate', 'false');
+            }
 
   Generate-Test-Wrappers:
-    needs: Check-Changed-Folders
-    if: ${{ needs.Check-Changed-Folders.outputs.should-generate == 'true' }}
+    needs: Should-Generate-Test-Wrappers
+    if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
     uses: ./.github/workflows/generate-modified-test-wrappers.yaml
     with:
       cli-path: /toolchain/packages/cli
       wasm-path: /toolchain/packages/wasm
-
+      harness-ref: ${{ needs.Should-Generate-Test-Wrappers.outputs.wrappers_branch }}
 
   Test-Core:
     runs-on: ubuntu-latest
-    needs: Generate-Test-Wrappers
+    needs: [Should-Generate-Test-Wrappers, Generate-Test-Wrappers]
     timeout-minutes: 60
     if: ${{ always() }}
     steps:
@@ -117,23 +122,25 @@ jobs:
         run: yarn build
 
       - name: Get updated wrappers
-        if: ${{ env.should-generate == 'true'}}
-        uses: actions/download-artifact@v2
+        if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        uses: actions/download-artifact@v3
         id: get-wrappers
         with:
           name: wrappers
+          path: ./wrappers
 
-      - name: If wrappers exists, update them
-        if: ${{ env.should-generate == 'true' }}
-        run: rm -rf packages/test-cases/wrappers |
-          mv wrappers packages/test-cases/wrappers
+      - if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        run: rm -rf packages/test-cases/cases/wrappers
+
+      - if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        run: mv wrappers packages/test-cases/cases
 
       - name: Test
         run: yarn test:core
 
   Test-Plugins:
     runs-on: ubuntu-latest
-    needs: Generate-Test-Wrappers
+    needs: [Should-Generate-Test-Wrappers, Generate-Test-Wrappers]
     if: ${{ always() }}
     timeout-minutes: 60
     steps:
@@ -167,23 +174,25 @@ jobs:
         run: yarn build
 
       - name: Get updated wrappers
-        if: ${{ env.should-generate == 'true'}}
-        uses: actions/download-artifact@v2
+        if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        uses: actions/download-artifact@v3
         id: get-wrappers
         with:
           name: wrappers
+          path: ./wrappers
 
-      - name: If wrappers exists, update them
-        if: ${{ env.should-generate == 'true' }}
-        run: rm -rf packages/test-cases/wrappers |
-          mv wrappers packages/test-cases/wrappers
+      - if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        run: rm -rf packages/test-cases/cases/wrappers
+
+      - if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        run: mv wrappers packages/test-cases/cases
 
       - name: Test
         run: yarn test:plugins
 
   Test-Client:
     runs-on: ubuntu-latest
-    needs: Generate-Test-Wrappers
+    needs: [Should-Generate-Test-Wrappers, Generate-Test-Wrappers]
     if: ${{ always() }}
     timeout-minutes: 60
     steps:
@@ -217,23 +226,25 @@ jobs:
         run: yarn build
 
       - name: Get updated wrappers
-        if: ${{ env.should-generate == 'true'}}
-        uses: actions/download-artifact@v2
+        if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        uses: actions/download-artifact@v3
         id: get-wrappers
         with:
           name: wrappers
+          path: ./wrappers
 
-      - name: If wrappers exists, update them
-        if: ${{ env.should-generate == 'true' }}
-        run: rm -rf packages/test-cases/wrappers |
-          mv wrappers packages/test-cases/wrappers
+      - if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        run: rm -rf packages/test-cases/cases/wrappers
+
+      - if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        run: mv wrappers packages/test-cases/cases
 
       - name: Test
         run: yarn test:client
 
   Test-Cli:
     runs-on: ubuntu-latest
-    needs: Generate-Test-Wrappers
+    needs: [Should-Generate-Test-Wrappers, Generate-Test-Wrappers]
     if: ${{ always() }}
     timeout-minutes: 60
     steps:
@@ -277,16 +288,18 @@ jobs:
         run: yarn build
 
       - name: Get updated wrappers
-        if: ${{ env.should-generate == 'true'}}
-        uses: actions/download-artifact@v2
+        if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        uses: actions/download-artifact@v3
         id: get-wrappers
         with:
           name: wrappers
+          path: ./wrappers
 
-      - name: If wrappers exists, update them
-        if: ${{ env.should-generate == 'true' }}
-        run: rm -rf packages/test-cases/wrappers |
-          mv wrappers packages/test-cases/wrappers
+      - if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        run: rm -rf packages/test-cases/cases/wrappers
+
+      - if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        run: mv wrappers packages/test-cases/cases
 
       - name: Test
         run: yarn test:cli
