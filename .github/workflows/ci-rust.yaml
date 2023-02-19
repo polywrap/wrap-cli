@@ -56,31 +56,53 @@ jobs:
         working-directory: ./packages/wasm/rs
         run: cargo doc --workspace --no-deps
 
-  Check-Changed-Folders:
+  # Check-Changed-Folders:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     should-generate: ${{ env.should-generate }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Check changed files
+  #       id: changed-files
+  #       uses: tj-actions/changed-files@v35
+  #       with:
+  #         files: |
+  #           packages/cli/*
+  #           packages/schema/*
+  #           packages/wasm/*
+  #     - id: set-output
+  #       run: echo "should-generate=${{steps.changed-files.outputs.any_changed}}" >> $GITHUB_ENV
+
+  # Generate-Test-Wrappers:
+  #   needs: Check-Changed-Folders
+  #   if: ${{ needs.Check-Changed-Folders.outputs.should-generate == 'true' }}
+  #   uses: ./.github/workflows/generate-modified-test-wrappers.yaml
+  #   with:
+  #     cli-path: /toolchain/packages/cli
+  #     wasm-path: /toolchain/packages/wasm
+
+  Check-PR-Body:
+    if: contains(github.event.pull_request.body, 'generate wrappers from branch:')
     runs-on: ubuntu-latest
     outputs:
       should-generate: ${{ env.should-generate }}
+      wrappers-branch: ${{ env.wrappers-branch }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Check changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v35
-        with:
-          files: |
-            packages/cli/*
-            packages/schema/*
-            packages/wasm/*
-      - id: set-output
-        run: echo "should-generate=${{steps.changed-files.outputs.any_changed}}" >> $GITHUB_ENV
+      - name: Extract branch name
+        id: extract-branch-name
+        run: echo "::set-output name=wrappers-branch::$(echo ${GITHUB_EVENT_PULL_REQUEST_BODY#*generate wrappers from branch: })"
+      - run: echo "should-generate='true'" >> $GITHUB_ENV
+    else:
+      - run: echo "should-generate='false'" >> $GITHUB_ENV
 
   Generate-Test-Wrappers:
-    needs: Check-Changed-Folders
     if: ${{ needs.Check-Changed-Folders.outputs.should-generate == 'true' }}
     uses: ./.github/workflows/generate-modified-test-wrappers.yaml
     with:
       cli-path: /toolchain/packages/cli
       wasm-path: /toolchain/packages/wasm
+      harness-ref: ${{ steps.Check-PR-Body.outputs.wrappers-branch }}
 
   Test-Cases:
     needs: Generate-Test-Wrappers
