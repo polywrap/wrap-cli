@@ -9,6 +9,10 @@ on:
       wasm-path:
         required: false
         type: string
+      harness-ref:
+        required: false
+        type: string
+        default: master
 
 jobs:
   generate_wrappers:
@@ -18,8 +22,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
         with:
-          repository: polywrap/wasm-test-harness
-          ref: ${{ github.event.pull_request.head.ref }}
+          repository: polywrap/wrap-test-harness
+          ref: ${{ input.harness-ref }}
           fetch-depth: 0
 
       - name: Checkout Repository
