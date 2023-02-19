@@ -40,6 +40,12 @@ export const getDefaultClientConfig = (
           fallbackProviders: defaultIpfsProviders.slice(1),
         },
       },
+      {
+        uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
+        env: {
+          retries: { tryResolveUri: 1, getFile: 1 },
+        },
+      },
     ],
     redirects: [
       {

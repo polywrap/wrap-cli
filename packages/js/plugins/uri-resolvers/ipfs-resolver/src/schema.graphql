@@ -7,11 +7,16 @@ type Timeouts {
   tryResolveUri: UInt32,
 }
 
+type Retries {
+    getFile: UInt32
+    tryResolveUri: UInt32
+}
+
 type Env {
     """
-    Determines whether the plugin should try to resolve a file (check for its existence) or immediately get the file
+    Re-attempt resolution on failure
     """
-    skipCheckIfExists: Boolean,
+    retries: Retries
     """
     Timeouts for methods
     """
