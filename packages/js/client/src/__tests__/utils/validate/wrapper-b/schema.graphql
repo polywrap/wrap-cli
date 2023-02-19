@@ -1,5 +1,0 @@
-#import { Module } into Foo from "ens/foo.eth"
-
-type Module {
-    greeting(message: String!): String!
-}

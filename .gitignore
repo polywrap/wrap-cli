@@ -17,3 +17,4 @@ bin
 pkg
 wasm-pack.log
 .env
+packages/test-cases/cases/wrappers
