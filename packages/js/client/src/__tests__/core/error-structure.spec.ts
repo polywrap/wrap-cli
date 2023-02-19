@@ -170,6 +170,7 @@ describe("Error structure", () => {
 
       test("Subinvoke error two layers deep", async () => {
         const config = new ClientConfigBuilder()
+          .addDefaults()
           .addRedirects({
             "ens/imported-invoke.eth": asInvokeWrapperUri.uri,
             "ens/imported-subinvoke.eth": asSubinvokeWrapperUri.uri,
@@ -380,6 +381,7 @@ describe("Error structure", () => {
 
       test("Subinvoke error two layers deep", async () => {
         const config = new ClientConfigBuilder()
+          .addDefaults()
           .addRedirects({
             "ens/imported-invoke.eth": rsInvokeWrapperUri.uri,
             "ens/imported-subinvoke.eth": rsSubinvokeWrapperUri.uri,
@@ -530,8 +532,8 @@ describe("Error structure", () => {
             "packages/js/client/src/__tests__/helpers.ts"
           )
         ).toBeTruthy();
-        expect(result.error?.source?.row).toEqual(50);
-        expect(result.error?.source?.col).toEqual(17);
+        expect(result.error?.source?.row).toEqual(47);
+        expect(result.error?.source?.col).toEqual(15);
       });
 
       test("Invoke a plugin wrapper that throws unexpectedly", async () => {
