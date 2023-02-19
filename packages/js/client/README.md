@@ -148,8 +148,7 @@ export interface PolywrapClientConfig<TUri extends Uri | string = string> {
   /**
    * Instantiate a PolywrapClient
    *
-   * @param config - a whole or partial client configuration
-   * @param options - { noDefaults?: boolean }
+   * @param config - a client configuration
    */
   constructor(config?: CoreClientConfig) 
 ```
