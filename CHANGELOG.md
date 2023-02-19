@@ -1,3 +1,7 @@
+# Polywrap Origin (0.9.6)
+## Bugs
+* [PR-1558](https://github.com/polywrap/toolchain/pull/1558) `@polywrap/core-js` WrapError now correctly parsing Rust unwrap errors.
+
 # Polywrap Origin (0.9.5)
 ## Bugs
 * [PR-1541](https://github.com/polywrap/toolchain/pull/1541) `polywrap` CLI: Update build images to use the latest multi-platform versions.
