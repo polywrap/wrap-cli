@@ -3538,9 +3538,9 @@ camelcase@^6.0.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001449:
-  version "1.0.30001453"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001453.tgz#6d3a1501622bf424a3cee5ad9550e640b0de3de8"
-  integrity sha512-R9o/uySW38VViaTrOtwfbFEiBFUh7ST3uIG4OEymIG3/uKdHDO4xk/FaqfUw0d+irSUyFPy3dZszf9VvSTPnsA==
+  version "1.0.30001456"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001456.tgz#734ec1dbfa4f3abe6e435b78ecf40d68e8c32ce4"
+  integrity sha512-XFHJY5dUgmpMV25UqaD4kVq2LsiaU5rS8fb0f17pCoXQiQslzmFgnfOxfvo1bTpTqf7dwG/N/05CnLCnOEKmzA==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -4380,9 +4380,9 @@ electron-fetch@^1.7.2:
     encoding "^0.1.13"
 
 electron-to-chromium@^1.4.284:
-  version "1.4.299"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.299.tgz#faa2069cd4879a73e540e533178db5c618768d41"
-  integrity sha512-lQ7ijJghH6pCGbfWXr6EY+KYCMaRSjgsY925r1p/TlpSfVM1VjHTcn1gAc15VM4uwti283X6QtjPTXdpoSGiZQ==
+  version "1.4.301"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.301.tgz#175d9fa1509a5b062752c6db321051e610fe2eae"
+  integrity sha512-bz00ASIIDjcgszZKuEA1JEFhbDjqUNbQ/PEhNEl1wbixzYpeTp2H2QWjsQvAL2T1wJBdOwCF5hE896BoMwYKrA==
 
 elliptic@6.5.4:
   version "6.5.4"
@@ -4764,9 +4764,9 @@ esprima@^4.0.0, esprima@^4.0.1:
   integrity sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A==
 
 esquery@^1.2.0:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/esquery/-/esquery-1.4.1.tgz#ddb8e1e2666750113b78c15f59e977564f52b116"
-  integrity sha512-3ZggxvMv5EEY1ssUVyHSVt0oPreyBfbUi1XikJVfjFiBeBDLdrb0IWoDiEwqT/2sUQi0TGaWtFhOGDD8RTpXgQ==
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/esquery/-/esquery-1.4.2.tgz#c6d3fee05dd665808e2ad870631f221f5617b1d1"
+  integrity sha512-JVSoLdTlTDkmjFmab7H/9SL9qGSyjElT3myyKp7krqjVFQCDLmj1QFaCLRFBszBKI0XVZaiiXvuPIX3ZwHe1Ng==
   dependencies:
     estraverse "^5.1.0"
 
@@ -6640,7 +6640,7 @@ jest-config@^26.6.3:
     micromatch "^4.0.2"
     pretty-format "^26.6.2"
 
-jest-diff@28.1.3, jest-diff@^28.0.2:
+jest-diff@28.1.3:
   version "28.1.3"
   resolved "https://registry.yarnpkg.com/jest-diff/-/jest-diff-28.1.3.tgz#948a192d86f4e7a64c5264ad4da4877133d8792f"
   integrity sha512-8RqP1B/OXzjjTWkqMX67iqgwBVJRgCyKD3L9nq+6ZqJMdvjE8RgHktqZ6jNrkdMT+dJuYNI3rhQpxaz7drJHfw==
@@ -6972,14 +6972,6 @@ jest-watcher@^26.6.2:
     chalk "^4.0.0"
     jest-util "^26.6.2"
     string-length "^4.0.1"
-
-jest-websocket-mock@~2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/jest-websocket-mock/-/jest-websocket-mock-2.4.0.tgz#95ab1f89f809e57d2714427736ab7b1094fb1c3c"
-  integrity sha512-AOwyuRw6fgROXHxMOiTDl1/T4dh3fV4jDquha5N0csS/PNp742HeTZWPAuKppVRSQ8s3fUGgJHoyZT9JDO0hMA==
-  dependencies:
-    jest-diff "^28.0.2"
-    mock-socket "^9.1.0"
 
 jest-worker@^26.6.2:
   version "26.6.2"
@@ -7802,11 +7794,6 @@ mkdirp@^0.5.1, mkdirp@^0.5.5:
   integrity sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==
   dependencies:
     minimist "^1.2.6"
-
-mock-socket@^9.1.0:
-  version "9.2.1"
-  resolved "https://registry.yarnpkg.com/mock-socket/-/mock-socket-9.2.1.tgz#cc9c0810aa4d0afe02d721dcb2b7e657c00e2282"
-  integrity sha512-aw9F9T9G2zpGipLLhSNh6ZpgUyUl4frcVmRN08uE1NWPWg43Wx6+sGPDbQ7E5iFZZDJW5b5bypMeAEHqTbIFag==
 
 modify-values@^1.0.0:
   version "1.0.1"
