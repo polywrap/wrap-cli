@@ -5,7 +5,6 @@ import { intlMsg } from "../../intl";
 import { CacheDirectory, globalCacheRoot } from "../../CacheDirectory";
 
 import path from "path";
-import fse from "fs-extra";
 
 export enum UrlFormat {
   git = ".git",
@@ -41,11 +40,9 @@ async function downloadGitTemplate(
     // remove .git data
     cacheDir.removeCacheDir(dotGitSubPath);
     // copy files from cache to project dir
-    await fse.copy(cacheDir.getCachePath(repoName), projectDir, {
-      overwrite: true,
-    });
+    await cacheDir.copyFromCache(repoName, projectDir);
   } catch (e) {
-    // this is safe because removeCacheDir and fse.copy should not throw
+    // this is safe because removeCacheDir and copyFromCache should not throw
     throw {
       command: "git clone " + args.join(", "),
     };
