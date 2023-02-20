@@ -225,7 +225,12 @@ async function run(
 
   try {
     if (command === "template") {
-      await downloadProjectTemplate(languageOrUrl, projectDir, logger, urlFormat);
+      await downloadProjectTemplate(
+        languageOrUrl,
+        projectDir,
+        logger,
+        urlFormat
+      );
     } else {
       await generateProjectTemplate(command, languageOrUrl, projectDir);
     }
