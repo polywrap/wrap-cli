@@ -57,7 +57,7 @@ const clearDir = (dir: string) => {
 
 const testData: CommandTestCaseData<CommandTypings> = {
   build: [{
-    options: { strategy: "vm", codegen: true },
+    options: { strategy: "vm" },
     cwd: path.join(GetPathToCliTestFiles(), "wasm/build-cmd/assemblyscript/001-sanity"),
     before: async (test) => {
       // clear build dir
@@ -97,7 +97,7 @@ const testData: CommandTestCaseData<CommandTypings> = {
   create: {
     app: [{
       cwd: fs.mkdtempSync(path.join(os.tmpdir(), "cli-js-create-test")),
-      arguments: ["typescript-node", "test-app"],
+      arguments: ["typescript", "test-app"],
       after: (test) => {
         if (!test.cwd)
           throw Error("This shouldn't happen");
@@ -221,7 +221,7 @@ const testData: CommandTestCaseData<CommandTypings> = {
       if (!test.cwd)
         throw Error("This shouldn't happen");
       const wrapperPath = path.join(test.cwd, "../run-test-wrapper");
-      await Commands.build({ codegen: true }, { cwd: wrapperPath });
+      await Commands.build({}, { cwd: wrapperPath });
     },
     after: (_, stdout, __, exitCode) => {
       expect(stdout).toContain("Data: ");

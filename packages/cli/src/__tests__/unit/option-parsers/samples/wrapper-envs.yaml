@@ -1,6 +1,6 @@
 ens/hello-world.polywrap.eth:
   foo: bar
-ens/ethereum.polywrap.eth:
+ens/wraps.eth:ethereum@1.0.0:
   connection:
     node: https://mainnet.infura.io/v3/some_api_key
     networkNameOrChainId: mainnet

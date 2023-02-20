@@ -104,7 +104,7 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
           }
         }
 
-        removeBuilder = !!dockerBuildxConfig.removeBuilder;
+        removeBuilder = !dockerBuildxConfig.keepBuilder;
       }
 
       const removeImage = !!buildManifest?.strategies?.image?.removeImage;

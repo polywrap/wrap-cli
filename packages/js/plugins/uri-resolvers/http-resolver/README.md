@@ -10,26 +10,42 @@ import {
   initTestEnvironment,
   providers,
   stopTestEnvironment,
-  buildAndDeployWrapperToHttp,
+  deployWrapper,
 } from "@polywrap/test-env-js";
-
 import { httpResolverPlugin } from "@polywrap/http-resolver-plugin-js";
+import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 
-// query wrapper at HTTP URI
+// invoke wrapper at HTTP URI
 export async function foo({
 
   await initTestEnvironment();
+  const wrapperAbsPath = `/path/to/simple-storage`;
+  const wrapperHttpUri = `${providers.http}/wrappers/local/simple-storage`;
 
+  const jobs: DeployManifest["jobs"] = {
+    buildAndDeployWrapperToHttp: {
+      steps: [
+        {
+          name: "httpDeploy",
+          package: "http",
+          uri: `fs/${wrapperAbsPath}`,
+          config: {
+            postUrl: wrapperHttpUri,
+          },
+        },
+      ],
+    },
+  };
   // deploy wrapper to local HTTP server
-  let { uri } = await buildAndDeployWrapperToHttp({
+  await deployWrapper({
     wrapperAbsPath: `/path/to/simple-storage`,
-    httpProvider: providers.http,
-    name: "simple-storage",
+    jobs,
+    build: true,
     codegen: true,
   });
 
   // get wrapper HTTP URI
-  const wrapperUri = `http/${uri}`;
+  const wrapperUri = `http/${wrapperHttpUri}`;
 
   // initialize client with the HTTP Resolver plugin
   client = new PolywrapClient({
@@ -49,7 +65,7 @@ export async function foo({
     ]
   });
 
-  // and query the wrapper over HTTP
+  // invoke query the wrapper over HTTP
   const response = await client.getManifest(wrapperUri)
 
   // we can resolve the HTTP URI in steps

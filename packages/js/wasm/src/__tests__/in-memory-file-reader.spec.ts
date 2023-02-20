@@ -1,4 +1,3 @@
-import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
 import { InMemoryFileReader } from "../InMemoryFileReader";
@@ -7,20 +6,16 @@ import { WRAP_MANIFEST_PATH, WRAP_MODULE_PATH } from "../constants";
 
 jest.setTimeout(200000);
 
-const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
+const wrapperPath = `${GetPathToTestWrappers()}/subinvoke/00-subinvoke/implementations/as`;
 
 describe("In-memory file reader", () => {
-  beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath, undefined, true);
-  });
-
   it("can create in-memory file reader from buffers", async () => {
     const manifest = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MANIFEST_PATH}`
+      `${wrapperPath}/${WRAP_MANIFEST_PATH}`
     );
 
     const wasmModule = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MODULE_PATH}`
+      `${wrapperPath}/${WRAP_MODULE_PATH}`
     );
     const fileReader = InMemoryFileReader.from(manifest, wasmModule);
 
@@ -36,11 +31,11 @@ describe("In-memory file reader", () => {
     const testEncoded = new TextEncoder().encode("test");
 
     const manifest = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MANIFEST_PATH}`
+      `${wrapperPath}/${WRAP_MANIFEST_PATH}`
     );
 
     const wasmModule = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MODULE_PATH}`
+      `${wrapperPath}/${WRAP_MODULE_PATH}`
     );
 
     const fileReader = InMemoryFileReader.fromManifest(manifest, {
@@ -70,11 +65,11 @@ describe("In-memory file reader", () => {
     const testEncoded = new TextEncoder().encode("test");
 
     const manifest = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MANIFEST_PATH}`
+      `${wrapperPath}/${WRAP_MANIFEST_PATH}`
     );
 
     const wasmModule = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MODULE_PATH}`
+      `${wrapperPath}/${WRAP_MODULE_PATH}`
     );
 
     const fileReader = InMemoryFileReader.fromWasmModule(wasmModule, {
@@ -104,11 +99,11 @@ describe("In-memory file reader", () => {
     const testEncoded = new TextEncoder().encode("test");
 
     const manifest = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MANIFEST_PATH}`
+      `${wrapperPath}/${WRAP_MANIFEST_PATH}`
     );
 
     const wasmModule = await fs.promises.readFile(
-      `${simpleWrapperPath}/build/${WRAP_MODULE_PATH}`
+      `${wrapperPath}/${WRAP_MODULE_PATH}`
     );
 
     const fileReader = InMemoryFileReader.from(manifest, wasmModule, {

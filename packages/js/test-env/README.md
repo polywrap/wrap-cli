@@ -33,7 +33,7 @@ Build a local wrapper project.
   const wrapperPath: string = path.join(path.resolve(__dirname), "..");
 
   // build current wrapper with CLI, invoking codegen before build
-  await buildWrapper(wrapperPath, undefined, true);
+  await buildWrapper(wrapperPath);
 
   // get URI to the local wrapper build
   const wrapperUri = `wrap://fs/${wrapperPath}/build`;
@@ -74,17 +74,6 @@ export const ensAddresses = {
 } as const;
 ```
 
-### embeddedWrappers
-
-```typescript
-/** Wasm wrappers embedded in the package */
-export const embeddedWrappers = {
-  ens: `wrap://fs/${path.join(__dirname, "wrappers", "ens")}`,
-  uts46: `wrap://fs/${path.join(__dirname, "wrappers", "uts46")}`,
-  sha3: `wrap://fs/${path.join(__dirname, "wrappers", "sha3")}`,
-};
-```
-
 ## Methods
 
 ### initTestEnvironment
@@ -121,73 +110,36 @@ export const stopTestEnvironment = async (
  *
  * @param wrapperAbsPath - absolute path of wrapper to build
  * @param manifestPathOverride? - path to polywrap manifest
- * @param codegen? - run codegen before build
+ * @param noCodegen? - don't run codegen before build
  */
 export async function buildWrapper(
   wrapperAbsPath: string,
   manifestPathOverride?: string,
-  codegen?: boolean
+  noCodegen?: boolean
 ): Promise<void> 
 ```
 
-### buildAndDeployWrapper
+### deployWrapper
 
 ```typescript
 /**
- * Build the wrapper located at the given path, and then deploy it to IPFS and ENS.
- * If an ENS domain is not provided, a randomly selected human-readable ENS domain name is used.
+ * Deploy the wrapper located at the given path, and then deploy it based on given jobs.
  *
- * @param wrapperAbsPath - absolute path of wrapper to build
- * @param ipfsProvider - ipfs provider to use for deployment
- * @param ethereumProvider - ethereum provider to use for ENS registration
- * @param ensName? - an ENS domain name to register and assign to the wrapper
- * @param codegen? - run codegen before build
- *
- * @returns registered ens domain name and IPFS hash
+ * @param options - an object containing:
+ *   wrapperAbsPath - absolute path of wrapper to build
+ *   jobs - jobs that will be executed in deploy process
+ *   codegen? - run codegen before build
+ *   build? - run build before deploy
  */
-export async function buildAndDeployWrapper({
-  wrapperAbsPath,
-  ipfsProvider,
-  ethereumProvider,
-  ensName,
-  codegen,
-}: {
+export async function deployWrapper(options: {
   wrapperAbsPath: string;
-  ipfsProvider: string;
-  ethereumProvider: string;
-  ensName?: string;
+  jobs: DeployManifest["jobs"];
   codegen?: boolean;
-}): Promise<{
-  ensDomain: string;
-  ipfsCid: string;
+  build?: boolean;
+}): Promise<void | {
+  stdout: string;
+  stderr: string;
 }> 
-```
-
-### buildAndDeployWrapperToHttp
-
-```typescript
-/**
- * Build the wrapper located at the given path, and then deploy it to HTTP.
- * If a domain name is not provided, a randomly selected human-readable domain name is used.
- *
- * @param wrapperAbsPath - absolute path of wrapper to build
- * @param httpProvider - http provider used for deployment and domain registration
- * @param name? - a domain name to register and assign to the wrapper
- * @param codegen? - run codegen before build
- *
- * @returns http uri
- */
-export async function buildAndDeployWrapperToHttp({
-  wrapperAbsPath,
-  httpProvider,
-  name,
-  codegen,
-}: {
-  wrapperAbsPath: string;
-  httpProvider: string;
-  name?: string;
-  codegen?: boolean;
-}): Promise<{ uri: string }> 
 ```
 
 ### runCLI

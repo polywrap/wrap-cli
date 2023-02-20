@@ -2,9 +2,6 @@
 ## Breaking Changes
 ### Toolchain
 **`polywrap` CLI:**
-* [PR-1385](https://github.com/polywrap/toolchain/pull/1385) **Separate Build & Codegen Functionality**
-  * Running `polywrap build` no longer automatically generates code bindings (`codegen`). You need to either run `polywrap codegen` before running `polywrap build`, or run `polywrap build` with the `--codegen` flag.
-  * Running `polywrap codegen` in Plugin Projects will no longer output the WRAP ABI (`wrap.info`) file into a build folder. To output the WRAP ABI, you need to run `polywrap build` within your Plugin Project.
 * [PR-1432](https://github.com/polywrap/toolchain/pull/1432) **Remove Legacy Polywrap Project Metadata**
   * Remove the `polywrap.meta.yaml` manifest.
 * [PR-1367](https://github.com/polywrap/toolchain/pull/1367) **Client Configuration Refactor**

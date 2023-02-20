@@ -1,0 +1,33 @@
+type Connection {
+  node: String
+  networkNameOrChainId: String
+}
+
+type Module {
+  """
+  Send a remote RPC request to the registered provider
+  """
+  request(method: String!, params: String, connection: Connection): String!
+
+  """
+  Sign a message and return the signature. Throws if signer is missing.
+  """
+  signMessage(message: Bytes!, connection: Connection): String!
+
+  """
+  Sign a serialized unsigned transaction and return the signature. Throws if signer is missing.
+  This method requires a wallet-based signer with a private key, and is not needed for most use cases.
+  Typically, transactions are sent by `request` and signed by the wallet.
+  """
+  signTransaction(rlp: Bytes!, connection: Connection): String!
+
+  """
+  Get the ethereum address of the signer. Throws if signer is missing.
+  """
+  address(connection: Connection): String!
+
+  """
+  Get the chain id of the signer's connection. Throws if signer is missing.
+  """
+  chainId(connection: Connection): String!
+}

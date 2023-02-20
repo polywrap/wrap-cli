@@ -1,9 +1,10 @@
 import { PolywrapClient } from "@polywrap/client-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { buildAndDeployWrapperToHttp, runCLI, providers } from "@polywrap/test-env-js";
+import { runCLI, providers, deployWrapper } from "@polywrap/test-env-js";
+import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
+import { deserializeWrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 import axios from "axios";
-import { deserializeWrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { getClient } from "./helpers/getClient";
 
 jest.setTimeout(300000);
@@ -22,15 +23,27 @@ describe("HTTP Plugin", () => {
     if (exitCode !== 0) {
       throw new Error(`Failed to start test environment: ${stderr}`);
     }
+    wrapperHttpUri = `${providers.http}/wrappers/local/${wrapperName}`;
 
-    const { uri } = await buildAndDeployWrapperToHttp({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
-      name: wrapperName,
-      httpProvider: providers.http,
-      codegen: true
-  });
-
-    wrapperHttpUri = uri;
+    const wrapperAbsPath = `${GetPathToTestWrappers()}/bigint-type/implementations/as`;
+    const jobs: DeployManifest["jobs"] = {
+      buildAndDeployWrapperToHttp: {
+        steps: [
+          {
+            name: "httpDeploy",
+            package: "http",
+            uri: `fs/${wrapperAbsPath}`,
+            config: {
+              postUrl: wrapperHttpUri,
+            },
+          },
+        ],
+      },
+    };
+    await deployWrapper({
+        wrapperAbsPath,
+        jobs
+    });
 
     client = getClient();
   });
@@ -68,7 +81,7 @@ describe("HTTP Plugin", () => {
 
     const manifest = await result.value.wrapper.getManifest();
 
-    expect(manifest?.name).toBe("SimpleStorage");
+    expect(manifest?.name).toBe("bigint-type");
     expect(manifest).toEqual(expectedManifest);
   });
 
@@ -95,7 +108,7 @@ describe("HTTP Plugin", () => {
 
     const manifest = await result.value.wrapper.getManifest();
 
-    expect(manifest?.name).toBe("SimpleStorage");
+    expect(manifest?.name).toBe("bigint-type");
     expect(manifest).toEqual(expectedManifest);
   });
 });

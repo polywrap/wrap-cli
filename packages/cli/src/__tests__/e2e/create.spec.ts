@@ -16,7 +16,7 @@ Commands:
   wasm [options] <language> <name>    Create a Polywrap wasm wrapper. langs:
                                       assemblyscript, rust, interface
   app [options] <language> <name>     Create a Polywrap application. langs:
-                                      typescript-node, typescript-react
+                                      typescript
   plugin [options] <language> <name>  Create a Polywrap plugin. langs:
                                       typescript
   template [options] <url> <name>     Download template from a URL. formats:

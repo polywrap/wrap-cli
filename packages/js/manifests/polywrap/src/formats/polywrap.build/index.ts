@@ -11,10 +11,14 @@ import {
 import {
   BuildManifest as BuildManifest_0_2_0,
 } from "./0.2.0";
+import {
+  BuildManifest as BuildManifest_0_3_0,
+} from "./0.3.0";
 
 export {
   BuildManifest_0_1_0,
   BuildManifest_0_2_0,
+  BuildManifest_0_3_0,
 };
 
 export enum BuildManifestFormats {
@@ -22,6 +26,7 @@ export enum BuildManifestFormats {
   "v0.1" = "0.1",
   "v0.1.0" = "0.1.0",
   "v0.2.0" = "0.2.0",
+  "v0.3.0" = "0.3.0",
 }
 
 export const BuildManifestSchemaFiles: Record<string, string> = {
@@ -29,17 +34,19 @@ export const BuildManifestSchemaFiles: Record<string, string> = {
   "0.1": "formats/polywrap.build/0.1.0.json",
   "0.1.0": "formats/polywrap.build/0.1.0.json",
   "0.2.0": "formats/polywrap.build/0.2.0.json",
+  "0.3.0": "formats/polywrap.build/0.3.0.json",
 }
 
 export type AnyBuildManifest =
   | BuildManifest_0_1_0
   | BuildManifest_0_2_0
+  | BuildManifest_0_3_0
 
 
 
-export type BuildManifest = BuildManifest_0_2_0;
+export type BuildManifest = BuildManifest_0_3_0;
 
-export const latestBuildManifestFormat = BuildManifestFormats["v0.2.0"]
+export const latestBuildManifestFormat = BuildManifestFormats["v0.3.0"]
 
 export { migrateBuildManifest } from "./migrate";
 

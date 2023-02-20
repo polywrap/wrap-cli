@@ -2,10 +2,19 @@
   "name": "@polywrap/test-cases",
   "description": "Reusable Polywrap Test Cases",
   "private": true,
-  "version": "0.10.0-pre.7",
+  "version": "0.10.0-pre.8",
   "license": "MIT",
   "main": "index.ts",
+  "scripts": {
+    "generate:wrappers": "npx ts-node -e \"import { fetchWrappers } from './'; (async () => await fetchWrappers())()\""
+  },
   "dependencies": {
-    "@polywrap/os-js": "0.10.0-pre.7"
+    "@polywrap/os-js": "0.10.0-pre.8"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "0.5.0",
+    "adm-zip": "0.5.10",
+    "axios": "1.2.2",
+    "shelljs": "0.8.5"
   }
 }

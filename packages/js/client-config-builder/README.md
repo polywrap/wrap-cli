@@ -428,59 +428,60 @@ A complete example using all or most of the available methods.
   /**
    * Build a sanitized core client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors
    *
+   * @param options - Use a custom wrapper cache or resolver
    * @returns CoreClientConfig that results from applying all the steps in the builder pipeline
    */
-  build(): CoreClientConfig;
+  build(options?: BuildOptions): CoreClientConfig;
 ```
 
 ## Bundles
 
 ### Bundle: DefaultConfig
 ```ts
-
 export const defaultIpfsProviders = [
   "https://ipfs.wrappers.io",
   "https://ipfs.io",
 ];
 
+export const defaultEmbeddedPackages = {
+  ipfsHttpClient: (): IWrapPackage => ipfsHttpClient.wasmPackage,
+  ipfsResolver: (): IWrapPackage => ipfsResolver.wasmPackage,
+};
+
 export const defaultWrappers = {
-  sha3: "wrap://ens/goerli/sha3.wrappers.eth",
-  uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
-  graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
-  concurrentInterface: "wrap://ens/goerli/interface.concurrent.wrappers.eth", //
+  sha3: "wrap://ens/wraps.eth:sha3@1.0.0",
+  uts46: "wrap://ens/wraps.eth:uts46@1.0.0",
+  graphNode: "wrap://ens/wraps.eth:graph-node@1.0.0",
   ensTextRecordResolver:
-    "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY",
+    "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p",
+  ethereum: "wrap://ens/wraps.eth:ethereum@1.0.0",
+  ens: "wrap://ens/wraps.eth:ens@1.0.0",
 };
 
 export const defaultPackages = {
-  ipfs: "wrap://ens/ipfs.polywrap.eth",
-  ensResolver: "wrap://ens/ens-resolver.polywrap.eth",
-  ethereum: "wrap://ens/ethereum.polywrap.eth",
-  http: "wrap://plugin/http",
-  httpResolver: "wrap://ens/http-resolver.polywrap.eth",
-  logger: "wrap://plugin/logger",
-  fileSystem: "wrap://plugin/fs",
-  fileSystemResolver: "wrap://ens/fs-resolver.polywrap.eth",
-  ipfsResolver: "wrap://ens/ipfs-resolver.polywrap.eth",
-  concurrent: "wrap://plugin/concurrent",
+  ensResolver: "wrap://package/ens-resolver",
+  httpResolver: "wrap://package/http-resolver",
+  fileSystemResolver: "wrap://package/fs-resolver",
+  ipfsResolver: "wrap://package/ipfs-resolver",
 };
 
 export const defaultInterfaces = {
-  uriResolver: "wrap://ens/uri-resolver.core.polywrap.eth",
-  concurrent: "wrap://ens/wrappers.polywrap.eth:concurrent@1.0.0",
-  logger: "wrap://ens/wrappers.polywrap.eth:logger@1.0.0",
-  http: "wrap://ens/wrappers.polywrap.eth:http@1.1.0",
-  fileSystem: "wrap://ens/wrappers.polywrap.eth:file-system@1.0.0",
+  concurrent: "wrap://ens/wraps.eth:concurrent@1.0.0",
+  logger: "wrap://ens/wraps.eth:logger@1.0.0",
+  http: "wrap://ens/wraps.eth:http@1.1.0",
+  fileSystem: "wrap://ens/wraps.eth:file-system@1.0.0",
+  ipfsHttpClient: "wrap://ens/wraps.eth:ipfs-http-client@1.0.0",
+  ethereumProvider: "wrap://ens/wraps.eth:ethereum-provider@1.0.0",
 };
 
-export const getDefaultPlugins = (): Record<string, IWrapPackage> => {
+export const getDefaultPackages = (): Record<string, IWrapPackage> => {
   return {
-    // IPFS is required for downloading Polywrap packages
-    [defaultPackages.ipfs]: ipfsPlugin({}),
+    [defaultInterfaces.ipfsHttpClient]: defaultEmbeddedPackages.ipfsHttpClient(),
+    [defaultPackages.ipfsResolver]: defaultEmbeddedPackages.ipfsResolver(),
     // ENS is required for resolving domain to IPFS hashes
     [defaultPackages.ensResolver]: ensResolverPlugin({}),
     // Ethereum is required for resolving domain to Ethereum addresses
-    [defaultPackages.ethereum]: ethereumPlugin({
+    [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
       connections: new Connections({
         networks: {
           mainnet: new Connection({
@@ -494,52 +495,45 @@ export const getDefaultPlugins = (): Record<string, IWrapPackage> => {
         },
       }),
     }),
-    [defaultPackages.http]: httpPlugin({}),
+    [defaultInterfaces.http]: httpPlugin({}),
     [defaultPackages.httpResolver]: httpResolverPlugin({}),
-    [defaultPackages.logger]: loggerPlugin({}) as IWrapPackage,
-    [defaultPackages.fileSystem]: fileSystemPlugin({}),
+    [defaultInterfaces.logger]: loggerPlugin({}) as IWrapPackage,
+    [defaultInterfaces.fileSystem]: fileSystemPlugin({}),
     [defaultPackages.fileSystemResolver]: fileSystemResolverPlugin({}),
-    [defaultPackages.ipfsResolver]: ipfsResolverPlugin({}),
-    [defaultPackages.concurrent]: concurrentPromisePlugin({}),
+    [defaultInterfaces.concurrent]: concurrentPromisePlugin({}),
   };
 };
 
 export const getDefaultConfig = (): BuilderConfig => ({
-  redirects: {
-    "wrap://ens/sha3.polywrap.eth": defaultWrappers.sha3,
-    "wrap://ens/uts46.polywrap.eth": defaultWrappers.uts46,
-    "wrap://ens/graph-node.polywrap.eth": defaultWrappers.graphNode,
-    [defaultInterfaces.logger]: defaultPackages.logger,
-    ["wrap://ens/http.polywrap.eth"]: defaultInterfaces.http,
-    [defaultInterfaces.http]: defaultPackages.http,
-    "wrap://ens/fs.polywrap.eth": defaultInterfaces.fileSystem,
-    [defaultInterfaces.fileSystem]: defaultPackages.fileSystem,
-  },
   envs: {
-    [defaultWrappers.graphNode]: {
-      provider: "https://api.thegraph.com",
-    },
-    [defaultPackages.ipfs]: {
+    [defaultPackages.ipfsResolver]: {
       provider: defaultIpfsProviders[0],
       fallbackProviders: defaultIpfsProviders.slice(1),
+      retries: { tryResolveUri: 2, getFile: 2 },
     },
   },
-  packages: getDefaultPlugins(),
-  wrappers: {},
   interfaces: {
-    [defaultInterfaces.uriResolver]: new Set([
+    [ExtendableUriResolver.extInterfaceUri.uri]: new Set([
       defaultPackages.ipfsResolver,
       defaultPackages.ensResolver,
       defaultPackages.fileSystemResolver,
       defaultPackages.httpResolver,
-      // ens-text-record-resolver
       defaultWrappers.ensTextRecordResolver,
     ]),
-    [defaultInterfaces.logger]: new Set([defaultPackages.logger]),
-    [defaultWrappers.concurrentInterface]: new Set([
-      defaultPackages.concurrent,
+    [defaultInterfaces.logger]: new Set([defaultInterfaces.logger]),
+    [defaultInterfaces.concurrent]: new Set([defaultInterfaces.concurrent]),
+    [defaultInterfaces.ipfsHttpClient]: new Set([
+      defaultInterfaces.ipfsHttpClient,
+    ]),
+    [defaultInterfaces.fileSystem]: new Set([defaultInterfaces.fileSystem]),
+    [defaultInterfaces.http]: new Set([defaultInterfaces.http]),
+    [defaultInterfaces.ethereumProvider]: new Set([
+      defaultInterfaces.ethereumProvider,
     ]),
   },
+  redirects: {},
+  wrappers: {},
+  packages: getDefaultPackages(),
   resolvers: [],
 });
 ```

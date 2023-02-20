@@ -53,7 +53,7 @@ describe("e2e tests for test command", () => {
 
   beforeAll(async () => {
     const wrapperPath = path.join(testCaseRoot, "run-test-wrapper");
-    await buildWrapper(wrapperPath, undefined, true);
+    await buildWrapper(wrapperPath);
   });
 
   it("Should show help text", async () => {

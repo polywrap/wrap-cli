@@ -1,13 +1,14 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { getClient } from "./helpers/getClient";
-import { Result } from "@polywrap/core-js";
+import { Result, Uri } from "@polywrap/core-js";
 import { ResultOk } from "@polywrap/result";
 import {
-  buildAndDeployWrapper,
+  deployWrapper,
   initTestEnvironment,
   providers,
   stopTestEnvironment,
 } from "@polywrap/test-env-js";
+import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 
 jest.setTimeout(300000);
 
@@ -18,15 +19,38 @@ describe("IPFS Plugin", () => {
   beforeAll(async () => {
     await initTestEnvironment();
 
-    let { ipfsCid } = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
-      ipfsProvider: providers.ipfs,
-      ethereumProvider: providers.ethereum,
-      ensName: "cool.wrapper.eth",
-      codegen: true
+    const wrapperAbsPath = `${GetPathToTestWrappers()}/bigint-type/implementations/as`;
+
+    const jobs: DeployManifest["jobs"] = {
+      buildAndDeployWrapper: {
+        config: {
+          provider: providers.ethereum
+        },
+        steps: [
+          {
+            name: "ipfsDeploy",
+            package: "ipfs",
+            uri: `fs/${wrapperAbsPath}`,
+            config: {
+              gatewayUri: providers.ipfs,
+            },
+          },
+        ],
+      },
+    };
+
+    const response = await deployWrapper({
+      wrapperAbsPath: wrapperAbsPath,
+      jobs
     });
 
-    wrapperIpfsCid = ipfsCid;
+    if (!response) {
+      throw Error("Failed to deploy wrapper");
+    }
+
+    const extractCID = /(wrap:\/\/ipfs\/[A-Za-z0-9]+)/;
+    const result = response.stdout.match(extractCID);
+    wrapperIpfsCid = new Uri(result![1]).path;
   });
 
   afterAll(async () => {
@@ -50,7 +74,7 @@ describe("IPFS Plugin", () => {
 
     const manifest = await result.value.wrapper.getManifest();
 
-    expect(manifest?.name).toBe("SimpleStorage");
+    expect(manifest?.name).toBe("bigint-type");
   });
 
   const createRacePromise = (
