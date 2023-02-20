@@ -60,7 +60,7 @@ const executeCommand = (
   command: string,
   args: string[],
   root: string
-): Promise<boolean | { command: string }> => {
+): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       stdio: "inherit",
@@ -136,11 +136,7 @@ export const generateProjectTemplate = async (
     );
   }
 
-  try {
-    await executeCommand(command, args, root);
-  } catch (e) {
-    return e;
-  }
+  await executeCommand(command, args, root);
 
   try {
     await fse.copy(

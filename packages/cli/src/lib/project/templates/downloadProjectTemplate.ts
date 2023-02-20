@@ -44,6 +44,11 @@ async function downloadGitTemplate(
     await fse.copy(cacheDir.getCachePath(repoName), projectDir, {
       overwrite: true,
     });
+  } catch (e) {
+    // this is safe because removeCacheDir and fse.copy should not throw
+    throw {
+      command: "git clone " + args.join(", "),
+    };
   } finally {
     // clear cache
     cacheDir.resetCache();
