@@ -1,8 +1,7 @@
 import { AbiMerger } from "../AbiMerger"
 import { Abi } from "../definitions"
-import { Parser } from "../imports"
+import { LocalImportsLinker } from "../imports"
 import { ExternalImportStatement, LocalImportStatement, SchemaParser } from "../types"
-import { UnlinkedAbiDefs } from "../UnlinkedDefs"
 
 describe("Imports parser", () => {
   it("Works", async () => {
@@ -93,9 +92,10 @@ describe("Imports parser", () => {
     }
 
     const mockSchemaParser: SchemaParser = {
-      parse: async (schema: string): Promise<UnlinkedAbiDefs> => {
+      parse: async (schema: string): Promise<Abi> => {
         switch (schema) {
           case rootSchema: return {
+            version: "0.2",
             functions: [],
             enums: [],
             objects: [{
@@ -121,6 +121,7 @@ describe("Imports parser", () => {
             }]
           };
           case fooSchema: return {
+            version: "0.2",
             functions: [],
             enums: [],
             objects: [{
@@ -172,6 +173,7 @@ describe("Imports parser", () => {
             }]
           }
           case barSchema: return {
+            version: "0.2",
             functions: [],
             enums: [],
             objects: [{
@@ -240,10 +242,11 @@ describe("Imports parser", () => {
       }
     }
 
-    const importsParser = new Parser(mockSchemaParser, fetchers, new AbiMerger())
-    const { abi, externalImportStatements } = await importsParser.parse(rootSchema)
+    const importsParser = new LocalImportsLinker(mockSchemaParser, fetchers, new AbiMerger())
+    const { abi, externalImportStatements } = await importsParser.link(rootSchema)
 
-    const expectedAbi: UnlinkedAbiDefs = {
+    const expectedAbi: Abi = {
+      version: "0.2",
       functions: [],
       enums: [],
       objects: [{

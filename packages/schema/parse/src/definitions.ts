@@ -85,14 +85,16 @@ export type AnyType =
   | ArrayType
   | MapType
   | RefType
-  | ImportRefType;
+  | ImportRefType
+  | UnlinkedImportRefType;
 
 export type TypeKind =
   | "Scalar"
   | "Array"
   | "Map"
   | "Ref"
-  | "ImportRef";
+  | "ImportRef"
+  | "UnlinkedImportRef"
 
 export interface Type {
   kind: TypeKind;
@@ -126,6 +128,11 @@ export interface ImportRefType extends Type {
   kind: "ImportRef";
   import_id: string;
   ref_kind: UniqueDefKind;
+  ref_name: string;
+}
+
+export interface UnlinkedImportRefType extends Type {
+  kind: "UnlinkedImportRef";
   ref_name: string;
 }
 
