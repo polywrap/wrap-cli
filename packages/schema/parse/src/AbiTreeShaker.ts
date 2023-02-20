@@ -26,7 +26,7 @@ export class AbiTreeShaker {
 
     return found;
   }
-  
+
   extractNeededDefinitions(abi: Abi, neededDefNames: string[]): AbiDefs {
     const result: AbiDefs = {};
     const state: { currentObject?: string; currentFunction?: string } = {}
@@ -99,18 +99,18 @@ export class AbiTreeShaker {
         },
         RefType: (ref) => {
           const containingDefName = state.currentObject || state.currentFunction as string
-          
-          if(!containingDefName) {
+
+          if (!containingDefName) {
             return;
           }
-          
+
           if (containingDefName) {
             const referencedDef = this.findReferencedDefinition(abi, ref)
 
             if (!referencedDef) {
               throw new Error(`Could not find referenced definition ${ref.ref_name} in ${containingDefName}`)
             }
-            
+
             if (referencedDef.kind === "Object") {
               result.objects = result.objects ? [...result.objects, referencedDef] : [referencedDef]
             } else {
@@ -134,22 +134,13 @@ export class AbiTreeShaker {
     return result;
   }
 
-  shakeTree(abi: Abi, neededDefNames: string[]): Abi {
-    const neededDefs = this.extractNeededDefinitions(abi, neededDefNames);
-    const referencedDefs = this.extractReferencedSiblingDefinitions(abi, neededDefs);
-    const shakenTree = {
-      version: abi.version,
-      ...neededDefs,
-      ...referencedDefs,
-    }
+  shakeImports(abi: Abi, neededImports: ImportRefType[], state: { currentDepth: number; lastDepth: number, currentId: string } = {
+    currentId: "",
+    currentDepth: 0,
+    lastDepth: 0,
+  }): Abi {
 
-    const neededImports = this.extractImportReferences(shakenTree);
-    
-    const state: { currentDepth: number; lastDepth: number, currentId: string } = {
-      currentId: "",
-      currentDepth: 0,
-      lastDepth: 0,
-    }
+    let abiClone = JSON.parse(JSON.stringify(abi));
 
     const importsVisitor = new AbiVisitor({
       enter: {
@@ -167,8 +158,42 @@ export class AbiTreeShaker {
             state.currentId = state.currentId.split(".").slice(0, state.currentDepth - 1).join(".")
             state.currentId = `${state.currentId}.${importDef.id}`
           }
+
+          state.lastDepth = state.currentDepth
+
+          const neededFromThisImport = neededImports
+            .filter((neededImport) => neededImport.import_id === state.currentId)
+            .map((neededImport) => neededImport.ref_name)
+          const neededDefsFromThisImport = this.extractNeededDefinitions({
+            version: abiClone.version,
+            ...importDef
+          }, neededFromThisImport);
+          const neededSiblingDefs = this.extractReferencedSiblingDefinitions({
+            version: abiClone.version,
+            ...importDef
+          }, neededDefsFromThisImport);
+
+          importDef = {
+            id: importDef.id,
+            uri: importDef.uri,
+            namespace: importDef.namespace,
+            type: importDef.type,
+            ...neededDefsFromThisImport,
+            ...neededSiblingDefs,
+          }
+
+          const transitiveImports = this.extractImportReferences({
+            version: abiClone.version,
+            ...importDef
+          });
+
+          abiClone = this.shakeImports({
+            version: abiClone.version,
+            ...importDef
+          }, transitiveImports, state)
+
         }
-        
+
       },
       leave: {
         Imports: () => {
@@ -177,12 +202,23 @@ export class AbiTreeShaker {
       }
     });
 
+    importsVisitor.visit(abiClone);
 
+    return abiClone;
+  }
 
-    return {
+  shakeTree(abi: Abi, neededDefNames: string[]): Abi {
+    const neededDefs = this.extractNeededDefinitions(abi, neededDefNames);
+    const referencedDefs = this.extractReferencedSiblingDefinitions(abi, neededDefs);
+    const shakenTree = {
       version: abi.version,
       ...neededDefs,
       ...referencedDefs,
-    };
+    }
+
+    const neededImports = this.extractImportReferences(shakenTree);
+    const shakenTreeWithShakenImports = this.shakeImports(shakenTree, neededImports);
+
+    return shakenTreeWithShakenImports;
   }
 }
