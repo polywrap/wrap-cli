@@ -85,9 +85,9 @@ export const generateProjectTemplate = async (
   type: string,
   lang: string,
   projectDir: string
-): Promise<boolean | { command: string }> => {
-  let command = "";
-  let args: string[] = [];
+): Promise<boolean> => {
+  let command;
+  let args: string[];
 
   const useYarn = shouldUseYarn();
   const isOnline = checkIfOnline(useYarn);
@@ -152,7 +152,7 @@ export const generateProjectTemplate = async (
     );
     return true;
   } catch (e) {
-    return {
+    throw {
       command: `copy ${root}/node_modules/@polywrap/templates/${type}/${lang} ${root}`,
     };
   }

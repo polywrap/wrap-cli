@@ -2,6 +2,7 @@ import { createUUID } from "../../helpers";
 import { runCommand } from "../../system";
 import { Logger } from "../../logging";
 import { intlMsg } from "../../intl";
+import { CacheDirectory, globalCacheRoot } from "../../CacheDirectory";
 
 import path from "path";
 import fse from "fs-extra";
@@ -23,36 +24,29 @@ export function parseUrlFormat(url: string): UrlFormat {
   }
 }
 
-function createCacheDir(): string {
-  const cacheDir = path.resolve(`./.polywrap/${createUUID()}`);
-  if (!fse.existsSync(cacheDir)) {
-    fse.mkdirSync(cacheDir, { recursive: true });
-  }
-  return cacheDir;
-}
-
 async function downloadGitTemplate(
   url: string,
   projectDir: string,
   logger: Logger,
-  cacheDir: string
+  cacheDir: CacheDirectory
 ): Promise<void> {
   const command = "git clone";
   const args = ["--depth", "1", "--single-branch", url];
   const repoName = path.basename(url, ".git");
-  const repoDir = path.join(cacheDir, repoName);
-  const dotGitPath = path.join(repoDir, "/.git/");
+  const dotGitSubPath = path.join(repoName, "/.git/");
 
   try {
     // clone repo
-    await runCommand(command, args, logger, undefined, cacheDir);
+    await runCommand(command, args, logger, undefined, cacheDir.getCacheDir());
     // remove .git data
-    await fse.remove(dotGitPath);
+    cacheDir.removeCacheDir(dotGitSubPath);
     // copy files from cache to project dir
-    await fse.copy(repoDir, projectDir, { overwrite: true });
+    await fse.copy(cacheDir.getCachePath(repoName), projectDir, {
+      overwrite: true,
+    });
   } finally {
-    // remove cache dir
-    await fse.remove(cacheDir);
+    // clear cache
+    cacheDir.resetCache();
   }
 }
 
@@ -63,7 +57,13 @@ export const downloadProjectTemplate = async (
   urlFormat?: UrlFormat
 ): Promise<void> => {
   urlFormat = urlFormat ?? parseUrlFormat(url);
-  const cacheDir = createCacheDir();
+  const cacheDir = new CacheDirectory(
+    {
+      rootDir: globalCacheRoot,
+      subDir: createUUID(),
+    },
+    "templates"
+  ).initCache();
 
   if (urlFormat === UrlFormat.git) {
     return downloadGitTemplate(url, projectDir, logger, cacheDir);

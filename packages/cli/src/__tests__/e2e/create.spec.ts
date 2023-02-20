@@ -175,7 +175,7 @@ describe("e2e tests for create command", () => {
         });
 
         expect(code).toEqual(1);
-        expect(error).toContain(`URL 'lang' uses an invalid format. Valid URL formats: .git`);
+        expect(error).toContain(`URL 'lang' uses an invalid format. Valid URL formats: ${Object.values(UrlFormat).join(", ")}`);
         expect(output).toBe("");
       });
 
