@@ -1,4 +1,3 @@
-import { UniqueDefKind } from "./definitions";
 import { UnlinkedAbiDefs } from "./UnlinkedDefs";
 
 export interface ImportStatement {
@@ -18,9 +17,7 @@ export interface LocalImportStatement extends ImportStatement {
 
 export interface SchemaParser {
   parseExternalImportStatements: (schema: string) => Promise<ExternalImportStatement[]>
-  getImportStatements: (schema: string) => Promise<ImportStatement[]>
-  getImportedSchemasTable: (schema: string, schemaPath: string) => Promise<Map<string, string>>
-  getUniqueDefinitionsTable: (schema: string) => Promise<Map<string, UniqueDefKind>>
+  parseLocalImportStatements: (schema: string) => Promise<LocalImportStatement[]>
   parse: (schema: string) => Promise<UnlinkedAbiDefs>
 }
 
