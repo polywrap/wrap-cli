@@ -1,4 +1,4 @@
-import { Abi, AnyType, ArgumentDef, ArrayType, EnumDef, FunctionDef, ImportedAbi, ImportRefType, MapType, ObjectDef, PropertyDef, RefType, ResultDef, ScalarType } from "../definitions";
+import { Abi, AnyType, ArgumentDef, ArrayType, EnumDef, FunctionDef, ImportedAbi, ImportRefType, MapType, ObjectDef, PropertyDef, RefType, ResultDef, ScalarType } from "./definitions";
 
 export interface IAbiVisitor {
   Abi?: (node: Abi) => void;

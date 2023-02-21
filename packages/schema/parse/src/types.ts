@@ -24,3 +24,11 @@ export interface SchemaParser {
 export interface ParserOptions {
   noValidate?: boolean;
 }
+
+export interface ExternalSchemaFetcher {
+  fetch: (uri: string) => Promise<Abi>;
+}
+
+export interface LocalSchemaFetcher {
+  fetch: (path: string) => Promise<string>;
+}

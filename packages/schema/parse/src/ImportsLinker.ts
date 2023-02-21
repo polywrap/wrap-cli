@@ -1,26 +1,26 @@
 import { IAbiMerger } from "./AbiMerger";
-import { ExternalImportStatement, LocalImportStatement, SchemaParser } from "./types";
+import { ExternalImportStatement, ExternalSchemaFetcher, LocalImportStatement, LocalSchemaFetcher, SchemaParser } from "./types";
 import { Abi, ImportedAbi } from "./definitions";
 import { IAbiTreeShaker } from "./AbiTreeShaker";
 
 export interface IImportsLinker {
   link: (rootAbi: Abi, importStatements?: {
-    local?: LocalImportStatement[];
-    external?: ExternalImportStatement[];
+    local: LocalImportStatement[];
+    external: ExternalImportStatement[];
   }) => Promise<Abi>
 }
 
 export class ImportsLinker implements IImportsLinker {
   constructor(protected _schemaParser: SchemaParser, protected _fetchers: {
-    external: (uri: string) => Promise<Abi>;
-    local: (path: string) => Promise<string>;
+    external: ExternalSchemaFetcher;
+    local: LocalSchemaFetcher;
   }, protected _abiMerger: IAbiMerger, protected _abiTreeShaker: IAbiTreeShaker) { }
 
   async embedExternalImports(rootAbi: Abi, extImportStatements: ExternalImportStatement[]) {
     let abiClone: Abi = JSON.parse(JSON.stringify(rootAbi));
 
     for await (const extImportStatement of extImportStatements) {
-      const externalSchema = await this._fetchers.external(extImportStatement.uriOrPath);
+      const externalSchema = await this._fetchers.external.fetch(extImportStatement.uriOrPath);
       const importedAbi: ImportedAbi = {
         ...externalSchema,
         namespace: extImportStatement.namespace,
@@ -43,7 +43,7 @@ export class ImportsLinker implements IImportsLinker {
     const transitiveExternalImports: ExternalImportStatement[] = []
 
     for await (const localImportStatement of localImportStatements) {
-      const localSchema = await this._fetchers.local(localImportStatement.uriOrPath);
+      const localSchema = await this._fetchers.local.fetch(localImportStatement.uriOrPath);
       const localAbi = await this._schemaParser.parse(localSchema)
       const localShakenAbi = await this._abiTreeShaker.shakeTree(localAbi, localImportStatement.importedTypes)
 

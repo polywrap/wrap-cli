@@ -1,34 +1,34 @@
+import { AbiMerger } from "./AbiMerger";
+import { AbiTreeShaker } from "./AbiTreeShaker";
 import { Abi } from "./definitions";
-import { ParserOptions, SchemaParser } from "./types";
+import { ImportsLinker } from "./ImportsLinker";
+import { ExternalSchemaFetcher, LocalSchemaFetcher, SchemaParser } from "./types";
 
 export * from "./abi";
 export * from "./types";
 
-export const parseSchemaAndImports = async (schema: string, schemaPath: string, parser: SchemaParser, options: ParserOptions = {}): Promise<{ abi: Abi, imports: Map<string, Abi> }> => {
-  throw new Error("Unimplemented")
-  
-  // const importsRegistry = await parser.getImportedSchemasTable(schema, schemaPath);
-  // let allUniqueDefinitions = new Map<string, UniqueDefKind>();
-  
-  // for await (const importedAbi of importsRegistry.values()) {
-  //   const importedAbiUniqueDefs = await parser.getUniqueDefinitionsTable(importedAbi);
-  //   allUniqueDefinitions = new Map([...allUniqueDefinitions, ...importedAbiUniqueDefs]);
-  // }
+interface Args {
+  schema: string
+  parser: SchemaParser
+  fetchers: {
+    external: ExternalSchemaFetcher;
+    local: LocalSchemaFetcher;
+  }
+}
 
-  // const importedAbis = new Map<string, Abi>();
+export const parseAndLinkSchema = async ({ schema, parser, fetchers }: Args): Promise<Abi> => {
+  const abi = await parser.parse(schema)
+  const externalImportStatements = await parser.parseExternalImportStatements(schema)
+  const localImportStatements = await parser.parseLocalImportStatements(schema)
 
-  // for await (const [importPath, importedSchemaString] of importsRegistry.entries()) {
-  //   const importedAbi = await parser.parse(importedSchemaString, allUniqueDefinitions);
-  //   importedAbis.set(importPath, importedAbi);
-  // }
+  const merger = new AbiMerger()
+  const shaker = new AbiTreeShaker()
+  const linker = new ImportsLinker(parser, fetchers, merger, shaker)
+  const linkedAbi = await linker.link(abi, {
+    external: externalImportStatements,
+    local: localImportStatements
+  })
 
-  // // TODO: should this happen before or after linking?
-  // // TODO: where does validation happen?
-  // let abi = await parser.parse(schema, allUniqueDefinitions);
-
-  // return {
-  //   abi,
-  //   imports: importedAbis
-  // }
+  return linkedAbi
 }
 
