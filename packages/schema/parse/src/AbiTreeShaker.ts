@@ -1,13 +1,11 @@
 import { Abi, AbiDefs, EnumDef, ImportRefType, ObjectDef, RefType } from "./definitions";
-import { AbiVisitor } from "./visitors";
+import { AbiVisitor } from "./AbiVisitor";
 
 type ReferenceableDef = ObjectDef | EnumDef;
 
 export interface IAbiTreeShaker {
   findReferencedDefinition(abi: Abi, ref: RefType): ReferenceableDef | undefined
   shakeTree(abi: Abi, neededDefNames: string[]): Abi
-  // TODO: revisit this method's signature
-  shakeImports(abi: Abi, neededImports: ImportRefType[], state: { currentDepth: number; lastDepth: number, currentId: string }): Abi
 }
 
 export class AbiTreeShaker implements IAbiTreeShaker {
