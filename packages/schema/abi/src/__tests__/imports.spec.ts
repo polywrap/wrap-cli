@@ -1,6 +1,6 @@
 import { AbiMerger } from "../AbiMerger"
 import { Abi } from "../definitions"
-import { LocalImportsLinker } from "../imports"
+import { ImportsLinker } from "../AbiImportsLinker"
 import { ExternalImportStatement, LocalImportStatement, SchemaParser } from "../types"
 
 describe("Imports parser", () => {
@@ -242,7 +242,7 @@ describe("Imports parser", () => {
       }
     }
 
-    const importsParser = new LocalImportsLinker(mockSchemaParser, fetchers, new AbiMerger())
+    const importsParser = new ImportsLinker(mockSchemaParser, fetchers, new AbiMerger())
     const { abi, externalImportStatements } = await importsParser.link(rootSchema)
 
     const expectedAbi: Abi = {

@@ -4,8 +4,11 @@ import { Abi } from "./definitions";
 import { AbiImportsLinker } from "./AbiImportsLinker";
 import { ExternalSchemaFetcher, LocalSchemaFetcher, SchemaParser } from "./types";
 
-export * from "./abi";
 export * from "./types";
+export * from "./AbiImportsLinker"
+export * from "./AbiMerger"
+export * from "./AbiTreeShaker"
+export * from "./AbiVisitor"
 
 interface Args {
   schema: string
@@ -32,3 +35,8 @@ export const parseAndLinkSchema = async ({ schema, parser, fetchers }: Args): Pr
   return linkedAbi
 }
 
+export function createAbi(): Abi {
+  return {
+    version: "0.2"
+  };
+}

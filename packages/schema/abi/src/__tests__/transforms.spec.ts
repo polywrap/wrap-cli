@@ -1,4 +1,4 @@
-import { parseSchema } from "../";
+import { parseSchema } from "..";
 import { addFirstLast, extendType } from "../transform";
 import {
   createObjectDefinition,

@@ -6,6 +6,7 @@ type ReferenceableDef = ObjectDef | EnumDef;
 export interface IAbiTreeShaker {
   findReferencedDefinition(abi: Abi, ref: RefType): ReferenceableDef | undefined
   shakeTree(abi: Abi, neededDefNames: string[]): Abi
+  shakeImports(abi: Abi): Abi
 }
 
 export class AbiTreeShaker implements IAbiTreeShaker {
@@ -139,7 +140,7 @@ export class AbiTreeShaker implements IAbiTreeShaker {
     return result;
   }
 
-  shakeImports(abi: Abi, neededImports: ImportRefType[], state: { currentDepth: number; lastDepth: number, currentId: string } = {
+  private _shakeImports(abi: Abi, neededImports: ImportRefType[], state: { currentDepth: number; lastDepth: number, currentId: string } = {
     currentId: "",
     currentDepth: 0,
     lastDepth: 0,
@@ -192,7 +193,7 @@ export class AbiTreeShaker implements IAbiTreeShaker {
             ...importDef
           });
 
-          abiClone = this.shakeImports({
+          abiClone = this._shakeImports({
             version: abiClone.version,
             ...importDef
           }, transitiveImports, state)
@@ -212,6 +213,13 @@ export class AbiTreeShaker implements IAbiTreeShaker {
     return abiClone;
   }
 
+  shakeImports(abi: Abi): Abi {
+    const neededImports = this.extractImportReferences(abi);
+    const treeWithShakenImports = this._shakeImports(abi, neededImports);
+
+    return treeWithShakenImports
+  }
+
   shakeTree(abi: Abi, neededDefNames: string[]): Abi {
     const neededDefs = this.extractNeededDefinitions(abi, neededDefNames);
     const referencedDefs = this.extractReferencedSiblingDefinitions(abi, neededDefs);
@@ -221,9 +229,7 @@ export class AbiTreeShaker implements IAbiTreeShaker {
       ...referencedDefs,
     }
 
-    const neededImports = this.extractImportReferences(shakenTree);
-    const shakenTreeWithShakenImports = this.shakeImports(shakenTree, neededImports);
-
+    const shakenTreeWithShakenImports = this.shakeImports(shakenTree);
     return shakenTreeWithShakenImports;
   }
 }

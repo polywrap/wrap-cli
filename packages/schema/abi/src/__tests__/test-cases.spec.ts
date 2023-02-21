@@ -1,4 +1,4 @@
-import { parseSchema } from "../";
+import { parseSchema } from "..";
 import { fetchTestCases } from "./index";
 
 describe("Polywrap Schema Parser Test Cases", () => {
