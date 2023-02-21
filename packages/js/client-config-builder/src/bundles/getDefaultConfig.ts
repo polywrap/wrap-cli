@@ -33,9 +33,9 @@ export const defaultWrappers = {
   uts46: "wrap://ens/wraps.eth:uts46@1.0.0",
   graphNode: "wrap://ens/wraps.eth:graph-node@1.0.0",
   ensTextRecordResolver:
-    "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p",
+    "wrap://ipfs/Qmf2AFb2NotbDfERtc8VdfF9fsCRtk2UzRCKJ1GCY1eQzG",
   ethereum: "wrap://ens/wraps.eth:ethereum@1.1.0",
-  ens: "wrap://ens/wraps.eth:ens@1.0.0",
+  ens: "wrap://ens/wraps.eth:ens@1.1.0",
 };
 
 export const defaultPackages = {
