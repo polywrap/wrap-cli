@@ -1,11 +1,9 @@
 import { PluginModule, PluginPackage } from "@polywrap/plugin-js";
-import {latestWrapManifestVersion} from "@polywrap/wrap-manifest-types-js";
-import {parseSchema} from "@polywrap/schema-parse";
-import {Uri} from "@polywrap/core-js";
+import { latestWrapManifestVersion } from "@polywrap/wrap-manifest-types-js";
+import { parseSchema } from "@polywrap/schema-parse";
+import { Uri } from "@polywrap/core-js";
 
-class MemoryStoragePlugin extends PluginModule<
-  Record<string, unknown>
-> {
+class MemoryStoragePlugin extends PluginModule<Record<string, unknown>> {
   private _value: number;
 
   async getData(_: {}): Promise<number> {
@@ -34,26 +32,24 @@ export const memoryStoragePlugin = () => {
           getData: Int32!
           setData(value: Int32!): Boolean!
         }
-      `)
-  })
-}
+      `),
+  });
+};
 
 export const mockPluginRegistration = (uri: string | Uri) => {
   return {
     uri: Uri.from(uri),
-    package: PluginPackage.from(
-      () => ({
-        simpleMethod: (_: unknown): string => {
-          return "plugin response";
-        },
-        methodThatThrows: (_: unknown): string => {
-          throw Error("I'm throwing!");
-        },
-        mockEnv(): { a: number } & Record<string, unknown> {
-          return this.env;
-        }
-      })
-    ),
+    package: PluginPackage.from(() => ({
+      simpleMethod: (_: unknown): string => {
+        return "plugin response";
+      },
+      methodThatThrows: (_: unknown): string => {
+        throw Error("I'm throwing!");
+      },
+      mockEnv(): { a: number } & Record<string, unknown> {
+        return this.env;
+      },
+    })),
   };
 };
 
@@ -68,11 +64,11 @@ export const incompatiblePlugin = () => {
   return PluginPackage.from(new IncompatiblePlugin({}), {
     name: "incompatiblePlugin",
     type: "plugin",
-    version: "0.0.0.5",
+    version: "0.0.0.5" as any,
     abi: parseSchema(`
         type Module {
           getData: Int32!
         }
-      `)
-  })
-}
+      `),
+  });
+};
