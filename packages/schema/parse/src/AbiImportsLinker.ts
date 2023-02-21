@@ -3,14 +3,14 @@ import { ExternalImportStatement, ExternalSchemaFetcher, LocalImportStatement, L
 import { Abi, ImportedAbi } from "./definitions";
 import { IAbiTreeShaker } from "./AbiTreeShaker";
 
-export interface IImportsLinker {
+export interface IAbiImportsLinker {
   link: (rootAbi: Abi, importStatements?: {
     local: LocalImportStatement[];
     external: ExternalImportStatement[];
   }) => Promise<Abi>
 }
 
-export class ImportsLinker implements IImportsLinker {
+export class AbiImportsLinker implements IAbiImportsLinker {
   constructor(protected _schemaParser: SchemaParser, protected _fetchers: {
     external: ExternalSchemaFetcher;
     local: LocalSchemaFetcher;

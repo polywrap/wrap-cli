@@ -1,7 +1,7 @@
 import { AbiMerger } from "./AbiMerger";
 import { AbiTreeShaker } from "./AbiTreeShaker";
 import { Abi } from "./definitions";
-import { ImportsLinker } from "./ImportsLinker";
+import { AbiImportsLinker } from "./AbiImportsLinker";
 import { ExternalSchemaFetcher, LocalSchemaFetcher, SchemaParser } from "./types";
 
 export * from "./abi";
@@ -23,7 +23,7 @@ export const parseAndLinkSchema = async ({ schema, parser, fetchers }: Args): Pr
 
   const merger = new AbiMerger()
   const shaker = new AbiTreeShaker()
-  const linker = new ImportsLinker(parser, fetchers, merger, shaker)
+  const linker = new AbiImportsLinker(parser, fetchers, merger, shaker)
   const linkedAbi = await linker.link(abi, {
     external: externalImportStatements,
     local: localImportStatements

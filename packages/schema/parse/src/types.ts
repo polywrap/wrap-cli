@@ -21,6 +21,10 @@ export interface SchemaParser {
   parse: (schema: string) => Promise<Abi>
 }
 
+export interface SchemaRenderer {
+  render: (abi: Abi) => Promise<string>
+}
+
 export interface ParserOptions {
   noValidate?: boolean;
 }
