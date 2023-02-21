@@ -9,7 +9,9 @@ export const subinvokeCase = (implementation: string) => {
       const wrapperUri = `file/${GetPathToTestWrappers()}/subinvoke/01-invoke/implementations/${implementation}`;
 
       const builder = new ClientConfigBuilder();
-      builder.addDefaults().addRedirect("ens/imported-subinvoke.eth", subinvokeUri);
+      builder
+        .addDefaults()
+        .addRedirect("ens/imported-subinvoke.eth", subinvokeUri);
 
       const client = new PolywrapClient(builder.build());
 

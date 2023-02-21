@@ -7,15 +7,18 @@ import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
 import {
-  Connections,
+  ClientConfigBuilder,
+  defaultInterfaces,
+  defaultIpfsProviders,
+  defaultPackages,
+  defaultWrappers,
+  PolywrapClient,
+} from "@polywrap/client-js";
+import {
   Connection,
+  Connections,
   ethereumProviderPlugin,
 } from "ethereum-provider-js";
-import { PolywrapClient } from "@polywrap/client-js";
-import {
-  defaultInterfaces,
-  defaultWrappers,
-} from "@polywrap/client-config-builder-js";
 
 class ENSRecursiveNameRegisterPublisher implements DeployModule {
   async execute(
@@ -52,11 +55,18 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
       ? new Wallet(config.privateKey).connect(connectionProvider)
       : undefined;
 
-    const client = new PolywrapClient({
-      packages: [
-        {
-          uri: defaultInterfaces.ethereumProvider,
-          package: ethereumProviderPlugin({
+    const clientConfig = new ClientConfigBuilder()
+      .addDefaults()
+      .add({
+        envs: {
+          [defaultPackages.ipfsResolver]: {
+            provider: defaultIpfsProviders[0],
+            fallbackProviders: defaultIpfsProviders.slice(1),
+            retries: { tryResolveUri: 2, getFile: 2 },
+          },
+        },
+        packages: {
+          [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
             connections: new Connections({
               networks: {
                 [network]: new Connection({
@@ -68,8 +78,10 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
             }),
           }),
         },
-      ],
-    });
+      })
+      .build();
+
+    const client = new PolywrapClient(clientConfig);
 
     const signerAddress = await client.invoke<string>({
       method: "getSignerAddress",

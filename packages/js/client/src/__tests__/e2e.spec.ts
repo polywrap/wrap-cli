@@ -4,9 +4,12 @@ import { envTestCases } from "./core/wrap-features/env-case";
 import { interfaceInvokeCase } from "./core/wrap-features/interface-implementation-case";
 
 export const supportedImplementations = ["as", "rs"];
-describe.each(supportedImplementations)("client <-> wrappers end to end", (i) => {
-		typeTestCases(i)
-		subinvokeCase(i)
-		envTestCases(i)
-		interfaceInvokeCase(i)
-})
+describe.each(supportedImplementations)(
+  "client <-> wrappers end to end",
+  (i) => {
+    typeTestCases(i);
+    subinvokeCase(i);
+    envTestCases(i);
+    interfaceInvokeCase(i);
+  }
+);

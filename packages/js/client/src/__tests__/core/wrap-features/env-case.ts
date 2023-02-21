@@ -12,7 +12,9 @@ export const envTestCases = (implementation: string) => {
   describe("env", () => {
     test(implementation, async () => {
       const externalWrapperPath = `${GetPathToTestWrappers()}/env-type/00-external/implementations/${implementation}`;
-      const { uri: externalWrapperUri } = Uri.from(`file/${externalWrapperPath}`);
+      const { uri: externalWrapperUri } = Uri.from(
+        `file/${externalWrapperPath}`
+      );
 
       const wrapperPath = `${GetPathToTestWrappers()}/env-type/01-main/implementations/${implementation}`;
       const { uri: wrapperUri } = Uri.from(`file/${wrapperPath}`);
@@ -163,28 +165,28 @@ export const envTestCases = (implementation: string) => {
 
   describe("env client types", () => {
     test("plugin env types", async () => {
-      const implementationUri = "wrap://ens/some-implementation.eth";
-      const envPackage = mockPluginRegistration(implementationUri).package;
-      const client = new PolywrapClient(
-        {
-          resolver: RecursiveResolver.from({
-            uri: Uri.from(implementationUri),
-            package: envPackage,
-          }),
-          envs: [
-            {
-              uri: implementationUri,
-              env: {
-                arg1: "10",
-              },
+      const implementationUri = Uri.from("wrap://ens/some-implementation.eth");
+      const envPlugin = mockPluginRegistration("ens/hello.eth");
+      const client = new PolywrapClient({
+        resolver: RecursiveResolver.from([
+          {
+            uri: envPlugin.uri,
+            package: envPlugin.package,
+          },
+          { from: Uri.from("ens/hello.eth"), to: implementationUri },
+        ]),
+        envs: [
+          {
+            uri: Uri.from("ens/hello.eth"),
+            env: {
+              arg1: "10",
             },
-          ],
-        },
-        { noDefaults: true }
-      );
+          },
+        ],
+      });
 
       const mockEnv = await client.invoke({
-        uri: implementationUri,
+        uri: Uri.from("ens/hello.eth"),
         method: "mockEnv",
       });
 
@@ -194,31 +196,31 @@ export const envTestCases = (implementation: string) => {
     });
 
     test("inline plugin env types", async () => {
-      const implementationUri = "wrap://ens/some-implementation.eth";
-      type MockPackage = { a: number } & Record<string, unknown>;
-      const client = new PolywrapClient(
-        {
-          resolver: RecursiveResolver.from([
-            {
-              uri: Uri.from(implementationUri),
-              package: PluginPackage.from<MockPackage>((module) => ({
-                mockEnv: (): MockPackage => {
-                  return module.env;
-                },
-              })),
-            },
-          ]),
-          envs: [
-            {
-              uri: implementationUri,
-              env: {
-                arg1: "10",
+      const implementationUri = Uri.from("wrap://ens/some-implementation.eth");
+      interface MockEnv extends Record<string, unknown> {
+        arg1: number;
+      }
+
+      const client = new PolywrapClient({
+        resolver: RecursiveResolver.from([
+          {
+            uri: implementationUri,
+            package: PluginPackage.from<MockEnv>((module) => ({
+              mockEnv: (): MockEnv => {
+                return module.env;
               },
+            })),
+          },
+        ]),
+        envs: [
+          {
+            uri: implementationUri,
+            env: {
+              arg1: "10",
             },
-          ],
-        },
-        { noDefaults: true }
-      );
+          },
+        ],
+      });
 
       const mockEnv = await client.invoke({
         uri: implementationUri,

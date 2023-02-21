@@ -1,11 +1,5 @@
 import { InvokerOptions, TryResolveUriOptions } from "./types";
-import {
-  PolywrapClientConfig,
-  PolywrapCoreClientConfig,
-  buildPolywrapCoreClientConfig,
-  sanitizeUri,
-  ClientConfig,
-} from "./legacy";
+import { sanitizeUri } from "./legacy";
 
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
 import {
@@ -31,58 +25,17 @@ import {
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig } from "@polywrap/tracing-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
-export class PolywrapClient<
-  TUri extends Uri | string = string
-> extends PolywrapCoreClient {
+export class PolywrapClient extends PolywrapCoreClient {
   // $start: PolywrapClient-constructor
   /**
    * Instantiate a PolywrapClient
    *
-   * @param config - a whole or partial client configuration
-   * @param options - { noDefaults?: boolean }
+   * @param config - a client configuration
    */
-  constructor(
-    config?: Partial<PolywrapClientConfig<TUri>>,
-    options?: { noDefaults?: boolean }
-  );
-  constructor(config: CoreClientConfig, options?: { noDefaults?: boolean });
-  constructor(
-    config: Partial<ClientConfig>,
-    options?: { noDefaults?: boolean }
-  );
-  constructor(
-    config: PolywrapCoreClientConfig<TUri>,
-    options?: { noDefaults: boolean }
-  );
-  constructor(
-    config:
-      | Partial<PolywrapClientConfig<TUri>>
-      | undefined
-      | PolywrapCoreClientConfig<TUri>
-      | CoreClientConfig
-      | Partial<ClientConfig>,
-    options?: { noDefaults?: boolean }
-  ) /* $ */ {
-    super(
-      buildPolywrapCoreClientConfig<TUri>(
-        config,
-        undefined,
-        options?.noDefaults ?? false
-      )
-    );
-    try {
-      if (config && "tracerConfig" in config) {
-        this.setTracingEnabled(config.tracerConfig);
-      }
-
-      Tracer.startSpan("PolywrapClient: constructor");
-    } catch (error) {
-      Tracer.recordException(error);
-      throw error;
-    } finally {
-      Tracer.endSpan();
-    }
+  constructor(config?: CoreClientConfig) /* $ */ {
+    super(config ?? new ClientConfigBuilder().addDefaults().build());
   }
 
   /**
