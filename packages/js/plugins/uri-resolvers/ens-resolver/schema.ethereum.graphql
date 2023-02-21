@@ -211,6 +211,8 @@ type Module {
 
   awaitTransaction(
     txHash: String!
+    confirmations: UInt32!
+    timeout: UInt32
     connection: Connection
   ): TxReceipt!
 
@@ -265,4 +267,26 @@ type Module {
     bytes: Bytes!
     connection: Connection
   ): String!
+
+  """
+  Sign a transaction and return the signature. Requires wallet signer (i.e. signer with private key)
+  """
+  signTransaction(
+    tx: TxRequest!
+    connection: Connection
+  ): String!
+
+# TODO: implement the following methods
+
+#    signTypedData(
+#        payload: JSON!
+#        connection: Connection
+#    ): String
+
+#     waitForEvent(
+#       address: String!
+#       event: String!
+#       args: [String!]
+#       timeout: UInt32
+#     ): EventNotification!
 }

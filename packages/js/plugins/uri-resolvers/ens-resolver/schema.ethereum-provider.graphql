@@ -10,6 +10,16 @@ type Module {
   request(method: String!, params: String, connection: Connection): String!
 
   """
+  Wait for a transaction to be confirmed
+  """
+  waitForTransaction(
+    txHash: String!
+    confirmations: UInt32!
+    timeout: UInt32
+    connection: Connection
+  ): Boolean!
+
+  """
   Sign a message and return the signature. Throws if signer is missing.
   """
   signMessage(message: Bytes!, connection: Connection): String!
