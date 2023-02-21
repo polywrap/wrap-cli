@@ -3,7 +3,14 @@ import { AbiVisitor } from "./visitors";
 
 type ReferenceableDef = ObjectDef | EnumDef;
 
-export class AbiTreeShaker {
+export interface IAbiTreeShaker {
+  findReferencedDefinition(abi: Abi, ref: RefType): ReferenceableDef | undefined
+  shakeTree(abi: Abi, neededDefNames: string[]): Abi
+  // TODO: revisit this method's signature
+  shakeImports(abi: Abi, neededImports: ImportRefType[], state: { currentDepth: number; lastDepth: number, currentId: string }): Abi
+}
+
+export class AbiTreeShaker implements IAbiTreeShaker {
   findReferencedDefinition(abi: Abi, ref: RefType): ReferenceableDef | undefined {
     // TODO: implement a stop to the search if the definition is found
     let found: ReferenceableDef | undefined = undefined;

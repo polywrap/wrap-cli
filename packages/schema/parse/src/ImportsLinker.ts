@@ -1,13 +1,20 @@
-import { AbiMerger } from "./AbiMerger";
+import { IAbiMerger } from "./AbiMerger";
 import { ExternalImportStatement, LocalImportStatement, SchemaParser } from "./types";
 import { Abi, ImportedAbi } from "./definitions";
-import { AbiTreeShaker } from "./AbiTreeShaker";
+import { IAbiTreeShaker } from "./AbiTreeShaker";
 
-export class ImportsLinker {
+export interface IImportsLinker {
+  link: (rootAbi: Abi, importStatements?: {
+    local?: LocalImportStatement[];
+    external?: ExternalImportStatement[];
+  }) => Promise<Abi>
+}
+
+export class ImportsLinker implements IImportsLinker {
   constructor(protected _schemaParser: SchemaParser, protected _fetchers: {
     external: (uri: string) => Promise<Abi>;
     local: (path: string) => Promise<string>;
-  }, protected _abiMerger: AbiMerger, protected _abiTreeShaker: AbiTreeShaker) { }
+  }, protected _abiMerger: IAbiMerger, protected _abiTreeShaker: IAbiTreeShaker) { }
 
   async embedExternalImports(rootAbi: Abi, extImportStatements: ExternalImportStatement[]) {
     let abiClone: Abi = JSON.parse(JSON.stringify(rootAbi));

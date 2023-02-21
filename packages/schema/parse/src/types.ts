@@ -1,4 +1,4 @@
-import { UnlinkedAbiDefs } from "./UnlinkedDefs";
+import { Abi } from "./definitions";
 
 export interface ImportStatement {
   kind: "local" | "external";
@@ -18,7 +18,7 @@ export interface LocalImportStatement extends ImportStatement {
 export interface SchemaParser {
   parseExternalImportStatements: (schema: string) => Promise<ExternalImportStatement[]>
   parseLocalImportStatements: (schema: string) => Promise<LocalImportStatement[]>
-  parse: (schema: string) => Promise<UnlinkedAbiDefs>
+  parse: (schema: string) => Promise<Abi>
 }
 
 export interface ParserOptions {
