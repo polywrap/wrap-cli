@@ -1,8 +1,0 @@
-type Env {
-  externalArray: [UInt32!]!
-  externalString: String!
-}
-
-type Module {
-  externalEnvMethod: Env! @env(required: true)
-}

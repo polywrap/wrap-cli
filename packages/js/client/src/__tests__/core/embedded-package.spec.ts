@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { InMemoryFileReader, WasmPackage } from "@polywrap/wasm-js";
 import { IWrapPackage } from "@polywrap/core-js";
@@ -10,49 +9,42 @@ import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 
-const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
-const simpleWrapperUri = `fs/${simpleWrapperPath}/build`;
+const wrapperPath = `${GetPathToTestWrappers()}/subinvoke/00-subinvoke/implementations/as`;
+const wrapperUri = `fs/${wrapperPath}`;
 
 describe("Embedded package", () => {
-  beforeAll(async () => {
-    await buildWrapper(simpleWrapperPath);
-  });
-
   it("can invoke an embedded package", async () => {
-    const manifestBuffer = fs.readFileSync(
-      path.join(simpleWrapperPath, "build/wrap.info")
-    );
+    const manifestBuffer = fs.readFileSync(path.join(wrapperPath, "wrap.info"));
     const wasmModuleBuffer = fs.readFileSync(
-      path.join(simpleWrapperPath, "build/wrap.wasm")
+      path.join(wrapperPath, "wrap.wasm")
     );
 
     let wrapPackage = WasmPackage.from(manifestBuffer, wasmModuleBuffer);
     const config = new ClientConfigBuilder()
       .addDefaults()
-      .addPackage(simpleWrapperUri, wrapPackage)
+      .addPackage(wrapperUri, wrapPackage)
       .build();
     const client = new PolywrapClient(config);
 
     const result = await client.invoke<string>({
-      uri: simpleWrapperUri,
-      method: "simpleMethod",
+      uri: wrapperUri,
+      method: "add",
       args: {
-        arg: "test",
+        a: 1,
+        b: 1,
       },
     });
 
     if (!result.ok) fail(result.error);
     expect(result.value).toBeTruthy();
-    expect(typeof result.value).toBe("string");
-    expect(result.value).toEqual("test");
+    expect(typeof result.value).toBe("number");
+    expect(result.value).toEqual(2);
   });
 
   it("can get a file from wrapper", async () => {
-    const manifestBuffer = fs.readFileSync(
-      path.join(simpleWrapperPath, "build/wrap.info")
-    );
+    const manifestBuffer = fs.readFileSync(path.join(wrapperPath, "wrap.info"));
     const wasmModuleBuffer = fs.readFileSync(
-      path.join(simpleWrapperPath, "build/wrap.wasm")
+      path.join(wrapperPath, "wrap.wasm")
     );
     const testFilePath = "hello.txt";
     const testFileText = "Hello Test!";
@@ -71,11 +63,9 @@ describe("Embedded package", () => {
   });
 
   it("can add embedded wrapper through file reader", async () => {
-    const manifestBuffer = fs.readFileSync(
-      path.join(simpleWrapperPath, "build/wrap.info")
-    );
+    const manifestBuffer = fs.readFileSync(path.join(wrapperPath, "wrap.info"));
     const wasmModuleBuffer = fs.readFileSync(
-      path.join(simpleWrapperPath, "build/wrap.wasm")
+      path.join(wrapperPath, "wrap.wasm")
     );
     const testFilePath = "hello.txt";
     const testFileText = "Hello Test!";
@@ -98,11 +88,9 @@ describe("Embedded package", () => {
   });
 
   it("can add embedded wrapper with async wrap manifest", async () => {
-    const manifestBuffer = fs.readFileSync(
-      path.join(simpleWrapperPath, "build/wrap.info")
-    );
+    const manifestBuffer = fs.readFileSync(path.join(wrapperPath, "wrap.info"));
     const wasmModuleBuffer = fs.readFileSync(
-      path.join(simpleWrapperPath, "build/wrap.wasm")
+      path.join(wrapperPath, "wrap.wasm")
     );
     const testFilePath = "hello.txt";
     const testFileText = "Hello Test!";
@@ -125,11 +113,9 @@ describe("Embedded package", () => {
   });
 
   it("can add embedded wrapper with async wasm module", async () => {
-    const manifestBuffer = fs.readFileSync(
-      path.join(simpleWrapperPath, "build/wrap.info")
-    );
+    const manifestBuffer = fs.readFileSync(path.join(wrapperPath, "wrap.info"));
     const wasmModuleBuffer = fs.readFileSync(
-      path.join(simpleWrapperPath, "build/wrap.wasm")
+      path.join(wrapperPath, "wrap.wasm")
     );
     const testFilePath = "hello.txt";
     const testFileText = "Hello Test!";
@@ -157,15 +143,15 @@ const testEmbeddedPackageWithFile = async (
 ) => {
   const config = new ClientConfigBuilder()
     .addDefaults()
-    .addPackage(simpleWrapperUri, wrapPackage)
+    .addPackage(wrapperUri, wrapPackage)
     .build();
 
   const client = new PolywrapClient(config);
 
   const expectedManifest = await fs.promises.readFile(
-    `${simpleWrapperPath}/build/wrap.info`
+    `${wrapperPath}/wrap.info`
   );
-  const receivedManifestResult = await client.getFile(simpleWrapperUri, {
+  const receivedManifestResult = await client.getFile(wrapperUri, {
     path: "wrap.info",
   });
   if (!receivedManifestResult.ok) fail(receivedManifestResult.error);
@@ -173,16 +159,16 @@ const testEmbeddedPackageWithFile = async (
   expect(receivedManifest).toEqual(expectedManifest);
 
   const expectedWasmModule = await fs.promises.readFile(
-    `${simpleWrapperPath}/build/wrap.wasm`
+    `${wrapperPath}/wrap.wasm`
   );
-  const receivedWasmModuleResult = await client.getFile(simpleWrapperUri, {
+  const receivedWasmModuleResult = await client.getFile(wrapperUri, {
     path: "wrap.wasm",
   });
   if (!receivedWasmModuleResult.ok) fail(receivedWasmModuleResult.error);
   const receivedWasmModule = receivedWasmModuleResult.value as Uint8Array;
   expect(receivedWasmModule).toEqual(expectedWasmModule);
 
-  const receivedHelloFileResult = await client.getFile(simpleWrapperUri, {
+  const receivedHelloFileResult = await client.getFile(wrapperUri, {
     path: filePath,
     encoding: "utf-8",
   });

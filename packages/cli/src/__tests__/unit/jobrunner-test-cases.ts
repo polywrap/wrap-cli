@@ -14,7 +14,7 @@ export const testCases: WorkflowTestCase[] = [
   {
     name: "simple workflow",
     workflow: {
-      name: "simpleCalculator",
+      name: "simpleInvoke",
       format: "0.1",
       __type: "PolywrapWorkflow",
       jobs: {
@@ -23,14 +23,15 @@ export const testCases: WorkflowTestCase[] = [
             {
               uri: `fs/${path.join(
                 GetPathToTestWrappers(),
-                "wasm-as",
-                "simple-calculator",
-                "build"
+                "subinvoke",
+                "00-subinvoke",
+                "implementations",
+                "as"
               )}`,
               method: "add",
               args: {
-                a: 12,
-                b: 8,
+                a: 1,
+                b: 1,
               },
             },
           ],
@@ -42,7 +43,7 @@ export const testCases: WorkflowTestCase[] = [
         case "ops.0": {
           expect(jobResult.status).toBe(Status.SUCCEED);
           expect(jobResult.error).toBeFalsy();
-          expect(jobResult.data).toBe(20);
+          expect(jobResult.data).toBe(2);
           break;
         }
         default: {
@@ -54,7 +55,7 @@ export const testCases: WorkflowTestCase[] = [
   {
     name: "simple workflow with output propagation",
     workflow: {
-      name: "simpleCalculator",
+      name: "simpleInvokeDifferentImplementations",
       format: "0.1",
       __type: "PolywrapWorkflow",
       jobs: {
@@ -63,27 +64,29 @@ export const testCases: WorkflowTestCase[] = [
             {
               uri: `fs/${path.join(
                 GetPathToTestWrappers(),
-                "wasm-as",
-                "simple-calculator",
-                "build"
+                "subinvoke",
+                "00-subinvoke",
+                "implementations",
+                "as"
               )}`,
               method: "add",
               args: {
-                a: 12,
-                b: 8,
+                a: 1,
+                b: 1,
               },
             },
             {
               uri: `fs/${path.join(
                 GetPathToTestWrappers(),
-                "wasm-as",
-                "simple-calculator",
-                "build"
+                "subinvoke",
+                "00-subinvoke",
+                "implementations",
+                "rs"
               )}`,
-              method: "sub",
+              method: "add",
               args: {
                 a: "$ops.0.data",
-                b: 5,
+                b: 1,
               },
             },
           ],
@@ -95,13 +98,13 @@ export const testCases: WorkflowTestCase[] = [
         case "ops.0": {
           expect(jobResult.status).toBe(Status.SUCCEED);
           expect(jobResult.error).toBeFalsy();
-          expect(jobResult.data).toBe(20);
+          expect(jobResult.data).toBe(2);
           break;
         }
         case "ops.1": {
           expect(jobResult.status).toBe(Status.SUCCEED);
           expect(jobResult.error).toBeFalsy();
-          expect(jobResult.data).toBe(15);
+          expect(jobResult.data).toBe(3);
           break;
         }
         default: {
@@ -113,7 +116,7 @@ export const testCases: WorkflowTestCase[] = [
   {
     name: "workflow with subJobs and output propagation",
     workflow: {
-      name: "simpleCalculator",
+      name: "simpleInvokeDifferentImplementations",
       format: "0.1",
       __type: "PolywrapWorkflow",
       jobs: {
@@ -122,27 +125,29 @@ export const testCases: WorkflowTestCase[] = [
             {
               uri: `fs/${path.join(
                 GetPathToTestWrappers(),
-                "wasm-as",
-                "simple-calculator",
-                "build"
+                "subinvoke",
+                "00-subinvoke",
+                "implementations",
+                "rs"
               )}`,
-              method: "add", // 20
+              method: "add", // 2
               args: {
-                a: 12,
-                b: 8,
+                a: 1,
+                b: 1,
               },
             },
             {
               uri: `fs/${path.join(
                 GetPathToTestWrappers(),
-                "wasm-as",
-                "simple-calculator",
-                "build"
+                "subinvoke",
+                "00-subinvoke",
+                "implementations",
+                "rs"
               )}`,
-              method: "sub", // 15
+              method: "add", // 3
               args: {
-                a: "$ops.0.data", // 20
-                b: 5,
+                a: "$ops.0.data", // 2
+                b: 1,
               },
             },
           ],
@@ -152,14 +157,15 @@ export const testCases: WorkflowTestCase[] = [
                 {
                   uri: `fs/${path.join(
                     GetPathToTestWrappers(),
-                    "wasm-as",
-                    "simple-calculator",
-                    "build"
+                    "subinvoke",
+                    "01-invoke",
+                    "implementations",
+                    "rs"
                   )}`,
-                  method: "sub", // 5
+                  method: "addAndIncrement", // 6
                   args: {
-                    a: "$ops.0.data", // 20
-                    b: "$ops.1.data", // 15
+                    a: "$ops.0.data", // 2
+                    b: "$ops.1.data", // 3
                   },
                 },
               ],
@@ -173,19 +179,19 @@ export const testCases: WorkflowTestCase[] = [
         case "ops.0": {
           expect(jobResult.status).toBe(Status.SUCCEED);
           expect(jobResult.error).toBeFalsy();
-          expect(jobResult.data).toBe(20);
+          expect(jobResult.data).toBe(2);
           break;
         }
         case "ops.1": {
           expect(jobResult.status).toBe(Status.SUCCEED);
           expect(jobResult.error).toBeFalsy();
-          expect(jobResult.data).toBe(15);
+          expect(jobResult.data).toBe(3);
           break;
         }
         case "ops.subOps.0": {
           expect(jobResult.status).toBe(Status.SUCCEED);
           expect(jobResult.error).toBeFalsy();
-          expect(jobResult.data).toBe(5);
+          expect(jobResult.data).toBe(6);
           break;
         }
         default: {

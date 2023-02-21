@@ -17,7 +17,7 @@
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose=true --detectOpenHandles --forceExit",
     "test:ci": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit",
-    "test:rust": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit --config ./jest.rs.config.js",
+    "test:rust": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit -t 'client <-> wrappers .* rs'",
     "test:watch": "jest --watch --passWithNoTests --verbose --detectOpenHandles",
     "build:snippets": "tsc --project ./examples/tsconfig.examples.json",
     "build:readme": "yarn doc-snippets combine"

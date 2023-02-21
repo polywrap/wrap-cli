@@ -66,8 +66,7 @@ Below you will find a reference of object definitions which can be used to confi
   /**
    * Instantiate a PolywrapClient
    *
-   * @param config - a whole or partial client configuration
-   * @param options - { noDefaults?: boolean }
+   * @param config - a client configuration
    */
   constructor(config?: CoreClientConfig) 
 ```
