@@ -1,4 +1,4 @@
-#import { Module } into IProvider from "wrap://ens/wraps.eth:ethereum-provider@1.0.0"
+#import { Module } into IProvider from "wrap://ens/wraps.eth:ethereum-provider@1.1.0"
 #use { getImplementations } for IProvider
 
 type Connection {

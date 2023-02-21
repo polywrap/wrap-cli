@@ -4,7 +4,7 @@ import { parseWrapperEnvsOption } from "../../../lib";
 describe("unit tests for option-parsers", () => {
   describe("wrapper-envs", () => {
     const sampleFileEnvs = {
-      "ens/wraps.eth:ethereum@1.0.0": {
+      "ens/wraps.eth:ethereum@1.1.0": {
         connection: {
           networkNameOrChainId: "mainnet",
           node: "https://mainnet.infura.io/v3/some_api_key",

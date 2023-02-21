@@ -1,2 +1,2 @@
-#import * into Ethereum from "wrap://ens/wraps.eth:ethereum@1.0.0"
+#import * into Ethereum from "wrap://ens/wraps.eth:ethereum@1.1.0"
 #import * into Logger from "wrap://ens/wraps.eth:logger@1.0.0"

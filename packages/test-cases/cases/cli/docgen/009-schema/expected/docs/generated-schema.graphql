@@ -95,7 +95,7 @@ enum test {
 ### Imported Modules START ###
 
 type Ethereum_Module @imported(
-  uri: "ens/wraps.eth:ethereum@1.0.0",
+  uri: "ens/wraps.eth:ethereum@1.1.0",
   namespace: "Ethereum",
   nativeType: "Module"
 ) {
@@ -251,7 +251,7 @@ type Ethereum_Module @imported(
 ### Imported Objects START ###
 
 type Ethereum_Connection @imported(
-  uri: "ens/wraps.eth:ethereum@1.0.0",
+  uri: "ens/wraps.eth:ethereum@1.1.0",
   namespace: "Ethereum",
   nativeType: "Connection"
 ) {
@@ -260,7 +260,7 @@ type Ethereum_Connection @imported(
 }
 
 type Ethereum_TxOptions @imported(
-  uri: "ens/wraps.eth:ethereum@1.0.0",
+  uri: "ens/wraps.eth:ethereum@1.1.0",
   namespace: "Ethereum",
   nativeType: "TxOptions"
 ) {
@@ -296,7 +296,7 @@ If this property is not null, a legacy transaction will be sent and maxFeePerGas
 }
 
 type Ethereum_StaticTxResult @imported(
-  uri: "ens/wraps.eth:ethereum@1.0.0",
+  uri: "ens/wraps.eth:ethereum@1.1.0",
   namespace: "Ethereum",
   nativeType: "StaticTxResult"
 ) {
@@ -305,7 +305,7 @@ type Ethereum_StaticTxResult @imported(
 }
 
 type Ethereum_Eip1559FeesEstimate @imported(
-  uri: "ens/wraps.eth:ethereum@1.0.0",
+  uri: "ens/wraps.eth:ethereum@1.1.0",
   namespace: "Ethereum",
   nativeType: "Eip1559FeesEstimate"
 ) {
@@ -314,7 +314,7 @@ type Ethereum_Eip1559FeesEstimate @imported(
 }
 
 type Ethereum_TxRequest @imported(
-  uri: "ens/wraps.eth:ethereum@1.0.0",
+  uri: "ens/wraps.eth:ethereum@1.1.0",
   namespace: "Ethereum",
   nativeType: "TxRequest"
 ) {
@@ -356,7 +356,7 @@ If this property is not null, a legacy transaction will be sent and maxFeePerGas
 }
 
 type Ethereum_AccessItem @imported(
-  uri: "ens/wraps.eth:ethereum@1.0.0",
+  uri: "ens/wraps.eth:ethereum@1.1.0",
   namespace: "Ethereum",
   nativeType: "AccessItem"
 ) {
@@ -365,7 +365,7 @@ type Ethereum_AccessItem @imported(
 }
 
 type Ethereum_TxReceipt @imported(
-  uri: "ens/wraps.eth:ethereum@1.0.0",
+  uri: "ens/wraps.eth:ethereum@1.1.0",
   namespace: "Ethereum",
   nativeType: "TxReceipt"
 ) {
@@ -388,7 +388,7 @@ type Ethereum_TxReceipt @imported(
 }
 
 type Ethereum_Log @imported(
-  uri: "ens/wraps.eth:ethereum@1.0.0",
+  uri: "ens/wraps.eth:ethereum@1.1.0",
   namespace: "Ethereum",
   nativeType: "Log"
 ) {
@@ -404,7 +404,7 @@ type Ethereum_Log @imported(
 }
 
 type Ethereum_TxResponse @imported(
-  uri: "ens/wraps.eth:ethereum@1.0.0",
+  uri: "ens/wraps.eth:ethereum@1.1.0",
   namespace: "Ethereum",
   nativeType: "TxResponse"
 ) {

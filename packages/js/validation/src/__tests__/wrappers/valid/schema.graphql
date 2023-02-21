@@ -79,7 +79,7 @@ type Module @imports(
 ### Imported Modules START ###
 
 type Ethereum_Module @imported(
-    uri: "wrap://ens/wraps.eth:ethereum@1.0.0",
+    uri: "wrap://ens/wraps.eth:ethereum@1.1.0",
     namespace: "Ethereum",
     nativeType: "Module"
 ) {
@@ -241,7 +241,7 @@ type Ethereum_Module @imported(
 ### Imported Objects START ###
 
 type Ethereum_Connection @imported(
-    uri: "wrap://ens/wraps.eth:ethereum@1.0.0",
+    uri: "wrap://ens/wraps.eth:ethereum@1.1.0",
     namespace: "Ethereum",
     nativeType: "Connection"
 ) {
@@ -250,7 +250,7 @@ type Ethereum_Connection @imported(
 }
 
 type Ethereum_TxOverrides @imported(
-    uri: "wrap://ens/wraps.eth:ethereum@1.0.0",
+    uri: "wrap://ens/wraps.eth:ethereum@1.1.0",
     namespace: "Ethereum",
     nativeType: "TxOverrides"
 ) {
@@ -260,7 +260,7 @@ type Ethereum_TxOverrides @imported(
 }
 
 type Ethereum_StaticTxResult @imported(
-    uri: "wrap://ens/wraps.eth:ethereum@1.0.0",
+    uri: "wrap://ens/wraps.eth:ethereum@1.1.0",
     namespace: "Ethereum",
     nativeType: "StaticTxResult"
 ) {
@@ -269,7 +269,7 @@ type Ethereum_StaticTxResult @imported(
 }
 
 type Ethereum_TxRequest @imported(
-    uri: "wrap://ens/wraps.eth:ethereum@1.0.0",
+    uri: "wrap://ens/wraps.eth:ethereum@1.1.0",
     namespace: "Ethereum",
     nativeType: "TxRequest"
 ) {
@@ -285,7 +285,7 @@ type Ethereum_TxRequest @imported(
 }
 
 type Ethereum_TxReceipt @imported(
-    uri: "wrap://ens/wraps.eth:ethereum@1.0.0",
+    uri: "wrap://ens/wraps.eth:ethereum@1.1.0",
     namespace: "Ethereum",
     nativeType: "TxReceipt"
 ) {
@@ -309,7 +309,7 @@ type Ethereum_TxReceipt @imported(
 }
 
 type Ethereum_Log @imported(
-    uri: "wrap://ens/wraps.eth:ethereum@1.0.0",
+    uri: "wrap://ens/wraps.eth:ethereum@1.1.0",
     namespace: "Ethereum",
     nativeType: "Log"
 ) {
@@ -325,7 +325,7 @@ type Ethereum_Log @imported(
 }
 
 type Ethereum_EventNotification @imported(
-    uri: "wrap://ens/wraps.eth:ethereum@1.0.0",
+    uri: "wrap://ens/wraps.eth:ethereum@1.1.0",
     namespace: "Ethereum",
     nativeType: "EventNotification"
 ) {
@@ -335,7 +335,7 @@ type Ethereum_EventNotification @imported(
 }
 
 type Ethereum_Network @imported(
-    uri: "wrap://ens/wraps.eth:ethereum@1.0.0",
+    uri: "wrap://ens/wraps.eth:ethereum@1.1.0",
     namespace: "Ethereum",
     nativeType: "Network"
 ) {
@@ -345,7 +345,7 @@ type Ethereum_Network @imported(
 }
 
 type Ethereum_TxResponse @imported(
-    uri: "wrap://ens/wraps.eth:ethereum@1.0.0",
+    uri: "wrap://ens/wraps.eth:ethereum@1.1.0",
     namespace: "Ethereum",
     nativeType: "TxResponse"
 ) {
@@ -371,7 +371,7 @@ type Ethereum_TxResponse @imported(
 }
 
 type Ethereum_Access @imported(
-    uri: "wrap://ens/wraps.eth:ethereum@1.0.0",
+    uri: "wrap://ens/wraps.eth:ethereum@1.1.0",
     namespace: "Ethereum",
     nativeType: "Access"
 ) {

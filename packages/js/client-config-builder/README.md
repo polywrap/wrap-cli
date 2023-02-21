@@ -454,7 +454,7 @@ export const defaultWrappers = {
   graphNode: "wrap://ens/wraps.eth:graph-node@1.0.0",
   ensTextRecordResolver:
     "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p",
-  ethereum: "wrap://ens/wraps.eth:ethereum@1.0.0",
+  ethereum: "wrap://ens/wraps.eth:ethereum@1.1.0",
   ens: "wrap://ens/wraps.eth:ens@1.0.0",
 };
 
@@ -471,7 +471,7 @@ export const defaultInterfaces = {
   http: "wrap://ens/wraps.eth:http@1.1.0",
   fileSystem: "wrap://ens/wraps.eth:file-system@1.0.0",
   ipfsHttpClient: "wrap://ens/wraps.eth:ipfs-http-client@1.0.0",
-  ethereumProvider: "wrap://ens/wraps.eth:ethereum-provider@1.0.0",
+  ethereumProvider: "wrap://ens/wraps.eth:ethereum-provider@1.1.0",
 };
 
 export const getDefaultPackages = (): Record<string, IWrapPackage> => {
