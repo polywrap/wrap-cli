@@ -24,16 +24,13 @@ import { Uri } from "@polywrap/core-js";
 
 export const getClient = () => {
   return new PolywrapClient({
-    envs: [
-      {
-        uri: Uri.from(defaultPackages.ipfsResolver),
-        env: {
-          provider: providers.ipfs,
-          fallbackProviders: defaultIpfsProviders,
-          retries: { tryResolveUri: 1, getFile: 1 },
-        },
+    envs: {
+      [defaultPackages.ipfsResolver]: {
+        provider: providers.ipfs,
+        fallbackProviders: defaultIpfsProviders,
+        retries: { tryResolveUri: 1, getFile: 1 },
       },
-    ],
+    },
     interfaces: [
       {
         interface: ExtendableUriResolver.extInterfaceUri,

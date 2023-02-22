@@ -1,6 +1,6 @@
 import { BuilderConfig, IClientConfigBuilder } from "./types";
 
-import { CoreClientConfig, Wrapper, IWrapPackage } from "@polywrap/core-js";
+import { CoreClientConfig, Wrapper, IWrapPackage, Uri } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";
 
 export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
@@ -92,7 +92,9 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
   }
 
   addEnv(uri: string, env: Record<string, unknown>): IClientConfigBuilder {
-    this._config.envs[uri] = { ...this._config.envs[uri], ...env };
+    const sanitizedUri = Uri.from(uri).uri;
+
+    this._config.envs[sanitizedUri] = { ...this._config.envs[sanitizedUri], ...env };
 
     return this;
   }
@@ -106,13 +108,17 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
   }
 
   removeEnv(uri: string): IClientConfigBuilder {
-    delete this._config.envs[uri];
+    const sanitizedUri = Uri.from(uri).uri;
+
+    delete this._config.envs[sanitizedUri];
 
     return this;
   }
 
   setEnv(uri: string, env: Record<string, unknown>): IClientConfigBuilder {
-    this._config.envs[uri] = env;
+    const sanitizedUri = Uri.from(uri).uri;
+
+    this._config.envs[sanitizedUri] = env;
 
     return this;
   }
