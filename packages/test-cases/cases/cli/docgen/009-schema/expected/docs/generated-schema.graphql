@@ -190,6 +190,8 @@ type Ethereum_Module @imported(
 
   awaitTransaction(
     txHash: String!
+    confirmations: UInt32!
+    timeout: UInt32
     connection: Ethereum_Connection
   ): Ethereum_TxReceipt!
 
@@ -242,6 +244,14 @@ type Ethereum_Module @imported(
 
   signMessageBytes(
     bytes: Bytes!
+    connection: Ethereum_Connection
+  ): String!
+
+  """
+  Sign a transaction and return the signature. Requires wallet signer (i.e. signer with private key)
+  """
+  signTransaction(
+    tx: Ethereum_TxRequest!
     connection: Ethereum_Connection
   ): String!
 }
