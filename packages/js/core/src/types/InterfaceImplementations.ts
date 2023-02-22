@@ -12,3 +12,7 @@ export interface InterfaceImplementations {
 }
 
 // $end
+
+export interface InterfaceImpls {
+  readonly [k: string]: readonly string[];
+}

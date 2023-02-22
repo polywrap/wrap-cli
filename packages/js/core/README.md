@@ -13,7 +13,7 @@ A TypeScript / JavaScript implementation of the WRAP standard, including all fun
 /** Core Client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors */
 export interface CoreClientConfig {
   /** register interface implementations */
-  readonly interfaces?: Readonly<InterfaceImplementations[]>;
+  readonly interfaces?: InterfaceImpls;
 
   /** set environmental variables for a wrapper */
   readonly envs?: Envs;
@@ -63,7 +63,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    *
    * @returns an array of interfaces and their registered implementations
    */
-  getInterfaces(): readonly InterfaceImplementations[] | undefined;
+  getInterfaces(): InterfaceImpls | undefined;
 
   /**
    * returns all env registrations from the configuration used to instantiate the client

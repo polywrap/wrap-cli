@@ -3,7 +3,6 @@ import {
   CoreClient,
   GetFileOptions,
   GetImplementationsOptions,
-  InterfaceImplementations,
   InvokeOptions,
   InvokerOptions,
   Uri,
@@ -21,6 +20,7 @@ import {
   WrapErrorCode,
   Envs,
   WrapperEnv,
+  InterfaceImpls,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
@@ -55,7 +55,7 @@ export class PolywrapCoreClient implements CoreClient {
    * @returns an array of interfaces and their registered implementations
    */
   public getInterfaces():
-    | readonly InterfaceImplementations[]
+    | InterfaceImpls
     | undefined /* $ */ {
     return this._config.interfaces;
   }
@@ -162,7 +162,7 @@ export class PolywrapCoreClient implements CoreClient {
 
     const getImplResult = await getImplementations(
       Uri.from(uri),
-      this.getInterfaces() ?? [],
+      this.getInterfaces() ?? {},
       applyResolution ? this : undefined,
       applyResolution ? options.resolutionContext : undefined
     );

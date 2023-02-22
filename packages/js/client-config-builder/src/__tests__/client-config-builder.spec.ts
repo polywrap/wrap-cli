@@ -80,7 +80,7 @@ describe("Client config builder", () => {
     const clientConfig = new ClientConfigBuilder().build();
 
     expect(clientConfig.envs).toStrictEqual({});
-    expect(clientConfig.interfaces).toStrictEqual([]);
+    expect(clientConfig.interfaces).toStrictEqual({});
   });
 
   it("should succesfully add config object and build", () => {
@@ -98,12 +98,14 @@ describe("Client config builder", () => {
 
     expect(clientConfig).toBeTruthy();
     expect(clientConfig.envs).toStrictEqual(testEnvs);
-    expect(clientConfig.interfaces).toStrictEqual(
-      Object.entries(testInterfaces).map(([uri, interfaces]) => ({
-        interface: Uri.from(uri),
-        implementations: Array.from(interfaces).map(Uri.from),
-      }))
-    );
+    expect(clientConfig.interfaces).toStrictEqual({
+      "wrap://ens/test-interface-1.polywrap.eth": [
+        "wrap://ens/test1.polywrap.eth",
+      ],
+      "wrap://ens/test-interface-2.polywrap.eth": [
+        "wrap://ens/test2.polywrap.eth",
+      ],
+    });
 
     expect(builderConfig).toEqual({
       ...emptyBuilderConfig,
@@ -133,12 +135,14 @@ describe("Client config builder", () => {
       ...testEnv1,
       ...testEnv2,
     });
-    expect(clientConfig.interfaces).toStrictEqual(
-      Object.entries(testInterfaces).map(([uri, interfaces]) => ({
-        interface: Uri.from(uri),
-        implementations: Array.from(interfaces).map(Uri.from),
-      }))
-    );
+    expect(clientConfig.interfaces).toStrictEqual({
+      "wrap://ens/test-interface-1.polywrap.eth": [
+        "wrap://ens/test1.polywrap.eth",
+      ],
+      "wrap://ens/test-interface-2.polywrap.eth": [
+        "wrap://ens/test2.polywrap.eth",
+      ],
+    });
 
     expect(clientConfig.resolver).toBeTruthy();
 
@@ -288,13 +292,12 @@ describe("Client config builder", () => {
       .addInterfaceImplementation(interfaceUri, implUri)
       .build();
 
-    if (!config.interfaces || config.interfaces.length !== 1) {
+    if (!config.interfaces || Object.keys(config.interfaces).length !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
-    expect(config.interfaces[0]).toStrictEqual({
-      interface: Uri.from(interfaceUri),
-      implementations: [Uri.from(implUri)],
+    expect(config.interfaces).toStrictEqual({
+      [interfaceUri]: [implUri],
     });
   });
 
@@ -308,19 +311,13 @@ describe("Client config builder", () => {
       .addInterfaceImplementation(interfaceUri, implUri2)
       .build();
 
-    if (!config.interfaces || config.interfaces.length !== 1) {
+    if (!config.interfaces || Object.keys(config.interfaces).length !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
-    expect(config.interfaces[0].interface).toStrictEqual(
-      Uri.from(interfaceUri)
-    );
-    expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri1)
-    );
-    expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri2)
-    );
+    expect(config.interfaces).toStrictEqual({
+      [interfaceUri]: [implUri1, implUri2],
+    });
   });
 
   it("should add different implementations for different interfaces", () => {
@@ -338,26 +335,14 @@ describe("Client config builder", () => {
       .addInterfaceImplementation(interfaceUri2, implUri4)
       .build();
 
-    if (!config.interfaces || config.interfaces.length !== 2) {
+    if (!config.interfaces || Object.keys(config.interfaces).length !== 2) {
       fail(["Expected 2 interfaces, received:", config.interfaces]);
     }
 
-    const interface1 = config.interfaces.find(
-      (x) => x.interface.uri === interfaceUri1
-    );
-    const interface2 = config.interfaces.find(
-      (x) => x.interface.uri === interfaceUri2
-    );
-
-    expect(interface1).toBeDefined();
-    expect(interface1?.implementations).toHaveLength(2);
-    expect(interface1?.implementations).toContainEqual(Uri.from(implUri1));
-    expect(interface1?.implementations).toContainEqual(Uri.from(implUri3));
-
-    expect(interface2).toBeDefined();
-    expect(interface2?.implementations).toHaveLength(2);
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri2));
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri4));
+    expect(config.interfaces).toStrictEqual({
+      [interfaceUri1]: [implUri1, implUri3],
+      [interfaceUri2]: [implUri2, implUri4],
+    });
   });
 
   it("should add multiple implementations for a non-existent interface", () => {
@@ -369,20 +354,13 @@ describe("Client config builder", () => {
       .addInterfaceImplementations(interfaceUri, [implUri1, implUri2])
       .build();
 
-    if (!config.interfaces || config.interfaces.length !== 1) {
+    if (!config.interfaces || Object.keys(config.interfaces).length !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
-    expect(config.interfaces[0].interface).toStrictEqual(
-      Uri.from(interfaceUri)
-    );
-    expect(config.interfaces[0].implementations).toHaveLength(2);
-    expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri1)
-    );
-    expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri2)
-    );
+    expect(config.interfaces).toStrictEqual({
+      [interfaceUri]: [implUri1, implUri2],
+    });
   });
 
   it("should add multiple implementations for an existing interface", () => {
@@ -396,23 +374,13 @@ describe("Client config builder", () => {
       .addInterfaceImplementations(interfaceUri, [implUri2, implUri3])
       .build();
 
-    if (!config.interfaces || config.interfaces.length !== 1) {
+    if (!config.interfaces || Object.keys(config.interfaces).length !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
-    expect(config.interfaces[0].interface).toStrictEqual(
-      Uri.from(interfaceUri)
-    );
-    expect(config.interfaces[0].implementations).toHaveLength(3);
-    expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri1)
-    );
-    expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri2)
-    );
-    expect(config.interfaces[0].implementations).toContainEqual(
-      Uri.from(implUri3)
-    );
+    expect(config.interfaces).toStrictEqual({
+      [interfaceUri]: [implUri1, implUri2, implUri3],
+    });
   });
 
   it("should add multiple different implementations for different interfaces", () => {
@@ -432,28 +400,14 @@ describe("Client config builder", () => {
       .addInterfaceImplementations(interfaceUri2, [implUri4, implUri6])
       .build();
 
-    if (!config.interfaces || config.interfaces.length !== 2) {
+    if (!config.interfaces || Object.keys(config.interfaces).length !== 2) {
       fail(["Expected 2 interfaces, received:", config.interfaces]);
     }
 
-    const interface1 = config.interfaces.find(
-      (x) => x.interface.uri === interfaceUri1
-    );
-    const interface2 = config.interfaces.find(
-      (x) => x.interface.uri === interfaceUri2
-    );
-
-    expect(interface1).toBeDefined();
-    expect(interface1?.implementations).toHaveLength(3);
-    expect(interface1?.implementations).toContainEqual(Uri.from(implUri1));
-    expect(interface1?.implementations).toContainEqual(Uri.from(implUri3));
-    expect(interface1?.implementations).toContainEqual(Uri.from(implUri5));
-
-    expect(interface2).toBeDefined();
-    expect(interface2?.implementations).toHaveLength(3);
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri2));
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri4));
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri6));
+    expect(config.interfaces).toStrictEqual({
+      [interfaceUri1]: [implUri1, implUri3, implUri5],
+      [interfaceUri2]: [implUri2, implUri4, implUri6],
+    });
   });
 
   it("should remove an interface implementation", () => {
@@ -468,25 +422,14 @@ describe("Client config builder", () => {
       .removeInterfaceImplementation(interfaceUri1, implUri2)
       .build();
 
-    if (!config.interfaces || config.interfaces.length !== 2) {
+    if (!config.interfaces || Object.keys(config.interfaces).length !== 2) {
       fail(["Expected 2 interfaces, received:", config.interfaces]);
     }
 
-    const interface1 = config.interfaces.find(
-      (x) => x.interface.uri === interfaceUri1
-    );
-    const interface2 = config.interfaces.find(
-      (x) => x.interface.uri === interfaceUri2
-    );
-
-    expect(interface1).toBeDefined();
-    expect(interface1?.implementations).toHaveLength(1);
-    expect(interface1?.implementations).toContainEqual(Uri.from(implUri1));
-
-    expect(interface2).toBeDefined();
-    expect(interface2?.implementations).toHaveLength(2);
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri1));
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri2));
+    expect(config.interfaces).toStrictEqual({
+      [interfaceUri1]: [implUri1],
+      [interfaceUri2]: [implUri1, implUri2],
+    });
   });
 
   it("should completely remove an interface if there are no implementations left", () => {
@@ -502,23 +445,13 @@ describe("Client config builder", () => {
       .removeInterfaceImplementation(interfaceUri1, implUri2)
       .build();
 
-    if (!config.interfaces || config.interfaces.length !== 1) {
+    if (!config.interfaces || Object.keys(config.interfaces).length !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
-    const interface1 = config.interfaces.find(
-      (x) => x.interface.uri === interfaceUri1
-    );
-    const interface2 = config.interfaces.find(
-      (x) => x.interface.uri === interfaceUri2
-    );
-
-    expect(interface1).toBeUndefined();
-
-    expect(interface2).toBeDefined();
-    expect(interface2?.implementations).toHaveLength(2);
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri1));
-    expect(interface2?.implementations).toContainEqual(Uri.from(implUri2));
+    expect(config.interfaces).toStrictEqual({
+      [interfaceUri2]: [implUri1, implUri2],
+    });
   });
 
   it("should add an uri redirect", () => {

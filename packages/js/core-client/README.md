@@ -75,7 +75,7 @@ Invoke a wrapper.
    * @returns an array of interfaces and their registered implementations
    */
   public getInterfaces():
-    | readonly InterfaceImplementations[]
+    | InterfaceImpls
     | undefined 
 ```
 

@@ -5,11 +5,11 @@ import { BuildOptions, IClientConfigBuilder, BuilderConfig } from "./types";
 import {
   CoreClientConfig,
   Envs,
-  InterfaceImplementations,
   IUriPackage,
   IUriRedirect,
   IUriWrapper,
   Uri,
+  InterfaceImpls,
 } from "@polywrap/core-js";
 import {
   PackageToWrapperCacheResolver,
@@ -67,19 +67,16 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
     return this._config.envs;
   }
 
-  private buildInterfaces(): InterfaceImplementations[] {
-    const interfaces: InterfaceImplementations[] = [];
+  private buildInterfaces(): InterfaceImpls {
+    const interfaces: Record<string, string[]> = {};
 
-    for (const [interfaceUri, implementations] of Object.entries(
-      this._config.interfaces
-    )) {
-      if (implementations.size === 0) continue;
-      interfaces.push({
-        interface: Uri.from(interfaceUri),
-        implementations: Array.from(implementations).map((uri) =>
-          Uri.from(uri)
-        ),
-      });
+    for (const iface in this._config.interfaces) {
+      if (this._config.interfaces[iface].size > 0) {
+        // Sanitize uri
+        const uri = Uri.from(iface).uri;
+
+        interfaces[uri] = [...this._config.interfaces[iface]];
+      }
     }
 
     return interfaces;
