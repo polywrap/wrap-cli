@@ -882,6 +882,28 @@ export const manifest: WrapManifest = {
             },
             {
               "kind": 34,
+              "name": "confirmations",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "confirmations",
+                "required": true,
+                "type": "UInt32"
+              },
+              "type": "UInt32"
+            },
+            {
+              "kind": 34,
+              "name": "timeout",
+              "scalar": {
+                "kind": 4,
+                "name": "timeout",
+                "type": "UInt32"
+              },
+              "type": "UInt32"
+            },
+            {
+              "kind": 34,
               "name": "connection",
               "object": {
                 "kind": 8192,
@@ -1413,6 +1435,49 @@ export const manifest: WrapManifest = {
             "scalar": {
               "kind": 4,
               "name": "signMessageBytes",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "tx",
+              "object": {
+                "kind": 8192,
+                "name": "tx",
+                "required": true,
+                "type": "Ethereum_TxRequest"
+              },
+              "required": true,
+              "type": "Ethereum_TxRequest"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "comment": "Sign a transaction and return the signature. Requires wallet signer (i.e. signer with private key)",
+          "kind": 64,
+          "name": "signTransaction",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "signTransaction",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "signTransaction",
               "required": true,
               "type": "String"
             },

@@ -264,6 +264,8 @@ export interface Ethereum_Module_Args_estimateTransactionGas {
 /* URI: "ens/wraps.eth:ethereum@1.1.0" */
 export interface Ethereum_Module_Args_awaitTransaction {
   txHash: Types.String;
+  confirmations: Types.UInt32;
+  timeout?: Types.UInt32 | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
@@ -324,6 +326,12 @@ export interface Ethereum_Module_Args_signMessage {
 /* URI: "ens/wraps.eth:ethereum@1.1.0" */
 export interface Ethereum_Module_Args_signMessageBytes {
   bytes: Types.Bytes;
+  connection?: Types.Ethereum_Connection | null;
+}
+
+/* URI: "ens/wraps.eth:ethereum@1.1.0" */
+export interface Ethereum_Module_Args_signTransaction {
+  tx: Types.Ethereum_TxRequest;
   connection?: Types.Ethereum_Connection | null;
 }
 
@@ -611,6 +619,17 @@ export const Ethereum_Module = {
     return client.invoke<Types.String>({
       uri: Uri.from("ens/wraps.eth:ethereum@1.1.0"),
       method: "signMessageBytes",
+      args: (args as unknown) as Record<string, unknown>,
+    });
+  },
+
+  signTransaction: async (
+    args: Ethereum_Module_Args_signTransaction,
+    client: CoreClient
+  ): Promise<InvokeResult<Types.String>> => {
+    return client.invoke<Types.String>({
+      uri: Uri.from("ens/wraps.eth:ethereum@1.1.0"),
+      method: "signTransaction",
       args: (args as unknown) as Record<string, unknown>,
     });
   }
