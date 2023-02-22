@@ -1,6 +1,6 @@
 {
-  "name": "@polywrap/schema-abi",
-  "description": "Polywrap ABI Parsing and Linking",
+  "name": "@polywrap/abi-types",
+  "description": "Polywrap ABI Core Types",
   "version": "0.10.0-pre.5",
   "license": "MIT",
   "repository": {
@@ -17,10 +17,6 @@
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
-  },
-  "dependencies": {
-    "@polywrap/abi-types": "0.10.0-pre.5",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.5"
   },
   "devDependencies": {
     "@polywrap/test-cases": "0.10.0-pre.5",

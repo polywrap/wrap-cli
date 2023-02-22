@@ -1,7 +1,7 @@
 import { IAbiMerger } from "./AbiMerger";
-import { ExternalImportStatement, ExternalSchemaFetcher, LocalImportStatement, LocalSchemaFetcher, SchemaParser } from "./types";
-import { Abi, ImportedAbi } from "./definitions";
 import { IAbiTreeShaker } from "./AbiTreeShaker";
+
+import { Abi, ExternalImportStatement, ExternalSchemaFetcher, ImportedAbi, LocalImportStatement, LocalSchemaFetcher, SchemaParser } from "@polywrap/abi-types"
 
 export interface IAbiImportsLinker {
   link: (rootAbi: Abi, importStatements?: {

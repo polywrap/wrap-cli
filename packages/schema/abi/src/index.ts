@@ -1,10 +1,8 @@
 import { AbiMerger } from "./AbiMerger";
-import { AbiTreeShaker } from "./AbiTreeShaker";
-import { Abi } from "./definitions";
+import { AbiTreeShaker } from "./AbiTreeShaker";;
 import { AbiImportsLinker } from "./AbiImportsLinker";
-import { ExternalSchemaFetcher, LocalSchemaFetcher, SchemaParser } from "./types";
+import { ExternalSchemaFetcher, LocalSchemaFetcher, SchemaParser, Abi } from "@polywrap/abi-types";
 
-export * from "./types";
 export * from "./AbiImportsLinker"
 export * from "./AbiMerger"
 export * from "./AbiTreeShaker"

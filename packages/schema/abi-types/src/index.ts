@@ -1,5 +1,7 @@
 import { Abi } from "./definitions";
 
+export * from "./definitions";
+
 export interface ImportStatement {
   kind: "local" | "external";
   importedTypes: string[];

@@ -1,4 +1,4 @@
-import { Abi } from "./definitions";
+import { Abi } from "@polywrap/abi-types";
 
 export interface IAbiMerger {
   merge(abis: Abi[]): Abi

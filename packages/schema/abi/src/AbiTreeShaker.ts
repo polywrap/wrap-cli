@@ -1,4 +1,4 @@
-import { Abi, AbiDefs, EnumDef, ImportRefType, ObjectDef, RefType } from "./definitions";
+import { Abi, AbiDefs, EnumDef, ImportRefType, ObjectDef, RefType } from "@polywrap/abi-types";
 import { AbiVisitor } from "./AbiVisitor";
 
 type ReferenceableDef = ObjectDef | EnumDef;
