@@ -18,43 +18,23 @@ jest.setTimeout(200000);
 describe("sanity", () => {
   test("default client config", () => {
     const client = new PolywrapClient();
-
-    expect(client.getInterfaces()).toStrictEqual([
-      {
-        interface: ExtendableUriResolver.extInterfaceUri,
-        implementations: [
-          new Uri(defaultPackages.ipfsResolver),
-          new Uri(defaultPackages.ensResolver),
-          new Uri(defaultPackages.fileSystemResolver),
-          new Uri(defaultPackages.httpResolver),
-          new Uri(defaultWrappers.ensTextRecordResolver),
-        ],
-      },
-      {
-        interface: new Uri(defaultInterfaces.logger),
-        implementations: [new Uri(defaultInterfaces.logger)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.concurrent),
-        implementations: [new Uri(defaultInterfaces.concurrent)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.ipfsHttpClient),
-        implementations: [new Uri(defaultInterfaces.ipfsHttpClient)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.fileSystem),
-        implementations: [new Uri(defaultInterfaces.fileSystem)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.http),
-        implementations: [new Uri(defaultInterfaces.http)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.ethereumProvider),
-        implementations: [new Uri(defaultInterfaces.ethereumProvider)],
-      },
-    ]);
+    expect(client.getInterfaces()).toStrictEqual({
+      [ExtendableUriResolver.extInterfaceUri.uri]: [
+        defaultPackages.ipfsResolver,
+        defaultPackages.ensResolver,
+        defaultPackages.fileSystemResolver,
+        defaultPackages.httpResolver,
+        defaultWrappers.ensTextRecordResolver,
+      ],
+      [defaultInterfaces.logger]: [defaultInterfaces.logger],
+      [defaultInterfaces.concurrent]: [defaultInterfaces.concurrent],
+      [defaultInterfaces.ipfsHttpClient]: [defaultInterfaces.ipfsHttpClient],
+      [defaultInterfaces.fileSystem]: [defaultInterfaces.fileSystem],
+      [defaultInterfaces.http]: [defaultInterfaces.http],
+      [defaultInterfaces.ethereumProvider]: [
+        defaultInterfaces.ethereumProvider,
+      ],
+    });
   });
 
   test("validate requested uri is available", async () => {

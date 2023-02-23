@@ -31,7 +31,7 @@ export const getImplementations = async (
   ): Promise<Result<undefined, WrapError>> => {
     for (const impl in impls) {
       let fullyResolvedUri: Uri;
-      let interfaceUri = Uri.from(impl);
+      const interfaceUri = Uri.from(impl);
       if (client) {
         const redirectsResult = await applyResolution(
           interfaceUri,

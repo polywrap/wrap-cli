@@ -54,9 +54,7 @@ export class PolywrapCoreClient implements CoreClient {
    *
    * @returns an array of interfaces and their registered implementations
    */
-  public getInterfaces():
-    | InterfaceImpls
-    | undefined /* $ */ {
+  public getInterfaces(): InterfaceImpls | undefined /* $ */ {
     return this._config.interfaces;
   }
 
