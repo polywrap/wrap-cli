@@ -56,40 +56,11 @@ jobs:
         working-directory: ./packages/wasm/rs
         run: cargo doc --workspace --no-deps
 
-  Should-Generate-Test-Wrappers:
-    runs-on: ubuntu-latest
-    outputs:
-      should_generate: ${{ env.should_generate }}
-      wrappers_branch: ${{ env.wrappers_branch }}
-    steps:
-      - name: Extract branch name if needed
-        id: extract
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const prDescription = context.payload.pull_request.body;
-            const regex = /\/generate-test-cases\s+(\S+)/;
-            const match = regex.exec(prDescription);
-            if (match) {
-              console.log(`Extracted text: ${match[1]}`);
-              core.exportVariable('wrappers_branch', match[1]);
-              core.exportVariable('should_generate', 'true');
-            } else {
-              core.exportVariable('should_generate', 'false');
-            }
-
-  Generate-Test-Wrappers:
-    needs: Should-Generate-Test-Wrappers
-    if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
-    uses: ./.github/workflows/generate-modified-test-wrappers.yaml
-    with:
-      cli-path: /toolchain/packages/cli
-      wasm-path: /toolchain/packages/wasm
-      harness-ref: ${{ needs.Should-Generate-Test-Wrappers.outputs.wrappers_branch }}
+  CI-WRAP-Test-Harness:
+    uses: ./.github/workflows/ci-wrap-test-harness.yaml
 
   Test-Cases:
-    needs: [Should-Generate-Test-Wrappers, Generate-Test-Wrappers]
+    needs: CI-WRAP-Test-Harness
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
@@ -123,18 +94,17 @@ jobs:
         run: yarn build
 
       - name: Get updated wrappers
-        if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        if: ${{ needs.CI-WRAP-Test-Harness.outputs.rebuild_required == 'true' }}
         uses: actions/download-artifact@v3
         id: get-wrappers
         with:
-          name: wrappers
+          name: rebuilt-wrappers
           path: ./wrappers
 
-      - if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
-        run: rm -rf packages/test-cases/cases/wrappers
-
-      - if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
-        run: mv wrappers packages/test-cases/cases
+      - if: ${{ needs.CI-WRAP-Test-Harness.outputs.rebuild_required == 'true' }}
+        run: |
+          rm -rf packages/test-cases/cases/wrappers
+          mv wrappers packages/test-cases/cases
 
       - name: Test
         run: yarn test:rust
@@ -142,7 +112,7 @@ jobs:
 
   Test-Cli:
     runs-on: ubuntu-latest
-    needs: [Should-Generate-Test-Wrappers, Generate-Test-Wrappers]
+    needs: CI-WRAP-Test-Harness
     if: ${{ always() }}
     steps:
       - name: Checkout repository
@@ -175,18 +145,17 @@ jobs:
         run: yarn build
 
       - name: Get updated wrappers
-        if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
+        if: ${{ needs.CI-WRAP-Test-Harness.outputs.rebuild_required == 'true' }}
         uses: actions/download-artifact@v3
         id: get-wrappers
         with:
-          name: wrappers
+          name: rebuilt-wrappers
           path: ./wrappers
 
-      - if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
-        run: rm -rf packages/test-cases/cases/wrappers
-
-      - if: ${{ needs.Should-Generate-Test-Wrappers.outputs.should_generate == 'true' }}
-        run: mv wrappers packages/test-cases/cases
+      - if: ${{ needs.CI-WRAP-Test-Harness.outputs.rebuild_required == 'true' }}
+        run: |
+          rm -rf packages/test-cases/cases/wrappers
+          mv wrappers packages/test-cases/cases
 
       - name: Test
         run: yarn test:rust

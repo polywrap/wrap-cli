@@ -1,29 +1,51 @@
-name: generate-wrappers
+name: CI-Wrap-Test-Harness
 
 on:
   workflow_call:
-    inputs:
-      cli-path:
-        required: false
-        type: string
-      wasm-path:
-        required: false
-        type: string
-      harness-ref:
-        required: false
-        type: string
-        default: master
+    outputs:
+      rebuild_required:
+        description: "If it is necessary to rebuild the wrap-test-harness with the latest build of the toolchain."
+        value: ${{ jobs.Rebuild-Required.outputs.required }}
 
 jobs:
-  generate_wrappers:
-    name: Generate wrappers
+  Rebuild-Required:
     runs-on: ubuntu-latest
+    outputs:
+      required: ${{ env.required }}
+      branch: ${{ env.branch }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Check changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+        with:
+          files: |
+            packages/cli/*
+            packages/schema/*
+            packages/wasm/*
+            packages/js/wasm/*
+            packages/js/asyncify/*
+            packages/js/manifests/*
+            WRAP_TEST_HARNESS
+
+      - name: Get Test Harness Branch
+        run: echo branch=$(cat WRAP_TEST_HARNESS) >> $GITHUB_ENV
+
+      - id: set-output
+        run: echo "required=${{steps.changed-files.outputs.any_changed}}" >> $GITHUB_ENV
+
+  Rebuild-Test-Wrappers:
+    runs-on: ubuntu-latest
+    needs: Rebuild-Required
+    if: ${{ needs.Rebuild-Required.outputs.required }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
         with:
           repository: polywrap/wrap-test-harness
-          ref: ${{ inputs.harness-ref }}
+          ref: ${{ needs.Rebuild-Required.outputs.branch }}
           fetch-depth: 0
 
       - name: Checkout Repository
@@ -80,12 +102,11 @@ jobs:
             cargo-${{ runner.os }}-${{ github.job }}
 
       - name: Set environment variable
-        if: ${{ inputs.cli-path }}
-        run: echo "POLYWRAP_CLI_PATH=${{ github.workspace }}/${{ inputs.cli-path }}" >> $GITHUB_ENV
+        run: echo "POLYWRAP_CLI_PATH=${{ github.workspace }}/toolchain/packages/cli" >> $GITHUB_ENV
 
       - name: Set environment variable
         if: ${{ inputs.wasm-path }}
-        run: echo "POLYWRAP_WASM_PATH=${{ github.workspace }}/${{ inputs.wasm-path }}" >> $GITHUB_ENV
+        run: echo "POLYWRAP_WASM_PATH=${{ github.workspace }}/toolchain/packages/wasm" >> $GITHUB_ENV
 
       - uses: nick-fields/retry@v2
         name: Run wrappers build
@@ -97,5 +118,5 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: wrappers
+          name: rebuilt-wrappers
           path: ./wrappers
