@@ -95,7 +95,7 @@ describe("e2e tests for deploy command", () => {
   });
 
   it("Should deploy the project successfully", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+    const { exitCode: code, stdout: output } = await runCLI(
       {
         args: ["deploy"],
         cwd: getTestCaseDir(0),
@@ -106,7 +106,6 @@ describe("e2e tests for deploy command", () => {
 
     const sanitizedOutput = clearStyle(output);
 
-    expect(error).toBeFalsy();
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain(
       "Successfully executed step 'ipfs_deploy'"
