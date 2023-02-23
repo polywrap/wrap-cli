@@ -31,24 +31,17 @@ export const getClient = () => {
         retries: { tryResolveUri: 1, getFile: 1 },
       },
     },
-    interfaces: [
-      {
-        interface: ExtendableUriResolver.extInterfaceUri,
-        implementations: [
-          Uri.from(defaultPackages.ipfsResolver),
-          Uri.from(defaultPackages.ensResolver),
-          Uri.from(defaultWrappers.ensTextRecordResolver),
-        ],
-      },
-      {
-        interface: Uri.from(defaultInterfaces.ipfsHttpClient),
-        implementations: [Uri.from(defaultInterfaces.ipfsHttpClient)],
-      },
-      {
-        interface: Uri.from(defaultInterfaces.ethereumProvider),
-        implementations: [Uri.from(defaultInterfaces.ethereumProvider)],
-      },
-    ],
+    interfaces: {
+      [ExtendableUriResolver.extInterfaceUri.uri]: [
+        defaultPackages.ipfsResolver,
+        defaultPackages.ensResolver,
+        defaultWrappers.ensTextRecordResolver,
+      ],
+      [defaultInterfaces.ipfsHttpClient]: [defaultInterfaces.ipfsHttpClient],
+      [defaultInterfaces.ethereumProvider]: [
+        defaultInterfaces.ethereumProvider,
+      ],
+    },
     resolver: RecursiveResolver.from(
       PackageToWrapperCacheResolver.from(
         [

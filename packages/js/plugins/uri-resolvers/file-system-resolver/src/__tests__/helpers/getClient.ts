@@ -14,12 +14,11 @@ import {
 
 export const getClient = () => {
   return new PolywrapClient({
-    interfaces: [
-      {
-        interface: ExtendableUriResolver.extInterfaceUri,
-        implementations: [Uri.from(defaultPackages.fileSystemResolver)],
-      },
-    ],
+    interfaces: {
+      [ExtendableUriResolver.extInterfaceUri.uri]: [
+        defaultPackages.fileSystemResolver,
+      ],
+    },
     resolver: RecursiveResolver.from(
       PackageToWrapperCacheResolver.from(
         [
