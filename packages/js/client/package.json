@@ -35,7 +35,6 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.8"
   },
   "devDependencies": {
-    "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.8",
     "@polywrap/fs-plugin-js": "~0.10.0-pre",
     "@polywrap/http-plugin-js": "~0.10.0-pre",
     "@polywrap/ipfs-plugin-js": "~0.10.0-pre",

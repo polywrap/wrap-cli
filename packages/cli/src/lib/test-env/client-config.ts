@@ -4,7 +4,6 @@ import {
   BuilderConfig,
   DefaultBundle,
 } from "@polywrap/client-config-builder-js";
-import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import {
   ethereumProviderPlugin,
@@ -33,6 +32,13 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
         fallbackProviders: DefaultBundle.ipfsProviders,
         retries: { tryResolveUri: 1, getFile: 1 },
       },
+      "proxy/testnet-ens-uri-resolver-ext": {
+        registryAddress: ensAddress
+      }
+    },
+    redirects: {
+      "proxy/testnet-ens-uri-resolver-ext":
+        "ens/wraps.eth:ens-uri-resolver-ext@1.0.0"
     },
     packages: {
       [DefaultBundle.plugins.ethereumProvider.uri.uri]: ethereumProviderPlugin({
@@ -52,15 +58,10 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
           },
         }),
       }),
-      ["plugin/ens-resolver"]: ensResolverPlugin({
-        addresses: {
-          testnet: ensAddress,
-        },
-      }),
     },
     interfaces: {
       [ExtendableUriResolver.extInterfaceUri.uri]: new Set([
-        "plugin/ens-resolver",
+        "proxy/testnet-ens-uri-resolver-ext",
         ...DefaultBundle.getConfig().interfaces[
           ExtendableUriResolver.extInterfaceUri.uri
         ],
