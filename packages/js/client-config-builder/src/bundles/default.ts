@@ -38,26 +38,22 @@ export const embeds: IDefaultEmbeds = {
   ipfsHttpClient: {
     uri: Uri.from("embed/ipfs-http-client@1.0.0"),
     package: ipfsHttpClient.wasmPackage,
-    source: Uri.from("ens/wraps.eth:ipfs-http-client@1.0.0")
+    source: Uri.from("ens/wraps.eth:ipfs-http-client@1.0.0"),
   },
   ipfsResolver: {
     uri: Uri.from("embed/ipfs-uri-resolver-ext@1.0.0"),
     package: ipfsResolver.wasmPackage,
-    source: Uri.from("ens/wraps.eth:ipfs-uri-resolver-ext@1.0.0")
+    source: Uri.from("ens/wraps.eth:ipfs-uri-resolver-ext@1.0.0"),
   },
 };
 
-type UriResolverExtBootloader = [
-  IDefaultEmbed,
-  IUriRedirect,
-  ...Uri[]
-];
+type UriResolverExtBootloader = [IDefaultEmbed, IUriRedirect, ...Uri[]];
 
 export const uriResolverExts: UriResolverExtBootloader = [
   embeds.ipfsResolver,
   {
     from: Uri.from("ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0"),
-    to: Uri.from("ipfs/Qmf2AFb2NotbDfERtc8VdfF9fsCRtk2UzRCKJ1GCY1eQzG")
+    to: Uri.from("ipfs/Qmf2AFb2NotbDfERtc8VdfF9fsCRtk2UzRCKJ1GCY1eQzG"),
   },
   Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.0"),
   Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.0"),
@@ -83,32 +79,26 @@ interface IDefaultPlugins {
 export const plugins: IDefaultPlugins = {
   logger: {
     uri: Uri.from("plugin/logger@1.0.0"),
-    plugin: loggerPlugin({ }),
-    implements: [
-      Uri.from("ens/wraps.eth:logger@1.0.0")
-    ]
+    plugin: loggerPlugin({}),
+    implements: [Uri.from("ens/wraps.eth:logger@1.0.0")],
   },
   http: {
     uri: Uri.from("plugin/http@1.1.0"),
-    plugin: httpPlugin({ }),
+    plugin: httpPlugin({}),
     implements: [
       Uri.from("ens/wraps.eth:http@1.1.0"),
       Uri.from("ens/wraps.eth:http@1.0.0"),
-    ]
+    ],
   },
   fileSystem: {
     uri: Uri.from("plugin/file-system@1.0.0"),
-    plugin: fileSystemPlugin({ }),
-    implements: [
-      Uri.from("ens/wraps.eth:file-system@1.0.0")
-    ]
+    plugin: fileSystemPlugin({}),
+    implements: [Uri.from("ens/wraps.eth:file-system@1.0.0")],
   },
   concurrent: {
     uri: Uri.from("plugin/concurrent@1.0.0"),
-    plugin: concurrentPromisePlugin({ }),
-    implements: [
-      Uri.from("ens/wraps.eth:concurrent@1.0.0")
-    ]
+    plugin: concurrentPromisePlugin({}),
+    implements: [Uri.from("ens/wraps.eth:concurrent@1.0.0")],
   },
   ethereumProvider: {
     uri: Uri.from("plugin/ethereum-provider@1.1.0"),
@@ -128,65 +118,49 @@ export const plugins: IDefaultPlugins = {
     }),
     implements: [
       Uri.from("ens/wraps.eth:ethereum-provider@1.1.0"),
-      Uri.from("ens/wraps.eth:ethereum-provider@1.0.0")
-    ]
-  }
-}
+      Uri.from("ens/wraps.eth:ethereum-provider@1.0.0"),
+    ],
+  },
+};
 
 export function getConfig(): BuilderConfig {
   const builder = new ClientConfigBuilder();
 
   // Add all embedded packages
   for (const embed of Object.values(embeds)) {
-    builder.addPackage(
-      embed.uri.uri,
-      embed.package
-    );
+    builder.addPackage(embed.uri.uri, embed.package);
 
     // Add source redirect
-    builder.addRedirect(
-      embed.source.uri,
-      embed.uri.uri
-    );
+    builder.addRedirect(embed.source.uri, embed.uri.uri);
   }
 
   // Add all plugin packages
   for (const plugin of Object.values(plugins)) {
-    builder.addPackage(
-      plugin.uri.uri,
-      plugin.plugin
-    );
+    builder.addPackage(plugin.uri.uri, plugin.plugin);
 
     // Add all interface implementations & redirects
     for (const interfaceUri of plugin.implements) {
-      builder.addInterfaceImplementation(
-        interfaceUri.uri,
-        plugin.uri.uri
-      );
-      builder.addRedirect(
-        interfaceUri.uri,
-        plugin.uri.uri
-      );
+      builder.addInterfaceImplementation(interfaceUri.uri, plugin.uri.uri);
+      builder.addRedirect(interfaceUri.uri, plugin.uri.uri);
     }
   }
 
   // Add all uri-resolver-ext interface implementations
   builder.addInterfaceImplementations(
-    ExtendableUriResolver.extInterfaceUri.uri, [
+    ExtendableUriResolver.extInterfaceUri.uri,
+    [
       uriResolverExts[0].source.uri,
       uriResolverExts[1].from.uri,
-      ...uriResolverExts.splice(2).map((x: Uri) => x.uri)
+      ...uriResolverExts.splice(2).map((x: Uri) => x.uri),
     ]
   );
 
   // Configure the ipfs-uri-resolver provider endpoints & retry counts
-  builder.addEnv(
-    embeds.ipfsResolver.uri.uri, {
-      provider: ipfsProviders[0],
-      fallbackProviders: ipfsProviders.slice(1),
-      retries: { tryResolveUri: 2, getFile: 2 },
-    }
-  );
+  builder.addEnv(embeds.ipfsResolver.uri.uri, {
+    provider: ipfsProviders[0],
+    fallbackProviders: ipfsProviders.slice(1),
+    retries: { tryResolveUri: 2, getFile: 2 },
+  });
 
   return builder.config;
 }

@@ -6,11 +6,8 @@ import { invokeWithTimeout } from "./invokeWithTimeout";
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
-import {
-  ClientConfigBuilder,
-  PolywrapClient,
-} from "@polywrap/client-js";
-import { DefaultBundle } from "@polywrap/client-config-builder-js"
+import { ClientConfigBuilder, PolywrapClient } from "@polywrap/client-js";
+import { DefaultBundle } from "@polywrap/client-config-builder-js";
 import {
   Connection,
   Connections,
@@ -63,7 +60,7 @@ class ENSPublisher implements DeployModule {
             },
             defaultNetwork: network,
           }),
-        }),
+        })
       )
       .build();
 

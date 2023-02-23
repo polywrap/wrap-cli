@@ -2,7 +2,7 @@ import { getTestEnvProviders } from "./providers";
 
 import {
   BuilderConfig,
-  DefaultBundle
+  DefaultBundle,
 } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
@@ -61,8 +61,10 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
     interfaces: {
       [ExtendableUriResolver.extInterfaceUri.uri]: new Set([
         "plugin/ens-resolver",
-        ...DefaultBundle.getConfig().interfaces[ExtendableUriResolver.extInterfaceUri.uri]
-      ])
-    }
+        ...DefaultBundle.getConfig().interfaces[
+          ExtendableUriResolver.extInterfaceUri.uri
+        ],
+      ]),
+    },
   };
 }
