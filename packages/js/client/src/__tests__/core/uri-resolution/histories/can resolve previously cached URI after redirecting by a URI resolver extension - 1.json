@@ -1,11 +1,11 @@
 [
-  "wrap://simple/$root-wrapper-dir/simple/build => RequestSynchronizerResolver => uri (wrap://file/$root-wrapper-dir/simple/build)",
+  "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => RequestSynchronizerResolver => uri (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
   [
-    "wrap://simple/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver => uri (wrap://file/$root-wrapper-dir/simple/build)",
+    "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => PackageToWrapperCacheResolver => uri (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
     [
-      "wrap://simple/$root-wrapper-dir/simple/build => UriResolverAggregator => uri (wrap://file/$root-wrapper-dir/simple/build)",
+      "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => UriResolverAggregator => uri (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
       [
-        "wrap://simple/$root-wrapper-dir/simple/build => ExtendableUriResolver => uri (wrap://file/$root-wrapper-dir/simple/build)",
+        "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ExtendableUriResolver => uri (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
         [
           "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
           [
@@ -47,30 +47,30 @@
               ]
             ]
           ],
-          "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => RequestSynchronizerResolver => wrapper (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+          "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => RequestSynchronizerResolver => wrapper (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)",
           [
-            "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => PackageToWrapperCacheResolver => wrapper (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+            "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => PackageToWrapperCacheResolver => wrapper (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)",
             [
-              "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => UriResolverAggregator => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+              "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => UriResolverAggregator => package (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)",
               [
-                "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ExtendableUriResolver => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+                "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => ExtendableUriResolver => package (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)",
                 [
                   "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
                   [
                     "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ipfs-resolver)"
                   ],
-                  "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ResolverExtension (wrap://package/ipfs-resolver) => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)"
+                  "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => ResolverExtension (wrap://package/ipfs-resolver) => package (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)"
                 ]
               ]
             ]
           ],
-          "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => RequestSynchronizerResolver => wrapper (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
+          "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => RequestSynchronizerResolver => wrapper (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
           [
-            "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
+            "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
             [
-              "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
+              "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
               [
-                "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
+                "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
                 [
                   "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
                   [
@@ -84,23 +84,23 @@
                   [
                     "wrap://package/fs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/fs-resolver)"
                   ],
-                  "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)"
+                  "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)"
                 ]
               ]
             ]
           ],
-          "wrap://simple/$root-wrapper-dir/simple/build => ResolverExtension (wrap://file/$root-wrapper-dir/simple-fs-resolver/build) => uri (wrap://file/$root-wrapper-dir/simple/build)"
+          "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ResolverExtension (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs) => uri (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)"
         ]
       ]
     ]
   ],
-  "wrap://file/$root-wrapper-dir/simple/build => RequestSynchronizerResolver => wrapper (wrap://file/$root-wrapper-dir/simple/build)",
+  "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => RequestSynchronizerResolver => wrapper (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
   [
-    "wrap://file/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple/build)",
+    "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
     [
-      "wrap://file/$root-wrapper-dir/simple/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple/build)",
+      "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
       [
-        "wrap://file/$root-wrapper-dir/simple/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple/build)",
+        "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
         [
           "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
           [
@@ -114,7 +114,7 @@
           [
             "wrap://package/fs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/fs-resolver)"
           ],
-          "wrap://file/$root-wrapper-dir/simple/build => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/simple/build)"
+          "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)"
         ]
       ]
     ]

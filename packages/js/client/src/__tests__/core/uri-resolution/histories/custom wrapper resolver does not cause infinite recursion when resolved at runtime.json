@@ -29,40 +29,15 @@
           ],
           "wrap://package/fs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/fs-resolver)",
           [
-            "wrap://package/fs-resolver => PackageToWrapperCacheResolver => wrapper (wrap://package/fs-resolver)",
-            [
-              "wrap://package/fs-resolver => UriResolverAggregator => package (wrap://package/fs-resolver)",
-              [
-                "wrap://package/fs-resolver => StaticResolver - Package (wrap://package/fs-resolver) => package (wrap://package/fs-resolver)"
-              ]
-            ]
+            "wrap://package/fs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/fs-resolver)"
           ],
           "wrap://package/http-resolver => RequestSynchronizerResolver => wrapper (wrap://package/http-resolver)",
           [
-            "wrap://package/http-resolver => PackageToWrapperCacheResolver => wrapper (wrap://package/http-resolver)",
-            [
-              "wrap://package/http-resolver => UriResolverAggregator => package (wrap://package/http-resolver)",
-              [
-                "wrap://package/http-resolver => StaticResolver - Package (wrap://package/http-resolver) => package (wrap://package/http-resolver)"
-              ]
-            ] 
+            "wrap://package/http-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/http-resolver)"
           ],
-          "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => RequestSynchronizerResolver => wrapper (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
+          "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => RequestSynchronizerResolver => wrapper (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)",
           [
-            "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => PackageToWrapperCacheResolver => wrapper (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
-            [
-              "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => UriResolverAggregator => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
-              [
-                "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ExtendableUriResolver => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)",
-                [
-                  "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
-                  [
-                    "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ipfs-resolver)"
-                  ],
-                  "wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY => ResolverExtension (wrap://package/ipfs-resolver) => package (wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY)"
-                ]
-              ]
-            ]
+            "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)"
           ],
           "wrap://ens/test.eth => ResolverExtension (wrap://ens/undefined-resolver.eth) => error (While resolving wrap://ens/test.eth with URI resolver extension wrap://ens/undefined-resolver.eth, the extension could not be fully resolved. Last tried URI is wrap://ens/undefined-resolver.eth)"
         ]

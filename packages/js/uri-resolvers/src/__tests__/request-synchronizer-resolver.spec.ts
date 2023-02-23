@@ -273,7 +273,6 @@ describe("RequestSynchronizerResolver", () => {
       const result = resolutionResults[i];
       const resolutionContext = resolutionContexts[i];
 
-      console.log(i);
       if (i === 0) {
         await expectHistory(
           resolutionContext.getHistory(),
@@ -290,7 +289,6 @@ describe("RequestSynchronizerResolver", () => {
           "synchronizer-with-error-without-cache-3"
         );
       }
-      console.log(i)
 
       expect(result.ok).toBeFalsy();
     }

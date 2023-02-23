@@ -1,11 +1,11 @@
 [
-  "wrap://file/$root-wrapper-dir/simple/build => RequestSynchronizerResolver => wrapper (wrap://file/$root-wrapper-dir/simple/build)",
+  "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => RequestSynchronizerResolver => wrapper (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
   [
-    "wrap://file/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple/build)",
+    "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
     [
-      "wrap://file/$root-wrapper-dir/simple/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple/build)",
+      "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
       [
-        "wrap://file/$root-wrapper-dir/simple/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple/build)",
+        "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
         [
           "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
           [
@@ -37,7 +37,7 @@
               ]
             ]
           ],
-          "wrap://file/$root-wrapper-dir/simple/build => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/simple/build)"
+          "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)"
         ]
       ]
     ]
