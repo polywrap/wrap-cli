@@ -554,10 +554,7 @@ export function getConfig(): BuilderConfig {
     builder.addRedirect(embed.source.uri, embed.uri.uri);
 
     // Add source implementation
-    builder.addInterfaceImplementation(
-      embed.source.uri,
-      embed.uri.uri
-    );
+    builder.addInterfaceImplementation(embed.source.uri, embed.uri.uri);
   }
 
   // Add all plugin packages
@@ -580,10 +577,7 @@ export function getConfig(): BuilderConfig {
       ...uriResolverExts.slice(2).map((x: Uri) => x.uri),
     ]
   );
-  builder.addRedirect(
-    uriResolverExts[1].from.uri,
-    uriResolverExts[1].to.uri
-  );
+  builder.addRedirect(uriResolverExts[1].from.uri, uriResolverExts[1].to.uri);
 
   // Configure the ipfs-uri-resolver provider endpoints & retry counts
   builder.addEnv(embeds.asyncIpfsResolver.source.uri, {
