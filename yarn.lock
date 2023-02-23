@@ -10,16 +10,6 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@apidevtools/json-schema-ref-parser@9.0.9":
-  version "9.0.9"
-  resolved "https://registry.yarnpkg.com/@apidevtools/json-schema-ref-parser/-/json-schema-ref-parser-9.0.9.tgz#d720f9256e3609621280584f2b47ae165359268b"
-  integrity sha512-GBD2Le9w2+lVFoc4vswGI/TjkNIZSVp7+9xPf+X3uidBfWnAeUWmquteSyt0+VCrhNMWj/FTABISQrD3Z/YA+w==
-  dependencies:
-    "@jsdevtools/ono" "^7.1.3"
-    "@types/json-schema" "^7.0.6"
-    call-me-maybe "^1.0.1"
-    js-yaml "^4.1.0"
-
 "@as-covers/assembly@^0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@as-covers/assembly/-/assembly-0.2.0.tgz#6f335834483ddf91b21da06955bd86647f9e8db9"
@@ -2172,22 +2162,6 @@
   resolved "https://registry.yarnpkg.com/@opentelemetry/semantic-conventions/-/semantic-conventions-1.6.0.tgz#ed410c9eb0070491cff9fe914246ce41f88d6f74"
   integrity sha512-aPfcBeLErM/PPiAuAbNFLN5sNbZLc3KZlar27uohllN8Zs6jJbHyJU1y7cMA6W/zuq+thkaG8mujiS+3iD/FWQ==
 
-"@polywrap/asyncify-js@0.10.0-pre.7":
-  version "0.10.0-pre.7"
-  resolved "https://registry.yarnpkg.com/@polywrap/asyncify-js/-/asyncify-js-0.10.0-pre.7.tgz#1edd34d5edd6bd1c34e6124ad1e6c6a34c2f51b7"
-  integrity sha512-egvWNt6mjfsO0TQImHIifAFmV9pn+LbHzDJhsUyLrKJo0Z9/QkMjOkMhR+NOqn6SeymCa+wFEWVbHe2YUSP8dg==
-
-"@polywrap/core-client-js@0.10.0-pre.7":
-  version "0.10.0-pre.7"
-  resolved "https://registry.yarnpkg.com/@polywrap/core-client-js/-/core-client-js-0.10.0-pre.7.tgz#7122e76dc5cc9d8e0cd36531994b84f290470dfd"
-  integrity sha512-F35gAozvJKz1cPTxrzuPpMeJFaw097T1J+rDpSSlemzGygfFv1dqCSDl3ynZqA59a9+/dBYwN9Ki/Oxrh66n6g==
-  dependencies:
-    "@polywrap/core-js" "0.10.0-pre.7"
-    "@polywrap/msgpack-js" "0.10.0-pre.7"
-    "@polywrap/result" "0.10.0-pre.7"
-    "@polywrap/tracing-js" "0.10.0-pre.7"
-    "@polywrap/wrap-manifest-types-js" "0.10.0-pre.7"
-
 "@polywrap/core-js@0.10.0-pre.5":
   version "0.10.0-pre.8"
   dependencies:
@@ -2292,68 +2266,10 @@
     "@polywrap/tracing-js" "0.10.0-pre.8"
     "@polywrap/wrap-manifest-types-js" "0.10.0-pre.8"
 
-"@polywrap/result@0.10.0-pre.7":
-  version "0.10.0-pre.7"
-  resolved "https://registry.yarnpkg.com/@polywrap/result/-/result-0.10.0-pre.7.tgz#0805b8c78f505eb4ade9c79c638f559b89ce7750"
-  integrity sha512-yxY8urJ+8sCwwdjMhZalt/5xzsGkBxbrPRIRJOQc85Qk2RRcm1khpmrFggCE2OY93gUueRXKH94Gd2biCjd+bg==
-
-"@polywrap/tracing-js@0.10.0-pre.7":
-  version "0.10.0-pre.7"
-  resolved "https://registry.yarnpkg.com/@polywrap/tracing-js/-/tracing-js-0.10.0-pre.7.tgz#8866bbc6d9cc834499d2e3460c90b80e26c5e682"
-  integrity sha512-26uVWLJ2WBwcbY1wTFaWaItktMUI/QTMwvewu2pnQhdowXsviubaxn9txM2Of0orBOiM2aZ4djBUlcVpSr5vZg==
-  dependencies:
-    "@fetsorn/opentelemetry-console-exporter" "0.0.3"
-    "@opentelemetry/api" "1.2.0"
-    "@opentelemetry/exporter-trace-otlp-http" "0.32.0"
-    "@opentelemetry/resources" "1.6.0"
-    "@opentelemetry/sdk-trace-base" "1.6.0"
-    "@opentelemetry/sdk-trace-web" "1.6.0"
-
-"@polywrap/uri-resolver-extensions-js@0.10.0-pre.7":
-  version "0.10.0-pre.7"
-  resolved "https://registry.yarnpkg.com/@polywrap/uri-resolver-extensions-js/-/uri-resolver-extensions-js-0.10.0-pre.7.tgz#e648ea74f94953ccc56e4fe04311d5335fb333a2"
-  integrity sha512-B0yxYizkCwHWM3N6Qa2CCCCNQdNbhUSx+yBCbdt0bSGSkjj+zunY6vcHIaNDs75mgMpxUhziX2hS5eLNsyWQTg==
-  dependencies:
-    "@polywrap/core-js" "0.10.0-pre.7"
-    "@polywrap/result" "0.10.0-pre.7"
-    "@polywrap/uri-resolvers-js" "0.10.0-pre.7"
-    "@polywrap/wasm-js" "0.10.0-pre.7"
-    "@polywrap/wrap-manifest-types-js" "0.10.0-pre.7"
-
-"@polywrap/uri-resolvers-js@0.10.0-pre.7":
-  version "0.10.0-pre.7"
-  resolved "https://registry.yarnpkg.com/@polywrap/uri-resolvers-js/-/uri-resolvers-js-0.10.0-pre.7.tgz#e7bace9fd8a17c8c5b80a0bd0870e7219f0376af"
-  integrity sha512-l/BJ5vuDOaXWs0vAL0V52SNY68YAgIROPoGcw6LXstajBNg1srOeZHOQFDHr4hhWD+YnEga7q+6N/iZMSEFiCA==
-  dependencies:
-    "@polywrap/core-js" "0.10.0-pre.7"
-    "@polywrap/result" "0.10.0-pre.7"
-    "@polywrap/wrap-manifest-types-js" "0.10.0-pre.7"
-
-"@polywrap/wasm-js@0.10.0-pre.7":
-  version "0.10.0-pre.7"
-  resolved "https://registry.yarnpkg.com/@polywrap/wasm-js/-/wasm-js-0.10.0-pre.7.tgz#fa44cc32883a66256b2c70ca44a74a7fa7b03caa"
-  integrity sha512-eRt2widiDd+8oY23oQ/11vNvp7Ur+0dr4Sbqp6XiWuoXEIKUFiD0MiFluhSnZp/Yo8u6dkkYpgR1DwHduJ7bcQ==
-  dependencies:
-    "@polywrap/asyncify-js" "0.10.0-pre.7"
-    "@polywrap/core-js" "0.10.0-pre.7"
-    "@polywrap/msgpack-js" "0.10.0-pre.7"
-    "@polywrap/result" "0.10.0-pre.7"
-    "@polywrap/tracing-js" "0.10.0-pre.7"
-    "@polywrap/wrap-manifest-types-js" "0.10.0-pre.7"
-
 "@polywrap/wrap-manifest-schemas@0.9.3":
   version "0.9.3"
   resolved "https://registry.yarnpkg.com/@polywrap/wrap-manifest-schemas/-/wrap-manifest-schemas-0.9.3.tgz#cdf950bb8951fba72afd8300aaf9a0a8159d7c37"
   integrity sha512-+IW/NEnJUlZKIL+UCpiTThHbvgEek6qWjkTCX1glPh6Q6sryFZ/X37sb9PkRuxiHi7ZMWBZt9hnNPhvTAdgL3A==
-
-"@polywrap/wrap-manifest-types-js@0.10.0-pre.7":
-  version "0.10.0-pre.7"
-  resolved "https://registry.yarnpkg.com/@polywrap/wrap-manifest-types-js/-/wrap-manifest-types-js-0.10.0-pre.7.tgz#adf8758cc99d52c0cba52e559dcc5d186eb0a15c"
-  integrity sha512-UlX9FOJyh1vcuKkKXwo2rvt1g4eiJQRj2BakNWA0qdrVGER1abhRyEYCbogOgiooloCHkMQ7Vqz6Lv3pLvHRsQ==
-  dependencies:
-    json-schema-ref-parser "9.0.9"
-    jsonschema "1.4.0"
-    semver "7.3.5"
 
 "@sinclair/typebox@^0.24.1":
   version "0.24.51"
@@ -7076,13 +6992,6 @@ json-parse-even-better-errors@^2.3.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/json-parse-even-better-errors/-/json-parse-even-better-errors-2.3.1.tgz#7c47805a94319928e05777405dc12e1f7a4ee02d"
   integrity sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==
-
-json-schema-ref-parser@9.0.9:
-  version "9.0.9"
-  resolved "https://registry.yarnpkg.com/json-schema-ref-parser/-/json-schema-ref-parser-9.0.9.tgz#66ea538e7450b12af342fa3d5b8458bc1e1e013f"
-  integrity sha512-qcP2lmGy+JUoQJ4DOQeLaZDqH9qSkeGCK3suKWxJXS82dg728Mn3j97azDMaOUmJAN4uCq91LdPx4K7E8F1a7Q==
-  dependencies:
-    "@apidevtools/json-schema-ref-parser" "9.0.9"
 
 json-schema-to-typescript@11.0.2:
   version "11.0.2"
