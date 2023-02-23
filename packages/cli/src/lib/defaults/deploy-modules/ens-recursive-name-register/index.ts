@@ -8,12 +8,9 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
 import {
   ClientConfigBuilder,
-  defaultInterfaces,
-  defaultIpfsProviders,
-  defaultPackages,
-  defaultWrappers,
   PolywrapClient,
 } from "@polywrap/client-js";
+import { DefaultBundle } from "@polywrap/client-config-builder-js";
 import {
   Connection,
   Connections,
@@ -57,35 +54,27 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
 
     const clientConfig = new ClientConfigBuilder()
       .addDefaults()
-      .add({
-        envs: {
-          [defaultPackages.ipfsResolver]: {
-            provider: defaultIpfsProviders[0],
-            fallbackProviders: defaultIpfsProviders.slice(1),
-            retries: { tryResolveUri: 2, getFile: 2 },
-          },
-        },
-        packages: {
-          [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
-            connections: new Connections({
-              networks: {
-                [network]: new Connection({
-                  provider: config.provider,
-                  signer,
-                }),
-              },
-              defaultNetwork: network,
-            }),
+      .addPackage(
+        DefaultBundle.plugins.ethereumProvider.uri.uri,
+        ethereumProviderPlugin({
+          connections: new Connections({
+            networks: {
+              [network]: new Connection({
+                provider: config.provider,
+                signer,
+              }),
+            },
+            defaultNetwork: network,
           }),
-        },
-      })
+        }),
+      )
       .build();
 
     const client = new PolywrapClient(clientConfig);
 
     const signerAddress = await client.invoke<string>({
       method: "getSignerAddress",
-      uri: defaultWrappers.ethereum,
+      uri: "ens/wraps.eth:ethereum@1.0.0",
       args: {
         connection: {
           networkNameOrChainId: network,
@@ -101,7 +90,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
       { tx: { hash: string }; didRegister: boolean }[]
     >({
       method: "registerDomainAndSubdomainsRecursively",
-      uri: defaultWrappers.ens,
+      uri: "ens/wraps.eth:ens@1.0.0",
       args: {
         domain: ensDomain,
         owner: signerAddress.value,
@@ -128,7 +117,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
         client,
         {
           method: "awaitTransaction",
-          uri: Uri.from(defaultWrappers.ethereum),
+          uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
           args: {
             txHash: registerData.value[0].tx.hash,
             connection: {

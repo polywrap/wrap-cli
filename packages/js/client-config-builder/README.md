@@ -443,13 +443,18 @@ export const ipfsProviders: string[] = [
   "https://ipfs.io",
 ];
 
-interface IWrapPackageEmbed {
+interface IDefaultEmbed {
   uri: Uri;
   package: IWrapPackage;
   source: Uri;
 }
 
-export const embeds: Record<string, IWrapPackageEmbed> = {
+interface IDefaultEmbeds {
+  ipfsHttpClient: IDefaultEmbed;
+  ipfsResolver: IDefaultEmbed;
+}
+
+export const embeds: IDefaultEmbeds = {
   ipfsHttpClient: {
     uri: Uri.from("embed/ipfs-http-client@1.0.0"),
     package: ipfsHttpClient.wasmPackage,
@@ -463,7 +468,7 @@ export const embeds: Record<string, IWrapPackageEmbed> = {
 };
 
 type UriResolverExtBootloader = [
-  IWrapPackageEmbed,
+  IDefaultEmbed,
   IUriRedirect,
   ...Uri[]
 ];
@@ -481,11 +486,21 @@ export const uriResolverExts: UriResolverExtBootloader = [
   Uri.from("ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.0"),
 ];
 
-export const plugins: Record<string, {
+interface IDefaultPlugin {
   uri: Uri;
   plugin: PluginPackage<unknown>;
   implements: Uri[];
-}> = {
+}
+
+interface IDefaultPlugins {
+  logger: IDefaultPlugin;
+  http: IDefaultPlugin;
+  fileSystem: IDefaultPlugin;
+  concurrent: IDefaultPlugin;
+  ethereumProvider: IDefaultPlugin;
+}
+
+export const plugins: IDefaultPlugins = {
   logger: {
     uri: Uri.from("plugin/logger@1.0.0"),
     plugin: loggerPlugin({ }),
@@ -538,7 +553,7 @@ export const plugins: Record<string, {
   }
 }
 
-export function getDefaultConfig(): BuilderConfig {
+export function getConfig(): BuilderConfig {
   const builder = new ClientConfigBuilder();
 
   // Add all embedded packages

@@ -2,11 +2,10 @@ import { getTestEnvProviders } from "./providers";
 
 import {
   BuilderConfig,
-  defaultInterfaces,
-  defaultIpfsProviders,
-  defaultPackages,
+  DefaultBundle
 } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
+import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import {
   ethereumProviderPlugin,
   Connections,
@@ -29,14 +28,14 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
 
   return {
     envs: {
-      [defaultPackages.ipfsResolver]: {
+      [DefaultBundle.uriResolverExts[0].uri.uri]: {
         provider: ipfsProvider,
-        fallbackProviders: defaultIpfsProviders,
+        fallbackProviders: DefaultBundle.ipfsProviders,
         retries: { tryResolveUri: 1, getFile: 1 },
       },
     },
     packages: {
-      [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
+      [DefaultBundle.plugins.ethereumProvider.uri.uri]: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({
@@ -53,11 +52,17 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
           },
         }),
       }),
-      [defaultPackages.ensResolver]: ensResolverPlugin({
+      ["plugin/ens-resolver"]: ensResolverPlugin({
         addresses: {
           testnet: ensAddress,
         },
       }),
     },
+    interfaces: {
+      [ExtendableUriResolver.extInterfaceUri.uri]: new Set([
+        "plugin/ens-resolver",
+        ...DefaultBundle.getConfig().interfaces[ExtendableUriResolver.extInterfaceUri.uri]
+      ])
+    }
   };
 }
