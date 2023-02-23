@@ -68,7 +68,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
 ```ts
   /** The default interface uri to which implementations should be registered */
   public static extInterfaceUri: Uri = new Uri(
-    "wrap://ens/uri-resolver.core.polywrap.eth"
+    "wrap://ens/wraps.eth:uri-resolver-ext@1.0.0"
   );
 ```
 
