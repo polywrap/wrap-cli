@@ -8,13 +8,13 @@ import { StaticResolver } from "../static";
 
 describe("redirects", () => {
   it("sanity - UriResolver", async () => {
-    const uri1 = "wrap://ens/some-uri1.eth";
-    const uri2 = "wrap://ens/some-uri2.eth";
+    const uri1 = Uri.from("wrap://ens/some-uri1.eth");
+    const uri2 = Uri.from("wrap://ens/some-uri2.eth");
     const resolver = UriResolver.from([
       { from: uri1, to: uri2 }
     ]);
 
-    const redirectsResult = await resolver.tryResolveUri(new Uri(uri1), {} as CoreClient, new UriResolutionContext());
+    const redirectsResult = await resolver.tryResolveUri(uri1, {} as CoreClient, new UriResolutionContext());
 
     if (!redirectsResult.ok) {
       fail(redirectsResult.error);
@@ -25,17 +25,17 @@ describe("redirects", () => {
       fail();
     }
 
-    expect(redirectsResult.value.uri.uri).toEqual(uri2);
+    expect(redirectsResult.value.uri.uri).toEqual(uri2.uri);
   });
 
   it("sanity - StaticResolver", async () => {
-    const uri1 = "wrap://ens/some-uri1.eth";
-    const uri2 = "wrap://ens/some-uri2.eth";
+    const uri1 = Uri.from("wrap://ens/some-uri1.eth");
+    const uri2 = Uri.from("wrap://ens/some-uri2.eth");
     const resolver = StaticResolver.from([
       { from: uri1, to: uri2 }
     ]);
 
-    const redirectsResult = await resolver.tryResolveUri(new Uri(uri1), {} as CoreClient, new UriResolutionContext());
+    const redirectsResult = await resolver.tryResolveUri(uri1, {} as CoreClient, new UriResolutionContext());
 
     if (!redirectsResult.ok) {
       fail(redirectsResult.error);
@@ -46,26 +46,26 @@ describe("redirects", () => {
       fail();
     }
 
-    expect(redirectsResult.value.uri.uri).toEqual(uri2);
+    expect(redirectsResult.value.uri.uri).toEqual(uri2.uri);
   });
 
   it("works with the redirect stack overrides - RecursiveResolver", async () => {
-    const uri1 = "wrap://ens/some-uri1.eth";
-    const uri2 = "wrap://ens/some-uri2.eth";
-    const uri3 = "wrap://ens/some-uri3.eth";
+    const uri1 = Uri.from("wrap://ens/some-uri1.eth");
+    const uri2 = Uri.from("wrap://ens/some-uri2.eth");
+    const uri3 = Uri.from("wrap://ens/some-uri3.eth");
 
     const resolver = RecursiveResolver.from([
       {
-        from: new Uri(uri1),
-        to: new Uri(uri2)
+        from: uri1,
+        to: uri2
       },
       {
-        from: new Uri(uri2),
-        to: new Uri(uri3)
+        from: uri2,
+        to: uri3
       }
     ]);
 
-    const redirectsResult = await resolver.tryResolveUri(new Uri(uri1), {} as CoreClient, new UriResolutionContext());
+    const redirectsResult = await resolver.tryResolveUri(uri1, {} as CoreClient, new UriResolutionContext());
 
     if (!redirectsResult.ok) {
       fail(redirectsResult.error);
@@ -76,28 +76,28 @@ describe("redirects", () => {
       fail();
     }
 
-    expect(redirectsResult.value.uri.uri).toEqual(uri3);
+    expect(redirectsResult.value.uri.uri).toEqual(uri3.uri);
   });
 
   it("works with the redirect stack overrides - RecursiveResolver with StaticResolver", async () => {
-    const uri1 = "wrap://ens/some-uri1.eth";
-    const uri2 = "wrap://ens/some-uri2.eth";
-    const uri3 = "wrap://ens/some-uri3.eth";
+    const uri1 = Uri.from("wrap://ens/some-uri1.eth");
+    const uri2 = Uri.from("wrap://ens/some-uri2.eth");
+    const uri3 = Uri.from("wrap://ens/some-uri3.eth");
 
     const resolver = RecursiveResolver.from(
       StaticResolver.from([
         {
-          from: new Uri(uri1),
-          to: new Uri(uri2)
+          from: uri1,
+          to: uri2
         },
         {
-          from: new Uri(uri2),
-          to: new Uri(uri3)
+          from: uri2,
+          to: uri3
         }
       ])
     );
 
-    const redirectsResult = await resolver.tryResolveUri(new Uri(uri1), {} as CoreClient, new UriResolutionContext());
+    const redirectsResult = await resolver.tryResolveUri(uri1, {} as CoreClient, new UriResolutionContext());
 
     if (!redirectsResult.ok) {
       fail(redirectsResult.error);
@@ -108,25 +108,25 @@ describe("redirects", () => {
       fail();
     }
 
-    expect(redirectsResult.value.uri.uri).toEqual(uri3);
+    expect(redirectsResult.value.uri.uri).toEqual(uri3.uri);
   });
 
   it("can not redirect to self - RecursiveResolver", async () => {
-    const uri1 = "wrap://ens/some-uri1.eth";
-    const uri2 = "wrap://ens/some-uri2.eth";
+    const uri1 = Uri.from("wrap://ens/some-uri1.eth");
+    const uri2 = Uri.from("wrap://ens/some-uri2.eth");
 
     const resolver = RecursiveResolver.from([
       {
-        from: new Uri(uri1),
-        to: new Uri(uri2)
+        from: uri1,
+        to: uri2
       },
       {
-        from: new Uri(uri2),
-        to: new Uri(uri1)
+        from: uri2,
+        to: uri1
       },
     ]);
 
-    const redirectsResult = await resolver.tryResolveUri(new Uri(uri1), {} as CoreClient, new UriResolutionContext());
+    const redirectsResult = await resolver.tryResolveUri(uri1, {} as CoreClient, new UriResolutionContext());
 
     if (redirectsResult.ok) {
       console.log(`Expected error`, redirectsResult.value);
@@ -138,23 +138,23 @@ describe("redirects", () => {
 
 
   it("can not redirect to self - RecursiveResolver with StaticResolver", async () => {
-    const uri1 = "wrap://ens/some-uri1.eth";
-    const uri2 = "wrap://ens/some-uri2.eth";
+    const uri1 = Uri.from("wrap://ens/some-uri1.eth");
+    const uri2 = Uri.from("wrap://ens/some-uri2.eth");
 
     const resolver = RecursiveResolver.from(
       StaticResolver.from([
         {
-          from: new Uri(uri1),
-          to: new Uri(uri2)
+          from: uri1,
+          to: uri2
         },
         {
-          from: new Uri(uri2),
-          to: new Uri(uri1)
+          from: uri2,
+          to: uri1
         },
       ]
     ));
 
-    const redirectsResult = await resolver.tryResolveUri(new Uri(uri1), {} as CoreClient, new UriResolutionContext());
+    const redirectsResult = await resolver.tryResolveUri(uri1, {} as CoreClient, new UriResolutionContext());
 
     if (redirectsResult.ok) {
       console.log(`Expected error`, redirectsResult.value);

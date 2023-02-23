@@ -91,4 +91,27 @@ $snippet: StaticResolver-tryResolveUri
 ```ts
 $snippet: StaticResolverLike
 ```
+
+## RequestSynchronizerResolver
+```ts
+$snippet: RequestSynchronizerResolver
+```
+
+### constructor
+```ts
+$snippet: RequestSynchronizerResolver-constructor
+```
+
+### Methods
+
+#### from
+```ts
+$snippet: RequestSynchronizerResolver-from
+```
+
+#### tryResolveUri
+```ts
+$snippet: RequestSynchronizerResolver-tryResolveUri
+```
+
 $end
