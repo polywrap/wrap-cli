@@ -22,8 +22,10 @@ jobs:
         uses: tj-actions/changed-files@v35
         with:
           files: |
-            packages/cli/*
-            packages/schema/*
+            packages/cli/src/commands/build.ts
+            packages/cli/src/lib/Compiler.ts
+            packages/cli/src/lib/defaults/build-strategies/*
+            packages/schema/bind/*
             packages/wasm/*
             packages/js/wasm/*
             packages/js/asyncify/*
