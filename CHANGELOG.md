@@ -25,6 +25,9 @@
   * The Polywrap Client with `noDefaults: true`, no longer accepts a `plugins` field. It is expected that devs using this option will manually configure their own resolver.
   * removed `getPlugins` and `getPluginByUri`. Will add `getWrapper`, `getWrapperByUri`, `getPackage`, `getPackageByUri`, in a follow up PR.
   * `createPolywrapClient` function has been deprecated.
+* [PR-1534](https://github.com/polywrap/toolchain/pull/1534) **Remove legacy config types from PolywrapClient**
+  * The `PolywrapClient`'s constructor now accepts only an optional `CoreClientConfig` type as its configuration object.
+  * It is now advised to use the `ClientConfigBuilder` found in `@polywrap/client-config-builder-js` and exported by `@polywrap/client-js` in order to set up their client configurations.
 
 **`@polywrap/client-config-builder-js`:**
 * [PR-1480](https://github.com/polywrap/toolchain/pull/1480) **ClientConfigBuilder-specific `BuilderConfig` Object**
