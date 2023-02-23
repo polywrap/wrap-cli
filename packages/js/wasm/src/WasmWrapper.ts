@@ -50,10 +50,11 @@ export class WasmWrapper implements Wrapper {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
 
   private _wasmModule?: Uint8Array;
+  private _wasmMemory?: WebAssembly.Memory;
 
   constructor(
     private _manifest: WrapManifest,
-    private _fileReader: IFileReader
+    private _fileReader: IFileReader,
   ) {}
 
   static async from(
@@ -189,13 +190,13 @@ export class WasmWrapper implements Wrapper {
         });
       };
 
-      const memory = AsyncWasmInstance.createMemory({ module: wasm });
+      this._wasmMemory = this._wasmMemory || AsyncWasmInstance.createMemory({ module: wasm });
       const instance = await AsyncWasmInstance.createInstance({
         module: wasm,
         imports: createImports({
           state,
           client,
-          memory,
+          memory: this._wasmMemory,
           abortWithInvokeAborted,
           abortWithInternalError,
         }),
@@ -209,6 +210,9 @@ export class WasmWrapper implements Wrapper {
         state.args.byteLength,
         state.env.byteLength
       );
+
+      // Clear memory
+      new Uint8Array(this._wasmMemory.buffer).fill(0);
 
       const invokeResult = this._processInvokeResult(state, result);
 

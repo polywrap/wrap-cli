@@ -92,6 +92,8 @@ export class AsyncWasmInstance {
       );
     }
 
+    console.log("alloc-memory-pages: ", memoryInitalLimits);
+
     return new WebAssembly.Memory({ initial: memoryInitalLimits });
   }
 

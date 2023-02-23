@@ -101,6 +101,7 @@ export class PackageToWrapperCacheResolver<TError>
         const wrapPackage = result.value.package;
         const resolutionPath: Uri[] = subContext.getResolutionPath();
 
+        console.log("CACHE IT", uri.uri);
         const createResult = await wrapPackage.createWrapper({
           noValidate: this._options?.deserializeManifestOptions?.noValidate,
         });
