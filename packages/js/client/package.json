@@ -43,7 +43,6 @@
     "@polywrap/http-resolver-plugin-js": "0.10.0-pre.8",
     "@polywrap/ipfs-plugin-js": "~0.10.0-pre",
     "@polywrap/ipfs-resolver-plugin-js": "~0.10.0-pre",
-    "@polywrap/plugin-js": "~0.10.0-pre",
     "@polywrap/test-cases": "0.10.0-pre.8",
     "@polywrap/test-env-js": "0.10.0-pre.8",
     "@types/jest": "26.0.8",

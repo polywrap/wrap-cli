@@ -220,7 +220,7 @@ export class Infra {
 
   private _writeFileToCacheFromAbsPath(
     absPath: string,
-    data: unknown,
+    data: string | NodeJS.ArrayBufferView,
     options?: fs.WriteFileOptions
   ) {
     this._cache.writeCacheFile(

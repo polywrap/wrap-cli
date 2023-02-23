@@ -1,84 +1,55 @@
-# Polywrap Core Development Guidelines
+# Toolchain Development Guidelines
 
-Guidelines for the core development contributors on the Polywrap monorepo written to have a better understanding of Polywrap progress and coordination. Recommended read for new developers as part of onboarding. 
+Guidelines for polywrap toolchain contributors. Have questions? https://discord.polywrap.io
 
-## Issues management
+## GitHub Issues
 
-All planned features, bugs, and enhancements are represented as a Github issue with appropriate description, examples, and issue labels.  
-
-Once created, issues can be brought into the [repository's "project"](https://github.com/polywrap/monorepo/projects/1), an automated kanban board consisting of columns that mark the issue status and can be *Unassigned*, *Assigned*, *In progress* and *Done*. *Backlog* column is used for keeping the available issues that are up for grabs and also when creating new tasks such as features, bug fixes or ideas.  
-
-![Github project board](https://i.imgur.com/aLWa5HQ.png)
-
-Milestones in the Github projects are oriented to specific goals such as releases (bigger or smaller) as the progress can be measured for an estimate of time left until release.
-
-### Issue development lifecycle
-
-When taking an issue to be resolved, one should:
-
-* Set assigned user in the issue
-* Set "in progress" status in Github project
-
-Once development of that issue is finished, a pull request (PR) should be created, detailing what the intended changes made were, so that others may properly evaluate with full context.
-
-Before creating the pull request contributor should make sure that changes will pass **[CI actions](https://github.com/polywrap/monorepo/blob/origin/.github/workflows/js-ci.yaml)** which include:
-
-* linting
-* full re-build
-* automated tests
-
-All relevant contributors will automatically be set as reviewers. At least two people should approve the PR in order to merge it.
-
-Please feel free to "socialize" the PR within our [Discord](https://discord.polywrap.io/) to gain other developer's attention. If things sit for a while, it's most likely that it has been off other people's radars, and it's okay to bring it up again so that it may be addressed.
+All planned features, bugs, and enhancements are represented as [GitHub issues](https://github.com/polywrap/toolchain/issues). Once created, issues can be brought into the ["Polywarp Release Roadmap"](https://github.com/orgs/polywrap/projects/6), where we track all in-progress roadmaps. [Milestones in GitHub repositories](https://github.com/polywrap/toolchain/milestones) are used to organize issues into [individual roadmaps](https://github.com/orgs/polywrap/projects/6/views/13).
 
 ## Testing
 
-In Polywrap monorepo currently unit tests can be found in almost all packages and **covering new code with unit tests is mandatory**. Unit tests can be found in the `__tests__` directory of the each package source. Additionally some re-usable test inputs and outputs can be found in the [test-cases directory](https://github.com/polywrap/monorepo/tree/origin/packages/test-cases).
+Tests for toolchain packages can be found in the can be found in the individual packages. Additionally there are various reusable integration test cases defined in the [test-cases directory](https://github.com/polywrap/toolchain/tree/origin/packages/test-cases).
 
-End to end (e2e) tests are recommended when complete integration is being tested like for CLI commands or a certain code is working with an external interface like an HTTP plugin. An example of such tests are [HTTP plugin e2e tests](https://github.com/polywrap/monorepo/blob/origin/packages/js/plugins/http/src/__tests__/e2e/e2e.spec.ts) and [CLI e2e tests](https://github.com/polywrap/monorepo/tree/origin/packages/cli/src/__tests__/e2e).
+### Dependencies
 
-### Additional dependencies for testing
+Some tests rely on additional system-wide dependencies being installed. These include:
+- [`docker buildx`](https://docs.docker.com/engine/reference/commandline/buildx/)
+- [`cue`](https://cuelang.org)
 
-Some tests rely on validating `stdout` for which Cue is used. If you need to run a full test suite, you will have to install Cue.
+### WRAP Integration Testing
+In the test-cases directory, you can find the `wrappers` folder, which is auto generated from the releases of the [WRAP Test Harness](https://github.com/polywrap/wrap-test-harness). The WRAP Test Harness is used to ensure the toolchain is compliant with the various WRAP versions it is supposed to support.
 
-You can install Cue by following the instructions found [here](https://cuelang.org/docs/install/).
-
-In the test-cases directory, you can find the `wrappers` folder, which is auto generated from the releases of the
-[WASM Test Harness](https://github.com/polywrap/wasm-test-harness), check the `fetchWrappers` function from the [test-cases package](./packages/test-cases/index.ts). These tests are used mostly for client tests, if you would like to
-modify them, [follow the development guide of the wasm test harness](https://github.com/polywrap/wasm-test-harness#build--contribute).
-
-If any PR modifies `packages/wasm`, `packages/cli` or `packages/schema`, it will try to generate wrappers on CI based on the changes
-introduced on the PR (You can check the workflow in detail [here](https://github.com/polywrap/wasm-test-harness/blob/master/.github/workflows/generate-wrappers.yaml#L14)).
-For this, a new branch in the Test Harness need to be opened **with the same name** of the base branch from the PR
+If your changes within the toolchain repo include breaking changes to the wrap developer experience, please modify the WRAP Test Harness accordingly by [following the development guidelines written here](https://github.com/polywrap/wrap-test-harness#build--contribute).
 
 ## Branches
 
-Currently, there are 2 active branches with configured branch policies:
-* **Release** (ex. `origin`)
-   * 1 or more [publishers](./github/PUBLISHERS) must approve.
-* **Dev** (ex. `origin-dev`)
-   * 2 or more developers working on the project must approve. 
+The toolchain repo organizes branches in the following ways:
+* **Release**
+   * 1 or more [publishers](./.github/PUBLISHERS) must approve
+   * ex: `origin`, `origin-0.9`, etc
+* **Dev**
+   * 2 or more developers working on the project must approve
+   * ex: `origin-dev`, `origin-0.9-dev`, etc
+
+## Changelog
+
+For each new release, a new entry in the [CHANGELOG.md](CHANGELOG) file should be added manually listing the changes done like new features or bug fixing.
 
 ## Releases
 
-Polywrap rolling releases can be found on [NPM](https://www.npmjs.com/org/polywrap) and [Github](https://github.com/polywrap/monorepo/releases).
+The toolchain's releases can be found on [NPM](https://www.npmjs.com/org/polywrap) and [Github](https://github.com/polywrap/monorepo/releases).
 
-Currently only the people listed in the [.github/PUBLISHERS](./github/PUBLISHERS) file can make releases using the CI (Github actions) flow. To make a new release one should:
+Only the people listed in the [.github/PUBLISHERS](./github/PUBLISHERS) file can initiate releases. To make a new release, a publisher should:
 
 1. Update the [VERSION](VERSION) and [CHANGELOG](CHANGELOG) files.
-2. Make a pull request from the ${release}-dev branch into the ${release} branch
-3. After the pull request is merged, make a comment on the pull request with content: `/workflows/release-pr`
-4. The Polywrap build bot will create a new release pull request for the ${release branch} and comment a link to it on the pull request it was commented on.
-5. In this new release pull request, copy & paste the changelog into the pull request's description section. This is what will be used for the Github release notes.
-6. Add the "Polywrap-Release" Github tag to the pull request.
-7. If this new pull request is merged, the release workflow will be run, publishing a new git tag, git release and all NPM packages.
+2. Make a pull request from the ${release}-dev branch into the ${release} branch, appending to the PR's title `/workflows/release-pr`
+3. The [`polywrap-build-bot`](https://github.com/polywrap-build-bot) will prepare a new release pull request for the ${release} branch, and comment a link to it on the pull request it was initiated from.
+4. In this new release pull request, copy & paste the changelog into the pull request's description section. This is what will be used for the Github release notes.
+5. Add the "Polywrap-Release" Github tag to the pull request.
+6. If this new pull request is merged, the release workflow will be run, publishing a new git tag, git release, and all packages.
 
-### Changelog
+## Code Owners
 
-For each new release a new log in the [CHANGELOG.md](CHANGELOG) file should be added manually listing the changes done like new features or bug fixing.
-
-## Code ownership
-
-A [CODEOWNERS file](./github/CODEOWNERS) is used to define individuals or teams that are responsible for code in a repository. Code owners are automatically requested for review when someone opens a pull request.
+The [CODEOWNERS](./.github/CODEOWNERS) file is used to define individuals or teams that are responsible for code in the repository. Code owners are automatically requested for review when someone opens a pull request.
 
 Code owners can be defined using a certain [syntax](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax) for a project globally or for a certain part of the code (directory) so only people that have worked on certain parts are really the defined code owners.
