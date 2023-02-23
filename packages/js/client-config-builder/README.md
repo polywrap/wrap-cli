@@ -477,7 +477,7 @@ export const uriResolverExts: UriResolverExtBootloader = [
   },
   Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.0"),
   Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:ens-contenthash-uri-resolver-ext@1.0.0"),
+  Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.0"),
   Uri.from("ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0"),
   Uri.from("ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.0"),
 ];
