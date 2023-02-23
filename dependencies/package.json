@@ -3,7 +3,6 @@
     "polywrap": "latest"
   },
   "resolutions": {
-    "colors": "1.4.0",
-    "json-schema-ref-parser": "APIDevTools/json-schema-ref-parser#da3f4e6d9680c910b62d706af0d468e45b300448"
+    "colors": "1.4.0"
   }
 }
