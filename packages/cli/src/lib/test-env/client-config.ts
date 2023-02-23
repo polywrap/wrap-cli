@@ -6,17 +6,15 @@ import {
   defaultIpfsProviders,
   defaultPackages,
 } from "@polywrap/client-config-builder-js";
-import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import {
   ethereumProviderPlugin,
   Connections,
   Connection,
 } from "ethereum-provider-js";
 import { ensAddresses } from "@polywrap/test-env-js";
+import { defaultWrappers } from "@polywrap/client-js";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
-  // TODO: move this into its own package, since it's being used everywhere?
-  // maybe have it exported from test-env.
   const providers = getTestEnvProviders();
   const ipfsProvider = providers.ipfsProvider;
   const ethProvider = providers.ethProvider;
@@ -33,6 +31,9 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
         provider: ipfsProvider,
         fallbackProviders: defaultIpfsProviders,
         retries: { tryResolveUri: 1, getFile: 1 },
+      },
+      [defaultWrappers.ensContenthashResolver]: {
+        registryAddress: ensAddress,
       },
     },
     packages: {
@@ -52,11 +53,6 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
             }),
           },
         }),
-      }),
-      [defaultPackages.ensResolver]: ensResolverPlugin({
-        addresses: {
-          testnet: ensAddress,
-        },
       }),
     },
   };

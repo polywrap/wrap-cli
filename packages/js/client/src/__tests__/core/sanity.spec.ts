@@ -24,9 +24,10 @@ describe("sanity", () => {
         interface: ExtendableUriResolver.extInterfaceUri,
         implementations: [
           new Uri(defaultPackages.ipfsResolver),
-          new Uri(defaultPackages.ensResolver),
-          new Uri(defaultPackages.fileSystemResolver),
-          new Uri(defaultPackages.httpResolver),
+          new Uri(defaultWrappers.ensContenthashResolver),
+          new Uri(defaultWrappers.ensIpfsContenthashResolver),
+          new Uri(defaultWrappers.fileSystemResolver),
+          new Uri(defaultWrappers.httpResolver),
           new Uri(defaultWrappers.ensTextRecordResolver),
         ],
       },

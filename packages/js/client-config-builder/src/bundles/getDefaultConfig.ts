@@ -8,12 +8,9 @@ import {
   Connection,
   Connections,
 } from "ethereum-provider-js";
-import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
-import { httpResolverPlugin } from "@polywrap/http-resolver-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
-import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
@@ -32,16 +29,20 @@ export const defaultWrappers = {
   sha3: "wrap://ens/wraps.eth:sha3@1.0.0",
   uts46: "wrap://ens/wraps.eth:uts46@1.0.0",
   graphNode: "wrap://ens/wraps.eth:graph-node@1.0.0",
+  ensContenthashResolver:
+    "wrap://ipfs/QmUdSEV7BHz1JxP655xB6tTVCM7x3nauWd7RZDE2i6priY",
+  ensIpfsContenthashResolver:
+    "wrap://ipfs/QmQW5rw8W9zreuhZwNEAsX7F3dC5ireiHaNxPFuEk6tu9p",
   ensTextRecordResolver:
-    "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p",
+    "wrap://ipfs/Qmf2AFb2NotbDfERtc8VdfF9fsCRtk2UzRCKJ1GCY1eQzG",
+  fileSystemResolver:
+    "wrap://ipfs/QmeJCV6poxpGFyrBuHp68CSbF7qiuB4wPgkhxcSQDSSnir",
+  httpResolver: "wrap://ipfs/QmRg4ZQytxgdEyHkteJVXHHphG8DtPHHg8vhbueAQDrhha",
   ethereum: "wrap://ens/wraps.eth:ethereum@1.0.0",
   ens: "wrap://ens/wraps.eth:ens@1.0.0",
 };
 
 export const defaultPackages = {
-  ensResolver: "wrap://package/ens-resolver",
-  httpResolver: "wrap://package/http-resolver",
-  fileSystemResolver: "wrap://package/fs-resolver",
   ipfsResolver: "wrap://package/ipfs-resolver",
 };
 
@@ -58,8 +59,6 @@ export const getDefaultPackages = (): Record<string, IWrapPackage> => {
   return {
     [defaultInterfaces.ipfsHttpClient]: defaultEmbeddedPackages.ipfsHttpClient(),
     [defaultPackages.ipfsResolver]: defaultEmbeddedPackages.ipfsResolver(),
-    // ENS is required for resolving domain to IPFS hashes
-    [defaultPackages.ensResolver]: ensResolverPlugin({}),
     // Ethereum is required for resolving domain to Ethereum addresses
     [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
       connections: new Connections({
@@ -76,10 +75,8 @@ export const getDefaultPackages = (): Record<string, IWrapPackage> => {
       }),
     }),
     [defaultInterfaces.http]: httpPlugin({}),
-    [defaultPackages.httpResolver]: httpResolverPlugin({}),
     [defaultInterfaces.logger]: loggerPlugin({}) as IWrapPackage,
     [defaultInterfaces.fileSystem]: fileSystemPlugin({}),
-    [defaultPackages.fileSystemResolver]: fileSystemResolverPlugin({}),
     [defaultInterfaces.concurrent]: concurrentPromisePlugin({}),
   };
 };
@@ -95,9 +92,10 @@ export const getDefaultConfig = (): BuilderConfig => ({
   interfaces: {
     [ExtendableUriResolver.extInterfaceUri.uri]: new Set([
       defaultPackages.ipfsResolver,
-      defaultPackages.ensResolver,
-      defaultPackages.fileSystemResolver,
-      defaultPackages.httpResolver,
+      defaultWrappers.ensContenthashResolver,
+      defaultWrappers.ensIpfsContenthashResolver,
+      defaultWrappers.fileSystemResolver,
+      defaultWrappers.httpResolver,
       defaultWrappers.ensTextRecordResolver,
     ]),
     [defaultInterfaces.logger]: new Set([defaultInterfaces.logger]),
