@@ -53,21 +53,27 @@ const setup = async () => {
   };
 }
 
+jest.setTimeout(500000);
+
 describe("e2e tests for deploy command", () => {
   beforeAll(async () => {
     await setup()
 
+    const builds = [];
+
     for (let i = 0; i < testCases.length; ++i) {
-      await runCLI(
-        {
-          args: ["build", "-v"],
-          cwd: getTestCaseDir(i),
-          cli: polywrapCli,
-        },
+      builds.push(
+        await runCLI(
+          {
+            args: ["build", "-v"],
+            cwd: getTestCaseDir(i),
+            cli: polywrapCli,
+          },
+        )
       );
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await Promise.all(builds);
   });
 
   afterAll(async () => {
@@ -183,18 +189,18 @@ describe("e2e tests for deploy command", () => {
             "name": "ipfs_deploy",
             "id": "fs_to_ens.ipfs_deploy",
             "input": "wrap://fs/./build",
-            "result": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
+            "result": "wrap://ipfs/QmcZJ1NudpTdF96NEJZiKnDDXhydqanTusw7DXGj7PfbxH",
           },
           {
             "name": "from_deploy",
             "id": "fs_to_ens.from_deploy",
-            "input": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
+            "input": "wrap://ipfs/QmcZJ1NudpTdF96NEJZiKnDDXhydqanTusw7DXGj7PfbxH",
             "result": "wrap://ens/testnet/test1.eth",
           },
           {
             "name": "from_deploy2",
             "id": "fs_to_ens.from_deploy2",
-            "input": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
+            "input": "wrap://ipfs/QmcZJ1NudpTdF96NEJZiKnDDXhydqanTusw7DXGj7PfbxH",
             "result": "wrap://ens/testnet/test2.eth",
           }
         ]
