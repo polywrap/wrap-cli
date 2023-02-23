@@ -33,12 +33,12 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
         retries: { tryResolveUri: 1, getFile: 1 },
       },
       "proxy/testnet-ens-uri-resolver-ext": {
-        registryAddress: ensAddress
-      }
+        registryAddress: ensAddress,
+      },
     },
     redirects: {
       "proxy/testnet-ens-uri-resolver-ext":
-        "ens/wraps.eth:ens-uri-resolver-ext@1.0.0"
+        "ens/wraps.eth:ens-uri-resolver-ext@1.0.0",
     },
     packages: {
       [DefaultBundle.plugins.ethereumProvider.uri.uri]: ethereumProviderPlugin({
