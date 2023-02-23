@@ -25,10 +25,10 @@ import {
   LocalBuildStrategy,
 } from "../lib/build-strategies";
 import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
+import { watchProject } from "../lib/watchProject";
 
 import { PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { watchProject } from "../lib/watchProject";
 
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;

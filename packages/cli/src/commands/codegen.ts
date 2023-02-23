@@ -17,9 +17,9 @@ import {
 } from "../lib";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
+import { watchProject } from "../lib/watchProject";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import { watchProject } from "../lib/watchProject";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
@@ -145,7 +145,7 @@ async function run(options: Required<CodegenCommandOptions>) {
       });
 
   const execute = async (): Promise<boolean> => {
-    let result: boolean = false;
+    let result = false;
 
     try {
       result = await codeGenerator.generate();

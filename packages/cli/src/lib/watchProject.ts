@@ -1,7 +1,8 @@
-import { ILogger } from "@polywrap/logging-js";
 import { intlMsg } from "./intl";
 import { AnyProjectManifest, Project } from "./project";
 import { Watcher, WatchEvent, watchEventName } from "./system";
+
+import { ILogger } from "@polywrap/logging-js";
 import readline from "readline";
 
 export type WatchProjectOptions = {
@@ -11,7 +12,9 @@ export type WatchProjectOptions = {
   ignored?: string[];
 };
 
-export async function watchProject(options: WatchProjectOptions) {
+export async function watchProject(
+  options: WatchProjectOptions
+): Promise<void> {
   const { execute, logger, project, ignored } = options;
   // Execute
   await execute();
