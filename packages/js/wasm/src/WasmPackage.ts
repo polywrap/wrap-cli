@@ -4,12 +4,12 @@ import { WasmWrapper } from "./WasmWrapper";
 import { WRAP_MODULE_PATH, WRAP_MANIFEST_PATH } from "./constants";
 import { createWasmPackage } from "./helpers/createWasmPackage";
 
+import { GetManifestOptions, Wrapper } from "@polywrap/core-js";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 import {
   deserializeWrapManifest,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
-import { GetManifestOptions, Wrapper } from "@polywrap/core-js";
-import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export class WasmPackage implements IWasmPackage {
   constructor(private readonly _fileReader: IFileReader) {}

@@ -1,11 +1,11 @@
 {
-  "name": "@polywrap/wasm-js",
-  "description": "Polywrap WASM wrappers",
+  "name": "@polywrap/wasm-memory-js",
+  "description": "Helpers for instantiating and managing `WebAssembly.Memory` instances.",
   "version": "0.10.0-pre.8",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/polywrap/monorepo.git"
+    "url": "https://github.com/polywrap/toolchain.git"
   },
   "main": "build/index.js",
   "files": [
@@ -13,28 +13,22 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "lint": "eslint --color -c ../../../.eslintrc.js src/",
+    "lint": "eslint --color -c ../../../.eslintrc.js --ignore-pattern src/__tests__/cases/* src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
-  "dependencies": {
-    "@polywrap/asyncify-js": "0.10.0-pre.8",
-    "@polywrap/core-js": "0.10.0-pre.8",
-    "@polywrap/msgpack-js": "0.10.0-pre.8",
-    "@polywrap/result": "0.10.0-pre.8",
-    "@polywrap/tracing-js": "0.10.0-pre.8",
-    "@polywrap/wasm-memory-js": "0.10.0-pre.8",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.8"
-  },
   "devDependencies": {
     "@types/jest": "26.0.8",
+    "@types/prettier": "2.6.0",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
+    "ts-loader": "8.0.17",
     "ts-node": "8.10.2",
     "typescript": "4.1.6"
   },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {
     "access": "public"
   }

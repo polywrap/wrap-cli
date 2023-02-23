@@ -5,6 +5,7 @@ import { IFileReader } from "./IFileReader";
 import { WRAP_MODULE_PATH } from "./constants";
 import { createWasmWrapper } from "./helpers/createWasmWrapper";
 
+import { getInitialPageCount, PoolHandle, WasmMemoryPool } from "@polywrap/wasm-memory-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
@@ -50,12 +51,12 @@ export class WasmWrapper implements Wrapper {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
 
   private _wasmModule?: Uint8Array;
-  private _wasmMemory?: WebAssembly.Memory;
+  private _wasmMemoryPool?: WasmMemoryPool;
 
   constructor(
     private _manifest: WrapManifest,
     private _fileReader: IFileReader,
-  ) {}
+  ) { }
 
   static async from(
     manifestBuffer: Uint8Array,
@@ -190,13 +191,13 @@ export class WasmWrapper implements Wrapper {
         });
       };
 
-      this._wasmMemory = this._wasmMemory || AsyncWasmInstance.createMemory({ module: wasm });
+      const memory = await this._getWasmMemory(wasm);
       const instance = await AsyncWasmInstance.createInstance({
         module: wasm,
         imports: createImports({
           state,
           client,
-          memory: this._wasmMemory,
+          memory: memory.memory,
           abortWithInvokeAborted,
           abortWithInternalError,
         }),
@@ -211,8 +212,7 @@ export class WasmWrapper implements Wrapper {
         state.env.byteLength
       );
 
-      // Clear memory
-      new Uint8Array(this._wasmMemory.buffer).fill(0);
+      this._wasmMemoryPool?.release(memory);
 
       const invokeResult = this._processInvokeResult(state, result);
 
@@ -252,6 +252,25 @@ export class WasmWrapper implements Wrapper {
 
       return ResultErr(state.invoke.error);
     }
+  }
+
+  private async _getWasmMemory(wasm: Uint8Array): Promise<PoolHandle> {
+    if (this._wasmMemoryPool) {
+      this._wasmMemoryPool = new WasmMemoryPool({
+        memoryConfig: {
+          initial: getInitialPageCount(wasm)
+        },
+        max: 5,
+        min: 1,
+        sleepMs: 100
+      });
+    }
+
+    if (!this._wasmMemoryPool) {
+      throw Error("This should never happen...");
+    }
+
+    return await this._wasmMemoryPool.acquire()
   }
 
   private async _getWasmModule(): Promise<Result<Uint8Array, string>> {

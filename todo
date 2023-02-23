@@ -1,0 +1,4 @@
+- [x] `WasmMemoryPool`
+- [ ] `WasmMemoryPool` tests
+- [ ] create benchmark simple load wrapper (before & after)
+- [ ] Enforce `WasmPackage` -> `WasmWrapper`[] relationship (factory)
