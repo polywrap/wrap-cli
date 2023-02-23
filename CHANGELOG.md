@@ -9,6 +9,9 @@
   * See example [config.ts](https://github.com/polywrap/toolchain/blob/1096f2f4dfb35fdcc29e9b66057f91ade8b82c67/packages/test-cases/cases/cli/test/008-custom-config/config.ts).
 * [PR-1348](https://github.com/polywrap/toolchain/pull/1348) **Rename `run` to `test`**
   * Rename the `run` command to `test`, which uses the `test` project extension, as defined in the `polywrap.test.yaml` manifest file.
+* [PR-1545](https://github.com/polywrap/toolchain/pull/1545) **Remove `config` section from test manifest
+  * The Polywrap Test manifest (`polywrap.test.yaml`) has been upgraded to version `0.2.0` with the following change:
+    * The `config` section inside `step` has been removed, and manifest migrations will warn the user regarding this change.
 
 ### JS Client
 **`@polywrap/client-js`:**
