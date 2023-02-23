@@ -4,7 +4,7 @@ import {
   IUriRedirect,
   UriPackageOrWrapper,
 } from "../";
-import { CoreClient, InterfaceImplementations, InterfaceImpls } from "../types";
+import { CoreClient, InterfaceImplementations } from "../types";
 import { Result, ResultOk } from "@polywrap/result";
 
 const getClient = (redirects: IUriRedirect[]): CoreClient => {
@@ -54,7 +54,7 @@ describe("getImplementations", () => {
       },
     ];
 
-    const interfaces: InterfaceImpls = {
+    const interfaces: InterfaceImplementations = {
       [interface1Uri]: [implementation1Uri, implementation2Uri],
       [interface2Uri]: [implementation3Uri],
       [interface3Uri]: [implementation3Uri],
@@ -110,7 +110,7 @@ describe("getImplementations", () => {
       },
     ];
 
-    const interfaces: InterfaceImpls = {
+    const interfaces: InterfaceImplementations = {
       [interface1Uri]: [implementation1Uri],
     };
 

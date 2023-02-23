@@ -3,7 +3,7 @@ import {
   CoreClient,
   WrapError,
   WrapErrorCode,
-  InterfaceImpls,
+  InterfaceImplementations,
 } from "../types";
 import { IUriResolutionContext } from "../uri-resolution";
 import { applyResolution } from "./applyResolution";
@@ -12,7 +12,7 @@ import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export const getImplementations = async (
   wrapperInterfaceUri: Uri,
-  interfaces: InterfaceImpls,
+  interfaces: InterfaceImplementations,
   client?: CoreClient,
   resolutionContext?: IUriResolutionContext
 ): Promise<Result<Uri[], WrapError>> => {
@@ -26,7 +26,7 @@ export const getImplementations = async (
   };
 
   const addAllImplementationsFromImplementationsArray = async (
-    impls: InterfaceImpls,
+    impls: InterfaceImplementations,
     wrapperInterfaceUri: Uri
   ): Promise<Result<undefined, WrapError>> => {
     for (const impl in impls) {

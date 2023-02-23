@@ -20,7 +20,7 @@ import {
   WrapErrorCode,
   Envs,
   WrapperEnv,
-  InterfaceImpls,
+  InterfaceImplementations,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
@@ -54,7 +54,7 @@ export class PolywrapCoreClient implements CoreClient {
    *
    * @returns an array of interfaces and their registered implementations
    */
-  public getInterfaces(): InterfaceImpls | undefined /* $ */ {
+  public getInterfaces(): InterfaceImplementations | undefined /* $ */ {
     return this._config.interfaces;
   }
 

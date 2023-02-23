@@ -6,7 +6,7 @@ import {
   Envs,
   GetFileOptions,
   GetImplementationsOptions,
-  InterfaceImpls,
+  InterfaceImplementations,
   InvokeResult,
   IUriResolutionContext,
   IUriResolver,
@@ -61,7 +61,7 @@ export class PolywrapClient extends PolywrapCoreClient {
   }
 
   @Tracer.traceMethod("PolywrapClient: getInterfaces")
-  public getInterfaces(): InterfaceImpls | undefined {
+  public getInterfaces(): InterfaceImplementations | undefined {
     return super.getInterfaces();
   }
 

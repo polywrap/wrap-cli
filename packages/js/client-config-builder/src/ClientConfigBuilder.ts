@@ -9,7 +9,7 @@ import {
   IUriRedirect,
   IUriWrapper,
   Uri,
-  InterfaceImpls,
+  InterfaceImplementations,
 } from "@polywrap/core-js";
 import {
   RecursiveResolver,
@@ -70,7 +70,7 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
     return this._config.envs;
   }
 
-  private buildInterfaces(): InterfaceImpls {
+  private buildInterfaces(): InterfaceImplementations {
     const interfaces: Record<string, string[]> = {};
 
     for (const iface in this._config.interfaces) {

@@ -74,7 +74,7 @@ Invoke a wrapper.
    *
    * @returns an array of interfaces and their registered implementations
    */
-  public getInterfaces(): InterfaceImpls | undefined 
+  public getInterfaces(): InterfaceImplementations | undefined 
 ```
 
 ### getEnvs
