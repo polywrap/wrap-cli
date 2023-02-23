@@ -106,9 +106,7 @@ async function run(options: Required<CodegenCommandOptions>) {
   }
 
   // Get Client
-  const client = new PolywrapClient(configBuilder.build(), {
-    noDefaults: true,
-  });
+  const client = new PolywrapClient(configBuilder.build());
 
   const project = await getProjectFromManifest(manifestFile, logger);
 

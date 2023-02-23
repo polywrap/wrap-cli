@@ -1,9 +1,4 @@
-import {
-  Uri,
-  PolywrapClient,
-  PolywrapCoreClientConfig,
-  ExtendableUriResolver
-} from "../..";
+import { Uri, PolywrapClient, ExtendableUriResolver } from "../..";
 import fs from "fs";
 
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
@@ -11,7 +6,12 @@ import { IUriPackage, IUriRedirect } from "@polywrap/core-js";
 import { ResultErr } from "@polywrap/result";
 import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
 import { WasmPackage } from "@polywrap/wasm-js";
-import { defaultInterfaces, defaultPackages, defaultWrappers } from "@polywrap/client-config-builder-js";
+import {
+  defaultInterfaces,
+  defaultPackages,
+  defaultWrappers,
+} from "@polywrap/client-config-builder-js";
+import { CoreClientConfig } from "@polywrap/core-js";
 
 jest.setTimeout(200000);
 
@@ -20,41 +20,41 @@ describe("sanity", () => {
     const client = new PolywrapClient();
 
     expect(client.getInterfaces()).toStrictEqual([
-        {
-          interface: ExtendableUriResolver.extInterfaceUri,
-          implementations: [
-            new Uri(defaultPackages.ipfsResolver),
-            new Uri(defaultPackages.ensResolver),
-            new Uri(defaultPackages.fileSystemResolver),
-            new Uri(defaultPackages.httpResolver),
-            new Uri(defaultWrappers.ensTextRecordResolver),
-          ],
-        },
-        {
-          interface: new Uri(defaultInterfaces.logger),
-          implementations: [new Uri(defaultInterfaces.logger)],
-        },
-        {
-          interface: new Uri(defaultInterfaces.concurrent),
-          implementations: [new Uri(defaultInterfaces.concurrent)],
-        },
-        {
-          interface: new Uri(defaultInterfaces.ipfsHttpClient),
-          implementations: [new Uri(defaultInterfaces.ipfsHttpClient)],
-        },
-        {
-          interface: new Uri(defaultInterfaces.fileSystem),
-          implementations: [new Uri(defaultInterfaces.fileSystem)],
-        },
-        {
-          interface: new Uri(defaultInterfaces.http),
-          implementations: [new Uri(defaultInterfaces.http)],
-        },
-        {
-          interface: new Uri(defaultInterfaces.ethereumProvider),
-          implementations: [new Uri(defaultInterfaces.ethereumProvider)],
-        },
-      ]);
+      {
+        interface: ExtendableUriResolver.extInterfaceUri,
+        implementations: [
+          new Uri(defaultPackages.ipfsResolver),
+          new Uri(defaultPackages.ensResolver),
+          new Uri(defaultPackages.fileSystemResolver),
+          new Uri(defaultPackages.httpResolver),
+          new Uri(defaultWrappers.ensTextRecordResolver),
+        ],
+      },
+      {
+        interface: new Uri(defaultInterfaces.logger),
+        implementations: [new Uri(defaultInterfaces.logger)],
+      },
+      {
+        interface: new Uri(defaultInterfaces.concurrent),
+        implementations: [new Uri(defaultInterfaces.concurrent)],
+      },
+      {
+        interface: new Uri(defaultInterfaces.ipfsHttpClient),
+        implementations: [new Uri(defaultInterfaces.ipfsHttpClient)],
+      },
+      {
+        interface: new Uri(defaultInterfaces.fileSystem),
+        implementations: [new Uri(defaultInterfaces.fileSystem)],
+      },
+      {
+        interface: new Uri(defaultInterfaces.http),
+        implementations: [new Uri(defaultInterfaces.http)],
+      },
+      {
+        interface: new Uri(defaultInterfaces.ethereumProvider),
+        implementations: [new Uri(defaultInterfaces.ethereumProvider)],
+      },
+    ]);
   });
 
   test("validate requested uri is available", async () => {
@@ -70,20 +70,20 @@ describe("sanity", () => {
       const wasmModule = await fs.promises.readFile(
         `${GetPathToTestWrappers()}/subinvoke/${name}/implementations/as/wrap.wasm`
       );
-      return WasmPackage.from(manifest, wasmModule)
-    }
+      return WasmPackage.from(manifest, wasmModule);
+    };
 
-    let config: unknown = {
+    let config: CoreClientConfig = {
       resolver: {
         tryResolveUri: (_a: unknown, _b: unknown, _c: unknown) => {
-          return Promise.resolve(ResultErr())
-        }
+          return Promise.resolve(ResultErr());
+        },
       },
       interfaces: undefined,
-      envs: undefined
-    }
+      envs: undefined,
+    };
 
-    let client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
+    let client = new PolywrapClient(config);
     let result = await client.validate(subinvokeUri, {});
     expect(result.ok).toBeFalsy();
     let resultError = (result as { error: Error }).error;
@@ -92,24 +92,24 @@ describe("sanity", () => {
 
     let fooPackage: IUriPackage = {
       uri: subinvokeUri,
-      package: await getPackage("00-subinvoke")
-    }
+      package: await getPackage("00-subinvoke"),
+    };
 
-    let resolvers: UriResolverLike[] = [ fooPackage ]
-    let staticResolver = StaticResolver.from(resolvers)
+    let resolvers: UriResolverLike[] = [fooPackage];
+    let staticResolver = StaticResolver.from(resolvers);
 
     config = {
-      resolver: staticResolver
+      resolver: staticResolver,
     };
-    
-    client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
+
+    client = new PolywrapClient(config);
     result = await client.validate(subinvokeUri, {});
 
     expect(result.ok).toBeTruthy();
 
     result = await client.validate(invokeUri, {
-      recursive: true
-    })
+      recursive: true,
+    });
     resultError = (result as { error: Error }).error;
     expect(result.ok).toBeFalsy();
     expect(resultError).toBeTruthy();
@@ -117,34 +117,43 @@ describe("sanity", () => {
 
     let modifiedFooWrapper: IUriPackage = {
       uri: invokeUri,
-      package: await getPackage("01-invoke")
+      package: await getPackage("01-invoke"),
     };
     resolvers.push(modifiedFooWrapper);
     staticResolver = StaticResolver.from(resolvers);
 
-    (config as Record<string, unknown>).resolver = staticResolver;
-    client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
+    const newConfig1: CoreClientConfig = {
+      resolver: staticResolver,
+      envs: config.envs,
+      interfaces: config.interfaces,
+    };
+    client = new PolywrapClient(newConfig1);
 
     result = await client.validate(invokeUri, {
-      recursive: true
-    })
+      recursive: true,
+    });
 
-    expect(result.ok).toBeTruthy()
+    expect(result.ok).toBeTruthy();
 
     let redirectUri: IUriRedirect = {
       from: subinvokeUri,
-      to: consumerUri
+      to: consumerUri,
     };
     resolvers.push(redirectUri);
 
     staticResolver = StaticResolver.from(resolvers);
 
-    (config as Record<string, unknown>).resolver = staticResolver;
-    client = new PolywrapClient(config as PolywrapCoreClientConfig, { noDefaults: true });
+    const newConfig2: CoreClientConfig = {
+      resolver: staticResolver,
+      envs: newConfig1.envs,
+      interfaces: newConfig1.interfaces,
+    };
+
+    client = new PolywrapClient(newConfig2);
 
     result = await client.validate(invokeUri, {
-      abi: true
-    })
+      abi: true,
+    });
 
     expect(result.ok).toBeFalsy();
   });

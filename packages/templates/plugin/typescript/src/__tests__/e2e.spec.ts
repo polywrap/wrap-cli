@@ -1,23 +1,23 @@
-import { PolywrapClient } from "@polywrap/client-js";
+import { ClientConfigBuilder, PolywrapClient } from "@polywrap/client-js";
 import { samplePlugin } from "../";
 
 describe("e2e", () => {
-
   let client: PolywrapClient;
   const uri = "ens/sampleplugin.eth";
 
   beforeAll(() => {
     // Add the samplePlugin to the PolywrapClient
-    client = new PolywrapClient({
-      packages: [
-        {
-          uri: uri,
-          package: samplePlugin({
-            defaultValue: "foo bar"
-          })
-        }
-      ]
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addPackage(
+        uri,
+        samplePlugin({
+          defaultValue: "foo bar",
+        })
+      )
+      .build();
+
+    client = new PolywrapClient(config);
   });
 
   it("sampleMethod", async () => {
@@ -25,7 +25,7 @@ describe("e2e", () => {
       uri,
       method: "sampleMethod",
       args: {
-        data: "fuz baz "
+        data: "fuz baz ",
       },
     });
 

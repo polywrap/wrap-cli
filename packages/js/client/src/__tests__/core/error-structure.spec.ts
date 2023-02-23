@@ -169,18 +169,14 @@ describe("Error structure", () => {
       });
 
       test("Subinvoke error two layers deep", async () => {
-        client = new PolywrapClient({
-          redirects: [
-            {
-              from: Uri.from("ens/imported-invoke.eth"),
-              to: asInvokeWrapperUri,
-            },
-            {
-              from: Uri.from("ens/imported-subinvoke.eth"),
-              to: asSubinvokeWrapperUri,
-            },
-          ],
-        });
+        const config = new ClientConfigBuilder()
+          .addDefaults()
+          .addRedirects({
+            "ens/imported-invoke.eth": asInvokeWrapperUri.uri,
+            "ens/imported-subinvoke.eth": asSubinvokeWrapperUri.uri,
+          });
+        
+        client = new PolywrapClient(config.build());
         const result = await client.invoke<boolean>({
           uri: asConsumerWrapperUri.uri,
           method: "throwError",
@@ -384,18 +380,14 @@ describe("Error structure", () => {
       });
 
       test("Subinvoke error two layers deep", async () => {
-        client = new PolywrapClient({
-          redirects: [
-            {
-              from: Uri.from("ens/imported-invoke.eth"),
-              to: rsInvokeWrapperUri,
-            },
-            {
-              from: Uri.from("ens/imported-subinvoke.eth"),
-              to: rsSubinvokeWrapperUri,
-            },
-          ],
-        });
+        const config = new ClientConfigBuilder()
+          .addDefaults()
+          .addRedirects({
+            "ens/imported-invoke.eth": rsInvokeWrapperUri.uri,
+            "ens/imported-subinvoke.eth": rsSubinvokeWrapperUri.uri,
+          });
+        
+        client = new PolywrapClient(config.build());
         const result = await client.invoke<number>({
           uri: rsConsumerWrapperUri.uri,
           method: "throwError",
@@ -462,9 +454,10 @@ describe("Error structure", () => {
     });
 
     describe("Plugin wrapper", () => {
-      const client = new PolywrapClient({
-        packages: [mockPluginRegistration("plugin/mock")],
-      });
+      const mockPlugin = mockPluginRegistration("plugin/mock")
+      const config = new ClientConfigBuilder()
+        .addDefaults().addPackage(mockPlugin.uri.uri, mockPlugin.package)
+      const client = new PolywrapClient(config.build());
       test("Invoke a plugin wrapper with malformed args", async () => {
         const result = await client.invoke<Uint8Array>({
           uri: defaultInterfaces.fileSystem,
@@ -539,8 +532,8 @@ describe("Error structure", () => {
             "packages/js/client/src/__tests__/helpers.ts"
           )
         ).toBeTruthy();
-        expect(result.error?.source?.row).toEqual(50);
-        expect(result.error?.source?.col).toEqual(17);
+        expect(result.error?.source?.row).toEqual(47);
+        expect(result.error?.source?.col).toEqual(15);
       });
 
       test("Invoke a plugin wrapper that throws unexpectedly", async () => {
