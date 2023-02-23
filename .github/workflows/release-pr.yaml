@@ -31,7 +31,7 @@ jobs:
         if: env.IS_PUBLISHER == 'false'
         uses: actions/github-script@0.8.0
         with:
-          github-token: ${{secrets.POLYWRAP_BUILD_BOT_PAT}}
+          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,
@@ -62,7 +62,7 @@ jobs:
         if: env.TAG_EXISTS == 'true'
         uses: actions/github-script@0.8.0
         with:
-          github-token: ${{secrets.POLYWRAP_BUILD_BOT_PAT}}
+          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,
@@ -86,8 +86,11 @@ jobs:
         with:
           ref: ${{github.event.pull_request.base.ref}}
 
-      - name: Set env.BOT to Build Bot's Username
-        run: echo BOT=polywrap-build-bot >> $GITHUB_ENV
+      - name: set env.RELEASE_FORKS to Release Forks' Organization
+        run: echo RELEASE_FORKS=polywrap-release-forks >> $GITHUB_ENV
+
+      - name: Set env.BUILD_BOT to Build Bot's Username
+        run: echo BUILD_BOT=polywrap-build-bot >> $GITHUB_ENV
 
       - name: Read VERSION into env.RELEASE_VERSION
         run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
@@ -95,7 +98,7 @@ jobs:
       - name: Building Release PR...
         uses: actions/github-script@0.8.0
         with:
-          github-token: ${{secrets.POLYWRAP_BUILD_BOT_PAT}}
+          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,
@@ -120,8 +123,8 @@ jobs:
 
       - name: Set Git Identity
         run: |
-          git config --global user.name '${{env.BOT}}'
-          git config --global user.email '${{env.BOT}}@users.noreply.github.com'
+          git config --global user.name '${{env.BUILD_BOT}}'
+          git config --global user.email '${{env.BUILD_BOT}}@users.noreply.github.com'
         env:
           GITHUB_TOKEN: ${{ secrets.POLYWRAP_BUILD_BOT_PAT }}
 
@@ -141,11 +144,11 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.POLYWRAP_BUILD_BOT_PAT }}
-          push-to-fork: ${{env.BOT}}/${{github.event.pull_request.base.repo.name}}
+          push-to-fork: ${{env.RELEASE_FORKS}}/${{github.event.pull_request.base.repo.name}}
           branch: release/origin-${{env.RELEASE_VERSION}}
           base: ${{github.event.pull_request.base.ref}}
           committer: GitHub <noreply@github.com>
-          author: ${{env.BOT}} <${{env.BOT}}@users.noreply.github.com>
+          author: ${{env.BUILD_BOT}} <${{env.BUILD_BOT}}@users.noreply.github.com>
           commit-message: "${{env.RELEASE_VERSION}}"
           title: 'Polywrap Origin (${{env.RELEASE_VERSION}})'
           body: |
@@ -168,7 +171,7 @@ jobs:
       - name: Release PR Created...
         uses: actions/github-script@0.8.0
         with:
-          github-token: ${{secrets.POLYWRAP_BUILD_BOT_PAT}}
+          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,

@@ -4,7 +4,7 @@ import axios from "axios";
 import * as os from "@polywrap/os-js";
 import Mustache from "mustache";
 import { compile } from "json-schema-to-typescript";
-import { FileInfo, bundle, JSONSchema } from "json-schema-ref-parser";
+import { FileInfo, bundle, JSONSchema } from "@apidevtools/json-schema-ref-parser";
 
 async function wrapCodegen() {
   const formatTypeName = "wrap.info";

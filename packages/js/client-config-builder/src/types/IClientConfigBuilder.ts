@@ -1,4 +1,5 @@
-import { BuilderConfig } from "./configs/BuilderConfig";
+import { BuilderConfig } from "./configs";
+import { BuildOptions } from "./BuildOptions";
 
 import { CoreClientConfig, Wrapper, IWrapPackage } from "@polywrap/core-js";
 import { UriResolverLike } from "@polywrap/uri-resolvers-js";
@@ -10,9 +11,10 @@ export interface IClientConfigBuilder {
   /**
    * Build a sanitized core client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors
    *
+   * @param options - Use a custom wrapper cache or resolver
    * @returns CoreClientConfig that results from applying all the steps in the builder pipeline
    */
-  build(): CoreClientConfig;
+  build(options?: BuildOptions): CoreClientConfig;
   // $end
 
   // $start: IClientConfigBuilder-add
