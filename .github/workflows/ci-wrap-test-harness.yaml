@@ -41,7 +41,7 @@ jobs:
   Rebuild-Test-Wrappers:
     runs-on: ubuntu-latest
     needs: Rebuild-Required
-    if: ${{ needs.Rebuild-Required.outputs.required }}
+    if: ${{ needs.Rebuild-Required.outputs.required == 'true' }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
