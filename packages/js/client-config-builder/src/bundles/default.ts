@@ -1,7 +1,7 @@
 import { ClientConfigBuilder } from "../ClientConfigBuilder";
 import { BuilderConfig } from "../types";
 import * as ipfsHttpClient from "./embeds/ipfs-http-client/wrap";
-import * as ipfsResolver from "./embeds/ipfs-resolver/wrap";
+import * as ipfsResolver from "./embeds/async-ipfs-resolver/wrap";
 
 import { IWrapPackage, Uri } from "@polywrap/core-js";
 import { PluginPackage } from "@polywrap/plugin-js";
@@ -31,7 +31,7 @@ interface IDefaultEmbed {
 
 interface IDefaultEmbeds {
   ipfsHttpClient: IDefaultEmbed;
-  ipfsResolver: IDefaultEmbed;
+  asyncIpfsResolver: IDefaultEmbed;
 }
 
 export const embeds: IDefaultEmbeds = {
@@ -40,20 +40,20 @@ export const embeds: IDefaultEmbeds = {
     package: ipfsHttpClient.wasmPackage,
     source: Uri.from("ens/wraps.eth:ipfs-http-client@1.0.0"),
   },
-  ipfsResolver: {
-    uri: Uri.from("embed/ipfs-uri-resolver-ext@1.0.0"),
+  asyncIpfsResolver: {
+    uri: Uri.from("embed/async-ipfs-uri-resolver-ext@1.0.0"),
     package: ipfsResolver.wasmPackage,
-    source: Uri.from("ens/wraps.eth:ipfs-uri-resolver-ext@1.0.0"),
+    source: Uri.from("ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0"),
   },
 };
 
 type UriResolverExtBootloader = [IDefaultEmbed, IUriRedirect, ...Uri[]];
 
 export const uriResolverExts: UriResolverExtBootloader = [
-  embeds.ipfsResolver,
+  embeds.asyncIpfsResolver,
   {
     from: Uri.from("ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0"),
-    to: Uri.from("ipfs/Qmf2AFb2NotbDfERtc8VdfF9fsCRtk2UzRCKJ1GCY1eQzG"),
+    to: Uri.from("ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw"),
   },
   Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.0"),
   Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.0"),
@@ -132,6 +132,12 @@ export function getConfig(): BuilderConfig {
 
     // Add source redirect
     builder.addRedirect(embed.source.uri, embed.uri.uri);
+
+    // Add source implementation
+    builder.addInterfaceImplementation(
+      embed.source.uri,
+      embed.uri.uri
+    );
   }
 
   // Add all plugin packages
@@ -151,12 +157,16 @@ export function getConfig(): BuilderConfig {
     [
       uriResolverExts[0].source.uri,
       uriResolverExts[1].from.uri,
-      ...uriResolverExts.splice(2).map((x: Uri) => x.uri),
+      ...uriResolverExts.slice(2).map((x: Uri) => x.uri),
     ]
+  );
+  builder.addRedirect(
+    uriResolverExts[1].from.uri,
+    uriResolverExts[1].to.uri
   );
 
   // Configure the ipfs-uri-resolver provider endpoints & retry counts
-  builder.addEnv(embeds.ipfsResolver.uri.uri, {
+  builder.addEnv(embeds.asyncIpfsResolver.source.uri, {
     provider: ipfsProviders[0],
     fallbackProviders: ipfsProviders.slice(1),
     retries: { tryResolveUri: 2, getFile: 2 },
