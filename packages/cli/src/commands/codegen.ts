@@ -19,6 +19,7 @@ import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
 
 import { PolywrapClient } from "@polywrap/client-js";
+import { watchProject } from "../lib/watchProject";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
@@ -29,6 +30,7 @@ export interface CodegenCommandOptions extends BaseCommandOptions {
   script: string | false;
   clientConfig: string | false;
   wrapperEnvs: string | false;
+  watch: boolean;
 }
 
 export const codegen: Command = {
@@ -61,6 +63,7 @@ export const codegen: Command = {
         `--wrapper-envs <${intlMsg.commands_common_options_wrapperEnvsPath()}>`,
         `${intlMsg.commands_common_options_wrapperEnvs()}`
       )
+      .option(`-w, --watch`, `${intlMsg.commands_common_options_w()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .option(
@@ -80,6 +83,7 @@ export const codegen: Command = {
           verbose: options.verbose || false,
           quiet: options.quiet || false,
           logFile: parseLogFileOption(options.logFile),
+          watch: options.watch || false,
         });
       });
   },
@@ -95,6 +99,7 @@ async function run(options: Required<CodegenCommandOptions>) {
     verbose,
     quiet,
     logFile,
+    watch,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
 
@@ -139,12 +144,37 @@ async function run(options: Required<CodegenCommandOptions>) {
         project,
       });
 
-  const result = await codeGenerator.generate();
+  const execute = async (): Promise<boolean> => {
+    let result: boolean = false;
 
-  if (result) {
-    logger.info(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
+    try {
+      result = await codeGenerator.generate();
+
+      if (result) {
+        logger.info(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
+      }
+    } catch (err) {
+      logger.error(err.message);
+      return false;
+    }
+
+    return result;
+  };
+
+  if (!watch) {
+    const result = await execute();
+
+    if (!result) {
+      process.exit(1);
+    }
+
     process.exit(0);
   } else {
-    process.exit(1);
+    await watchProject({
+      execute,
+      logger,
+      project,
+      ignored: [codegenDir + "/**", project.getManifestDir() + "/**/wrap/**"],
+    });
   }
 }
