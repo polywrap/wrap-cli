@@ -38,3 +38,9 @@ export interface ExternalSchemaFetcher {
 export interface LocalSchemaFetcher {
   fetch: (path: string) => Promise<string>;
 }
+
+export function createAbi(): Abi {
+  return {
+    version: "0.2"
+  };
+}

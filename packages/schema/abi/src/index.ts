@@ -32,9 +32,3 @@ export const parseAndLinkSchema = async ({ schema, parser, fetchers }: Args): Pr
 
   return linkedAbi
 }
-
-export function createAbi(): Abi {
-  return {
-    version: "0.2"
-  };
-}
