@@ -53,7 +53,7 @@ import {
   latestPolywrapManifestFormat,
   latestPolywrapWorkflowFormat,
 } from "@polywrap/polywrap-manifest-types-js";
-import { dereference } from "@apidevtools/json-schema-ref-parser";
+import { dereference } from "@bcherny/json-schema-ref-parser";
 import fs from "fs";
 import path from "path";
 

@@ -751,14 +751,14 @@ export type StaticResolverLike =
 
 ## RequestSynchronizerResolver
 ```ts
-
 /* Uri resolver that synchronizes requests to the same URI
-* Multiple requests to the same URI will be resolved only once
-* and the result will be cached for subsequent requests (only for the duration of that first request)
-* Can use the `shouldIgnoreCache` option to determine whether to ignore the cached request in case of an error
-* (default is to use the cache)
-*/
+ * Multiple requests to the same URI will be resolved only once
+ * and the result will be cached for subsequent requests (only for the duration of that first request)
+ * Can use the `shouldIgnoreCache` option to determine whether to ignore the cached request in case of an error
+ * (default is to use the cache)
+ */
 export class RequestSynchronizerResolver<TError>
+  implements IUriResolver<TError> 
 ```
 
 ### constructor
@@ -774,7 +774,7 @@ export class RequestSynchronizerResolver<TError>
     private options?: {
       shouldIgnoreCache?: (error: TError | undefined) => boolean;
     }
-  );
+  ) 
 ```
 
 ### Methods
@@ -794,7 +794,7 @@ export class RequestSynchronizerResolver<TError>
     options?: {
       shouldIgnoreCache?: (error: TResolverError | undefined) => boolean;
     }
-  ): RequestSynchronizerResolver<TResolverError>;
+  ): RequestSynchronizerResolver<TResolverError> 
 ```
 
 #### tryResolveUri
@@ -808,29 +808,13 @@ export class RequestSynchronizerResolver<TError>
    * @param resolutionContext - the current URI resolution context
    * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
    */
- async tryResolveUri(
+  async tryResolveUri(
     uri: Uri,
     client: CoreClient,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TError>>;
+  ): Promise<Result<UriPackageOrWrapper, TError>> 
 ```
 
-### resolveAndCacheRequest (private)
-```ts
-  /**
-   * A function that resolves a URI and caches the promise of that resolution for subsequent requests
-   *
-   * @param uri - the URI to resolve
-   * @param client - a CoreClient instance that may be used to invoke a wrapper that implements the UriResolver interface
-   * @param resolutionContext - the current URI resolution context
-   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
-   * */
-  private resolveAndCacheRequest(
-    uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TError>>
-```
 
 ## Development
 

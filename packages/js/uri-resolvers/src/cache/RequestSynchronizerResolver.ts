@@ -9,6 +9,7 @@ import {
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 
+// $start: RequestSynchronizerResolver
 /* Uri resolver that synchronizes requests to the same URI
  * Multiple requests to the same URI will be resolved only once
  * and the result will be cached for subsequent requests (only for the duration of that first request)
@@ -16,12 +17,13 @@ import { Result } from "@polywrap/result";
  * (default is to use the cache)
  */
 export class RequestSynchronizerResolver<TError>
-  implements IUriResolver<TError> {
+  implements IUriResolver<TError> /* $ */ {
   private requestCache: Map<
     string,
     Promise<Result<UriPackageOrWrapper, TError>>
   > = new Map();
 
+  // $start: RequestSynchronizerResolver-constructor
   /**
    * Construct a RequestSynchronizerResolver
    *
@@ -33,8 +35,9 @@ export class RequestSynchronizerResolver<TError>
     private options?: {
       shouldIgnoreCache?: (error: TError | undefined) => boolean;
     }
-  ) {}
+  ) /* $ */ {}
 
+  // $start: RequestSynchronizerResolver-from
   /**
    * Create a RequestSynchronizerResolver from a static-resolver-like object
    *
@@ -48,13 +51,14 @@ export class RequestSynchronizerResolver<TError>
     options?: {
       shouldIgnoreCache?: (error: TResolverError | undefined) => boolean;
     }
-  ): RequestSynchronizerResolver<TResolverError> {
+  ): RequestSynchronizerResolver<TResolverError> /* $ */ {
     return new RequestSynchronizerResolver(
       UriResolver.from<TResolverError>(resolver),
       options
     );
   }
 
+  // $start: RequestSynchronizerResolver-tryResolveUri
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
    * Attempts to resolve the URI using each of the aggregated resolvers sequentially.
@@ -68,7 +72,7 @@ export class RequestSynchronizerResolver<TError>
     uri: Uri,
     client: CoreClient,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TError>> {
+  ): Promise<Result<UriPackageOrWrapper, TError>> /* $ */ {
     const subContext = resolutionContext.createSubHistoryContext();
 
     const existingRequest = this.requestCache.get(uri.uri);
