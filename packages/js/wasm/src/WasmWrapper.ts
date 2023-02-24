@@ -197,9 +197,9 @@ export class WasmWrapper implements Wrapper {
         });
       };
 
-      if (!this._wasmMemoryPool) console.log("IN: ", options.uri.uri, wasm.byteLength * 0.000000001, "GB");
+      if (!this._wasmMemoryPool) console.log("IN: ", options.uri.uri, wasm.byteLength * 0.000001, "MB");
       memoryHandle = await this._getWasmMemory(wasm);
-      console.log("BEFORE-INSTANCE: ", options.uri.uri, process.memoryUsage().rss * 0.000000001, "GB");
+      console.log("BEFORE-INSTANCE: ", options.uri.uri, process.memoryUsage().rss * 0.000001, "MB");
       const instance = await AsyncWasmInstance.createInstance({
         module: wasm,
         imports: createImports({
@@ -211,7 +211,7 @@ export class WasmWrapper implements Wrapper {
         }),
         requiredExports: WasmWrapper.requiredExports,
       });
-      console.log("AFTER-INSTANCE: ", options.uri.uri, process.memoryUsage().rss * 0.000000001, "GB");
+      console.log("AFTER-INSTANCE: ", options.uri.uri, process.memoryUsage().rss * 0.000001, "MB");
 
       const exports = instance.exports as WrapExports;
 
@@ -221,7 +221,7 @@ export class WasmWrapper implements Wrapper {
         state.env.byteLength
       );
 
-      console.log("AFTER-INVOKE: ", options.uri.uri, process.memoryUsage().rss * 0.000000001, "GB");
+      console.log("AFTER-INVOKE: ", options.uri.uri, process.memoryUsage().rss * 0.000001, "MB");
 
       const handle = memoryHandle;
       memoryHandle = undefined;

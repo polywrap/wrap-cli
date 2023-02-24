@@ -108,9 +108,9 @@ export class WasmMemoryPool {
       }
       memory = this._cache[id].memory;
     } else {
-      console.log("BEFORE WASM MEMORY ALLOC:", process.memoryUsage().rss * 0.000000001, "GB")
+      console.log("BEFORE WASM MEMORY ALLOC:", process.memoryUsage().rss * 0.000001, "MB")
       memory = new WebAssembly.Memory(this._config.memoryConfig);
-      console.log("AFTER WASM MEMORY ALLOC:", process.memoryUsage().rss * 0.000000001, "GB")
+      console.log("AFTER WASM MEMORY ALLOC:", process.memoryUsage().rss * 0.000001, "MB")
     }
 
     const handle = {
