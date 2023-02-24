@@ -259,7 +259,7 @@ export class WasmWrapper implements Wrapper {
   }
 
   private async _getWasmMemory(wasm: Uint8Array): Promise<PoolHandle> {
-    if (this._wasmMemoryPool) {
+    if (!this._wasmMemoryPool) {
       this._wasmMemoryPool = new WasmMemoryPool({
         memoryConfig: {
           initial: getInitialPageCount(wasm),
