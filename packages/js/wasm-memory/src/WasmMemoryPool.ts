@@ -30,8 +30,8 @@ export interface PoolConfig {
 
 export class WasmMemoryPool {
   protected _cache: Record<number, PoolCacheEntry> = {};
-  protected _aliveCounter: number;
-  protected _freeList: number[];
+  protected _aliveCounter: number = 0;
+  protected _freeList: number[] = [];
 
   constructor(protected _config: PoolConfig) {
     const { max, min } = this._config;
