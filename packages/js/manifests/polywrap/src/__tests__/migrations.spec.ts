@@ -1,7 +1,44 @@
-import { deserializeDeployManifest, deserializePolywrapManifest } from "../";
+import {
+  deserializeDeployManifest,
+  deserializePolywrapManifest,
+  deserializePolywrapWorkflow,
+} from "../";
 
 import fs from "fs";
 import { findShortestMigrationPath, Migrator } from "../migrations";
+import { ILogger } from "@polywrap/logging-js";
+
+function getMockLogger(): {
+  logger: ILogger;
+  debug: jest.Mock;
+  warn: jest.Mock;
+  info: jest.Mock;
+  error: jest.Mock;
+  log: jest.Mock;
+} {
+  const warn = jest.fn();
+  const debug = jest.fn();
+  const error = jest.fn();
+  const info = jest.fn();
+  const log = jest.fn();
+
+  const logger: ILogger = {
+    warn,
+    debug,
+    error,
+    info,
+    log,
+  };
+
+  return {
+    logger,
+    warn,
+    debug,
+    error,
+    info,
+    log,
+  };
+}
 
 describe("Manifest migration pathfinding", () => {
   const migrators: Migrator[] = [
@@ -90,5 +127,50 @@ describe("Polywrap Deploy Manifest Migrations", () => {
     const expectedManifest = deserializeDeployManifest(expectedManifestFile);
 
     expect(manifest).toEqual(expectedManifest);
+  });
+});
+
+describe("Polywrap Test Manifest Migrations", () => {
+  const stepConfigWarning_0_1_0 =
+    "One or more of the steps in your test manifest have a config property. This is no longer supported, and will be removed.";
+
+  it("Should succesfully migrate from 0.1.0 to 0.2.0 - no steps with config", async () => {
+    const { logger, warn } = getMockLogger();
+
+    const manifestPath =
+      __dirname + "/manifest/test/migrations/polywrap.test-0.1.0.yaml";
+    const expectedManifestPath =
+      __dirname + "/manifest/test/migrations/polywrap.test-0.2.0.yaml";
+
+    const manifestFile = fs.readFileSync(manifestPath, "utf-8");
+    const expectedManifestFile = fs.readFileSync(expectedManifestPath, "utf-8");
+
+    const manifest = deserializePolywrapWorkflow(manifestFile, {
+      logger: logger,
+    });
+    const expectedManifest = deserializePolywrapWorkflow(expectedManifestFile);
+
+    expect(manifest).toEqual(expectedManifest);
+    expect(warn).not.toHaveBeenCalledWith(stepConfigWarning_0_1_0);
+  });
+
+  it("Should succesfully migrate from 0.1.0 to 0.2.0 - steps with config", async () => {
+    const { logger, warn } = getMockLogger();
+
+    const manifestPath =
+      __dirname + "/manifest/test/migrations/polywrap.test-0.1.0-config.yaml";
+    const expectedManifestPath =
+      __dirname + "/manifest/test/migrations/polywrap.test-0.2.0.yaml";
+
+    const manifestFile = fs.readFileSync(manifestPath, "utf-8");
+    const expectedManifestFile = fs.readFileSync(expectedManifestPath, "utf-8");
+
+    const manifest = deserializePolywrapWorkflow(manifestFile, {
+      logger: logger,
+    });
+    const expectedManifest = deserializePolywrapWorkflow(expectedManifestFile);
+
+    expect(manifest).toEqual(expectedManifest);
+    expect(warn).toHaveBeenCalledWith(stepConfigWarning_0_1_0);
   });
 });

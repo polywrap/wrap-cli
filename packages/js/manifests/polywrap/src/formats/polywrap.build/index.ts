@@ -43,7 +43,6 @@ export type AnyBuildManifest =
   | BuildManifest_0_3_0
 
 
-
 export type BuildManifest = BuildManifest_0_3_0;
 
 export const latestBuildManifestFormat = BuildManifestFormats["v0.3.0"]
