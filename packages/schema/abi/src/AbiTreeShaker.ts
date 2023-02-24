@@ -1,27 +1,27 @@
-import { Abi, AbiDefs, EnumDef, ImportRefType, ObjectDef, RefType } from "@polywrap/abi-types";
+import { Abi, AbiDefs, EnumDef, ImportRefType, ObjectDef } from "@polywrap/abi-types";
 import { AbiVisitor } from "./AbiVisitor";
 
 type ReferenceableDef = ObjectDef | EnumDef;
 
 export interface IAbiTreeShaker {
-  findReferencedDefinition(abi: Abi, ref: RefType): ReferenceableDef | undefined
+  findReferencedDefinition(abi: Abi, ref: string): ReferenceableDef | undefined
   shakeTree(abi: Abi, neededDefNames: string[]): Abi
   shakeImports(abi: Abi): Abi
 }
 
 export class AbiTreeShaker implements IAbiTreeShaker {
-  findReferencedDefinition(abi: Abi, ref: RefType): ReferenceableDef | undefined {
+  findReferencedDefinition(abi: Abi, refName: string): ReferenceableDef | undefined {
     // TODO: implement a stop to the search if the definition is found
     let found: ReferenceableDef | undefined = undefined;
     const visitor = new AbiVisitor({
       enter: {
         ObjectDef: (def) => {
-          if (def.name === ref.ref_name) {
+          if (def.name === refName) {
             found = def;
           }
         },
         EnumDef: (def) => {
-          if (def.name === ref.ref_name) {
+          if (def.name === refName) {
             found = def;
           }
         }
@@ -111,7 +111,7 @@ export class AbiTreeShaker implements IAbiTreeShaker {
           }
 
           if (containingDefName) {
-            const referencedDef = this.findReferencedDefinition(abi, ref)
+            const referencedDef = this.findReferencedDefinition(abi, ref.ref_name)
 
             if (!referencedDef) {
               throw new Error(`Could not find referenced definition ${ref.ref_name} in ${containingDefName}`)
@@ -140,35 +140,20 @@ export class AbiTreeShaker implements IAbiTreeShaker {
     return result;
   }
 
-  private _shakeImports(abi: Abi, neededImports: ImportRefType[], state: { currentDepth: number; lastDepth: number, currentId: string } = {
-    currentId: "",
-    currentDepth: 0,
-    lastDepth: 0,
+  private _shakeImports(abi: Abi, neededImports: ImportRefType[], state: { currentIdPath: string[] } = {
+    currentIdPath: []
   }): Abi {
 
     let abiClone = JSON.parse(JSON.stringify(abi));
 
     const importsVisitor = new AbiVisitor({
       enter: {
-        Imports: () => {
-          state.currentDepth += 1
-        },
         Import: (importDef) => {
-          // TODO: this logic works but could be improved
-          if (state.currentDepth > state.lastDepth) {
-            state.currentId = `${state.currentId}.${importDef.id}`
-          } else if (state.currentDepth < state.lastDepth) {
-            state.currentId = state.currentId.split(".").slice(0, state.currentDepth - 1).join(".")
-            state.currentId = `${state.currentId}.${importDef.id}`
-          } else {
-            state.currentId = state.currentId.split(".").slice(0, state.currentDepth - 1).join(".")
-            state.currentId = `${state.currentId}.${importDef.id}`
-          }
-
-          state.lastDepth = state.currentDepth
+          state.currentIdPath.push(importDef.id)
+          const currentId = state.currentIdPath.join(".")
 
           const neededFromThisImport = neededImports
-            .filter((neededImport) => neededImport.import_id === state.currentId)
+            .filter((neededImport) => neededImport.import_id === currentId)
             .map((neededImport) => neededImport.ref_name)
           const neededDefsFromThisImport = this.extractNeededDefinitions({
             version: abiClone.version,
@@ -197,13 +182,13 @@ export class AbiTreeShaker implements IAbiTreeShaker {
             version: abiClone.version,
             ...importDef
           }, transitiveImports, state)
-
+          
         }
 
       },
       leave: {
-        Imports: () => {
-          state.currentDepth -= 1
+        Import: (importAbi) => {
+          state.currentIdPath.pop()
         }
       }
     });

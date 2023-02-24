@@ -7,53 +7,42 @@ export class CircularDependencyValidator {
   private importsTree: DependencyTree
 
   private traverseAbi(abi: Abi) {
-    const state: { currentDepth: number; lastDepth: number, currentId: string; currentObject?: string } = {
-      currentId: "",
-      currentDepth: 0,
-      lastDepth: 0,
-      currentObject: undefined,
+    const state: { currentIdPath: string[]; currentObject?: string } = {
+      currentIdPath: [],
+      currentObject: undefined
     }
 
     const importsVisitor = new AbiVisitor({
       enter: {
-        Imports: () => {
-          state.currentDepth += 1
-        },
         Import: (importDef) => {
-          // TODO: this logic works but could be improved
-          if (state.currentDepth > state.lastDepth) {
-            state.currentId = `${state.currentId}.${importDef.id}`
-          } else if (state.currentDepth < state.lastDepth) {
-            state.currentId = state.currentId.split(".").slice(0, state.currentDepth - 1).join(".")
-            state.currentId = `${state.currentId}.${importDef.id}`
-          } else {
-            state.currentId = state.currentId.split(".").slice(0, state.currentDepth - 1).join(".")
-            state.currentId = `${state.currentId}.${importDef.id}`
-          }
+          state.currentIdPath.push(importDef.id)
+          const currentId = state.currentIdPath.join(".")
 
-          this.importsTree.addNode(state.currentId)
-          state.lastDepth = state.currentDepth
+          this.importsTree.addNode(currentId)
         },
         ObjectDef: (objectDef) => {
           state.currentObject = objectDef.name
-          this.definitionsTree.addNode(`${state.currentId}.${objectDef.name}`)
+          const currentId = state.currentIdPath.join(".")
+          this.definitionsTree.addNode(`${currentId}.${objectDef.name}`)
         },
         RefType: (refType) => {
           if (refType.ref_kind === "Object") {
-            this.definitionsTree.addEdge(`${state.currentId}.${state.currentObject}`, `${state.currentId}.${refType.ref_name}`)
+            const currentId = state.currentIdPath.join(".")
+            this.definitionsTree.addEdge(`${currentId}.${state.currentObject}`, `${currentId}.${refType.ref_name}`)
           }
         },
         ImportRefType: (importRefType) => {
-          this.importsTree.addEdge(state.currentId, `${state.currentId}.${importRefType.import_id}`)
+          const currentId = state.currentIdPath.join(".")
+          this.importsTree.addEdge(currentId, `${currentId}.${importRefType.import_id}`)
 
           if (importRefType.ref_kind === "Object") {
-            this.definitionsTree.addEdge(`${state.currentId}.${state.currentObject}`, `${state.currentId}.${importRefType.import_id}.${importRefType.ref_name}`)
+            this.definitionsTree.addEdge(`${currentId}.${state.currentObject}`, `${currentId}.${importRefType.import_id}.${importRefType.ref_name}`)
           }
         }
       },
       leave: {
-        Imports: () => {
-          state.currentDepth -= 1
+        Import: () => {
+          state.currentIdPath.pop()
         },
         ObjectDef: () => {
           state.currentObject = undefined
