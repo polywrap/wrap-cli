@@ -4,23 +4,28 @@ import {
 } from "./build";
 
 async function main() {
+  console.log("START SIZE:", process.memoryUsage().rss * 0.000000001, "GB")
   const client = new PolywrapClient();
   const result = await client.loadWrapper(
     Uri.from("ens/wraps.eth:ethereum@1.1.0")
   );
 
+  console.log("AFTER LOAD:", process.memoryUsage().rss * 0.000000001, "GB")
+
   if (!result.ok) throw result.error;
 
   const wrapper = result.value;
 
-  for (let i = 0; i < 100000; ++i) {
-    wrapper.invoke({
+  for (let i = 0; i < 50; ++i) {
+    const log = i < 50 || i > 950;
+    const promise = wrapper.invoke({
       uri: Uri.from("ens/wraps.eth:ethereum@1.1.0"),
       method: "any"
     }, client)
-      .then(() => console.log(i, "FINISH", process.memoryUsage().rss * 0.000000001));
+      .then(() => log ? console.log(i, "FINISH", process.memoryUsage().rss * 0.000000001, "GB") : true);
 
-    console.log(i, process.memoryUsage().rss * 0.000000001)
+    if (log) console.log(i, process.memoryUsage().rss * 0.000000001, "GB");
+    await promise;
   }
 }
 
