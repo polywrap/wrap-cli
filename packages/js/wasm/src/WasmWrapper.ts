@@ -138,6 +138,8 @@ export class WasmWrapper implements Wrapper {
     options: InvokeOptions,
     client: CoreClient
   ): Promise<InvocableResult<Uint8Array>> {
+    let memoryHandle: PoolHandle | undefined;
+
     try {
       const { method } = options;
       const args = options.args || {};
@@ -195,13 +197,13 @@ export class WasmWrapper implements Wrapper {
         });
       };
 
-      const memory = await this._getWasmMemory(wasm);
+      memoryHandle = await this._getWasmMemory(wasm);
       const instance = await AsyncWasmInstance.createInstance({
         module: wasm,
         imports: createImports({
           state,
           client,
-          memory: memory.memory,
+          memory: memoryHandle.memory,
           abortWithInvokeAborted,
           abortWithInternalError,
         }),
@@ -216,7 +218,9 @@ export class WasmWrapper implements Wrapper {
         state.env.byteLength
       );
 
-      this._wasmMemoryPool?.release(memory);
+      const handle = memoryHandle;
+      memoryHandle = undefined;
+      this._wasmMemoryPool?.release(handle);
 
       const invokeResult = this._processInvokeResult(state, result);
 
@@ -235,6 +239,9 @@ export class WasmWrapper implements Wrapper {
         return ResultErr(error);
       }
     } catch (error) {
+      if (memoryHandle) {
+        this._wasmMemoryPool?.release(memoryHandle);
+      }
       return ResultErr(error);
     }
   }
