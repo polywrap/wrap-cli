@@ -1,244 +1,289 @@
-import { Abi, AnyType, ArgumentDef, ArrayType, EnumDef, FunctionDef, ImportedAbi, ImportRefType, MapType, ObjectDef, PropertyDef, RefType, ResultDef, ScalarType } from "@polywrap/abi-types";
+import { Abi, AnyType, ArgumentDef, ArrayType, EnumDef, FunctionDef, ImportedAbi, ImportRefType, MapType, ObjectDef, PropertyDef, RefType, ResultDef, ScalarType, UnlinkedImportRefType } from "@polywrap/abi-types";
+
+type VisitorFunction<T> = (node: T) => T | void;
 
 export interface IAbiVisitor {
-  Abi?: (node: Abi) => void;
-  Imports?: (node: ImportedAbi[]) => void;
-  Import?: (node: ImportedAbi) => void;
-  FunctionDef?: (node: FunctionDef) => void;
-  ArgumentDef?: (node: ArgumentDef) => void;
-  ResultDef?: (node: ResultDef) => void;
-  ObjectDef?: (node: ObjectDef) => void;
-  PropertyDef?: (node: PropertyDef) => void;
-  EnumDef?: (node: EnumDef) => void;
-  ScalarType?: (node: ScalarType) => void;
-  RefType?: (node: RefType) => void;
-  ImportRefType?: (node: ImportRefType) => void;
-  ArrayType?: (node: ArrayType) => void;
-  MapType?: (node: MapType) => void;
-  AnyType?: (node: AnyType) => void;
+  Abi?: VisitorFunction<Abi>;
+  ImportedAbi?: VisitorFunction<ImportedAbi>;
+  Import?: VisitorFunction<ImportedAbi>;
+  FunctionDef?: VisitorFunction<FunctionDef>;
+  ArgumentDef?: VisitorFunction<ArgumentDef>;
+  ResultDef?: VisitorFunction<ResultDef>;
+  ObjectDef?: VisitorFunction<ObjectDef>;
+  PropertyDef?: VisitorFunction<PropertyDef>;
+  EnumDef?: VisitorFunction<EnumDef>;
+  ScalarType?: VisitorFunction<ScalarType>;
+  RefType?: VisitorFunction<RefType>;
+  ImportRefType?: VisitorFunction<ImportRefType>;
+  UnlinkedImportRefType?: (node: UnlinkedImportRefType) => UnlinkedImportRefType;
+  ArrayType?: VisitorFunction<ArrayType>;
+  MapType?: VisitorFunction<MapType>;
+  AnyType?: VisitorFunction<AnyType>;
 }
 
-interface IAbiVisitorEnterAndLeave {
+export interface IAbiVisitorEnterAndLeave {
   enter?: IAbiVisitor;
   leave?: IAbiVisitor;
 }
 
 export class AbiVisitor implements IAbiVisitor {
-  constructor(private readonly visitor: IAbiVisitorEnterAndLeave) { }
+  constructor(protected readonly visitor: IAbiVisitorEnterAndLeave) { }
 
-  Abi(node: Abi) {
+  private coerceVoidToUndefined<T>(value: T | void): T | undefined {
+    return value === undefined ? undefined : value;
+  }
+
+  Abi(node: Abi): Abi {
+    let mutatedNode = node;
+
     if (this.visitor.enter?.Abi) {
-      this.visitor.enter.Abi(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.Abi(node)) ?? mutatedNode;
     }
 
-    if (node.imports) {
-      this.Imports(node.imports);
-    }
-
-    if (node.functions) {
-      for (const functionNode of node.functions) {
-        this.FunctionDef(functionNode);
-      }
-    }
-
-    if (node.objects) {
-      for (const objectNode of node.objects) {
-        this.ObjectDef(objectNode);
-      }
-    }
-
-    if (node.enums) {
-      for (const enumNode of node.enums) {
-        this.EnumDef(enumNode);
-      }
-    }
+    mutatedNode.imports = mutatedNode.imports?.map((importNode) => this.Import(importNode));
+    mutatedNode.functions = mutatedNode.functions?.map((functionNode) => this.FunctionDef(functionNode));
+    mutatedNode.objects = mutatedNode.objects?.map((objectNode) => this.ObjectDef(objectNode));
+    mutatedNode.enums = mutatedNode.enums?.map((enumNode) => this.EnumDef(enumNode));
 
     if (this.visitor.leave?.Abi) {
-      this.visitor.leave.Abi(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.Abi(node)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  Imports(node: ImportedAbi[]) {
-    if (this.visitor.enter?.Imports) {
-      this.visitor.enter.Imports(node);
-    }
+  Import(node: ImportedAbi): ImportedAbi {
+    let mutatedNode = node;
 
-    for (const importNode of node) {
-      this.Import(importNode);
-    }
-
-    if (this.visitor.leave?.Imports) {
-      this.visitor.leave.Imports(node);
-    }
-  }
-
-  Import(node: ImportedAbi) {
     if (this.visitor.enter?.Import) {
-      this.visitor.enter.Import(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.Import(mutatedNode)) ?? mutatedNode;
     }
 
-    this.Abi({
-      version: "0.2",
-      ...node
-    });
+    mutatedNode.imports = mutatedNode.imports?.map((importNode) => this.Import(importNode));
+    mutatedNode.functions = mutatedNode.functions?.map((functionNode) => this.FunctionDef(functionNode));
+    mutatedNode.objects = mutatedNode.objects?.map((objectNode) => this.ObjectDef(objectNode));
+    mutatedNode.enums = mutatedNode.enums?.map((enumNode) => this.EnumDef(enumNode));
 
     if (this.visitor.leave?.Import) {
-      this.visitor.leave.Import(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.Import(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  FunctionDef(node: FunctionDef) {
+  FunctionDef(node: FunctionDef): FunctionDef {
+    let mutatedNode = node;
+
     if (this.visitor.enter?.FunctionDef) {
-      this.visitor.enter.FunctionDef(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.FunctionDef(mutatedNode)) ?? mutatedNode;
     }
 
-    if (node.args) {
-      for (const argumentNode of node.args) {
-        this.ArgumentDef(argumentNode);
-      }
-    }
-
-    this.ResultDef(node.result);
+    mutatedNode.args = mutatedNode.args?.map((argumentNode) => this.ArgumentDef(argumentNode));
+    mutatedNode.result = this.ResultDef(mutatedNode.result);
 
     if (this.visitor.leave?.FunctionDef) {
-      this.visitor.leave.FunctionDef(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.FunctionDef(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  ArgumentDef(node: ArgumentDef) {
+  ArgumentDef(node: ArgumentDef): ArgumentDef {
+    let mutatedNode = node;
+
     if (this.visitor.enter?.ArgumentDef) {
-      this.visitor.enter.ArgumentDef(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.ArgumentDef(mutatedNode)) ?? mutatedNode;
     }
-    this.AnyType(node.type);
+
+    mutatedNode.type = this.AnyType(mutatedNode.type);
 
     if (this.visitor.leave?.ArgumentDef) {
-      this.visitor.leave.ArgumentDef(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.ArgumentDef(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  ResultDef(node: ResultDef) {
+  ResultDef(node: ResultDef): ResultDef {
+    let mutatedNode = node;
     if (this.visitor.enter?.ResultDef) {
-      this.visitor.enter.ResultDef(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.ResultDef(mutatedNode)) ?? mutatedNode;
     }
-    this.AnyType(node.type);
+    mutatedNode.type = this.AnyType(mutatedNode.type);
 
     if (this.visitor.leave?.ResultDef) {
-      this.visitor.leave.ResultDef(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.ResultDef(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  ObjectDef(node: ObjectDef) {
+  ObjectDef(node: ObjectDef): ObjectDef {
+    let mutatedNode = node;
     if (this.visitor.enter?.ObjectDef) {
-      this.visitor.enter.ObjectDef(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.ObjectDef(mutatedNode)) ?? mutatedNode;
     }
-    if (node.props) {
-      for (const propertyNode of node.props) {
-        this.PropertyDef(propertyNode);
-      }
-    }
+
+    mutatedNode.props = mutatedNode.props?.map((propertyNode) => this.PropertyDef(propertyNode));
+
     if (this.visitor.leave?.ObjectDef) {
-      this.visitor.leave.ObjectDef(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.ObjectDef(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  PropertyDef(node: PropertyDef) {
+  PropertyDef(node: PropertyDef): PropertyDef {
+    let mutatedNode = node;
+
     if (this.visitor.enter?.PropertyDef) {
-      this.visitor.enter.PropertyDef(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.PropertyDef(mutatedNode)) ?? mutatedNode;
     }
-    this.AnyType(node.type);
+
+    mutatedNode.type = this.AnyType(mutatedNode.type);
+  
     if (this.visitor.leave?.PropertyDef) {
-      this.visitor.leave?.PropertyDef(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave?.PropertyDef(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  EnumDef(node: EnumDef) {
+  EnumDef(node: EnumDef): EnumDef {
+    let mutatedNode = node;
+
     if (this.visitor.enter?.EnumDef) {
-      this.visitor.enter.EnumDef(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.EnumDef(mutatedNode)) ?? mutatedNode;
     }
 
     if (this.visitor.leave?.EnumDef) {
-      this.visitor.leave.EnumDef(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.EnumDef(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  AnyType(node: AnyType) {
+  AnyType(node: AnyType): AnyType {
+    let mutatedNode = node;
+
     if (this.visitor.enter?.AnyType) {
-      this.visitor.enter.AnyType(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.AnyType(mutatedNode)) ?? mutatedNode;
     }
 
-    switch (node.kind) {
+    switch (mutatedNode.kind) {
       case "Scalar":
-        this.ScalarType(node);
+        this.ScalarType(mutatedNode);
         break;
       case "Array":
-        this.ArrayType(node);
+        this.ArrayType(mutatedNode);
         break;
       case "Map":
-        this.MapType(node);
+        this.MapType(mutatedNode);
         break;
       case "Ref":
-        this.RefType(node);
+        this.RefType(mutatedNode);
         break;
       case "ImportRef":
-        this.ImportRefType(node);
+        this.ImportRefType(mutatedNode);
+        break;
+      case "UnlinkedImportRef":
+        this.UnlinkedImportRefType(mutatedNode);
         break;
     }
 
     if (this.visitor.leave?.AnyType) {
-      this.visitor.leave.AnyType(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.AnyType(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  ScalarType(node: ScalarType) {
+  ScalarType(node: ScalarType): ScalarType {
+    let mutatedNode = node;
+
     if (this.visitor.enter?.ScalarType) {
-      this.visitor.enter.ScalarType(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.ScalarType(mutatedNode)) ?? mutatedNode;
     }
 
     if (this.visitor.leave?.ScalarType) {
-      this.visitor.leave.ScalarType(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.ScalarType(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  RefType(node: RefType) {
+  RefType(node: RefType): RefType {
+    let mutatedNode = node;
+
     if (this.visitor.enter?.RefType) {
-      this.visitor.enter.RefType(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.RefType(mutatedNode)) ?? mutatedNode;
     }
 
     if (this.visitor.leave?.RefType) {
-      this.visitor.leave.RefType(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.RefType(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  ImportRefType(node: ImportRefType) {
+  ImportRefType(node: ImportRefType): ImportRefType {
+    let mutatedNode = node;
+  
     if (this.visitor.enter?.ImportRefType) {
-      this.visitor.enter.ImportRefType(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.ImportRefType(mutatedNode)) ?? mutatedNode;
     }
 
     if (this.visitor.leave?.ImportRefType) {
-      this.visitor.leave.ImportRefType(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.ImportRefType(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  ArrayType(node: ArrayType) {
-    if (this.visitor.enter?.ArrayType) {
-      this.visitor.enter.ArrayType(node);
+  UnlinkedImportRefType(node: UnlinkedImportRefType): UnlinkedImportRefType {
+    let mutatedNode = node;
+    
+    if (this.visitor.enter?.UnlinkedImportRefType) {
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.UnlinkedImportRefType(mutatedNode)) ?? mutatedNode;
     }
-    this.AnyType(node.item.type);
+
+    if (this.visitor.leave?.UnlinkedImportRefType) {
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.UnlinkedImportRefType(mutatedNode)) ?? mutatedNode;
+    }
+
+    return mutatedNode;
+  }
+
+  ArrayType(node: ArrayType): ArrayType {
+    let mutatedNode = node;
+  
+    if (this.visitor.enter?.ArrayType) {
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.ArrayType(mutatedNode)) ?? mutatedNode;
+    }
+
+    mutatedNode.item.type = this.AnyType(mutatedNode.item.type);
 
     if (this.visitor.leave?.ArrayType) {
-      this.visitor.leave.ArrayType(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.ArrayType(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
-  MapType(node: MapType) {
+  MapType(node: MapType): MapType {
+    let mutatedNode = node;
+
     if (this.visitor.enter?.MapType) {
-      this.visitor.enter.MapType(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.MapType(mutatedNode)) ?? mutatedNode;
     }
-    this.AnyType(node.value.type);
+
+    mutatedNode.value.type = this.AnyType(mutatedNode.value.type);
 
     if (this.visitor.leave?.MapType) {
-      this.visitor.leave.MapType(node);
+      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.MapType(mutatedNode)) ?? mutatedNode;
     }
+
+    return mutatedNode;
   }
 
   visit(node: Abi) {
