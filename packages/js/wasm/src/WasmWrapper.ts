@@ -5,7 +5,11 @@ import { IFileReader } from "./IFileReader";
 import { WRAP_MODULE_PATH } from "./constants";
 import { createWasmWrapper } from "./helpers/createWasmWrapper";
 
-import { getInitialPageCount, PoolHandle, WasmMemoryPool } from "@polywrap/wasm-memory-js";
+import {
+  getInitialPageCount,
+  PoolHandle,
+  WasmMemoryPool,
+} from "@polywrap/wasm-memory-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
@@ -55,8 +59,8 @@ export class WasmWrapper implements Wrapper {
 
   constructor(
     private _manifest: WrapManifest,
-    private _fileReader: IFileReader,
-  ) { }
+    private _fileReader: IFileReader
+  ) {}
 
   static async from(
     manifestBuffer: Uint8Array,
@@ -258,11 +262,11 @@ export class WasmWrapper implements Wrapper {
     if (this._wasmMemoryPool) {
       this._wasmMemoryPool = new WasmMemoryPool({
         memoryConfig: {
-          initial: getInitialPageCount(wasm)
+          initial: getInitialPageCount(wasm),
         },
         max: 5,
         min: 1,
-        sleepMs: 100
+        sleepMs: 100,
       });
     }
 
@@ -270,7 +274,7 @@ export class WasmWrapper implements Wrapper {
       throw Error("This should never happen...");
     }
 
-    return await this._wasmMemoryPool.acquire()
+    return await this._wasmMemoryPool.acquire();
   }
 
   private async _getWasmModule(): Promise<Result<Uint8Array, string>> {

@@ -13,6 +13,7 @@ import {
 } from "./";
 import { BuildStrategy } from "./build-strategies/BuildStrategy";
 
+import { getInitialPageCount } from "@polywrap/wasm-memory-js";
 import { WasmWrapper, WrapImports } from "@polywrap/wasm-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath } from "@polywrap/os-js";
@@ -184,7 +185,9 @@ export class Compiler {
     };
 
     try {
-      const memory = AsyncWasmInstance.createMemory({ module: wasmSource });
+      const memory = new WebAssembly.Memory({
+        initial: getInitialPageCount(wasmSource),
+      });
       await AsyncWasmInstance.createInstance({
         module: wasmSource,
         imports: {

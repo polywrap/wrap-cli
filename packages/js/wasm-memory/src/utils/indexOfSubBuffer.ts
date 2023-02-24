@@ -1,4 +1,7 @@
-export function indexOfSubBuffer(source: Uint8Array, search: Uint8Array): number {
+export function indexOfSubBuffer(
+  source: Uint8Array,
+  search: Uint8Array
+): number {
   let run = true;
   let start = 0;
 

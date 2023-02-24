@@ -29,10 +29,7 @@ export function getInitialPageCount(moduleBuffer: ArrayBuffer): number {
 
   const moduleView = new Uint8Array(moduleBuffer);
 
-  const sigIdx = indexOfSubBuffer(
-    moduleView,
-    envMemoryImportSignature
-  );
+  const sigIdx = indexOfSubBuffer(moduleView, envMemoryImportSignature);
 
   if (sigIdx < 0) {
     throw Error(
@@ -48,9 +45,7 @@ export function getInitialPageCount(moduleBuffer: ArrayBuffer): number {
     moduleView[sigIdx + envMemoryImportSignature.length + 1];
 
   if (memoryInitalLimits === undefined) {
-    throw Error(
-      "No initial memory number found, this should never happen..."
-    );
+    throw Error("No initial memory number found, this should never happen...");
   }
 
   return memoryInitalLimits;
