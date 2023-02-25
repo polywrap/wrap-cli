@@ -1,4 +1,4 @@
-import { Abi, LocalImportStatement, SchemaParser } from "@polywrap/abi-types"
+import { Abi, ExternalImportStatement, LocalImportStatement, SchemaParser } from "@polywrap/abi-types"
 import { AbiImportsLinker } from "../AbiImportsLinker"
 import { AbiMerger } from "../AbiMerger"
 import { AbiTreeShaker } from "../AbiTreeShaker"
@@ -405,8 +405,23 @@ describe("AbiImportsLinker", () => {
       version: "0.2",
     }
 
-    const localAbi1: Abi = {
+    const extAbi1: Abi = {
       version: "0.2",
+      imports: [
+        {
+          id: "0",
+          type: "wasm",
+          uri: "ext1",
+          namespace: "BAR",
+          enums: [
+            {
+              kind: "Enum",
+              name: "Bar",
+              constants: ["ONE", "TWO"]
+            }
+          ]
+        }
+      ],
       objects: [
         {
           kind: "Object",
@@ -441,7 +456,7 @@ describe("AbiImportsLinker", () => {
       ]
     }
 
-    const localAbi2: Abi = {
+    const extAbi2: Abi = {
       version: "0.2",
       enums: [
         {
@@ -459,68 +474,57 @@ describe("AbiImportsLinker", () => {
 
     const expectedAbi: Abi = {
       version: "0.2",
-      objects: [
+      imports: [
         {
-          kind: "Object",
-          name: "Some",
-          props: [
-            {
-              kind: "Property",
-              name: "propSome",
-              required: true,
-              type: {
-                kind: "Scalar",
-                scalar: "String",
-              }
-            }
-          ]
-        }
-      ],
-      enums: [
+          id: "EXT1",
+          type: "wasm",
+          uri: "ext1",
+          namespace: "EXT1",
+          ...extAbi1
+        },
         {
-          kind: "Enum",
-          name: "Foo",
-          constants: ["ONE", "TWO"]
-        }
+          id: "EXT2",
+          type: "wasm",
+          uri: "ext2",
+          namespace: "EXT2",
+          ...extAbi2
+        },
       ]
     }
 
-    const localImportStatements: LocalImportStatement[] = [
+    const externalImportStatements: ExternalImportStatement[] = [
       {
-        kind: "local",
-        uriOrPath: "local1",
+        kind: "external",
+        uriOrPath: "ext1",
+        namespace: "EXT1",
         importedTypes: ["Some"]
       },
       {
-        kind: "local",
-        uriOrPath: "local2",
+        kind: "external",
+        uriOrPath: "ext2",
+        namespace: "EXT2",
         importedTypes: ["Foo"]
       },
     ]
 
     const fetchers = {
       external: {
-        fetch: jest.fn(),
+        fetch: (uriOrPath: string) => {
+          if (uriOrPath === "ext1") {
+            return Promise.resolve(extAbi1)
+          } else {
+            return Promise.resolve(extAbi2)
+          }
+        },
       },
       local: {
-        fetch: (uriOrPath: string) => Promise.resolve(uriOrPath)
+        fetch: jest.fn()
       }
     }
 
-    const parser: SchemaParser = {
-      parse: (uriOrPath: string) => {
-        if (uriOrPath === "local1") {
-          return Promise.resolve(localAbi1)
-        } else {
-          return Promise.resolve(localAbi2)
-        }
-      },
-      parseLocalImportStatements: (_: string) => Promise.resolve([]),
-      parseExternalImportStatements: (_: string) => Promise.resolve([]),
-    }
-    const linker = new AbiImportsLinker(parser, fetchers, new AbiMerger(), new AbiTreeShaker())
-    const mergedAbi = await linker.mergeLocalImports(abi, localImportStatements)
+    const linker = new AbiImportsLinker(mockSchemaParser(), fetchers, new AbiMerger(), new AbiTreeShaker())
+    const abiWithExports = await linker.embedExternalImports(abi, externalImportStatements)
 
-    expect(mergedAbi.abi).toEqual(expectedAbi)
+    expect(abiWithExports).toEqual(expectedAbi)
   })
 })
