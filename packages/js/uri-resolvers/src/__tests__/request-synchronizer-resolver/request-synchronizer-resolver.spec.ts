@@ -7,9 +7,9 @@ import {
   UriPackageOrWrapper,
   UriResolutionContext,
 } from "@polywrap/core-js";
-import { expectHistory } from "./helpers/expectHistory";
-import { RequestSynchronizerResolver } from "../cache";
-import { UriResolutionResult } from "../helpers";
+import { expectHistory } from "../helpers/expectHistory";
+import { RequestSynchronizerResolver } from "../../cache";
+import { UriResolutionResult } from "../../helpers";
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
 
 jest.setTimeout(200000);
@@ -114,6 +114,7 @@ describe("RequestSynchronizerResolver", () => {
       if (!foundFirst) {
         await expectHistory(
           resolutionContext.getHistory(),
+          "request-synchronizer-resolver",
           "synchronizer-without-cache"
         );
         expect(result.value.type).toEqual("uri");
@@ -123,6 +124,7 @@ describe("RequestSynchronizerResolver", () => {
 
       await expectHistory(
         resolutionContext.getHistory(),
+        "request-synchronizer-resolver",
         "synchronizer-with-cache"
       );
 
@@ -157,6 +159,7 @@ describe("RequestSynchronizerResolver", () => {
 
       await expectHistory(
         resolutionContext.getHistory(),
+        "request-synchronizer-resolver",
         "synchronizer-without-cache"
       );
       expect(result.value.type).toEqual("uri");
@@ -227,6 +230,7 @@ describe("RequestSynchronizerResolver", () => {
       if (!foundFirst) {
         await expectHistory(
           resolutionContext.getHistory(),
+          "request-synchronizer-resolver",
           "synchronizer-with-error-without-cache"
         );
         expect(result.ok).toBeFalsy();
@@ -236,6 +240,7 @@ describe("RequestSynchronizerResolver", () => {
 
       await expectHistory(
         resolutionContext.getHistory(),
+        "request-synchronizer-resolver",
         "synchronizer-with-error-and-cache"
       );
       expect(result.ok).toBeFalsy();
@@ -276,16 +281,19 @@ describe("RequestSynchronizerResolver", () => {
       if (i === 0) {
         await expectHistory(
           resolutionContext.getHistory(),
+          "request-synchronizer-resolver",
           "synchronizer-with-error-without-cache"
         );
       } else if (i === 1) {
         await expectHistory(
           resolutionContext.getHistory(),
+          "request-synchronizer-resolver",
           "synchronizer-with-error-without-cache-2"
         );
       } else {
         await expectHistory(
           resolutionContext.getHistory(),
+          "request-synchronizer-resolver",
           "synchronizer-with-error-without-cache-3"
         );
       }
@@ -316,6 +324,7 @@ describe("RequestSynchronizerResolver", () => {
       if (!foundFirst) {
         await expectHistory(
           resolutionContext.getHistory(),
+          "request-synchronizer-resolver",
           "synchronizer-with-error-without-cache"
         );
         expect(result.ok).toBeFalsy();
@@ -325,6 +334,7 @@ describe("RequestSynchronizerResolver", () => {
 
       await expectHistory(
         resolutionContext.getHistory(),
+        "request-synchronizer-resolver",
         "synchronizer-with-error-and-cache"
       );
       expect(result.ok).toBeFalsy();
