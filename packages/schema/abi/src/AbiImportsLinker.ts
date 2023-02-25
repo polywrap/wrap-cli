@@ -1,8 +1,9 @@
 import { IAbiMerger } from "./AbiMerger";
 import { IAbiTreeShaker } from "./AbiTreeShaker";
 
-import { Abi, ExternalImportStatement, ExternalSchemaFetcher, ImportedAbi, ImportRefType, LocalImportStatement, LocalSchemaFetcher, RefType, SchemaParser, UniqueDefKind } from "@polywrap/abi-types"
+import { Abi, ExternalImportStatement, ExternalSchemaFetcher, ImportedAbi, LocalImportStatement, LocalSchemaFetcher, SchemaParser, UniqueDefKind } from "@polywrap/abi-types"
 import { AbiVisitor } from "./AbiVisitor";
+import { LinkerVisitor } from "./UnlinkedRefVisitor";
 
 export interface IAbiImportsLinker {
   link: (rootAbi: Abi, importStatements?: {
@@ -121,7 +122,7 @@ export class AbiImportsLinker implements IAbiImportsLinker {
     const rootAbiUniqueDefsMap = this.getUniqueDefinitionsMap(rootAbi)
     const importMap = this.mapImportsToNamespacePaths(rootAbi)
 
-    const linkVisitor = new AbiVisitor({
+    const linkVisitor = new LinkerVisitor({
       enter: {
         UnlinkedImportRefType: (refType) => {
           const nameSplit = refType.ref_name.split("_");
@@ -133,10 +134,11 @@ export class AbiImportsLinker implements IAbiImportsLinker {
               throw new Error(`Could not find definition for ${refType.ref_name}`)
             }
 
-            // TODO: this is a hack around immutability, we should have a better way to do this
-            (refType as unknown as RefType).kind = "Ref";
-            (refType as unknown as RefType).ref_name = refType.ref_name;
-            (refType as unknown as RefType).ref_kind = foundDefinitionKind;
+            return {
+              kind: "Ref",
+              ref_name: refType.ref_name,
+              ref_kind: foundDefinitionKind
+            }
           } else {
             // if Foo_Bar_Baz_SomeDef, then namespace path is ["Baz", "Bar", "Foo"]
             const namespacePath = nameSplit.slice(0, -1).reverse()
@@ -157,10 +159,12 @@ export class AbiImportsLinker implements IAbiImportsLinker {
               throw new Error(`Could not find definition for ${refType.ref_name}`)
             }
 
-            // TODO: this is a hack around immutability, we should have a better way to do this
-            (refType as unknown as ImportRefType).kind = "ImportRef";
-            (refType as unknown as ImportRefType).ref_name = refName;
-            (refType as unknown as ImportRefType).import_id = importAbi.absoluteIdPath;
+            return {
+              kind: "ImportRef",
+              ref_name: refName,
+              ref_kind: foundDefinition.kind,
+              import_id: importAbi.absoluteIdPath
+            }
           }
         }
       },
