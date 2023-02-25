@@ -66,6 +66,11 @@ const expectHistory = async (
     "$root-wrapper-dir"
   );
 
+  fs.writeFileSync(
+    `${__dirname}/histories/${historyFileName}-new.json`,
+    receivedCleanHistory
+  );
+
   expect(receivedCleanHistory).toEqual(
     JSON.stringify(JSON.parse(expectedCleanHistory), null, 2)
   );

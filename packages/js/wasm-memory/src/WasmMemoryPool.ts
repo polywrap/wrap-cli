@@ -108,9 +108,7 @@ export class WasmMemoryPool {
       }
       memory = this._cache[id].memory;
     } else {
-      console.log("BEFORE WASM MEMORY ALLOC:", process.memoryUsage().rss * 0.000001, "MB")
       memory = new WebAssembly.Memory(this._config.memoryConfig);
-      console.log("AFTER WASM MEMORY ALLOC:", process.memoryUsage().rss * 0.000001, "MB")
     }
 
     const handle = {
@@ -128,6 +126,10 @@ export class WasmMemoryPool {
 
   private _cleanEntry(id: number) {
     this._cache[id].dirty = false;
-    new Uint8Array(this._cache[id].memory.buffer).fill(0);
+    // NOTE: this logic should technically be a zeroing out of the relevant
+    // memory sections, but when this is done the memory page grows linearly
+    // for some reason... so instead of reusing the memory instance, we allocate
+    // a new one and rely on the garbage collector to clean up dead references.
+    this._cache[id].memory = new WebAssembly.Memory(this._config.memoryConfig);
   }
 }
