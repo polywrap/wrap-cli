@@ -1,4 +1,4 @@
-import { Abi, AnyType, ArgumentDef, ArrayType, EnumDef, FunctionDef, ImportedAbi, ImportRefType, MapType, ObjectDef, PropertyDef, RefType, ResultDef, ScalarType, UnlinkedImportRefType } from "@polywrap/abi-types";
+import { Abi, AnyType, ArgumentDef, ArrayType, EnumDef, FunctionDef, ImportedAbi, ImportRefType, MapType, ObjectDef, PropertyDef, RefType, ResultDef, ScalarType } from "@polywrap/abi-types";
 
 type VisitorFunction<T> = (node: T) => T | void;
 
@@ -15,7 +15,6 @@ export interface IAbiVisitor {
   ScalarType?: VisitorFunction<ScalarType>;
   RefType?: VisitorFunction<RefType>;
   ImportRefType?: VisitorFunction<ImportRefType>;
-  UnlinkedImportRefType?: (node: UnlinkedImportRefType) => UnlinkedImportRefType;
   ArrayType?: VisitorFunction<ArrayType>;
   MapType?: VisitorFunction<MapType>;
   AnyType?: VisitorFunction<AnyType>;
@@ -29,7 +28,7 @@ export interface IAbiVisitorEnterAndLeave {
 export class AbiVisitor implements IAbiVisitor {
   constructor(protected readonly visitor: IAbiVisitorEnterAndLeave) { }
 
-  private coerceVoidToUndefined<T>(value: T | void): T | undefined {
+  protected coerceVoidToUndefined<T>(value: T | void): T | undefined {
     return value === undefined ? undefined : value;
   }
 
@@ -186,9 +185,6 @@ export class AbiVisitor implements IAbiVisitor {
       case "ImportRef":
         this.ImportRefType(mutatedNode);
         break;
-      case "UnlinkedImportRef":
-        this.UnlinkedImportRefType(mutatedNode);
-        break;
     }
 
     if (this.visitor.leave?.AnyType) {
@@ -235,20 +231,6 @@ export class AbiVisitor implements IAbiVisitor {
 
     if (this.visitor.leave?.ImportRefType) {
       mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.ImportRefType(mutatedNode)) ?? mutatedNode;
-    }
-
-    return mutatedNode;
-  }
-
-  UnlinkedImportRefType(node: UnlinkedImportRefType): UnlinkedImportRefType {
-    let mutatedNode = node;
-    
-    if (this.visitor.enter?.UnlinkedImportRefType) {
-      mutatedNode = this.coerceVoidToUndefined(this.visitor.enter.UnlinkedImportRefType(mutatedNode)) ?? mutatedNode;
-    }
-
-    if (this.visitor.leave?.UnlinkedImportRefType) {
-      mutatedNode = this.coerceVoidToUndefined(this.visitor.leave.UnlinkedImportRefType(mutatedNode)) ?? mutatedNode;
     }
 
     return mutatedNode;
