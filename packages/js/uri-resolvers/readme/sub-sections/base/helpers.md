@@ -58,6 +58,28 @@ $snippet: ResolverWithLoopGuard-from
 $snippet: ResolverWithLoopGuard-tryResolveUri
 ```
 
+## PackageToWrapperResolver
+```ts
+$snippet: PackageToWrapperResolver
+```
+
+### constructor
+```ts
+$snippet: PackageToWrapperResolver-constructor
+```
+
+### Methods
+
+#### from
+```ts
+$snippet: PackageToWrapperResolver-from
+```
+
+#### tryResolveUri
+```ts
+$snippet: PackageToWrapperResolver-tryResolveUri
+```
+
 ## UriResolutionResult
 ```ts
 $snippet: UriResolutionResult

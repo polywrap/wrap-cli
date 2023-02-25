@@ -12,7 +12,7 @@ import { RequestSynchronizerResolver } from "../../cache";
 import { UriResolutionResult } from "../../helpers";
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
 
-jest.setTimeout(200000);
+jest.setTimeout(20000);
 
 class SimpleAsyncRedirectResolver implements IUriResolver<Error> {
   async tryResolveUri(
