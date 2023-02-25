@@ -269,7 +269,7 @@ export class WasmWrapper implements Wrapper {
     if (!this._wasmMemoryPool) {
       this._wasmMemoryPool = new WasmMemoryPool({
         memoryConfig: {
-          initial: getInitialPageCount(wasm)
+          initial: getInitialPageCount(wasm),
         },
         max: 5,
         min: 1,
