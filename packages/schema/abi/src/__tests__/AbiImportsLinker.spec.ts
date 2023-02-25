@@ -269,4 +269,258 @@ describe("AbiImportsLinker", () => {
 
     expect(mergedAbi.abi).toEqual(expectedAbi)
   })
+
+  it("Should merge local transitive imports", async () => {
+    const abi: Abi = {
+      version: "0.2",
+    }
+
+    const localAbi1: Abi = {
+      version: "0.2",
+      objects: [
+        {
+          kind: "Object",
+          name: "Some",
+          props: [
+            {
+              kind: "Property",
+              name: "propSome",
+              required: true,
+              type: {
+                kind: "Scalar",
+                scalar: "String",
+              }
+            }
+          ]
+        },
+        {
+          kind: "Object",
+          name: "WillBeShakenObj",
+          props: [
+            {
+              kind: "Property",
+              name: "propSome",
+              required: true,
+              type: {
+                kind: "Scalar",
+                scalar: "String",
+              }
+            }
+          ]
+        }
+      ]
+    }
+
+    const localAbi2: Abi = {
+      version: "0.2",
+      enums: [
+        {
+          kind: "Enum",
+          name: "Foo",
+          constants: ["ONE", "TWO"]
+        },
+        {
+          kind: "Enum",
+          name: "WillBeShakenEnum",
+          constants: ["THREE", "FOUR"]
+        }
+      ]
+    }
+
+    const expectedAbi: Abi = {
+      version: "0.2",
+      objects: [
+        {
+          kind: "Object",
+          name: "Some",
+          props: [
+            {
+              kind: "Property",
+              name: "propSome",
+              required: true,
+              type: {
+                kind: "Scalar",
+                scalar: "String",
+              }
+            }
+          ]
+        }
+      ],
+      enums: [
+        {
+          kind: "Enum",
+          name: "Foo",
+          constants: ["ONE", "TWO"]
+        }
+      ]
+    }
+
+    const localImportStatements: LocalImportStatement[] = [
+      {
+        kind: "local",
+        uriOrPath: "local1",
+        importedTypes: ["Some"]
+      }
+    ]
+
+    const fetchers = {
+      external: {
+        fetch: jest.fn(),
+      },
+      local: {
+        fetch: (uriOrPath: string) => Promise.resolve(uriOrPath)
+      }
+    }
+
+    const parser: SchemaParser = {
+      parse: (uriOrPath: string) => {
+        if (uriOrPath === "local1") {
+          return Promise.resolve(localAbi1)
+        } else {
+          return Promise.resolve(localAbi2)
+        }
+      },
+      parseLocalImportStatements: (uriOrPath: string) => {
+        if (uriOrPath === "local1") {
+          return Promise.resolve([
+            {
+              kind: "local",
+              uriOrPath: "local2",
+              importedTypes: ["Foo"]
+            }
+          ])
+        }
+        return Promise.resolve([])
+      },
+      parseExternalImportStatements: (_: string) => Promise.resolve([]),
+    }
+    const linker = new AbiImportsLinker(parser, fetchers, new AbiMerger(), new AbiTreeShaker())
+    const mergedAbi = await linker.mergeLocalImports(abi, localImportStatements)
+
+    expect(mergedAbi.abi).toEqual(expectedAbi)
+  })
+
+  it("Should embed external imports", async () => {
+    const abi: Abi = {
+      version: "0.2",
+    }
+
+    const localAbi1: Abi = {
+      version: "0.2",
+      objects: [
+        {
+          kind: "Object",
+          name: "Some",
+          props: [
+            {
+              kind: "Property",
+              name: "propSome",
+              required: true,
+              type: {
+                kind: "Scalar",
+                scalar: "String",
+              }
+            }
+          ]
+        },
+        {
+          kind: "Object",
+          name: "WillBeShakenObj",
+          props: [
+            {
+              kind: "Property",
+              name: "propSome",
+              required: true,
+              type: {
+                kind: "Scalar",
+                scalar: "String",
+              }
+            }
+          ]
+        }
+      ]
+    }
+
+    const localAbi2: Abi = {
+      version: "0.2",
+      enums: [
+        {
+          kind: "Enum",
+          name: "Foo",
+          constants: ["ONE", "TWO"]
+        },
+        {
+          kind: "Enum",
+          name: "WillBeShakenEnum",
+          constants: ["THREE", "FOUR"]
+        }
+      ]
+    }
+
+    const expectedAbi: Abi = {
+      version: "0.2",
+      objects: [
+        {
+          kind: "Object",
+          name: "Some",
+          props: [
+            {
+              kind: "Property",
+              name: "propSome",
+              required: true,
+              type: {
+                kind: "Scalar",
+                scalar: "String",
+              }
+            }
+          ]
+        }
+      ],
+      enums: [
+        {
+          kind: "Enum",
+          name: "Foo",
+          constants: ["ONE", "TWO"]
+        }
+      ]
+    }
+
+    const localImportStatements: LocalImportStatement[] = [
+      {
+        kind: "local",
+        uriOrPath: "local1",
+        importedTypes: ["Some"]
+      },
+      {
+        kind: "local",
+        uriOrPath: "local2",
+        importedTypes: ["Foo"]
+      },
+    ]
+
+    const fetchers = {
+      external: {
+        fetch: jest.fn(),
+      },
+      local: {
+        fetch: (uriOrPath: string) => Promise.resolve(uriOrPath)
+      }
+    }
+
+    const parser: SchemaParser = {
+      parse: (uriOrPath: string) => {
+        if (uriOrPath === "local1") {
+          return Promise.resolve(localAbi1)
+        } else {
+          return Promise.resolve(localAbi2)
+        }
+      },
+      parseLocalImportStatements: (_: string) => Promise.resolve([]),
+      parseExternalImportStatements: (_: string) => Promise.resolve([]),
+    }
+    const linker = new AbiImportsLinker(parser, fetchers, new AbiMerger(), new AbiTreeShaker())
+    const mergedAbi = await linker.mergeLocalImports(abi, localImportStatements)
+
+    expect(mergedAbi.abi).toEqual(expectedAbi)
+  })
 })
