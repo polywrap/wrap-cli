@@ -3,7 +3,7 @@ import { IAbiTreeShaker } from "./AbiTreeShaker";
 
 import { Abi, ExternalImportStatement, ExternalSchemaFetcher, ImportedAbi, LocalImportStatement, LocalSchemaFetcher, SchemaParser, UniqueDefKind } from "@polywrap/abi-types"
 import { AbiVisitor } from "./AbiVisitor";
-import { LinkerVisitor } from "./UnlinkedRefVisitor";
+import { LinkerVisitor } from "./LinkerVisitor";
 
 export interface IAbiImportsLinker {
   link: (rootAbi: Abi, importStatements?: {
