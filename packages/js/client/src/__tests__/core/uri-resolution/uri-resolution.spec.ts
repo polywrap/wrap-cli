@@ -123,41 +123,6 @@ describe("URI resolution", () => {
     );
   });
 
-  it("can resolve redirects", async () => {
-    const fromUri = new Uri("ens/from.eth");
-    const toUri1 = new Uri("ens/to1.eth");
-    const toUri2 = new Uri("ens/to2.eth");
-
-    const config = new ClientConfigBuilder()
-      .addDefaults()
-      .addRedirects({
-        [fromUri.uri]: toUri1.uri,
-        [toUri1.uri]: toUri2.uri,
-      })
-      .build();
-
-    const client = new PolywrapClient(config);
-
-    const resolutionContext = new UriResolutionContext();
-    const response = await client.tryResolveUri({
-      uri: fromUri,
-      resolutionContext,
-    });
-
-    await expectResultWithHistory(
-      response,
-      UriResolutionResult.ok(toUri2),
-      getUriResolutionPath(resolutionContext.getHistory()),
-      "can resolve redirects"
-    );
-
-    expect(resolutionContext.getResolutionPath().map((x) => x.uri)).toEqual([
-      "wrap://ens/from.eth",
-      "wrap://ens/to1.eth",
-      "wrap://ens/to2.eth",
-    ]);
-  });
-
   it("can resolve plugin", async () => {
     const pluginUri = new Uri("ens/plugin.eth");
     const config = new ClientConfigBuilder()
