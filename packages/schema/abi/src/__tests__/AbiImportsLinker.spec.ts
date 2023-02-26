@@ -527,4 +527,607 @@ describe("AbiImportsLinker", () => {
 
     expect(abiWithExports).toEqual(expectedAbi)
   })
+
+  it("Link unlinked local and external import references", async () => {
+    const abi: Abi = {
+      version: "0.2",
+      imports: [
+        {
+          id: "0",
+          type: "wasm",
+          uri: "ext",
+          namespace: "EXT",
+          enums: [
+            {
+              kind: "Enum",
+              name: "Foo",
+              constants: ["ONE", "TWO"]
+            }
+          ]
+        }
+      ],
+      enums: [
+        {
+          kind: "Enum",
+          name: "Bar",
+          constants: ["ONE", "TWO"]
+        }
+      ],
+      objects: [
+        {
+          kind: "Object",
+          name: "Some",
+          props: [
+            {
+              kind: "Property",
+              name: "extProp",
+              required: true,
+              type: {
+                kind: "UnlinkedImportRef",
+                ref_name: "EXT_Foo",
+              }
+            },
+            {
+              kind: "Property",
+              name: "extBar",
+              required: true,
+              type: {
+                kind: "UnlinkedImportRef",
+                ref_name: "Bar",
+              }
+            }
+          ]
+        }
+      ]
+    }
+
+    const expectedAbi: Abi = {
+      version: "0.2",
+      imports: [
+        {
+          id: "0",
+          type: "wasm",
+          uri: "ext",
+          namespace: "EXT",
+          enums: [
+            {
+              kind: "Enum",
+              name: "Foo",
+              constants: ["ONE", "TWO"]
+            }
+          ]
+        }
+      ],
+      enums: [
+        {
+          kind: "Enum",
+          name: "Bar",
+          constants: ["ONE", "TWO"]
+        }
+      ],
+      objects: [
+        {
+          kind: "Object",
+          name: "Some",
+          props: [
+            {
+              kind: "Property",
+              name: "extProp",
+              required: true,
+              type: {
+                kind: "ImportRef",
+                ref_name: "Foo",
+                ref_kind: "Enum",
+                import_id: "0",
+              }
+            },
+            {
+              kind: "Property",
+              name: "extBar",
+              required: true,
+              type: {
+                kind: "Ref",
+                ref_name: "Bar",
+                ref_kind: "Enum",
+              }
+            }
+          ]
+        }
+      ]
+    }
+
+    const linker = new AbiImportsLinker(mockSchemaParser(), mockFetchers(), new AbiMerger(), new AbiTreeShaker())
+    const linkedAbi = await linker.linkImportReferences(abi)
+
+    expect(linkedAbi).toEqual(expectedAbi)
+  })
+
+  it("Link external nested/transitive import references", async () => {
+    const abi: Abi = {
+      version: "0.2",
+      imports: [
+        {
+          id: "0",
+          type: "wasm",
+          uri: "ext1",
+          namespace: "EXT1",
+          enums: [
+            {
+              kind: "Enum",
+              name: "Foo",
+              constants: ["ONE", "TWO"]
+            }
+          ],
+          imports: [
+            {
+              id: "1",
+              type: "wasm",
+              uri: "ext2",
+              namespace: "EXT2",
+              enums: [
+                {
+                  kind: "Enum",
+                  name: "Bar",
+                  constants: ["ONE", "TWO"]
+                }
+              ],
+              imports: [
+                {
+                  id: "2",
+                  type: "wasm",
+                  uri: "ext3",
+                  namespace: "EXT3",
+                  enums: [
+                    {
+                      kind: "Enum",
+                      name: "Baz",
+                      constants: ["ONE", "TWO"]
+                    }
+                  ],
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      objects: [
+        {
+          kind: "Object",
+          name: "Some",
+          props: [
+            {
+              kind: "Property",
+              name: "extProp",
+              required: true,
+              type: {
+                kind: "UnlinkedImportRef",
+                ref_name: "EXT1_Foo",
+              }
+            },
+            {
+              kind: "Property",
+              name: "extProp2",
+              required: true,
+              type: {
+                kind: "UnlinkedImportRef",
+                ref_name: "EXT1_EXT2_Bar",
+              }
+            },
+            {
+              kind: "Property",
+              name: "extProp3",
+              required: true,
+              type: {
+                kind: "UnlinkedImportRef",
+                ref_name: "EXT1_EXT2_EXT3_Baz",
+              }
+            },
+          ]
+        }
+      ]
+    }
+
+    const expectedAbi: Abi = {
+      version: "0.2",
+      imports: [
+        {
+          id: "0",
+          type: "wasm",
+          uri: "ext1",
+          namespace: "EXT1",
+          enums: [
+            {
+              kind: "Enum",
+              name: "Foo",
+              constants: ["ONE", "TWO"]
+            }
+          ],
+          imports: [
+            {
+              id: "1",
+              type: "wasm",
+              uri: "ext2",
+              namespace: "EXT2",
+              enums: [
+                {
+                  kind: "Enum",
+                  name: "Bar",
+                  constants: ["ONE", "TWO"]
+                }
+              ],
+              imports: [
+                {
+                  id: "2",
+                  type: "wasm",
+                  uri: "ext3",
+                  namespace: "EXT3",
+                  enums: [
+                    {
+                      kind: "Enum",
+                      name: "Baz",
+                      constants: ["ONE", "TWO"]
+                    }
+                  ],
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      objects: [
+        {
+          kind: "Object",
+          name: "Some",
+          props: [
+            {
+              kind: "Property",
+              name: "extProp",
+              required: true,
+              type: {
+                kind: "ImportRef",
+                ref_name: "Foo",
+                ref_kind: "Enum",
+                import_id: "0",
+              }
+            },
+            {
+              kind: "Property",
+              name: "extProp2",
+              required: true,
+              type: {
+                kind: "ImportRef",
+                ref_name: "Bar",
+                ref_kind: "Enum",
+                import_id: "0.1",
+              }
+            },
+            {
+              kind: "Property",
+              name: "extProp3",
+              required: true,
+              type: {
+                kind: "ImportRef",
+                ref_name: "Baz",
+                ref_kind: "Enum",
+                import_id: "0.1.2",
+              }
+            },
+          ]
+        }
+      ]
+    }
+
+    const linker = new AbiImportsLinker(mockSchemaParser(), mockFetchers(), new AbiMerger(), new AbiTreeShaker())
+    const linkedAbi = await linker.linkImportReferences(abi)
+
+    expect(linkedAbi).toEqual(expectedAbi)
+  })
+
+  it("Link ABI", async () => {
+    const extAbi: Abi = {
+      version: "0.2",
+      imports: [
+        {
+          id: "0",
+          type: "wasm",
+          uri: "ext2",
+          namespace: "BAR",
+          enums: [
+            {
+              kind: "Enum",
+              name: "Bar",
+              constants: ["ONE", "TWO"]
+            }
+          ]
+        }
+      ],
+      objects: [
+        {
+          kind: "Object",
+          name: "Foo",
+          props: [{
+            kind: "Property",
+            name: "transitiveProp",
+            required: true,
+            type: {
+              kind: "ImportRef",
+              ref_name: "Bar",
+              ref_kind: "Enum",
+              import_id: "0"
+            }
+          }]
+        }
+      ]
+    }
+
+    const transitiveLocalAbi: Abi = {
+      version: "0.2",
+      enums: [
+        {
+          kind: "Enum",
+          name: "TransitiveFoo",
+          constants: ["ONE", "TWO"]
+        }
+      ]
+    }
+
+    const localAbi: Abi = {
+      version: "0.2",
+      objects: [
+        {
+          kind: "Object",
+          name: "Some",
+          props: [
+            {
+              kind: "Property",
+              name: "propSome",
+              required: true,
+              type: {
+                kind: "Ref",
+                ref_kind: "Enum",
+                ref_name: "LocalFoo",
+              }
+            },
+            {
+              kind: "Property",
+              name: "propSome",
+              required: true,
+              type: {
+                kind: "UnlinkedImportRef",
+                ref_name: "TransitiveFoo",
+              }
+            }
+          ]
+        }
+      ],
+      enums: [
+        {
+          kind: "Enum",
+          name: "LocalFoo",
+          constants: ["ONE", "TWO"]
+        }
+      ]
+    }
+
+    const rootAbi: Abi = {
+      version: "0.2",
+      objects: [
+        {
+          kind: "Object",
+          name: "RefObj",
+          props: [
+            {
+              kind: "Property",
+              name: "propSome",
+              required: true,
+              type: {
+                kind: "UnlinkedImportRef",
+                ref_name: "EXT1_Foo",
+              }
+            },
+            {
+              kind: "Property",
+              name: "propSome2",
+              required: true,
+              type: {
+                kind: "UnlinkedImportRef",
+                ref_name: "Some",
+              }
+            }
+          ]
+        }
+      ]
+    }
+    
+    const expectedAbi: Abi = {
+      version: "0.2",
+      imports: [
+        {
+          id: "EXT1",
+          type: "wasm",
+          uri: "ext1",
+          namespace: "EXT1",
+          imports: [
+            {
+              id: "0",
+              type: "wasm",
+              uri: "ext2",
+              namespace: "BAR",
+              enums: [
+                {
+                  kind: "Enum",
+                  name: "Bar",
+                  constants: ["ONE", "TWO"]
+                }
+              ]
+            }
+          ],
+          objects: [
+            {
+              kind: "Object",
+              name: "Foo",
+              props: [{
+                kind: "Property",
+                name: "transitiveProp",
+                required: true,
+                type: {
+                  kind: "ImportRef",
+                  ref_name: "Bar",
+                  ref_kind: "Enum",
+                  import_id: "1"
+                }
+              }]
+            }
+          ]
+        }
+      ],
+      objects: [
+        {
+          kind: "Object",
+          name: "RefObj",
+          props: [
+            {
+              kind: "Property",
+              name: "propSome",
+              required: true,
+              type: {
+                kind: "ImportRef",
+                ref_kind: "Object",
+                ref_name: "Foo",
+                import_id: "EXT",
+              }
+            },
+            {
+              kind: "Property",
+              name: "propSome2",
+              required: true,
+              type: {
+                kind: "Ref",
+                ref_kind: "Object",
+                ref_name: "Some",
+              }
+            }
+          ]
+        },
+        {
+          kind: "Object",
+          name: "Some",
+          props: [
+            {
+              kind: "Property",
+              name: "propSome",
+              required: true,
+              type: {
+                kind: "Ref",
+                ref_kind: "Enum",
+                ref_name: "LocalFoo",
+              }
+            },
+            {
+              kind: "Property",
+              name: "propSome",
+              required: true,
+              type: {
+                kind: "Ref",
+                ref_kind: "Object",
+                ref_name: "TransitiveFoo",
+              }
+            }
+          ]
+        }
+      ],
+      enums: [
+        {
+          kind: "Enum",
+          name: "LocalFoo",
+          constants: ["ONE", "TWO"]
+        },
+        {
+          kind: "Enum",
+          name: "TransitiveFoo",
+          constants: ["ONE", "TWO"]
+        }
+      ]
+    }
+
+    const parser: SchemaParser = {
+      parse: async (schemaUri: string): Promise<Abi> => {
+        switch (schemaUri) {
+          case "local":
+            return Promise.resolve(localAbi)
+          case "transitiveLocal":
+            return Promise.resolve(transitiveLocalAbi)
+        }
+
+        throw new Error("Unknown schema")
+      },
+      parseExternalImportStatements: async (schemaUri: string): Promise<ExternalImportStatement[]> => {
+        if (schemaUri === "ext1") {
+          return Promise.resolve([
+            {
+              kind: "external",
+              namespace: "EXT1",
+              importedTypes: ["Foo"],
+              uriOrPath: "ext1",
+            }
+          ])
+        }
+
+        return Promise.resolve([])
+      },
+      parseLocalImportStatements: async (schemaUri: string): Promise<LocalImportStatement[]> => {
+        console.log("SCHEMA URI ", schemaUri)
+        if (schemaUri === "local") {
+          return Promise.resolve([
+            {
+              kind: "local",
+              importedTypes: ["TransitiveFoo"],
+              uriOrPath: "transitiveLocal",
+            }
+          ])
+        }
+        return Promise.resolve([])
+      }
+    }
+
+    const fetchers = {
+      external: {
+        fetch: async (uri: string): Promise<Abi> => {
+          return extAbi
+        }
+      },
+      local: {
+        fetch: async (path: string): Promise<string> => {
+          return path
+        }
+      }
+    }
+
+    const linker = new AbiImportsLinker(parser, fetchers, new AbiMerger(), new AbiTreeShaker())
+
+    const linkedAbi = await linker.link(rootAbi, {
+      local: [
+        {
+          kind: "local",
+          importedTypes: ["Some"],
+          uriOrPath: "local",
+        },
+        {
+          kind: "local",
+          importedTypes: ["TransitiveFoo"],
+          uriOrPath: "transitiveLocal",
+        }
+      ],
+      external: [
+        {
+          kind: "external",
+          namespace: "EXT1",
+          importedTypes: ["Foo"],
+          uriOrPath: "ext1",
+        }
+      ]
+    })
+
+    expect(linkedAbi).toEqual(expectedAbi)
+  })
 })
