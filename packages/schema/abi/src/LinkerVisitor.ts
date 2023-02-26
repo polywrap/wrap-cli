@@ -20,22 +20,22 @@ export class LinkerVisitor extends AbiVisitor {
 
     switch (mutatedNode.kind) {
       case "Scalar":
-        this.ScalarType(mutatedNode);
+        mutatedNode = this.ScalarType(mutatedNode);
         break;
       case "Array":
-        this.ArrayType(mutatedNode);
+        mutatedNode = this.ArrayType(mutatedNode);
         break;
       case "Map":
-        this.MapType(mutatedNode);
+        mutatedNode = this.MapType(mutatedNode);
         break;
       case "Ref":
-        this.RefType(mutatedNode);
+        mutatedNode = this.RefType(mutatedNode);
         break;
       case "ImportRef":
-        this.ImportRefType(mutatedNode);
+        mutatedNode = this.ImportRefType(mutatedNode);
         break;
       case "UnlinkedImportRef":
-        this.UnlinkedImportRefType(mutatedNode);
+        mutatedNode = this.UnlinkedImportRefType(mutatedNode);
         break;
     }
 

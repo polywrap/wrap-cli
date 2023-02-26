@@ -131,7 +131,7 @@ export class AbiImportsLinker implements IAbiImportsLinker {
             const foundDefinitionKind = rootAbiUniqueDefsMap.get(refType.ref_name)
 
             if (!foundDefinitionKind) {
-              throw new Error(`Could not find definition for ${refType.ref_name}`)
+              throw new Error(`Could not find local definition for ${refType.ref_name}`)
             }
 
             return {
@@ -140,8 +140,8 @@ export class AbiImportsLinker implements IAbiImportsLinker {
               ref_kind: foundDefinitionKind
             }
           } else {
-            // if Foo_Bar_Baz_SomeDef, then namespace path is ["Baz", "Bar", "Foo"]
-            const namespacePath = nameSplit.slice(0, -1).reverse()
+            // if Foo_Bar_Baz_SomeDef, then namespace path is ["Foo", "Bar", "Baz"]
+            const namespacePath = nameSplit.slice(0, -1)
             const refName = nameSplit.slice(-1)[0]
             const importAbi = importMap.get(namespacePath.join("_"))
 
@@ -150,13 +150,12 @@ export class AbiImportsLinker implements IAbiImportsLinker {
             }
 
             const foundDefinition = this._abiTreeShaker.findReferencedDefinition({
-              objects: importAbi.abi.objects,
-              enums: importAbi.abi.enums,
-              version: "0.2"
-            }, refType.ref_name)
+              version: "0.2",
+              ...importAbi.abi
+            }, refName)
 
             if (!foundDefinition) {
-              throw new Error(`Could not find definition for ${refType.ref_name}`)
+              throw new Error(`Could not find imported definition for ${refType.ref_name}`)
             }
 
             return {
@@ -180,7 +179,6 @@ export class AbiImportsLinker implements IAbiImportsLinker {
   }): Promise<Abi> {
     const localImportStatementsFromRoot = importStatements?.local || []
     const externalImportStatementsFromRoot = importStatements?.external || []
-
     const { abi: abiWithLocalImports, transitiveExternalImports } = await this.mergeLocalImports(rootAbi, localImportStatementsFromRoot)
 
     const externalImportStatements = [...externalImportStatementsFromRoot, ...transitiveExternalImports]
