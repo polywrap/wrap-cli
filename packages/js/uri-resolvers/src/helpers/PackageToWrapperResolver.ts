@@ -13,7 +13,7 @@ import { Result } from "@polywrap/result";
 // $start: PackageToWrapperResolver
 /**
  * An IUriResolver implementation that initalizes wrappers from resolved packages.
- * The PackageToWrapperResolver wraps a IUriResolver implementation and delegates resolution to it.
+ * The PackageToWrapperResolver wraps an IUriResolver implementation and delegates resolution to it.
  * */
 export class PackageToWrapperResolver<TError>
   implements IUriResolver<TError | Error> /* $ */ {
@@ -21,11 +21,11 @@ export class PackageToWrapperResolver<TError>
   /**
    * Creates a PackageToWrapperResolver
    *
-   * @param _resolverToCache - a resolver to delegate resolution to
+   * @param _resolver - a resolver to delegate resolution to
    * @param _options - control wrapper manifest deserialization
    * */
   constructor(
-    private _resolverToCache: IUriResolver<TError>,
+    private _resolver: IUriResolver<TError>,
     private _options?: {
       deserializeManifestOptions?: DeserializeManifestOptions;
     }
@@ -68,11 +68,7 @@ export class PackageToWrapperResolver<TError>
     // Resolve uri if not in cache
     const subContext = resolutionContext.createSubHistoryContext();
 
-    let result = await this._resolverToCache.tryResolveUri(
-      uri,
-      client,
-      subContext
-    );
+    let result = await this._resolver.tryResolveUri(uri, client, subContext);
 
     if (result.ok && result.value.type === "package") {
       const wrapPackage = result.value.package;

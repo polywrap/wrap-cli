@@ -14,7 +14,7 @@ import { Result } from "@polywrap/result";
 /**
  * An IUriResolver implementation that caches wrappers once they are resolved.
  * It does not cache URIs and packages.
- * The WrapperCacheResolver a IUriResolver implementation and delegates resolution to it.
+ * The WrapperCacheResolver wraps an IUriResolver implementation and delegates resolution to it.
  * */
 export class WrapperCacheResolver<TError>
   implements IUriResolver<TError | Error> /* $ */ {
