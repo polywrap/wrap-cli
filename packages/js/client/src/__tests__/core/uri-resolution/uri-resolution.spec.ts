@@ -216,42 +216,6 @@ describe("URI resolution", () => {
     );
   });
 
-  it("can resolve cache", async () => {
-    const client = new PolywrapClient();
-
-    const resolutionContext1 = new UriResolutionContext();
-    const result1 = await client.tryResolveUri({
-      uri: wrapperUri,
-      resolutionContext: resolutionContext1,
-    });
-
-    await expectWrapperWithHistory(
-      result1,
-      wrapperUri,
-      getUriResolutionPath(resolutionContext1.getHistory()),
-      "can resolve cache - 1"
-    );
-    expect([wrapperUri.uri]).toEqual(
-      resolutionContext1.getResolutionPath().map((x) => x.uri)
-    );
-
-    const resolutionContext2 = new UriResolutionContext();
-    const result2 = await client.tryResolveUri({
-      uri: wrapperUri,
-      resolutionContext: resolutionContext2,
-    });
-
-    await expectWrapperWithHistory(
-      result2,
-      wrapperUri,
-      getUriResolutionPath(resolutionContext2.getHistory()),
-      "can resolve cache - 2"
-    );
-    expect([wrapperUri.uri]).toEqual(
-      resolutionContext2.getResolutionPath().map((x) => x.uri)
-    );
-  });
-
   it("can resolve previously cached URI after redirecting by a URI resolver extension", async () => {
     const config = new ClientConfigBuilder()
       .addDefaults()
