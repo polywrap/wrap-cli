@@ -1,0 +1,3 @@
+[
+  "wrap://test/package => WrapperCacheResolver (Cache) => wrapper (wrap://test/package)"
+]
