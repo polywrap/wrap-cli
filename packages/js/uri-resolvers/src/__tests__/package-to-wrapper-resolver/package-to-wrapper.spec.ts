@@ -71,8 +71,6 @@ describe("PackageToWrapperResolver", () => {
 
     let resolutionContext = new UriResolutionContext();
     const result = await client.tryResolveUri({ uri, resolutionContext });
-    resolutionContext = new UriResolutionContext();
-    await client.tryResolveUri({ uri, resolutionContext });
 
     await expectHistory(
       resolutionContext.getHistory(),
@@ -102,8 +100,6 @@ describe("PackageToWrapperResolver", () => {
 
     let resolutionContext = new UriResolutionContext();
     const result = await client.tryResolveUri({ uri, resolutionContext });
-    resolutionContext = new UriResolutionContext();
-    await client.tryResolveUri({ uri, resolutionContext });
 
     await expectHistory(
       resolutionContext.getHistory(),
@@ -133,8 +129,6 @@ describe("PackageToWrapperResolver", () => {
 
     let resolutionContext = new UriResolutionContext();
     const result = await client.tryResolveUri({ uri, resolutionContext });
-    resolutionContext = new UriResolutionContext();
-    await client.tryResolveUri({ uri, resolutionContext });
 
     await expectHistory(
       resolutionContext.getHistory(),
