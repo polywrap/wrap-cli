@@ -31,6 +31,7 @@
   "devDependencies": {
     "@polywrap/core-client-js": "0.10.0-pre.8",
     "@polywrap/client-config-builder-js": "0.10.0-pre.8",
+    "@polywrap/plugin-js": "0.10.0-pre.8",
     "@types/jest": "26.0.8",
     "doc-snippets": "~1.0.0",
     "jest": "26.6.3",
