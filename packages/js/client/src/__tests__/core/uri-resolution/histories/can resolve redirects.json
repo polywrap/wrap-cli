@@ -1,0 +1,22 @@
+[
+  "wrap://ens/from.eth => RequestSynchronizerResolver => uri (wrap://ens/to1.eth)",
+  [
+    "wrap://ens/from.eth => PackageToWrapperCacheResolver => uri (wrap://ens/to1.eth)",
+    [
+      "wrap://ens/from.eth => UriResolverAggregator => uri (wrap://ens/to1.eth)",
+      [
+        "wrap://ens/from.eth => StaticResolver - Redirect (wrap://ens/from.eth - wrap://ens/to1.eth) => uri (wrap://ens/to1.eth)"
+      ]
+    ]
+  ],
+  "wrap://ens/to1.eth => RequestSynchronizerResolver => uri (wrap://ens/to2.eth)",
+  [
+    "wrap://ens/to1.eth => PackageToWrapperCacheResolver => uri (wrap://ens/to2.eth)",
+    [
+      "wrap://ens/to1.eth => UriResolverAggregator => uri (wrap://ens/to2.eth)",
+      [
+        "wrap://ens/to1.eth => StaticResolver - Redirect (wrap://ens/to1.eth - wrap://ens/to2.eth) => uri (wrap://ens/to2.eth)"
+      ]
+    ]
+  ]
+]

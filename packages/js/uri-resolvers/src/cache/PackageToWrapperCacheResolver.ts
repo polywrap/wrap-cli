@@ -8,49 +8,57 @@ import {
   IUriResolutionContext,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
+import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
-// $start: WrapperCacheResolver
+// $start: PackageToWrapperCacheResolver
 /**
  * An IUriResolver implementation that caches wrappers once they are resolved.
- * It does not cache URIs and packages.
- * The WrapperCacheResolver wraps an IUriResolver implementation and delegates resolution to it.
+ * The PackageToWrapeprCacheResolver wraps one or more IUriResolver
+ * implementations and delegates resolution to them.
  * */
-export class WrapperCacheResolver<TError>
+export class PackageToWrapperCacheResolver<TError>
   implements IUriResolver<TError | Error> /* $ */ {
-  // $start: WrapperCacheResolver-constructor
+  // TODO: the name property is never assigned
+  // $start: PackageToWrapperCacheResolver-constructor
   /**
-   * Creates a WrapperCacheResolvers
+   * Create a PackageToWrapperCacheResolver
    *
    * @param _resolverToCache - a resolver to delegate resolution to
    * @param _cache - a wrapper cache
+   * @param _options - control wrapper manifest deserialization
    * */
   constructor(
     private _resolverToCache: IUriResolver<TError>,
-    private _cache: IWrapperCache
+    private _cache: IWrapperCache,
+    private _options?: {
+      deserializeManifestOptions?: DeserializeManifestOptions;
+    }
   ) /* $ */ {}
 
-  // $start: WrapperCacheResolver-from
+  // $start: PackageToWrapperCacheResolver-from
   /**
-   * Creates a WrapperCacheResolver from a resolver-like object
+   * Create a PackageToWrapperCacheResolver from a resolver-like object
    *
    * @param resolver - a resolver-like item to delegate resolution to
    * @param cache - a wrapper cache
    * @param options - control wrapper manifest deserialization
    *
-   * @returns a WrapperCacheResolver
+   * @returns a PackageToWrapperCacheResolver
    * */
   static from<TResolverError = unknown>(
     resolver: UriResolverLike,
     cache: IWrapperCache,
-  ): WrapperCacheResolver<TResolverError> /* $ */ {
-    return new WrapperCacheResolver(
+    options?: { deserializeManifestOptions?: DeserializeManifestOptions }
+  ): PackageToWrapperCacheResolver<TResolverError> /* $ */ {
+    return new PackageToWrapperCacheResolver(
       UriResolver.from<TResolverError>(resolver),
-      cache
+      cache,
+      options
     );
   }
 
-  // $start: WrapperCacheResolver-tryResolveUri
+  // $start: PackageToWrapperCacheResolver-tryResolveUri
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
    * If successful, cache the result.
@@ -74,7 +82,7 @@ export class WrapperCacheResolver<TError>
       resolutionContext.trackStep({
         sourceUri: uri,
         result,
-        description: "WrapperCacheResolver (Cache)",
+        description: "PackageToWrapperCacheResolver (Cache)",
       });
       return result;
     }
@@ -82,18 +90,39 @@ export class WrapperCacheResolver<TError>
     // Resolve uri if not in cache
     const subContext = resolutionContext.createSubHistoryContext();
 
-    const result = await this._resolverToCache.tryResolveUri(
+    let result = await this._resolverToCache.tryResolveUri(
       uri,
       client,
       subContext
     );
 
-    if (result.ok && result.value.type === "wrapper") {
-      const wrapper = result.value.wrapper;
-      const resolutionPath: Uri[] = subContext.getResolutionPath();
+    if (result.ok) {
+      if (result.value.type === "package") {
+        const wrapPackage = result.value.package;
+        const resolutionPath: Uri[] = subContext.getResolutionPath();
 
-      for (const uri of resolutionPath) {
-        await this._cache.set(uri, wrapper);
+        const createResult = await wrapPackage.createWrapper({
+          noValidate: this._options?.deserializeManifestOptions?.noValidate,
+        });
+
+        if (!createResult.ok) {
+          return createResult;
+        }
+
+        const wrapper = createResult.value;
+
+        for (const uri of resolutionPath) {
+          await this._cache.set(uri, wrapper);
+        }
+
+        result = UriResolutionResult.ok(result.value.uri, wrapper);
+      } else if (result.value.type === "wrapper") {
+        const wrapper = result.value.wrapper;
+        const resolutionPath: Uri[] = subContext.getResolutionPath();
+
+        for (const uri of resolutionPath) {
+          await this._cache.set(uri, wrapper);
+        }
       }
     }
 
@@ -101,7 +130,7 @@ export class WrapperCacheResolver<TError>
       sourceUri: uri,
       result,
       subHistory: subContext.getHistory(),
-      description: "WrapperCacheResolver",
+      description: "PackageToWrapperCacheResolver",
     });
     return result;
   }

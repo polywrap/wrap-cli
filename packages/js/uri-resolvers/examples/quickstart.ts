@@ -1,7 +1,7 @@
 import { IUriResolver } from "@polywrap/core-js";
 import {
   PackageResolver,
-  WrapperCacheResolver,
+  PackageToWrapperCacheResolver,
   RecursiveResolver,
   RedirectResolver,
   StaticResolver,
@@ -15,17 +15,17 @@ export function example(): IUriResolver<unknown> {
   const packages: PackageResolver[] = [];
   // $start: quickstart-example
   const resolver = RecursiveResolver.from(
-    WrapperCacheResolver.from(
-      [
-        StaticResolver.from([
-            ...redirects,
-            ...wrappers,
-            ...packages,
-          ]),
-      ],
-      new WrapperCache()
-    )
-  );
+      PackageToWrapperCacheResolver.from(
+        [
+          StaticResolver.from([
+              ...redirects,
+              ...wrappers,
+              ...packages,
+            ]),
+          ],
+          new WrapperCache()
+        )
+      );
   // $end
 
   return resolver;

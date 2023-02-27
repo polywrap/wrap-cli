@@ -3,7 +3,6 @@ import fs from "fs";
 
 export const expectHistory = async (
   receivedHistory: IUriResolutionStep<unknown>[] | undefined,
-  directory: string,
   historyFileName: string
 ): Promise<void> => {
   if (!receivedHistory) {
@@ -11,7 +10,7 @@ export const expectHistory = async (
   }
 
   const expectedCleanHistoryStr = await fs.promises.readFile(
-    `${__dirname}/../${directory}/histories/${historyFileName}.json`,
+    `${__dirname}/../histories/${historyFileName}.json`,
     "utf-8"
   );
   const expectedCleanHistory = JSON.stringify(JSON.parse(expectedCleanHistoryStr), null, 2);

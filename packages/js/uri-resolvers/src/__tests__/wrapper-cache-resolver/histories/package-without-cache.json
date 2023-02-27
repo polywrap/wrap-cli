@@ -1,6 +1,0 @@
-[
-  "wrap://test/package => WrapperCacheResolver => wrapper (wrap://test/package)",
-  [
-    "wrap://test/package => SimplePackageResolver => wrapper (wrap://test/package)"
-  ]
-]
