@@ -1,10 +1,15 @@
 import { Abi, ExternalImportStatement, LocalImportStatement, SchemaParser } from "@polywrap/abi-types"
 import { AbiImportsLinker } from "../AbiImportsLinker"
 import { AbiMerger } from "../AbiMerger"
+import { AbiSanitizer } from "../AbiSanitizer"
 import { AbiTreeShaker } from "../AbiTreeShaker"
 import { mockFetchers, mockSchemaParser } from "./mocks"
 
 describe("AbiImportsLinker", () => {
+  const merger = new AbiMerger()
+  const shaker = new AbiTreeShaker(merger)
+  const sanitizer = new AbiSanitizer()
+
   it("Should extract unique definitions", () => {
     const abi: Abi = {
       version: "0.2",
@@ -49,7 +54,7 @@ describe("AbiImportsLinker", () => {
       ],
     }
 
-    const linker = new AbiImportsLinker(mockSchemaParser(), mockFetchers(), new AbiMerger(), new AbiTreeShaker())
+    const linker = new AbiImportsLinker(mockSchemaParser(), mockFetchers(), merger, shaker)
     const uniqueDefinitions = linker.getUniqueDefinitionsMap(abi)
     const expectedUniqueDefinitions = new Map([
       ["Some", "Object"],
@@ -140,7 +145,7 @@ describe("AbiImportsLinker", () => {
       ["FOO_BAR_BAZ", { abi: bazImport, absoluteIdPath: "0.1.2" }]
     ])
 
-    const linker = new AbiImportsLinker(mockSchemaParser(), mockFetchers(), new AbiMerger(), new AbiTreeShaker())
+    const linker = new AbiImportsLinker(mockSchemaParser(), mockFetchers(), merger, shaker)
     const mapping = linker.mapImportsToNamespacePaths(abi);
 
     expect(mapping).toEqual(expectedMapping)
@@ -264,10 +269,10 @@ describe("AbiImportsLinker", () => {
       parseLocalImportStatements: (_: string) => Promise.resolve([]),
       parseExternalImportStatements: (_: string) => Promise.resolve([]),
     }
-    const linker = new AbiImportsLinker(parser, fetchers, new AbiMerger(), new AbiTreeShaker())
+    const linker = new AbiImportsLinker(parser, fetchers, merger, shaker)
     const mergedAbi = await linker.mergeLocalImports(abi, localImportStatements)
 
-    expect(mergedAbi.abi).toEqual(expectedAbi)
+    expect(sanitizer.sanitizeAbi(mergedAbi.abi)).toEqual(expectedAbi)
   })
 
   it("Should merge local transitive imports", async () => {
@@ -394,10 +399,10 @@ describe("AbiImportsLinker", () => {
       },
       parseExternalImportStatements: (_: string) => Promise.resolve([]),
     }
-    const linker = new AbiImportsLinker(parser, fetchers, new AbiMerger(), new AbiTreeShaker())
+    const linker = new AbiImportsLinker(parser, fetchers, merger, shaker)
     const mergedAbi = await linker.mergeLocalImports(abi, localImportStatements)
 
-    expect(mergedAbi.abi).toEqual(expectedAbi)
+    expect(sanitizer.sanitizeAbi(mergedAbi.abi)).toEqual(expectedAbi)
   })
 
   it("Should embed external imports", async () => {
@@ -480,14 +485,20 @@ describe("AbiImportsLinker", () => {
           type: "wasm",
           uri: "ext1",
           namespace: "EXT1",
-          ...extAbi1
+          objects: extAbi1.objects,
+          enums: extAbi1.enums,
+          functions: extAbi1.functions,
+          imports: extAbi1.imports
         },
         {
           id: "EXT2",
           type: "wasm",
           uri: "ext2",
           namespace: "EXT2",
-          ...extAbi2
+          objects: extAbi2.objects,
+          enums: extAbi2.enums,
+          functions: extAbi2.functions,
+          imports: extAbi2.imports
         },
       ]
     }
@@ -522,10 +533,10 @@ describe("AbiImportsLinker", () => {
       }
     }
 
-    const linker = new AbiImportsLinker(mockSchemaParser(), fetchers, new AbiMerger(), new AbiTreeShaker())
+    const linker = new AbiImportsLinker(mockSchemaParser(), fetchers, merger, shaker)
     const abiWithExports = await linker.embedExternalImports(abi, externalImportStatements)
 
-    expect(abiWithExports).toEqual(expectedAbi)
+    expect(sanitizer.sanitizeAbi(abiWithExports)).toEqual(expectedAbi)
   })
 
   it("Link unlinked local and external import references", async () => {
@@ -636,7 +647,7 @@ describe("AbiImportsLinker", () => {
       ]
     }
 
-    const linker = new AbiImportsLinker(mockSchemaParser(), mockFetchers(), new AbiMerger(), new AbiTreeShaker())
+    const linker = new AbiImportsLinker(mockSchemaParser(), mockFetchers(), merger, shaker)
     const linkedAbi = await linker.linkImportReferences(abi)
 
     expect(linkedAbi).toEqual(expectedAbi)
@@ -817,7 +828,7 @@ describe("AbiImportsLinker", () => {
       ]
     }
 
-    const linker = new AbiImportsLinker(mockSchemaParser(), mockFetchers(), new AbiMerger(), new AbiTreeShaker())
+    const linker = new AbiImportsLinker(mockSchemaParser(), mockFetchers(), merger, shaker)
     const linkedAbi = await linker.linkImportReferences(abi)
 
     expect(linkedAbi).toEqual(expectedAbi)
@@ -1103,7 +1114,7 @@ describe("AbiImportsLinker", () => {
       }
     }
 
-    const linker = new AbiImportsLinker(parser, fetchers, new AbiMerger(), new AbiTreeShaker())
+    const linker = new AbiImportsLinker(parser, fetchers, merger, shaker)
 
     const linkedAbi = await linker.link(rootAbi, {
       local: [
@@ -1123,6 +1134,6 @@ describe("AbiImportsLinker", () => {
       ]
     })
 
-    expect(linkedAbi).toEqual(expectedAbi)
+    expect(sanitizer.sanitizeAbi(linkedAbi)).toEqual(expectedAbi)
   })
 })
