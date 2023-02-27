@@ -36,7 +36,6 @@ export type AnyDeployManifest =
   | DeployManifest_0_2_0
 
 
-
 export type DeployManifest = DeployManifest_0_2_0;
 
 export const latestDeployManifestFormat = DeployManifestFormats["v0.2.0"]

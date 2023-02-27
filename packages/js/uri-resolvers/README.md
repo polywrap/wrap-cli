@@ -278,7 +278,6 @@ export class PackageToWrapperCacheResolver<TError>
     private _cache: IWrapperCache,
     private _options?: {
       deserializeManifestOptions?: DeserializeManifestOptions;
-      endOnRedirect?: boolean;
     }
   ) 
 ```
@@ -299,10 +298,7 @@ export class PackageToWrapperCacheResolver<TError>
   static from<TResolverError = unknown>(
     resolver: UriResolverLike,
     cache: IWrapperCache,
-    options?: {
-      deserializeManifestOptions?: DeserializeManifestOptions;
-      endOnRedirect?: boolean;
-    }
+    options?: { deserializeManifestOptions?: DeserializeManifestOptions }
   ): PackageToWrapperCacheResolver<TResolverError> 
 ```
 
@@ -752,6 +748,73 @@ export type StaticResolverLike =
   | IUriWrapper
   | StaticResolverLike[];
 ```
+
+## RequestSynchronizerResolver
+```ts
+/* Uri resolver that synchronizes requests to the same URI
+ * Multiple requests to the same URI will be resolved only once
+ * and the result will be cached for subsequent requests (only for the duration of that first request)
+ * Can use the `shouldIgnoreCache` option to determine whether to ignore the cached request in case of an error
+ * (default is to use the cache)
+ */
+export class RequestSynchronizerResolver<TError>
+  implements IUriResolver<TError> 
+```
+
+### constructor
+```ts
+  /**
+   * Construct a RequestSynchronizerResolver
+   *
+   * @param resolverToSynchronize - the inner resolve whose resolution will be synchronized
+   * @param options - the optional options containing the `shouldIgnoreCache` error handler
+   * */
+  constructor(
+    private resolverToSynchronize: IUriResolver<TError>,
+    private options?: {
+      shouldIgnoreCache?: (error: TError | undefined) => boolean;
+    }
+  ) 
+```
+
+### Methods
+
+#### from
+```ts
+  /**
+   * Create a RequestSynchronizerResolver from a static-resolver-like object
+   *
+   * @param resolver - a resolver-like object whose resolution will be synchronized
+   * @param options - the optional options containing the `shouldIgnoreCache` error handler
+   *
+   * @returns a RequestSynchronizerResolver
+   * */
+  static from<TResolverError = unknown>(
+    resolver: UriResolverLike,
+    options?: {
+      shouldIgnoreCache?: (error: TResolverError | undefined) => boolean;
+    }
+  ): RequestSynchronizerResolver<TResolverError> 
+```
+
+#### tryResolveUri
+```ts
+  /**
+   * Resolve a URI to a wrap package, a wrapper, or a URI.
+   * Attempts to resolve the URI using each of the aggregated resolvers sequentially.
+   *
+   * @param uri - the URI to resolve
+   * @param client - a CoreClient instance that may be used to invoke a wrapper that implements the UriResolver interface
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
+  async tryResolveUri(
+    uri: Uri,
+    client: CoreClient,
+    resolutionContext: IUriResolutionContext
+  ): Promise<Result<UriPackageOrWrapper, TError>> 
+```
+
 
 ## Development
 

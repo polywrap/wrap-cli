@@ -62,7 +62,7 @@ export class CacheDirectory {
 
   public writeCacheFile(
     subPath: string,
-    data: unknown,
+    data: string | NodeJS.ArrayBufferView,
     options?: fs.WriteFileOptions
   ): void {
     const filePath = this.getCachePath(subPath);

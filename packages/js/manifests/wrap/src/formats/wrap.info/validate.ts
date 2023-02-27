@@ -17,7 +17,7 @@ import {
   ValidationError,
   ValidatorResult
 } from "jsonschema";
-import { resolve, $Refs } from "json-schema-ref-parser";
+import { resolve, $Refs } from "@bcherny/json-schema-ref-parser";
 
 type WrapManifestSchemas = {
   [key in WrapManifestVersions]: Schema | undefined

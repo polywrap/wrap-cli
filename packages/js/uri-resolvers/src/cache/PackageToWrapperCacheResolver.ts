@@ -1,5 +1,5 @@
 import { IWrapperCache } from "./IWrapperCache";
-import { UriResolver, UriResolutionResult, UriResolverLike } from "../helpers";
+import { UriResolutionResult, UriResolver, UriResolverLike } from "../helpers";
 
 import {
   IUriResolver,
@@ -20,8 +20,6 @@ import { Result } from "@polywrap/result";
 export class PackageToWrapperCacheResolver<TError>
   implements IUriResolver<TError | Error> /* $ */ {
   // TODO: the name property is never assigned
-  name: string;
-
   // $start: PackageToWrapperCacheResolver-constructor
   /**
    * Create a PackageToWrapperCacheResolver
@@ -35,7 +33,6 @@ export class PackageToWrapperCacheResolver<TError>
     private _cache: IWrapperCache,
     private _options?: {
       deserializeManifestOptions?: DeserializeManifestOptions;
-      endOnRedirect?: boolean;
     }
   ) /* $ */ {}
 
@@ -52,10 +49,7 @@ export class PackageToWrapperCacheResolver<TError>
   static from<TResolverError = unknown>(
     resolver: UriResolverLike,
     cache: IWrapperCache,
-    options?: {
-      deserializeManifestOptions?: DeserializeManifestOptions;
-      endOnRedirect?: boolean;
-    }
+    options?: { deserializeManifestOptions?: DeserializeManifestOptions }
   ): PackageToWrapperCacheResolver<TResolverError> /* $ */ {
     return new PackageToWrapperCacheResolver(
       UriResolver.from<TResolverError>(resolver),
@@ -81,6 +75,7 @@ export class PackageToWrapperCacheResolver<TError>
   ): Promise<Result<UriPackageOrWrapper, TError | Error>> /* $ */ {
     const wrapper = await this._cache.get(uri);
 
+    // Return from cache if available
     if (wrapper) {
       const result = UriResolutionResult.ok(uri, wrapper);
 
@@ -92,6 +87,7 @@ export class PackageToWrapperCacheResolver<TError>
       return result;
     }
 
+    // Resolve uri if not in cache
     const subContext = resolutionContext.createSubHistoryContext();
 
     let result = await this._resolverToCache.tryResolveUri(
