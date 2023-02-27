@@ -1087,7 +1087,6 @@ describe("AbiImportsLinker", () => {
         return Promise.resolve([])
       },
       parseLocalImportStatements: async (schemaUri: string): Promise<LocalImportStatement[]> => {
-        console.log("SCHEMA URI ", schemaUri)
         if (schemaUri === "local") {
           return Promise.resolve([
             {

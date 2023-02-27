@@ -74,19 +74,36 @@ export class AbiTreeShaker implements IAbiTreeShaker {
     return result;
   }
 
-  extractImportReferences(abi: Abi | ImportedAbi): ImportRefType[] {
-    const result: ImportRefType[] = [];
+  extractImportReferences(abi: Abi): ImportRefType[] {
+    const refsWithAbsIds: ImportRefType[] = [];
+    const state: { currentId: string[] } = { currentId: [] };
     const abiVisitor = new AbiVisitor({
       enter: {
+        Import: (importDef) => {
+          state.currentId.push(importDef.id);
+        },
         ImportRefType: (ref) => {
-          result.push(ref);
+          state.currentId.push(ref.import_id);
+          
+          refsWithAbsIds.push({
+            ...ref,
+            import_id: state.currentId.join("."),
+          });
+        },
+      },
+      leave: {
+        Import: () => {
+          state.currentId.pop();
+        },
+        ImportRefType: () => {
+          state.currentId.pop();
         }
       }
     });
 
     abiVisitor.visit(abi);
 
-    return result;
+    return refsWithAbsIds;
   }
 
   extractReferencedSiblingDefinitions(abi: Abi | ImportedAbi, defs: AbiDefs): AbiDefs {
@@ -143,7 +160,7 @@ export class AbiTreeShaker implements IAbiTreeShaker {
     return result;
   }
 
-  private _shakeImports(abi: Abi | ImportedAbi, neededImports: ImportRefType[]): Abi | ImportedAbi {
+  private _shakeImports(abi: Abi, neededImports: ImportRefType[]): Abi {
 
     let abiClone = JSON.parse(JSON.stringify(abi));
 
@@ -161,9 +178,7 @@ export class AbiTreeShaker implements IAbiTreeShaker {
           const neededFromThisImport = state.neededImports
             .filter((neededImport) => neededImport.import_id === currentId)
             .map((neededImport) => neededImport.ref_name)
-
           const shakenImportDef = this.shakeLocalDefinitions(importDef, neededFromThisImport) as ImportedAbi
-          state.neededImports.push(...this.extractImportReferences(importDef));
 
           return shakenImportDef
         }
@@ -181,7 +196,7 @@ export class AbiTreeShaker implements IAbiTreeShaker {
     return abiClone;
   }
 
-  shakeImports(abi: Abi | ImportedAbi): Abi | ImportedAbi {
+  shakeImports(abi: Abi): Abi {
     const neededImports = this.extractImportReferences(abi);
     const treeWithShakenImports = this._shakeImports(abi, neededImports);
 
@@ -201,9 +216,9 @@ export class AbiTreeShaker implements IAbiTreeShaker {
     }
   }
 
-  shakeTree(abi: Abi | ImportedAbi, neededDefNames: string[]): Abi | ImportedAbi {
+  shakeTree(abi: Abi, neededDefNames: string[]): Abi | ImportedAbi {
     const shakenTree = this.shakeLocalDefinitions(abi, neededDefNames);
-    const shakenTreeWithShakenImports = this.shakeImports(shakenTree);
+    const shakenTreeWithShakenImports = this.shakeImports(shakenTree as Abi);
     return shakenTreeWithShakenImports;
   }
 }

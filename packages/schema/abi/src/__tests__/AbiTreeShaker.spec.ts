@@ -261,4 +261,239 @@ describe("AbiTreeShaker", () => {
     const sanitizer = new AbiSanitizer();
     expect(sanitizer.sanitizeAbi(shakenAbi)).toEqual(expectedAbi)
   });
+
+  it("Detects and keeps transitive import definitions", async () => {
+    const merger = new AbiMerger();
+    const abiTreeShaker = new AbiTreeShaker(merger);
+
+    const abi: Abi = {
+      version: "0.2",
+      objects: [
+        {
+          kind: "Object",
+          name: "Foo",
+          props: [
+            {
+              kind: "Property",
+              required: true,
+              name: "baz",
+              type: {
+                kind: "ImportRef",
+                ref_name: "Baz",
+                ref_kind: "Object",
+                import_id: "2"
+              }
+            }
+          ]
+        }
+      ],
+      imports: [
+        {
+          namespace: "EXT2",
+          uri: "uri2",
+          id: "2",
+          type: "wasm",
+          objects: [
+            {
+              kind: "Object",
+              name: "Baz",
+              props: [
+                {
+                  kind: "Property",
+                  required: true,
+                  name: "bar",
+                  type: {
+                    kind: "ImportRef",
+                    ref_name: "Bar",
+                    ref_kind: "Enum",
+                    import_id: "1"
+                  }
+                },
+                {
+                  kind: "Property",
+                  required: true,
+                  name: "bar2",
+                  type: {
+                    kind: "Ref",
+                    ref_name: "BazEnum",
+                    ref_kind: "Enum"
+                  }
+                },
+                {
+                  kind: "Property",
+                  required: true,
+                  name: "bar2",
+                  type: {
+                    kind: "ImportRef",
+                    import_id: "1.3",
+                    ref_name: "FooBar",
+                    ref_kind: "Enum"
+                  }
+                }
+              ]
+            }
+          ],
+          enums: [
+            {
+              kind: "Enum",
+              name: "BazEnum",
+              constants: ["ONE", "TWO"]
+            },
+            {
+              kind: "Enum",
+              name: "BazEnum2",
+              constants: ["ONE", "TWO"]
+            }
+          ],
+          imports: [
+            {
+              namespace: "EXT1",
+              uri: "uri1",
+              id: "1",
+              type: "wasm",
+              enums: [
+                {
+                  kind: "Enum",
+                  name: "Bar",
+                  constants: ["ONE", "TWO"]
+                }
+              ],
+              imports: [
+                {
+                  namespace: "EXT3",
+                  uri: "uri3",
+                  id: "3",
+                  type: "wasm",
+                  enums: [
+                    {
+                      kind: "Enum",
+                      name: "FooBar",
+                      constants: ["ONE", "TWO"]
+                    },
+                    {
+                      kind: "Enum",
+                      name: "FooBar2",
+                      constants: ["ONE", "TWO"]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+
+    const expectedAbi: Abi = {
+      version: "0.2",
+      objects: [
+        {
+          kind: "Object",
+          name: "Foo",
+          props: [
+            {
+              kind: "Property",
+              required: true,
+              name: "baz",
+              type: {
+                kind: "ImportRef",
+                ref_name: "Baz",
+                ref_kind: "Object",
+                import_id: "2"
+              }
+            }
+          ]
+        }
+      ],
+      imports: [
+        {
+          namespace: "EXT2",
+          uri: "uri2",
+          id: "2",
+          type: "wasm",
+          objects: [
+            {
+              kind: "Object",
+              name: "Baz",
+              props: [
+                {
+                  kind: "Property",
+                  required: true,
+                  name: "bar",
+                  type: {
+                    kind: "ImportRef",
+                    ref_name: "Bar",
+                    ref_kind: "Enum",
+                    import_id: "1"
+                  }
+                },
+                {
+                  kind: "Property",
+                  required: true,
+                  name: "bar2",
+                  type: {
+                    kind: "Ref",
+                    ref_name: "BazEnum",
+                    ref_kind: "Enum"
+                  }
+                },
+                {
+                  kind: "Property",
+                  required: true,
+                  name: "bar2",
+                  type: {
+                    kind: "ImportRef",
+                    import_id: "1.3",
+                    ref_name: "FooBar",
+                    ref_kind: "Enum"
+                  }
+                }
+              ]
+            }
+          ],
+          enums: [
+            {
+              kind: "Enum",
+              name: "BazEnum",
+              constants: ["ONE", "TWO"]
+            }
+          ],
+          imports: [
+            {
+              namespace: "EXT1",
+              uri: "uri1",
+              id: "1",
+              type: "wasm",
+              enums: [
+                {
+                  kind: "Enum",
+                  name: "Bar",
+                  constants: ["ONE", "TWO"]
+                }
+              ],
+              imports: [
+                {
+                  namespace: "EXT3",
+                  uri: "uri3",
+                  id: "3",
+                  type: "wasm",
+                  enums: [
+                    {
+                      kind: "Enum",
+                      name: "FooBar",
+                      constants: ["ONE", "TWO"]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+
+    const shakenAbi = abiTreeShaker.shakeImports(abi)
+    const sanitizer = new AbiSanitizer();
+    expect(sanitizer.sanitizeAbi(shakenAbi)).toEqual(expectedAbi)
+  });
 })
