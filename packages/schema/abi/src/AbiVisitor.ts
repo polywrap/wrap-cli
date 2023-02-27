@@ -3,7 +3,7 @@ import { Abi, AnyType, ArgumentDef, ArrayType, EnumDef, FunctionDef, ImportedAbi
 type VisitorFunction<T> = (node: T) => T | void;
 
 export interface IAbiVisitor {
-  Abi?: VisitorFunction<Abi>;
+  Abi?: VisitorFunction<Abi | ImportedAbi>;
   ImportedAbi?: VisitorFunction<ImportedAbi>;
   Import?: VisitorFunction<ImportedAbi>;
   FunctionDef?: VisitorFunction<FunctionDef>;
@@ -32,7 +32,7 @@ export class AbiVisitor implements IAbiVisitor {
     return value === undefined ? undefined : value;
   }
 
-  Abi(node: Abi): Abi {
+  Abi(node: Abi | ImportedAbi): Abi | ImportedAbi {
     let mutatedNode = node;
 
     if (this.visitor.enter?.Abi) {
@@ -171,19 +171,19 @@ export class AbiVisitor implements IAbiVisitor {
 
     switch (mutatedNode.kind) {
       case "Scalar":
-        this.ScalarType(mutatedNode);
+        mutatedNode = this.ScalarType(mutatedNode);
         break;
       case "Array":
-        this.ArrayType(mutatedNode);
+        mutatedNode = this.ArrayType(mutatedNode);
         break;
       case "Map":
-        this.MapType(mutatedNode);
+        mutatedNode = this.MapType(mutatedNode);
         break;
       case "Ref":
-        this.RefType(mutatedNode);
+        mutatedNode = this.RefType(mutatedNode);
         break;
       case "ImportRef":
-        this.ImportRefType(mutatedNode);
+        mutatedNode = this.ImportRefType(mutatedNode);
         break;
     }
 
@@ -268,7 +268,7 @@ export class AbiVisitor implements IAbiVisitor {
     return mutatedNode;
   }
 
-  visit(node: Abi) {
+  visit(node: Abi | ImportedAbi) {
     this.Abi(node);
   }
 }
