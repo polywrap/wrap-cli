@@ -974,7 +974,7 @@ describe("AbiImportsLinker", () => {
                   kind: "ImportRef",
                   ref_name: "Bar",
                   ref_kind: "Enum",
-                  import_id: "1"
+                  import_id: "0"
                 }
               }]
             }
@@ -994,7 +994,7 @@ describe("AbiImportsLinker", () => {
                 kind: "ImportRef",
                 ref_kind: "Object",
                 ref_name: "Foo",
-                import_id: "EXT",
+                import_id: "EXT1",
               }
             },
             {
@@ -1029,7 +1029,7 @@ describe("AbiImportsLinker", () => {
               required: true,
               type: {
                 kind: "Ref",
-                ref_kind: "Object",
+                ref_kind: "Enum",
                 ref_name: "TransitiveFoo",
               }
             }
@@ -1111,11 +1111,6 @@ describe("AbiImportsLinker", () => {
           kind: "local",
           importedTypes: ["Some"],
           uriOrPath: "local",
-        },
-        {
-          kind: "local",
-          importedTypes: ["TransitiveFoo"],
-          uriOrPath: "transitiveLocal",
         }
       ],
       external: [

@@ -184,8 +184,8 @@ export class AbiImportsLinker implements IAbiImportsLinker {
     const externalImportStatements = [...externalImportStatementsFromRoot, ...transitiveExternalImports]
     const abiWithExtImports = await this.embedExternalImports(abiWithLocalImports, externalImportStatements)
     const abiWithLinkedRefs = this.linkImportReferences(abiWithExtImports)
-    const linkedAbiWithShakenExtImports = await this._abiTreeShaker.shakeImports(abiWithLinkedRefs)
+    // const linkedAbiWithShakenExtImports = await this._abiTreeShaker.shakeImports(abiWithLinkedRefs)
 
-    return linkedAbiWithShakenExtImports
+    return abiWithLinkedRefs
   }
 }
