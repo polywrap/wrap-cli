@@ -2,6 +2,7 @@ import { AbiMerger } from "./AbiMerger";
 import { AbiTreeShaker } from "./AbiTreeShaker";;
 import { AbiImportsLinker } from "./AbiImportsLinker";
 import { ExternalSchemaFetcher, LocalSchemaFetcher, SchemaParser, Abi } from "@polywrap/abi-types";
+import { AbiSanitizer } from "./AbiSanitizer";
 
 export * from "./AbiImportsLinker"
 export * from "./AbiMerger"
@@ -23,12 +24,14 @@ export const parseAndLinkSchema = async ({ schema, parser, fetchers }: Args): Pr
   const localImportStatements = await parser.parseLocalImportStatements(schema)
 
   const merger = new AbiMerger()
-  const shaker = new AbiTreeShaker()
+  const sanitizer = new AbiSanitizer()
+  const shaker = new AbiTreeShaker(merger)
   const linker = new AbiImportsLinker(parser, fetchers, merger, shaker)
   const linkedAbi = await linker.link(abi, {
     external: externalImportStatements,
     local: localImportStatements
   })
-
-  return linkedAbi
+  const shakenAbi = await shaker.shakeImports(linkedAbi)
+  const sanitizedAbi = sanitizer.sanitizeAbi(shakenAbi)
+  return sanitizedAbi as Abi
 }

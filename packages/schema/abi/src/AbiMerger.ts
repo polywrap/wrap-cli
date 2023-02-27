@@ -1,36 +1,24 @@
-import { Abi, ImportedAbi } from "@polywrap/abi-types";
+import { Abi, AbiDefs, ImportedAbi } from "@polywrap/abi-types";
 
 export interface IAbiMerger {
-  merge(abis: Abi[]): Abi
+  merge(rootAbi: Abi, abisToMerge: (Abi | ImportedAbi)[]): Abi
+  mergeDefs(defs: AbiDefs[]): AbiDefs
 }
 
 export class AbiMerger implements IAbiMerger {
-  merge(abis: Abi[]): Abi {
-    return this._removeEmptyArrays({
-      // TODO: handle different versions?
-      version: "0.2",
-      objects: abis.reduce((acc, abi) => [...acc, ...(abi.objects ?? [])], []),
-      enums: abis.reduce((acc, abi) => [...acc, ...(abi.enums ?? [])], []),
-      functions: abis.reduce((acc, abi) => [...acc, ...(abi.functions ?? [])], []),
-      imports: abis.reduce((acc, abi) => [...acc, ...(abi.imports ?? [])], [])
-    }) as Abi
+  merge(rootAbi: Abi, abisToMerge: (Abi | ImportedAbi)[]): Abi {
+    return {
+      ...rootAbi,
+      ...this.mergeDefs([rootAbi, ...abisToMerge]),
+      imports: [rootAbi, ...abisToMerge].reduce((acc, abi) => [...acc, ...(abi.imports ?? [])], [])
+    }
   }
 
-  private _removeEmptyArrays(abi: Abi | ImportedAbi): Abi | ImportedAbi {
-    const processed = {
-      objects: abi.objects?.length ? abi.objects : undefined,
-      enums: abi.enums?.length ? abi.enums : undefined,
-      functions: abi.functions?.length ? abi.functions : undefined,
-      imports: abi.imports?.length ? abi.imports.map(this._removeEmptyArrays) as ImportedAbi[] : undefined
+  mergeDefs(defs: AbiDefs[]): AbiDefs {
+    return {
+      objects: defs.reduce((acc, def) => [...acc, ...(def.objects ?? [])], []),
+      enums: defs.reduce((acc, def) => [...acc, ...(def.enums ?? [])], []),
+      functions: defs.reduce((acc, def) => [...acc, ...(def.functions ?? [])], [])
     }
-
-    if ((abi as Abi).version) {
-      return {
-        version: (abi as Abi).version,
-        ...processed
-      }
-    }
-
-    return processed as ImportedAbi
   }
 }

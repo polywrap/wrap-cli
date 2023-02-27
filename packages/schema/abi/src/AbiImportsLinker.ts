@@ -18,13 +18,16 @@ export class AbiImportsLinker implements IAbiImportsLinker {
     local: LocalSchemaFetcher;
   }, protected _abiMerger: IAbiMerger, protected _abiTreeShaker: IAbiTreeShaker) { }
 
-  async embedExternalImports(rootAbi: Abi, extImportStatements: ExternalImportStatement[]) {
-    let abiClone: Abi = JSON.parse(JSON.stringify(rootAbi));
+  async embedExternalImports(rootAbi: Abi | ImportedAbi, extImportStatements: ExternalImportStatement[]) {
+    let abiClone: Abi | ImportedAbi = JSON.parse(JSON.stringify(rootAbi));
 
     for await (const extImportStatement of extImportStatements) {
-      const externalSchema = await this._fetchers.external.fetch(extImportStatement.uriOrPath);
+      const externalAbi = await this._fetchers.external.fetch(extImportStatement.uriOrPath);
       const importedAbi: ImportedAbi = {
-        ...externalSchema,
+        objects: externalAbi.objects,
+        enums: externalAbi.enums,
+        functions: externalAbi.functions,
+        imports: externalAbi.imports,
         namespace: extImportStatement.namespace,
         id: extImportStatement.namespace,
         uri: extImportStatement.uriOrPath,
@@ -37,11 +40,11 @@ export class AbiImportsLinker implements IAbiImportsLinker {
     return abiClone
   }
 
-  async mergeLocalImports(rootAbi: Abi, localImportStatements: LocalImportStatement[]): Promise<{
-    abi: Abi,
+  async mergeLocalImports(rootAbi: Abi | ImportedAbi, localImportStatements: LocalImportStatement[]): Promise<{
+    abi: Abi | ImportedAbi,
     transitiveExternalImports: ExternalImportStatement[]
   }> {
-    let mergedAbi: Abi = JSON.parse(JSON.stringify(rootAbi))
+    let mergedAbi: Abi | ImportedAbi = JSON.parse(JSON.stringify(rootAbi))
     const transitiveExternalImports: ExternalImportStatement[] = []
 
     for await (const localImportStatement of localImportStatements) {
@@ -54,7 +57,7 @@ export class AbiImportsLinker implements IAbiImportsLinker {
 
       const transitiveLocalImports = await this._schemaParser.parseLocalImportStatements(localSchema)
       const subResult = await this.mergeLocalImports(localShakenAbi, transitiveLocalImports)
-      mergedAbi = this._abiMerger.merge([mergedAbi, subResult.abi])
+      mergedAbi = this._abiMerger.merge(mergedAbi as Abi, [subResult.abi])
       transitiveExternalImports.push(...subResult.transitiveExternalImports)
     }
 
@@ -149,10 +152,7 @@ export class AbiImportsLinker implements IAbiImportsLinker {
               throw new Error(`Could not find import for ${refType.ref_name}`)
             }
 
-            const foundDefinition = this._abiTreeShaker.findReferencedDefinition({
-              version: "0.2",
-              ...importAbi.abi
-            }, refName)
+            const foundDefinition = this._abiTreeShaker.findReferencedDefinition(importAbi.abi, refName)
 
             if (!foundDefinition) {
               throw new Error(`Could not find imported definition for ${refType.ref_name}`)
@@ -183,8 +183,7 @@ export class AbiImportsLinker implements IAbiImportsLinker {
 
     const externalImportStatements = [...externalImportStatementsFromRoot, ...transitiveExternalImports]
     const abiWithExtImports = await this.embedExternalImports(abiWithLocalImports, externalImportStatements)
-    const abiWithLinkedRefs = this.linkImportReferences(abiWithExtImports)
-    // const linkedAbiWithShakenExtImports = await this._abiTreeShaker.shakeImports(abiWithLinkedRefs)
+    const abiWithLinkedRefs = this.linkImportReferences(abiWithExtImports as Abi)
 
     return abiWithLinkedRefs
   }
