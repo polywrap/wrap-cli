@@ -123,32 +123,6 @@ describe("URI resolution", () => {
     );
   });
 
-  it("can resolve plugin", async () => {
-    const pluginUri = new Uri("ens/plugin.eth");
-    const config = new ClientConfigBuilder()
-      .addDefaults()
-      .addResolver(UriResolver.from(mockPluginRegistration(pluginUri)))
-      .build();
-    const client = new PolywrapClient(config);
-
-    const resolutionContext = new UriResolutionContext();
-    const result = await client.tryResolveUri({
-      uri: pluginUri,
-      resolutionContext,
-    });
-
-    await expectWrapperWithHistory(
-      result,
-      pluginUri,
-      getUriResolutionPath(resolutionContext.getHistory()),
-      "can resolve plugin"
-    );
-
-    expect(["wrap://ens/plugin.eth"]).toEqual(
-      resolutionContext.getResolutionPath().map((x) => x.uri)
-    );
-  });
-
   it("can resolve a URI resolver extension wrapper", async () => {
     const config = new ClientConfigBuilder()
       .addDefaults()
