@@ -8,9 +8,10 @@ import {
   UriResolutionContext,
 } from "@polywrap/core-js";
 import { expectHistory } from "../helpers/expectHistory";
-import { PackageToWrapperResolver, UriResolutionResult } from "../../helpers";
+import { UriResolutionResult } from "../../helpers";
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
 import { PluginPackage } from "@polywrap/plugin-js";
+import { WrapperCache, WrapperCacheResolver } from "../../cache";
 
 jest.setTimeout(20000);
 
@@ -63,15 +64,18 @@ describe("WrapperCacheResolver", () => {
   it("caches a resolved wrapper", async () => {
     const uri = new Uri("test/wrapper");
 
+    const cache = new WrapperCache();
     const client = new PolywrapCoreClient({
-      resolver: PackageToWrapperResolver.from(
-        new SimplePackageResolver()
+      resolver: WrapperCacheResolver.from(
+        new SimplePackageResolver(),
+        cache
       ),
     });
 
     let resolutionContext = new UriResolutionContext();
     let result = await client.tryResolveUri({ uri, resolutionContext });
 
+    console.log(cache);
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
@@ -112,8 +116,9 @@ describe("WrapperCacheResolver", () => {
     const uri = new Uri("test/from");
 
     const client = new PolywrapCoreClient({
-      resolver: PackageToWrapperResolver.from(
-        new SimplePackageResolver()
+      resolver: WrapperCacheResolver.from(
+        new SimplePackageResolver(),
+        new WrapperCache()
       ),
     });
 
@@ -142,7 +147,7 @@ describe("WrapperCacheResolver", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
-      "uri-with-cache",
+      "uri-without-cache",
     );
 
     if (!result.ok) {
@@ -160,8 +165,9 @@ describe("WrapperCacheResolver", () => {
     const uri = new Uri("test/package");
 
     const client = new PolywrapCoreClient({
-      resolver: PackageToWrapperResolver.from(
-        new SimplePackageResolver()
+      resolver: WrapperCacheResolver.from(
+        new SimplePackageResolver(),
+        new WrapperCache()
       ),
     });
 
@@ -190,7 +196,7 @@ describe("WrapperCacheResolver", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
-      "package-with-cache",
+      "package-without-cache",
     );
 
     if (!result.ok) {

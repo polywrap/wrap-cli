@@ -1,6 +1,6 @@
 [
-  "wrap://test/from => WrapperCacheResolver => wrapper (wrap://test/to)",
+  "wrap://test/from => WrapperCacheResolver => uri (wrap://test/to)",
   [
-    "wrap://test/from => SimplePackageResolver => wrapper (wrap://test/to)"
+    "wrap://test/from => SimplePackageResolver => uri (wrap://test/to)"
   ]
 ]

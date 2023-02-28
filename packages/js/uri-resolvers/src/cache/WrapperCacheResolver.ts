@@ -88,13 +88,17 @@ export class WrapperCacheResolver<TError>
       subContext
     );
 
+    console.log("RESULT", result);
     if (result.ok && result.value.type === "wrapper") {
       const wrapper = result.value.wrapper;
       const resolutionPath: Uri[] = subContext.getResolutionPath();
 
+      console.log("RESOLUTION PATH", subContext, result.value.uri.uri);
       for (const uri of resolutionPath) {
         await this._cache.set(uri, wrapper);
       }
+
+      await this._cache.set(result.value.uri, wrapper);
     }
 
     resolutionContext.trackStep({
