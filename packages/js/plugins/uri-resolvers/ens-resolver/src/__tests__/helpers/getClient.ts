@@ -7,8 +7,6 @@ import {
 } from "ethereum-provider-js";
 import {
   RecursiveResolver,
-  PackageToWrapperCacheResolver,
-  WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
@@ -53,45 +51,42 @@ export const getClient = () => {
       },
     ],
     resolver: RecursiveResolver.from(
-      PackageToWrapperCacheResolver.from(
-        [
-          {
-            uri: Uri.from(defaultInterfaces.ipfsHttpClient),
-            package: defaultEmbeddedPackages.ipfsHttpClient(),
-          },
-          {
-            uri: Uri.from(defaultPackages.ipfsResolver),
-            package: defaultEmbeddedPackages.ipfsResolver(),
-          },
-          {
-            uri: Uri.from(defaultInterfaces.ethereumProvider),
-            package: ethereumProviderPlugin({
-              connections: new Connections({
-                networks: {
-                  testnet: new Connection({
-                    provider: providers.ethereum,
-                  }),
-                },
-                defaultNetwork: "testnet",
-              }),
-            }),
-          },
-          {
-            uri: Uri.from(defaultPackages.ensResolver),
-            package: ensResolverPlugin({
-              addresses: {
-                testnet: ensAddresses.ensAddress,
+      [
+        {
+          uri: Uri.from(defaultInterfaces.ipfsHttpClient),
+          package: defaultEmbeddedPackages.ipfsHttpClient(),
+        },
+        {
+          uri: Uri.from(defaultPackages.ipfsResolver),
+          package: defaultEmbeddedPackages.ipfsResolver(),
+        },
+        {
+          uri: Uri.from(defaultInterfaces.ethereumProvider),
+          package: ethereumProviderPlugin({
+            connections: new Connections({
+              networks: {
+                testnet: new Connection({
+                  provider: providers.ethereum,
+                }),
               },
+              defaultNetwork: "testnet",
             }),
-          },
-          {
-            uri: Uri.from(defaultInterfaces.http),
-            package: httpPlugin({}),
-          },
-          new ExtendableUriResolver(),
-        ],
-        new WrapperCache()
-      )
+          }),
+        },
+        {
+          uri: Uri.from(defaultPackages.ensResolver),
+          package: ensResolverPlugin({
+            addresses: {
+              testnet: ensAddresses.ensAddress,
+            },
+          }),
+        },
+        {
+          uri: Uri.from(defaultInterfaces.http),
+          package: httpPlugin({}),
+        },
+        new ExtendableUriResolver(),
+      ]
     ),
   });
 };

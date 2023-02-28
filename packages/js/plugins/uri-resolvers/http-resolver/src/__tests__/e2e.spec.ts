@@ -67,8 +67,8 @@ describe("HTTP Plugin", () => {
       fail("Expected response to not be an error");
     }
 
-    if (result.value.type !== "wrapper") {
-      fail("Expected response to be a wrapper");
+    if (result.value.type !== "package") {
+      fail("Expected response to be a package");
     }
 
     const { data } = await axios.get(
@@ -79,7 +79,13 @@ describe("HTTP Plugin", () => {
     );
     const expectedManifest = await deserializeWrapManifest(data);
 
-    const manifest = await result.value.wrapper.getManifest();
+    const manifestResult = await result.value.package.getManifest();
+
+    if (!manifestResult.ok) {
+      fail(manifestResult.error);
+    }
+
+    const manifest = manifestResult.value;
 
     expect(manifest?.name).toBe("bigint-type");
     expect(manifest).toEqual(expectedManifest);
@@ -94,8 +100,8 @@ describe("HTTP Plugin", () => {
       fail("Expected response to not be an error");
     }
 
-    if (result.value.type !== "wrapper") {
-      fail("Expected response to be a wrapper");
+    if (result.value.type !== "package") {
+      fail("Expected response to be a package");
     }
 
     const { data } = await axios.get(
@@ -106,7 +112,13 @@ describe("HTTP Plugin", () => {
     );
     const expectedManifest = await deserializeWrapManifest(data);
 
-    const manifest = await result.value.wrapper.getManifest();
+    const manifestResult = await result.value.package.getManifest();
+
+    if (!manifestResult.ok) {
+      fail(manifestResult.error);
+    }
+
+    const manifest = manifestResult.value;
 
     expect(manifest?.name).toBe("bigint-type");
     expect(manifest).toEqual(expectedManifest);

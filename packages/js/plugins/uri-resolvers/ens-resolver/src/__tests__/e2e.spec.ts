@@ -76,11 +76,17 @@ describe("ENS Resolver Plugin", () => {
       throw result.error;
     }
 
-    if (result.value.type !== "wrapper") {
-      fail("Expected response to be a wrapper");
+    if (result.value.type !== "package") {
+      fail("Expected response to be a package");
     }
 
-    const manifest = await result.value.wrapper.getManifest();
+    const manifestResult = await result.value.package.getManifest();
+
+    if (!manifestResult.ok) {
+      fail(manifestResult.error);
+    }
+
+    const manifest = manifestResult.value;
 
     expect(manifest?.name).toBe("bigint-type");
   });
