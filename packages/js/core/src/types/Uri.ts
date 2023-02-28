@@ -135,7 +135,7 @@ export class Uri {
     }
 
     // Extract the authoriy & path
-    let result = processed.match(/wrap:\/\/([a-z][a-z0-9-_]+)\/(.*)/);
+    const result = processed.match(/wrap:\/\/([a-z][a-z0-9-_]+)\/(.*)/);
     let uriParts: string[];
 
     // Remove all empty strings
