@@ -32,17 +32,14 @@ Otherwise, you must also add the `ExtendableUriResolver` to your resolver.
       }
     ],
     resolver: RecursiveResolver.from(
-      PackageToWrapperCacheResolver.from(
-        [
-          StaticResolver.from([
-            ...redirects,
-            ...wrappers,
-            ...packages,
-          ]),
-          new ExtendableUriResolver(),
-        ],
-        new WrapperCache()
-      )
+      [
+        StaticResolver.from([
+          ...redirects,
+          ...wrappers,
+          ...packages,
+        ]),
+        new ExtendableUriResolver(),
+      ]
     )
   };
 ```

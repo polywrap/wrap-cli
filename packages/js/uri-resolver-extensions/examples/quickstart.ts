@@ -1,11 +1,9 @@
 import { CoreClientConfig, Uri } from "@polywrap/core-js";
 import {
   PackageResolver,
-  PackageToWrapperCacheResolver,
   RecursiveResolver,
   RedirectResolver,
   StaticResolver,
-  WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "../build";
 
@@ -27,17 +25,14 @@ export function example(): CoreClientConfig {
       }
     ],
     resolver: RecursiveResolver.from(
-      PackageToWrapperCacheResolver.from(
-        [
-          StaticResolver.from([
-            ...redirects,
-            ...wrappers,
-            ...packages,
-          ]),
-          new ExtendableUriResolver(),
-        ],
-        new WrapperCache()
-      )
+      [
+        StaticResolver.from([
+          ...redirects,
+          ...wrappers,
+          ...packages,
+        ]),
+        new ExtendableUriResolver(),
+      ]
     )
   };
   // $end
