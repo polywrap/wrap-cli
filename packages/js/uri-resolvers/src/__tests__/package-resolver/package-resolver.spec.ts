@@ -41,7 +41,7 @@ describe("PackageResolver", () => {
     expect(result.value.uri.uri).toEqual("wrap://test/package");
   });
 
-  it("does not resolver a package when not a match", async () => {
+  it("does not resolve a package when not a match", async () => {
     const uri = new Uri("test/not-a-match");
 
     const client = new PolywrapCoreClient({

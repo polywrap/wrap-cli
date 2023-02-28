@@ -45,7 +45,7 @@ describe("WrapperResolver", () => {
     expect(result.value.uri.uri).toEqual("wrap://test/wrapper");
   });
 
-  it("does not resolver a wrapper when not a match", async () => {
+  it("does not resolve a wrapper when not a match", async () => {
     const uri = new Uri("test/not-a-match");
 
     let wrapperResult = await PluginPackage.from(() => ({})).createWrapper();
