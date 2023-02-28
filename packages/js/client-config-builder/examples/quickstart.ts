@@ -5,7 +5,7 @@ import { WasmWrapper } from "@polywrap/wasm-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { RecursiveResolver, WrapperCache } from "@polywrap/uri-resolvers-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
-import { CoreClientConfig } from "@polywrap/core-js";
+import { CoreClientConfig, IWrapPackage } from "@polywrap/core-js";
 
 export function initialize(): ClientConfigBuilder {
   // $start: quickstart-initialize
@@ -32,12 +32,12 @@ export function configure(): ClientConfigBuilder {
 
   // add or remove items by chaining method calls
   builder
-    .addPackage("wrap://plugin/package", httpPlugin({}))
+    .addPackage("wrap://plugin/package", httpPlugin({}) as IWrapPackage)
     .removePackage("wrap://plugin/package")
     .addPackages(
       {
-        "wrap://plugin/http": httpPlugin({}),
-        "wrap://plugin/filesystem": fileSystemPlugin({}),
+        "wrap://plugin/http": httpPlugin({}) as IWrapPackage,
+        "wrap://plugin/filesystem": fileSystemPlugin({}) as IWrapPackage,
       }
     );
   // $end
@@ -106,10 +106,10 @@ export async function example(): Promise<CoreClientConfig> {
 
   // add and remove wrap packages
   builder
-    .addPackage("wrap://plugin/package", httpPlugin({}))
+    .addPackage("wrap://plugin/package", httpPlugin({}) as IWrapPackage)
     .removePackage("wrap://plugin/package")
     .addPackages({
-      "wrap://plugin/package": httpPlugin({})
+      "wrap://plugin/package": httpPlugin({}) as IWrapPackage
     })
 
   // add and remove Envs

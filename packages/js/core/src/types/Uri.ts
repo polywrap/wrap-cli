@@ -136,13 +136,16 @@ export class Uri {
 
     // Extract the authoriy & path
     let result = processed.match(/wrap:\/\/([a-z][a-z0-9-_]+)\/(.*)/);
+    let uriParts: string[];
 
     // Remove all empty strings
     if (result) {
-      result = result.filter((str) => !!str);
+      uriParts = result.filter((str) => !!str);
+    } else {
+      uriParts = [];
     }
 
-    if (!result || result.length !== 3) {
+    if (uriParts.length !== 3) {
       return ResultErr(
         Error(
           `URI is malformed, here are some examples of valid URIs:\n` +
@@ -156,8 +159,8 @@ export class Uri {
 
     return ResultOk({
       uri: processed,
-      authority: result[1],
-      path: result[2],
+      authority: uriParts[1],
+      path: uriParts[2],
     });
   }
 

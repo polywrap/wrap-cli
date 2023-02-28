@@ -55,33 +55,33 @@ export const defaultInterfaces = {
 };
 
 export const getDefaultPackages = (): Record<string, IWrapPackage> => {
-  return {
-    [defaultInterfaces.ipfsHttpClient]: defaultEmbeddedPackages.ipfsHttpClient(),
-    [defaultPackages.ipfsResolver]: defaultEmbeddedPackages.ipfsResolver(),
-    // ENS is required for resolving domain to IPFS hashes
-    [defaultPackages.ensResolver]: ensResolverPlugin({}),
-    // Ethereum is required for resolving domain to Ethereum addresses
-    [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
-      connections: new Connections({
-        networks: {
-          mainnet: new Connection({
-            provider:
-              "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-          }),
-          goerli: new Connection({
-            provider:
-              "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-          }),
-        },
-      }),
+  const packages: Record<string, IWrapPackage> = {};
+  packages[defaultInterfaces.ipfsHttpClient] = defaultEmbeddedPackages.ipfsHttpClient();
+  packages[defaultPackages.ipfsResolver] = defaultEmbeddedPackages.ipfsResolver();
+  // ENS is required for resolving domain to IPFS hashes
+  packages[defaultPackages.ensResolver] = ensResolverPlugin({});
+  // Ethereum is required for resolving domain to Ethereum addresses
+  packages[defaultInterfaces.ethereumProvider] = ethereumProviderPlugin({
+    connections: new Connections({
+      networks: {
+        mainnet: new Connection({
+          provider:
+            "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+        }),
+        goerli: new Connection({
+          provider:
+            "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+        }),
+      },
     }),
-    [defaultInterfaces.http]: httpPlugin({}),
-    [defaultPackages.httpResolver]: httpResolverPlugin({}),
-    [defaultInterfaces.logger]: loggerPlugin({}) as IWrapPackage,
-    [defaultInterfaces.fileSystem]: fileSystemPlugin({}),
-    [defaultPackages.fileSystemResolver]: fileSystemResolverPlugin({}),
-    [defaultInterfaces.concurrent]: concurrentPromisePlugin({}),
-  };
+  });
+  packages[defaultInterfaces.http] = httpPlugin({}) as IWrapPackage;
+  packages[defaultPackages.httpResolver] = httpResolverPlugin({});
+  packages[defaultInterfaces.logger] = loggerPlugin({}) as IWrapPackage;
+  packages[defaultInterfaces.fileSystem] = fileSystemPlugin({}) as IWrapPackage;
+  packages[defaultPackages.fileSystemResolver] = fileSystemResolverPlugin({});
+  packages[defaultInterfaces.concurrent] = concurrentPromisePlugin({});
+  return packages;
 };
 
 export const getDefaultConfig = (): BuilderConfig => ({

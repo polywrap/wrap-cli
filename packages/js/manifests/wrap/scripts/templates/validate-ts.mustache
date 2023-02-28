@@ -19,7 +19,10 @@ import {
   ValidationError,
   ValidatorResult
 } from "jsonschema";
-import { resolve, $Refs } from "@bcherny/json-schema-ref-parser";
+import { resolve, $Refs } from "@apidevtools/json-schema-ref-parser";
+// Workaround: https://github.com/APIDevTools/json-schema-ref-parser/issues/139#issuecomment-940500698
+import $RefParser from '@apidevtools/json-schema-ref-parser';
+$RefParser.resolve = $RefParser.resolve.bind($RefParser);
 
 type WrapManifestSchemas = {
   [key in WrapManifestVersions]: Schema | undefined

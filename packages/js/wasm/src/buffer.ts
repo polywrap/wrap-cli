@@ -46,7 +46,9 @@ function memcpy(
   dstOffset: number,
   length: number
 ): Uint8Array {
+  // @ts-ignore
   src = (src.subarray || src.slice ? src : src.buffer) as Uint8Array;
+  // @ts-ignore
   dst = (dst.subarray || dst.slice ? dst : dst.buffer) as Uint8Array;
 
   src = srcOffset
