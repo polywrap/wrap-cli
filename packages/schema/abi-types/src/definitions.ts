@@ -133,7 +133,7 @@ export interface ImportRefType extends Type {
 
 export interface UnlinkedImportRefType extends Type {
   kind: "UnlinkedImportRef";
-  ref_name: string;
+  namespaced_ref_name: string;
 }
 
 export interface OptionalType {

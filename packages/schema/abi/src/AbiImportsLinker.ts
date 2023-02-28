@@ -128,18 +128,19 @@ export class AbiImportsLinker implements IAbiImportsLinker {
     const linkVisitor = new LinkerVisitor({
       enter: {
         UnlinkedImportRefType: (refType) => {
-          const nameSplit = refType.ref_name.split("_");
+          const nameSplit = refType.namespaced_ref_name.split("_");
 
+          // if name isn't namespaced, then it's a local reference
           if (nameSplit.length < 2) {
-            const foundDefinitionKind = rootAbiUniqueDefsMap.get(refType.ref_name)
+            const foundDefinitionKind = rootAbiUniqueDefsMap.get(refType.namespaced_ref_name)
 
             if (!foundDefinitionKind) {
-              throw new Error(`Could not find local definition for ${refType.ref_name}`)
+              throw new Error(`Could not find local definition for ${refType.namespaced_ref_name}`)
             }
 
             return {
               kind: "Ref",
-              ref_name: refType.ref_name,
+              ref_name: refType.namespaced_ref_name,
               ref_kind: foundDefinitionKind
             }
           } else {
@@ -149,13 +150,13 @@ export class AbiImportsLinker implements IAbiImportsLinker {
             const importAbi = importMap.get(namespacePath.join("_"))
 
             if (!importAbi) {
-              throw new Error(`Could not find import for ${refType.ref_name}`)
+              throw new Error(`Could not find import for ${refType.namespaced_ref_name}`)
             }
 
             const foundDefinition = this._abiTreeShaker.findReferencedDefinition(importAbi.abi, refName)
 
             if (!foundDefinition) {
-              throw new Error(`Could not find imported definition for ${refType.ref_name}`)
+              throw new Error(`Could not find imported definition for ${refType.namespaced_ref_name}`)
             }
 
             return {
