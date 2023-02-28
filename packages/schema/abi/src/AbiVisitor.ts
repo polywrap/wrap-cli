@@ -2,9 +2,9 @@ import { Abi, AnyType, ArgumentDef, ArrayType, EnumDef, FunctionDef, ImportedAbi
 
 type VisitorFunction<T> = (node: T) => T | void;
 
+// NOTE: does not visit map keys
 export interface IAbiVisitor {
   Abi?: VisitorFunction<Abi | ImportedAbi>;
-  ImportedAbi?: VisitorFunction<ImportedAbi>;
   Import?: VisitorFunction<ImportedAbi>;
   FunctionDef?: VisitorFunction<FunctionDef>;
   ArgumentDef?: VisitorFunction<ArgumentDef>;
