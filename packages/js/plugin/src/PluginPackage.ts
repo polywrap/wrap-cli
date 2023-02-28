@@ -6,45 +6,34 @@ import { IWrapPackage, Wrapper } from "@polywrap/core-js";
 import { Result, ResultOk } from "@polywrap/result";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
-export class PluginPackage<
-  TConfig,
-  TEnv extends Record<string, unknown> = Record<string, unknown>
-> implements IWrapPackage {
+export class PluginPackage<TConfig> implements IWrapPackage {
   constructor(
-    private _pluginModule: PluginModule<TConfig, TEnv>,
+    private _pluginModule: PluginModule<TConfig>,
     private _manifest: WrapManifest
   ) {}
 
-  static from<
-    TConfig,
-    TEnv extends Record<string, unknown> = Record<string, unknown>
-  >(
+  static from<TConfig>(
     pluginModule: PluginModule<TConfig>,
     manifest?: WrapManifest
-  ): PluginPackage<TConfig, TEnv>;
-  static from<TEnv extends Record<string, unknown> = Record<string, unknown>>(
-    getPluginFuncs: GetPluginMethodsFunc<TEnv>,
+  ): PluginPackage<TConfig>;
+  static from(
+    getPluginFuncs: GetPluginMethodsFunc,
     manifest?: WrapManifest
-  ): PluginPackage<never, TEnv>;
-  static from<
-    TConfig,
-    TEnv extends Record<string, unknown> = Record<string, unknown>
-  >(
-    pluginModuleOrGetPluginFuncs:
-      | PluginModule<TConfig>
-      | GetPluginMethodsFunc<TEnv>,
+  ): PluginPackage<never>;
+  static from<TConfig>(
+    pluginModuleOrGetPluginFuncs: PluginModule<TConfig> | GetPluginMethodsFunc,
     manifest?: WrapManifest
-  ): PluginPackage<TConfig, TEnv> {
+  ): PluginPackage<TConfig> {
     if (typeof pluginModuleOrGetPluginFuncs === "function") {
-      const getPluginFuncs = pluginModuleOrGetPluginFuncs as GetPluginMethodsFunc<TEnv>;
+      const getPluginFuncs = pluginModuleOrGetPluginFuncs as GetPluginMethodsFunc;
 
-      return new PluginPackage<TConfig, TEnv>(
-        new PluginModuleWithMethods<TEnv>(getPluginFuncs),
+      return new PluginPackage<TConfig>(
+        new PluginModuleWithMethods(getPluginFuncs),
         manifest || ({} as WrapManifest)
-      ) as PluginPackage<TConfig, TEnv>;
+      ) as PluginPackage<TConfig>;
     } else {
-      return new PluginPackage<TConfig, TEnv>(
-        pluginModuleOrGetPluginFuncs as PluginModule<TConfig, TEnv>,
+      return new PluginPackage<TConfig>(
+        pluginModuleOrGetPluginFuncs as PluginModule<TConfig>,
         manifest || ({} as WrapManifest)
       );
     }

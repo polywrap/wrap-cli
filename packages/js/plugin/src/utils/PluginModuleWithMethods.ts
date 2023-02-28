@@ -7,19 +7,19 @@ import { GetPluginMethodsFunc } from "./GetPluginMethodsFunc";
 import { CoreClient, WrapErrorCode } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
-export class PluginModuleWithMethods<
-  TEnv extends Record<string, unknown> = Record<string, unknown>
-> extends PluginModule<never, TEnv> {
-  constructor(private _getPluginMethods: GetPluginMethodsFunc<TEnv>) {
+export class PluginModuleWithMethods extends PluginModule<never> {
+  constructor(private _getPluginMethods: GetPluginMethodsFunc) {
     super({} as never);
   }
 
   async _wrap_invoke<
     TArgs extends Record<string, unknown> = Record<string, unknown>,
-    TResult = unknown
+    TResult = unknown,
+    TEnv extends Record<string, unknown> = Record<string, unknown>
   >(
     method: string,
     args: TArgs,
+    env: TEnv,
     client: CoreClient
   ): Promise<Result<TResult, Error>> {
     const fn = this.getMethod<TArgs, TResult>(method);
@@ -35,7 +35,7 @@ export class PluginModuleWithMethods<
     }
 
     try {
-      const data = await fn(args, client);
+      const data = await fn(args, env, client);
       return ResultOk(data);
     } catch (e) {
       e.code = WrapErrorCode.WRAPPER_INVOKE_ABORTED;
@@ -45,11 +45,16 @@ export class PluginModuleWithMethods<
 
   getMethod<
     TArgs extends Record<string, unknown> = Record<string, unknown>,
-    TResult = unknown
+    TResult = unknown,
+    TEnv extends Record<string, unknown> = Record<string, unknown>
   >(method: string): PluginMethod<TArgs, TResult> | undefined {
-    const fn: PluginMethod<TArgs, TResult> | undefined = this._getPluginMethods(
-      this
-    )[method] as PluginMethod<TArgs, TResult>;
+    const fn:
+      | PluginMethod<TArgs, TResult, TEnv>
+      | undefined = this._getPluginMethods(this)[method] as PluginMethod<
+      TArgs,
+      TResult,
+      TEnv
+    >;
 
     return fn?.bind(this);
   }

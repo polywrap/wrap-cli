@@ -49,9 +49,6 @@ export class PluginWrapper implements Wrapper {
       return ResultErr(error);
     }
 
-    // Set the module's environment
-    this._module.setEnv(options.env || {});
-
     let jsArgs: Record<string, unknown>;
 
     // If the args are a msgpack buffer, deserialize it
@@ -77,7 +74,12 @@ export class PluginWrapper implements Wrapper {
     }
 
     // Invoke the function
-    const result = await this._module._wrap_invoke(method, jsArgs, client);
+    const result = await this._module._wrap_invoke(
+      method,
+      jsArgs,
+      options.env || {},
+      client
+    );
 
     if (result.ok) {
       const data = result.value;

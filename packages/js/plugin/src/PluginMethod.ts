@@ -11,5 +11,6 @@ import { CoreClient, MaybeAsync } from "@polywrap/core-js";
  */
 export type PluginMethod<
   TArgs extends Record<string, unknown> = Record<string, unknown>,
-  TResult = unknown
-> = (args: TArgs, client: CoreClient) => MaybeAsync<TResult>;
+  TResult = unknown,
+  TEnv extends Record<string, unknown> = Record<string, unknown>
+> = (args: TArgs, env: TEnv, client: CoreClient) => MaybeAsync<TResult>;
