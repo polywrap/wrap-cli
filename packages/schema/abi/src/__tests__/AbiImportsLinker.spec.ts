@@ -3,7 +3,39 @@ import { AbiImportsLinker } from "../AbiImportsLinker"
 import { AbiMerger } from "../AbiMerger"
 import { AbiSanitizer } from "../AbiSanitizer"
 import { AbiTreeShaker } from "../AbiTreeShaker"
-import { mockFetchers, mockSchemaParser } from "./mocks"
+
+export const mockSchemaParser = (): SchemaParser => {
+  return {
+    parse: async (schema: string): Promise<Abi> => {
+      return {
+        version: "0.2",
+      }
+    },
+    parseExternalImportStatements: async (schema: string): Promise<ExternalImportStatement[]> => {
+      return []
+    },
+    parseLocalImportStatements: async (schema: string): Promise<LocalImportStatement[]> => {
+      return []
+    }
+  }
+}
+
+export const mockFetchers = () => {
+  return {
+    external: {
+      fetch: async (url: string): Promise<Abi> => {
+        return {
+          version: "0.2",
+        }
+      }
+    },
+    local: {
+      fetch: async (path: string): Promise<string> => {
+        return ""
+      }
+    },
+  }
+}
 
 describe("AbiImportsLinker", () => {
   const merger = new AbiMerger()
@@ -24,7 +56,7 @@ describe("AbiImportsLinker", () => {
               required: true,
               type: {
                 kind: "UnlinkedImportRef",
-                ref_name: "OutBar",
+                namespaced_ref_name: "OutBar",
               }
             }
           ]
@@ -39,7 +71,7 @@ describe("AbiImportsLinker", () => {
               required: true,
               type: {
                 kind: "UnlinkedImportRef",
-                ref_name: "OutBar",
+                namespaced_ref_name: "OutBar",
               }
             }
           ]
@@ -575,7 +607,7 @@ describe("AbiImportsLinker", () => {
               required: true,
               type: {
                 kind: "UnlinkedImportRef",
-                ref_name: "EXT_Foo",
+                namespaced_ref_name: "EXT_Foo",
               }
             },
             {
@@ -584,7 +616,7 @@ describe("AbiImportsLinker", () => {
               required: true,
               type: {
                 kind: "UnlinkedImportRef",
-                ref_name: "Bar",
+                namespaced_ref_name: "Bar",
               }
             }
           ]
@@ -712,7 +744,7 @@ describe("AbiImportsLinker", () => {
               required: true,
               type: {
                 kind: "UnlinkedImportRef",
-                ref_name: "EXT1_Foo",
+                namespaced_ref_name: "EXT1_Foo",
               }
             },
             {
@@ -721,7 +753,7 @@ describe("AbiImportsLinker", () => {
               required: true,
               type: {
                 kind: "UnlinkedImportRef",
-                ref_name: "EXT1_EXT2_Bar",
+                namespaced_ref_name: "EXT1_EXT2_Bar",
               }
             },
             {
@@ -730,7 +762,7 @@ describe("AbiImportsLinker", () => {
               required: true,
               type: {
                 kind: "UnlinkedImportRef",
-                ref_name: "EXT1_EXT2_EXT3_Baz",
+                namespaced_ref_name: "EXT1_EXT2_EXT3_Baz",
               }
             },
           ]
@@ -905,7 +937,7 @@ describe("AbiImportsLinker", () => {
               required: true,
               type: {
                 kind: "UnlinkedImportRef",
-                ref_name: "TransitiveFoo",
+                namespaced_ref_name: "TransitiveFoo",
               }
             }
           ]
@@ -933,7 +965,7 @@ describe("AbiImportsLinker", () => {
               required: true,
               type: {
                 kind: "UnlinkedImportRef",
-                ref_name: "EXT1_Foo",
+                namespaced_ref_name: "EXT1_Foo",
               }
             },
             {
@@ -942,7 +974,7 @@ describe("AbiImportsLinker", () => {
               required: true,
               type: {
                 kind: "UnlinkedImportRef",
-                ref_name: "Some",
+                namespaced_ref_name: "Some",
               }
             }
           ]
