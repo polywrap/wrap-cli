@@ -7,13 +7,11 @@ import {
   buildCleanUriHistory,
 } from "@polywrap/core-js";
 import {
-  UriResolver,
   getUriResolutionPath,
   UriResolutionResult,
 } from "@polywrap/uri-resolvers-js";
 import fs from "fs";
 import { Result } from "@polywrap/result";
-import { mockPluginRegistration } from "../../helpers";
 import {
   PolywrapClient,
   ExtendableUriResolver,

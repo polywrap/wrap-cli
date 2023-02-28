@@ -1,50 +1,59 @@
 [
   "wrap://ens/uri.eth => RequestSynchronizerResolver",
   [
-    "wrap://ens/uri.eth => PackageToWrapperCacheResolver",
+    "wrap://ens/uri.eth => WrapperCacheResolver",
     [
-      "wrap://ens/uri.eth => UriResolverAggregator",
+      "wrap://ens/uri.eth => PackageToWrapperResolver",
       [
-        "wrap://ens/uri.eth => StaticResolver - Miss",
-        "wrap://ens/uri.eth => ExtendableUriResolver",
+        "wrap://ens/uri.eth => UriResolverAggregator",
         [
-          "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
+          "wrap://ens/uri.eth => StaticResolver - Miss",
+          "wrap://ens/uri.eth => ExtendableUriResolver",
           [
-            "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver => wrapper (wrap://package/ipfs-resolver)",
+            "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
             [
-              "wrap://package/ipfs-resolver => UriResolverAggregator => package (wrap://package/ipfs-resolver)",
+              "wrap://package/ipfs-resolver => WrapperCacheResolver => wrapper (wrap://package/ipfs-resolver)",
               [
-                "wrap://package/ipfs-resolver => StaticResolver - Package (wrap://package/ipfs-resolver) => package (wrap://package/ipfs-resolver)"
+                "wrap://package/ipfs-resolver => PackageToWrapperResolver => wrapper (wrap://package/ipfs-resolver)",
+                [
+                  "wrap://package/ipfs-resolver => UriResolverAggregator => package (wrap://package/ipfs-resolver)",
+                  [
+                    "wrap://package/ipfs-resolver => StaticResolver - Package (wrap://package/ipfs-resolver) => package (wrap://package/ipfs-resolver)"
+                  ]
+                ]
               ]
-            ]
-          ],
-          "wrap://ens/uri.eth => ResolverExtension (wrap://package/ipfs-resolver)",
-          "wrap://package/ens-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ens-resolver)",
-          [
-            "wrap://package/ens-resolver => PackageToWrapperCacheResolver => wrapper (wrap://package/ens-resolver)",
+            ],
+            "wrap://ens/uri.eth => ResolverExtension (wrap://package/ipfs-resolver)",
+            "wrap://package/ens-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ens-resolver)",
             [
-              "wrap://package/ens-resolver => UriResolverAggregator => package (wrap://package/ens-resolver)",
+              "wrap://package/ens-resolver => WrapperCacheResolver => wrapper (wrap://package/ens-resolver)",
               [
-                "wrap://package/ens-resolver => StaticResolver - Package (wrap://package/ens-resolver) => package (wrap://package/ens-resolver)"
+                "wrap://package/ens-resolver => PackageToWrapperResolver => wrapper (wrap://package/ens-resolver)",
+                [
+                  "wrap://package/ens-resolver => UriResolverAggregator => package (wrap://package/ens-resolver)",
+                  [
+                    "wrap://package/ens-resolver => StaticResolver - Package (wrap://package/ens-resolver) => package (wrap://package/ens-resolver)"
+                  ]
+                ]
               ]
-            ]
-          ],
-          "wrap://ens/uri.eth => ResolverExtension (wrap://package/ens-resolver)",
-          "wrap://package/fs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/fs-resolver)",
-          [
-            "wrap://package/fs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/fs-resolver)"
-          ],
-          "wrap://ens/uri.eth => ResolverExtension (wrap://package/fs-resolver)",
-          "wrap://package/http-resolver => RequestSynchronizerResolver => wrapper (wrap://package/http-resolver)",
-          [
-            "wrap://package/http-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/http-resolver)"
-          ],
-          "wrap://ens/uri.eth => ResolverExtension (wrap://package/http-resolver)",
-          "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => RequestSynchronizerResolver => wrapper (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)",
-          [
-            "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)"
-          ],
-          "wrap://ens/uri.eth => ResolverExtension (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)"
+            ],
+            "wrap://ens/uri.eth => ResolverExtension (wrap://package/ens-resolver)",
+            "wrap://package/fs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/fs-resolver)",
+            [
+              "wrap://package/fs-resolver => WrapperCacheResolver (Cache) => wrapper (wrap://package/fs-resolver)"
+            ],
+            "wrap://ens/uri.eth => ResolverExtension (wrap://package/fs-resolver)",
+            "wrap://package/http-resolver => RequestSynchronizerResolver => wrapper (wrap://package/http-resolver)",
+            [
+              "wrap://package/http-resolver => WrapperCacheResolver (Cache) => wrapper (wrap://package/http-resolver)"
+            ],
+            "wrap://ens/uri.eth => ResolverExtension (wrap://package/http-resolver)",
+            "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => RequestSynchronizerResolver => wrapper (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)",
+            [
+              "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => WrapperCacheResolver (Cache) => wrapper (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)"
+            ],
+            "wrap://ens/uri.eth => ResolverExtension (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)"
+          ]
         ]
       ]
     ]
