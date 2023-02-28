@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/ens-resolver-plugin-js",
   "description": "Polywrap ENS Javascript Plugin",
-  "version": "0.10.0-pre.8",
+  "version": "0.10.0-pre.9",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,18 +22,18 @@
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/basex": "5.0.7",
-    "@polywrap/core-js": "0.10.0-pre.8",
-    "@polywrap/plugin-js": "0.10.0-pre.8",
+    "@polywrap/core-js": "0.10.0-pre.9",
+    "@polywrap/plugin-js": "0.10.0-pre.9",
     "ethers": "5.0.7"
   },
   "devDependencies": {
-    "@polywrap/client-config-builder-js": "0.10.0-pre.8",
-    "@polywrap/client-js": "0.10.0-pre.8",
-    "ethereum-provider-js": "0.1.7",
+    "@polywrap/client-config-builder-js": "0.10.0-pre.9",
+    "@polywrap/client-js": "0.10.0-pre.9",
     "@polywrap/http-plugin-js": "~0.10.0-pre",
-    "@polywrap/wasm-js": "0.10.0-pre.8",
+    "@polywrap/wasm-js": "0.10.0-pre.9",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
+    "ethereum-provider-js": "0.1.7",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
