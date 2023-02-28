@@ -34,6 +34,7 @@ export const defaultWrappers = {
   graphNode: "wrap://ens/wraps.eth:graph-node@1.0.0",
   ensTextRecordResolver:
     "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p",
+  githubResolver: "wrap://ipfs/QmTNukpDR6HHtZnUKX88ytJTfqRaeLoy6bpDLRXAQX42sW",
   ethereum: "wrap://ens/wraps.eth:ethereum@1.0.0",
   ens: "wrap://ens/wraps.eth:ens@1.0.0",
 };
@@ -97,6 +98,7 @@ export const getDefaultConfig = (): BuilderConfig => ({
       defaultPackages.ipfsResolver,
       defaultPackages.ensResolver,
       defaultPackages.fileSystemResolver,
+      defaultWrappers.githubResolver,
       defaultPackages.httpResolver,
       defaultWrappers.ensTextRecordResolver,
     ]),

@@ -65,6 +65,15 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
   const deployer = await Deployer.create(manifestFile, logger);
   const jobResults = await deployer.run();
 
+  // output primary deployment uri
+  const primaryJob = jobResults[0];
+  const primaryStep = primaryJob.steps.length - 1;
+  const primaryDeploymentUri = primaryJob.steps[primaryStep].result.uri;
+  fs.writeFileSync(
+    path.join(path.dirname(manifestFile), "polywrap.deployment.txt"),
+    primaryDeploymentUri
+  );
+
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);
     if (!outputFileExt) throw new Error("Require output file extension");
