@@ -26,7 +26,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
   /** The supported interface uris to which resolver-ext implementations should be registered */
   public static extInterfaceUris: Uri[] = [
     Uri.from("wrap://ens/wraps.eth:uri-resolver-ext@1.1.0"),
-    Uri.from("wrap://ens/wraps.eth:uri-resolver-ext@1.0.0")
+    Uri.from("wrap://ens/wraps.eth:uri-resolver-ext@1.0.0"),
   ];
   // $end
 
@@ -76,11 +76,11 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
           resolutionContext: resolutionContext.createSubContext(),
         }
       );
-  
+
       if (!getImplementationsResult.ok) {
         return ResultErr(getImplementationsResult.error);
       }
-  
+
       uriResolverImpls.push(...getImplementationsResult.value);
     }
 
