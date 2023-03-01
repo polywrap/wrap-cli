@@ -98,7 +98,6 @@ export const getDefaultConfig = (): BuilderConfig => ({
       defaultPackages.ipfsResolver,
       defaultPackages.ensResolver,
       defaultPackages.fileSystemResolver,
-      defaultWrappers.githubResolver,
       defaultPackages.httpResolver,
       defaultWrappers.ensTextRecordResolver,
     ]),
