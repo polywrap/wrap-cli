@@ -4,7 +4,10 @@ import axios from "axios";
 import * as os from "@polywrap/os-js";
 import Mustache from "mustache";
 import { compile } from "json-schema-to-typescript";
-import { FileInfo, bundle, JSONSchema } from "@bcherny/json-schema-ref-parser";
+import { FileInfo, bundle, JSONSchema } from "@apidevtools/json-schema-ref-parser";
+// Workaround: https://github.com/APIDevTools/json-schema-ref-parser/issues/139#issuecomment-940500698
+import $RefParser from '@apidevtools/json-schema-ref-parser';
+$RefParser.bundle = $RefParser.bundle.bind($RefParser);
 
 async function wrapCodegen() {
   const formatTypeName = "wrap.info";

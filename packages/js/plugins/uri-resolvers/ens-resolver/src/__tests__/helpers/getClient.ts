@@ -20,7 +20,7 @@ import {
   defaultWrappers,
 } from "@polywrap/client-config-builder-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
-import { Uri } from "@polywrap/core-js";
+import { IWrapPackage, Uri } from "@polywrap/core-js";
 
 export const getClient = () => {
   return new PolywrapClient({
@@ -86,7 +86,7 @@ export const getClient = () => {
           },
           {
             uri: Uri.from(defaultInterfaces.http),
-            package: httpPlugin({}),
+            package: httpPlugin({}) as IWrapPackage,
           },
           new ExtendableUriResolver(),
         ],
