@@ -71,7 +71,7 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
   if (primaryJobName) {
     // validate primary job name
     if (!jobNames.find((jobName) => jobName === primaryJobName)) {
-      logger.error("A primary job was indicated but not found in the manifest");
+      logger.error(intlMsg.commands_deploy_error_primaryJobNotFound());
       process.exit(1);
     }
   } else {
@@ -93,8 +93,16 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
   const deploymentFilepath = path.join(manifestDir, "polywrap.deployment.txt");
   fs.writeFileSync(deploymentFilepath, deploymentUri);
   logger.info(
-    `The URI result from job "${primaryJobName}" has been written to ${deploymentFilepath}. ` +
-      "It is recommended to store this file at the root of your wrap package and commit it to your repository."
+    intlMsg.commands_deploy_deployment_written({
+      primaryJobName,
+      deploymentFilepath,
+    })
+  );
+
+  // update historic deployment log
+  deployer.config.cache.appendToCacheFile(
+    `deploy.log`,
+    `${new Date().toISOString()} ${deploymentUri}\n`
   );
 
   if (outputFile) {
