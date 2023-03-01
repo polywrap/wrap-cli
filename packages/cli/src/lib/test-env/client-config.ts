@@ -9,7 +9,7 @@ import {
   ethereumProviderPlugin,
   Connections,
   Connection,
-} from "ethereum-provider-js";
+} from "@polywrap/ethereum-provider-js";
 import { ensAddresses } from "@polywrap/test-env-js";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {

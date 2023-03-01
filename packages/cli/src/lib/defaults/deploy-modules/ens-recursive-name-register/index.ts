@@ -12,7 +12,7 @@ import {
   Connection,
   Connections,
   ethereumProviderPlugin,
-} from "ethereum-provider-js";
+} from "@polywrap/ethereum-provider-js";
 
 class ENSRecursiveNameRegisterPublisher implements DeployModule {
   async execute(

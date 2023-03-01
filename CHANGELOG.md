@@ -1,4 +1,4 @@
-# Polywrap Origin (0.10.0-pre.8)
+# Polywrap Origin (0.10.0-pre.10)
 ## Breaking Changes
 ### Toolchain
 **`polywrap` CLI:**
@@ -9,6 +9,9 @@
   * See example [config.ts](https://github.com/polywrap/toolchain/blob/1096f2f4dfb35fdcc29e9b66057f91ade8b82c67/packages/test-cases/cases/cli/test/008-custom-config/config.ts).
 * [PR-1348](https://github.com/polywrap/toolchain/pull/1348) **Rename `run` to `test`**
   * Rename the `run` command to `test`, which uses the `test` project extension, as defined in the `polywrap.test.yaml` manifest file.
+* [PR-1545](https://github.com/polywrap/toolchain/pull/1545) **Remove `config` section from test manifest
+  * The Polywrap Test manifest (`polywrap.test.yaml`) has been upgraded to version `0.2.0` with the following change:
+    * The `config` section inside `step` has been removed, and manifest migrations will warn the user regarding this change.
 
 ### JS Client
 **`@polywrap/client-js`:**
@@ -22,6 +25,9 @@
   * The Polywrap Client with `noDefaults: true`, no longer accepts a `plugins` field. It is expected that devs using this option will manually configure their own resolver.
   * removed `getPlugins` and `getPluginByUri`. Will add `getWrapper`, `getWrapperByUri`, `getPackage`, `getPackageByUri`, in a follow up PR.
   * `createPolywrapClient` function has been deprecated.
+* [PR-1534](https://github.com/polywrap/toolchain/pull/1534) **Remove legacy config types from PolywrapClient**
+  * The `PolywrapClient`'s constructor now accepts only an optional `CoreClientConfig` type as its configuration object.
+  * It is now advised to use the `ClientConfigBuilder` found in `@polywrap/client-config-builder-js` and exported by `@polywrap/client-js` in order to set up their client configurations.
 
 **`@polywrap/client-config-builder-js`:**
 * [PR-1480](https://github.com/polywrap/toolchain/pull/1480) **ClientConfigBuilder-specific `BuilderConfig` Object**

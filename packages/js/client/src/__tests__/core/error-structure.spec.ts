@@ -484,7 +484,7 @@ describe("Error structure", () => {
         );
         expect(result.error?.source).toEqual({
           file: "node:internal/fs/promises",
-          row: 450,
+          row: 503,
           col: 10,
         });
       });

@@ -9,7 +9,7 @@ import {
   ethereumProviderPlugin,
   Connection,
   Connections,
-} from "ethereum-provider-js";
+} from "@polywrap/ethereum-provider-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
@@ -79,12 +79,12 @@ interface IDefaultPlugins {
 export const plugins: IDefaultPlugins = {
   logger: {
     uri: Uri.from("plugin/logger@1.0.0"),
-    plugin: loggerPlugin({}),
+    plugin: loggerPlugin({}) as unknown as PluginPackage<unknown>,
     implements: [Uri.from("ens/wraps.eth:logger@1.0.0")],
   },
   http: {
     uri: Uri.from("plugin/http@1.1.0"),
-    plugin: httpPlugin({}),
+    plugin: httpPlugin({}) as unknown as PluginPackage<unknown>,
     implements: [
       Uri.from("ens/wraps.eth:http@1.1.0"),
       Uri.from("ens/wraps.eth:http@1.0.0"),
@@ -92,7 +92,7 @@ export const plugins: IDefaultPlugins = {
   },
   fileSystem: {
     uri: Uri.from("plugin/file-system@1.0.0"),
-    plugin: fileSystemPlugin({}),
+    plugin: fileSystemPlugin({}) as unknown as PluginPackage<unknown>,
     implements: [Uri.from("ens/wraps.eth:file-system@1.0.0")],
   },
   concurrent: {

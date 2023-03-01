@@ -34,7 +34,6 @@
     "build:client": "lerna run build --scope @polywrap/client-js",
     "build:test-env": "lerna run build --scope @polywrap/test-env-js",
     "build:cli": "lerna run build --scope polywrap && lerna run build --scope @polywrap/cli-js",
-    "link:interface:deps": "yarn link:manifests && yarn link:schema",
     "link:manifests": "yarn link:manifests:polywrap && yarn link:manifests:wrap",
     "link:manifests:polywrap": "cd packages/js/manifests/polywrap && (yarn unlink || true) && yarn link && cd ../../../../dependencies && yarn link @polywrap/polywrap-manifest-types-js && cd ../",
     "link:manifests:wrap": "cd packages/js/manifests/wrap && (yarn unlink || true) && yarn link && cd ../../../../dependencies && yarn link @polywrap/wrap-manifest-types-js && cd ../",
@@ -71,9 +70,6 @@
   },
   "resolutions": {
     "@types/react": "16.9.0",
-    "@types/react-dom": "16.9.0",
-    "@types/node": "16.11.68",
-    "@polywrap/core-js": "0.10.0-pre.8",
-    "@polywrap/plugin-js": "0.10.0-pre.8"
+    "@types/react-dom": "16.9.0"
   }
 }

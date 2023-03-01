@@ -1,5 +1,4 @@
 import { InvokerOptions, TryResolveUriOptions } from "./types";
-import { sanitizeUri } from "./legacy";
 
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
 import {
@@ -79,14 +78,14 @@ export class PolywrapClient extends PolywrapCoreClient {
   public getEnvByUri<TUri extends Uri | string = string>(
     uri: TUri
   ): Env | undefined {
-    return super.getEnvByUri(sanitizeUri(uri));
+    return super.getEnvByUri(Uri.from(uri));
   }
 
   @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<TUri extends Uri | string = string>(
     uri: TUri
   ): Promise<Result<WrapManifest, WrapError>> {
-    return super.getManifest(sanitizeUri(uri));
+    return super.getManifest(Uri.from(uri));
   }
 
   @Tracer.traceMethod("PolywrapClient: getFile")
@@ -94,7 +93,7 @@ export class PolywrapClient extends PolywrapCoreClient {
     uri: TUri,
     options: GetFileOptions
   ): Promise<Result<string | Uint8Array, WrapError>> {
-    return super.getFile(sanitizeUri(uri), options);
+    return super.getFile(Uri.from(uri), options);
   }
 
   @Tracer.traceMethod("PolywrapClient: getImplementations")
@@ -102,7 +101,7 @@ export class PolywrapClient extends PolywrapCoreClient {
     uri: TUri,
     options?: GetImplementationsOptions
   ): Promise<Result<Uri[], WrapError>> {
-    return super.getImplementations(sanitizeUri(uri), options);
+    return super.getImplementations(Uri.from(uri), options);
   }
 
   @Tracer.traceMethod("PolywrapClient: invokeWrapper")
@@ -114,7 +113,7 @@ export class PolywrapClient extends PolywrapCoreClient {
   ): Promise<InvokeResult<TData>> {
     return super.invokeWrapper({
       ...options,
-      uri: sanitizeUri(options.uri),
+      uri: Uri.from(options.uri),
     });
   }
 
@@ -124,7 +123,7 @@ export class PolywrapClient extends PolywrapCoreClient {
   ): Promise<InvokeResult<TData>> {
     return super.invoke({
       ...options,
-      uri: sanitizeUri(options.uri),
+      uri: Uri.from(options.uri),
     });
   }
 
@@ -134,7 +133,7 @@ export class PolywrapClient extends PolywrapCoreClient {
   ): Promise<Result<UriPackageOrWrapper, unknown>> {
     return super.tryResolveUri({
       ...options,
-      uri: sanitizeUri(options.uri),
+      uri: Uri.from(options.uri),
     });
   }
 
@@ -144,7 +143,7 @@ export class PolywrapClient extends PolywrapCoreClient {
     resolutionContext?: IUriResolutionContext,
     options?: DeserializeManifestOptions
   ): Promise<Result<Wrapper, WrapError>> {
-    return super.loadWrapper(sanitizeUri(uri), resolutionContext, options);
+    return super.loadWrapper(Uri.from(uri), resolutionContext, options);
   }
 
   // $start: PolywrapCoreClient-validate
