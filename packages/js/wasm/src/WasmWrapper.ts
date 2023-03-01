@@ -204,7 +204,7 @@ export class WasmWrapper implements Wrapper {
 
       const exports = instance.exports as WrapExports;
 
-      const result = exports._wrap_invoke(
+      const result = await exports._wrap_invoke(
         state.method.length,
         state.args.byteLength,
         state.env.byteLength
