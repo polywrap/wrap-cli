@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/schema-compose",
   "description": "Polywrap Schema Composition",
-  "version": "0.10.0-pre.9",
+  "version": "0.10.0-pre.10",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,13 +19,13 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/schema-parse": "0.10.0-pre.9",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.9",
+    "@polywrap/schema-parse": "0.10.0-pre.10",
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.10",
     "graphql": "15.5.0",
     "mustache": "4.0.1"
   },
   "devDependencies": {
-    "@polywrap/test-cases": "0.10.0-pre.9",
+    "@polywrap/test-cases": "0.10.0-pre.10",
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
     "@types/prettier": "2.6.0",
