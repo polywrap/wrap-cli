@@ -134,7 +134,7 @@ export async function buildWrapper(
 export async function deployWrapper(options: {
   wrapperAbsPath: string;
   jobs: DeployManifest["jobs"];
-  primaryJob?: string;
+  primaryJobName?: string;
   codegen?: boolean;
   build?: boolean;
 }): Promise<void | {

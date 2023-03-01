@@ -9,7 +9,7 @@
       "type": "string",
       "const": "0.3.0"
     },
-    "primaryJob": {
+    "primaryJobName": {
       "description": "Name of the job that runs the primary deployment sequence.",
       "type": "string"
     },

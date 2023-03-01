@@ -66,7 +66,7 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
   const deployer = await Deployer.create(manifestFile, logger);
 
   // set primary job before running
-  let primaryJobName = deployer.manifest.primaryJob;
+  let primaryJobName = deployer.manifest.primaryJobName;
   const jobNames = Object.keys(deployer.manifest.jobs);
   if (primaryJobName) {
     // validate primary job name

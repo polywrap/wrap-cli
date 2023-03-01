@@ -7,7 +7,7 @@ export function migrate(old: OldManifest): NewManifest {
   return {
     __type: "DeployManifest",
     format: "0.3.0",
-    primaryJob: Object.keys(old.jobs)[0],
+    primaryJobName: Object.keys(old.jobs)[0],
     jobs: old.jobs,
   };
 }

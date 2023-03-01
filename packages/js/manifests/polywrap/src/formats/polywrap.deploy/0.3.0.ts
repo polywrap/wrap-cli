@@ -14,7 +14,7 @@ export interface DeployManifest {
   /**
    * Name of the job that runs the primary deployment sequence.
    */
-  primaryJob?: string;
+  primaryJobName?: string;
   /**
    * Sequences of deployment steps
    */
