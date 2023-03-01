@@ -3,7 +3,7 @@ import {
   PackageToWrapperCacheResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
-import { PolywrapClient, Uri } from "@polywrap/client-js";
+import { IWrapPackage, PolywrapClient, Uri } from "@polywrap/client-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "../..";
@@ -29,7 +29,7 @@ export const getClient = () => {
           },
           {
             uri: Uri.from(defaultInterfaces.fileSystem),
-            package: fileSystemPlugin({}),
+            package: fileSystemPlugin({}) as IWrapPackage,
           },
           new ExtendableUriResolver(),
         ],

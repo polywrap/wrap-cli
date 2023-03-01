@@ -476,8 +476,12 @@ export const defaultInterfaces = {
 
 export const getDefaultPackages = (): Record<string, IWrapPackage> => {
   const packages: Record<string, IWrapPackage> = {};
-  packages[defaultInterfaces.ipfsHttpClient] = defaultEmbeddedPackages.ipfsHttpClient();
-  packages[defaultPackages.ipfsResolver] = defaultEmbeddedPackages.ipfsResolver();
+  packages[
+    defaultInterfaces.ipfsHttpClient
+  ] = defaultEmbeddedPackages.ipfsHttpClient();
+  packages[
+    defaultPackages.ipfsResolver
+  ] = defaultEmbeddedPackages.ipfsResolver();
   // ENS is required for resolving domain to IPFS hashes
   packages[defaultPackages.ensResolver] = ensResolverPlugin({});
   // Ethereum is required for resolving domain to Ethereum addresses

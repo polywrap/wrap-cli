@@ -18,7 +18,7 @@
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "9.0.9",
     "jsonschema": "1.4.0",
-    "semver": "7.3.5"
+    "semver": "7.3.8"
   },
   "devDependencies": {
     "@polywrap/msgpack-js": "0.10.0-pre.9",
