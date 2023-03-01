@@ -1,6 +1,7 @@
 version: '3'
 services:
   ganache:
+    platform: linux/x86_64
     build: ./eth
     ports:
       - ${ETHEREUM_PORT:-8545}:8545

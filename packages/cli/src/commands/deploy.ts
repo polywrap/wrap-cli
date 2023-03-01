@@ -7,6 +7,7 @@ import {
   parseLogFileOption,
   Deployer,
   defaultDeployManifest,
+  DeployJobResult,
 } from "../lib";
 
 import fs from "fs";
@@ -63,15 +64,32 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
   const logger = createLogger({ verbose, quiet, logFile });
 
   const deployer = await Deployer.create(manifestFile, logger);
+
+  // set primary job before running
+  let primaryJobName = deployer.manifest.primaryJob;
+  const jobNames = Object.keys(deployer.manifest.jobs);
+  if (primaryJobName) {
+    // validate primary job name
+    if (!jobNames.find((jobName) => jobName === primaryJobName)) {
+      logger.error("A primary job was indicated but not found in the manifest");
+      process.exit(1);
+    }
+  } else {
+    // default to first job
+    primaryJobName = jobNames[0];
+  }
+
   const jobResults = await deployer.run();
 
-  // output primary deployment uri
-  const primaryJob = jobResults[0];
-  const primaryStep = primaryJob.steps.length - 1;
-  const primaryDeploymentUri = primaryJob.steps[primaryStep].result.uri;
+  // output deployment uri
+  const primaryJob = jobResults.find(
+    (job) => job.name === primaryJobName
+  ) as DeployJobResult;
+  const deploymentStep = primaryJob.steps.length - 1;
+  const deploymentUri = primaryJob.steps[deploymentStep].result.uri;
   fs.writeFileSync(
     path.join(path.dirname(manifestFile), "polywrap.deployment.txt"),
-    primaryDeploymentUri
+    deploymentUri
   );
 
   if (outputFile) {
