@@ -81,15 +81,20 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
 
   const jobResults = await deployer.run();
 
-  // output deployment uri
+  // get deployment uri
   const primaryJob = jobResults.find(
     (job) => job.name === primaryJobName
   ) as DeployJobResult;
   const deploymentStep = primaryJob.steps.length - 1;
   const deploymentUri = primaryJob.steps[deploymentStep].result.uri;
-  fs.writeFileSync(
-    path.join(path.dirname(manifestFile), "polywrap.deployment.txt"),
-    deploymentUri
+
+  // write deployment uri to file
+  const manifestDir = path.dirname(manifestFile);
+  const deploymentFilepath = path.join(manifestDir, "polywrap.deployment.txt");
+  fs.writeFileSync(deploymentFilepath, deploymentUri);
+  logger.info(
+    `Output URI result from job "${primaryJobName}" to ${deploymentFilepath}. ` +
+      "It is recommended to store this file at the root of your wrap package and commit it to your repository."
   );
 
   if (outputFile) {
