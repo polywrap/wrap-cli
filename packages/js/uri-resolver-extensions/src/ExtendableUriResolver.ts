@@ -23,15 +23,16 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
   Error
 > /* $ */ {
   // $start: ExtendableUriResolver-extInterfaceUri-static
-  /** The default interface uri to which implementations should be registered */
-  public static extInterfaceUri: Uri = new Uri(
-    "wrap://ens/wraps.eth:uri-resolver-ext@1.0.0"
-  );
+  /** The supported interface uris to which resolver-ext implementations should be registered */
+  public static extInterfaceUris: Uri[] = [
+    Uri.from("wrap://ens/wraps.eth:uri-resolver-ext@1.1.0"),
+    Uri.from("wrap://ens/wraps.eth:uri-resolver-ext@1.0.0")
+  ];
   // $end
 
   // $start: ExtendableUriResolver-extInterfaceUri
-  /** The active interface uri to which implementations should be registered */
-  public readonly extInterfaceUri: Uri;
+  /** The active interface uris to which implementations should be registered */
+  public readonly extInterfaceUris: Uri[];
   // $end
   private readonly _resolverName: string;
 
@@ -39,15 +40,15 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
   /**
    * Create an ExtendableUriResolver
    *
-   * @param extInterfaceUri - URI Resolver Interface URI
+   * @param extInterfaceUris - URI Resolver Interface URIs
    * @param resolverName - Name to use in resolution history output
    * */
   constructor(
-    extInterfaceUri: Uri = ExtendableUriResolver.extInterfaceUri,
+    extInterfaceUris: Uri[] = ExtendableUriResolver.extInterfaceUris,
     resolverName = "ExtendableUriResolver"
   ) /* $ */ {
     super();
-    this.extInterfaceUri = extInterfaceUri;
+    this.extInterfaceUris = extInterfaceUris;
     this._resolverName = resolverName;
   }
 
@@ -66,18 +67,22 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
     client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<IUriResolver<unknown>[], Error>> /* $ */ {
-    const getImplementationsResult = await client.getImplementations(
-      this.extInterfaceUri,
-      {
-        resolutionContext: resolutionContext.createSubContext(),
+    const uriResolverImpls: Uri[] = [];
+
+    for (const extInterfaceUri of this.extInterfaceUris) {
+      const getImplementationsResult = await client.getImplementations(
+        extInterfaceUri,
+        {
+          resolutionContext: resolutionContext.createSubContext(),
+        }
+      );
+  
+      if (!getImplementationsResult.ok) {
+        return ResultErr(getImplementationsResult.error);
       }
-    );
-
-    if (!getImplementationsResult.ok) {
-      return ResultErr(getImplementationsResult.error);
+  
+      uriResolverImpls.push(...getImplementationsResult.value);
     }
-
-    const uriResolverImpls = getImplementationsResult.value;
 
     const resolvers: UriResolverWrapper[] = uriResolverImpls
       .filter((x) => !resolutionContext.isResolving(x))

@@ -499,12 +499,12 @@ interface IDefaultPlugins {
 export const plugins: IDefaultPlugins = {
   logger: {
     uri: Uri.from("plugin/logger@1.0.0"),
-    plugin: loggerPlugin({}) as unknown as PluginPackage<unknown>,
+    plugin: (loggerPlugin({}) as unknown) as PluginPackage<unknown>,
     implements: [Uri.from("ens/wraps.eth:logger@1.0.0")],
   },
   http: {
     uri: Uri.from("plugin/http@1.1.0"),
-    plugin: httpPlugin({}) as unknown as PluginPackage<unknown>,
+    plugin: (httpPlugin({}) as unknown) as PluginPackage<unknown>,
     implements: [
       Uri.from("ens/wraps.eth:http@1.1.0"),
       Uri.from("ens/wraps.eth:http@1.0.0"),
@@ -512,7 +512,7 @@ export const plugins: IDefaultPlugins = {
   },
   fileSystem: {
     uri: Uri.from("plugin/file-system@1.0.0"),
-    plugin: fileSystemPlugin({}) as unknown as PluginPackage<unknown>,
+    plugin: (fileSystemPlugin({}) as unknown) as PluginPackage<unknown>,
     implements: [Uri.from("ens/wraps.eth:file-system@1.0.0")],
   },
   concurrent: {
@@ -570,7 +570,7 @@ export function getConfig(): BuilderConfig {
 
   // Add all uri-resolver-ext interface implementations
   builder.addInterfaceImplementations(
-    ExtendableUriResolver.extInterfaceUri.uri,
+    ExtendableUriResolver.extInterfaceUris[0].uri,
     [
       uriResolverExts[0].source.uri,
       uriResolverExts[1].from.uri,
