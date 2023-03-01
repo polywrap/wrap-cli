@@ -93,7 +93,7 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
   const deploymentFilepath = path.join(manifestDir, "polywrap.deployment.txt");
   fs.writeFileSync(deploymentFilepath, deploymentUri);
   logger.info(
-    `Output URI result from job "${primaryJobName}" to ${deploymentFilepath}. ` +
+    `The URI result from job "${primaryJobName}" has been written to ${deploymentFilepath}. ` +
       "It is recommended to store this file at the root of your wrap package and commit it to your repository."
   );
 
