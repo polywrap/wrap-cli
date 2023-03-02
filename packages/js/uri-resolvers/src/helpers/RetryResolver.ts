@@ -93,7 +93,7 @@ export class RetryResolver<TError = undefined> implements IUriResolver<TError> {
           sourceUri: uri,
           result,
           subHistory: subContext.getHistory(),
-          description: "RetryResolver",
+          description: "RetryResolver (Retry)",
         });
         return result;
       }
@@ -105,7 +105,7 @@ export class RetryResolver<TError = undefined> implements IUriResolver<TError> {
       sourceUri: uri,
       result: noResolution,
       subHistory: subContext.getHistory(),
-      description: "RetryResolver",
+      description: "RetryResolver - Miss",
     });
 
     return noResolution;

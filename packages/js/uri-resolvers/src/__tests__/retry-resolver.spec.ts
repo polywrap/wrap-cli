@@ -1,37 +1,36 @@
 import { Uri, UriResolutionContext } from "@polywrap/core-js";
 import { expectHistory } from "./util";
 import { RecursiveResolver, RetryResolver, RetryResolverOptions } from "../helpers";
-import { ClientConfigBuilder, defaultPackages, PolywrapClient } from "@polywrap/client-js";
-import { httpPlugin } from "@polywrap/http-plugin-js";
-import { httpResolverPlugin } from "@polywrap/http-resolver-plugin-js";
+import { ClientConfigBuilder, PolywrapClient } from "@polywrap/client-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
-import { defaultEmbeddedPackages, defaultInterfaces, defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { PackageToWrapperCacheResolver, WrapperCache } from "../cache";
 import { StaticResolver } from "../static";
+import {
+  embeds,
+  ipfsProviders,
+  plugins,
+} from "@polywrap/client-config-builder-js/build/bundles/default";
 
 jest.setTimeout(200000);
 
 const getClientWithRetryResolver = (retryOptions: RetryResolverOptions): PolywrapClient => {
+  const ipfsResolverUri = Uri.from("wrap://package/ipfs-resolver");
   const resolver = RecursiveResolver.from(
     PackageToWrapperCacheResolver.from(
       [
         StaticResolver.from([
           {
-            uri: new Uri(defaultInterfaces.ipfsHttpClient),
-            package: defaultEmbeddedPackages.ipfsHttpClient(),
+            uri: embeds.ipfsHttpClient.uri,
+            package: embeds.ipfsHttpClient.package,
           },
           {
-            uri: new Uri(defaultPackages.ipfsResolver),
-            package: defaultEmbeddedPackages.ipfsResolver(),
+            uri: ipfsResolverUri,
+            package: embeds.ipfsResolver.package,
           },
           {
-            uri: new Uri(defaultInterfaces.http),
-            package: httpPlugin({})
+            uri: plugins.http.implements[0],
+            package: plugins.http.plugin,
           },
-          {
-            uri: new Uri(defaultPackages.httpResolver),
-            package: httpResolverPlugin({})
-          }
         ]),
         new RetryResolver(
           new ExtendableUriResolver(),
@@ -42,28 +41,25 @@ const getClientWithRetryResolver = (retryOptions: RetryResolverOptions): Polywra
     )
   );
 
-  const builder = new ClientConfigBuilder()
+  const config = new ClientConfigBuilder()
     .addEnv(
-      defaultPackages.ipfsResolver,
+      ipfsResolverUri.uri,
       {
-        provider: defaultIpfsProviders[0],
-        fallbackProviders: defaultIpfsProviders.slice(1),
+        provider: ipfsProviders[0],
+        fallbackProviders: ipfsProviders.slice(1),
       })
     .addInterfaceImplementations(
-      ExtendableUriResolver.extInterfaceUri.uri,
-      [
-        defaultPackages.ipfsResolver,
-        defaultPackages.httpResolver,
-      ]
+      ExtendableUriResolver.defaultExtInterfaceUris[0].uri,
+      [ipfsResolverUri.uri]
     )
     .addInterfaceImplementations(
-      defaultInterfaces.ipfsHttpClient,
-      [defaultInterfaces.ipfsHttpClient]
-    );
+      embeds.ipfsHttpClient.source.uri,
+      [embeds.ipfsHttpClient.uri.uri]
+    )
+    .build({ resolver });
 
-  const config = (builder as ClientConfigBuilder).build({ resolver })
 
-  return new PolywrapClient(config, { noDefaults: true });
+  return new PolywrapClient(config);
 };
 
 describe("RetryResolver", () => {

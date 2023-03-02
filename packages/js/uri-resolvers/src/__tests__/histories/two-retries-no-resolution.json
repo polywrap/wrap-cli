@@ -4,7 +4,7 @@
         "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => UriResolverAggregator",
         [
           "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => StaticResolver - Miss",
-          "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => RetryResolver",
+          "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => RetryResolver - Miss",
           [
             "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => ExtendableUriResolver",
             [
@@ -15,29 +15,17 @@
                   "wrap://package/ipfs-resolver => StaticResolver - Package (wrap://package/ipfs-resolver) => package (wrap://package/ipfs-resolver)"
                 ]
               ],
-              "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => ResolverExtension (wrap://package/ipfs-resolver)",
-              "wrap://package/http-resolver => PackageToWrapperCacheResolver => wrapper (wrap://package/http-resolver)",
-              [
-                "wrap://package/http-resolver => UriResolverAggregator => package (wrap://package/http-resolver)",
-                [
-                  "wrap://package/http-resolver => StaticResolver - Package (wrap://package/http-resolver) => package (wrap://package/http-resolver)"
-                ]
-              ],
-              "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => ResolverExtension (wrap://package/http-resolver)"
+              "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => ResolverExtension (wrap://package/ipfs-resolver)"
             ],
             "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => ExtendableUriResolver",
             [
               "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ipfs-resolver)",
-              "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => ResolverExtension (wrap://package/ipfs-resolver)",
-              "wrap://package/http-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/http-resolver)",
-              "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => ResolverExtension (wrap://package/http-resolver)"
+              "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => ResolverExtension (wrap://package/ipfs-resolver)"
             ],
             "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => ExtendableUriResolver",
             [
               "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ipfs-resolver)",
-              "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => ResolverExtension (wrap://package/ipfs-resolver)",
-              "wrap://package/http-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/http-resolver)",
-              "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => ResolverExtension (wrap://package/http-resolver)"
+              "wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7 => ResolverExtension (wrap://package/ipfs-resolver)"
             ]
           ]
         ]

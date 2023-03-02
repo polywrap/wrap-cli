@@ -54,7 +54,8 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
                   ...this.buildPackages(),
                 ]),
                 new RetryResolver(new ExtendableUriResolver(), {
-                  ipfs: { retries: 1, interval: 100 },
+                  http: { retries: 1, interval: 100 },
+                  https: { retries: 1, interval: 100 },
                 }),
               ],
               wrapperCache ?? new WrapperCache()
