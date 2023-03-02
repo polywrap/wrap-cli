@@ -114,8 +114,8 @@ describe("Resolver extensions", () => {
       ])
     });
 
-    let resolutionContext = new UriResolutionContext();
-    let result = await client.tryResolveUri({ uri, resolutionContext });
+    const resolutionContext = new UriResolutionContext();
+    const result = await client.tryResolveUri({ uri, resolutionContext });
 
     await expectHistory(
       resolutionContext.getHistory(),
@@ -132,5 +132,41 @@ describe("Resolver extensions", () => {
     }
 
     expect(result.value.uri.uri).toEqual("wrap://test/not-a-match");
+  });
+
+  it("does not cause infinite recursion when resolved at runtime when an extension is not found", async () => {
+    const undefinedResolverUri = Uri.from("test/undefined-resolver");
+
+    const client = new PolywrapCoreClient({
+      interfaces: [
+        {
+          interface: ExtendableUriResolver.extInterfaceUri,
+          implementations: [
+            undefinedResolverUri
+          ]
+        }
+      ],
+      resolver: RecursiveResolver.from([
+        new ExtendableUriResolver()
+      ])
+    });
+
+
+    const resolutionContext = new UriResolutionContext();
+    const result = await client.tryResolveUri({ uri: Uri.from("test/not-a-match"), resolutionContext });
+
+    await expectHistory(
+      resolutionContext.getHistory(),
+      "resolver-extensions",
+      "not-found-extension",
+    );
+
+    if (result.ok) {
+      fail("Resoulution should have failed");
+    }
+
+    expect(result.error).toEqual(
+      "While resolving wrap://test/not-a-match with URI resolver extension wrap://test/undefined-resolver, the extension could not be fully resolved. Last tried URI is wrap://test/undefined-resolver"
+    );
   });
 });

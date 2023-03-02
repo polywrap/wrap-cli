@@ -7,30 +7,16 @@ import {
   buildCleanUriHistory,
 } from "@polywrap/core-js";
 import {
-  getUriResolutionPath,
   UriResolutionResult,
 } from "@polywrap/uri-resolvers-js";
 import fs from "fs";
 import { Result } from "@polywrap/result";
 import {
   PolywrapClient,
-  ExtendableUriResolver,
   ClientConfigBuilder,
 } from "../../../";
 
 jest.setTimeout(200000);
-const wrapperPath = `${GetPathToTestWrappers()}/subinvoke/00-subinvoke/implementations/as`;
-const wrapperUri = new Uri(`wrap://file/${wrapperPath}`);
-
-const simpleRedirectResolverWrapperPath = `${GetPathToTestWrappers()}/resolver/01-redirect/implementations/as`;
-const simpleRedirectResolverWrapperUri = new Uri(
-  `wrap://file/${simpleRedirectResolverWrapperPath}`
-);
-
-const fsRedirectResolverWrapperPath = `${GetPathToTestWrappers()}/resolver/02-fs/implementations/rs`;
-const fsRedirectResolverWrapperUri = new Uri(
-  `wrap://file/${fsRedirectResolverWrapperPath}`
-);
 
 const expectResultWithHistory = async (
   receivedResult: Result<UriPackageOrWrapper, unknown>,
@@ -67,37 +53,6 @@ const expectHistory = async (
   expect(receivedCleanHistory).toEqual(
     JSON.stringify(JSON.parse(expectedCleanHistory), null, 2)
   );
-};
-
-const expectWrapperWithHistory = async (
-  receivedResult: Result<UriPackageOrWrapper, unknown>,
-  expectedUri: Uri,
-  uriHistory: IUriResolutionStep<unknown>[],
-  historyFileName: string
-): Promise<void> => {
-  if (historyFileName && uriHistory) {
-    await expectHistory(uriHistory, historyFileName);
-  }
-
-  if (!receivedResult.ok) {
-    fail("Uri resolution failed " + receivedResult.error);
-  }
-
-  const uriPackageOrWrapper = receivedResult.value;
-
-  if (uriPackageOrWrapper.type !== "wrapper") {
-    if (uriPackageOrWrapper.type === "package") {
-      fail(
-        `Uri resolution did not return a wrapper, it returned a package (${uriPackageOrWrapper.uri.uri})`
-      );
-    } else {
-      fail(
-        `Uri resolution did not return a wrapper, it returned a uri (${uriPackageOrWrapper.uri.uri})`
-      );
-    }
-  }
-
-  expect(uriPackageOrWrapper.uri.uri).toEqual(expectedUri.uri);
 };
 
 function replaceAll(str: string, strToReplace: string, replaceStr: string) {
@@ -169,36 +124,5 @@ describe("URI resolution", () => {
     });
 
     expect(result).toEqual(UriResolutionResult.ok(redirectUri));
-  });
-
-  it("custom wrapper resolver does not cause infinite recursion when resolved at runtime", async () => {
-    const config = new ClientConfigBuilder()
-      .addDefaults()
-      .addInterfaceImplementation(
-        ExtendableUriResolver.extInterfaceUri.uri,
-        "ens/undefined-resolver.eth"
-      )
-      .build();
-
-    const client = new PolywrapClient(config);
-
-    const resolutionContext = new UriResolutionContext();
-    const result = await client.tryResolveUri({
-      uri: "ens/test.eth",
-      resolutionContext,
-    });
-
-    await expectResultWithHistory(
-      result,
-      UriResolutionResult.err(
-        "While resolving wrap://ens/test.eth with URI resolver extension wrap://ens/undefined-resolver.eth, the extension could not be fully resolved. Last tried URI is wrap://ens/undefined-resolver.eth"
-      ),
-      getUriResolutionPath(resolutionContext.getHistory()),
-      "custom wrapper resolver does not cause infinite recursion when resolved at runtime"
-    );
-
-    expect(["wrap://ens/test.eth"]).toEqual(
-      resolutionContext.getResolutionPath().map((x) => x.uri)
-    );
   });
 });
