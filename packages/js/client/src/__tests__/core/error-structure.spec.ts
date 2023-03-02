@@ -217,9 +217,7 @@ describe("Error structure", () => {
         ).toBeTruthy();
         expect(prev.uri).toEqual("wrap://ens/imported-invoke.eth");
         expect(prev.method).toEqual("invokeThrowError");
-        expect(prev.args).toEqual(
-          '{\n  "0": 129,\n  "1": 161,\n  "2": 97,\n  "3": 163,\n  "4": 72,\n  "5": 101,\n  "6": 121\n}'
-        );
+        expect(prev.args).toEqual('{\n  "a": "Hey"\n}' );
         expect(prev.source).toEqual({
           file: "~lib/@polywrap/wasm-as/containers/Result.ts",
           row: 171,
@@ -235,9 +233,7 @@ describe("Error structure", () => {
           prevOfPrev.uri.endsWith("wrap://ens/imported-subinvoke.eth")
         ).toBeTruthy();
         expect(prevOfPrev.method).toEqual("subinvokeThrowError");
-        expect(prev.args).toEqual(
-          '{\n  "0": 129,\n  "1": 161,\n  "2": 97,\n  "3": 163,\n  "4": 72,\n  "5": 101,\n  "6": 121\n}'
-        );
+        expect(prev.args).toEqual('{\n  "a": "Hey"\n}');
         expect(prevOfPrev.source).toEqual({
           file: "src/index.ts",
           row: 8,
@@ -428,9 +424,7 @@ describe("Error structure", () => {
         ).toBeTruthy();
         expect(prev.uri).toEqual("wrap://ens/imported-invoke.eth");
         expect(prev.method).toEqual("invokeThrowError");
-        expect(prev.args).toEqual(
-          '{\n  "0": 129,\n  "1": 161,\n  "2": 97,\n  "3": 163,\n  "4": 72,\n  "5": 101,\n  "6": 121\n}'
-        );
+        expect(prev.args).toEqual('{\n  "a": "Hey"\n}');
         expect(prev.source).toEqual({ file: "src/lib.rs", row: 10, col: 129 });
 
         expect(prev.innerError instanceof WrapError).toBeTruthy();
@@ -442,9 +436,7 @@ describe("Error structure", () => {
           prevOfPrev.uri.endsWith("wrap://ens/imported-subinvoke.eth")
         ).toBeTruthy();
         expect(prevOfPrev.method).toEqual("subinvokeThrowError");
-        expect(prevOfPrev.args).toEqual(
-          '{\n  "0": 129,\n  "1": 161,\n  "2": 97,\n  "3": 163,\n  "4": 72,\n  "5": 101,\n  "6": 121\n}'
-        );
+        expect(prevOfPrev.args).toEqual('{\n  "a": "Hey"\n}');
         expect(prevOfPrev.source).toEqual({
           file: "src/lib.rs",
           row: 9,
