@@ -1,7 +1,0 @@
-format: 0.2.0
-project:
-  type: plugin/typescript
-  name: Ws
-source:
-  module: ./src/index.ts
-  schema: ./src/schema.graphql

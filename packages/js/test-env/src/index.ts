@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { generateName } from "./generate-name";
-
 import path from "path";
 import spawn from "spawn-command";
 import axios from "axios";
 import fs from "fs";
 import yaml from "yaml";
-import { Uri } from "@polywrap/core-js";
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 
 // $start: ensAddresses
@@ -178,7 +175,9 @@ export const runCLI = async (options: {
   stdout: string;
   stderr: string;
 }> /* $ */ => {
-  const [exitCode, stdout, stderr] = await new Promise((resolve, reject) => {
+  const [exitCode, stdout, stderr] = await new Promise<
+    [number, string, string]
+  >((resolve, reject) => {
     if (!options.cwd) {
       // Make sure to set an absolute working directory
       const cwd = process.cwd();
@@ -272,80 +271,41 @@ export async function buildWrapper(
   }
 }
 
-// $start: buildAndDeployWrapper
+// $start: deployWrapper
 /**
- * Build the wrapper located at the given path, and then deploy it to IPFS and ENS.
- * If an ENS domain is not provided, a randomly selected human-readable ENS domain name is used.
+ * Deploy the wrapper located at the given path, and then deploy it based on given jobs.
  *
- * @param wrapperAbsPath - absolute path of wrapper to build
- * @param ipfsProvider - ipfs provider to use for deployment
- * @param ethereumProvider - ethereum provider to use for ENS registration
- * @param ensName? - an ENS domain name to register and assign to the wrapper
- * @param codegen? - run codegen before build
- *
- * @returns registered ens domain name and IPFS hash
+ * @param options - an object containing:
+ *   wrapperAbsPath - absolute path of wrapper to build
+ *   jobs - jobs that will be executed in deploy process
+ *   codegen? - run codegen before build
+ *   build? - run build before deploy
  */
-export async function buildAndDeployWrapper({
-  wrapperAbsPath,
-  ipfsProvider,
-  ethereumProvider,
-  ensName,
-}: {
+export async function deployWrapper(options: {
   wrapperAbsPath: string;
-  ipfsProvider: string;
-  ethereumProvider: string;
-  ensName?: string;
+  jobs: DeployManifest["jobs"];
+  primaryJobName?: string;
   codegen?: boolean;
-}): Promise<{
-  ensDomain: string;
-  ipfsCid: string;
+  build?: boolean;
+}): Promise<void | {
+  stdout: string;
+  stderr: string;
 }> /* $ */ {
+  const { wrapperAbsPath, jobs, codegen, build } = options;
   const tempDeployManifestFilename = `polywrap.deploy-temp.yaml`;
   const tempDeployManifestPath = path.join(
     wrapperAbsPath,
     tempDeployManifestFilename
   );
 
-  // create a new ENS domain
-  const wrapperEns = ensName ?? `${generateName()}.eth`;
-
-  await buildWrapper(wrapperAbsPath);
+  if (build) {
+    await buildWrapper(wrapperAbsPath, undefined, codegen);
+  }
 
   const deployManifest: Omit<DeployManifest, "__type"> = {
-    format: "0.2.0",
-    jobs: {
-      buildAndDeployWrapper: {
-        config: {
-          provider: ethereumProvider,
-          ensRegistryAddress: ensAddresses.ensAddress,
-          ensRegistrarAddress: ensAddresses.registrarAddress,
-          ensResolverAddress: ensAddresses.resolverAddress,
-        },
-        steps: [
-          {
-            name: "registerName",
-            package: "ens-recursive-name-register",
-            uri: `wrap://ens/${wrapperEns}`,
-          },
-          {
-            name: "ipfsDeploy",
-            package: "ipfs",
-            uri: `fs/${wrapperAbsPath}/build`,
-            config: {
-              gatewayUri: ipfsProvider,
-            },
-          },
-          {
-            name: "ensPublish",
-            package: "ens",
-            uri: "$$ipfsDeploy",
-            config: {
-              domainName: wrapperEns,
-            },
-          },
-        ],
-      },
-    },
+    format: "0.3.0",
+    primaryJobName: options.primaryJobName,
+    jobs,
   };
   fs.writeFileSync(
     tempDeployManifestPath,
@@ -353,99 +313,6 @@ export async function buildAndDeployWrapper({
   );
 
   // deploy Wrapper
-
-  const {
-    exitCode: deployExitCode,
-    stdout: deployStdout,
-    stderr: deployStderr,
-  } = await runCLI({
-    args: ["deploy", "--manifest-file", tempDeployManifestPath],
-  });
-
-  if (deployExitCode !== 0) {
-    console.error(`polywrap exited with code: ${deployExitCode}`);
-    console.log(`stderr:\n${deployStderr}`);
-    console.log(`stdout:\n${deployStdout}`);
-    throw Error("polywrap CLI failed");
-  }
-
-  // remove manually configured manifests
-  fs.unlinkSync(tempDeployManifestPath);
-
-  // get the IPFS CID of the published package
-  const extractCID = /(wrap:\/\/ipfs\/[A-Za-z0-9]+)/;
-  const result = deployStdout.match(extractCID);
-
-  if (!result) {
-    throw Error(
-      `polywrap CLI output missing IPFS CID.\nOutput: ${deployStdout}`
-    );
-  }
-
-  const wrapperCid = new Uri(result[1]).path;
-
-  return {
-    ensDomain: wrapperEns,
-    ipfsCid: wrapperCid,
-  };
-}
-
-// $start: buildAndDeployWrapperToHttp
-/**
- * Build the wrapper located at the given path, and then deploy it to HTTP.
- * If a domain name is not provided, a randomly selected human-readable domain name is used.
- *
- * @param wrapperAbsPath - absolute path of wrapper to build
- * @param httpProvider - http provider used for deployment and domain registration
- * @param name? - a domain name to register and assign to the wrapper
- * @param codegen? - run codegen before build
- *
- * @returns http uri
- */
-export async function buildAndDeployWrapperToHttp({
-  wrapperAbsPath,
-  httpProvider,
-  name,
-}: {
-  wrapperAbsPath: string;
-  httpProvider: string;
-  name?: string;
-  codegen?: boolean;
-}): Promise<{ uri: string }> /* $ */ {
-  const tempDeployManifestFilename = `polywrap.deploy-temp.yaml`;
-  const tempDeployManifestPath = path.join(
-    wrapperAbsPath,
-    tempDeployManifestFilename
-  );
-
-  const wrapperName = name ?? generateName();
-  const postUrl = `${httpProvider}/wrappers/local/${wrapperName}`;
-
-  await buildWrapper(wrapperAbsPath);
-  const deployManifest: Omit<DeployManifest, "__type"> = {
-    format: "0.2.0",
-    jobs: {
-      buildAndDeployWrapperToHttp: {
-        steps: [
-          {
-            name: "httpDeploy",
-            package: "http",
-            uri: `fs/${wrapperAbsPath}/build`,
-            config: {
-              postUrl,
-            },
-          },
-        ],
-      },
-    },
-  };
-  fs.writeFileSync(
-    tempDeployManifestPath,
-    yaml.stringify(deployManifest, null, 2)
-  );
-
-  // deploy Wrapper
-
   const {
     exitCode: deployExitCode,
     stdout: deployStdout,
@@ -465,6 +332,7 @@ export async function buildAndDeployWrapperToHttp({
   fs.unlinkSync(tempDeployManifestPath);
 
   return {
-    uri: postUrl,
+    stdout: deployStdout,
+    stderr: deployStderr,
   };
 }

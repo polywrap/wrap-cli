@@ -1,0 +1,6 @@
+[
+  "wrap://test/should-error => RequestSynchronizerResolver => error (Test resolution error)",
+  [
+    "wrap://test/should-error => SimpleAsyncRedirectResolver => error (Test resolution error)"
+  ]
+]

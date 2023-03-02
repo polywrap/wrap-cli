@@ -133,6 +133,19 @@ const testData: CommandTestCaseData<CommandTypings> = {
         expect(fs.existsSync(packagePath)).toBeTruthy();
         clearDir(test.cwd);
       }
+    }],
+    template: [{
+      cwd: fs.mkdtempSync(path.join(os.tmpdir(), "cli-js-create-test")),
+      arguments: ["https://github.com/polywrap/logging.git", "test-template"],
+      after: (test, stdout, stderr, exitCode) => {
+        if (!test.cwd)
+          throw Error("This shouldn't happen");
+        const outputDir = path.join(test.cwd, "test-template");
+        const packagePath = path.join(outputDir, "README.md");
+        expect(fs.existsSync(outputDir)).toBeTruthy();
+        expect(fs.existsSync(packagePath)).toBeTruthy();
+        clearDir(test.cwd);
+      }
     }]
   },
   deploy: [{

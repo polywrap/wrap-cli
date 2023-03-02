@@ -1,7 +1,6 @@
-import { getDefaultConfig } from "./bundles";
+import { DefaultBundle } from "./bundles";
 import { BaseClientConfigBuilder } from "./BaseClientConfigBuilder";
-import { IClientConfigBuilder } from "./types";
-import { BuilderConfig } from "./types";
+import { BuildOptions, IClientConfigBuilder, BuilderConfig } from "./types";
 
 import {
   CoreClientConfig,
@@ -9,27 +8,19 @@ import {
   InterfaceImplementations,
   IUriPackage,
   IUriRedirect,
-  IUriResolver,
   IUriWrapper,
   Uri,
 } from "@polywrap/core-js";
 import {
-  IWrapperCache,
-  PackageToWrapperCacheResolver,
   RecursiveResolver,
   RetryResolver,
   StaticResolver,
   WrapperCache,
+  PackageToWrapperCacheResolver,
+  RequestSynchronizerResolver,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
-type BuildOptions =
-  | {
-      wrapperCache: IWrapperCache;
-    }
-  | {
-      resolver: IUriResolver<unknown>;
-    };
 export class ClientConfigBuilder extends BaseClientConfigBuilder {
   // $start: ClientConfigBuilder-constructor
   /**
@@ -40,7 +31,7 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
   }
 
   addDefaults(): IClientConfigBuilder {
-    return this.add(getDefaultConfig());
+    return this.add(DefaultBundle.getConfig());
   }
 
   build(options?: BuildOptions): CoreClientConfig {
@@ -54,19 +45,20 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
       resolver:
         resolver ??
         RecursiveResolver.from(
-          PackageToWrapperCacheResolver.from(
-            [
-              StaticResolver.from([
-                ...this.buildRedirects(),
-                ...this.buildWrappers(),
-                ...this.buildPackages(),
-              ]),
-              ...this._config.resolvers,
-              new RetryResolver(new ExtendableUriResolver(), {
-                ipfs: { retries: 1, interval: 100 },
-              }),
-            ],
-            wrapperCache ?? new WrapperCache()
+          RequestSynchronizerResolver.from(
+            PackageToWrapperCacheResolver.from(
+              [
+                StaticResolver.from([
+                  ...this.buildRedirects(),
+                  ...this.buildWrappers(),
+                  ...this.buildPackages(),
+                ]),
+                new RetryResolver(new ExtendableUriResolver(), {
+                  ipfs: { retries: 1, interval: 100 },
+                }),
+              ],
+              wrapperCache ?? new WrapperCache()
+            )
           )
         ),
     };

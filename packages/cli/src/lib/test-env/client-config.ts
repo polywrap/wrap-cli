@@ -2,16 +2,14 @@ import { getTestEnvProviders } from "./providers";
 
 import {
   BuilderConfig,
-  defaultInterfaces,
-  defaultIpfsProviders,
-  defaultPackages,
+  DefaultBundle,
 } from "@polywrap/client-config-builder-js";
-import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
+import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import {
   ethereumProviderPlugin,
   Connections,
   Connection,
-} from "ethereum-provider-js";
+} from "@polywrap/ethereum-provider-js";
 import { ensAddresses } from "@polywrap/test-env-js";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
@@ -29,13 +27,21 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
 
   return {
     envs: {
-      [defaultPackages.ipfsResolver]: {
+      [DefaultBundle.embeds.ipfsResolver.uri.uri]: {
         provider: ipfsProvider,
-        fallbackProviders: defaultIpfsProviders,
+        fallbackProviders: DefaultBundle.ipfsProviders,
+        retries: { tryResolveUri: 1, getFile: 1 },
+      },
+      "proxy/testnet-ens-uri-resolver-ext": {
+        registryAddress: ensAddress,
       },
     },
+    redirects: {
+      "proxy/testnet-ens-uri-resolver-ext":
+        "ens/wraps.eth:ens-uri-resolver-ext@1.0.0",
+    },
     packages: {
-      [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
+      [DefaultBundle.plugins.ethereumProvider.uri.uri]: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({
@@ -52,11 +58,14 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
           },
         }),
       }),
-      [defaultPackages.ensResolver]: ensResolverPlugin({
-        addresses: {
-          testnet: ensAddress,
-        },
-      }),
+    },
+    interfaces: {
+      [ExtendableUriResolver.defaultExtInterfaceUris[0].uri]: new Set([
+        "proxy/testnet-ens-uri-resolver-ext",
+        ...DefaultBundle.getConfig().interfaces[
+          ExtendableUriResolver.defaultExtInterfaceUris[0].uri
+        ],
+      ]),
     },
   };
 }

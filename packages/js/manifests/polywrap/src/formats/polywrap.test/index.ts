@@ -9,34 +9,43 @@ import {
   PolywrapWorkflow as PolywrapWorkflow_0_1_0,
   Jobs as WorkflowJobs_0_1_0,
 } from "./0.1.0";
+import {
+  PolywrapWorkflow as PolywrapWorkflow_0_2_0,
+  Jobs as WorkflowJobs_0_2_0,
+} from "./0.2.0";
 
 export {
   PolywrapWorkflow_0_1_0,
   WorkflowJobs_0_1_0,
+  PolywrapWorkflow_0_2_0,
+  WorkflowJobs_0_2_0,
 };
 
 export enum PolywrapWorkflowFormats {
   // NOTE: Patch fix for backwards compatability
   "v0.1" = "0.1",
   "v0.1.0" = "0.1.0",
+  "v0.2.0" = "0.2.0",
 }
 
 export const PolywrapWorkflowSchemaFiles: Record<string, string> = {
   // NOTE: Patch fix for backwards compatability
   "0.1": "formats/polywrap.test/0.1.0.json",
   "0.1.0": "formats/polywrap.test/0.1.0.json",
+  "0.2.0": "formats/polywrap.test/0.2.0.json",
 }
 
 export type AnyPolywrapWorkflow =
   | PolywrapWorkflow_0_1_0
-
+  | PolywrapWorkflow_0_2_0
 
 export type WorkflowJobs =
    | WorkflowJobs_0_1_0
+   | WorkflowJobs_0_2_0
 
-export type PolywrapWorkflow = PolywrapWorkflow_0_1_0;
+export type PolywrapWorkflow = PolywrapWorkflow_0_2_0;
 
-export const latestPolywrapWorkflowFormat = PolywrapWorkflowFormats["v0.1.0"]
+export const latestPolywrapWorkflowFormat = PolywrapWorkflowFormats["v0.2.0"]
 
 export { migratePolywrapWorkflow } from "./migrate";
 

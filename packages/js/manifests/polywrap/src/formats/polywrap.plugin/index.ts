@@ -43,7 +43,6 @@ export type AnyPluginManifest =
   | PluginManifest_0_3_0
 
 
-
 export type PluginManifest = PluginManifest_0_3_0;
 
 export const latestPluginManifestFormat = PluginManifestFormats["v0.3.0"]

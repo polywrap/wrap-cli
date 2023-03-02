@@ -6,16 +6,13 @@ import { invokeWithTimeout } from "./invokeWithTimeout";
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
+import { ClientConfigBuilder, PolywrapClient } from "@polywrap/client-js";
+import { DefaultBundle } from "@polywrap/client-config-builder-js";
 import {
-  Connections,
   Connection,
+  Connections,
   ethereumProviderPlugin,
-} from "ethereum-provider-js";
-import { PolywrapClient } from "@polywrap/client-js";
-import {
-  defaultInterfaces,
-  defaultWrappers,
-} from "@polywrap/client-config-builder-js";
+} from "@polywrap/ethereum-provider-js";
 
 const contentHash = require("content-hash");
 
@@ -49,28 +46,29 @@ class ENSPublisher implements DeployModule {
       ? new Wallet(config.privateKey).connect(connectionProvider)
       : undefined;
 
-    const client = new PolywrapClient({
-      packages: [
-        {
-          uri: defaultInterfaces.ethereumProvider,
-          package: ethereumProviderPlugin({
-            connections: new Connections({
-              networks: {
-                [network]: new Connection({
-                  provider: config.provider,
-                  signer,
-                }),
-              },
-              defaultNetwork: network,
-            }),
+    const clientConfig = new ClientConfigBuilder()
+      .addDefaults()
+      .addPackage(
+        DefaultBundle.plugins.ethereumProvider.uri.uri,
+        ethereumProviderPlugin({
+          connections: new Connections({
+            networks: {
+              [network]: new Connection({
+                provider: config.provider,
+                signer,
+              }),
+            },
+            defaultNetwork: network,
           }),
-        },
-      ],
-    });
+        })
+      )
+      .build();
+
+    const client = new PolywrapClient(clientConfig);
 
     const resolver = await client.invoke<string>({
       method: "getResolver",
-      uri: defaultWrappers.ens,
+      uri: "ens/wraps.eth:ens@1.0.0",
       args: {
         registryAddress: config.ensRegistryAddress,
         domain: config.domainName,
@@ -92,7 +90,7 @@ class ENSPublisher implements DeployModule {
 
     const setContenthashData = await client.invoke<{ hash: string }>({
       method: "setContentHash",
-      uri: defaultWrappers.ens,
+      uri: "ens/wraps.eth:ens@1.0.0",
       args: {
         domain: config.domainName,
         cid: hash,
@@ -111,7 +109,7 @@ class ENSPublisher implements DeployModule {
       client,
       {
         method: "awaitTransaction",
-        uri: Uri.from(defaultWrappers.ethereum),
+        uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
         args: {
           txHash: setContenthashData.value.hash,
           connection: {
