@@ -35,13 +35,10 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.10"
   },
   "devDependencies": {
-    "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.10",
+    "@polywrap/ethereum-provider-js": "0.2.2",
     "@polywrap/fs-plugin-js": "~0.10.0-pre",
-    "@polywrap/fs-resolver-plugin-js": "0.10.0-pre.10",
     "@polywrap/http-plugin-js": "~0.10.0-pre",
-    "@polywrap/http-resolver-plugin-js": "0.10.0-pre.10",
     "@polywrap/ipfs-plugin-js": "~0.10.0-pre",
-    "@polywrap/ipfs-resolver-plugin-js": "~0.10.0-pre",
     "@polywrap/test-cases": "0.10.0-pre.10",
     "@polywrap/test-env-js": "0.10.0-pre.10",
     "@types/jest": "26.0.8",
@@ -49,7 +46,6 @@
     "@types/uuid": "8.3.0",
     "bignumber.js": "9.0.2",
     "doc-snippets": "~1.0.0",
-    "ethereum-provider-js": "0.1.7",
     "jest": "26.6.3",
     "polywrap": "0.10.0-pre.10",
     "rimraf": "3.0.2",

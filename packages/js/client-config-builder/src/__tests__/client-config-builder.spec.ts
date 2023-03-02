@@ -6,7 +6,7 @@ import {
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
-import { getDefaultConfig } from "../bundles";
+import { DefaultBundle } from "../bundles";
 
 class MockUriResolver implements IUriResolver {
   private uri: string;
@@ -166,7 +166,7 @@ describe("Client config builder", () => {
 
     expect(clientConfig).toBeTruthy();
 
-    const expectedBuilderConfig = getDefaultConfig();
+    const expectedBuilderConfig = DefaultBundle.getConfig();
     expect(JSON.stringify(builderConfig)).toBe(JSON.stringify(expectedBuilderConfig));
   });
 

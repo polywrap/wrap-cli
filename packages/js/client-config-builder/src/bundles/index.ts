@@ -1,1 +1,1 @@
-export * from "./getDefaultConfig";
+export * as DefaultBundle from "./default";

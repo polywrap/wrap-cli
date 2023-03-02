@@ -2207,6 +2207,16 @@
     "@polywrap/tracing-js" "0.10.0-pre.7"
     "@polywrap/wrap-manifest-types-js" "0.10.0-pre.7"
 
+"@polywrap/ethereum-provider-js@0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@polywrap/ethereum-provider-js/-/ethereum-provider-js-0.2.2.tgz#0bd6337f26da381b1567f26d077cd32debf43d03"
+  integrity sha512-GGWB7C8pLSRx1fcBaT/hnLISJNoPilM7FHrKfvhWRAjbGDLKlL1tDmHD2J1G5R5dOkA97Z+boVbI5VrjzqE5/Q==
+  dependencies:
+    "@ethersproject/address" "5.7.0"
+    "@ethersproject/providers" "5.7.0"
+    "@polywrap/core-js" "0.10.0-pre.10"
+    ethers "5.7.0"
+
 "@polywrap/fs-plugin-js@~0.10.0-pre":
   version "0.10.0-pre.7"
   resolved "https://registry.yarnpkg.com/@polywrap/fs-plugin-js/-/fs-plugin-js-0.10.0-pre.7.tgz#d066fac96869363de512978bb66204b589ffa9a1"
@@ -2252,17 +2262,6 @@
     abort-controller "3.0.0"
     is-ipfs "1.0.3"
     multiformats "9.7.0"
-
-"@polywrap/ipfs-resolver-plugin-js@~0.10.0-pre":
-  version "0.10.0-pre.7"
-  resolved "https://registry.yarnpkg.com/@polywrap/ipfs-resolver-plugin-js/-/ipfs-resolver-plugin-js-0.10.0-pre.7.tgz#e82ebae17eacc542d8f83c183674e82715c5bd9c"
-  integrity sha512-jI+KqpAq0b8P7nmItUwUJ1JTibMfFUvt5mYuylJj9w3Ua15foTpML60uhOCt1kZ4TeaZoq7C1QcytbWTMsfhUQ==
-  dependencies:
-    "@polywrap/core-js" "0.10.0-pre.7"
-    "@polywrap/ipfs-http-client-lite" "0.3.0"
-    "@polywrap/plugin-js" "0.10.0-pre.7"
-    abort-controller "3.0.0"
-    is-ipfs "1.0.3"
 
 "@polywrap/logger-plugin-js@0.10.0":
   version "0.10.0"
@@ -4839,16 +4838,6 @@ esutils@^2.0.2:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
-
-ethereum-provider-js@0.1.7:
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/ethereum-provider-js/-/ethereum-provider-js-0.1.7.tgz#a340545c267b7068c9ff697ba5e891c20d6bc5a8"
-  integrity sha512-x//Mdfhsw3IJPemWufLtZX7JkOFRJ8vVGHkFLjdwDew/EErNq4aV3UfjMylcmeP21WVoOmZzNyljEMtvQFng4w==
-  dependencies:
-    "@ethersproject/address" "5.7.0"
-    "@ethersproject/providers" "5.7.0"
-    "@polywrap/core-js" "0.10.0-pre.7"
-    ethers "5.7.0"
 
 ethers@5.0.7:
   version "5.0.7"

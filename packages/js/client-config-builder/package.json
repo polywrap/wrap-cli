@@ -24,20 +24,17 @@
   },
   "dependencies": {
     "@polywrap/core-js": "0.10.0-pre.10",
-    "@polywrap/ens-resolver-plugin-js": "0.10.0-pre.10",
+    "@polywrap/ethereum-provider-js": "0.2.2",
     "@polywrap/fs-plugin-js": "~0.10.0-pre",
-    "@polywrap/fs-resolver-plugin-js": "0.10.0-pre.10",
     "@polywrap/http-plugin-js": "~0.10.0-pre",
-    "@polywrap/http-resolver-plugin-js": "0.10.0-pre.10",
     "@polywrap/ipfs-plugin-js": "~0.10.0-pre",
-    "@polywrap/ipfs-resolver-plugin-js": "~0.10.0-pre",
     "@polywrap/logger-plugin-js": "0.10.0",
+    "@polywrap/plugin-js": "0.10.0-pre.10",
     "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.10",
     "@polywrap/uri-resolvers-js": "0.10.0-pre.10",
     "@polywrap/wasm-js": "0.10.0-pre.10",
     "base64-to-uint8array": "1.0.0",
-    "concurrent-plugin-js": "0.1.2",
-    "ethereum-provider-js": "0.1.7"
+    "concurrent-plugin-js": "0.1.2"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
