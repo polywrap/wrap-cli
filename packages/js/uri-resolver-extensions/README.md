@@ -88,7 +88,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
    * @param resolverName - Name to use in resolution history output
    * */
   constructor(
-    extInterfaceUris: Uri[] = ExtendableUriResolver.extInterfaceUris,
+    extInterfaceUris: Uri[] = ExtendableUriResolver.defaultExtInterfaceUris,
     resolverName = "ExtendableUriResolver"
   ) 
 ```

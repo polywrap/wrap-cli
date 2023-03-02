@@ -192,7 +192,7 @@ export const interfaceInvokeCase = (implementation: string) => {
     });
 
     it("should merge user-defined interface implementations with defaults", async () => {
-      const interfaceUri = ExtendableUriResolver.extInterfaceUris[0];
+      const interfaceUri = ExtendableUriResolver.defaultExtInterfaceUris[0];
       const implementationUri1 = Uri.from("wrap://ens/implementation1.eth");
       const implementationUri2 = Uri.from("wrap://ens/implementation2.eth");
 

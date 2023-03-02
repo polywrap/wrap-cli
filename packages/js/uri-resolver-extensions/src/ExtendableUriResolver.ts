@@ -24,7 +24,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
 > /* $ */ {
   // $start: ExtendableUriResolver-extInterfaceUri-static
   /** The supported interface uris to which resolver-ext implementations should be registered */
-  public static extInterfaceUris: Uri[] = [
+  public static defaultExtInterfaceUris: Uri[] = [
     Uri.from("wrap://ens/wraps.eth:uri-resolver-ext@1.1.0"),
     Uri.from("wrap://ens/wraps.eth:uri-resolver-ext@1.0.0"),
   ];
@@ -44,7 +44,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
    * @param resolverName - Name to use in resolution history output
    * */
   constructor(
-    extInterfaceUris: Uri[] = ExtendableUriResolver.extInterfaceUris,
+    extInterfaceUris: Uri[] = ExtendableUriResolver.defaultExtInterfaceUris,
     resolverName = "ExtendableUriResolver"
   ) /* $ */ {
     super();

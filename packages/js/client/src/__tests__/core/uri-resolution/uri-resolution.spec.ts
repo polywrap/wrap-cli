@@ -188,7 +188,7 @@ describe("URI resolution", () => {
     const config = new ClientConfigBuilder()
       .addDefaults()
       .addInterfaceImplementation(
-        ExtendableUriResolver.extInterfaceUris[0].uri,
+        ExtendableUriResolver.defaultExtInterfaceUris[0].uri,
         fsRedirectResolverWrapperUri.uri
       )
       .build();
@@ -255,7 +255,7 @@ describe("URI resolution", () => {
   it("can resolve previously cached URI after redirecting by a URI resolver extension", async () => {
     const config = new ClientConfigBuilder()
       .addDefaults()
-      .addInterfaceImplementations(ExtendableUriResolver.extInterfaceUris[0].uri, [
+      .addInterfaceImplementations(ExtendableUriResolver.defaultExtInterfaceUris[0].uri, [
         fsRedirectResolverWrapperUri.uri,
         simpleRedirectResolverWrapperUri.uri,
       ])
@@ -308,7 +308,7 @@ describe("URI resolution", () => {
     const config = new ClientConfigBuilder()
       .addDefaults()
       .addRedirect(resolverRedirectUri.uri, finalRedirectedUri.uri)
-      .addInterfaceImplementations(ExtendableUriResolver.extInterfaceUris[0].uri, [
+      .addInterfaceImplementations(ExtendableUriResolver.defaultExtInterfaceUris[0].uri, [
         fsRedirectResolverWrapperUri.uri,
         simpleRedirectResolverWrapperUri.uri,
       ])
@@ -388,7 +388,7 @@ describe("URI resolution", () => {
     const config = new ClientConfigBuilder()
       .addDefaults()
       .addInterfaceImplementation(
-        ExtendableUriResolver.extInterfaceUris[0].uri,
+        ExtendableUriResolver.defaultExtInterfaceUris[0].uri,
         "ens/undefined-resolver.eth"
       )
       .build();
