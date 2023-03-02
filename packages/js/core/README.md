@@ -359,7 +359,7 @@ export interface UriConfig {
 /**
  * A Polywrap URI. Some examples of valid URIs are:
  * wrap://ipfs/QmHASH
- * wrap://ens/sub.dimain.eth
+ * wrap://ens/sub.domain.eth
  * wrap://fs/directory/file.txt
  * wrap://uns/domain.crypto
  *

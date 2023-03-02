@@ -1,3 +1,5 @@
+import { RegExpGroups } from "../utils/RegExpGroups";
+
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 // $start: UriConfig
@@ -18,7 +20,7 @@ export interface UriConfig {
 /**
  * A Polywrap URI. Some examples of valid URIs are:
  * wrap://ipfs/QmHASH
- * wrap://ens/sub.dimain.eth
+ * wrap://ens/sub.domain.eth
  * wrap://fs/directory/file.txt
  * wrap://uns/domain.crypto
  *
@@ -135,17 +137,10 @@ export class Uri {
     }
 
     // Extract the authoriy & path
-    const result = processed.match(/wrap:\/\/([a-z][a-z0-9-_]+)\/(.*)/);
-    let uriParts: string[];
+    const re = /^wrap:\/\/((?<authority>[a-z][a-z0-9-_]+)\/)?(?<path>.*)$/;
+    const result: RegExpGroups<"authority" | "path"> = re.exec(processed);
 
-    // Remove all empty strings
-    if (result) {
-      uriParts = result.filter((str) => !!str);
-    } else {
-      uriParts = [];
-    }
-
-    if (uriParts.length !== 3) {
+    if (!result || !result.groups || !result.groups.path) {
       return ResultErr(
         Error(
           `URI is malformed, here are some examples of valid URIs:\n` +
@@ -157,10 +152,30 @@ export class Uri {
       );
     }
 
+    let { authority, path } = result.groups;
+
+    if (!authority) {
+      const inferred = Uri.inferAuthority(path);
+      if (!inferred) {
+        return ResultErr(
+          Error(
+            `URI authority is missing, here are some examples of valid URIs:\n` +
+              `wrap://ipfs/QmHASH\n` +
+              `wrap://ens/domain.eth\n` +
+              `ens/domain.eth\n\n` +
+              `Invalid URI Received: ${uri}`
+          )
+        );
+      }
+      authority = inferred.authority;
+      path = inferred.path;
+      processed = `wrap://${authority}/${path}`;
+    }
+
     return ResultOk({
       uri: processed,
-      authority: uriParts[1],
-      path: uriParts[2],
+      authority,
+      path,
     });
   }
 
@@ -193,5 +208,27 @@ export class Uri {
   /** @returns Uri string representation */
   public toJSON(): string /* $ */ {
     return this._config.uri;
+  }
+
+  private static inferAuthority(path: string): UriConfig | undefined {
+    let authority: string | undefined;
+
+    if (path.startsWith("https://")) {
+      authority = "https";
+    } else if (path.startsWith("http://")) {
+      authority = "http";
+    } else if (path.startsWith("ipfs://")) {
+      authority = "ipfs";
+      path = path.substring(7);
+    } else if (path.startsWith("ens://")) {
+      authority = "ens";
+      path = path.substring(6);
+    }
+
+    if (!authority) {
+      return undefined;
+    }
+
+    return { authority, path, uri: `wrap://${authority}/${path}` };
   }
 }

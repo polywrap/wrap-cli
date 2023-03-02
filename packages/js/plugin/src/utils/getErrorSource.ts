@@ -1,10 +1,4 @@
-import { ErrorSource } from "@polywrap/core-js";
-
-type RegExpGroups<T extends string> =
-  | (RegExpExecArray & {
-      groups?: { [name in T]: string | undefined } | { [key: string]: string };
-    })
-  | null;
+import { ErrorSource, RegExpGroups } from "@polywrap/core-js";
 
 const re = /\((?<file>.*):(?<row>\d+):(?<col>\d+)\)$/;
 

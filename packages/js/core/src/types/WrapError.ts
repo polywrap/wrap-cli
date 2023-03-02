@@ -1,4 +1,5 @@
 import { CleanResolutionStep } from "../algorithms";
+import { RegExpGroups } from "../utils/RegExpGroups";
 
 export type ErrorSource = Readonly<{
   file?: string;
@@ -51,12 +52,6 @@ export interface WrapErrorOptions {
   cause?: unknown;
   innerError?: WrapError;
 }
-
-type RegExpGroups<T extends string> =
-  | (RegExpExecArray & {
-      groups?: { [name in T]: string | undefined } | { [key: string]: string };
-    })
-  | null;
 
 export class WrapError extends Error {
   readonly name: string = "WrapError";
@@ -170,7 +165,7 @@ export class WrapError extends Error {
       | "resolutionStack"
       | "cause"
     > = WrapError.re.exec(error);
-    if (!result) {
+    if (!result || !result.groups) {
       return undefined;
     }
     const {
@@ -184,8 +179,7 @@ export class WrapError extends Error {
       col,
       resolutionStack: resolutionStackStr,
       cause,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    } = result.groups!;
+    } = result.groups;
 
     const code = parseInt(codeStr as string);
 

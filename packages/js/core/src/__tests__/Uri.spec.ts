@@ -15,7 +15,7 @@ describe("Uri", () => {
   });
 
   it("Fails if an authority is not present", () => {
-    expect(() => new Uri("wrap://path")).toThrowError(/URI is malformed,/);
+    expect(() => new Uri("wrap://path")).toThrowError(/URI authority is missing,/);
   });
 
   it("Fails if a path is not present", () => {
@@ -49,5 +49,32 @@ describe("Uri", () => {
       authority: "valid",
       path: "uri",
     });
+  });
+
+  it("Infers common URI authorities", () => {
+    let uri = new Uri("https://domain.com/path/to/thing");
+    expect(uri.uri).toEqual("wrap://https/https://domain.com/path/to/thing");
+    expect(uri.authority).toEqual("https");
+    expect(uri.path).toEqual("https://domain.com/path/to/thing");
+
+    uri = new Uri("http://domain.com/path/to/thing");
+    expect(uri.uri).toEqual("wrap://http/http://domain.com/path/to/thing");
+    expect(uri.authority).toEqual("http");
+    expect(uri.path).toEqual("http://domain.com/path/to/thing");
+
+    uri = new Uri("ipfs://QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw");
+    expect(uri.uri).toEqual("wrap://ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw");
+    expect(uri.authority).toEqual("ipfs");
+    expect(uri.path).toEqual("QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw");
+
+    uri = new Uri("ens://domain.eth");
+    expect(uri.uri).toEqual("wrap://ens/domain.eth");
+    expect(uri.authority).toEqual("ens");
+    expect(uri.path).toEqual("domain.eth");
+
+    uri = new Uri("ens://domain.eth:pkg@1.0.0");
+    expect(uri.uri).toEqual("wrap://ens/domain.eth:pkg@1.0.0");
+    expect(uri.authority).toEqual("ens");
+    expect(uri.path).toEqual("domain.eth:pkg@1.0.0");
   });
 });
