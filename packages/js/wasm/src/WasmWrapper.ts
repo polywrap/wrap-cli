@@ -6,7 +6,7 @@ import { WRAP_MODULE_PATH } from "./constants";
 import { createWasmWrapper } from "./helpers/createWasmWrapper";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
-import { msgpackEncode } from "@polywrap/msgpack-js";
+import { msgpackDecode, msgpackEncode } from "@polywrap/msgpack-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import {
   CoreClient,
@@ -141,7 +141,7 @@ export class WasmWrapper implements Wrapper {
           code: WrapErrorCode.WRAPPER_READ_FAIL,
           uri: options.uri.uri,
           method,
-          args: JSON.stringify(args, null, 2),
+          args: JSON.stringify(WasmWrapper._decodeArgs(args), null, 2),
         });
         return ResultErr(error);
       }
@@ -174,7 +174,7 @@ export class WasmWrapper implements Wrapper {
           code: WrapErrorCode.WRAPPER_INVOKE_ABORTED,
           uri: options.uri.uri,
           method,
-          args: JSON.stringify(args, null, 2),
+          args: JSON.stringify(WasmWrapper._decodeArgs(args), null, 2),
           source,
           innerError: prev,
         });
@@ -185,7 +185,7 @@ export class WasmWrapper implements Wrapper {
           code: WrapErrorCode.WRAPPER_INTERNAL_ERROR,
           uri: options.uri.uri,
           method,
-          args: JSON.stringify(args, null, 2),
+          args: JSON.stringify(WasmWrapper._decodeArgs(args), null, 2),
         });
       };
 
@@ -222,13 +222,21 @@ export class WasmWrapper implements Wrapper {
           code: WrapErrorCode.WRAPPER_INVOKE_FAIL,
           uri: options.uri.uri,
           method,
-          args: JSON.stringify(args, null, 2),
+          args: JSON.stringify(WasmWrapper._decodeArgs(args), null, 2),
         });
         return ResultErr(error);
       }
     } catch (error) {
       return ResultErr(error);
     }
+  }
+
+  private static _decodeArgs(
+    args: Uint8Array | Record<string, unknown>
+  ): Record<string, unknown> {
+    return args instanceof Uint8Array
+      ? (msgpackDecode(args) as Record<string, unknown>)
+      : args;
   }
 
   private _processInvokeResult(

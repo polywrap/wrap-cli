@@ -18,3 +18,4 @@ pkg
 wasm-pack.log
 .env
 packages/test-cases/cases/wrappers
+polywrap.deployment.txt

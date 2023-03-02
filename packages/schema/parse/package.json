@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/schema-parse",
   "description": "Polywrap Schema Parsing",
-  "version": "0.10.0-pre.8",
+  "version": "0.10.0-pre.10",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,19 +20,19 @@
   },
   "dependencies": {
     "@dorgjelli/graphql-schema-cycles": "1.1.4",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.8",
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.10",
     "graphql": "15.5.0"
   },
   "devDependencies": {
-    "@polywrap/test-cases": "0.10.0-pre.8",
+    "@polywrap/test-cases": "0.10.0-pre.10",
     "@types/deep-equal": "1.0.1",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
-    "ts-node": "8.10.2",
-    "typescript": "4.1.6"
+    "ts-node": "10.9.1",
+    "typescript": "4.9.5"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

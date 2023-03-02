@@ -7,25 +7,33 @@
       [
         "wrap://custom-authority/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ExtendableUriResolver => uri (wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
         [
-          "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
+          "wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0)",
           [
-            "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ipfs-resolver)"
+            "wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0)"
           ],
-          "wrap://package/ens-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ens-resolver)",
+          "wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0)",
           [
-            "wrap://package/ens-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ens-resolver)"
+            "wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0)"
           ],
-          "wrap://package/fs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/fs-resolver)",
+          "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0)",
           [
-            "wrap://package/fs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/fs-resolver)"
+            "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0)"
           ],
-          "wrap://package/http-resolver => RequestSynchronizerResolver => wrapper (wrap://package/http-resolver)",
+          "wrap://ens/wraps.eth:file-system-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:file-system-uri-resolver-ext@1.0.0)",
           [
-            "wrap://package/http-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/http-resolver)"
+            "wrap://ens/wraps.eth:file-system-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:file-system-uri-resolver-ext@1.0.0)"
           ],
-          "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => RequestSynchronizerResolver => wrapper (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)",
+          "wrap://ens/wraps.eth:ens-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:ens-uri-resolver-ext@1.0.0)",
           [
-            "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p)"
+            "wrap://ens/wraps.eth:ens-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:ens-uri-resolver-ext@1.0.0)"
+          ],
+          "wrap://ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0)",
+          [
+            "wrap://ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0)"
+          ],
+          "wrap://ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.0)",
+          [
+            "wrap://ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.0)"
           ],
           "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => RequestSynchronizerResolver => wrapper (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
           [
@@ -39,19 +47,23 @@
               [
                 "wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as)",
                 [
-                  "wrap://package/ipfs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ipfs-resolver)",
+                  "wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0)",
                   [
-                    "wrap://package/ipfs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ipfs-resolver)"
+                    "wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0)"
                   ],
-                  "wrap://package/ens-resolver => RequestSynchronizerResolver => wrapper (wrap://package/ens-resolver)",
+                  "wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0)",
                   [
-                    "wrap://package/ens-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/ens-resolver)"
+                    "wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0)"
                   ],
-                  "wrap://package/fs-resolver => RequestSynchronizerResolver => wrapper (wrap://package/fs-resolver)",
+                  "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0)",
                   [
-                    "wrap://package/fs-resolver => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://package/fs-resolver)"
+                    "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0)"
                   ],
-                  "wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as)"
+                  "wrap://ens/wraps.eth:file-system-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:file-system-uri-resolver-ext@1.0.0)",
+                  [
+                    "wrap://ens/wraps.eth:file-system-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:file-system-uri-resolver-ext@1.0.0)"
+                  ],
+                  "wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as => ResolverExtension (wrap://ens/wraps.eth:file-system-uri-resolver-ext@1.0.0) => package (wrap://file/$root-wrapper-dir/resolver/01-redirect/implementations/as)"
                 ]
               ]
             ]

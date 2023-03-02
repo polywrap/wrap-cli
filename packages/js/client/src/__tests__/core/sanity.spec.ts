@@ -1,4 +1,4 @@
-import { Uri, PolywrapClient, ExtendableUriResolver } from "../..";
+import { Uri, PolywrapClient } from "../..";
 import fs from "fs";
 
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
@@ -6,35 +6,21 @@ import { IUriPackage, IUriRedirect } from "@polywrap/core-js";
 import { ResultErr } from "@polywrap/result";
 import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
 import { WasmPackage } from "@polywrap/wasm-js";
-import {
-  defaultInterfaces,
-  defaultPackages,
-  defaultWrappers,
-} from "@polywrap/client-config-builder-js";
+import { ClientConfigBuilder, DefaultBundle } from "@polywrap/client-config-builder-js";
 import { CoreClientConfig } from "@polywrap/core-js";
 
 jest.setTimeout(200000);
 
 describe("sanity", () => {
   test("default client config", () => {
-    const client = new PolywrapClient();
-    expect(client.getInterfaces()).toStrictEqual({
-      [ExtendableUriResolver.extInterfaceUri.uri]: [
-        defaultPackages.ipfsResolver,
-        defaultPackages.ensResolver,
-        defaultPackages.fileSystemResolver,
-        defaultPackages.httpResolver,
-        defaultWrappers.ensTextRecordResolver,
-      ],
-      [defaultInterfaces.logger]: [defaultInterfaces.logger],
-      [defaultInterfaces.concurrent]: [defaultInterfaces.concurrent],
-      [defaultInterfaces.ipfsHttpClient]: [defaultInterfaces.ipfsHttpClient],
-      [defaultInterfaces.fileSystem]: [defaultInterfaces.fileSystem],
-      [defaultInterfaces.http]: [defaultInterfaces.http],
-      [defaultInterfaces.ethereumProvider]: [
-        defaultInterfaces.ethereumProvider,
-      ],
-    });
+    const clientConfig = new PolywrapClient().getConfig();
+    const expectedConfig = new ClientConfigBuilder().add(DefaultBundle.getConfig()).build();
+
+    expect(
+      JSON.stringify(clientConfig, null, 2)
+    ).toMatch(
+      JSON.stringify(expectedConfig, null, 2)
+    );
   });
 
   test("validate requested uri is available", async () => {

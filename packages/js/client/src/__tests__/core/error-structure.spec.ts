@@ -9,7 +9,7 @@ import { incompatiblePlugin, mockPluginRegistration } from "../helpers";
 import { msgpackDecode, msgpackEncode } from "@polywrap/msgpack-js";
 import {
   ClientConfigBuilder,
-  defaultInterfaces,
+  DefaultBundle,
 } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(660000);
@@ -217,9 +217,7 @@ describe("Error structure", () => {
         ).toBeTruthy();
         expect(prev.uri).toEqual("wrap://ens/imported-invoke.eth");
         expect(prev.method).toEqual("invokeThrowError");
-        expect(prev.args).toEqual(
-          '{\n  "0": 129,\n  "1": 161,\n  "2": 97,\n  "3": 163,\n  "4": 72,\n  "5": 101,\n  "6": 121\n}'
-        );
+        expect(prev.args).toEqual('{\n  "a": "Hey"\n}' );
         expect(prev.source).toEqual({
           file: "~lib/@polywrap/wasm-as/containers/Result.ts",
           row: 171,
@@ -235,9 +233,7 @@ describe("Error structure", () => {
           prevOfPrev.uri.endsWith("wrap://ens/imported-subinvoke.eth")
         ).toBeTruthy();
         expect(prevOfPrev.method).toEqual("subinvokeThrowError");
-        expect(prev.args).toEqual(
-          '{\n  "0": 129,\n  "1": 161,\n  "2": 97,\n  "3": 163,\n  "4": 72,\n  "5": 101,\n  "6": 121\n}'
-        );
+        expect(prev.args).toEqual('{\n  "a": "Hey"\n}');
         expect(prevOfPrev.source).toEqual({
           file: "src/index.ts",
           row: 8,
@@ -428,9 +424,7 @@ describe("Error structure", () => {
         ).toBeTruthy();
         expect(prev.uri).toEqual("wrap://ens/imported-invoke.eth");
         expect(prev.method).toEqual("invokeThrowError");
-        expect(prev.args).toEqual(
-          '{\n  "0": 129,\n  "1": 161,\n  "2": 97,\n  "3": 163,\n  "4": 72,\n  "5": 101,\n  "6": 121\n}'
-        );
+        expect(prev.args).toEqual('{\n  "a": "Hey"\n}');
         expect(prev.source).toEqual({ file: "src/lib.rs", row: 10, col: 129 });
 
         expect(prev.innerError instanceof WrapError).toBeTruthy();
@@ -442,9 +436,7 @@ describe("Error structure", () => {
           prevOfPrev.uri.endsWith("wrap://ens/imported-subinvoke.eth")
         ).toBeTruthy();
         expect(prevOfPrev.method).toEqual("subinvokeThrowError");
-        expect(prevOfPrev.args).toEqual(
-          '{\n  "0": 129,\n  "1": 161,\n  "2": 97,\n  "3": 163,\n  "4": 72,\n  "5": 101,\n  "6": 121\n}'
-        );
+        expect(prevOfPrev.args).toEqual('{\n  "a": "Hey"\n}');
         expect(prevOfPrev.source).toEqual({
           file: "src/lib.rs",
           row: 9,
@@ -460,7 +452,7 @@ describe("Error structure", () => {
       const client = new PolywrapClient(config.build());
       test("Invoke a plugin wrapper with malformed args", async () => {
         const result = await client.invoke<Uint8Array>({
-          uri: defaultInterfaces.fileSystem,
+          uri: DefaultBundle.plugins.fileSystem.uri.uri,
           method: "readFile",
           args: {
             pathh: "packages/js/client/src/__tests__/core/index.ts",
@@ -477,21 +469,21 @@ describe("Error structure", () => {
         expect(result.error?.reason).toEqual(
           'The "path" argument must be of type string or an instance of Buffer or URL. Received undefined'
         );
-        expect(result.error?.uri).toEqual(defaultInterfaces.fileSystem);
+        expect(result.error?.uri).toEqual(DefaultBundle.plugins.fileSystem.uri.uri);
         expect(result.error?.method).toEqual("readFile");
         expect(result.error?.args).toContain(
           '{\n  "pathh": "packages/js/client/src/__tests__/core/index.ts"\n}'
         );
         expect(result.error?.source).toEqual({
           file: "node:internal/fs/promises",
-          row: 450,
+          row: 503,
           col: 10,
         });
       });
 
       test("Invoke a plugin wrapper with a method that doesn't exist", async () => {
         const result = await client.invoke<Uint8Array>({
-          uri: defaultInterfaces.fileSystem,
+          uri: DefaultBundle.plugins.fileSystem.uri.uri,
           method: "readFileNotFound",
           args: {
             path: __dirname + "/index.ts",
@@ -508,7 +500,7 @@ describe("Error structure", () => {
         expect(
           result.error?.reason.startsWith("Plugin missing method ")
         ).toBeTruthy();
-        expect(result.error?.uri).toEqual(defaultInterfaces.fileSystem);
+        expect(result.error?.uri).toEqual(DefaultBundle.plugins.fileSystem.uri.uri);
         expect(result.error?.method).toEqual("readFileNotFound");
       });
 
@@ -538,7 +530,7 @@ describe("Error structure", () => {
 
       test("Invoke a plugin wrapper that throws unexpectedly", async () => {
         const result = await client.invoke<Uint8Array>({
-          uri: defaultInterfaces.fileSystem,
+          uri: DefaultBundle.plugins.fileSystem.uri.uri,
           method: "readFile",
           args: {
             path: "./this/path/does/not/exist.ts",
@@ -555,7 +547,7 @@ describe("Error structure", () => {
         expect(
           result.error?.reason.startsWith("ENOENT: no such file or directory")
         ).toBeTruthy();
-        expect(result.error?.uri).toEqual(defaultInterfaces.fileSystem);
+        expect(result.error?.uri).toEqual(DefaultBundle.plugins.fileSystem.uri.uri);
         expect(result.error?.method).toEqual("readFile");
         expect(result.error?.args).toEqual(
           '{\n  "path": "./this/path/does/not/exist.ts"\n}'

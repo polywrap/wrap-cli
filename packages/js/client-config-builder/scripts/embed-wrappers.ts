@@ -4,14 +4,14 @@ import { WasmPackage } from "@polywrap/wasm-js";
 
 async function main() {
 
-  const wrappersDir = path.join(__dirname, "../src/bundles/wrappers");
-  const wrappersDirents = fs.readdirSync(wrappersDir, { withFileTypes: true });
+  const embedsDir = path.join(__dirname, "../src/bundles/embeds");
+  const embedsDirents = fs.readdirSync(embedsDir, { withFileTypes: true });
 
   const wrapperDirs: string[] = [];
 
-  for (const dirent of wrappersDirents) {
+  for (const dirent of embedsDirents) {
     if (dirent.isDirectory()) {
-      wrapperDirs.push(path.join(wrappersDir, dirent.name));
+      wrapperDirs.push(path.join(embedsDir, dirent.name));
     }
   }
 

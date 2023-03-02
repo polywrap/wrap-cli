@@ -32,12 +32,12 @@ Add client configuration with [add](#add), or flexibly mix and match builder [co
 
   // add or remove items by chaining method calls
   builder
-    .addPackage("wrap://plugin/package", httpPlugin({}))
+    .addPackage("wrap://plugin/package", httpPlugin({}) as IWrapPackage)
     .removePackage("wrap://plugin/package")
     .addPackages(
       {
-        "wrap://plugin/http": httpPlugin({}),
-        "wrap://plugin/filesystem": fileSystemPlugin({}),
+        "wrap://plugin/http": httpPlugin({}) as IWrapPackage,
+        "wrap://plugin/filesystem": fileSystemPlugin({}) as IWrapPackage,
       }
     );
 ```
@@ -104,10 +104,10 @@ A complete example using all or most of the available methods.
 
   // add and remove wrap packages
   builder
-    .addPackage("wrap://plugin/package", httpPlugin({}))
+    .addPackage("wrap://plugin/package", httpPlugin({}) as IWrapPackage)
     .removePackage("wrap://plugin/package")
     .addPackages({
-      "wrap://plugin/package": httpPlugin({})
+      "wrap://plugin/package": httpPlugin({}) as IWrapPackage
     })
 
   // add and remove Envs
@@ -438,50 +438,91 @@ A complete example using all or most of the available methods.
 
 ### Bundle: DefaultConfig
 ```ts
-export const defaultIpfsProviders = [
+export const ipfsProviders: string[] = [
   "https://ipfs.wrappers.io",
   "https://ipfs.io",
 ];
 
-export const defaultEmbeddedPackages = {
-  ipfsHttpClient: (): IWrapPackage => ipfsHttpClient.wasmPackage,
-  ipfsResolver: (): IWrapPackage => ipfsResolver.wasmPackage,
+interface IDefaultEmbed {
+  uri: Uri;
+  package: IWrapPackage;
+  source: Uri;
+}
+
+interface IDefaultEmbeds {
+  ipfsHttpClient: IDefaultEmbed;
+  ipfsResolver: IDefaultEmbed;
+}
+
+export const embeds: IDefaultEmbeds = {
+  ipfsHttpClient: {
+    uri: Uri.from("embed/ipfs-http-client@1.0.0"),
+    package: ipfsHttpClient.wasmPackage,
+    source: Uri.from("ens/wraps.eth:ipfs-http-client@1.0.0"),
+  },
+  ipfsResolver: {
+    uri: Uri.from("embed/async-ipfs-uri-resolver-ext@1.0.0"),
+    package: ipfsResolver.wasmPackage,
+    source: Uri.from("ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0"),
+  },
 };
 
-export const defaultWrappers = {
-  sha3: "wrap://ens/wraps.eth:sha3@1.0.0",
-  uts46: "wrap://ens/wraps.eth:uts46@1.0.0",
-  graphNode: "wrap://ens/wraps.eth:graph-node@1.0.0",
-  ensTextRecordResolver:
-    "wrap://ipfs/QmbqeVAhSzTtSmdVjrPMK42pX1sFs8t5MUB741T7nxSs1p",
-  ethereum: "wrap://ens/wraps.eth:ethereum@1.0.0",
-  ens: "wrap://ens/wraps.eth:ens@1.0.0",
-};
+type UriResolverExtBootloader = [IDefaultEmbed, IUriRedirect, ...Uri[]];
 
-export const defaultPackages = {
-  ensResolver: "wrap://package/ens-resolver",
-  httpResolver: "wrap://package/http-resolver",
-  fileSystemResolver: "wrap://package/fs-resolver",
-  ipfsResolver: "wrap://package/ipfs-resolver",
-};
+export const uriResolverExts: UriResolverExtBootloader = [
+  embeds.ipfsResolver,
+  {
+    from: Uri.from("ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0"),
+    to: Uri.from("ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw"),
+  },
+  Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.0"),
+  Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.0"),
+  Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.0"),
+  Uri.from("ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0"),
+  Uri.from("ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.0"),
+];
 
-export const defaultInterfaces = {
-  concurrent: "wrap://ens/wraps.eth:concurrent@1.0.0",
-  logger: "wrap://ens/wraps.eth:logger@1.0.0",
-  http: "wrap://ens/wraps.eth:http@1.1.0",
-  fileSystem: "wrap://ens/wraps.eth:file-system@1.0.0",
-  ipfsHttpClient: "wrap://ens/wraps.eth:ipfs-http-client@1.0.0",
-  ethereumProvider: "wrap://ens/wraps.eth:ethereum-provider@1.0.0",
-};
+interface IDefaultPlugin {
+  uri: Uri;
+  plugin: PluginPackage<unknown>;
+  implements: Uri[];
+}
 
-export const getDefaultPackages = (): Record<string, IWrapPackage> => {
-  return {
-    [defaultInterfaces.ipfsHttpClient]: defaultEmbeddedPackages.ipfsHttpClient(),
-    [defaultPackages.ipfsResolver]: defaultEmbeddedPackages.ipfsResolver(),
-    // ENS is required for resolving domain to IPFS hashes
-    [defaultPackages.ensResolver]: ensResolverPlugin({}),
-    // Ethereum is required for resolving domain to Ethereum addresses
-    [defaultInterfaces.ethereumProvider]: ethereumProviderPlugin({
+interface IDefaultPlugins {
+  logger: IDefaultPlugin;
+  http: IDefaultPlugin;
+  fileSystem: IDefaultPlugin;
+  concurrent: IDefaultPlugin;
+  ethereumProvider: IDefaultPlugin;
+}
+
+export const plugins: IDefaultPlugins = {
+  logger: {
+    uri: Uri.from("plugin/logger@1.0.0"),
+    plugin: (loggerPlugin({}) as unknown) as PluginPackage<unknown>,
+    implements: [Uri.from("ens/wraps.eth:logger@1.0.0")],
+  },
+  http: {
+    uri: Uri.from("plugin/http@1.1.0"),
+    plugin: (httpPlugin({}) as unknown) as PluginPackage<unknown>,
+    implements: [
+      Uri.from("ens/wraps.eth:http@1.1.0"),
+      Uri.from("ens/wraps.eth:http@1.0.0"),
+    ],
+  },
+  fileSystem: {
+    uri: Uri.from("plugin/file-system@1.0.0"),
+    plugin: (fileSystemPlugin({}) as unknown) as PluginPackage<unknown>,
+    implements: [Uri.from("ens/wraps.eth:file-system@1.0.0")],
+  },
+  concurrent: {
+    uri: Uri.from("plugin/concurrent@1.0.0"),
+    plugin: concurrentPromisePlugin({}),
+    implements: [Uri.from("ens/wraps.eth:concurrent@1.0.0")],
+  },
+  ethereumProvider: {
+    uri: Uri.from("plugin/ethereum-provider@1.1.0"),
+    plugin: ethereumProviderPlugin({
       connections: new Connections({
         networks: {
           mainnet: new Connection({
@@ -495,45 +536,56 @@ export const getDefaultPackages = (): Record<string, IWrapPackage> => {
         },
       }),
     }),
-    [defaultInterfaces.http]: httpPlugin({}),
-    [defaultPackages.httpResolver]: httpResolverPlugin({}),
-    [defaultInterfaces.logger]: loggerPlugin({}) as IWrapPackage,
-    [defaultInterfaces.fileSystem]: fileSystemPlugin({}),
-    [defaultPackages.fileSystemResolver]: fileSystemResolverPlugin({}),
-    [defaultInterfaces.concurrent]: concurrentPromisePlugin({}),
-  };
+    implements: [
+      Uri.from("ens/wraps.eth:ethereum-provider@1.1.0"),
+      Uri.from("ens/wraps.eth:ethereum-provider@1.0.0"),
+    ],
+  },
 };
 
-export const getDefaultConfig = (): BuilderConfig => ({
-  envs: {
-    [defaultPackages.ipfsResolver]: {
-      provider: defaultIpfsProviders[0],
-      fallbackProviders: defaultIpfsProviders.slice(1),
-      retries: { tryResolveUri: 2, getFile: 2 },
-    },
-  },
-  interfaces: {
-    [ExtendableUriResolver.extInterfaceUri.uri]: new Set([
-      defaultPackages.ipfsResolver,
-      defaultPackages.ensResolver,
-      defaultPackages.fileSystemResolver,
-      defaultPackages.httpResolver,
-      defaultWrappers.ensTextRecordResolver,
-    ]),
-    [defaultInterfaces.logger]: new Set([defaultInterfaces.logger]),
-    [defaultInterfaces.concurrent]: new Set([defaultInterfaces.concurrent]),
-    [defaultInterfaces.ipfsHttpClient]: new Set([
-      defaultInterfaces.ipfsHttpClient,
-    ]),
-    [defaultInterfaces.fileSystem]: new Set([defaultInterfaces.fileSystem]),
-    [defaultInterfaces.http]: new Set([defaultInterfaces.http]),
-    [defaultInterfaces.ethereumProvider]: new Set([
-      defaultInterfaces.ethereumProvider,
-    ]),
-  },
-  redirects: {},
-  wrappers: {},
-  packages: getDefaultPackages(),
-  resolvers: [],
-});
+export function getConfig(): BuilderConfig {
+  const builder = new ClientConfigBuilder();
+
+  // Add all embedded packages
+  for (const embed of Object.values(embeds)) {
+    builder.addPackage(embed.uri.uri, embed.package);
+
+    // Add source redirect
+    builder.addRedirect(embed.source.uri, embed.uri.uri);
+
+    // Add source implementation
+    builder.addInterfaceImplementation(embed.source.uri, embed.uri.uri);
+  }
+
+  // Add all plugin packages
+  for (const plugin of Object.values(plugins)) {
+    builder.addPackage(plugin.uri.uri, plugin.plugin);
+
+    // Add all interface implementations & redirects
+    for (const interfaceUri of plugin.implements) {
+      builder.addInterfaceImplementation(interfaceUri.uri, plugin.uri.uri);
+      builder.addRedirect(interfaceUri.uri, plugin.uri.uri);
+    }
+  }
+
+  // Add all uri-resolver-ext interface implementations
+  builder.addInterfaceImplementations(
+    ExtendableUriResolver.defaultExtInterfaceUris[0].uri,
+    [
+      uriResolverExts[0].source.uri,
+      uriResolverExts[1].from.uri,
+      ...uriResolverExts.slice(2).map((x: Uri) => x.uri),
+    ]
+  );
+  builder.addRedirect(uriResolverExts[1].from.uri, uriResolverExts[1].to.uri);
+
+  // Configure the ipfs-uri-resolver provider endpoints & retry counts
+  builder.addEnv(embeds.ipfsResolver.source.uri, {
+    provider: ipfsProviders[0],
+    fallbackProviders: ipfsProviders.slice(1),
+    retries: { tryResolveUri: 2, getFile: 2 },
+  });
+
+  return builder.config;
+}
 ```
