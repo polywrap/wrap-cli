@@ -23,7 +23,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
   Error
 > /* $ */ {
   // $start: ExtendableUriResolver-extInterfaceUri-static
-  /** The supported interface uris to which resolver-ext implementations should be registered */
+  /** The supported interface URIs to which resolver-ext implementations should be registered */
   public static defaultExtInterfaceUris: Uri[] = [
     Uri.from("wrap://ens/wraps.eth:uri-resolver-ext@1.1.0"),
     Uri.from("wrap://ens/wraps.eth:uri-resolver-ext@1.0.0"),
@@ -31,7 +31,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
   // $end
 
   // $start: ExtendableUriResolver-extInterfaceUri
-  /** The active interface uris to which implementations should be registered */
+  /** The active interface URIs to which implementations should be registered */
   public readonly extInterfaceUris: Uri[];
   // $end
   private readonly _resolverName: string;
