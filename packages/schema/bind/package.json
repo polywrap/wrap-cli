@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "@polywrap/os-js": "0.10.0-pre.5",
-    "@polywrap/schema-parse": "0.10.0-pre.5",
+    "@polywrap/schema-abi": "0.10.0-pre.5",
+    "@polywrap/abi-types": "0.10.0-pre.5",
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.5",
     "mustache": "4.0.1"
   },

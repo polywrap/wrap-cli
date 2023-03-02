@@ -8,6 +8,7 @@ export * from "./AbiImportsLinker"
 export * from "./AbiMerger"
 export * from "./AbiTreeShaker"
 export * from "./AbiVisitor"
+export * from "./AbiSanitizer"
 
 interface Args {
   schema: string

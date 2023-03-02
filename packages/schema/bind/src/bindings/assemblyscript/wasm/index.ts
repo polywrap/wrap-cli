@@ -4,11 +4,12 @@ import { loadSubTemplates } from "../../utils";
 import { BindOptions, BindOutput } from "../../..";
 
 import {
-  transformAbi,
   addFirstLast,
   extendType,
   toPrefixedGraphQLType,
 } from "@polywrap/schema-parse";
+import { AbiVisitor, IAbiVisitorEnterAndLeave } from "@polywrap/schema-abi";
+import { Abi } from "@polywrap/abi-types";
 import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
 import path from "path";
 import { WrapAbi } from "@polywrap/wrap-manifest-types-js/src";
@@ -153,8 +154,17 @@ export const generateBinding: GenerateBindingFn = (
   return result;
 };
 
-function applyTransforms(abi: WrapAbi): WrapAbi {
-  const transforms = [
+const transformAbi = (abi: Abi, transform: IAbiVisitorEnterAndLeave) => {
+  const abiClone: Abi = JSON.parse(JSON.stringify(abi));
+  const visitor = new AbiVisitor(transform);
+
+  visitor.visit(abiClone);
+
+  return abiClone;
+}
+
+function applyTransforms(abi: Abi): Abi {
+  const transforms: IAbiVisitorEnterAndLeave[] = [
     extendType(Functions),
     addFirstLast,
     toPrefixedGraphQLType,
@@ -163,5 +173,6 @@ function applyTransforms(abi: WrapAbi): WrapAbi {
   for (const transform of transforms) {
     abi = transformAbi(abi, transform);
   }
+
   return abi;
 }
