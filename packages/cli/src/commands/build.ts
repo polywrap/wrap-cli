@@ -4,9 +4,6 @@ import {
   Compiler,
   PolywrapProject,
   SchemaComposer,
-  Watcher,
-  WatchEvent,
-  watchEventName,
   intlMsg,
   defaultPolywrapManifest,
   parseDirOption,
@@ -28,8 +25,8 @@ import {
   LocalBuildStrategy,
 } from "../lib/build-strategies";
 import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
+import { watchProject } from "../lib/watchProject";
 
-import readline from "readline";
 import { PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 
@@ -94,7 +91,7 @@ export const build: Command = {
           default: defaultStrategy,
         })}`
       )
-      .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
+      .option(`-w, --watch`, `${intlMsg.commands_common_options_w()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .option(
@@ -263,54 +260,11 @@ async function run(options: Required<BuildCommandOptions>) {
 
     process.exit(0);
   } else {
-    // Execute
-    await execute();
-
-    const keyPressListener = () => {
-      // Watch for escape key presses
-      logger.info(
-        `${intlMsg.commands_build_keypressListener_watching()}: ${project.getManifestDir()}`
-      );
-      logger.info(intlMsg.commands_build_keypressListener_exit());
-      readline.emitKeypressEvents(process.stdin);
-      process.stdin.on("keypress", async (str, key) => {
-        if (
-          key.name == "escape" ||
-          key.name == "q" ||
-          (key.name == "c" && key.ctrl)
-        ) {
-          await watcher.stop();
-          process.kill(process.pid, "SIGINT");
-        }
-      });
-
-      if (process.stdin.setRawMode) {
-        process.stdin.setRawMode(true);
-      }
-
-      process.stdin.resume();
-    };
-
-    keyPressListener();
-
-    // Watch the directory
-    const watcher = new Watcher();
-
-    watcher.start(project.getManifestDir(), {
+    await watchProject({
+      execute,
+      logger,
+      project,
       ignored: [outputDir + "/**", project.getManifestDir() + "/**/wrap/**"],
-      ignoreInitial: true,
-      execute: async (events: WatchEvent[]) => {
-        // Log all of the events encountered
-        for (const event of events) {
-          logger.info(`${watchEventName(event.type)}: ${event.path}`);
-        }
-
-        // Execute the build
-        await execute();
-
-        // Process key presses
-        keyPressListener();
-      },
     });
   }
 }

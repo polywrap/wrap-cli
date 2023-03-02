@@ -42,6 +42,10 @@ export interface CommandTypings {
       options: CreateCommandOptions;
       arguments: [language: SupportedWasmLangs, name: string];
     };
+    template: {
+      options: CreateCommandOptions;
+      arguments: [url: string, name: string];
+    };
   };
   deploy: DeployCommandOptions;
   docgen: {

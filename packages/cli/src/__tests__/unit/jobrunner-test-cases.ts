@@ -15,7 +15,7 @@ export const testCases: WorkflowTestCase[] = [
     name: "simple workflow",
     workflow: {
       name: "simpleInvoke",
-      format: "0.1",
+      format: "0.2.0",
       __type: "PolywrapWorkflow",
       jobs: {
         ops: {
@@ -56,7 +56,7 @@ export const testCases: WorkflowTestCase[] = [
     name: "simple workflow with output propagation",
     workflow: {
       name: "simpleInvokeDifferentImplementations",
-      format: "0.1",
+      format: "0.2.0",
       __type: "PolywrapWorkflow",
       jobs: {
         ops: {
@@ -117,7 +117,7 @@ export const testCases: WorkflowTestCase[] = [
     name: "workflow with subJobs and output propagation",
     workflow: {
       name: "simpleInvokeDifferentImplementations",
-      format: "0.1",
+      format: "0.2.0",
       __type: "PolywrapWorkflow",
       jobs: {
         ops: {
