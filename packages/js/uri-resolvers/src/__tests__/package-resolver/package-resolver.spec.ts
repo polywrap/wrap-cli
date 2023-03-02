@@ -4,7 +4,6 @@ import {
 } from "@polywrap/core-js";
 import { expectHistory } from "../helpers/expectHistory";
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
-import { RedirectResolver } from "../../redirects";
 import { PackageResolver } from "../../packages";
 import { PluginPackage } from "@polywrap/plugin-js";
 
