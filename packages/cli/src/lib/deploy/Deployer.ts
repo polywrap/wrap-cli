@@ -20,8 +20,8 @@ import path from "path";
 import fs from "fs";
 
 interface DeployerConfig {
-  readonly cache: CacheDirectory;
-  readonly logger: Logger;
+  cache: CacheDirectory;
+  logger: Logger;
   defaultModulesCached: boolean;
 }
 
@@ -34,14 +34,14 @@ export class Deployer {
     deployModulesDir: "modules/",
   };
   public manifest: DeployManifest;
-  public readonly config: DeployerConfig;
+  private _config: DeployerConfig;
 
   private constructor(
     manifest: DeployManifest,
     cache: CacheDirectory,
     logger: Logger
   ) {
-    this.config = {
+    this._config = {
       logger,
       cache,
       defaultModulesCached: false,
@@ -116,11 +116,15 @@ export class Deployer {
         name: jobName,
         steps,
         config: job.config ?? {},
-        logger: this.config.logger,
+        logger: this._config.logger,
       });
     });
 
     return await Promise.all(jobs.map((job) => job.run()));
+  }
+
+  public getCacheDir(): CacheDirectory {
+    return this._config.cache;
   }
 
   private _sanitizePackages(packages: string[]) {
@@ -149,11 +153,11 @@ export class Deployer {
     deployModule: DeployModule;
     manifestExt: JsonSchema | undefined;
   }> {
-    if (!this.config.defaultModulesCached) {
+    if (!this._config.defaultModulesCached) {
       throw new Error("Deploy modules have not been cached");
     }
 
-    const cachePath = this.config.cache.getCachePath(
+    const cachePath = this._config.cache.getCachePath(
       `${Deployer.cacheLayout.deployModulesDir}/${moduleName}`
     );
 
@@ -161,7 +165,7 @@ export class Deployer {
 
     const manifestExt = await loadDeployManifestExt(
       manifestExtPath,
-      this.config.logger
+      this._config.logger
     );
 
     return {
@@ -172,21 +176,21 @@ export class Deployer {
   }
 
   private async _cacheDeployModules(modules: string[]): Promise<void> {
-    if (this.config.defaultModulesCached) {
+    if (this._config.defaultModulesCached) {
       return;
     }
 
-    this.config.cache.removeCacheDir(Deployer.cacheLayout.deployModulesDir);
+    this._config.cache.removeCacheDir(Deployer.cacheLayout.deployModulesDir);
 
     for await (const deployModule of modules) {
-      await this.config.cache.copyIntoCache(
+      await this._config.cache.copyIntoCache(
         `${Deployer.cacheLayout.deployModulesDir}/${deployModule}`,
         `${__dirname}/../defaults/deploy-modules/${deployModule}/*`,
         { up: true }
       );
     }
 
-    this.config.defaultModulesCached = true;
+    this._config.defaultModulesCached = true;
   }
 
   private _validateManifestWithExts(

@@ -128,8 +128,8 @@ describe("e2e tests for deploy command", () => {
     );
   });
 
-  it("Should output the deployment uri to polywrap.deployment.txt", async () => {
-    const deploymentFilePath = path.join(getTestCaseDir(0), "polywrap.deployment.txt");
+  it("Should output the deployment uri to URI.txt", async () => {
+    const deploymentFilePath = path.join(getTestCaseDir(0), "URI.txt");
     if (fs.existsSync(deploymentFilePath)) {
       fs.unlinkSync(deploymentFilePath);
     }
@@ -158,7 +158,7 @@ describe("e2e tests for deploy command", () => {
   });
 
   it("Should record successful deployments in the deployment log", async () => {
-    const deploymentFilePath = path.join(getTestCaseDir(0), "polywrap.deployment.txt");
+    const deploymentFilePath = path.join(getTestCaseDir(0), "URI.txt");
     const deployLogFilePath = path.join(getTestCaseDir(0), "/.polywrap/deploy/deploy.log");
 
     let entries = 0;

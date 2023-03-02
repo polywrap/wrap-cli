@@ -90,7 +90,7 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
 
   // write deployment uri to file
   const manifestDir = path.dirname(manifestFile);
-  const deploymentFilepath = path.join(manifestDir, "polywrap.deployment.txt");
+  const deploymentFilepath = path.join(manifestDir, "URI.txt");
   fs.writeFileSync(deploymentFilepath, deploymentUri);
   logger.info(
     intlMsg.commands_deploy_deployment_written({
@@ -100,10 +100,12 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
   );
 
   // update historic deployment log
-  deployer.config.cache.appendToCacheFile(
-    `deploy.log`,
-    `${new Date().toISOString()} ${deploymentUri}\n`
-  );
+  deployer
+    .getCacheDir()
+    .appendToCacheFile(
+      `deploy.log`,
+      `${new Date().toISOString()} ${deploymentUri}\n`
+    );
 
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);
