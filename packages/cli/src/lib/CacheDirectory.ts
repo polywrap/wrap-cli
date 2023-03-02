@@ -3,6 +3,12 @@ import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
 import { writeFileSync } from "@polywrap/os-js";
+import fse from "fs-extra";
+
+export const globalCacheRoot: string =
+  process.platform == "darwin"
+    ? process.env.HOME + "/Library/Preferences/polywrap/cache"
+    : process.env.HOME + "/.local/share/polywrap/cache";
 
 export interface CacheDirectoryConfig {
   rootDir: string;
@@ -21,6 +27,14 @@ export class CacheDirectory {
       this._cacheDirName,
       this._config.subDir
     );
+  }
+
+  public initCache(): this {
+    const cacheDir = this.getCacheDir();
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+    return this;
   }
 
   public resetCache(): void {
@@ -81,6 +95,21 @@ export class CacheDirectory {
           resolve();
         }
       });
+    });
+  }
+
+  public async copyFromCache(
+    sourceSubDir: string,
+    destDir: string
+  ): Promise<void> {
+    const source = this.getCachePath(sourceSubDir);
+
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
+
+    await fse.copy(source, destDir, {
+      overwrite: true,
     });
   }
 }
