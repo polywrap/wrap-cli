@@ -451,7 +451,7 @@ interface IDefaultEmbed {
 
 interface IDefaultEmbeds {
   ipfsHttpClient: IDefaultEmbed;
-  asyncIpfsResolver: IDefaultEmbed;
+  ipfsResolver: IDefaultEmbed;
 }
 
 export const embeds: IDefaultEmbeds = {
@@ -460,7 +460,7 @@ export const embeds: IDefaultEmbeds = {
     package: ipfsHttpClient.wasmPackage,
     source: Uri.from("ens/wraps.eth:ipfs-http-client@1.0.0"),
   },
-  asyncIpfsResolver: {
+  ipfsResolver: {
     uri: Uri.from("embed/async-ipfs-uri-resolver-ext@1.0.0"),
     package: ipfsResolver.wasmPackage,
     source: Uri.from("ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0"),
@@ -470,7 +470,7 @@ export const embeds: IDefaultEmbeds = {
 type UriResolverExtBootloader = [IDefaultEmbed, IUriRedirect, ...Uri[]];
 
 export const uriResolverExts: UriResolverExtBootloader = [
-  embeds.asyncIpfsResolver,
+  embeds.ipfsResolver,
   {
     from: Uri.from("ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0"),
     to: Uri.from("ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw"),
@@ -580,7 +580,7 @@ export function getConfig(): BuilderConfig {
   builder.addRedirect(uriResolverExts[1].from.uri, uriResolverExts[1].to.uri);
 
   // Configure the ipfs-uri-resolver provider endpoints & retry counts
-  builder.addEnv(embeds.asyncIpfsResolver.source.uri, {
+  builder.addEnv(embeds.ipfsResolver.source.uri, {
     provider: ipfsProviders[0],
     fallbackProviders: ipfsProviders.slice(1),
     retries: { tryResolveUri: 2, getFile: 2 },

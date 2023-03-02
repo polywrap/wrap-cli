@@ -27,7 +27,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
 
   return {
     envs: {
-      [DefaultBundle.embeds.asyncIpfsResolver.uri.uri]: {
+      [DefaultBundle.embeds.ipfsResolver.uri.uri]: {
         provider: ipfsProvider,
         fallbackProviders: DefaultBundle.ipfsProviders,
         retries: { tryResolveUri: 1, getFile: 1 },
