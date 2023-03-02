@@ -15,7 +15,6 @@ import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
-import { IUriRedirect } from "@polywrap/core-js";
 
 // $start: getDefaultConfig
 export const ipfsProviders: string[] = [
@@ -47,20 +46,33 @@ export const embeds: IDefaultEmbeds = {
   },
 };
 
-type UriResolverExtBootloader = [IDefaultEmbed, IUriRedirect, ...Uri[]];
+interface UriResolverExtBootloader {
+  ipfsResolver: Uri;
+  ensTextRecordResolver: Uri;
+  httpResolver: Uri;
+  fileSystemResolver: Uri;
+  ensResolver: Uri;
+  ensIpfsContenthashResolver: Uri;
+  ensOcrContenthashResolver: Uri;
+}
 
-export const uriResolverExts: UriResolverExtBootloader = [
-  embeds.asyncIpfsResolver,
-  {
-    from: Uri.from("ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0"),
-    to: Uri.from("ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw"),
-  },
-  Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.0"),
-];
+export const uriResolverExts: UriResolverExtBootloader = {
+  ipfsResolver: embeds.asyncIpfsResolver.uri,
+  ensTextRecordResolver: Uri.from(
+    "ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw"
+  ),
+  httpResolver: Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.0"),
+  fileSystemResolver: Uri.from(
+    "ens/wraps.eth:file-system-uri-resolver-ext@1.0.0"
+  ),
+  ensResolver: Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.0"),
+  ensIpfsContenthashResolver: Uri.from(
+    "ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0"
+  ),
+  ensOcrContenthashResolver: Uri.from(
+    "ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.0"
+  ),
+};
 
 interface IDefaultPlugin {
   uri: Uri;
@@ -151,13 +163,8 @@ export function getConfig(): BuilderConfig {
   // Add all uri-resolver-ext interface implementations
   builder.addInterfaceImplementations(
     ExtendableUriResolver.extInterfaceUri.uri,
-    [
-      uriResolverExts[0].source.uri,
-      uriResolverExts[1].from.uri,
-      ...uriResolverExts.slice(2).map((x: Uri) => x.uri),
-    ]
+    Object.values(uriResolverExts).map((x: Uri) => x.uri)
   );
-  builder.addRedirect(uriResolverExts[1].from.uri, uriResolverExts[1].to.uri);
 
   // Configure the ipfs-uri-resolver provider endpoints & retry counts
   builder.addEnv(embeds.asyncIpfsResolver.source.uri, {
