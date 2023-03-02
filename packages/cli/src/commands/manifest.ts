@@ -53,7 +53,10 @@ import {
   latestPolywrapManifestFormat,
   latestPolywrapWorkflowFormat,
 } from "@polywrap/polywrap-manifest-types-js";
-import { dereference } from "@bcherny/json-schema-ref-parser";
+import { dereference } from "@apidevtools/json-schema-ref-parser";
+// Workaround: https://github.com/APIDevTools/json-schema-ref-parser/issues/139#issuecomment-940500698
+import $RefParser from "@apidevtools/json-schema-ref-parser";
+$RefParser.dereference = $RefParser.dereference.bind($RefParser);
 import fs from "fs";
 import path from "path";
 

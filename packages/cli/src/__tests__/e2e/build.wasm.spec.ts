@@ -25,8 +25,8 @@ Options:
                                        envs
   -s, --strategy <vm | image | local>  Strategy to use for building the wrapper
                                        (default: vm)
-  -w, --watch                          Automatically rebuild when changes are
-                                       made (default: false)
+  -w, --watch                          Automatically execute command when
+                                       changes are made (default: false)
   -v, --verbose                        Verbose output (default: false)
   -q, --quiet                          Suppress output (default: false)
   -l, --log-file [path]                Log file to save console output to

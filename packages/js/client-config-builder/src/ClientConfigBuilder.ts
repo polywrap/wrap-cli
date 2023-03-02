@@ -1,4 +1,4 @@
-import { getDefaultConfig } from "./bundles";
+import { DefaultBundle } from "./bundles";
 import { BaseClientConfigBuilder } from "./BaseClientConfigBuilder";
 import { BuildOptions, IClientConfigBuilder, BuilderConfig } from "./types";
 
@@ -30,7 +30,7 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
   }
 
   addDefaults(): IClientConfigBuilder {
-    return this.add(getDefaultConfig());
+    return this.add(DefaultBundle.getConfig());
   }
 
   build(options?: BuildOptions): CoreClientConfig {
