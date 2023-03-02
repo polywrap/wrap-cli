@@ -60,10 +60,10 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
       }),
     },
     interfaces: {
-      [ExtendableUriResolver.extInterfaceUri.uri]: new Set([
+      [ExtendableUriResolver.defaultExtInterfaceUris[0].uri]: new Set([
         "proxy/testnet-ens-uri-resolver-ext",
         ...DefaultBundle.getConfig().interfaces[
-          ExtendableUriResolver.extInterfaceUri.uri
+          ExtendableUriResolver.defaultExtInterfaceUris[0].uri
         ],
       ]),
     },

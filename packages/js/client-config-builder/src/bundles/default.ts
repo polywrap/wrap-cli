@@ -15,6 +15,7 @@ import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { concurrentPromisePlugin } from "concurrent-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
+import { IUriRedirect } from "@polywrap/core-js";
 
 // $start: getDefaultConfig
 export const ipfsProviders: string[] = [
@@ -30,7 +31,7 @@ interface IDefaultEmbed {
 
 interface IDefaultEmbeds {
   ipfsHttpClient: IDefaultEmbed;
-  asyncIpfsResolver: IDefaultEmbed;
+  ipfsResolver: IDefaultEmbed;
 }
 
 export const embeds: IDefaultEmbeds = {
@@ -39,7 +40,7 @@ export const embeds: IDefaultEmbeds = {
     package: ipfsHttpClient.wasmPackage,
     source: Uri.from("ens/wraps.eth:ipfs-http-client@1.0.0"),
   },
-  asyncIpfsResolver: {
+  ipfsResolver: {
     uri: Uri.from("embed/async-ipfs-uri-resolver-ext@1.0.0"),
     package: ipfsResolver.wasmPackage,
     source: Uri.from("ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0"),
@@ -57,7 +58,7 @@ interface UriResolverExtBootloader {
 }
 
 export const uriResolverExts: UriResolverExtBootloader = {
-  ipfsResolver: embeds.asyncIpfsResolver.uri,
+  ipfsResolver: embeds.ipfsResolver.uri,
   ensTextRecordResolver: Uri.from(
     "ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw"
   ),
@@ -162,12 +163,12 @@ export function getConfig(): BuilderConfig {
 
   // Add all uri-resolver-ext interface implementations
   builder.addInterfaceImplementations(
-    ExtendableUriResolver.extInterfaceUri.uri,
+    ExtendableUriResolver.defaultExtInterfaceUris[0].uri,
     Object.values(uriResolverExts).map((x: Uri) => x.uri)
   );
 
   // Configure the ipfs-uri-resolver provider endpoints & retry counts
-  builder.addEnv(embeds.asyncIpfsResolver.source.uri, {
+  builder.addEnv(embeds.ipfsResolver.source.uri, {
     provider: ipfsProviders[0],
     fallbackProviders: ipfsProviders.slice(1),
     retries: { tryResolveUri: 2, getFile: 2 },

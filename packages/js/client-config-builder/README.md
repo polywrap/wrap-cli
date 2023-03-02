@@ -451,7 +451,7 @@ interface IDefaultEmbed {
 
 interface IDefaultEmbeds {
   ipfsHttpClient: IDefaultEmbed;
-  asyncIpfsResolver: IDefaultEmbed;
+  ipfsResolver: IDefaultEmbed;
 }
 
 export const embeds: IDefaultEmbeds = {
@@ -460,40 +460,27 @@ export const embeds: IDefaultEmbeds = {
     package: ipfsHttpClient.wasmPackage,
     source: Uri.from("ens/wraps.eth:ipfs-http-client@1.0.0"),
   },
-  asyncIpfsResolver: {
+  ipfsResolver: {
     uri: Uri.from("embed/async-ipfs-uri-resolver-ext@1.0.0"),
     package: ipfsResolver.wasmPackage,
     source: Uri.from("ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0"),
   },
 };
 
-interface UriResolverExtBootloader {
-  ipfsResolver: Uri;
-  ensTextRecordResolver: Uri;
-  httpResolver: Uri;
-  fileSystemResolver: Uri;
-  ensResolver: Uri;
-  ensIpfsContenthashResolver: Uri;
-  ensOcrContenthashResolver: Uri;
-}
+type UriResolverExtBootloader = [IDefaultEmbed, IUriRedirect, ...Uri[]];
 
-export const uriResolverExts: UriResolverExtBootloader = {
-  ipfsResolver: embeds.asyncIpfsResolver.uri,
-  ensTextRecordResolver: Uri.from(
-    "ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw"
-  ),
-  httpResolver: Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.0"),
-  fileSystemResolver: Uri.from(
-    "ens/wraps.eth:file-system-uri-resolver-ext@1.0.0"
-  ),
-  ensResolver: Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.0"),
-  ensIpfsContenthashResolver: Uri.from(
-    "ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0"
-  ),
-  ensOcrContenthashResolver: Uri.from(
-    "ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.0"
-  ),
-};
+export const uriResolverExts: UriResolverExtBootloader = [
+  embeds.ipfsResolver,
+  {
+    from: Uri.from("ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0"),
+    to: Uri.from("ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw"),
+  },
+  Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.0"),
+  Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.0"),
+  Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.0"),
+  Uri.from("ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0"),
+  Uri.from("ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.0"),
+];
 
 interface IDefaultPlugin {
   uri: Uri;
@@ -583,12 +570,17 @@ export function getConfig(): BuilderConfig {
 
   // Add all uri-resolver-ext interface implementations
   builder.addInterfaceImplementations(
-    ExtendableUriResolver.extInterfaceUri.uri,
-    Object.values(uriResolverExts).map((x: Uri) => x.uri)
+    ExtendableUriResolver.defaultExtInterfaceUris[0].uri,
+    [
+      uriResolverExts[0].source.uri,
+      uriResolverExts[1].from.uri,
+      ...uriResolverExts.slice(2).map((x: Uri) => x.uri),
+    ]
   );
+  builder.addRedirect(uriResolverExts[1].from.uri, uriResolverExts[1].to.uri);
 
   // Configure the ipfs-uri-resolver provider endpoints & retry counts
-  builder.addEnv(embeds.asyncIpfsResolver.source.uri, {
+  builder.addEnv(embeds.ipfsResolver.source.uri, {
     provider: ipfsProviders[0],
     fallbackProviders: ipfsProviders.slice(1),
     retries: { tryResolveUri: 2, getFile: 2 },
