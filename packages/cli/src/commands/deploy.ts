@@ -7,6 +7,7 @@ import {
   parseLogFileOption,
   Deployer,
   defaultDeployManifest,
+  DeployJobResult,
 } from "../lib";
 
 import fs from "fs";
@@ -63,7 +64,48 @@ async function run(options: Required<DeployCommandOptions>): Promise<void> {
   const logger = createLogger({ verbose, quiet, logFile });
 
   const deployer = await Deployer.create(manifestFile, logger);
+
+  // set primary job before running
+  let primaryJobName = deployer.manifest.primaryJobName;
+  const jobNames = Object.keys(deployer.manifest.jobs);
+  if (primaryJobName) {
+    // validate primary job name
+    if (!jobNames.find((jobName) => jobName === primaryJobName)) {
+      logger.error(intlMsg.commands_deploy_error_primaryJobNotFound());
+      process.exit(1);
+    }
+  } else {
+    // default to first job
+    primaryJobName = jobNames[0];
+  }
+
   const jobResults = await deployer.run();
+
+  // get deployment uri
+  const primaryJob = jobResults.find(
+    (job) => job.name === primaryJobName
+  ) as DeployJobResult;
+  const deploymentStep = primaryJob.steps.length - 1;
+  const deploymentUri = primaryJob.steps[deploymentStep].result.uri;
+
+  // write deployment uri to file
+  const manifestDir = path.dirname(manifestFile);
+  const deploymentFilepath = path.join(manifestDir, "URI.txt");
+  fs.writeFileSync(deploymentFilepath, deploymentUri);
+  logger.info(
+    intlMsg.commands_deploy_deployment_written({
+      primaryJobName,
+      deploymentFilepath,
+    })
+  );
+
+  // update historic deployment log
+  deployer
+    .getCacheDir()
+    .appendToCacheFile(
+      `deploy.log`,
+      `${new Date().toISOString()} ${deploymentUri}\n`
+    );
 
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);

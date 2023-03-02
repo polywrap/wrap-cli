@@ -284,6 +284,7 @@ export async function buildWrapper(
 export async function deployWrapper(options: {
   wrapperAbsPath: string;
   jobs: DeployManifest["jobs"];
+  primaryJobName?: string;
   codegen?: boolean;
   build?: boolean;
 }): Promise<void | {
@@ -302,7 +303,8 @@ export async function deployWrapper(options: {
   }
 
   const deployManifest: Omit<DeployManifest, "__type"> = {
-    format: "0.2.0",
+    format: "0.3.0",
+    primaryJobName: options.primaryJobName,
     jobs,
   };
   fs.writeFileSync(

@@ -76,6 +76,22 @@ export class CacheDirectory {
     writeFileSync(filePath, data, options);
   }
 
+  public appendToCacheFile(
+    subPath: string,
+    data: string | Buffer,
+    options?: fs.WriteFileOptions
+  ): void {
+    const filePath = this.getCachePath(subPath);
+    const folderPath = path.dirname(filePath);
+
+    // Create folders if they don't exist
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
+
+    fs.appendFileSync(filePath, data, options);
+  }
+
   public async copyIntoCache(
     destSubDir: string,
     sourceDir: string,
