@@ -123,6 +123,10 @@ export class Deployer {
     return await Promise.all(jobs.map((job) => job.run()));
   }
 
+  public getCacheDir(): CacheDirectory {
+    return this._config.cache;
+  }
+
   private _sanitizePackages(packages: string[]) {
     const unrecognizedPackages: string[] = [];
 

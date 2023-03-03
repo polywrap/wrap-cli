@@ -1,11 +1,11 @@
-format: 0.2.0
+format: 0.3.0
 strategies:
   image:
-    node_version: "16.13.0"
+    name: wrap-wasm-as-build-image
+    node_version: 16.13.0
     include:
       - ./package.json
       - ./src
-    name: template-wasm-as
 linked_packages:
   - name: "@polywrap/wasm-as"
     path: ../../../wasm/as

@@ -1,4 +1,4 @@
-import { Uri, PolywrapClient, ExtendableUriResolver } from "../..";
+import { Uri, PolywrapClient } from "../..";
 import fs from "fs";
 
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
@@ -6,55 +6,21 @@ import { IUriPackage, IUriRedirect } from "@polywrap/core-js";
 import { ResultErr } from "@polywrap/result";
 import { StaticResolver, UriResolverLike } from "@polywrap/uri-resolvers-js";
 import { WasmPackage } from "@polywrap/wasm-js";
-import {
-  defaultInterfaces,
-  defaultPackages,
-  defaultWrappers,
-} from "@polywrap/client-config-builder-js";
+import { ClientConfigBuilder, DefaultBundle } from "@polywrap/client-config-builder-js";
 import { CoreClientConfig } from "@polywrap/core-js";
 
 jest.setTimeout(200000);
 
 describe("sanity", () => {
   test("default client config", () => {
-    const client = new PolywrapClient();
+    const clientConfig = new PolywrapClient().getConfig();
+    const expectedConfig = new ClientConfigBuilder().add(DefaultBundle.getConfig()).build();
 
-    expect(client.getInterfaces()).toStrictEqual([
-      {
-        interface: ExtendableUriResolver.extInterfaceUri,
-        implementations: [
-          new Uri(defaultPackages.ipfsResolver),
-          new Uri(defaultPackages.ensResolver),
-          new Uri(defaultPackages.fileSystemResolver),
-          new Uri(defaultPackages.httpResolver),
-          new Uri(defaultWrappers.ensTextRecordResolver),
-        ],
-      },
-      {
-        interface: new Uri(defaultInterfaces.logger),
-        implementations: [new Uri(defaultInterfaces.logger)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.concurrent),
-        implementations: [new Uri(defaultInterfaces.concurrent)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.ipfsHttpClient),
-        implementations: [new Uri(defaultInterfaces.ipfsHttpClient)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.fileSystem),
-        implementations: [new Uri(defaultInterfaces.fileSystem)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.http),
-        implementations: [new Uri(defaultInterfaces.http)],
-      },
-      {
-        interface: new Uri(defaultInterfaces.ethereumProvider),
-        implementations: [new Uri(defaultInterfaces.ethereumProvider)],
-      },
-    ]);
+    expect(
+      JSON.stringify(clientConfig, null, 2)
+    ).toMatch(
+      JSON.stringify(expectedConfig, null, 2)
+    );
   });
 
   test("validate requested uri is available", async () => {
