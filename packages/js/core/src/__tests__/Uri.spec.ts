@@ -53,14 +53,14 @@ describe("Uri", () => {
 
   it("Infers common URI authorities", () => {
     let uri = new Uri("https://domain.com/path/to/thing");
-    expect(uri.uri).toEqual("wrap://https/https://domain.com/path/to/thing");
+    expect(uri.uri).toEqual("wrap://https/domain.com/path/to/thing");
     expect(uri.authority).toEqual("https");
-    expect(uri.path).toEqual("https://domain.com/path/to/thing");
+    expect(uri.path).toEqual("domain.com/path/to/thing");
 
     uri = new Uri("http://domain.com/path/to/thing");
-    expect(uri.uri).toEqual("wrap://http/http://domain.com/path/to/thing");
+    expect(uri.uri).toEqual("wrap://http/domain.com/path/to/thing");
     expect(uri.authority).toEqual("http");
-    expect(uri.path).toEqual("http://domain.com/path/to/thing");
+    expect(uri.path).toEqual("domain.com/path/to/thing");
 
     uri = new Uri("ipfs://QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw");
     expect(uri.uri).toEqual("wrap://ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw");

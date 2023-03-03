@@ -210,24 +210,15 @@ export class Uri {
     return this._config.uri;
   }
 
-  private static inferAuthority(path: string): UriConfig | undefined {
-    let authority: string | undefined;
+  private static inferAuthority(_path: string): UriConfig | undefined {
+    const re = /^(?<authority>[a-z][a-z0-9-_]+):\/\/(?<path>.*)$/;
+    const result: RegExpGroups<"authority" | "path"> = re.exec(_path);
 
-    if (path.startsWith("https://")) {
-      authority = "https";
-    } else if (path.startsWith("http://")) {
-      authority = "http";
-    } else if (path.startsWith("ipfs://")) {
-      authority = "ipfs";
-      path = path.substring(7);
-    } else if (path.startsWith("ens://")) {
-      authority = "ens";
-      path = path.substring(6);
-    }
-
-    if (!authority) {
+    if (!result || !result.groups) {
       return undefined;
     }
+    const authority = result.groups.authority as string;
+    const path = result.groups.path as string;
 
     return { authority, path, uri: `wrap://${authority}/${path}` };
   }
