@@ -2172,13 +2172,21 @@
     "@polywrap/core-js" "0.10.0-pre.10"
     ethers "5.7.0"
 
-"@polywrap/fs-plugin-js@~0.10.0-pre":
+"@polywrap/fs-plugin-js@0.10.0-pre.7", "@polywrap/fs-plugin-js@~0.10.0-pre":
   version "0.10.0-pre.7"
   resolved "https://registry.yarnpkg.com/@polywrap/fs-plugin-js/-/fs-plugin-js-0.10.0-pre.7.tgz#d066fac96869363de512978bb66204b589ffa9a1"
   integrity sha512-zhNOrzaK+X95orrD9FgHRt6etUMq2kjzfZtbPGHcBxN3JR81rtO+7UsVfCdz1U2VoHXsKOZ6t59JhHVfvVRP/g==
   dependencies:
     "@polywrap/core-js" "0.10.0-pre.7"
     "@polywrap/plugin-js" "0.10.0-pre.7"
+
+"@polywrap/fs-resolver-plugin-js@0.10.0-pre.10":
+  version "0.10.0-pre.10"
+  resolved "https://registry.yarnpkg.com/@polywrap/fs-resolver-plugin-js/-/fs-resolver-plugin-js-0.10.0-pre.10.tgz#95ba1be2eeca7d1a48dcc204ba9845642f4dbf1d"
+  integrity sha512-W7yQglo3fSVojZ6TB+YA/U6Cxs5UB5nnZsdVVTDP9e9gXytp9aOyYpimE3OIyPtxGKGBMbAx27oZ8N5mUbo3ZA==
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.10"
+    "@polywrap/plugin-js" "0.10.0-pre.10"
 
 "@polywrap/http-plugin-js@~0.10.0-pre":
   version "0.10.0-pre.7"

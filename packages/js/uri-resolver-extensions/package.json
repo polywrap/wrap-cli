@@ -29,10 +29,11 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.10"
   },
   "devDependencies": {
-    "@polywrap/test-cases": "0.10.0-pre.8",
-    "@polywrap/core-client": "0.10.0-pre.8",
-    "@polywrap/fs-plugin-js": "0.10.0-pre.8",
-    "@polywrap/fs-resolver-plugin-js": "0.10.0-pre.8",
+    "@polywrap/test-cases": "0.10.0-pre.10",
+    "@polywrap/core-client-js": "0.10.0-pre.10",
+    "@polywrap/plugin-js": "0.10.0-pre.10",
+    "@polywrap/fs-plugin-js": "0.10.0-pre.7",
+    "@polywrap/fs-resolver-plugin-js": "0.10.0-pre.10",
     "@types/jest": "26.0.8",
     "doc-snippets": "~1.0.0",
     "jest": "26.6.3",

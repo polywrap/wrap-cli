@@ -44,7 +44,7 @@ describe("Resolver extensions", () => {
     const client = new PolywrapCoreClient({
       interfaces: [
         {
-          interface: ExtendableUriResolver.extInterfaceUri,
+          interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
           implementations: [
             fsRedirectResolverWrapperUri,
             Uri.from(defaultPackages.fileSystemResolver)
@@ -92,7 +92,7 @@ describe("Resolver extensions", () => {
     const client = new PolywrapCoreClient({
       interfaces: [
         {
-          interface: ExtendableUriResolver.extInterfaceUri,
+          interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
           implementations: [
             fsRedirectResolverWrapperUri,
             Uri.from(defaultPackages.fileSystemResolver)
@@ -140,7 +140,7 @@ describe("Resolver extensions", () => {
     const client = new PolywrapCoreClient({
       interfaces: [
         {
-          interface: ExtendableUriResolver.extInterfaceUri,
+          interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
           implementations: [
             undefinedResolverUri
           ]
