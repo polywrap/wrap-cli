@@ -58,14 +58,8 @@ export class SchemaComposer {
 
     const options: ComposerOptions = {
       schema: schemaFile,
-      abiResolver: (
-        importFrom: string,
-        schemaFile: SchemaFile
-      ) => this._abiResolver(
-        schemaFile,
-        importFrom,
-        import_abis
-      ),
+      abiResolver: (importFrom: string, schemaFile: SchemaFile) =>
+        this._abiResolver(schemaFile, importFrom, import_abis),
     };
 
     this._abi = await composeSchema(options);
@@ -84,24 +78,20 @@ export class SchemaComposer {
     if (Uri.isValidUri(importFrom)) {
       return this._resolveUri(importFrom, import_abi);
     } else {
-      return Promise.resolve(this._resolvePath(
-        importFrom,
-        path.dirname(schemaFile.absolutePath)
-      ));
+      return Promise.resolve(
+        this._resolvePath(importFrom, path.dirname(schemaFile.absolutePath))
+      );
     }
   }
 
   private _resolvePath(importFrom: string, sourceDir: string): SchemaFile {
-    const schemaPath = path.isAbsolute(importFrom) ?
-      importFrom :
-      path.join(sourceDir, importFrom);
-    const schema = fs.readFileSync(
-      schemaPath,
-      "utf-8"
-    );
+    const schemaPath = path.isAbsolute(importFrom)
+      ? importFrom
+      : path.join(sourceDir, importFrom);
+    const schema = fs.readFileSync(schemaPath, "utf-8");
     return {
       schema,
-      absolutePath: schemaPath
+      absolutePath: schemaPath,
     };
   }
 
@@ -174,11 +164,8 @@ export class SchemaComposer {
         schema: schema,
         absolutePath: path,
       },
-      abiResolver: (importFrom, schemaFile) => this._abiResolver(
-        schemaFile,
-        importFrom,
-        import_abis
-      ),
+      abiResolver: (importFrom, schemaFile) =>
+        this._abiResolver(schemaFile, importFrom, import_abis),
     });
   }
 

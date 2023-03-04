@@ -113,9 +113,7 @@ export function parseExternalImports(
   return externalImports;
 }
 
-export function parseLocalImports(
-  imports: RegExpMatchArray[]
-): LocalImport[] {
+export function parseLocalImports(imports: RegExpMatchArray[]): LocalImport[] {
   const localImports: LocalImport[] = [];
 
   for (const importStatement of imports) {

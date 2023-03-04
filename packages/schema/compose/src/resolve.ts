@@ -13,6 +13,7 @@ import { parseExternalImports, parseLocalImports, parseUse } from "./parse";
 import { renderSchema } from "./render";
 import { checkDuplicateEnvProperties } from "./env";
 import { addHeader } from "./templates/header.mustache";
+
 import {
   WrapAbi,
   ObjectDefinition,
@@ -132,7 +133,6 @@ export async function resolveImportsAndParseSchemas(
   abiResolver: AbiResolver,
   noValidate = false
 ): Promise<WrapAbi> {
-
   // Make sure the schema has the Polywrap header
   if (schema.indexOf("### Polywrap Header START ###") === -1) {
     schema = addHeader(schema);
@@ -185,8 +185,8 @@ export async function resolveImportsAndParseSchemas(
 
   const schemaFile: SchemaFile = {
     schema,
-    absolutePath: schemaPath
-  }
+    absolutePath: schemaPath,
+  };
 
   const externalImports = await resolveExternalImports(
     schemaFile,
@@ -669,7 +669,7 @@ async function resolveExternalImports(
     const uri = importFrom;
     const schemaOrAbi = await abiResolver(importFrom, schemaFile);
     let extAbi: WrapAbi;
-    
+
     // Resolve the schema
     if (typeof (schemaOrAbi as SchemaFile).schema === "string") {
       const schemaFile = schemaOrAbi as SchemaFile;
@@ -1035,10 +1035,17 @@ async function resolveLocalImports(
     }
 
     // Keep track of all imported type names
-    const typesToImport: Record<string, ModuleDefinition | ObjectDefinition | EnumDefinition> = {};
+    const typesToImport: Record<
+      string,
+      ModuleDefinition | ObjectDefinition | EnumDefinition
+    > = {};
 
     for (const importedType of extTypesToImport) {
-      let type: ModuleDefinition | ObjectDefinition | EnumDefinition | undefined;
+      let type:
+        | ModuleDefinition
+        | ObjectDefinition
+        | EnumDefinition
+        | undefined;
       let visitorFunc: Function;
 
       if (isModuleType(importedType)) {
