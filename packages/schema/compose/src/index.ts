@@ -1,4 +1,4 @@
-import { SchemaFile, AbiResolvers } from "./types";
+import { SchemaFile, AbiResolver } from "./types";
 import { resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
 
@@ -9,7 +9,7 @@ export { renderSchema };
 
 export interface ComposerOptions {
   schema: SchemaFile;
-  resolvers: AbiResolvers;
+  abiResolver: AbiResolver;
 }
 
 export async function composeSchema(
@@ -18,6 +18,6 @@ export async function composeSchema(
   return await resolveImportsAndParseSchemas(
     options.schema.schema,
     options.schema.absolutePath,
-    options.resolvers
+    options.abiResolver
   );
 }
