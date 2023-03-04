@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@polywrap/ethereum-provider-js": "0.2.2",
-    "@polywrap/fs-plugin-js": "~0.10.0-pre",
+    "@polywrap/file-system-plugin-js": "~0.10.0-pre",
     "@polywrap/http-plugin-js": "~0.10.0-pre",
     "@polywrap/ipfs-plugin-js": "~0.10.0-pre",
     "@polywrap/test-cases": "0.10.0-pre.10",
