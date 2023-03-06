@@ -15,6 +15,10 @@
     "@polywrap/core-js": "0.10.0-pre.10",
     "@polywrap/plugin-js": "0.10.0-pre.10"
   },
+  "peerDependencies": {
+    "@polywrap/core-js": "0.10.x",
+    "@polywrap/plugin-js": "0.10.x"
+  },
   "devDependencies": {
     "@polywrap/client-js": "0.10.0-pre.10",
     "@types/jest": "26.0.8",

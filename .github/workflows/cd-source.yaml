@@ -10,7 +10,7 @@ jobs:
     if: |
       github.event.pull_request.user.login == 'polywrap-build-bot' &&
       github.event.pull_request.merged == true
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
