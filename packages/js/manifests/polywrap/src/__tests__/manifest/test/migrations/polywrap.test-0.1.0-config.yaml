@@ -1,0 +1,12 @@
+name: test-workflow
+format: 0.1.0
+jobs:
+  sampleMethod:
+    steps:
+      - uri: fs/build
+        method: sampleMethod
+        args:
+          arg: "polywrap"
+        config:
+          foo: bar
+          baz: bam

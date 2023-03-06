@@ -44,13 +44,12 @@ export type Any{{#latest}}{{type}}{{/latest}} =
   | {{type}}_{{tsVersion}}
 {{/formats}}
 
-
-{{#formats}}
-{{#isWorkflow}}
+{{#latest.isWorkflow}}
 export type WorkflowJobs =
+{{#formats}}
    | WorkflowJobs_{{tsVersion}}
-{{/isWorkflow}}
 {{/formats}}
+{{/latest.isWorkflow}}
 
 export type {{#latest}}{{type}}{{/latest}} = {{#latest}}{{type}}_{{tsVersion}}{{/latest}};
 

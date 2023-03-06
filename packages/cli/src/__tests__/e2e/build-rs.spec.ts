@@ -19,8 +19,8 @@ describe("e2e tests for build command", () => {
   describe("Image strategy", () => {
     it("Builds for rust", async () => {
       const { exitCode: code, stdout: output } = await Commands.build({
-        codegen: true,
-        strategy: "image"
+        strategy: "image",
+        verbose: true
       }, {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
@@ -37,8 +37,8 @@ describe("e2e tests for build command", () => {
   describe.skip("Local strategy", () => {
     it("Builds for rust", async () => {
       const { exitCode: code, stdout: output } = await Commands.build({
-        codegen: true,
-        strategy: "local"
+        strategy: "local",
+        verbose: true
       }, {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
@@ -55,8 +55,8 @@ describe("e2e tests for build command", () => {
   describe("VM strategy", () => {
     it("Builds for rust", async () => {
       const { exitCode: code, stdout: output } = await Commands.build({
-        codegen: true,
-        strategy: "vm"
+        strategy: "vm",
+        verbose: true
       }, {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,

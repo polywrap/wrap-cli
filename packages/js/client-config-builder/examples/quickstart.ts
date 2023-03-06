@@ -4,7 +4,7 @@ import { ClientConfigBuilder } from "../build";
 import { WasmWrapper } from "@polywrap/wasm-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { RecursiveResolver, WrapperCache } from "@polywrap/uri-resolvers-js";
-import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
+import { fileSystemPlugin } from "@polywrap/file-system-plugin-js";
 import { CoreClientConfig } from "@polywrap/core-js";
 
 export function initialize(): ClientConfigBuilder {
@@ -58,11 +58,15 @@ export function build():
   // accepted by either the PolywrapClient or the PolywrapCoreClient
   let coreClientConfig = builder.build();
 
-  // build with a custom cache and/or resolver
-  coreClientConfig = builder.build(
-    new WrapperCache(),
-    RecursiveResolver.from([])
-  );
+  // build with a custom cache
+  coreClientConfig = builder.build({
+    wrapperCache: new WrapperCache(),
+  });
+
+  // or build with a custom resolver
+  coreClientConfig = builder.build({
+    resolver: RecursiveResolver.from([]),
+  });
   // $end
 
   return builder ?? coreClientConfig;

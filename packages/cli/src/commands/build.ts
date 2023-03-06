@@ -4,9 +4,6 @@ import {
   Compiler,
   PolywrapProject,
   SchemaComposer,
-  Watcher,
-  WatchEvent,
-  watchEventName,
   intlMsg,
   defaultPolywrapManifest,
   parseDirOption,
@@ -28,8 +25,8 @@ import {
   LocalBuildStrategy,
 } from "../lib/build-strategies";
 import { DEFAULT_CODEGEN_DIR } from "../lib/defaults";
+import { watchProject } from "../lib/watchProject";
 
-import readline from "readline";
 import { PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 
@@ -49,7 +46,7 @@ export interface BuildCommandOptions extends BaseCommandOptions {
   outputDir: string;
   clientConfig: string | false;
   wrapperEnvs: string | false;
-  codegen: boolean; // defaults to false
+  noCodegen: boolean;
   codegenDir: string;
   watch: boolean;
   strategy: `${SupportedStrategies}`;
@@ -77,7 +74,7 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
-      .option(`--codegen`, `${intlMsg.commands_build_options_codegen()}`)
+      .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_codegen()}`)
       .option(
         `--codegen-dir`,
         `${intlMsg.commands_build_options_codegen_dir({
@@ -94,7 +91,7 @@ export const build: Command = {
           default: defaultStrategy,
         })}`
       )
-      .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
+      .option(`-w, --watch`, `${intlMsg.commands_common_options_w()}`)
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .option(
@@ -110,7 +107,7 @@ export const build: Command = {
           clientConfig: options.clientConfig || false,
           wrapperEnvs: options.wrapperEnvs || false,
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
-          codegen: options.codegen || false,
+          noCodegen: options.noCodegen || false,
           codegenDir: parseDirOption(options.codegenDir, DEFAULT_CODEGEN_DIR),
           strategy: options.strategy || defaultStrategy,
           watch: options.watch || false,
@@ -165,12 +162,13 @@ async function run(options: Required<BuildCommandOptions>) {
     wrapperEnvs,
     outputDir,
     strategy,
-    codegen,
+    noCodegen,
     codegenDir,
     verbose,
     quiet,
     logFile,
   } = options;
+
   const logger = createLogger({ verbose, quiet, logFile });
 
   const envs = await parseWrapperEnvsOption(wrapperEnvs);
@@ -181,9 +179,7 @@ async function run(options: Required<BuildCommandOptions>) {
   }
 
   // Get Client
-  const client = new PolywrapClient(configBuilder.build(), {
-    noDefaults: true,
-  });
+  const client = new PolywrapClient(configBuilder.build());
 
   const project = await getProjectFromManifest(manifestFile, logger);
 
@@ -206,6 +202,7 @@ async function run(options: Required<BuildCommandOptions>) {
   }
 
   let buildStrategy: BuildStrategy<unknown>;
+  let canRunCodegen = true;
 
   if (isPolywrapManifestLanguage(language)) {
     await validateManifestModules(manifest as PolywrapManifest);
@@ -215,6 +212,8 @@ async function run(options: Required<BuildCommandOptions>) {
       outputDir,
       project as PolywrapProject
     );
+
+    canRunCodegen = language != "interface";
   }
 
   const execute = async (): Promise<boolean> => {
@@ -224,7 +223,7 @@ async function run(options: Required<BuildCommandOptions>) {
         client,
       });
 
-      if (codegen) {
+      if (canRunCodegen && !noCodegen) {
         const codeGenerator = new CodeGenerator({
           project,
           schemaComposer,
@@ -261,54 +260,11 @@ async function run(options: Required<BuildCommandOptions>) {
 
     process.exit(0);
   } else {
-    // Execute
-    await execute();
-
-    const keyPressListener = () => {
-      // Watch for escape key presses
-      logger.info(
-        `${intlMsg.commands_build_keypressListener_watching()}: ${project.getManifestDir()}`
-      );
-      logger.info(intlMsg.commands_build_keypressListener_exit());
-      readline.emitKeypressEvents(process.stdin);
-      process.stdin.on("keypress", async (str, key) => {
-        if (
-          key.name == "escape" ||
-          key.name == "q" ||
-          (key.name == "c" && key.ctrl)
-        ) {
-          await watcher.stop();
-          process.kill(process.pid, "SIGINT");
-        }
-      });
-
-      if (process.stdin.setRawMode) {
-        process.stdin.setRawMode(true);
-      }
-
-      process.stdin.resume();
-    };
-
-    keyPressListener();
-
-    // Watch the directory
-    const watcher = new Watcher();
-
-    watcher.start(project.getManifestDir(), {
+    await watchProject({
+      execute,
+      logger,
+      project,
       ignored: [outputDir + "/**", project.getManifestDir() + "/**/wrap/**"],
-      ignoreInitial: true,
-      execute: async (events: WatchEvent[]) => {
-        // Log all of the events encountered
-        for (const event of events) {
-          logger.info(`${watchEventName(event.type)}: ${event.path}`);
-        }
-
-        // Execute the build
-        await execute();
-
-        // Process key presses
-        keyPressListener();
-      },
     });
   }
 }

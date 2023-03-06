@@ -32,7 +32,7 @@ Use the `@polywrap/client-config-builder-js` package to build a custom configura
 ```ts
   const config = new ClientConfigBuilder().addDefaults().build();
 
-  const client = new PolywrapClient(config, { noDefaults: true });
+  const client = new PolywrapClient(config);
 ```
 
 ### Invoke
@@ -59,88 +59,6 @@ Invoke a wrapper.
 
 Below you will find a reference of object definitions which can be used to configure the Polywrap client. Please note that the intended way of configuring the client is to use the `ClientConfigBuilder`, as explained above.
 
-### ClientConfig
-```ts
-/**
- * Client configuration that can be passed to the PolywrapClient
- *
- * @remarks
- * The PolywrapClient converts the ClientConfig to a CoreClientConfig.
- */
-export interface ClientConfig {
-  /** set environmental variables for a wrapper */
-  readonly envs: Env[];
-
-  /** register interface implementations */
-  readonly interfaces: InterfaceImplementations[];
-
-  /** redirect invocations from one uri to another */
-  readonly redirects: IUriRedirect[];
-
-  /** add embedded wrappers */
-  readonly wrappers: IUriWrapper[];
-
-  /** add and configure embedded packages */
-  readonly packages: IUriPackage[];
-
-  /** customize URI resolution
-   *
-   * @remarks
-   * A UriResolverLike can be any one of:
-   *     IUriResolver<unknown>
-   *   | IUriRedirect
-   *   | IUriPackage
-   *   | IUriWrapper
-   *   | UriResolverLike[]
-   *   */
-  readonly resolvers: UriResolverLike[];
-}
-```
-
-### PolywrapClientConfig
-```ts
-/**
- * Client configuration that can be passed to the PolywrapClient.
- *
- * @remarks
- * Extends ClientConfig from @polywrap/client-js.
- * The PolywrapClient converts the PolywrapClientConfig to a CoreClientConfig.
- */
-export interface PolywrapClientConfig<TUri extends Uri | string = string> {
-  /** set environmental variables for a wrapper */
-  readonly envs: GenericEnv<TUri>[];
-
-  /** register interface implementations */
-  readonly interfaces: GenericInterfaceImplementations<TUri>[];
-
-  /** redirect invocations from one uri to another */
-  readonly redirects: IGenericUriRedirect<TUri>[];
-
-  /** add embedded wrappers */
-  readonly wrappers: IGenericUriWrapper<TUri>[];
-
-  /** add and configure embedded packages */
-  readonly packages: IGenericUriPackage<TUri>[];
-
-  /** customize URI resolution
-   *
-   * @remarks
-   * A UriResolverLike can be any one of:
-   *     IUriResolver<unknown>
-   *   | IUriRedirect
-   *   | IUriPackage
-   *   | IUriWrapper
-   *   | UriResolverLike<TUri>[]
-   *   */
-  readonly resolvers: GenericUriResolverLike<TUri>[];
-  /** a wrapper cache to be used in place of the default wrapper cache */
-  readonly wrapperCache?: IWrapperCache;
-
-  /** configuration for opentelemetry tracing to aid in debugging */
-  readonly tracerConfig?: Readonly<Partial<TracerConfig>>;
-}
-```
-
 ## PolywrapClient
 
 ### Constructor
@@ -148,29 +66,7 @@ export interface PolywrapClientConfig<TUri extends Uri | string = string> {
   /**
    * Instantiate a PolywrapClient
    *
-   * @param config - a whole or partial client configuration
-   * @param options - { noDefaults?: boolean }
+   * @param config - a client configuration
    */
-  constructor(
-    config?: Partial<PolywrapClientConfig<TUri>>,
-    options?: { noDefaults?: boolean }
-  );
-  constructor(config: CoreClientConfig, options?: { noDefaults?: boolean });
-  constructor(
-    config: Partial<ClientConfig>,
-    options?: { noDefaults?: boolean }
-  );
-  constructor(
-    config: PolywrapCoreClientConfig<TUri>,
-    options?: { noDefaults: boolean }
-  );
-  constructor(
-    config:
-      | Partial<PolywrapClientConfig<TUri>>
-      | undefined
-      | PolywrapCoreClientConfig<TUri>
-      | CoreClientConfig
-      | Partial<ClientConfig>,
-    options?: { noDefaults?: boolean }
-  ) 
+  constructor(config?: CoreClientConfig) 
 ```

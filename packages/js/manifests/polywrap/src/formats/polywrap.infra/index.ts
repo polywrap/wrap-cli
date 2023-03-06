@@ -29,7 +29,6 @@ export type AnyInfraManifest =
   | InfraManifest_0_1_0
 
 
-
 export type InfraManifest = InfraManifest_0_1_0;
 
 export const latestInfraManifestFormat = InfraManifestFormats["v0.1.0"]

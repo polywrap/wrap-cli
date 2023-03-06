@@ -19,15 +19,15 @@ Options:
                                        (default: ./build)
   -c, --client-config <config-path>    Add custom configuration to the
                                        PolywrapClient
-  --codegen                            Perform code generation before build
+  -n, --no-codegen                     Skip code generation before build
   --codegen-dir                        Codegen output directory (default:
                                        ./src/wrap)
   --wrapper-envs <envs-path>           Path to a JSON file containing wrapper
                                        envs
   -s, --strategy <vm | image | local>  Strategy to use for building the wrapper
                                        (default: vm)
-  -w, --watch                          Automatically rebuild when changes are
-                                       made (default: false)
+  -w, --watch                          Automatically execute command when
+                                       changes are made (default: false)
   -v, --verbose                        Verbose output (default: false)
   -q, --quiet                          Suppress output (default: false)
   -l, --log-file [path]                Log file to save console output to
@@ -169,7 +169,7 @@ describe("e2e tests for build command", () => {
     const testCaseDir = getTestCaseDir(0);
     const { exitCode: code, stdout: output } = await Commands.build({
       outputDir,
-      codegen: true
+      verbose: true
     }, {
       cwd: testCaseDir,
       cli: polywrapCli,
@@ -251,7 +251,7 @@ describe("e2e tests for build command", () => {
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await Commands.build({
         strategy: "local",
-        codegen: true
+        verbose: true
       }, {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
@@ -282,7 +282,7 @@ describe("e2e tests for build command", () => {
       test(testCaseName, async () => {
         const { exitCode, stdout, stderr } = await Commands.build({
           ...args,
-          codegen: true
+          verbose: true
         }, {
           cwd: testCaseDir,
           cli: polywrapCli,

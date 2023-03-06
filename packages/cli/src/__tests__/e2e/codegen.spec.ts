@@ -22,6 +22,8 @@ Options:
                                      PolywrapClient
   --wrapper-envs <envs-path>         Path to a JSON file containing wrapper
                                      envs
+  -w, --watch                        Automatically execute command when changes
+                                     are made (default: false)
   -v, --verbose                      Verbose output (default: false)
   -q, --quiet                        Suppress output (default: false)
   -l, --log-file [path]              Log file to save console output to

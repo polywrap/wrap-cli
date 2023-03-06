@@ -2,11 +2,11 @@ type Module {
   tryResolveUri(
     authority: String!
     path: String!
-  ): MaybeUriOrManifest
+  ): MaybeUriOrManifest @env(required: false)
 
   getFile(
     path: String!
-  ): Bytes
+  ): Bytes @env(required: false)
 }
 
 type MaybeUriOrManifest {

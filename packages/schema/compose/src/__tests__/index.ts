@@ -1,14 +1,16 @@
-import { ComposerOptions } from "..";
+import { ComposerOptions, SchemaFile } from "..";
+import {
+  readFileIfExists,
+  getFilePath,
+  readNamedExportIfExists
+} from "./utils";
 
 import path from "path";
 import { readdirSync, Dirent } from "fs";
 
+import { Uri } from "@polywrap/core-js";
 import { Abi, createAbi } from "@polywrap/schema-parse";
-import {
-  GetPathToComposeTestFiles,
-  readFileIfExists,
-  readNamedExportIfExists,
-} from "@polywrap/test-cases"
+import { GetPathToComposeTestFiles } from "@polywrap/test-cases"
 
 const root = GetPathToComposeTestFiles();
 
@@ -71,42 +73,62 @@ async function importCase(
   name: string,
 ): Promise<TestCase | undefined> {
   // Fetch the input schemas
-  const moduleInput = readFileIfExists("input/module.graphql", directory);
+  const moduleInput = readFileIfExists(path.join(directory, "input/module.graphql"));
+  const moduleDir = path.join(directory, "input");
 
   // Fetch the output abi
-  const moduleAbi = await readNamedExportIfExists<Abi>("abi", "output/module.ts", directory);
+  const moduleAbi = await readNamedExportIfExists<Abi>("abi", path.join(directory, "output/module.ts"));
 
   // Fetch the output schema
-  const moduleSchema = readFileIfExists("output/module.graphql", directory);
+  const moduleSchema = readFileIfExists(path.join(directory, "output/module.graphql"));
 
-  const resolveExternal = async (uri: string): Promise<Abi> => {
+  const resolveUri = async (uri: string): Promise<Abi> => {
     let abi = createAbi()
-    const generatedAbi = await readNamedExportIfExists<Abi>("abi", `imports-ext/${uri}/module.ts`, directory)
+    const generatedAbi = await readNamedExportIfExists<Abi>(
+      "abi",
+      path.join(directory, `imports-ext/${uri}/module.ts`)
+    );
     if (generatedAbi) {
       abi = generatedAbi
     }
     return Promise.resolve(abi);
   };
 
-  const resolveLocal = (path: string): Promise<string> => {
-    return Promise.resolve(readFileIfExists(path, directory, true) || "");
+  const resolvePath = (importFrom: string, sourceDir: string): SchemaFile => {
+    const absolutePath = getFilePath(importFrom, sourceDir);
+    const schema = readFileIfExists(absolutePath);
+    if (!schema) {
+      throw Error(`Did not find schema in directory "${sourceDir}" from import "${importFrom}"`);
+    }
+    return {
+      schema,
+      absolutePath
+    };
   };
 
   if (!moduleInput) {
     throw new Error("Expected input schema.graphql file to Exist")
   }
 
+  const schemaPath = path.join(
+    moduleDir,
+    "module.graphql"
+  );
+
   const input: ComposerOptions = {
     schema: {
       schema: moduleInput,
-      absolutePath: path.join(
-        directory,
-        "input/module.graphql"
-      ),
+      absolutePath: schemaPath,
     },
-    resolvers: {
-      external: resolveExternal,
-      local: resolveLocal,
+    abiResolver: async (importFrom: string, schemaFile: SchemaFile): Promise<Abi | SchemaFile> => {
+      if (Uri.isValidUri(importFrom) || importFrom.endsWith(".eth")) {
+        return await resolveUri(importFrom);
+      } else {
+        return Promise.resolve(resolvePath(
+          importFrom,
+          path.dirname(schemaFile.absolutePath)
+        ));
+      }
     },
   };
 

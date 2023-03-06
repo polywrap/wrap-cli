@@ -1,7 +1,6 @@
-import { getDefaultConfig } from "./bundles";
+import { DefaultBundle } from "./bundles";
 import { BaseClientConfigBuilder } from "./BaseClientConfigBuilder";
-import { IClientConfigBuilder } from "./types/IClientConfigBuilder";
-import { BuilderConfig } from "./types";
+import { BuildOptions, IClientConfigBuilder, BuilderConfig } from "./types";
 
 import {
   CoreClientConfig,
@@ -9,16 +8,15 @@ import {
   InterfaceImplementations,
   IUriPackage,
   IUriRedirect,
-  IUriResolver,
   IUriWrapper,
   Uri,
 } from "@polywrap/core-js";
 import {
-  IWrapperCache,
-  PackageToWrapperCacheResolver,
   RecursiveResolver,
   StaticResolver,
   WrapperCache,
+  PackageToWrapperCacheResolver,
+  RequestSynchronizerResolver,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 
@@ -32,30 +30,33 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
   }
 
   addDefaults(): IClientConfigBuilder {
-    return this.add(getDefaultConfig());
+    return this.add(DefaultBundle.getConfig());
   }
 
-  build(
-    wrapperCache?: IWrapperCache,
-    resolver?: IUriResolver<unknown>
-  ): CoreClientConfig {
+  build(options?: BuildOptions): CoreClientConfig {
+    const resolver =
+      options && "resolver" in options ? options.resolver : undefined;
+    const wrapperCache =
+      options && "wrapperCache" in options ? options.wrapperCache : undefined;
     return {
       envs: this.buildEnvs(),
       interfaces: this.buildInterfaces(),
       resolver:
         resolver ??
         RecursiveResolver.from(
-          PackageToWrapperCacheResolver.from(
-            [
-              StaticResolver.from([
-                ...this.buildRedirects(),
-                ...this.buildWrappers(),
-                ...this.buildPackages(),
-              ]),
-              ...this._config.resolvers,
-              new ExtendableUriResolver(),
-            ],
-            wrapperCache ?? new WrapperCache()
+          RequestSynchronizerResolver.from(
+            PackageToWrapperCacheResolver.from(
+              [
+                StaticResolver.from([
+                  ...this.buildRedirects(),
+                  ...this.buildWrappers(),
+                  ...this.buildPackages(),
+                ]),
+                ...this._config.resolvers,
+                new ExtendableUriResolver(),
+              ],
+              wrapperCache ?? new WrapperCache()
+            )
           )
         ),
     };

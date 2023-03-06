@@ -1,4 +1,0 @@
-#import { Module, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.polywrap.eth"
-
-type Module implements UriResolver_Module {
-}

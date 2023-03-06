@@ -1,0 +1,75 @@
+{
+  "id": "PolywrapWorkflow",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "name", "jobs"],
+  "properties": {
+    "format": {
+      "description": "Workflow format version",
+      "type": "string",
+      "enum": ["0.2.0"]
+    },
+    "name": {
+      "description": "Workflow name",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+    },
+    "validation": {
+      "description": "Path to validation script",
+      "type": "string"
+    },
+    "jobs": {
+      "$ref": "#/definitions/jobs"
+    }
+  },
+  "definitions": {
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uri", "method"],
+      "properties": {
+        "uri": {
+          "description": "Wrapper URI",
+          "type": "string",
+          "tsType": "any"
+        },
+        "method": {
+          "description": "Wrapper method name",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+        },
+        "args": {
+          "description": "Wrapper method arguments",
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "jobInfo": {
+      "description": "Sequences of actions inside the job",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "steps": {
+          "description": "Array of calls to wrappers",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/step"
+          }
+        },
+        "jobs": {
+          "$ref": "#/definitions/jobs"
+        }
+      }
+    },
+    "jobs": {
+      "description": "Map of workflow jobs",
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/definitions/jobInfo"
+        }
+      }
+    }
+  }
+}
