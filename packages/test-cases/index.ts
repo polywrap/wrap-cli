@@ -3,8 +3,8 @@ import { readFileSync, existsSync } from "fs";
 
 import { normalizeLineEndings } from "@polywrap/os-js";
 import admZip from 'adm-zip';
-const axios = require("axios");
-const shell = require("shelljs");
+import axios from "axios";
+import shell from "shelljs";
 
 export const GetPathToBindTestFiles = () => `${__dirname}/cases/bind`
 export const GetPathToComposeTestFiles = () => `${__dirname}/cases/compose`
