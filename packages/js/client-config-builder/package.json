@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/client-config-builder-js",
   "description": "Polywrap Javascript Client configuration",
-  "version": "0.10.0-pre.10",
+  "version": "0.10.0-pre.11",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -23,17 +23,17 @@
     "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.10.0-pre.10",
     "@polywrap/concurrent-plugin-js": "~0.10.0-pre",
+    "@polywrap/core-js": "0.10.0-pre.11",
     "@polywrap/ethereum-provider-js": "~0.2.3",
     "@polywrap/fs-plugin-js": "~0.10.0-pre",
     "@polywrap/http-plugin-js": "~0.10.0-pre",
     "@polywrap/ipfs-plugin-js": "~0.10.0-pre",
     "@polywrap/logger-plugin-js": "0.10.0",
-    "@polywrap/plugin-js": "0.10.0-pre.10",
-    "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.10",
-    "@polywrap/uri-resolvers-js": "0.10.0-pre.10",
-    "@polywrap/wasm-js": "0.10.0-pre.10",
+    "@polywrap/plugin-js": "0.10.0-pre.11",
+    "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.11",
+    "@polywrap/uri-resolvers-js": "0.10.0-pre.11",
+    "@polywrap/wasm-js": "0.10.0-pre.11",
     "base64-to-uint8array": "1.0.0"
   },
   "devDependencies": {
