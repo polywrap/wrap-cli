@@ -48,7 +48,6 @@
     "@polywrap/client-js": "0.10.0-pre.10",
     "@polywrap/core-js": "0.10.0-pre.10",
     "@polywrap/ethereum-provider-js": "~0.2.3",
-    "@polywrap/ipfs-plugin-js": "~0.10.0-pre",
     "@polywrap/logging-js": "~0.10.0-pre",
     "@polywrap/os-js": "0.10.0-pre.10",
     "@polywrap/polywrap-manifest-types-js": "0.10.0-pre.10",

@@ -32,12 +32,12 @@ Add client configuration with [add](#add), or flexibly mix and match builder [co
 
   // add or remove items by chaining method calls
   builder
-    .addPackage("wrap://plugin/package", httpPlugin({}) as IWrapPackage)
+    .addPackage("wrap://plugin/package", httpPlugin({}))
     .removePackage("wrap://plugin/package")
     .addPackages(
       {
-        "wrap://plugin/http": httpPlugin({}) as IWrapPackage,
-        "wrap://plugin/filesystem": fileSystemPlugin({}) as IWrapPackage,
+        "wrap://plugin/http": httpPlugin({}),
+        "wrap://plugin/filesystem": fileSystemPlugin({}),
       }
     );
 ```
@@ -104,10 +104,10 @@ A complete example using all or most of the available methods.
 
   // add and remove wrap packages
   builder
-    .addPackage("wrap://plugin/package", httpPlugin({}) as IWrapPackage)
+    .addPackage("wrap://plugin/package", httpPlugin({}))
     .removePackage("wrap://plugin/package")
     .addPackages({
-      "wrap://plugin/package": httpPlugin({}) as IWrapPackage
+      "wrap://plugin/package": httpPlugin({})
     })
 
   // add and remove Envs
@@ -499,12 +499,12 @@ interface IDefaultPlugins {
 export const plugins: IDefaultPlugins = {
   logger: {
     uri: Uri.from("plugin/logger@1.0.0"),
-    plugin: (loggerPlugin({}) as unknown) as PluginPackage<unknown>,
+    plugin: loggerPlugin({}),
     implements: [Uri.from("ens/wraps.eth:logger@1.0.0")],
   },
   http: {
     uri: Uri.from("plugin/http@1.1.0"),
-    plugin: (httpPlugin({}) as unknown) as PluginPackage<unknown>,
+    plugin: httpPlugin({}),
     implements: [
       Uri.from("ens/wraps.eth:http@1.1.0"),
       Uri.from("ens/wraps.eth:http@1.0.0"),
@@ -512,7 +512,7 @@ export const plugins: IDefaultPlugins = {
   },
   fileSystem: {
     uri: Uri.from("plugin/file-system@1.0.0"),
-    plugin: (fileSystemPlugin({}) as unknown) as PluginPackage<unknown>,
+    plugin: fileSystemPlugin({}),
     implements: [Uri.from("ens/wraps.eth:file-system@1.0.0")],
   },
   concurrent: {

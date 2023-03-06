@@ -35,10 +35,6 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.10"
   },
   "devDependencies": {
-    "@polywrap/ethereum-provider-js": "~0.2.3",
-    "@polywrap/fs-plugin-js": "~0.10.0-pre",
-    "@polywrap/http-plugin-js": "~0.10.0-pre",
-    "@polywrap/ipfs-plugin-js": "~0.10.0-pre",
     "@polywrap/test-cases": "0.10.0-pre.10",
     "@polywrap/test-env-js": "0.10.0-pre.10",
     "@types/jest": "26.0.8",
