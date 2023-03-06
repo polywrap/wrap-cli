@@ -21,6 +21,7 @@
     ]
   },
   "scripts": {
+    "postinstall": "ts-node ./scripts/patch-peer-deps.ts",
     "reset": "yarn clean && yarn && yarn build",
     "clean": "npx rimraf ./**/node_modules ./**/yarn.lock ./**/build ./**/coverage ./**/.polywrap",
     "dependencies:install": "cd dependencies && yarn",
@@ -66,6 +67,7 @@
     "graphql": "15.5.0",
     "lerna": "4.0.0",
     "prettier": "2.2.1",
+    "ts-node": "10.9.1",
     "rimraf": "3.0.2"
   },
   "resolutions": {
