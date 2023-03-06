@@ -73,10 +73,10 @@ export class SchemaComposer {
   private _abiResolver(
     schemaFile: SchemaFile,
     importFrom: string,
-    import_abi?: PolywrapManifest["source"]["import_abis"]
+    import_abis?: PolywrapManifest["source"]["import_abis"]
   ): Promise<WrapAbi | SchemaFile> {
     if (Uri.isValidUri(importFrom)) {
-      return this._resolveUri(importFrom, import_abi);
+      return this._resolveUri(importFrom, import_abis);
     } else {
       return Promise.resolve(
         this._resolvePath(importFrom, path.dirname(schemaFile.absolutePath))
