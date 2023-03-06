@@ -13,7 +13,7 @@ import {
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
-import { concurrentPromisePlugin } from "concurrent-plugin-js";
+import { concurrentPromisePlugin } from "@polywrap/concurrent-plugin-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { IUriRedirect } from "@polywrap/core-js";
 

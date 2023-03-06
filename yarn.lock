@@ -2142,6 +2142,15 @@
   resolved "https://registry.yarnpkg.com/@opentelemetry/semantic-conventions/-/semantic-conventions-1.6.0.tgz#ed410c9eb0070491cff9fe914246ce41f88d6f74"
   integrity sha512-aPfcBeLErM/PPiAuAbNFLN5sNbZLc3KZlar27uohllN8Zs6jJbHyJU1y7cMA6W/zuq+thkaG8mujiS+3iD/FWQ==
 
+"@polywrap/concurrent-plugin-js@~0.10.0-pre":
+  version "0.10.0-pre.10"
+  resolved "https://registry.yarnpkg.com/@polywrap/concurrent-plugin-js/-/concurrent-plugin-js-0.10.0-pre.10.tgz#106e015173cabed5b043cbc2fac00a6ccf58f9a0"
+  integrity sha512-CZUbEEhplLzXpl1xRsF5aRgZLeu4sJxhXA0GWTMqzmGjhqvMPClOMfqklFPmPuCyq76q068XPpYavHjGKNmN2g==
+  dependencies:
+    "@polywrap/core-js" "0.10.0-pre.10"
+    "@polywrap/msgpack-js" "0.10.0-pre.10"
+    "@polywrap/plugin-js" "0.10.0-pre.10"
+
 "@polywrap/core-js@0.10.0-pre.5":
   version "0.10.0-pre.5"
   resolved "https://registry.yarnpkg.com/@polywrap/core-js/-/core-js-0.10.0-pre.5.tgz#8457f168235faae19342a87aed6ddce44a56fb59"
@@ -2162,14 +2171,15 @@
     "@polywrap/tracing-js" "0.10.0-pre.7"
     "@polywrap/wrap-manifest-types-js" "0.10.0-pre.7"
 
-"@polywrap/ethereum-provider-js@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@polywrap/ethereum-provider-js/-/ethereum-provider-js-0.2.2.tgz#0bd6337f26da381b1567f26d077cd32debf43d03"
-  integrity sha512-GGWB7C8pLSRx1fcBaT/hnLISJNoPilM7FHrKfvhWRAjbGDLKlL1tDmHD2J1G5R5dOkA97Z+boVbI5VrjzqE5/Q==
+"@polywrap/ethereum-provider-js@~0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@polywrap/ethereum-provider-js/-/ethereum-provider-js-0.2.3.tgz#3a2c16115ba3c5b1cf8136fe9d528770a0c4572f"
+  integrity sha512-TY2Y33Oitt1elBaM/3OXulRZ22vI3vA7+Y+XVzhV7Az37GJm1tR8NDL05g3wBFqlps6zoTdmfR0zmFVtFvvAtw==
   dependencies:
     "@ethersproject/address" "5.7.0"
     "@ethersproject/providers" "5.7.0"
     "@polywrap/core-js" "0.10.0-pre.10"
+    "@polywrap/plugin-js" "0.10.0-pre.10"
     ethers "5.7.0"
 
 "@polywrap/fs-plugin-js@~0.10.0-pre":
@@ -3852,14 +3862,6 @@ concat-stream@^2.0.0:
     inherits "^2.0.3"
     readable-stream "^3.0.2"
     typedarray "^0.0.6"
-
-concurrent-plugin-js@0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/concurrent-plugin-js/-/concurrent-plugin-js-0.1.2.tgz#206b9f12723fb99d79a4c03c0f28b427deca6ff4"
-  integrity sha512-MWpw9uuQtQ/IerG2CtGjFm+UTmDy0D+D7HZh4hW5PYTk4SbcYBVJtK6n7Yk3tg8NE3rcXLnRxLBoW7UbO2o5hw==
-  dependencies:
-    "@polywrap/core-js" "0.10.0-pre.7"
-    "@polywrap/msgpack-js" "0.10.0-pre.7"
 
 config-chain@^1.1.12:
   version "1.1.13"
