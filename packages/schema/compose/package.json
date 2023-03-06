@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@polywrap/test-cases": "0.10.0-pre.11",
+    "@polywrap/os-js": "0.10.0-pre.11",
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
     "@types/prettier": "2.6.0",
