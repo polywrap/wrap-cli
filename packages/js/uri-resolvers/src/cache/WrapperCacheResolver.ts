@@ -20,7 +20,7 @@ export class WrapperCacheResolver<TError>
   implements IUriResolver<TError | Error> /* $ */ {
   // $start: WrapperCacheResolver-constructor
   /**
-   * Creates a WrapperCacheResolvers
+   * Creates a WrapperCacheResolver
    *
    * @param _resolverToCache - a resolver to delegate resolution to
    * @param _cache - a wrapper cache
