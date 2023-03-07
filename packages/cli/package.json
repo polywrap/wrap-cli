@@ -55,7 +55,6 @@
     "@polywrap/schema-bind": "0.10.0-pre.11",
     "@polywrap/schema-compose": "0.10.0-pre.11",
     "@polywrap/schema-parse": "0.10.0-pre.11",
-    "@polywrap/test-env-js": "0.10.0-pre.11",
     "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.11",
     "@polywrap/uri-resolvers-js": "0.10.0-pre.11",
     "@polywrap/wasm-js": "0.10.0-pre.11",
@@ -83,6 +82,7 @@
     "yesno": "0.4.0"
   },
   "devDependencies": {
+    "@polywrap/cli-js": "0.10.0-pre.11",
     "@types/copyfiles": "2.4.0",
     "@types/fs-extra": "9.0.12",
     "@types/jest": "26.0.8",
