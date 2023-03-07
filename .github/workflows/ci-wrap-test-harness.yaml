@@ -110,13 +110,11 @@ jobs:
         if: ${{ inputs.wasm-path }}
         run: echo "POLYWRAP_WASM_PATH=${{ github.workspace }}/toolchain/packages/wasm" >> $GITHUB_ENV
 
-      - uses: nick-fields/retry@v2
-        name: Run wrappers build
-        with:
-          command: cargo run -- -w
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 60
+      - name: Run wrappers build
+        run: cargo run -- -w
+        env:
+          POLYWRAP_CLI_PATH: ${{env.POLYWRAP_CLI_PATH}}
+          POLYWRAP_WASM_PATH: ${{env.POLYWRAP_WASM_PATH}}
 
       - uses: actions/upload-artifact@v3
         with:
