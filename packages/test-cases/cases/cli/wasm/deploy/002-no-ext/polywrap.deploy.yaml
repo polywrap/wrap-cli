@@ -4,6 +4,6 @@ jobs:
     steps:
       - name: ipfs_test
         package: ipfs-test
-        uri: wrap://fs/./build
+        uri: wrap://fs/../wrapper
         config:
           foo: bar

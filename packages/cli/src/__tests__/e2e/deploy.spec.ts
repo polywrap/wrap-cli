@@ -56,19 +56,6 @@ jest.setTimeout(500000);
 describe("e2e tests for deploy command", () => {
   beforeAll(async () => {
     await setup()
-
-    const builds = [];
-
-    for (let i = 0; i < testCases.length; ++i) {
-      builds.push(Commands.build({
-        verbose: true
-      }, {
-        cwd: getTestCaseDir(i),
-        cli: polywrapCli,
-      }));
-    }
-
-    await Promise.all(builds);
   });
 
   afterAll(async () => {
@@ -230,7 +217,7 @@ describe("e2e tests for deploy command", () => {
           {
             "name": "ipfs_deploy",
             "id": "fs_to_ens.ipfs_deploy",
-            "input": "wrap://fs/./build",
+            "input": "wrap://fs/../wrapper",
             "result": "wrap://ipfs/QmcZJ1NudpTdF96NEJZiKnDDXhydqanTusw7DXGj7PfbxH",
           },
           {

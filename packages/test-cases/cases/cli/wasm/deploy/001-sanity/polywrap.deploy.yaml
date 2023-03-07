@@ -16,7 +16,7 @@ jobs:
         uri: wrap://ens/test2.eth
       - name: ipfs_deploy
         package: ipfs
-        uri: wrap://fs/./build
+        uri: wrap://fs/../wrapper
       - name: from_deploy
         package: ens
         uri: $$ipfs_deploy
