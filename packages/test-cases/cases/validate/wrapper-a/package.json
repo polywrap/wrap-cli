@@ -1,9 +1,0 @@
-{
-  "name": "wrapper-a",
-  "private": true,
-  "version": "0.1.0",
-  "dependencies": {
-    "@polywrap/wasm-as": "0.9.2",
-    "assemblyscript": "0.19.23"
-  }
-}

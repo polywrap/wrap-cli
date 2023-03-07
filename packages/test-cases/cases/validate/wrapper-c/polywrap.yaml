@@ -1,9 +1,0 @@
-format: 0.2.0
-project:
-  name: WrapperC
-  type: wasm/assemblyscript
-source:
-  schema: ./schema.graphql
-  module: ./src/index.ts
-extensions:
-  build: ./polywrap.build.yaml
