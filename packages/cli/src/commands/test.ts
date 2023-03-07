@@ -184,7 +184,12 @@ const _run = async (options: Required<TestCommandOptions>) => {
     }
   }
 
-  if (workflowOutput.some((val) => val.status === Status.FAILED)) {
+  const isFailed = (val: WorkflowOutput) =>
+    val.status === Status.FAILED &&
+    (val.validation.status === Status.SKIPPED ||
+      val.validation.status === Status.FAILED);
+
+  if (workflowOutput.some(isFailed)) {
     process.exit(1);
   }
 };

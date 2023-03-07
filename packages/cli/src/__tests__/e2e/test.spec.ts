@@ -328,4 +328,18 @@ describe("e2e tests for test command", () => {
     expect(output[0].status).toBe("FAILED");
     expect(output[0].validation.status).toBe("SUCCEED");
   })
+
+  it("Should close with exit code 1 if any test fails", async () => {
+    const testCaseDir = getTestCaseDir(12);
+    const { exitCode, stdout } = await Commands.test(undefined, {
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(exitCode).toEqual(1);
+
+    const output = parseOutput(stdout);
+    expect(output.find(v => v.id === "bad.0")?.status).toBe("FAILED");
+    expect(output.find(v => v.id === "good.0")?.status).toBe("SUCCEED");
+  })
 });
