@@ -293,7 +293,7 @@ export class WrapperCacheResolver<TError>
    * */
   static from<TResolverError = unknown>(
     resolver: UriResolverLike,
-    cache: IWrapperCache,
+    cache: IWrapperCache
   ): WrapperCacheResolver<TResolverError> 
 ```
 

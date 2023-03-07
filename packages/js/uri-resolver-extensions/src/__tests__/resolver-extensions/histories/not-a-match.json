@@ -4,19 +4,19 @@
     "wrap://test/not-a-match => StaticResolver - Miss",
     "wrap://test/not-a-match => ExtendableUriResolver",
     [
-      "wrap://file//home/nerfzael/dev/web3api/repos/monorepo/packages/test-cases/cases/wrappers/resolver/02-fs/implementations/rs => UriResolverAggregator => package (wrap://file//home/nerfzael/dev/web3api/repos/monorepo/packages/test-cases/cases/wrappers/resolver/02-fs/implementations/rs)",
+      "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
       [
-        "wrap://file//home/nerfzael/dev/web3api/repos/monorepo/packages/test-cases/cases/wrappers/resolver/02-fs/implementations/rs => StaticResolver - Miss",
-        "wrap://file//home/nerfzael/dev/web3api/repos/monorepo/packages/test-cases/cases/wrappers/resolver/02-fs/implementations/rs => ExtendableUriResolver => package (wrap://file//home/nerfzael/dev/web3api/repos/monorepo/packages/test-cases/cases/wrappers/resolver/02-fs/implementations/rs)",
+        "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => StaticResolver - Miss",
+        "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
         [
           "wrap://package/fs-resolver => UriResolverAggregator => package (wrap://package/fs-resolver)",
           [
             "wrap://package/fs-resolver => StaticResolver - Package (wrap://package/fs-resolver) => package (wrap://package/fs-resolver)"
           ],
-          "wrap://file//home/nerfzael/dev/web3api/repos/monorepo/packages/test-cases/cases/wrappers/resolver/02-fs/implementations/rs => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file//home/nerfzael/dev/web3api/repos/monorepo/packages/test-cases/cases/wrappers/resolver/02-fs/implementations/rs)"
+          "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)"
         ]
       ],
-      "wrap://test/not-a-match => ResolverExtension (wrap://file//home/nerfzael/dev/web3api/repos/monorepo/packages/test-cases/cases/wrappers/resolver/02-fs/implementations/rs)",
+      "wrap://test/not-a-match => ResolverExtension (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
       "wrap://package/fs-resolver => UriResolverAggregator => package (wrap://package/fs-resolver)",
       [
         "wrap://package/fs-resolver => StaticResolver - Package (wrap://package/fs-resolver) => package (wrap://package/fs-resolver)"

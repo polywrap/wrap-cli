@@ -1,4 +1,5 @@
 import { buildCleanUriHistory, IUriResolutionStep } from "@polywrap/core-js";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
 
 export const expectHistory = async (
@@ -16,7 +17,16 @@ export const expectHistory = async (
   );
   const expectedCleanHistory = JSON.stringify(JSON.parse(expectedCleanHistoryStr), null, 2);
 
-  const receivedCleanHistory = JSON.stringify(buildCleanUriHistory(receivedHistory), null, 2);
+
+  const receivedCleanHistory = replaceAll(
+    JSON.stringify(buildCleanUriHistory(receivedHistory), null, 2),
+    `${GetPathToTestWrappers()}`,
+    "$root-wrapper-dir"
+  );
 
   expect(receivedCleanHistory).toEqual(expectedCleanHistory);
 };
+
+function replaceAll(str: string, strToReplace: string, replaceStr: string) {
+  return str.replace(new RegExp(strToReplace, "g"), replaceStr);
+}

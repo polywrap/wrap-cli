@@ -1,7 +1,4 @@
-import {
-  Uri,
-  UriResolutionContext,
-} from "@polywrap/core-js";
+import { Uri, UriResolutionContext, buildCleanUriHistory } from "@polywrap/core-js";
 import { expectHistory } from "../helpers/expectHistory";
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
 import { RecursiveResolver, StaticResolver } from "@polywrap/uri-resolvers-js";
@@ -9,6 +6,7 @@ import { ExtendableUriResolver } from "../../ExtendableUriResolver";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
+import { PluginPackage } from "@polywrap/plugin-js";
 
 jest.setTimeout(20000);
 
@@ -47,32 +45,37 @@ describe("Resolver extensions", () => {
           interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
           implementations: [
             fsRedirectResolverWrapperUri,
-            Uri.from(defaultPackages.fileSystemResolver)
-          ]
-        }
+            Uri.from(defaultPackages.fileSystemResolver),
+          ],
+        },
       ],
       resolver: RecursiveResolver.from([
         StaticResolver.from([
           {
             uri: Uri.from(defaultInterfaces.fileSystem),
-            package: fileSystemPlugin({}),
+            package: (fileSystemPlugin(
+              {}
+            ) as unknown) as PluginPackage<unknown>,
           },
           {
             uri: Uri.from(defaultPackages.fileSystemResolver),
             package: fileSystemResolverPlugin({}),
           },
         ]),
-        new ExtendableUriResolver()
-      ])
+        new ExtendableUriResolver(),
+      ]),
     });
 
     let resolutionContext = new UriResolutionContext();
-    let result = await client.tryResolveUri({ uri: sourceUri, resolutionContext });
+    let result = await client.tryResolveUri({
+      uri: sourceUri,
+      resolutionContext,
+    });
 
     await expectHistory(
       resolutionContext.getHistory(),
       "resolver-extensions",
-      "can-resolve-extension",
+      "can-resolve-extension"
     );
 
     if (!result.ok) {
@@ -95,23 +98,25 @@ describe("Resolver extensions", () => {
           interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
           implementations: [
             fsRedirectResolverWrapperUri,
-            Uri.from(defaultPackages.fileSystemResolver)
-          ]
-        }
+            Uri.from(defaultPackages.fileSystemResolver),
+          ],
+        },
       ],
       resolver: RecursiveResolver.from([
         StaticResolver.from([
           {
             uri: Uri.from(defaultInterfaces.fileSystem),
-            package: fileSystemPlugin({}),
+            package: (fileSystemPlugin(
+              {}
+            ) as unknown) as PluginPackage<unknown>,
           },
           {
             uri: Uri.from(defaultPackages.fileSystemResolver),
             package: fileSystemResolverPlugin({}),
           },
         ]),
-        new ExtendableUriResolver()
-      ])
+        new ExtendableUriResolver(),
+      ]),
     });
 
     const resolutionContext = new UriResolutionContext();
@@ -120,7 +125,7 @@ describe("Resolver extensions", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "resolver-extensions",
-      "not-a-match",
+      "not-a-match"
     );
 
     if (!result.ok) {
@@ -141,24 +146,22 @@ describe("Resolver extensions", () => {
       interfaces: [
         {
           interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
-          implementations: [
-            undefinedResolverUri
-          ]
-        }
+          implementations: [undefinedResolverUri],
+        },
       ],
-      resolver: RecursiveResolver.from([
-        new ExtendableUriResolver()
-      ])
+      resolver: RecursiveResolver.from([new ExtendableUriResolver()]),
     });
 
-
     const resolutionContext = new UriResolutionContext();
-    const result = await client.tryResolveUri({ uri: Uri.from("test/not-a-match"), resolutionContext });
+    const result = await client.tryResolveUri({
+      uri: Uri.from("test/not-a-match"),
+      resolutionContext,
+    });
 
     await expectHistory(
       resolutionContext.getHistory(),
       "resolver-extensions",
-      "not-found-extension",
+      "not-found-extension"
     );
 
     if (result.ok) {
