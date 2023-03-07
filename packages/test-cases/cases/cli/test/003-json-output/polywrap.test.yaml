@@ -1,5 +1,5 @@
 name: run-test-wrapper
-format: 0.1.0
+format: 0.2.0
 jobs:
   cases:
     steps:

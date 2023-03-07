@@ -43,7 +43,6 @@ export type AnyAppManifest =
   | AppManifest_0_3_0
 
 
-
 export type AppManifest = AppManifest_0_3_0;
 
 export const latestAppManifestFormat = AppManifestFormats["v0.3.0"]

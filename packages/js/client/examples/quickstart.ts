@@ -13,7 +13,7 @@ export function configure(): PolywrapClient {
   // $start: quickstart-configure
   const config = new ClientConfigBuilder().addDefaults().build();
 
-  const client = new PolywrapClient(config, { noDefaults: true });
+  const client = new PolywrapClient(config);
   // $end
 
   return client;

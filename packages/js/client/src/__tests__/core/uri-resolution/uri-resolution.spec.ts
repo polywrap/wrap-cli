@@ -1,4 +1,3 @@
-import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
   Uri,
@@ -14,22 +13,25 @@ import {
 } from "@polywrap/uri-resolvers-js";
 import fs from "fs";
 import { Result } from "@polywrap/result";
-import { mockPluginRegistration } from "../../helpers/mockPluginRegistration";
-import { PolywrapClient, ExtendableUriResolver } from "../../../";
+import { mockPluginRegistration } from "../../helpers";
+import {
+  PolywrapClient,
+  ExtendableUriResolver,
+  ClientConfigBuilder,
+} from "../../../";
 
-jest.setTimeout(300000);
+jest.setTimeout(200000);
+const wrapperPath = `${GetPathToTestWrappers()}/subinvoke/00-subinvoke/implementations/as`;
+const wrapperUri = new Uri(`wrap://file/${wrapperPath}`);
 
-const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
-const wrapperUri = new Uri(`wrap://file/${wrapperPath}/build`);
-
-const simpleFsResolverWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-fs-resolver`;
-const simpleFsResolverWrapperUri = new Uri(
-  `wrap://file/${simpleFsResolverWrapperPath}/build`
+const simpleRedirectResolverWrapperPath = `${GetPathToTestWrappers()}/resolver/01-redirect/implementations/as`;
+const simpleRedirectResolverWrapperUri = new Uri(
+  `wrap://file/${simpleRedirectResolverWrapperPath}`
 );
 
-const simpleRedirectResolverWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-redirect-resolver`;
-const simpleRedirectResolverWrapperUri = new Uri(
-  `wrap://file/${simpleRedirectResolverWrapperPath}/build`
+const fsRedirectResolverWrapperPath = `${GetPathToTestWrappers()}/resolver/02-fs/implementations/rs`;
+const fsRedirectResolverWrapperUri = new Uri(
+  `wrap://file/${fsRedirectResolverWrapperPath}`
 );
 
 const expectResultWithHistory = async (
@@ -60,7 +62,7 @@ const expectHistory = async (
 
   const receivedCleanHistory = replaceAll(
     JSON.stringify(buildCleanUriHistory(receivedHistory), null, 2),
-    `${GetPathToTestWrappers()}/wasm-as`,
+    `${GetPathToTestWrappers()}`,
     "$root-wrapper-dir"
   );
 
@@ -105,14 +107,6 @@ function replaceAll(str: string, strToReplace: string, replaceStr: string) {
 }
 
 describe("URI resolution", () => {
-  beforeAll(async () => {
-    await Promise.all([
-      buildWrapper(wrapperPath),
-      buildWrapper(simpleFsResolverWrapperPath),
-      buildWrapper(simpleRedirectResolverWrapperPath)
-    ]);
-  });
-
   it("sanity", async () => {
     const uri = new Uri("ens/uri.eth");
 
@@ -134,18 +128,15 @@ describe("URI resolution", () => {
     const toUri1 = new Uri("ens/to1.eth");
     const toUri2 = new Uri("ens/to2.eth");
 
-    const client = new PolywrapClient({
-      redirects: [
-        {
-          from: fromUri.uri,
-          to: toUri1.uri,
-        },
-        {
-          from: toUri1.uri,
-          to: toUri2.uri,
-        },
-      ],
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addRedirects({
+        [fromUri.uri]: toUri1.uri,
+        [toUri1.uri]: toUri2.uri,
+      })
+      .build();
+
+    const client = new PolywrapClient(config);
 
     const resolutionContext = new UriResolutionContext();
     const response = await client.tryResolveUri({
@@ -169,11 +160,11 @@ describe("URI resolution", () => {
 
   it("can resolve plugin", async () => {
     const pluginUri = new Uri("ens/plugin.eth");
-    const client = new PolywrapClient(
-      {
-        resolvers: [UriResolver.from(mockPluginRegistration(pluginUri))],
-      },
-    );
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addResolver(UriResolver.from(mockPluginRegistration(pluginUri)))
+      .build();
+    const client = new PolywrapClient(config);
 
     const resolutionContext = new UriResolutionContext();
     const result = await client.tryResolveUri({
@@ -194,16 +185,17 @@ describe("URI resolution", () => {
   });
 
   it("can resolve a URI resolver extension wrapper", async () => {
-    const client = new PolywrapClient({
-      interfaces: [
-        {
-          interface: ExtendableUriResolver.extInterfaceUri,
-          implementations: [simpleFsResolverWrapperUri],
-        },
-      ],
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addInterfaceImplementation(
+        ExtendableUriResolver.defaultExtInterfaceUris[0].uri,
+        fsRedirectResolverWrapperUri.uri
+      )
+      .build();
 
-    const sourceUri = new Uri(`simple/${wrapperPath}/build`);
+    const client = new PolywrapClient(config);
+
+    const sourceUri = new Uri(`custom-fs/${wrapperPath}`);
     const redirectedUri = wrapperUri;
 
     const resolutionContext = new UriResolutionContext();
@@ -261,20 +253,17 @@ describe("URI resolution", () => {
   });
 
   it("can resolve previously cached URI after redirecting by a URI resolver extension", async () => {
-    const client = new PolywrapClient({
-      interfaces: [
-        {
-          interface: ExtendableUriResolver.extInterfaceUri,
-          implementations: [
-            simpleFsResolverWrapperUri,
-            simpleRedirectResolverWrapperUri,
-          ],
-        },
-      ],
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addInterfaceImplementations(ExtendableUriResolver.defaultExtInterfaceUris[0].uri, [
+        fsRedirectResolverWrapperUri.uri,
+        simpleRedirectResolverWrapperUri.uri,
+      ])
+      .build();
+    const client = new PolywrapClient(config);
 
-    const sourceUri = new Uri(`simple-redirect/${wrapperPath}/build`);
-    const redirectedUri = new Uri(`simple/${wrapperPath}/build`);
+    const sourceUri = new Uri(`custom-authority/${wrapperPath}`);
+    const redirectedUri = new Uri(`custom-fs/${wrapperPath}`);
     const finalUri = wrapperUri;
 
     const resolutionContext1 = new UriResolutionContext();
@@ -312,26 +301,20 @@ describe("URI resolution", () => {
 
   it("restarts URI resolution after URI resolver extension redirect", async () => {
     // Testing that the URI resolution process restarts after a URI resolver extension redirect
-    const sourceUri = new Uri(`simple-redirect/${wrapperPath}/build`);
-    const resolverRedirectUri = new Uri(`simple/${wrapperPath}/build`);
+    const sourceUri = new Uri(`custom-authority/${wrapperPath}`);
+    const resolverRedirectUri = new Uri(`custom-fs/${wrapperPath}`);
     const finalRedirectedUri = new Uri(`ens/redirect.eth`);
-    const client = new PolywrapClient({
-      redirects: [
-        {
-          from: resolverRedirectUri,
-          to: finalRedirectedUri,
-        },
-      ],
-      interfaces: [
-        {
-          interface: ExtendableUriResolver.extInterfaceUri,
-          implementations: [
-            simpleFsResolverWrapperUri,
-            simpleRedirectResolverWrapperUri,
-          ],
-        },
-      ],
-    });
+
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addRedirect(resolverRedirectUri.uri, finalRedirectedUri.uri)
+      .addInterfaceImplementations(ExtendableUriResolver.defaultExtInterfaceUris[0].uri, [
+        fsRedirectResolverWrapperUri.uri,
+        simpleRedirectResolverWrapperUri.uri,
+      ])
+      .build();
+
+    const client = new PolywrapClient(config);
 
     const resolutionContext = new UriResolutionContext();
     const result = await client.tryResolveUri({
@@ -355,19 +338,20 @@ describe("URI resolution", () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const client = new PolywrapClient({
-      resolvers: [
-        {
-          tryResolveUri: async (uri: Uri) => {
-            if (uri.uri === ensUri.uri) {
-              return UriResolutionResult.ok(redirectUri);
-            }
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addResolver({
+        tryResolveUri: async (uri: Uri) => {
+          if (uri.uri === ensUri.uri) {
+            return UriResolutionResult.ok(redirectUri);
+          }
 
-            return UriResolutionResult.ok(uri);
-          },
+          return UriResolutionResult.ok(uri);
         },
-      ],
-    });
+      })
+      .build();
+
+    const client = new PolywrapClient(config);
 
     const result = await client.tryResolveUri({ uri: ensUri });
 
@@ -378,19 +362,20 @@ describe("URI resolution", () => {
     const fromUri = new Uri(`ens/from.eth`);
     const redirectUri = new Uri(`ens/to.eth`);
 
-    const client = new PolywrapClient({
-      resolvers: [
-        {
-          tryResolveUri: async (uri: Uri) => {
-            if (uri.uri === fromUri.uri) {
-              return UriResolutionResult.ok(redirectUri);
-            }
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addResolver({
+        tryResolveUri: async (uri: Uri) => {
+          if (uri.uri === fromUri.uri) {
+            return UriResolutionResult.ok(redirectUri);
+          }
 
-            return UriResolutionResult.ok(uri);
-          },
+          return UriResolutionResult.ok(uri);
         },
-      ],
-    });
+      })
+      .build();
+
+    const client = new PolywrapClient(config);
 
     const result = await client.tryResolveUri({
       uri: fromUri,
@@ -400,14 +385,15 @@ describe("URI resolution", () => {
   });
 
   it("custom wrapper resolver does not cause infinite recursion when resolved at runtime", async () => {
-    const client = new PolywrapClient({
-      interfaces: [
-        {
-          interface: ExtendableUriResolver.extInterfaceUri.uri,
-          implementations: ["ens/undefined-resolver.eth"],
-        },
-      ],
-    });
+    const config = new ClientConfigBuilder()
+      .addDefaults()
+      .addInterfaceImplementation(
+        ExtendableUriResolver.defaultExtInterfaceUris[0].uri,
+        "ens/undefined-resolver.eth"
+      )
+      .build();
+
+    const client = new PolywrapClient(config);
 
     const resolutionContext = new UriResolutionContext();
     const result = await client.tryResolveUri({

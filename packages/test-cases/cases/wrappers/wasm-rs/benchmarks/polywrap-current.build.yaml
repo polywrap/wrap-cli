@@ -1,8 +1,0 @@
-format: 0.2.0
-strategies:
-  image:
-    name: benchmark-type-wasm-rs
-  dockerfile: ./Dockerfile
-linked_packages:
-  - name: polywrap-wasm-rs
-    path: ../../../../../wasm/rs

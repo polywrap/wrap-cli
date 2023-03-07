@@ -1,8 +1,8 @@
 #![allow(unused_imports)]
 #![allow(non_camel_case_types)]
 
-/// NOTE: This is an auto-generated file.
-///       All modifications will be overwritten.
+// NOTE: This is an auto-generated file.
+//       All modifications will be overwritten.
 use serde::{Serialize, Deserialize};
 use num_bigint::BigInt;
 use bigdecimal::BigDecimal as BigNumber;
@@ -10,10 +10,10 @@ use serde_json as JSON;
 use std::collections::BTreeMap as Map;
 use std::sync::Arc;
 use polywrap_msgpack::{decode, serialize};
-use polywrap_core::{invoke::{Invoker, InvokeArgs}, uri::Uri};
+use polywrap_core::{invoke::{Invoker}, uri::Uri};
 use polywrap_plugin::error::PluginError;
 
-/// Env START ///
+// Env START //
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Env {
@@ -21,9 +21,9 @@ pub struct Env {
     pub opt_prop: Option<String>,
     pub opt_map: Option<Map<String, Option<i32>>>,
 }
-/// Env END ///
+// Env END //
 
-/// Objects START ///
+// Objects START //
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CustomType {
@@ -86,9 +86,9 @@ pub struct Else {
     #[serde(rename = "else")]
     pub _else: String,
 }
-/// Objects END ///
+// Objects END //
 
-/// Enums START ///
+// Enums START //
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum CustomEnum {
@@ -102,9 +102,9 @@ pub enum While {
     _in,
     _MAX_
 }
-/// Enums END ///
+// Enums END //
 
-/// Imported objects START ///
+// Imported objects START //
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportObject {
@@ -121,13 +121,13 @@ pub struct TestImportObject {
 pub struct TestImportAnotherObject {
     pub prop: String,
 }
-/// Imported objects END ///
+// Imported objects END //
 
-/// Imported envs START ///
+// Imported envs START //
 
-/// Imported envs END ///
+// Imported envs END //
 
-/// Imported enums START ///
+// Imported enums START //
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum TestImportEnum {
@@ -141,11 +141,11 @@ pub enum TestImportEnumReturn {
     BYTES,
     _MAX_
 }
-/// Imported enums END ///
+// Imported enums END //
 
-/// Imported Modules START ///
+// Imported Modules START //
 
-/// URI: "testimport.uri.eth" ///
+// URI: "testimport.uri.eth" //
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportModuleArgsImportedMethod {
     pub str: String,
@@ -163,13 +163,13 @@ pub struct TestImportModuleArgsImportedMethod {
     pub opt_enum_array: Option<Vec<Option<TestImportEnum>>>,
 }
 
-/// URI: "testimport.uri.eth" ///
+// URI: "testimport.uri.eth" //
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportModuleArgsAnotherMethod {
     pub arg: Vec<String>,
 }
 
-/// URI: "testimport.uri.eth" ///
+// URI: "testimport.uri.eth" //
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportModuleArgsReturnsArrayOfEnums {
     pub arg: String,
@@ -189,8 +189,8 @@ impl<'a> TestImportModule<'a> {
 
     pub async fn imported_method(&self, args: &TestImportModuleArgsImportedMethod) -> Result<Option<TestImportObject>, PluginError> {
         let uri = self.uri;
-        let serialized_args = InvokeArgs::UIntArray(serialize(args.clone()).unwrap());
-        let result = invoker.invoke(
+        let serialized_args = serialize(args.clone()).unwrap();
+        let result = invoker.invoke_raw(
             uri,
             "importedMethod",
             serialized_args,
@@ -209,8 +209,8 @@ impl<'a> TestImportModule<'a> {
 
     pub async fn another_method(&self, args: &TestImportModuleArgsAnotherMethod) -> Result<i32, PluginError> {
         let uri = self.uri;
-        let serialized_args = InvokeArgs::UIntArray(serialize(args.clone()).unwrap());
-        let result = invoker.invoke(
+        let serialized_args = serialize(args.clone()).unwrap();
+        let result = invoker.invoke_raw(
             uri,
             "anotherMethod",
             serialized_args,
@@ -229,8 +229,8 @@ impl<'a> TestImportModule<'a> {
 
     pub async fn returns_array_of_enums(&self, args: &TestImportModuleArgsReturnsArrayOfEnums) -> Result<Vec<Option<TestImportEnumReturn>>, PluginError> {
         let uri = self.uri;
-        let serialized_args = InvokeArgs::UIntArray(serialize(args.clone()).unwrap());
-        let result = invoker.invoke(
+        let serialized_args = serialize(args.clone()).unwrap();
+        let result = invoker.invoke_raw(
             uri,
             "returnsArrayOfEnums",
             serialized_args,
@@ -247,4 +247,4 @@ impl<'a> TestImportModule<'a> {
         Ok(decode(result.as_slice())?)
     }
 }
-/// Imported Modules END ///
+// Imported Modules END //

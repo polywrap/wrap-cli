@@ -4,7 +4,7 @@ import { ClientConfigBuilder } from "../build";
 import { WasmWrapper } from "@polywrap/wasm-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { RecursiveResolver, WrapperCache } from "@polywrap/uri-resolvers-js";
-import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
+import { fileSystemPlugin } from "@polywrap/file-system-plugin-js";
 import { CoreClientConfig } from "@polywrap/core-js";
 
 export function initialize(): ClientConfigBuilder {

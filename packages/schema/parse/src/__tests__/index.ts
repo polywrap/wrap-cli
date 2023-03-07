@@ -1,13 +1,12 @@
 import { WrapAbi } from "../abi";
+import {
+  readFileIfExists,
+  readNamedExportIfExists
+} from "./utils";
 
 import path from "path";
 import { readdirSync, Dirent } from "fs";
-
-import {
-  GetPathToParseTestFiles,
-  readFileIfExists,
-  readNamedExportIfExists
-} from "@polywrap/test-cases"
+import { GetPathToParseTestFiles } from "@polywrap/test-cases"
 
 const root = GetPathToParseTestFiles();
 
@@ -69,10 +68,10 @@ async function importCase(
   name: string,
 ): Promise<TestCase | undefined> {
   // Fetch the input schema
-  const input = readFileIfExists("input.graphql", directory);
+  const input = readFileIfExists(path.join(directory, "input.graphql"));
 
   // Fetch the output Abi
-  const output = await readNamedExportIfExists<WrapAbi>("abi", "output.ts", directory);
+  const output = await readNamedExportIfExists<WrapAbi>("abi", path.join(directory, "output.ts"));
 
   if (!input) {
     console.error(`Missing input file "input.graphql" for test case "${name}" at ${directory}`);

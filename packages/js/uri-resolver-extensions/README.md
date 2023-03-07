@@ -66,16 +66,17 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
 
 #### extInterfaceUri (static)
 ```ts
-  /** The default interface uri to which implementations should be registered */
-  public static extInterfaceUri: Uri = new Uri(
-    "wrap://ens/uri-resolver.core.polywrap.eth"
-  );
+  /** The supported interface URIs to which resolver-ext implementations should be registered */
+  public static defaultExtInterfaceUris: Uri[] = [
+    Uri.from("wrap://ens/wraps.eth:uri-resolver-ext@1.1.0"),
+    Uri.from("wrap://ens/wraps.eth:uri-resolver-ext@1.0.0"),
+  ];
 ```
 
 #### extInterfaceUri
 ```ts
-  /** The active interface uri to which implementations should be registered */
-  public readonly extInterfaceUri: Uri;
+  /** The active interface URIs to which implementations should be registered */
+  public readonly extInterfaceUris: Uri[];
 ```
 
 ### constructor
@@ -83,11 +84,11 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
   /**
    * Create an ExtendableUriResolver
    *
-   * @param extInterfaceUri - URI Resolver Interface URI
+   * @param extInterfaceUris - URI Resolver Interface URIs
    * @param resolverName - Name to use in resolution history output
    * */
   constructor(
-    extInterfaceUri: Uri = ExtendableUriResolver.extInterfaceUri,
+    extInterfaceUris: Uri[] = ExtendableUriResolver.defaultExtInterfaceUris,
     resolverName = "ExtendableUriResolver"
   ) 
 ```

@@ -3,6 +3,12 @@ import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
 import { writeFileSync } from "@polywrap/os-js";
+import fse from "fs-extra";
+
+export const globalCacheRoot: string =
+  process.platform == "darwin"
+    ? process.env.HOME + "/Library/Preferences/polywrap/cache"
+    : process.env.HOME + "/.local/share/polywrap/cache";
 
 export interface CacheDirectoryConfig {
   rootDir: string;
@@ -21,6 +27,14 @@ export class CacheDirectory {
       this._cacheDirName,
       this._config.subDir
     );
+  }
+
+  public initCache(): this {
+    const cacheDir = this.getCacheDir();
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+    return this;
   }
 
   public resetCache(): void {
@@ -48,7 +62,7 @@ export class CacheDirectory {
 
   public writeCacheFile(
     subPath: string,
-    data: unknown,
+    data: string | NodeJS.ArrayBufferView,
     options?: fs.WriteFileOptions
   ): void {
     const filePath = this.getCachePath(subPath);
@@ -60,6 +74,22 @@ export class CacheDirectory {
     }
 
     writeFileSync(filePath, data, options);
+  }
+
+  public appendToCacheFile(
+    subPath: string,
+    data: string | Buffer,
+    options?: fs.WriteFileOptions
+  ): void {
+    const filePath = this.getCachePath(subPath);
+    const folderPath = path.dirname(filePath);
+
+    // Create folders if they don't exist
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
+
+    fs.appendFileSync(filePath, data, options);
   }
 
   public async copyIntoCache(
@@ -81,6 +111,21 @@ export class CacheDirectory {
           resolve();
         }
       });
+    });
+  }
+
+  public async copyFromCache(
+    sourceSubDir: string,
+    destDir: string
+  ): Promise<void> {
+    const source = this.getCachePath(sourceSubDir);
+
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
+
+    await fse.copy(source, destDir, {
+      overwrite: true,
     });
   }
 }
