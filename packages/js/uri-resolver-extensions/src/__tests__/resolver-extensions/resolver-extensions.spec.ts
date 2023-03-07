@@ -1,10 +1,10 @@
-import { Uri, UriResolutionContext, buildCleanUriHistory } from "@polywrap/core-js";
+import { Uri, UriResolutionContext } from "@polywrap/core-js";
 import { expectHistory } from "../helpers/expectHistory";
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
 import { RecursiveResolver, StaticResolver } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "../../ExtendableUriResolver";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
+import { fileSystemPlugin } from "@polywrap/file-system-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { PluginPackage } from "@polywrap/plugin-js";
 

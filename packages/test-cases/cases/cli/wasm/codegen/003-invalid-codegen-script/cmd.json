@@ -1,3 +1,3 @@
 {
-  "args": ["--script", "polywrap-norun.gen.js"]
+  "script": "polywrap-norun.gen.js"
 }

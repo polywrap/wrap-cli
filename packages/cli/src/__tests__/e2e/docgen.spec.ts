@@ -1,12 +1,13 @@
 import { clearStyle, polywrapCli } from "./utils";
 
-import { runCLI } from "@polywrap/test-env-js";
+import { Commands, runCli } from "@polywrap/cli-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
 import os from "os";
 import rimraf from "rimraf";
 import { compareSync } from "dir-compare";
+import { DocgenCommandOptions } from "../../commands";
 
 const HELP = `Usage: polywrap docgen|o <action> [options]
 
@@ -103,10 +104,12 @@ describe("e2e tests for docgen command", () => {
   };
 
   test("Should show help text", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+    const { exitCode: code, stdout: output, stderr: error } = await runCli({
       args: ["docgen", "--help"],
-      cwd: getTestCaseDir(0),
-      cli: polywrapCli,
+      config: {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+      }
     });
 
     expect(error).toBe("");
@@ -115,11 +118,13 @@ describe("e2e tests for docgen command", () => {
   });
 
   it("Should throw error for unknown option --invalid", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["docgen", "docusaurus", "--invalid"],
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.docgen("docusaurus",{
+      args: ["--invalid"],
+    }, {
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
+
 
     expect(code).toEqual(1);
     expect(error).toBe("error: unknown option '--invalid'\n");
@@ -135,8 +140,9 @@ describe("e2e tests for docgen command", () => {
 
     for (const [option, errorMessage] of Object.entries(missingOptionArgs)) {
       it(`Should throw error if params not specified for ${option} option`, async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["docgen", "docusaurus", option],
+        const { exitCode: code, stdout: output, stderr: error } = await Commands.docgen("docusaurus", {
+          args: [option],
+        }, {
           cwd: getTestCaseDir(0),
           cli: polywrapCli,
         });
@@ -155,8 +161,9 @@ describe("e2e tests for docgen command", () => {
       path.join(os.tmpdir(), `polywrap-cli-tests`)
     );
     const testCaseDir = getTestCaseDir(0);
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.docgen("docusaurus", {
       args: ["docgen", "docusaurus", "--docgen-dir", docgenDir],
+    }, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -171,8 +178,7 @@ describe("e2e tests for docgen command", () => {
   it("Should successfully generate docs", async () => {
     rimraf.sync(`${getTestCaseDir(0)}/docs`);
 
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["docgen", "docusaurus"],
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.docgen("docusaurus", {}, {
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
@@ -192,12 +198,12 @@ describe("e2e tests for docgen command", () => {
       const testCaseDir = getTestCaseDir(i);
 
       let docgenDir = path.join(testCaseDir, "docs");
-      let cmdArgs: string[] = [];
+      let args: Partial<DocgenCommandOptions> & { doc: string } = { doc: "docusaurus" };
       let cmdFile = path.join(testCaseDir, "cmd.json");
       if (fs.existsSync(cmdFile)) {
         const cmdConfig = JSON.parse(fs.readFileSync(cmdFile, "utf-8"));
-        if (cmdConfig.args) {
-          cmdArgs.push(...cmdConfig.args);
+        if (cmdConfig) {
+          args = cmdConfig;
         }
 
         if(cmdConfig.docgenDir) {
@@ -205,9 +211,11 @@ describe("e2e tests for docgen command", () => {
         }
       }
 
+      const docType = args.doc as "docusaurus" | "jsdoc" | "schema";
+      // @ts-ignore
+      delete args.doc;
       test(testCaseName, async () => {
-        let { exitCode, stdout, stderr } = await runCLI({
-          args: ["docgen", ...cmdArgs],
+        let { exitCode, stdout, stderr } = await Commands.docgen(docType, args, {
           cwd: testCaseDir,
           cli: polywrapCli,
         });

@@ -23,7 +23,7 @@ class MockPlugin extends PluginModule<Config> {
 
 const mockPlugin = () => {
   return PluginPackage.from(
-    new MockPlugin({ val: 0 }) as PluginModule<Config>,
+    new MockPlugin({ val: 0 }),
     {
       name: "mock",
       type: "plugin",

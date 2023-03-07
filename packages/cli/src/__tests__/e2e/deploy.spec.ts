@@ -1,12 +1,6 @@
 import { clearStyle, polywrapCli } from "./utils";
 
-import { 
-  initTestEnvironment,
-  runCLI,
-  stopTestEnvironment,
-  ensAddresses,
-  providers
-} from "@polywrap/test-env-js";
+import { Commands, ETH_ENS_IPFS_MODULE_CONSTANTS } from "@polywrap/cli-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
@@ -37,20 +31,23 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/deploy");
     path.join(testCaseRoot, testCases[index]);
 
 const setup = async () => {
-  await stopTestEnvironment();
-  await initTestEnvironment();
-
+  await Commands.infra("down", {
+    modules: ["eth-ens-ipfs"],
+  })
+  await Commands.infra("up", {
+    modules: ["eth-ens-ipfs"],
+  })
   // Wait a little longer just in case
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
   // Setup environment variables
   process.env = {
     ...process.env,
-    IPFS_GATEWAY_URI: providers.ipfs,
+    IPFS_GATEWAY_URI: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,
     DOMAIN_NAME: "test1.eth",
-    ENS_REG_ADDR: ensAddresses.ensAddress,
-    ENS_REGISTRAR_ADDR: ensAddresses.registrarAddress,
-    ENS_RESOLVER_ADDR: ensAddresses.resolverAddress,
+    ENS_REG_ADDR: ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress,
+    ENS_REGISTRAR_ADDR: ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.registrarAddress,
+    ENS_RESOLVER_ADDR: ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.resolverAddress,
   };
 }
 
@@ -59,32 +56,17 @@ jest.setTimeout(500000);
 describe("e2e tests for deploy command", () => {
   beforeAll(async () => {
     await setup()
-
-    const builds = [];
-
-    for (let i = 0; i < testCases.length; ++i) {
-      builds.push(
-        await runCLI(
-          {
-            args: ["build", "-v"],
-            cwd: getTestCaseDir(i),
-            cli: polywrapCli,
-          },
-        )
-      );
-    }
-
-    await Promise.all(builds);
   });
 
   afterAll(async () => {
-    await stopTestEnvironment();
+    await Commands.infra("down", {
+      modules: ["eth-ens-ipfs"],
+    })
   });
 
   it("Should show help text", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["deploy", "--help"],
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.deploy(
+      { help: true }, {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       },
@@ -96,14 +78,11 @@ describe("e2e tests for deploy command", () => {
   });
 
   it("Should deploy the project successfully", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
-      {
-        args: ["deploy"],
-        cwd: getTestCaseDir(0),
-        cli: polywrapCli,
-        env: process.env as Record<string, string>
-      },
-    );
+    const { exitCode: code, stdout: output } = await Commands.deploy({}, {
+      cwd: getTestCaseDir(0),
+      cli: polywrapCli,
+      env: process.env as Record<string, string>
+    });
 
     const sanitizedOutput = clearStyle(output);
 
@@ -134,14 +113,11 @@ describe("e2e tests for deploy command", () => {
       fs.unlinkSync(deploymentFilePath);
     }
 
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["deploy"],
-        cwd: getTestCaseDir(0),
-        cli: polywrapCli,
-        env: process.env as Record<string, string>
-      },
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.deploy({}, {
+      cwd: getTestCaseDir(0),
+      cli: polywrapCli,
+      env: process.env as Record<string, string>
+    });
 
     expect(error).toBeFalsy();
     expect(code).toEqual(0);
@@ -166,14 +142,11 @@ describe("e2e tests for deploy command", () => {
       entries = fs.readFileSync(deployLogFilePath, "utf8").trim().split("\n").length;
     }
 
-    const { exitCode: code, stderr: error } = await runCLI(
-      {
-        args: ["deploy"],
-        cwd: getTestCaseDir(0),
-        cli: polywrapCli,
-        env: process.env as Record<string, string>
-      },
-    );
+    const { exitCode: code, stderr: error } = await Commands.deploy({}, {
+      cwd: getTestCaseDir(0),
+      cli: polywrapCli,
+      env: process.env as Record<string, string>
+    });
 
     expect(error).toBeFalsy();
     expect(code).toEqual(0);
@@ -187,24 +160,22 @@ describe("e2e tests for deploy command", () => {
   });
 
   it("Should output the results to a file if -o is passed", async () => {
-    await runCLI(
-      {
-        args: ["deploy", "-o", "./output.yaml"],
-        cwd: getTestCaseDir(0),
-        cli: polywrapCli,
-        env: process.env as Record<string, string>
-      },
-    );
+    await Commands.deploy({
+      outputFile: "./output.yaml",
+    }, {
+      cwd: getTestCaseDir(0),
+      cli: polywrapCli,
+      env: process.env as Record<string, string>
+    });
 
-    await runCLI(
-      {
-        args: ["deploy", "-o", "./output.json"],
-        cwd: getTestCaseDir(0),
-        cli: polywrapCli,
-        env: process.env as Record<string, string>
-      },
-    );
-    
+    await Commands.deploy({
+      outputFile: "./output.json",
+    }, {
+      cwd: getTestCaseDir(0),
+      cli: polywrapCli,
+      env: process.env as Record<string, string>
+    });
+
     const yamlOutputFileContents = JSON.parse(
       JSON.stringify(
         (yaml.parse(
@@ -246,7 +217,7 @@ describe("e2e tests for deploy command", () => {
           {
             "name": "ipfs_deploy",
             "id": "fs_to_ens.ipfs_deploy",
-            "input": "wrap://fs/./build",
+            "input": "wrap://fs/../wrapper",
             "result": "wrap://ipfs/QmcZJ1NudpTdF96NEJZiKnDDXhydqanTusw7DXGj7PfbxH",
           },
           {
@@ -284,14 +255,11 @@ describe("e2e tests for deploy command", () => {
   });
 
   it("Should show warning if no manifest ext is found in deploy package", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
-      {
-        args: ["deploy"],
-        cwd: getTestCaseDir(1),
-        cli: polywrapCli,
-        env: process.env as Record<string, string>
-      },
-    );
+    const { exitCode: code, stdout: output } = await Commands.deploy({}, {
+      cwd: getTestCaseDir(1),
+      cli: polywrapCli,
+      env: process.env as Record<string, string>
+    });
 
     const sanitizedOutput = clearStyle(output);
 
@@ -302,14 +270,11 @@ describe("e2e tests for deploy command", () => {
   });
 
   it("Should throw if manifest ext exists and config property is invalid", async () => {
-    const { exitCode: code, stderr } = await runCLI(
-      {
-        args: ["deploy"],
-        cwd: getTestCaseDir(2),
-        cli: polywrapCli,
-        env: process.env as Record<string, string>
-      },
-    );
+    const { exitCode: code, stderr } = await Commands.deploy({}, {
+      cwd: getTestCaseDir(2),
+      cli: polywrapCli,
+      env: process.env as Record<string, string>
+    });
 
     const sanitizedErr = clearStyle(stderr);
 
@@ -318,14 +283,11 @@ describe("e2e tests for deploy command", () => {
   });
 
   it("Should throw and stop chain if error is found", async () => {
-    const { exitCode: code, stdout: output, stderr } = await runCLI(
-      {
-        args: ["deploy"],
-        cwd: getTestCaseDir(3),
-        cli: polywrapCli,
-        env: process.env as Record<string, string>
-      },
-    );
+    const { exitCode: code, stdout: output, stderr } = await Commands.deploy({}, {
+      cwd: getTestCaseDir(3),
+      cli: polywrapCli,
+      env: process.env as Record<string, string>
+    });
 
     const sanitizedOutput = clearStyle(output);
     const sanitizedErr = clearStyle(stderr);
@@ -344,15 +306,11 @@ describe("e2e tests for deploy command", () => {
   });
 
   it("Should throw if environment variable is not loaded but defined in manifest", async () => {
-    const { exitCode: code, stderr } = await runCLI(
-      {
-        args: ["deploy"],
-        cwd: getTestCaseDir(4),
-        cli: polywrapCli,
-        env: process.env as Record<string, string>
-      },
-    );
-
+    const { exitCode: code, stderr } = await Commands.deploy({}, {
+      cwd: getTestCaseDir(4),
+      cli: polywrapCli,
+      env: process.env as Record<string, string>
+    });
     const sanitizedErr = clearStyle(stderr);
     expect(code).toEqual(1);
     expect(sanitizedErr).toContain("Environment variable not found: `NON_LOADED_VAR`");

@@ -1,9 +1,11 @@
-import { runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
+import { Commands } from "@polywrap/cli-js";
+
 import path from "path";
 import fs from "fs";
 import { testCliOutput } from "./helpers/testCliOutput";
 import { testCodegenOutput } from "./helpers/testCodegenOutput";
+import { CodegenCommandOptions } from "../../commands";
 
 describe("e2e tests for codegen command - plugin project", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin/codegen");
@@ -20,12 +22,12 @@ describe("e2e tests for codegen command - plugin project", () => {
       const testCaseDir = getTestCaseDir(i);
 
       let codegenDir = path.join(testCaseDir, "src", "wrap");
-      let cmdArgs: string[] = [];
+      let args: CodegenCommandOptions;
       let cmdFile = path.join(testCaseDir, "cmd.json");
       if (fs.existsSync(cmdFile)) {
         const cmdConfig = JSON.parse(fs.readFileSync(cmdFile, "utf-8"));
-        if (cmdConfig.args) {
-          cmdArgs.push(...cmdConfig.args);
+        if (cmdConfig) {
+          args = cmdConfig;
         }
 
         if (cmdConfig.codegenDir) {
@@ -34,8 +36,7 @@ describe("e2e tests for codegen command - plugin project", () => {
       }
 
       test(testCaseName, async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["codegen", ...cmdArgs],
+        const { exitCode: code, stdout: output, stderr: error } = await Commands.codegen(args, {
           cwd: testCaseDir,
         });
         testCliOutput(testCaseDir, code, output, error);
