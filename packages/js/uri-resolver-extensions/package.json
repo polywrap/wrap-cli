@@ -29,9 +29,9 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.11"
   },
   "devDependencies": {
-    "@polywrap/test-cases": "0.10.0-pre.10",
-    "@polywrap/core-client-js": "0.10.0-pre.10",
-    "@polywrap/plugin-js": "0.10.0-pre.10",
+    "@polywrap/test-cases": "0.10.0-pre.11",
+    "@polywrap/core-client-js": "0.10.0-pre.11",
+    "@polywrap/plugin-js": "0.10.0-pre.11",
     "@polywrap/file-system-plugin-js": "0.10.0-pre.10",
     "@polywrap/fs-resolver-plugin-js": "0.10.0-pre.10",
     "@types/jest": "26.0.8",
