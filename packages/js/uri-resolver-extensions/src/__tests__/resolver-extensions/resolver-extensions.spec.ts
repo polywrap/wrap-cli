@@ -18,21 +18,10 @@ const fsRedirectResolverWrapperUri = new Uri(
   `wrap://file/${fsRedirectResolverWrapperPath}`
 );
 
-export const defaultPackages = {
-  ensResolver: "wrap://package/ens-resolver",
-  httpResolver: "wrap://package/http-resolver",
-  fileSystemResolver: "wrap://package/fs-resolver",
-  ipfsResolver: "wrap://package/ipfs-resolver",
-};
-
-export const defaultInterfaces = {
-  concurrent: "wrap://ens/wraps.eth:concurrent@1.0.0",
-  logger: "wrap://ens/wraps.eth:logger@1.0.0",
-  http: "wrap://ens/wraps.eth:http@1.1.0",
-  fileSystem: "wrap://ens/wraps.eth:file-system@1.0.0",
-  ipfsHttpClient: "wrap://ens/wraps.eth:ipfs-http-client@1.0.0",
-  ethereumProvider: "wrap://ens/wraps.eth:ethereum-provider@1.0.0",
-};
+const fileSystemResolverUri = Uri.from("wrap://package/fs-resolver");
+const fileSystemInterfaceUri = Uri.from(
+  "wrap://ens/wraps.eth:file-system@1.0.0"
+);
 
 describe("Resolver extensions", () => {
   it("can resolve a resolver extension", async () => {
@@ -45,20 +34,20 @@ describe("Resolver extensions", () => {
           interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
           implementations: [
             fsRedirectResolverWrapperUri,
-            Uri.from(defaultPackages.fileSystemResolver),
+            fileSystemResolverUri,
           ],
         },
       ],
       resolver: RecursiveResolver.from([
         StaticResolver.from([
           {
-            uri: Uri.from(defaultInterfaces.fileSystem),
+            uri: Uri.from(fileSystemInterfaceUri),
             package: (fileSystemPlugin(
               {}
             ) as unknown) as PluginPackage<unknown>,
           },
           {
-            uri: Uri.from(defaultPackages.fileSystemResolver),
+            uri: Uri.from(fileSystemResolverUri),
             package: fileSystemResolverPlugin({}),
           },
         ]),
@@ -98,20 +87,20 @@ describe("Resolver extensions", () => {
           interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
           implementations: [
             fsRedirectResolverWrapperUri,
-            Uri.from(defaultPackages.fileSystemResolver),
+            Uri.from(fileSystemResolverUri),
           ],
         },
       ],
       resolver: RecursiveResolver.from([
         StaticResolver.from([
           {
-            uri: Uri.from(defaultInterfaces.fileSystem),
+            uri: Uri.from(fileSystemInterfaceUri),
             package: (fileSystemPlugin(
               {}
             ) as unknown) as PluginPackage<unknown>,
           },
           {
-            uri: Uri.from(defaultPackages.fileSystemResolver),
+            uri: Uri.from(fileSystemResolverUri),
             package: fileSystemResolverPlugin({}),
           },
         ]),
