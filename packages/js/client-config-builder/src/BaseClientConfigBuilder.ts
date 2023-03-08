@@ -173,6 +173,10 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
 
     existingInterface.delete(implementationUri);
 
+    if (existingInterface.size == 0) {
+      delete this._config.interfaces[interfaceUri];
+    }
+
     return this;
   }
 

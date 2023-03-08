@@ -8,7 +8,6 @@ import {
   IUriRedirect,
   IUriWrapper,
   Uri,
-  InterfaceImplementations,
   WrapperEnv,
   ReadonlyUriMap,
   UriMap,
@@ -78,19 +77,17 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
     return envs;
   }
 
-  private buildInterfaces(): InterfaceImplementations {
-    const interfaces: Record<string, string[]> = {};
+  private buildInterfaces(): ReadonlyUriMap<readonly Uri[]> {
+    const interfaceImplementations = new UriMap<readonly Uri[]>();
 
-    for (const iface in this._config.interfaces) {
-      if (this._config.interfaces[iface].size > 0) {
-        // Sanitize uri
-        const uri = Uri.from(iface).uri;
-
-        interfaces[uri] = [...this._config.interfaces[iface]];
-      }
+    for (const uri in this._config.interfaces) {
+      const uriImpls = [...this._config.interfaces[uri]].map((x) =>
+        Uri.from(x)
+      );
+      interfaceImplementations.set(Uri.from(uri), uriImpls);
     }
 
-    return interfaces;
+    return interfaceImplementations;
   }
 
   private buildRedirects(): IUriRedirect[] {

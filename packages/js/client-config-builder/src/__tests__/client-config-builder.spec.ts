@@ -82,7 +82,7 @@ describe("Client config builder", () => {
     const clientConfig = new ClientConfigBuilder().build();
 
     expect(clientConfig.envs).toStrictEqual(new UriMap<WrapperEnv>());
-    expect(clientConfig.interfaces).toStrictEqual({});
+    expect(clientConfig.interfaces).toStrictEqual(new UriMap<readonly Uri[]>());
   });
 
   it("should succesfully add config object and build", () => {
@@ -105,14 +105,18 @@ describe("Client config builder", () => {
         [Uri.from("wrap://ens/test.plugin.two"), { test: "value" }],
       ])
     );
-    expect(clientConfig.interfaces).toStrictEqual({
-      "wrap://ens/test-interface-1.polywrap.eth": [
-        "wrap://ens/test1.polywrap.eth",
-      ],
-      "wrap://ens/test-interface-2.polywrap.eth": [
-        "wrap://ens/test2.polywrap.eth",
-      ],
-    });
+    expect(clientConfig.interfaces).toStrictEqual(
+      new UriMap([
+        [
+          Uri.from("wrap://ens/test-interface-1.polywrap.eth"),
+          [Uri.from("wrap://ens/test1.polywrap.eth")],
+        ],
+        [
+          Uri.from("wrap://ens/test-interface-2.polywrap.eth"),
+          [Uri.from("wrap://ens/test2.polywrap.eth")],
+        ],
+      ])
+    );
 
     expect(builderConfig).toEqual({
       ...emptyBuilderConfig,
@@ -144,14 +148,18 @@ describe("Client config builder", () => {
         [Uri.from("wrap://ens/test.plugin.two"), { test: "value" }],
       ])
     );
-    expect(clientConfig.interfaces).toStrictEqual({
-      "wrap://ens/test-interface-1.polywrap.eth": [
-        "wrap://ens/test1.polywrap.eth",
-      ],
-      "wrap://ens/test-interface-2.polywrap.eth": [
-        "wrap://ens/test2.polywrap.eth",
-      ],
-    });
+    expect(clientConfig.interfaces).toStrictEqual(
+      new UriMap([
+        [
+          Uri.from("wrap://ens/test-interface-1.polywrap.eth"),
+          [Uri.from("wrap://ens/test1.polywrap.eth")],
+        ],
+        [
+          Uri.from("wrap://ens/test-interface-2.polywrap.eth"),
+          [Uri.from("wrap://ens/test2.polywrap.eth")],
+        ],
+      ])
+    );
 
     expect(clientConfig.resolver).toBeTruthy();
 
@@ -301,13 +309,13 @@ describe("Client config builder", () => {
       .addInterfaceImplementation(interfaceUri, implUri)
       .build();
 
-    if (!config.interfaces || Object.keys(config.interfaces).length !== 1) {
+    if (!config.interfaces || config.interfaces.size !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
-    expect(config.interfaces).toStrictEqual({
-      [interfaceUri]: [implUri],
-    });
+    expect(config.interfaces).toStrictEqual(
+      new UriMap([[Uri.from(interfaceUri), [Uri.from(implUri)]]])
+    );
   });
 
   it("should add an interface implementation for an interface that already exists", () => {
@@ -320,13 +328,15 @@ describe("Client config builder", () => {
       .addInterfaceImplementation(interfaceUri, implUri2)
       .build();
 
-    if (!config.interfaces || Object.keys(config.interfaces).length !== 1) {
+    if (!config.interfaces || config.interfaces.size !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
-    expect(config.interfaces).toStrictEqual({
-      [interfaceUri]: [implUri1, implUri2],
-    });
+    expect(config.interfaces).toStrictEqual(
+      new UriMap([
+        [Uri.from(interfaceUri), [Uri.from(implUri1), Uri.from(implUri2)]],
+      ])
+    );
   });
 
   it("should add different implementations for different interfaces", () => {
@@ -344,14 +354,16 @@ describe("Client config builder", () => {
       .addInterfaceImplementation(interfaceUri2, implUri4)
       .build();
 
-    if (!config.interfaces || Object.keys(config.interfaces).length !== 2) {
+    if (!config.interfaces || config.interfaces.size !== 2) {
       fail(["Expected 2 interfaces, received:", config.interfaces]);
     }
 
-    expect(config.interfaces).toStrictEqual({
-      [interfaceUri1]: [implUri1, implUri3],
-      [interfaceUri2]: [implUri2, implUri4],
-    });
+    expect(config.interfaces).toStrictEqual(
+      new UriMap([
+        [Uri.from(interfaceUri1), [Uri.from(implUri1), Uri.from(implUri3)]],
+        [Uri.from(interfaceUri2), [Uri.from(implUri2), Uri.from(implUri4)]],
+      ])
+    );
   });
 
   it("should add multiple implementations for a non-existent interface", () => {
@@ -363,13 +375,15 @@ describe("Client config builder", () => {
       .addInterfaceImplementations(interfaceUri, [implUri1, implUri2])
       .build();
 
-    if (!config.interfaces || Object.keys(config.interfaces).length !== 1) {
+    if (!config.interfaces || config.interfaces.size !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
-    expect(config.interfaces).toStrictEqual({
-      [interfaceUri]: [implUri1, implUri2],
-    });
+    expect(config.interfaces).toStrictEqual(
+      new UriMap([
+        [Uri.from(interfaceUri), [Uri.from(implUri1), Uri.from(implUri2)]],
+      ])
+    );
   });
 
   it("should add multiple implementations for an existing interface", () => {
@@ -383,13 +397,18 @@ describe("Client config builder", () => {
       .addInterfaceImplementations(interfaceUri, [implUri2, implUri3])
       .build();
 
-    if (!config.interfaces || Object.keys(config.interfaces).length !== 1) {
+    if (!config.interfaces || config.interfaces.size !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
-    expect(config.interfaces).toStrictEqual({
-      [interfaceUri]: [implUri1, implUri2, implUri3],
-    });
+    expect(config.interfaces).toStrictEqual(
+      new UriMap([
+        [
+          Uri.from(interfaceUri),
+          [Uri.from(implUri1), Uri.from(implUri2), Uri.from(implUri3)],
+        ],
+      ])
+    );
   });
 
   it("should add multiple different implementations for different interfaces", () => {
@@ -409,14 +428,22 @@ describe("Client config builder", () => {
       .addInterfaceImplementations(interfaceUri2, [implUri4, implUri6])
       .build();
 
-    if (!config.interfaces || Object.keys(config.interfaces).length !== 2) {
+    if (!config.interfaces || config.interfaces.size !== 2) {
       fail(["Expected 2 interfaces, received:", config.interfaces]);
     }
 
-    expect(config.interfaces).toStrictEqual({
-      [interfaceUri1]: [implUri1, implUri3, implUri5],
-      [interfaceUri2]: [implUri2, implUri4, implUri6],
-    });
+    expect(config.interfaces).toStrictEqual(
+      new UriMap([
+        [
+          Uri.from(interfaceUri1),
+          [Uri.from(implUri1), Uri.from(implUri3), Uri.from(implUri5)],
+        ],
+        [
+          Uri.from(interfaceUri2),
+          [Uri.from(implUri2), Uri.from(implUri4), Uri.from(implUri6)],
+        ],
+      ])
+    );
   });
 
   it("should remove an interface implementation", () => {
@@ -431,14 +458,16 @@ describe("Client config builder", () => {
       .removeInterfaceImplementation(interfaceUri1, implUri2)
       .build();
 
-    if (!config.interfaces || Object.keys(config.interfaces).length !== 2) {
+    if (!config.interfaces || config.interfaces.size !== 2) {
       fail(["Expected 2 interfaces, received:", config.interfaces]);
     }
 
-    expect(config.interfaces).toStrictEqual({
-      [interfaceUri1]: [implUri1],
-      [interfaceUri2]: [implUri1, implUri2],
-    });
+    expect(config.interfaces).toStrictEqual(
+      new UriMap([
+        [Uri.from(interfaceUri1), [Uri.from(implUri1)]],
+        [Uri.from(interfaceUri2), [Uri.from(implUri1), Uri.from(implUri2)]],
+      ])
+    );
   });
 
   it("should completely remove an interface if there are no implementations left", () => {
@@ -454,13 +483,15 @@ describe("Client config builder", () => {
       .removeInterfaceImplementation(interfaceUri1, implUri2)
       .build();
 
-    if (!config.interfaces || Object.keys(config.interfaces).length !== 1) {
+    if (!config.interfaces || config.interfaces.size !== 1) {
       fail(["Expected 1 interface, received:", config.interfaces]);
     }
 
-    expect(config.interfaces).toStrictEqual({
-      [interfaceUri2]: [implUri1, implUri2],
-    });
+    expect(config.interfaces).toStrictEqual(
+      new UriMap([
+        [Uri.from(interfaceUri2), [Uri.from(implUri1), Uri.from(implUri2)]],
+      ])
+    );
   });
 
   it("should add an uri redirect", () => {
