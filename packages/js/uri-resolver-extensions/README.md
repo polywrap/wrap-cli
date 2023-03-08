@@ -21,13 +21,16 @@ Otherwise, you must also add the `ExtendableUriResolver` to your resolver.
 
 ```ts
   const clientConfig: CoreClientConfig = {
-    interfaces: {
-      "wrap://ens/uri-resolver.core.polywrap.eth": [
-        "wrap://ens/fs-resolver.polywrap.eth",
-        "wrap://ens/ipfs-resolver.polywrap.eth",
-        "wrap://ens/ens-resolver.polywrap.eth",
+    interfaces: new UriMap<Uri[]>([
+      [
+        Uri.from("wrap://ens/uri-resolver.core.polywrap.eth"),
+        [
+          Uri.from("wrap://ens/fs-resolver.polywrap.eth"),
+          Uri.from("wrap://ens/ipfs-resolver.polywrap.eth"),
+          Uri.from("wrap://ens/ens-resolver.polywrap.eth"),
+        ],
       ],
-    },
+    ]),
     resolver: RecursiveResolver.from(
       PackageToWrapperCacheResolver.from(
         [
