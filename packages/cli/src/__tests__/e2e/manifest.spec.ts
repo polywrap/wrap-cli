@@ -1,11 +1,12 @@
 import { clearStyle, polywrapCli } from "./utils";
 
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
+import { Commands, runCli } from "@polywrap/cli-js"
 import fs from "fs";
 import fse from "fs-extra";
 import path from "path";
 import rimraf from "rimraf";
-import { runCLI } from "@polywrap/test-env-js";
+import { ManifestType } from "../../commands";
 
 const HELP = `Usage: polywrap manifest|m [options] [command]
 
@@ -64,10 +65,12 @@ describe("e2e tests for manifest command", () => {
   const testsRoot = path.join(GetPathToCliTestFiles(), "manifest");
 
   test("Should show help text", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+    const { exitCode: code, stdout: output, stderr: error } = await runCli({
       args: ["manifest", "--help"],
-      cwd: testsRoot,
-      cli: polywrapCli,
+      config: {
+        cwd: testsRoot,
+        cli: polywrapCli,
+      }
     });
 
     expect(code).toEqual(0);
@@ -77,11 +80,13 @@ describe("e2e tests for manifest command", () => {
 
   describe("migrate command", () => {
     test("Should show help text", async () => {
-      const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-        args: ["manifest", "migrate", "--help"],
-        cwd: testsRoot,
-        cli: polywrapCli,
-      });
+      const { exitCode: code, stdout: output, stderr: error } = await Commands.manifest.migrate("project", {
+          args: ["--help"]
+        }, {
+          cwd: testsRoot,
+          cli: polywrapCli,
+        }
+      );
 
       expect(clearStyle(output)).toEqual(MIGRATE_HELP);
       expect(error).toBe("");
@@ -90,11 +95,14 @@ describe("e2e tests for manifest command", () => {
 
     describe("options", () => {
       it("Should throw error for unknown option --invalid", async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["manifest", "migrate", "--invalid"],
-          cwd: testsRoot,
-          cli: polywrapCli,
-        });
+        const { exitCode: code, stdout: output, stderr: error } = await Commands.manifest.migrate(
+          "project", {
+            args: ["--invalid"]
+          }, {
+            cwd: testsRoot,
+            cli: polywrapCli,
+          }
+        );
 
         expect(error).toBe("error: unknown option '--invalid'\n");
         expect(output).toEqual(``);
@@ -102,11 +110,14 @@ describe("e2e tests for manifest command", () => {
       });
 
       it("Should throw error if params not specified for --manifest-file option", async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["manifest", "migrate", "-m"],
-          cwd: testsRoot,
-          cli: polywrapCli,
-        });
+        const { exitCode: code, stdout: output, stderr: error } = await Commands.manifest.migrate(
+          "project", {
+            args: ["-m"]
+          }, {
+            cwd: testsRoot,
+            cli: polywrapCli,
+          }
+        );
 
         expect(error).toBe(
           `error: option '-m, --manifest-file <path>' argument missing\n`
@@ -118,10 +129,12 @@ describe("e2e tests for manifest command", () => {
 
     describe("arguments", () => {
       it("Should throw error if 'type' argument is invalid", async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+        const { exitCode: code, stdout: output, stderr: error } = await runCli({
           args: ["manifest", "migrate", "invalid-arg"],
-          cwd: testsRoot,
-          cli: polywrapCli,
+          config: {
+            cwd: testsRoot,
+            cli: polywrapCli,
+          }
         });
 
         expect(error).toBe(
@@ -172,12 +185,14 @@ describe("e2e tests for manifest command", () => {
             exitCode: code,
             stdout: output,
             stderr: error,
-          } = await runCLI({
-            args: ["manifest", "migrate", "-m", manifestFile],
-            cwd: tempDir,
-            cli: polywrapCli,
-          });
-
+          } = await Commands.manifest.migrate(
+            "project", {
+              manifestFile
+            }, {
+              cwd: tempDir,
+              cli: polywrapCli,
+            }
+          );
           expect(output).toContain(`Migrating ${manifestFile} to version`);
           expect(output).toContain(
             `Saved previous version of manifest to .polywrap/manifest/${manifestFile}`
@@ -201,11 +216,15 @@ describe("e2e tests for manifest command", () => {
             exitCode: code,
             stdout: output,
             stderr: error,
-          } = await runCLI({
-            args: ["manifest", "migrate", "-m", manifestFile, "-f", "INVALID_MANIFEST_FORMAT"],
-            cwd: tempDir,
-            cli: polywrapCli,
-          });
+          } = await Commands.manifest.migrate(
+            "project", {
+              manifestFile,
+              format: "INVALID_MANIFEST_FORMAT"
+            }, {
+              cwd: tempDir,
+              cli: polywrapCli,
+            }
+          );
 
           expect(output).toBe("");
           expect(error).toContain("Unsupported target format. Supported formats:");
@@ -221,8 +240,9 @@ describe("e2e tests for manifest command", () => {
             exitCode: code,
             stdout: output,
             stderr: error,
-          } = await runCLI({
-            args: ["manifest", "migrate", extensionType, "-m", manifestFile],
+          } = await Commands.manifest.migrate(extensionType as ManifestType, {
+            manifestFile
+          }, {
             cwd: tempDir,
             cli: polywrapCli,
           });
@@ -250,8 +270,10 @@ describe("e2e tests for manifest command", () => {
             exitCode: code,
             stdout: output,
             stderr: error,
-          } = await runCLI({
-            args: ["manifest", "migrate", extensionType, "-m", manifestFile, "-f", "INVALID_MANIFEST_FORMAT"],
+          } = await Commands.manifest.migrate(extensionType as ManifestType, {
+            manifestFile,
+            format: "INVALID_MANIFEST_FORMAT"
+          }, {
             cwd: tempDir,
             cli: polywrapCli,
           });
@@ -266,12 +288,13 @@ describe("e2e tests for manifest command", () => {
 
   describe("Schema command", () => {
     test("Should show help text", async () => {
-      const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      const { exitCode: code, stdout: output, stderr: error } = await runCli({
         args: ["manifest", "schema", "--help"],
-        cwd: testsRoot,
-        cli: polywrapCli,
+        config: {
+          cwd: testsRoot,
+          cli: polywrapCli,
+        }
       });
-
       expect(clearStyle(output)).toEqual(SCHEMA_HELP);
       expect(error).toBe("");
       expect(code).toEqual(0);
@@ -279,11 +302,13 @@ describe("e2e tests for manifest command", () => {
 
     describe("options", () => {
       it("Should throw error for unknown option --invalid", async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["manifest", "migrate", "--invalid"],
+        const { exitCode: code, stdout: output, stderr: error } = await Commands.manifest.schema("project", {
+          args: ["--invalid"]
+        }, {
           cwd: testsRoot,
           cli: polywrapCli,
-        });
+        }
+      );
 
         expect(error).toBe("error: unknown option '--invalid'\n");
         expect(output).toEqual(``);
@@ -291,11 +316,13 @@ describe("e2e tests for manifest command", () => {
       });
 
       it("Should throw error if params not specified for --manifest-file option", async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["manifest", "migrate", "-m"],
+        const { exitCode: code, stdout: output, stderr: error } = await Commands.manifest.schema("project", {
+          args: ["-m"]
+        }, {
           cwd: testsRoot,
           cli: polywrapCli,
-        });
+        }
+      );
 
         expect(error).toBe(
           `error: option '-m, --manifest-file <path>' argument missing\n`
@@ -307,10 +334,12 @@ describe("e2e tests for manifest command", () => {
 
     describe("arguments", () => {
       it("Should throw error if 'type' argument is invalid", async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["manifest", "migrate", "invalid-arg"],
-          cwd: testsRoot,
-          cli: polywrapCli,
+        const { exitCode: code, stdout: output, stderr: error } = await runCli({
+          args: ["manifest", "schema", "invalid-arg"],
+          config: {
+            cwd: testsRoot,
+            cli: polywrapCli,
+          }
         });
 
         expect(error).toBe(
@@ -327,8 +356,9 @@ describe("e2e tests for manifest command", () => {
         "samples",
         "invalid-format.yaml"
       );
-      const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-        args: ["manifest", "schema", "-m", manifestFile],
+      const { exitCode: code, stdout: output, stderr: error } = await Commands.manifest.schema("project", {
+        manifestFile
+      }, {
         cwd: testsRoot,
         cli: polywrapCli,
       });
@@ -342,8 +372,9 @@ describe("e2e tests for manifest command", () => {
 
     test("Should output a YAML-ish schema", async () => {
       const manifestFile = path.join(testsRoot, "samples", "polywrap.yaml");
-      const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-        args: ["manifest", "schema", "-m", manifestFile],
+      const { exitCode: code, stdout: output, stderr: error } = await Commands.manifest.schema("project", {
+        manifestFile
+      }, {
         cwd: testsRoot,
         cli: polywrapCli,
       });
@@ -355,8 +386,10 @@ describe("e2e tests for manifest command", () => {
 
     test("Should output a raw schema", async () => {
       const manifestFile = path.join(testsRoot, "samples", "polywrap.yaml");
-      const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-        args: ["manifest", "schema", "-m", manifestFile, "--raw"],
+      const { exitCode: code, stdout: output, stderr: error } = await Commands.manifest.schema("project", {
+        manifestFile,
+        raw: true
+      }, {
         cwd: testsRoot,
         cli: polywrapCli,
       });

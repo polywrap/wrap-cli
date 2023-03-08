@@ -4,7 +4,7 @@ import net from "net";
 import { clearStyle, polywrapCli } from "./utils";
 
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
-import { runCLI } from "@polywrap/test-env-js";
+import { Commands, runCli } from '@polywrap/cli-js';
 
 const testCaseRoot = path.join(GetPathToCliTestFiles(), "infra");
   const testCases =
@@ -91,14 +91,6 @@ const waitForPorts = (ports: { port: number; expected: boolean }[]) => {
   });
 };
 
-const runPolywrapCli = (args: string[], cwd: string) =>
-  runCLI({
-    args,
-    cwd,
-    cli: polywrapCli,
-    env: process.env as Record<string, string>
-  });
-
 describe("e2e tests for infra command", () => {
   beforeAll(() => {
     process.env = {
@@ -113,15 +105,20 @@ describe("e2e tests for infra command", () => {
 
   describe("Sanity", () => {
     afterEach(async () => {
-      await runPolywrapCli(
-          ["infra", "down", "-v"],
-          getTestCaseDir(0),
-      );
+      await Commands.infra("down", undefined, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
-      await runPolywrapCli(
-        ["infra", "down", "-v", "--modules eth-ens-ipfs"],
-        getTestCaseDir(0),
-      );
+      await Commands.infra("down", {
+        modules: ["eth-ens-ipfs"]
+      }, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
+
 
       await waitForPorts([
         { port: 4040, expected: false },
@@ -131,20 +128,28 @@ describe("e2e tests for infra command", () => {
     });
 
     it("Should throw error for no command given", async () => {
-      const { exitCode: code, stderr: error } = await runPolywrapCli(
-        ["infra"],
-        getTestCaseDir(0),
-      );
+      const { exitCode: code, stderr: error } = await runCli({
+        args: ["infra"],
+        config: {
+          cwd: getTestCaseDir(0),
+          cli: polywrapCli,
+          env:  process.env as Record<string, string>
+        }
+      });
 
       expect(code).toEqual(1);
       expect(error).toContain(`error: missing required argument 'action'`);
     });
 
     it("Should show help text", async () => {
-      const { exitCode: code, stdout: output, stderr: error } = await runPolywrapCli(
-        ["infra", "--help"],
-        getTestCaseDir(0),
-      );
+      const { exitCode: code, stdout: output, stderr: error } = await runCli({
+        args: ["infra", "--help"],
+        config: {
+          cwd: getTestCaseDir(0),
+          cli: polywrapCli,
+          env: process.env as Record<string, string>
+        }
+      })
 
       expect(code).toEqual(0);
       expect(error).toBe("");
@@ -152,10 +157,11 @@ describe("e2e tests for infra command", () => {
     });
 
     it("Should extract composed docker manifest's environment variable list", async () => {
-      const { exitCode: code, stdout: output } = await runPolywrapCli(
-        ["infra", "vars"],
-        getTestCaseDir(0),
-      );
+      const { exitCode: code, stdout: output } = await Commands.infra("vars", undefined, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       const sanitizedOutput = clearStyle(output);
 
@@ -166,10 +172,11 @@ describe("e2e tests for infra command", () => {
     });
 
     it("Should validate and display composed docker manifest", async () => {
-      const { exitCode: code, stdout: output } = await runPolywrapCli(
-        ["infra", "config"],
-        getTestCaseDir(0),
-      );
+      const { exitCode: code, stdout: output } = await Commands.infra("config", undefined, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       const sanitizedOutput = clearStyle(output);
 
@@ -180,22 +187,26 @@ describe("e2e tests for infra command", () => {
     });
 
     it("Should set environment up with all modules if no --modules are passed", async () => {
-      await runPolywrapCli(
-        ["infra", "down", "--manifest-file=./polywrap.infra.yaml"],
-        getTestCaseDir(0),
-      );
-
+      await Commands.infra("down", {
+        manifestFile: "./polywrap.infra.yaml",
+      }, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
       await waitForPorts([
         { port: 4040, expected: false },
         { port: 5001, expected: false },
         { port: 8545, expected: false }
       ]);
 
-      await runPolywrapCli(
-        ["infra", "up", "--manifest-file=./polywrap.infra.yaml"],
-        getTestCaseDir(0),
-      );
-
+      await Commands.infra("up", {
+        manifestFile: "./polywrap.infra.yaml",
+      }, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
       await waitForPorts([
         { port: 4040, expected: true },
         { port: 5001, expected: true },
@@ -204,43 +215,54 @@ describe("e2e tests for infra command", () => {
     });
 
     it("Should correctly fetch default & local module", async () => {
-      await runPolywrapCli(
-        ["infra", "up"],
-        getTestCaseDir(4),
-      );
+      await Commands.infra("up", undefined, {
+        cwd: getTestCaseDir(4),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       await waitForPorts([
         { port: 5001, expected: true },
         { port: 8546, expected: true },
       ]);
 
-      await runPolywrapCli(
-        ["infra", "down"],
-        getTestCaseDir(4),
-      );
+      await Commands.infra("down", undefined, {
+        cwd: getTestCaseDir(4),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
     });
 
     it("Should correctly open one process for default module because modules flag overwrites it", async () => {
-      await runPolywrapCli(
-        ["infra", "up", "--modules eth-ens-ipfs"],
-        getTestCaseDir(4),
-      );
+      await Commands.infra("up", {
+        modules: ["eth-ens-ipfs"]
+      }, {
+        cwd: getTestCaseDir(4),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       await waitForPorts([
         { port: 5001, expected: true },
       ]);
 
-      await runPolywrapCli(
-        ["infra", "down", "--modules eth-ens-ipfs"],
-        getTestCaseDir(4),
-      );
+      await Commands.infra("down", {
+        modules: ["eth-ens-ipfs"]
+      }, {
+        cwd: getTestCaseDir(4),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
     });
 
     it("Should throw because default module declared in manifest is not recognized", async () => {
-      const { stderr } = await runPolywrapCli(
-        ["infra", "up", "--manifest-file=./polywrap.infra.wrong.yaml"],
-        getTestCaseDir(4),
-      );
+      const { stderr } = await Commands.infra("up", {
+        manifestFile: "./polywrap.infra.wrong.yaml"
+      }, {
+        cwd: getTestCaseDir(4),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       expect(stderr).toContain(
         `Module random-module not found as default\nDefault Modules available: `
@@ -248,10 +270,11 @@ describe("e2e tests for infra command", () => {
     });
 
     it("Should correctly fetch different local modules when they are declared as folder or file", async () => {
-      await runPolywrapCli(
-        ["infra", "up"],
-        getTestCaseDir(4),
-      );
+      await Commands.infra("up", undefined, {
+        cwd: getTestCaseDir(4),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       await waitForPorts([
         { port: 5001, expected: true },
@@ -259,17 +282,19 @@ describe("e2e tests for infra command", () => {
         { port: 8547, expected: true },
       ]);
 
-      await runPolywrapCli(
-        ["infra", "down"],
-        getTestCaseDir(4),
-      );
+      await Commands.infra("down", undefined, {
+        cwd: getTestCaseDir(4),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
     });
 
     it("Should tear down environment", async () => {
-      await runPolywrapCli(
-        ["infra", "up"],
-        getTestCaseDir(0),
-      );
+      await Commands.infra("up", undefined, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       await waitForPorts([
         { port: 4040, expected: true },
@@ -277,10 +302,11 @@ describe("e2e tests for infra command", () => {
         { port: 8545, expected: true }
       ]);
 
-      await runPolywrapCli(
-        ["infra", "down"],
-        getTestCaseDir(0),
-      );
+      await Commands.infra("down", undefined, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       await waitForPorts([
         { port: 4040, expected: false },
@@ -290,10 +316,14 @@ describe("e2e tests for infra command", () => {
     });
 
     it("Should set environment up with only selected modules", async () => {
-      await runPolywrapCli(
-        ["infra", "up", "--modules ipfs"],
-        getTestCaseDir(0),
-      );
+      await Commands.infra("up", {
+        modules: ["ipfs"]
+      }, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
+
 
       await waitForPorts([
         { port: 4040, expected: false },
@@ -301,10 +331,13 @@ describe("e2e tests for infra command", () => {
         { port: 8545, expected: false }
       ]);
 
-      await runPolywrapCli(
-        ["infra", "down", "--modules ipfs"],
-        getTestCaseDir(0),
-      );
+      await Commands.infra("down", {
+        modules: ["ipfs"]
+      }, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       await waitForPorts([
         { port: 5001, expected: false }
@@ -312,14 +345,13 @@ describe("e2e tests for infra command", () => {
     });
 
     it("Should throw error for --modules that don't exist in infra manifest and are not default modules", async () => {
-      const { exitCode: code, stderr } = await runPolywrapCli(
-        [
-          "infra",
-          "config",
-          "--modules notExistingModule alsoNotExisting",
-        ],
-        getTestCaseDir(0),
-      );
+      const { exitCode: code, stderr } = await Commands.infra("config", {
+        modules: ["notExistingModule alsoNotExisting"]
+      }, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       expect(code).toEqual(1);
       expect(stderr).toContain(
@@ -328,15 +360,14 @@ describe("e2e tests for infra command", () => {
     });
 
     it("Should setup and use a default module if --modules arg is passed and the module does not exist in the manifest", async () => {
-      await runPolywrapCli(
-        [
-          "infra",
-          "up",
-          "--modules eth-ens-ipfs",
-          "--verbose"
-        ],
-        getTestCaseDir(0),
-      );
+      await Commands.infra("up", {
+        modules: ["eth-ens-ipfs"],
+        verbose: true
+      }, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       await waitForPorts([
         { port: 5001, expected: true },
@@ -345,29 +376,27 @@ describe("e2e tests for infra command", () => {
     })
 
     test("If a module declared in manifest has the same name of a default module, the manifest's should take precedence", async () => {
-      const { stdout: withManifestModOutput } = await runPolywrapCli(
-        [
-          "infra",
-          "config",
-          "--modules eth-ens-ipfs",
-          "--verbose"
-        ],
-        getTestCaseDir(2),
-      );
+      const { stdout: withManifestModOutput } = await Commands.infra("config", {
+        modules: ["eth-ens-ipfs"],
+        verbose: true
+      }, {
+        cwd: getTestCaseDir(2),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       const withManifestModSanitizedOutput = clearStyle(withManifestModOutput);
 
       expect(withManifestModSanitizedOutput).toContain("dev-server:")
 
-      const { stdout: withoutManifestModOutput } = await runPolywrapCli(
-        [
-          "infra",
-          "config",
-          "--modules eth-ens-ipfs",
-          "--verbose"
-        ],
-        getTestCaseDir(0),
-      );
+      const { stdout: withoutManifestModOutput } = await Commands.infra("config", {
+        modules: ["eth-ens-ipfs"],
+        verbose: true
+      }, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       const withoutManifestModSanitizedOutput = clearStyle(withoutManifestModOutput);
 
@@ -376,15 +405,14 @@ describe("e2e tests for infra command", () => {
 
     it("Should set up a default environment if no manifest is present, but --modules option is passed", async () => {
       
-      await runPolywrapCli(
-        [
-          "infra",
-          "up",
-          "--modules eth-ens-ipfs",
-          "--verbose"
-        ],
-        getTestCaseDir(3),
-      );
+      await Commands.infra("up", {
+        modules: ["eth-ens-ipfs"],
+        verbose: true
+      }, {
+        cwd: getTestCaseDir(3),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       await waitForPorts([
         { port: 5001, expected: true },
@@ -394,14 +422,13 @@ describe("e2e tests for infra command", () => {
 
     it("Should not include default modules if no --modules option is passed and manifest exists", async () => {
       
-      const { stdout } = await runPolywrapCli(
-        [
-          "infra",
-          "config",
-          "--verbose"
-        ],
-        getTestCaseDir(0),
-      );
+      const { stdout } = await Commands.infra("config", {
+        verbose: true
+      }, {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       const output = clearStyle(stdout);
 
@@ -410,14 +437,13 @@ describe("e2e tests for infra command", () => {
 
     it("Should fail if no manifest is present and no --modules option is passed", async () => {
       
-      const { exitCode, stderr } = await runPolywrapCli(
-        [
-          "infra",
-          "config",
-          "--verbose"
-        ],
-        getTestCaseDir(3),
-      );
+      const { exitCode, stderr } = await Commands.infra("config", {
+        verbose: true
+      }, {
+        cwd: getTestCaseDir(3),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       expect(exitCode).toBe(1)
       expect(stderr).toContain("If no infra manifest is specified, a default module should be specified using the '--modules' option")
@@ -426,44 +452,52 @@ describe("e2e tests for infra command", () => {
 
   describe("Duplicates", () => {
     it("Should handle duplicate services", async () => {
-      await runPolywrapCli(
-        [
-          "infra",
-          "up",
-          "--modules ganache,dev-server"
-        ],
-        getTestCaseDir(1),
-      );
+      await Commands.infra("up", {
+        verbose: true,
+        modules: ["ganache", "dev-server"]
+      }, {
+        cwd: getTestCaseDir(1),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
 
       await waitForPorts([
         { port: 8546, expected: true },
         { port: 8545, expected: true }
       ]);
 
-      await runPolywrapCli(
-        ["infra", "down", "--modules ganache,dev-server"],
-        getTestCaseDir(1),
-      );
+      await Commands.infra("down", {
+        verbose: true,
+        modules: ["ganache", "dev-server"]
+      }, {
+        cwd: getTestCaseDir(1),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
     });
 
     it("Should correctly duplicate pkg in different module", async () => {
-      await runPolywrapCli(
-        [
-          "infra",
-          "up",
-          "--modules ipfs,ipfs-duplicate"
-        ],
-        getTestCaseDir(1),
-      );
+      await Commands.infra("up", {
+        verbose: true,
+        modules: ["ipfs", "ipfs-duplicate"]
+      }, {
+        cwd: getTestCaseDir(1),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
   
       await waitForPorts([
         { port: 5001, expected: true },
       ]);
 
-      await runPolywrapCli(
-        ["infra", "down", "--modules ipfs,ipfs-duplicate"],
-        getTestCaseDir(1),
-      );
+      await Commands.infra("down", {
+        verbose: true,
+        modules: ["ipfs", "ipfs-duplicate"]
+      }, {
+        cwd: getTestCaseDir(1),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      });
     });
   });
 })

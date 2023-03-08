@@ -1,3 +1,4 @@
 {
-  "args": ["docusaurus", "--imports"]
+  "imports": true,
+  "doc": "docusaurus"
 }

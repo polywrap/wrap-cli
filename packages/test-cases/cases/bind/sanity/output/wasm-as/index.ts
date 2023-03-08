@@ -10,6 +10,7 @@ export {
   Args_optionalEnvMethod,
   Args__if
 };
+export { ModuleBase } from "./Module";
 export { CustomType } from "./CustomType";
 export { AnotherType } from "./AnotherType";
 export { CustomMapValue } from "./CustomMapValue";

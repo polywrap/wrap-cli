@@ -15,3 +15,4 @@ export * from "./workflow";
 export * from "./CacheDirectory";
 export * from "./Compiler";
 export * from "./SchemaComposer";
+export * from "./defaults";
