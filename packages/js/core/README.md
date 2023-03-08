@@ -128,22 +128,8 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
 ```ts
 
 /** A map of string-indexed, Msgpack-serializable environmental variables associated with a wrapper */
-export interface Envs {
-  readonly [k: string]: WrapperEnv;
-}
-
 export interface WrapperEnv {
   readonly [k: string]: unknown;
-}
-```
-
-### InterfaceImplementations
-
-```ts
-
-/** An interface and a list of wrappers that implement the interface */
-export interface InterfaceImplementations {
-  readonly [k: string]: readonly string[];
 }
 ```
 

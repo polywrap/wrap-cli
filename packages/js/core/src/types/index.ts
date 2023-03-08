@@ -4,7 +4,6 @@ export * from "./Invoke";
 export * from "./MaybeAsync";
 export * from "./Uri";
 export * from "./Env";
-export * from "./InterfaceImplementations";
 export * from "./UriResolver";
 export * from "./IWrapPackage";
 export * from "./IUriRedirect";
