@@ -1,6 +1,5 @@
 import { polywrapCli } from "./utils";
-
-import { runCLI } from "@polywrap/test-env-js";
+import { Commands } from "@polywrap/cli-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import fs from "fs";
 import path from "path";
@@ -19,17 +18,15 @@ describe("e2e tests for build command", () => {
 
   describe("Image strategy", () => {
     it("Builds for rust", async () => {
-      const out= await runCLI({
-        args: ["build", "-v", "-s", "image"],
+      const { exitCode: code, stdout: output } = await Commands.build({
+        strategy: "image",
+        verbose: true
+      }, {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
-      const { exitCode: code, stdout: output } = out;
-  
       const buildDir = `./build`;
 
-      console.log(out)
-  
       expect(code).toEqual(0);
       expect(output).toContain(`Artifacts written to ${buildDir}`);
       expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
@@ -39,8 +36,10 @@ describe("e2e tests for build command", () => {
   // NOTE: Skipped because CI needs system prequisites: bindgen, snip, etc.
   describe.skip("Local strategy", () => {
     it("Builds for rust", async () => {
-      const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v", "-s", "local"],
+      const { exitCode: code, stdout: output } = await Commands.build({
+        strategy: "local",
+        verbose: true
+      }, {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
@@ -55,8 +54,10 @@ describe("e2e tests for build command", () => {
 
   describe("VM strategy", () => {
     it("Builds for rust", async () => {
-      const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v", "-s", "vm"],
+      const { exitCode: code, stdout: output } = await Commands.build({
+        strategy: "vm",
+        verbose: true
+      }, {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });

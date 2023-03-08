@@ -3,8 +3,8 @@ import { Uri } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PluginPackage, PluginModule } from "@polywrap/plugin-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
-import { defaultPackages } from "@polywrap/client-config-builder-js";
-import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
+import { DefaultBundle } from "@polywrap/client-config-builder-js";
+
 jest.setTimeout(200000);
 
 describe("plugin-wrapper", () => {
@@ -37,7 +37,7 @@ describe("plugin-wrapper", () => {
     );
   };
 
-  it("plugin map types", async () => {
+  test("plugin map types", async () => {
     const implementationUri = Uri.from("wrap://ens/some-implementation.eth");
     const mockPlugin = mockMapPlugin();
     const client = new PolywrapClient(
@@ -48,8 +48,7 @@ describe("plugin-wrapper", () => {
             package: mockPlugin,
           },
         ]),
-      },
-      { noDefaults: true }
+      }
     );
 
     const getResult = await client.invoke({
@@ -82,14 +81,13 @@ describe("plugin-wrapper", () => {
     const client = new PolywrapClient(
       {
         resolver: UriResolver.from([
-          { uri: Uri.from(defaultPackages.fileSystemResolver), package: fileSystemResolverPlugin({}) },
+          { uri: DefaultBundle.plugins.http.uri, package: DefaultBundle.plugins.http.plugin },
         ]),
-      },
-      { noDefaults: true }
+      }
     );
-    const manifest = await client.getManifest(defaultPackages.fileSystemResolver);
+    const manifest = await client.getManifest(DefaultBundle.plugins.http.uri);
     if (!manifest.ok) fail(manifest.error);
     expect(manifest.value.type).toEqual("plugin");
-    expect(manifest.value.name).toEqual("FileSystemResolver");
+    expect(manifest.value.name).toEqual("Http");
   });
 });

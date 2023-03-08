@@ -43,7 +43,6 @@ export type AnyPolywrapManifest =
   | PolywrapManifest_0_3_0
 
 
-
 export type PolywrapManifest = PolywrapManifest_0_3_0;
 
 export const latestPolywrapManifestFormat = PolywrapManifestFormats["v0.3.0"]

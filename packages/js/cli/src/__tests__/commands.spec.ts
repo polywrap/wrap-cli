@@ -5,13 +5,8 @@ import {
   CommandTypings,
   CommandTypeMapping,
   BaseCommandOptions,
+  ETH_ENS_IPFS_MODULE_CONSTANTS,
 } from "polywrap";
-import { 
-  initTestEnvironment,
-  stopTestEnvironment,
-  ensAddresses,
-  providers
-} from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import fs from "fs";
 import os from "os";
@@ -133,21 +128,34 @@ const testData: CommandTestCaseData<CommandTypings> = {
         expect(fs.existsSync(packagePath)).toBeTruthy();
         clearDir(test.cwd);
       }
+    }],
+    template: [{
+      cwd: fs.mkdtempSync(path.join(os.tmpdir(), "cli-js-create-test")),
+      arguments: ["https://github.com/polywrap/logging.git", "test-template"],
+      after: (test, stdout, stderr, exitCode) => {
+        if (!test.cwd)
+          throw Error("This shouldn't happen");
+        const outputDir = path.join(test.cwd, "test-template");
+        const packagePath = path.join(outputDir, "README.md");
+        expect(fs.existsSync(outputDir)).toBeTruthy();
+        expect(fs.existsSync(packagePath)).toBeTruthy();
+        clearDir(test.cwd);
+      }
     }]
   },
   deploy: [{
     cwd: path.join(GetPathToCliTestFiles(), "wasm/deploy/001-sanity"),
     env: {
       PATH: process.env.PATH || "",
-      IPFS_GATEWAY_URI: providers.ipfs,
+      IPFS_GATEWAY_URI: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,
       DOMAIN_NAME: "test1.eth",
-      ENS_REG_ADDR: ensAddresses.ensAddress,
-      ENS_REGISTRAR_ADDR: ensAddresses.registrarAddress,
-      ENS_RESOLVER_ADDR: ensAddresses.resolverAddress,
+      ENS_REG_ADDR: ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress,
+      ENS_REGISTRAR_ADDR: ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.registrarAddress,
+      ENS_RESOLVER_ADDR: ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.resolverAddress,
     },
     before: async () => {
-      await stopTestEnvironment();
-      await initTestEnvironment();
+      await Commands.infra("down", { modules: ["eth-ens-ipfs"]});
+      await Commands.infra("up", { modules: ["eth-ens-ipfs"]});
 
       // Wait a little longer just in case
       await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -156,7 +164,7 @@ const testData: CommandTestCaseData<CommandTypings> = {
       expect(stdout).toContain(
         "Successfully executed"
       );
-      await stopTestEnvironment();
+      await Commands.infra("down", { modules: ["eth-ens-ipfs"]});
     }
   }],
   docgen: [{

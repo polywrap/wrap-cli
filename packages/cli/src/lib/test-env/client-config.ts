@@ -1,17 +1,16 @@
 import { getTestEnvProviders } from "./providers";
+import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "../../lib";
 
 import {
   BuilderConfig,
-  defaultIpfsProviders,
-  defaultPackages,
+  DefaultBundle,
 } from "@polywrap/client-config-builder-js";
-import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
+import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import {
-  ethereumPlugin,
+  ethereumProviderPlugin,
   Connections,
   Connection,
-} from "@polywrap/ethereum-plugin-js";
-import { ensAddresses } from "@polywrap/test-env-js";
+} from "@polywrap/ethereum-provider-js";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   // TODO: move this into its own package, since it's being used everywhere?
@@ -24,18 +23,25 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
     throw Error("Test environment not found.");
   }
 
-  const ensAddress = ensAddresses.ensAddress;
+  const ensAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress;
 
   return {
     envs: {
-      [defaultPackages.ipfsResolver]: {
+      [DefaultBundle.embeds.ipfsResolver.uri.uri]: {
         provider: ipfsProvider,
-        fallbackProviders: defaultIpfsProviders,
+        fallbackProviders: DefaultBundle.ipfsProviders,
         retries: { tryResolveUri: 1, getFile: 1 },
       },
+      "proxy/testnet-ens-uri-resolver-ext": {
+        registryAddress: ensAddress,
+      },
+    },
+    redirects: {
+      "proxy/testnet-ens-uri-resolver-ext":
+        "ens/wraps.eth:ens-uri-resolver-ext@1.0.0",
     },
     packages: {
-      [defaultPackages.ethereum]: ethereumPlugin({
+      [DefaultBundle.plugins.ethereumProvider.uri.uri]: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({
@@ -52,11 +58,14 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
           },
         }),
       }),
-      [defaultPackages.ensResolver]: ensResolverPlugin({
-        addresses: {
-          testnet: ensAddress,
-        },
-      }),
+    },
+    interfaces: {
+      [ExtendableUriResolver.defaultExtInterfaceUris[0].uri]: new Set([
+        "proxy/testnet-ens-uri-resolver-ext",
+        ...DefaultBundle.getConfig().interfaces[
+          ExtendableUriResolver.defaultExtInterfaceUris[0].uri
+        ],
+      ]),
     },
   };
 }

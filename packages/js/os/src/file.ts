@@ -3,7 +3,7 @@ import os from "os";
 
 export function writeFileSync(
   path: fs.PathLike | number,
-  data: unknown,
+  data: string | NodeJS.ArrayBufferView,
   options?: fs.WriteFileOptions
 ): void {
   if (typeof data === "string") {

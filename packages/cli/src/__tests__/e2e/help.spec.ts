@@ -1,6 +1,6 @@
 import { clearStyle, polywrapCli } from "./utils";
 
-import { runCLI } from "@polywrap/test-env-js";
+import { runCli } from "@polywrap/cli-js";
 
 
 const HELP = `Usage: polywrap [options] [command]
@@ -23,9 +23,11 @@ Commands:
 describe("e2e tests for no help", () => {
 
   it("Should display the help content", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+    const { exitCode: code, stdout: output, stderr: error } = await runCli({
       args: ["help"],
-      cli: polywrapCli,
+      config: {
+        cli: polywrapCli,
+      }
     });
 
     expect(code).toEqual(0);

@@ -150,6 +150,7 @@ const _run = async (options: Required<TestCommandOptions>) => {
     if (!quiet) {
       printJobOutput(output);
     }
+
     workflowOutput.push(output);
   };
 
@@ -181,5 +182,14 @@ const _run = async (options: Required<TestCommandOptions>) => {
           })
         );
     }
+  }
+
+  const isFailed = (val: WorkflowOutput) =>
+    val.status === Status.FAILED &&
+    (val.validation.status === Status.SKIPPED ||
+      val.validation.status === Status.FAILED);
+
+  if (workflowOutput.some(isFailed)) {
+    process.exit(1);
   }
 };

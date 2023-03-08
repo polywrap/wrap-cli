@@ -11,6 +11,7 @@ import {
 
 import BuildManifestSchema_0_1_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.build/0.1.0.json";
 import BuildManifestSchema_0_2_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.build/0.2.0.json";
+import BuildManifestSchema_0_3_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.build/0.3.0.json";
 
 import {
   Schema,
@@ -28,6 +29,7 @@ const schemas: BuildManifestSchemas = {
   "0.1": BuildManifestSchema_0_1_0,
   "0.1.0": BuildManifestSchema_0_1_0,
   "0.2.0": BuildManifestSchema_0_2_0,
+  "0.3.0": BuildManifestSchema_0_3_0,
 };
 
 const validator = new Validator();

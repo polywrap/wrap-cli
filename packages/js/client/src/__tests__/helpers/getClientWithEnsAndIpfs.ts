@@ -1,44 +1,39 @@
 import { PolywrapClient, Uri } from "../..";
-import { ensAddresses, providers } from "@polywrap/test-env-js";
 import {
   Connection,
   Connections,
   ethereumPlugin,
 } from "@polywrap/ethereum-plugin-js";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
+import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import {
   PackageToWrapperCacheResolver,
   RecursiveResolver,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
-import {
-  defaultInterfaces,
-  defaultEmbeddedPackages,
-  defaultPackages,
-} from "@polywrap/client-config-builder-js";
-import { httpPlugin } from "@polywrap/http-plugin-js";
+import { defaultInterfaces } from "@polywrap/client-config-builder-js";
+import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "@polywrap/cli-js";
 
 export const getClientWithEnsAndIpfs = () => {
   const connections: Connections = new Connections({
     networks: {
       testnet: new Connection({
-        provider: providers.ethereum,
+        provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider,
       }),
     },
     defaultNetwork: "testnet",
   });
-
   return new PolywrapClient<string>(
     {
       envs: [
         {
-          uri: defaultPackages.ipfsResolver,
+          uri: "wrap://ens/ipfs.polywrap.eth",
           env: {
-            provider: providers.ipfs,
-            retries: { tryResolveUri: 1, getFile: 1 },
+            provider: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,
           },
         },
       ],
@@ -46,56 +41,48 @@ export const getClientWithEnsAndIpfs = () => {
         {
           interface: ExtendableUriResolver.extInterfaceUri.uri,
           implementations: [
-            defaultPackages.ipfsResolver,
-            defaultPackages.ensResolver,
-            defaultPackages.fileSystemResolver,
+            "wrap://ens/ipfs-resolver.polywrap.eth",
+            "wrap://ens/ens-resolver.polywrap.eth",
+            "wrap://ens/fs-resolver.polywrap.eth",
           ],
         },
-        {
-          interface: defaultInterfaces.ipfsHttpClient,
-          implementations: [defaultInterfaces.ipfsHttpClient],
-        },
       ],
-      resolver: RecursiveResolver.from([
+      resolver: RecursiveResolver.from(
         PackageToWrapperCacheResolver.from(
           [
             {
-              uri: Uri.from(defaultInterfaces.ipfsHttpClient),
-              package: defaultEmbeddedPackages.ipfsHttpClient(),
-            },
-            {
-              uri: Uri.from(defaultPackages.ipfsResolver),
-              package: defaultEmbeddedPackages.ipfsResolver(),
-            },
-            {
-              uri: Uri.from(defaultPackages.ethereum),
+              uri: Uri.from("wrap://ens/ethereum.polywrap.eth"),
               package: ethereumPlugin({ connections }),
             },
             {
-              uri: Uri.from(defaultPackages.ensResolver),
+              uri: Uri.from("wrap://ens/ens-resolver.polywrap.eth"),
               package: ensResolverPlugin({
                 addresses: {
-                  testnet: ensAddresses.ensAddress,
+                  testnet: ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress,
                 },
               }),
+            },
+            {
+              uri: Uri.from("wrap://ens/ipfs.polywrap.eth"),
+              package: ipfsPlugin({}),
+            },
+            {
+              uri: Uri.from("wrap://ens/ipfs-resolver.polywrap.eth"),
+              package: ipfsResolverPlugin({}),
             },
             {
               uri: Uri.from(defaultInterfaces.fileSystem),
               package: fileSystemPlugin({}),
             },
             {
-              uri: Uri.from(defaultPackages.fileSystemResolver),
+              uri: Uri.from("wrap://ens/fs-resolver.polywrap.eth"),
               package: fileSystemResolverPlugin({}),
-            },
-            {
-              uri: Uri.from(defaultInterfaces.http),
-              package: httpPlugin({}),
             },
             new ExtendableUriResolver(),
           ],
           new WrapperCache()
         )
-      ]),
+      ),
     },
     {
       noDefaults: true,

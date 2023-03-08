@@ -10,8 +10,7 @@ import {
   addFirstLast,
   toPrefixedGraphQLType,
   hasImports,
-  methodParentPointers,
-  moduleHasEnv,
+  methodParentPointers
 } from "@polywrap/schema-parse";
 import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
 import path from "path";
@@ -201,7 +200,6 @@ function applyTransforms(abi: WrapAbi): WrapAbi {
     methodParentPointers(),
     Transforms.propertyDeps(),
     Transforms.byRef(),
-    moduleHasEnv(),
   ];
 
   for (const transform of transforms) {

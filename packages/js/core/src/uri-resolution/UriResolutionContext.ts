@@ -4,8 +4,6 @@ import { Uri } from "../types";
 
 // $start: UriResolutionContext
 /** An implementation of the IUriResolutionContext interface */
-// $start: UriResolutionContext
-/** An implementation of the IUriResolutionContext interface */
 export class UriResolutionContext implements IUriResolutionContext {
   // $end
   private _resolvingUriMap: Map<string, boolean>;

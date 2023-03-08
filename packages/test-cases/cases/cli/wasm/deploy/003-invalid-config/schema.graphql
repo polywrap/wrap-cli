@@ -1,3 +1,0 @@
-type Module {
-  get: String!
-}

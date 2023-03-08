@@ -1,11 +1,11 @@
 import { clearStyle, polywrapCli } from "./utils";
 
-import { runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
 import os from "os";
 import rimraf from "rimraf";
+import { Commands, runCli } from "@polywrap/cli-js";
 
 const HELP = `Usage: polywrap codegen|g [options]
 
@@ -22,6 +22,8 @@ Options:
                                      PolywrapClient
   --wrapper-envs <envs-path>         Path to a JSON file containing wrapper
                                      envs
+  -w, --watch                        Automatically execute command when changes
+                                     are made (default: false)
   -v, --verbose                      Verbose output (default: false)
   -q, --quiet                        Suppress output (default: false)
   -l, --log-file [path]              Log file to save console output to
@@ -38,8 +40,9 @@ describe("e2e tests for codegen command", () => {
     path.join(testCaseRoot, testCases[index]);
 
   test("Should show help text", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", "--help"],
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.codegen({
+      help: true 
+    }, {
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
@@ -50,10 +53,12 @@ describe("e2e tests for codegen command", () => {
   });
 
   it("Should throw error for unknown option --invalid", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+    const { exitCode: code, stdout: output, stderr: error } = await runCli({
       args: ["codegen", "--invalid"],
-      cwd: getTestCaseDir(0),
-      cli: polywrapCli,
+      config: {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+      }
     });
 
     expect(code).toEqual(1);
@@ -71,8 +76,9 @@ describe("e2e tests for codegen command", () => {
 
     for (const [option, errorMessage] of Object.entries(missingOptionArgs)) {
       it(`Should throw error if params not specified for ${option} option`, async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["codegen", option],
+        const { exitCode: code, stdout: output, stderr: error } = await Commands.codegen({
+          args: [option]
+        }, {
           cwd: getTestCaseDir(0),
           cli: polywrapCli,
         });
@@ -87,8 +93,9 @@ describe("e2e tests for codegen command", () => {
   });
 
   it("Should throw error for invalid generation file - wrong file", async () => {
-    const { exitCode: code, stderr: error } = await runCLI({
-      args: ["codegen", "--script", `polywrap-invalid.gen.js`],
+    const { exitCode: code, stderr: error } = await Commands.codegen({
+      script: `polywrap-invalid.gen.js`
+    },{
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
@@ -109,8 +116,9 @@ describe("e2e tests for codegen command", () => {
   });
 
   it("Should throw error for invalid generation file - no run() method", async () => {
-    const { exitCode: code, stderr: error } = await runCLI({
-      args: ["codegen", "--script", `polywrap-norun.gen.js`],
+    const { exitCode: code, stderr: error } = await Commands.codegen({
+      script: `polywrap-norun.gen.js`,
+    }, {
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
@@ -130,8 +138,9 @@ describe("e2e tests for codegen command", () => {
       path.join(os.tmpdir(), `polywrap-cli-tests`)
     );
     const testCaseDir = getTestCaseDir(0);
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", "--codegen-dir", codegenDir],
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.codegen({
+      codegenDir,
+    }, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
@@ -149,8 +158,7 @@ describe("e2e tests for codegen command", () => {
   it("Should successfully generate types", async () => {
     rimraf.sync(`${getTestCaseDir(0)}/types`);
 
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen"],
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.codegen({}, {
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
@@ -167,8 +175,7 @@ describe("e2e tests for codegen command", () => {
   it("Should successfully generate types - Rust", async () => {
     rimraf.sync(`${getTestCaseDir(1)}/types`);
 
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen"],
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.codegen({}, {
       cwd: getTestCaseDir(1),
       cli: polywrapCli,
     });
