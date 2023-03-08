@@ -177,7 +177,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
         // For rust, we want to also mount the cargo registry's cache directory
         const localCargoCache = `${process.env.HOME}/.cargo`;
-        let cacheVolumes: string[] = [];
+        const cacheVolumes: string[] = [];
         if (language === "wasm/rust" && fse.existsSync(localCargoCache)) {
           cacheVolumes.push(`-v ${localCargoCache}:/usr/local/cargo`);
           // Ignore the bin folder, without this an exception is thrown upon exe exec
