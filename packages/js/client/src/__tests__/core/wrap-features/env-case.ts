@@ -4,7 +4,7 @@ import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { PolywrapClient } from "../../../PolywrapClient";
 import { mockPluginRegistration } from "../../helpers";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { Uri } from "@polywrap/core-js";
+import { Uri, UriMap } from "@polywrap/core-js";
 
 jest.setTimeout(200000);
 
@@ -175,11 +175,7 @@ export const envTestCases = (implementation: string) => {
           },
           { from: Uri.from("ens/hello.eth"), to: implementationUri },
         ]),
-        envs: {
-          "wrap://ens/hello.eth": {
-            arg1: "10",
-          },
-        },
+        envs: new UriMap([[Uri.from("wrap://ens/hello.eth"), { arg1: "10" }]]),
       });
 
       const mockEnv = await client.invoke({
@@ -209,11 +205,7 @@ export const envTestCases = (implementation: string) => {
             })),
           },
         ]),
-        envs: {
-          [implementationUri]: {
-            arg1: "10",
-          },
-        },
+        envs: new UriMap([[Uri.from(implementationUri), { arg1: "10" }]]),
       });
 
       const mockEnv = await client.invoke({
