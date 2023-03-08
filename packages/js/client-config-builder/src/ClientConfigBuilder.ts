@@ -4,12 +4,14 @@ import { BuildOptions, IClientConfigBuilder, BuilderConfig } from "./types";
 
 import {
   CoreClientConfig,
-  Envs,
   IUriPackage,
   IUriRedirect,
   IUriWrapper,
   Uri,
   InterfaceImplementations,
+  WrapperEnv,
+  ReadonlyUriMap,
+  UriMap,
 } from "@polywrap/core-js";
 import {
   RecursiveResolver,
@@ -66,8 +68,14 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
     return this._config;
   }
 
-  private buildEnvs(): Envs {
-    return this._config.envs;
+  private buildEnvs(): ReadonlyUriMap<WrapperEnv> {
+    const envs = new UriMap<WrapperEnv>();
+
+    for (const uri in this._config.envs) {
+      envs.set(Uri.from(uri), this._config.envs[uri]);
+    }
+
+    return envs;
   }
 
   private buildInterfaces(): InterfaceImplementations {

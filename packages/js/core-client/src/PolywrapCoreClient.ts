@@ -18,9 +18,9 @@ import {
   CoreClientConfig,
   WrapError,
   WrapErrorCode,
-  Envs,
   WrapperEnv,
   InterfaceImplementations,
+  ReadonlyUriMap
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
@@ -64,7 +64,7 @@ export class PolywrapCoreClient implements CoreClient {
    *
    * @returns an array of env objects containing wrapper environmental variables
    */
-  public getEnvs(): Readonly<Envs> | undefined /* $ */ {
+  public getEnvs(): ReadonlyUriMap<WrapperEnv> | undefined /* $ */ {
     return this._config.envs;
   }
 
@@ -85,13 +85,13 @@ export class PolywrapCoreClient implements CoreClient {
    * @param uri - the URI used to register the env
    * @returns an env, or undefined if an env is not found at the given URI
    */
-  public getEnvByUri(uri: Uri): Readonly<WrapperEnv> | undefined /* $ */ {
+  public getEnvByUri(uri: Uri): WrapperEnv | undefined /* $ */ {
     const envs = this.getEnvs();
     if (!envs) {
       return undefined;
     }
 
-    return envs[uri.uri];
+    return envs.get(uri);
   }
 
   // $start: PolywrapCoreClient-getManifest

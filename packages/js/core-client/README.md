@@ -84,7 +84,7 @@ Invoke a wrapper.
    *
    * @returns an array of env objects containing wrapper environmental variables
    */
-  public getEnvs(): Readonly<Envs> | undefined 
+  public getEnvs(): ReadonlyUriMap<WrapperEnv> | undefined 
 ```
 
 ### getResolver
@@ -105,7 +105,7 @@ Invoke a wrapper.
    * @param uri - the URI used to register the env
    * @returns an env, or undefined if an env is not found at the given URI
    */
-  public getEnvByUri(uri: Uri): Readonly<WrapperEnv> | undefined 
+  public getEnvByUri(uri: Uri): WrapperEnv | undefined 
 ```
 
 ### getManifest

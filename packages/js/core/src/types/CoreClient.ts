@@ -2,7 +2,6 @@ import {
   Invoker,
   Uri,
   WrapError,
-  Envs,
   WrapperEnv,
   InterfaceImplementations,
 } from ".";
@@ -11,6 +10,7 @@ import { UriResolverHandler } from "./UriResolver";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
+import { ReadonlyUriMap } from "./UriMap";
 
 // $start: CoreClient.ts
 
@@ -20,7 +20,7 @@ export interface CoreClientConfig {
   readonly interfaces?: InterfaceImplementations;
 
   /** set environmental variables for a wrapper */
-  readonly envs?: Envs;
+  readonly envs?: ReadonlyUriMap<WrapperEnv>;
 
   /** configure URI resolution for redirects, packages, and wrappers */
   readonly resolver: Readonly<IUriResolver<unknown>>;
@@ -74,7 +74,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    *
    * @returns an array of env objects containing wrapper environmental variables
    */
-  getEnvs(): Readonly<Envs> | undefined;
+  getEnvs(): ReadonlyUriMap<WrapperEnv> | undefined;
 
   /**
    * returns an env (a set of environmental variables) from the configuration used to instantiate the client
@@ -82,7 +82,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    * @param uri - the URI used to register the env
    * @returns an env, or undefined if an env is not found at the given URI
    */
-  getEnvByUri(uri: Uri): Readonly<WrapperEnv> | undefined;
+  getEnvByUri(uri: Uri): WrapperEnv | undefined;
 
   /**
    * returns the URI resolver from the configuration used to instantiate the client

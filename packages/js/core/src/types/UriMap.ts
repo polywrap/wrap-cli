@@ -1,11 +1,9 @@
 import { Uri } from "./Uri";
 
-export class UriMap<TValue> implements Map<Uri, TValue> {
+export class UriMap<TValue>
+  implements Map<Uri, TValue>, ReadonlyUriMap<TValue> {
   private map: Map<string, TValue>;
 
-  /**
-   *
-   */
   constructor(entries?: readonly (readonly [Uri, TValue])[]) {
     this.map = new Map<string, TValue>(entries?.map((x) => [x[0].uri, x[1]]));
   }
@@ -23,7 +21,6 @@ export class UriMap<TValue> implements Map<Uri, TValue> {
     thisArg?: any
   ): void {
     this.map.forEach((v, k) => callbackfn(v, Uri.from(k), this), thisArg);
-    throw new Error("Method not implemented.");
   }
 
   get(key: Uri): TValue | undefined {
@@ -68,11 +65,3 @@ export class UriMap<TValue> implements Map<Uri, TValue> {
 }
 
 export interface ReadonlyUriMap<T> extends ReadonlyMap<Uri, T> {}
-
-function foo(bar: ReadonlyUriMap<boolean>) {
-  bar.size;
-}
-
-const a = new UriMap<boolean>();
-
-foo(new UriMap([[Uri.from(""), true]]));
