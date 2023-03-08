@@ -1,4 +1,9 @@
-import { ExtendableUriResolver, Uri, PolywrapClient } from "../../../index";
+import {
+  ExtendableUriResolver,
+  Uri,
+  PolywrapClient,
+  UriMap,
+} from "../../../index";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { UriResolver } from "@polywrap/uri-resolvers-js";
 import { mockPluginRegistration } from "../../helpers";
@@ -52,12 +57,9 @@ export const interfaceInvokeCase = (implementation: string) => {
       );
 
       const client = new PolywrapClient({
-        interfaces: [
-          {
-            interface: interfaceUri,
-            implementations: [implementation1Uri, implementation2Uri],
-          },
-        ],
+        interfaces: new UriMap<Uri[]>([
+          [interfaceUri, [implementation1Uri, implementation2Uri]],
+        ]),
         resolver: UriResolver.from({
           from: Uri.from("uri/foo"),
           to: Uri.from("uri/bar"),
@@ -66,12 +68,9 @@ export const interfaceInvokeCase = (implementation: string) => {
 
       const interfaces = client.getInterfaces();
 
-      expect(interfaces).toEqual([
-        {
-          interface: interfaceUri,
-          implementations: [implementation1Uri, implementation2Uri],
-        },
-      ]);
+      expect(interfaces).toEqual(new UriMap<Uri[]>([
+        [interfaceUri, [implementation1Uri, implementation2Uri]],
+      ]));
 
       const implementations = await client.getImplementations(interfaceUri, {
         applyResolution: false,
@@ -116,20 +115,11 @@ export const interfaceInvokeCase = (implementation: string) => {
           },
           mockPluginRegistration(implementation4Uri),
         ]),
-        interfaces: [
-          {
-            interface: interface1Uri,
-            implementations: [implementation1Uri, implementation2Uri],
-          },
-          {
-            interface: interface2Uri,
-            implementations: [implementation3Uri],
-          },
-          {
-            interface: interface3Uri,
-            implementations: [implementation3Uri, implementation4Uri],
-          },
-        ],
+        interfaces: new UriMap<Uri[]>([
+          [interface1Uri, [implementation1Uri, implementation2Uri]],
+          [interface2Uri, [implementation3Uri]],
+          [interface3Uri, [implementation3Uri, implementation4Uri]],
+        ]),
       });
 
       const implementations1 = await client.getImplementations(interface1Uri, {
@@ -178,12 +168,7 @@ export const interfaceInvokeCase = (implementation: string) => {
 
       const client = new PolywrapClient(config);
 
-      const interfaces = (client.getInterfaces() || []).filter(
-        (x) => x.interface.uri === interfaceUri.uri
-      );
-      expect(interfaces.length).toEqual(1);
-
-      const implementationUris = interfaces[0].implementations;
+      const implementationUris = (client.getInterfaces() || new UriMap<Uri[]>).get(interfaceUri);
 
       expect(implementationUris).toEqual([
         implementationUri1,
@@ -206,20 +191,13 @@ export const interfaceInvokeCase = (implementation: string) => {
 
       const client = new PolywrapClient(config);
 
-      const interfaces = (client.getInterfaces() || []).filter(
-        (x) => x.interface.uri === interfaceUri.uri
-      );
-      expect(interfaces.length).toEqual(1);
-
-      const implementationUris = interfaces[0].implementations;
+      const implementationUris = (client.getInterfaces() ?? new UriMap<Uri[]>).get(interfaceUri);
 
       const builder = new ClientConfigBuilder();
       const defaultClientConfig = builder.addDefaults().build();
 
       expect(implementationUris).toEqual([
-        ...(defaultClientConfig.interfaces || []).find(
-          (x) => x.interface.uri === interfaceUri.uri
-        )!.implementations,
+        ...((defaultClientConfig.interfaces ?? new UriMap<Uri[]>).get(interfaceUri) || []),
         implementationUri1,
         implementationUri2,
       ]);
@@ -239,12 +217,9 @@ export const interfaceInvokeCase = (implementation: string) => {
         resolver: UriResolver.from([
           mockPluginRegistration(implementation1Uri),
         ]),
-        interfaces: [
-          {
-            interface: interfaceUri,
-            implementations: [implementation2Uri],
-          },
-        ],
+        interfaces: new UriMap<Uri[]>([
+          [interfaceUri, [implementation2Uri]],
+        ]),
       });
 
       const getImplementationsResult = await client.getImplementations(
@@ -270,12 +245,9 @@ export const interfaceInvokeCase = (implementation: string) => {
         resolver: UriResolver.from([
           mockPluginRegistration(implementation1Uri),
         ]),
-        interfaces: [
-          {
-            interface: interfaceUri,
-            implementations: [implementation1Uri, implementation2Uri],
-          },
-        ],
+        interfaces: new UriMap<Uri[]>([
+          [interfaceUri, [implementation1Uri, implementation2Uri]],
+        ]),
       });
 
       const getImplementationsResult = await client.getImplementations(

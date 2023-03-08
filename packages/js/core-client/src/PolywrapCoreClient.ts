@@ -19,8 +19,8 @@ import {
   WrapError,
   WrapErrorCode,
   WrapperEnv,
-  InterfaceImplementations,
-  ReadonlyUriMap
+  ReadonlyUriMap,
+  UriMap
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
@@ -54,7 +54,7 @@ export class PolywrapCoreClient implements CoreClient {
    *
    * @returns an array of interfaces and their registered implementations
    */
-  public getInterfaces(): InterfaceImplementations | undefined /* $ */ {
+  public getInterfaces(): ReadonlyUriMap<readonly Uri[]> | undefined /* $ */ {
     return this._config.interfaces;
   }
 
@@ -160,7 +160,7 @@ export class PolywrapCoreClient implements CoreClient {
 
     const getImplResult = await getImplementations(
       Uri.from(uri),
-      this.getInterfaces() ?? {},
+      this.getInterfaces() ?? new UriMap<readonly Uri[]>(),
       applyResolution ? this : undefined,
       applyResolution ? options.resolutionContext : undefined
     );

@@ -4,7 +4,7 @@ import {
   IUriRedirect,
   UriPackageOrWrapper,
 } from "../";
-import { CoreClient, InterfaceImplementations } from "../types";
+import { CoreClient, UriMap } from "../types";
 import { Result, ResultOk } from "@polywrap/result";
 
 const getClient = (redirects: IUriRedirect[]): CoreClient => {
@@ -54,11 +54,14 @@ describe("getImplementations", () => {
       },
     ];
 
-    const interfaces: InterfaceImplementations = {
-      [interface1Uri]: [implementation1Uri, implementation2Uri],
-      [interface2Uri]: [implementation3Uri],
-      [interface3Uri]: [implementation3Uri],
-    };
+    const interfaces: UriMap<readonly Uri[]> = new UriMap([
+      [
+        Uri.from(interface1Uri),
+        [Uri.from(implementation1Uri), Uri.from(implementation2Uri)],
+      ],
+      [Uri.from(interface2Uri), [Uri.from(implementation3Uri)]],
+      [Uri.from(interface3Uri), [Uri.from(implementation3Uri)]],
+    ]);
 
     const getImplementationsResult1 = await getImplementations(
       new Uri(interface1Uri),
@@ -110,9 +113,9 @@ describe("getImplementations", () => {
       },
     ];
 
-    const interfaces: InterfaceImplementations = {
-      [interface1Uri]: [implementation1Uri],
-    };
+    const interfaces: UriMap<readonly Uri[]> = new UriMap([
+      [Uri.from(interface1Uri), [Uri.from(implementation1Uri)]],
+    ]);
 
     const result = await getImplementations(
       new Uri(interface1Uri),

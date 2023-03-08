@@ -3,7 +3,7 @@ import {
   CoreClient,
   WrapError,
   WrapErrorCode,
-  InterfaceImplementations,
+  ReadonlyUriMap,
 } from "../types";
 import { IUriResolutionContext } from "../uri-resolution";
 import { applyResolution } from "./applyResolution";
@@ -12,7 +12,7 @@ import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export const getImplementations = async (
   wrapperInterfaceUri: Uri,
-  interfaces: InterfaceImplementations,
+  interfaces: ReadonlyUriMap<readonly Uri[]>,
   client?: CoreClient,
   resolutionContext?: IUriResolutionContext
 ): Promise<Result<Uri[], WrapError>> => {
@@ -26,21 +26,20 @@ export const getImplementations = async (
   };
 
   const addAllImplementationsFromImplementationsArray = async (
-    impls: InterfaceImplementations,
+    impls: ReadonlyUriMap<readonly Uri[]>,
     wrapperInterfaceUri: Uri
   ): Promise<Result<undefined, WrapError>> => {
-    for (const impl in impls) {
+    for (const impl of impls.keys()) {
       let fullyResolvedUri: Uri;
-      const interfaceUri = Uri.from(impl);
       if (client) {
         const redirectsResult = await applyResolution(
-          interfaceUri,
+          impl,
           client,
           resolutionContext
         );
         if (!redirectsResult.ok) {
           const error = new WrapError("Failed to resolve redirects", {
-            uri: impl,
+            uri: impl.uri,
             code: WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS_ERROR,
             cause: redirectsResult.error,
           });
@@ -48,12 +47,15 @@ export const getImplementations = async (
         }
         fullyResolvedUri = redirectsResult.value;
       } else {
-        fullyResolvedUri = interfaceUri;
+        fullyResolvedUri = impl;
       }
 
       if (Uri.equals(fullyResolvedUri, wrapperInterfaceUri)) {
-        for (const implementation of impls[impl]) {
-          addUniqueResult(Uri.from(implementation));
+        const implementations = impls.get(impl);
+        if (implementations) {
+          for (const implementation of implementations) {
+            addUniqueResult(Uri.from(implementation));
+          }
         }
       }
     }
