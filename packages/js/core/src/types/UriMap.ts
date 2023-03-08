@@ -18,7 +18,7 @@ export class UriMap<TValue>
 
   forEach(
     callbackfn: (value: TValue, key: Uri, map: Map<Uri, TValue>) => void,
-    thisArg?: any
+    thisArg?: unknown
   ): void {
     this.map.forEach((v, k) => callbackfn(v, Uri.from(k), this), thisArg);
   }
@@ -64,4 +64,4 @@ export class UriMap<TValue>
   }
 }
 
-export interface ReadonlyUriMap<T> extends ReadonlyMap<Uri, T> {}
+export type ReadonlyUriMap<T> = ReadonlyMap<Uri, T>;

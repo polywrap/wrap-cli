@@ -1,15 +1,10 @@
-import {
-  Invoker,
-  Uri,
-  WrapError,
-  WrapperEnv,
-} from ".";
+import { Invoker, Uri, WrapError, WrapperEnv } from ".";
 import { IUriResolutionContext, IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
+import { ReadonlyUriMap } from "./UriMap";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
-import { ReadonlyUriMap } from "./UriMap";
 
 // $start: CoreClient.ts
 

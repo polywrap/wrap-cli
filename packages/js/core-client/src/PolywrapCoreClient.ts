@@ -20,7 +20,7 @@ import {
   WrapErrorCode,
   WrapperEnv,
   ReadonlyUriMap,
-  UriMap
+  UriMap,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
