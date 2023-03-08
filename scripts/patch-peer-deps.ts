@@ -22,4 +22,4 @@ function main () {
   }
 }
 
-main(); 
+main();
