@@ -1,0 +1,17 @@
+name: run-test-wrapper
+format: 0.2.0
+jobs:
+  bad:
+    steps:
+    - uri: fs/../run-test-wrapper/buildd
+      method: add
+      args:
+        x: 1
+        y: 1
+  good:
+    steps:
+      - uri: fs/../run-test-wrapper/build
+        method: add
+        args:
+          x: 1
+          y: 1
