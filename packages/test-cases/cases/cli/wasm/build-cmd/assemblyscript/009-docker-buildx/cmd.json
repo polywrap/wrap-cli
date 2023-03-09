@@ -1,3 +1,3 @@
 {
-  "args": ["-s", "image"]
+  "strategy": "image"
 }

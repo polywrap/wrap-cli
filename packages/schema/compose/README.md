@@ -27,9 +27,11 @@ const input: ComposerOptions = {
     schema,
     absolutePath,
   }],
-  resolvers: {
-    external: resolveExternal,
-    local: resolveLocal,
+  abiResolver: (
+    importFrom: string,
+    schemaFile: SchemaFile
+  ) => Promise<Abi | SchemaFile> => {
+    ...
   },
   output: ComposerFilter.All
 };

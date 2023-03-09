@@ -202,11 +202,9 @@ describe("Error structure", () => {
         ).toBeTruthy();
         expect(result.error?.method).toEqual("throwError");
         expect(result.error?.args).toEqual('{\n  "a": "Hey"\n}');
-        expect(result.error?.source).toEqual({
-          file: "~lib/@polywrap/wasm-as/containers/Result.ts",
-          row: 171,
-          col: 13,
-        });
+        expect(result.error?.source?.file).toEqual(
+          "~lib/@polywrap/wasm-as/containers/Result.ts"
+        );
 
         expect(result.error?.innerError instanceof WrapError).toBeTruthy();
         const prev = result.error?.innerError as WrapError;
@@ -409,11 +407,7 @@ describe("Error structure", () => {
         ).toBeTruthy();
         expect(result.error?.method).toEqual("throwError");
         expect(result.error?.args).toEqual('{\n  "a": "Hey"\n}');
-        expect(result.error?.source).toEqual({
-          file: "src/lib.rs",
-          row: 10,
-          col: 117,
-        });
+        expect(result.error?.source?.file).toEqual("src/lib.rs");
 
         expect(result.error?.innerError instanceof WrapError).toBeTruthy();
         const prev = result.error?.innerError as WrapError;

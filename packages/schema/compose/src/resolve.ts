@@ -5,10 +5,9 @@
 import {
   ExternalImport,
   LocalImport,
-  AbiResolvers,
   SYNTAX_REFERENCE,
   AbiResolver,
-  SchemaResolver,
+  SchemaFile,
 } from "./types";
 import { parseExternalImports, parseLocalImports, parseUse } from "./parse";
 import { renderSchema } from "./render";
@@ -43,6 +42,7 @@ import {
   visitImportedEnumDefinition,
   isKind,
   isImportedModuleType,
+  isModuleType,
   header,
   isEnvType,
   createImportedObjectDefinition,
@@ -130,9 +130,14 @@ export async function resolveUseStatements(
 export async function resolveImportsAndParseSchemas(
   schema: string,
   schemaPath: string,
-  resolvers: AbiResolvers,
+  abiResolver: AbiResolver,
   noValidate = false
 ): Promise<WrapAbi> {
+  // Make sure the schema has the Polywrap header
+  if (schema.indexOf("### Polywrap Header START ###") === -1) {
+    schema = addHeader(schema);
+  }
+
   const importKeywordCapture = /^(?:#|""")*import\s/gm;
   const externalImportCapture = /(?:#|""")*import\s*(?:({[^}]+}|\*))\s*into\s*(\w+?)\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
   const localImportCapture = /(?:#|""")*import\s*(?:({[^}]+}|\*))\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
@@ -164,8 +169,7 @@ export async function resolveImportsAndParseSchemas(
   );
 
   const localImportsToResolve: LocalImport[] = parseLocalImports(
-    localImportStatements,
-    schemaPath
+    localImportStatements
   );
 
   const subAbi: WrapAbi = {
@@ -179,17 +183,23 @@ export async function resolveImportsAndParseSchemas(
     importedEnvTypes: [],
   };
 
+  const schemaFile: SchemaFile = {
+    schema,
+    absolutePath: schemaPath,
+  };
+
   const externalImports = await resolveExternalImports(
+    schemaFile,
     externalImportsToResolve,
-    resolvers.external,
+    abiResolver,
     subAbi
   );
 
   await resolveLocalImports(
+    schemaFile,
     localImportsToResolve,
-    resolvers.local,
-    subAbi,
-    resolvers
+    abiResolver,
+    subAbi
   );
   const capabilitiesByModule = await resolveUseStatements(
     schema,
@@ -645,21 +655,36 @@ function resolveInterfaces(
 }
 
 async function resolveExternalImports(
+  schemaFile: SchemaFile,
   importsToResolve: ExternalImport[],
-  resolveAbi: AbiResolver,
+  abiResolver: AbiResolver,
   abi: WrapAbi
 ): Promise<string[]> {
   // Keep track of all imported object type names
   const typesToImport: ImportMap = {};
 
   for (const importToResolve of importsToResolve) {
-    const { uri, namespace, importedTypes } = importToResolve;
+    const { importFrom, namespace, importedTypes } = importToResolve;
+
+    const uri = importFrom;
+    const schemaOrAbi = await abiResolver(importFrom, schemaFile);
+    let extAbi: WrapAbi;
 
     // Resolve the schema
-    const extAbi = await resolveAbi(uri);
+    if (typeof (schemaOrAbi as SchemaFile).schema === "string") {
+      const schemaFile = schemaOrAbi as SchemaFile;
+      extAbi = await resolveImportsAndParseSchemas(
+        schemaFile.schema,
+        schemaFile.absolutePath,
+        abiResolver,
+        true
+      );
+    } else {
+      extAbi = schemaOrAbi as WrapAbi;
+    }
 
     if (!extAbi) {
-      throw Error(`Unable to resolve abi at "${uri}"`);
+      throw Error(`Unable to resolve abi at "${importFrom}"`);
     }
 
     const extTypesToImport = importedTypes;
@@ -698,7 +723,7 @@ async function resolveExternalImports(
         | undefined;
 
       // If it's a module type
-      if (importedType === "Module") {
+      if (isModuleType(importedType)) {
         if (!extAbi.moduleType) {
           extAbi.moduleType = createModuleDefinition({});
         }
@@ -962,33 +987,33 @@ async function resolveExternalImports(
 }
 
 async function resolveLocalImports(
+  schemaFile: SchemaFile,
   importsToResolve: LocalImport[],
-  resolveSchema: SchemaResolver,
-  abi: WrapAbi,
-  resolvers: AbiResolvers
+  abiResolver: AbiResolver,
+  abi: WrapAbi
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {
-    const { importedTypes, path } = importToResolve;
+    const { importedTypes, importFrom } = importToResolve;
 
     // Resolve the schema
-    let schema = await resolveSchema(path);
+    const schemaOrAbi = await abiResolver(importFrom, schemaFile);
+    let localAbi: WrapAbi;
 
-    if (!schema) {
-      throw Error(`Unable to resolve schema at "${path}"`);
+    if (typeof (schemaOrAbi as SchemaFile).schema === "string") {
+      const schemaFile = schemaOrAbi as SchemaFile;
+      localAbi = await resolveImportsAndParseSchemas(
+        schemaFile.schema,
+        schemaFile.absolutePath,
+        abiResolver,
+        true
+      );
+    } else {
+      localAbi = schemaOrAbi as WrapAbi;
     }
 
-    // Make sure the schema has the Polywrap header
-    if (schema.indexOf("### Polywrap Header START ###") === -1) {
-      schema = addHeader(schema);
+    if (!localAbi) {
+      throw Error(`Unable to resolve schema at "${importFrom}"`);
     }
-
-    // Parse the schema into Abi
-    const localAbi = await resolveImportsAndParseSchemas(
-      schema,
-      path,
-      resolvers,
-      true
-    );
 
     const extTypesToImport = importedTypes;
     const starIdx = extTypesToImport.indexOf("*");
@@ -1010,19 +1035,23 @@ async function resolveLocalImports(
     }
 
     // Keep track of all imported type names
-    const typesToImport: Record<string, ObjectDefinition | EnumDefinition> = {};
+    const typesToImport: Record<
+      string,
+      ModuleDefinition | ObjectDefinition | EnumDefinition
+    > = {};
 
     for (const importedType of extTypesToImport) {
-      if (importedType === "Module") {
-        throw Error(
-          `Importing module types from local schemas is prohibited. Tried to import from ${path}.`
-        );
-      }
-
-      let type: ObjectDefinition | EnumDefinition | undefined;
+      let type:
+        | ModuleDefinition
+        | ObjectDefinition
+        | EnumDefinition
+        | undefined;
       let visitorFunc: Function;
 
-      if (isEnvType(importedType)) {
+      if (isModuleType(importedType)) {
+        visitorFunc = visitModuleDefinition;
+        type = localAbi.moduleType;
+      } else if (isEnvType(importedType)) {
         visitorFunc = visitEnvDefinition;
         type = localAbi.envType;
       } else {
@@ -1048,7 +1077,7 @@ async function resolveLocalImports(
 
       if (!type) {
         throw Error(
-          `Cannot find type "${importedType}" in the schema at ${path}.\nFound: [ ${
+          `Cannot find type "${importedType}" in the schema at ${importFrom}.\nFound: [ ${
             localAbi.objectTypes &&
             localAbi.objectTypes.map((type) => type.type + " ")
           }]`
@@ -1138,7 +1167,9 @@ async function resolveLocalImports(
 
     // Add all imported types into the aggregate Abi
     for (const importType of Object.keys(typesToImport)) {
-      if (isKind(typesToImport[importType], DefinitionKind.Env)) {
+      if (isKind(typesToImport[importType], DefinitionKind.Module)) {
+        abi.moduleType = typesToImport[importType];
+      } else if (isKind(typesToImport[importType], DefinitionKind.Env)) {
         if (!abi.envType) {
           abi.envType = createEnvDefinition({});
         }

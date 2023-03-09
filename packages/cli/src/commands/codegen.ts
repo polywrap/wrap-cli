@@ -16,7 +16,7 @@ import {
   parseWrapperEnvsOption,
 } from "../lib";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
-import { defaultCodegenDir } from "../lib/defaults/defaultCodegenDir";
+import { DEFAULT_CODEGEN_DIR } from "../lib/defaults";
 import { watchProject } from "../lib/watchProject";
 
 import { PolywrapClient } from "@polywrap/client-js";
@@ -48,7 +48,7 @@ export const codegen: Command = {
       .option(
         `-g, --codegen-dir <${pathStr}>`,
         `${intlMsg.commands_codegen_options_codegen({
-          default: defaultCodegenDir,
+          default: DEFAULT_CODEGEN_DIR,
         })}`
       )
       .option(
@@ -76,7 +76,7 @@ export const codegen: Command = {
             options.manifestFile,
             defaultProjectManifestFiles
           ),
-          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
+          codegenDir: parseDirOption(options.codegenDir, DEFAULT_CODEGEN_DIR),
           script: parseCodegenScriptOption(options.script),
           clientConfig: options.clientConfig || false,
           wrapperEnvs: options.wrapperEnvs || false,
