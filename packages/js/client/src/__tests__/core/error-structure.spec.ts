@@ -234,7 +234,7 @@ describe("Error structure", () => {
         expect(prev.args).toEqual('{\n  "a": "Hey"\n}');
         expect(prevOfPrev.source).toEqual({
           file: "src/index.ts",
-          row: 8,
+          row: 13,
           col: 5,
         });
       });
