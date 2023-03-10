@@ -54,13 +54,13 @@
               ]
             ]
           ],
-          "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => uri (wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop)",
+          "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => uri (wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg)",
           [
-            "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver => uri (wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop)",
+            "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver => uri (wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg)",
             [
-              "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => UriResolverAggregator => uri (wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop)",
+              "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => UriResolverAggregator => uri (wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg)",
               [
-                "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => ExtendableUriResolver => uri (wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop)",
+                "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => ExtendableUriResolver => uri (wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg)",
                 [
                   "wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0)",
                   [
@@ -70,24 +70,24 @@
                   [
                     "wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0)"
                   ],
-                  "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => ResolverExtension (wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0) => uri (wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop)"
+                  "wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0 => ResolverExtension (wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0) => uri (wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg)"
                 ]
               ]
             ]
           ],
-          "wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop => RequestSynchronizerResolver => wrapper (wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop)",
+          "wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg => RequestSynchronizerResolver => wrapper (wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg)",
           [
-            "wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop => PackageToWrapperCacheResolver => wrapper (wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop)",
+            "wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg => PackageToWrapperCacheResolver => wrapper (wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg)",
             [
-              "wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop => UriResolverAggregator => package (wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop)",
+              "wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg => UriResolverAggregator => package (wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg)",
               [
-                "wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop => ExtendableUriResolver => package (wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop)",
+                "wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg => ExtendableUriResolver => package (wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg)",
                 [
                   "wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0 => RequestSynchronizerResolver => wrapper (wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0)",
                   [
                     "wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0 => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0)"
                   ],
-                  "wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop => ResolverExtension (wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0) => package (wrap://ipfs/QmRmvC9y481GJ6arGsPqLvU7H8Zy86P8US9onmE48VpKop)"
+                  "wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg => ResolverExtension (wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0) => package (wrap://ipfs/QmbsxmNDbJ3uNp9CRBTfTVQJikCYWQrFcXbC3mVpTRTLZg)"
                 ]
               ]
             ]
