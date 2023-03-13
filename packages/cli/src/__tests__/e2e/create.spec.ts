@@ -26,10 +26,13 @@ Commands:
   help [command]                      display help for command
 `;
 
-const VERSION = fs.readFileSync(
-  path.join(__dirname, "../../../../../VERSION"),
-  "utf-8"
-).replace("\n", "").replace("\r", "");
+const VERSION =
+  fs.readFileSync(
+    path.join(__dirname, "../../../../../VERSION"),
+    "utf-8"
+  )
+  .replace(/\n/g, "")
+  .replace(/\r/g, "");
 
 const urlExamples = (format: UrlFormat): string => {
   if (format === UrlFormat.git) {
