@@ -11,15 +11,19 @@ import {
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 
-/** configure how additional resolution attempts are handled after an initial resolution attempt fails */
+/**
+ * configure how additional resolution attempts are handled after an initial resolution attempt fails
+ * @property retries the number of additional resolution attempts
+ * @property interval the duration (in ms) to pause between attempts
+ * @property callback a function that returns true if the resolution attempt should be retried
+ */
 export type RetryOptions = {
-  /** the number of additional resolution attempts */
   retries: number;
-  /** the duration (in ms) to pause between attempts */
-  interval: number;
+  interval?: number;
+  callback?: (uriOrAuthority: string) => boolean;
 };
 
-/** A map or uri or authority strings to retry options */
+/** A map of uri or authority strings to retry options */
 export type RetryResolverOptions = {
   [uriOrAuthority: string]: RetryOptions;
 };
@@ -65,37 +69,47 @@ export class RetryResolver<TError = undefined> implements IUriResolver<TError> {
       return result;
     }
 
-    let retries = 0;
-    let interval = 0;
+    let uriOrAuthority: string | undefined = undefined;
+    let options: RetryOptions | undefined = undefined;
     if (uri.uri in this.options) {
-      const uriOrAuthority = this.options[uri.uri];
-      retries = uriOrAuthority.retries;
-      interval = uriOrAuthority.interval;
+      uriOrAuthority = uri.uri;
+      options = this.options[uriOrAuthority];
     } else if (uri.authority in this.options) {
-      const uriOrAuthority = this.options[uri.authority];
-      retries = uriOrAuthority.retries;
-      interval = uriOrAuthority.interval;
+      uriOrAuthority = uri.authority;
+      options = this.options[uriOrAuthority];
     }
 
-    while (retries-- > 0) {
-      // sleep
-      await new Promise((r) => setTimeout(r, interval));
-      const result = await this.resolver.tryResolveUri(uri, client, subContext);
+    let retries = options?.retries ?? 0;
+    const interval = options?.interval ?? 0;
 
-      const isChange = !(
-        result.ok &&
-        result.value.type === "uri" &&
-        result.value.uri.uri === uri.uri
-      );
+    if (
+      uriOrAuthority &&
+      this.options[uriOrAuthority].callback?.(uriOrAuthority)
+    ) {
+      while (retries-- > 0) {
+        // sleep
+        await new Promise((r) => setTimeout(r, interval));
+        const result = await this.resolver.tryResolveUri(
+          uri,
+          client,
+          subContext
+        );
 
-      if (isChange) {
-        resolutionContext.trackStep({
-          sourceUri: uri,
-          result,
-          subHistory: subContext.getHistory(),
-          description: "RetryResolver (Retry)",
-        });
-        return result;
+        const isChange = !(
+          result.ok &&
+          result.value.type === "uri" &&
+          result.value.uri.uri === uri.uri
+        );
+
+        if (isChange) {
+          resolutionContext.trackStep({
+            sourceUri: uri,
+            result,
+            subHistory: subContext.getHistory(),
+            description: "RetryResolver (Retry)",
+          });
+          return result;
+        }
       }
     }
 

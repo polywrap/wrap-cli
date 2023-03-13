@@ -1,9 +1,8 @@
 import { Uri, UriResolutionContext } from "@polywrap/core-js";
 import { expectHistory } from "./util";
-import { RecursiveResolver, RetryResolver, RetryResolverOptions } from "../helpers";
+import { RetryResolver, RetryResolverOptions, UriResolver } from "../helpers";
 import { ClientConfigBuilder, PolywrapClient } from "@polywrap/client-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
-import { PackageToWrapperCacheResolver, WrapperCache } from "../cache";
 import { StaticResolver } from "../static";
 import {
   embeds,
@@ -15,9 +14,7 @@ jest.setTimeout(200000);
 
 const getClientWithRetryResolver = (retryOptions: RetryResolverOptions): PolywrapClient => {
   const ipfsResolverUri = Uri.from("wrap://package/ipfs-resolver");
-  const resolver = RecursiveResolver.from(
-    PackageToWrapperCacheResolver.from(
-      [
+  const resolver = UriResolver.from([
         StaticResolver.from([
           {
             uri: embeds.ipfsHttpClient.uri,
@@ -36,9 +33,7 @@ const getClientWithRetryResolver = (retryOptions: RetryResolverOptions): Polywra
           new ExtendableUriResolver(),
           retryOptions
         )
-      ],
-      new WrapperCache()
-    )
+    ]
   );
 
   const config = new ClientConfigBuilder()
@@ -97,4 +92,20 @@ describe("RetryResolver", () => {
       "two-retries-no-resolution"
     );
   });
+
+  // it("one retry then resolves", async () => {
+  //   const uri = new Uri("wrap://ipfs/QmdEMfomFW1XqoxcsCEnhujn9ebQezUXw8pmwLtecyR6F7");
+  //
+  //   const client = getClientWithRetryResolver({ ipfs: { retries: 2, interval: 10000 }});
+  //
+  //   const resolutionContext = new UriResolutionContext();
+  //   const result = await client.tryResolveUri({ uri, resolutionContext });
+  //
+  //   if (!result.ok) throw result.error;
+  //
+  //   await expectHistory(
+  //     resolutionContext.getHistory(),
+  //     "two-retries-no-resolution"
+  //   );
+  // });
 });
