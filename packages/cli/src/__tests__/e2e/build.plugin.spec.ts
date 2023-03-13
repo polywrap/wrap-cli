@@ -35,7 +35,6 @@ describe("e2e tests for build command - plugin project", () => {
       test(testCaseName, async () => {
         const { exitCode: code, stdout: output, stderr: error } = await Commands.build({
           ...args,
-          codegen: true,
         }, {
           cwd: testCaseDir,
         });
