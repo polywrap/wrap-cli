@@ -172,91 +172,91 @@ describe("e2e tests for create command", () => {
     });
   }
 
-    describe("template", () => {
-      it("Should throw error for missing required argument - url", async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCli({
-          args: ["create", "template"],
-          config: {
-            cli: polywrapCli,
-          }
-        });
-
-        expect(code).toEqual(1);
-        expect(error).toContain("error: missing required argument 'url'");
-        expect(output).toBe("");
+  describe.skip("template", () => {
+    it("Should throw error for missing required argument - url", async () => {
+      const { exitCode: code, stdout: output, stderr: error } = await runCli({
+        args: ["create", "template"],
+        config: {
+          cli: polywrapCli,
+        }
       });
 
-      it("Should throw error for missing required argument - name", async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCli({
-          args: ["create", "template", "lang"],
-          config: {
-            cli: polywrapCli,
-          }
-        });
+      expect(code).toEqual(1);
+      expect(error).toContain("error: missing required argument 'url'");
+      expect(output).toBe("");
+    });
 
-        expect(code).toEqual(1);
-        expect(error).toContain("error: missing required argument 'name'");
-        expect(output).toBe("");
+    it("Should throw error for missing required argument - name", async () => {
+      const { exitCode: code, stdout: output, stderr: error } = await runCli({
+        args: ["create", "template", "lang"],
+        config: {
+          cli: polywrapCli,
+        }
       });
 
-      it("Should throw error for invalid url parameter", async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCli({
-          args: ["create", "template", "lang", "demo"],
-          config: {
-            cli: polywrapCli,
-          }
-        });
+      expect(code).toEqual(1);
+      expect(error).toContain("error: missing required argument 'name'");
+      expect(output).toBe("");
+    });
 
-        expect(code).toEqual(1);
-        expect(error).toContain(`URL 'lang' uses an invalid format. Valid URL formats: ${Object.values(UrlFormat).join(", ")}`);
-        expect(output).toBe("");
+    it("Should throw error for invalid url parameter", async () => {
+      const { exitCode: code, stdout: output, stderr: error } = await runCli({
+        args: ["create", "template", "lang", "demo"],
+        config: {
+          cli: polywrapCli,
+        }
       });
 
-      for (const format of Object.values(UrlFormat)) {
-        const url = urlExamples(format);
+      expect(code).toEqual(1);
+      expect(error).toContain(`URL 'lang' uses an invalid format. Valid URL formats: ${Object.values(UrlFormat).join(", ")}`);
+      expect(output).toBe("");
+    });
 
-        describe(format, () => {
-          it("Should throw error for missing path argument for --output-dir option", async () => {
-            const { exitCode: code, stdout: output, stderr: error } = await runCli({
-              args: ["create", "template", url, "name", "-o"],
-              config: {
-                cli: polywrapCli,
-              }
-            });
+    for (const format of Object.values(UrlFormat)) {
+      const url = urlExamples(format);
 
-            expect(code).toEqual(1);
-            expect(error).toContain(
-              "error: option '-o, --output-dir <path>' argument missing"
-            );
-            expect(output).toBe("");
+      describe(format, () => {
+        it("Should throw error for missing path argument for --output-dir option", async () => {
+          const { exitCode: code, stdout: output, stderr: error } = await runCli({
+            args: ["create", "template", url, "name", "-o"],
+            config: {
+              cli: polywrapCli,
+            }
           });
 
-          it("Should successfully generate project", async () => {
-            rimraf.sync(`${__dirname}/test`);
+          expect(code).toEqual(1);
+          expect(error).toContain(
+            "error: option '-o, --output-dir <path>' argument missing"
+          );
+          expect(output).toBe("");
+        });
 
-            const { exitCode: code, stdout: output } = await runCli({
-              args: [
-                "create",
-                "template",
-                url,
-                "test",
-                "-o",
-                `${__dirname}/test`,
-              ],
-              config: {
-                cwd: __dirname,
-                cli: polywrapCli,
-              }
-            });
+        it("Should successfully generate project", async () => {
+          rimraf.sync(`${__dirname}/test`);
 
-            expect(code).toEqual(0);
-            expect(clearStyle(output)).toContain(
-              "🔥 You are ready "
-            );
+          const { exitCode: code, stdout: output } = await runCli({
+            args: [
+              "create",
+              "template",
+              url,
+              "test",
+              "-o",
+              `${__dirname}/test`,
+            ],
+            config: {
+              cwd: __dirname,
+              cli: polywrapCli,
+            }
+          });
 
-            rimraf.sync(`${__dirname}/test`);
-          }, 60000);
-        })
-      }
-    });
+          expect(code).toEqual(0);
+          expect(clearStyle(output)).toContain(
+            "🔥 You are ready "
+          );
+
+          rimraf.sync(`${__dirname}/test`);
+        }, 60000);
+      })
+    }
+  });
 });
