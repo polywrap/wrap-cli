@@ -1,9 +1,11 @@
 import { clearStyle, polywrapCli } from "./utils";
+import { ProjectType, supportedLangs } from "../../commands";
+import { UrlFormat } from "../../lib";
 
 import { runCli } from "@polywrap/cli-js";
 import rimraf from "rimraf";
-import { ProjectType, supportedLangs } from "../../commands";
-import { UrlFormat } from "../../lib";
+import path from "path";
+import fs from "fs";
 
 const HELP = `Usage: polywrap create|c [options] [command]
 
@@ -23,6 +25,11 @@ Commands:
                                       .git
   help [command]                      display help for command
 `;
+
+const VERSION = fs.readFileSync(
+  path.join(__dirname, "../../../../../VERSION"),
+  "utf-8"
+).replace("\n", "").replace("\r", "");
 
 const urlExamples = (format: UrlFormat): string => {
   if (format === UrlFormat.git) {
@@ -146,6 +153,10 @@ describe("e2e tests for create command", () => {
               config: {
                 cwd: __dirname,
                 cli: polywrapCli,
+                env: {
+                  ...process.env,
+                  OVERRIDE_CREATE_TEMPLATES_NPM: `@polywrap/templates@${VERSION}`
+                }
               }
             });
 
