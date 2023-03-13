@@ -213,7 +213,7 @@ async function run(options: Required<BuildCommandOptions>) {
       project as PolywrapProject
     );
 
-    canRunCodegen = language != "interface";
+    canRunCodegen = language !== "interface";
   }
 
   const execute = async (): Promise<boolean> => {
