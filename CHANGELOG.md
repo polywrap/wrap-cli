@@ -1,3 +1,9 @@
+# Polywrap Origin (0.9.6)
+## Bugs
+* [PR-1565](https://github.com/polywrap/toolchain/pull/1565) `@polywrap/ipfs-plugin-js`: Added optional support for provider authentication via the plugin's environment variables.
+* [PR-1559](https://github.com/polywrap/toolchain/pull/1559) `@polywrap/client-config-builder-js`, `@polywrap/ipfs-resolver-plugin-js`: Add the concept of configurable retries to the IPFS resolver.
+* [PR-1558](https://github.com/polywrap/toolchain/pull/1558) `@polywrap/core-js`: WrapError now correctly parsing Rust unwrap errors.
+
 # Polywrap Origin (0.9.5)
 ## Bugs
 * [PR-1541](https://github.com/polywrap/toolchain/pull/1541) `polywrap` CLI: Update build images to use the latest multi-platform versions.

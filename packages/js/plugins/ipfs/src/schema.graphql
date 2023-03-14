@@ -2,6 +2,10 @@
 
 type Env {
   """
+  auth token for the IPFS gateway
+  """
+  auth: String,
+  """
   Disable querying providers in parallel when resolving URIs
   """
   disableParallelRequests: Boolean,

@@ -1,0 +1,12 @@
+format: 0.2.0
+project:
+  name: test-case-simple-subinvoke
+  type: wasm/rust
+source:
+  schema: ./schema.graphql
+  module: ./Cargo.toml
+  import_abis:
+    - uri: ens/bad-util.eth
+      abi: ../1-subinvoke/build/wrap.info
+extensions:
+  build: ./polywrap.build.yaml
