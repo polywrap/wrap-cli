@@ -65,7 +65,6 @@ export class PackageToWrapperResolver<TError>
     client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | Error>> /* $ */ {
-    // Resolve uri if not in cache
     const subContext = resolutionContext.createSubHistoryContext();
 
     let result = await this._resolver.tryResolveUri(uri, client, subContext);
