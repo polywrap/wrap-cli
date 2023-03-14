@@ -1,5 +1,4 @@
-import { Uri } from "..";
-import { IUriPackage, IUriWrapper } from "../types";
+import { Uri, UriPackage, UriWrapper } from ".";
 
 // $start: UriPackageOrWrapper.ts
 
@@ -10,12 +9,12 @@ export type UriValue = {
 };
 
 /** Indicates that a URI resolved to a wrap package */
-export type UriPackageValue = IUriPackage & {
+export type UriPackageValue = UriPackage & {
   type: "package";
 };
 
 /** Indicates that a URI resolved to a wrapper */
-export type UriWrapperValue = IUriWrapper & {
+export type UriWrapperValue = UriWrapper & {
   type: "wrapper";
 };
 

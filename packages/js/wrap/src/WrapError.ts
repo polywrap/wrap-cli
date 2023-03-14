@@ -1,4 +1,4 @@
-import { CleanResolutionStep } from "../algorithms";
+export type ResolutionStack = (string | ResolutionStack)[];
 
 export type ErrorSource = Readonly<{
   file?: string;
@@ -47,7 +47,7 @@ export interface WrapErrorOptions {
   method?: string;
   args?: string;
   source?: ErrorSource;
-  resolutionStack?: CleanResolutionStep;
+  resolutionStack?: ResolutionStack;
   cause?: unknown;
   innerError?: WrapError;
 }
@@ -66,7 +66,7 @@ export class WrapError extends Error {
   readonly method?: string;
   readonly args?: string;
   readonly source?: ErrorSource;
-  readonly resolutionStack?: CleanResolutionStep;
+  readonly resolutionStack?: ResolutionStack;
   readonly cause?: unknown;
   readonly innerError?: WrapError;
 

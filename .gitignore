@@ -6,6 +6,7 @@ coverage
 .vscode
 *.log
 wrap
+!packages/js/wrap
 .polywrap
 .DS_Store
 report.*

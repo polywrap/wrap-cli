@@ -1,9 +1,9 @@
 import { Uri } from ".";
 
-// $start: IUriRedirect.ts
+// $start: UriRedirect.ts
 
 /** Redirect invocations from one URI to another */
-export interface IUriRedirect {
+export interface UriRedirect {
   /** URI to redirect from */
   from: Uri;
 

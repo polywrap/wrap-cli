@@ -1,9 +1,10 @@
-import { Uri, Wrapper } from ".";
+import { Uri } from ".";
+import { Wrapper } from "../wrapper";
 
-// $start: IUriWrapper.ts
+// $start: UriWrapper.ts
 
 /** Associates a URI with an embedded wrapper */
-export interface IUriWrapper {
+export interface UriWrapper {
   /** The URI to resolve to the wrapper */
   uri: Uri;
 

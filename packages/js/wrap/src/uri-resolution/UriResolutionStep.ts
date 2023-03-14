@@ -1,11 +1,10 @@
-import { Uri } from "..";
-import { UriPackageOrWrapper } from "./UriPackageOrWrapper";
+import { Uri, UriPackageOrWrapper } from ".";
 
 import { Result } from "@polywrap/result";
 
-// $start: IUriResolutionStep
+// $start: UriResolutionStep
 /** A step in the URI resolution algorithm */
-export interface IUriResolutionStep<TError = undefined> {
+export interface UriResolutionStep<TError = undefined> {
   /** The current URI being resolved */
   sourceUri: Uri;
 
@@ -16,6 +15,6 @@ export interface IUriResolutionStep<TError = undefined> {
   description?: string;
 
   /** History of sub-steps that exist within the context of this URI resolution step */
-  subHistory?: IUriResolutionStep<TError>[];
+  subHistory?: UriResolutionStep<TError>[];
 }
 // $end

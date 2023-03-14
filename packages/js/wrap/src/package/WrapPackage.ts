@@ -1,4 +1,4 @@
-import { Wrapper } from ".";
+import { Wrapper } from "../wrapper";
 
 import {
   DeserializeManifestOptions,
@@ -6,16 +6,16 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
-// $start: IWrapPackage.ts
+// $start: WrapPackage.ts
 
-/** Options for IWrapPackage's getManifest method */
+/** Options for WrapPackage's getManifest method */
 export interface GetManifestOptions {
   /** If true, manifest validation step will be skipped */
   noValidate?: boolean;
 }
 
 /** A wrap package, capable of producing instances of a wrapper and its manifest */
-export interface IWrapPackage {
+export interface WrapPackage {
   /**
    * Produce an instance of the wrap manifest
    *

@@ -1,15 +1,23 @@
 import {
-  GetFileOptions,
   InvokeOptions,
   Invocable,
   Invoker,
   InvocableResult,
-} from ".";
+} from "../invoke";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
 // $start: Wrapper.ts
+
+/** Options for getFile method */
+export interface GetFileOptions {
+  /** file path from wrapper root */
+  path: string;
+
+  /** file encoding */
+  encoding?: "utf-8" | string;
+}
 
 /**
  * The Wrapper definition, which can be used to spawn

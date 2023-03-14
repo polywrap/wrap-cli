@@ -1,0 +1,2 @@
+- [ ] look into making a `./resources/` section in the `wrap` package
+  - can have the `getFile` interface there for getting a file from a wrap package

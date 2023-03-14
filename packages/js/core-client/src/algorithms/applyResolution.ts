@@ -1,5 +1,6 @@
-import { Uri, CoreClient, IUriResolutionContext } from "..";
+import { CoreClient } from "..";
 
+import { Uri, IUriResolutionContext } from "@polywrap/wrap-js";
 import { Result, ResultOk } from "@polywrap/result";
 
 export const applyResolution = async (

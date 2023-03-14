@@ -19,15 +19,6 @@ export interface CoreClientConfig {
   readonly resolver: Readonly<IUriResolver<unknown>>;
 }
 
-/** Options for CoreClient's getFile method */
-export interface GetFileOptions {
-  /** file path from wrapper root */
-  path: string;
-
-  /** file encoding */
-  encoding?: "utf-8" | string;
-}
-
 /** Options for CoreClient's getImplementations method */
 export interface GetImplementationsOptions {
   /** If true, follow redirects to resolve URIs */

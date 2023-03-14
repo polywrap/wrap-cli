@@ -1,5 +1,4 @@
-import { Uri } from ".";
-import { IUriResolutionContext, UriPackageOrWrapper } from "../uri-resolution";
+import { Uri, UriResolutionContext, UriPackageOrWrapper } from ".";
 
 import { Result } from "@polywrap/result";
 
@@ -11,11 +10,11 @@ export interface TryResolveUriOptions {
   uri: Uri;
 
   /** A URI resolution context */
-  resolutionContext?: IUriResolutionContext;
+  resolutionContext?: UriResolutionContext;
 }
 
 /** An entity capable of resolving a wrap URI, typically by using an IUriResolver implementation */
-export interface UriResolverHandler<TError = undefined> {
+export interface UriResolutionClient<TError = undefined> {
   /**
    * Resolve a URI to a wrap package, a wrapper, or a uri
    *
