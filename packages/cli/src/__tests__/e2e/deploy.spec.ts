@@ -38,7 +38,7 @@ const setup = async () => {
     modules: ["eth-ens-ipfs"],
   })
   // Wait a little longer just in case
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  await new Promise((resolve) => setTimeout(resolve, 10000));
 
   // Setup environment variables
   process.env = {

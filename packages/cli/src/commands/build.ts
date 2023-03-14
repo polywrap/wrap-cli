@@ -98,24 +98,28 @@ export const build: Command = {
         `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
-      .action(async (options: Partial<BuildCommandOptions>) => {
-        await run({
-          manifestFile: parseManifestFileOption(
-            options.manifestFile,
-            defaultPolywrapManifest
-          ),
-          clientConfig: options.clientConfig || false,
-          wrapperEnvs: options.wrapperEnvs || false,
-          outputDir: parseDirOption(options.outputDir, defaultOutputDir),
-          noCodegen: options.noCodegen || false,
-          codegenDir: parseDirOption(options.codegenDir, DEFAULT_CODEGEN_DIR),
-          strategy: options.strategy || defaultStrategy,
-          watch: options.watch || false,
-          verbose: options.verbose || false,
-          quiet: options.quiet || false,
-          logFile: parseLogFileOption(options.logFile),
-        });
-      });
+      .action(
+        async (
+          options: Partial<BuildCommandOptions> & { codegen: boolean }
+        ) => {
+          await run({
+            manifestFile: parseManifestFileOption(
+              options.manifestFile,
+              defaultPolywrapManifest
+            ),
+            clientConfig: options.clientConfig || false,
+            wrapperEnvs: options.wrapperEnvs || false,
+            outputDir: parseDirOption(options.outputDir, defaultOutputDir),
+            noCodegen: !options.codegen || false,
+            codegenDir: parseDirOption(options.codegenDir, DEFAULT_CODEGEN_DIR),
+            strategy: options.strategy || defaultStrategy,
+            watch: options.watch || false,
+            verbose: options.verbose || false,
+            quiet: options.quiet || false,
+            logFile: parseLogFileOption(options.logFile),
+          });
+        }
+      );
   },
 };
 
@@ -213,7 +217,7 @@ async function run(options: Required<BuildCommandOptions>) {
       project as PolywrapProject
     );
 
-    canRunCodegen = language != "interface";
+    canRunCodegen = language !== "interface";
   }
 
   const execute = async (): Promise<boolean> => {

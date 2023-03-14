@@ -7,6 +7,10 @@ module.exports = {
       diagnostics: false
     },
   },
+  modulePathIgnorePatterns: [
+    "<rootDir>/build",
+    "<rootDir>/src/__tests__/project/.polywrap"
+  ],
   testPathIgnorePatterns: [
     "<rootDir>/src/__tests__/project/.polywrap"
   ],
@@ -14,6 +18,5 @@ module.exports = {
     "<rootDir>/src/__tests__/project/.polywrap"
   ],
   setupFilesAfterEnv: ["./jest.setup.js"],
-  testMatch: ["**/build-rs.spec.ts"],
-  modulePathIgnorePatterns: [],
+  testMatch: ["**/build-rs.spec.ts"]
 };

@@ -1,9 +1,11 @@
 import { clearStyle, polywrapCli } from "./utils";
+import { ProjectType, supportedLangs } from "../../commands";
+import { UrlFormat } from "../../lib";
 
 import { runCli } from "@polywrap/cli-js";
 import rimraf from "rimraf";
-import { ProjectType, supportedLangs } from "../../commands";
-import { UrlFormat } from "../../lib";
+import path from "path";
+import fs from "fs";
 
 const HELP = `Usage: polywrap create|c [options] [command]
 
@@ -23,6 +25,14 @@ Commands:
                                       .git
   help [command]                      display help for command
 `;
+
+const VERSION =
+  fs.readFileSync(
+    path.join(__dirname, "../../../../../VERSION"),
+    "utf-8"
+  )
+  .replace(/\n/g, "")
+  .replace(/\r/g, "");
 
 const urlExamples = (format: UrlFormat): string => {
   if (format === UrlFormat.git) {
@@ -146,6 +156,10 @@ describe("e2e tests for create command", () => {
               config: {
                 cwd: __dirname,
                 cli: polywrapCli,
+                env: {
+                  ...process.env,
+                  OVERRIDE_CREATE_TEMPLATES_NPM: `@polywrap/templates@${VERSION}`
+                }
               }
             });
 
@@ -161,81 +175,91 @@ describe("e2e tests for create command", () => {
     });
   }
 
-    describe("template", () => {
-      it("Should throw error for missing required argument - url", async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["create", "template"],
+  describe("template", () => {
+    it("Should throw error for missing required argument - url", async () => {
+      const { exitCode: code, stdout: output, stderr: error } = await runCli({
+        args: ["create", "template"],
+        config: {
           cli: polywrapCli,
-        });
-
-        expect(code).toEqual(1);
-        expect(error).toContain("error: missing required argument 'url'");
-        expect(output).toBe("");
+        }
       });
 
-      it("Should throw error for missing required argument - name", async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["create", "template", "lang"],
-          cli: polywrapCli,
-        });
+      expect(code).toEqual(1);
+      expect(error).toContain("error: missing required argument 'url'");
+      expect(output).toBe("");
+    });
 
-        expect(code).toEqual(1);
-        expect(error).toContain("error: missing required argument 'name'");
-        expect(output).toBe("");
+    it("Should throw error for missing required argument - name", async () => {
+      const { exitCode: code, stdout: output, stderr: error } = await runCli({
+        args: ["create", "template", "lang"],
+        config: {
+          cli: polywrapCli,
+        }
       });
 
-      it("Should throw error for invalid url parameter", async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["create", "template", "lang", "demo"],
-          cli: polywrapCli,
-        });
+      expect(code).toEqual(1);
+      expect(error).toContain("error: missing required argument 'name'");
+      expect(output).toBe("");
+    });
 
-        expect(code).toEqual(1);
-        expect(error).toContain(`URL 'lang' uses an invalid format. Valid URL formats: ${Object.values(UrlFormat).join(", ")}`);
-        expect(output).toBe("");
+    it("Should throw error for invalid url parameter", async () => {
+      const { exitCode: code, stdout: output, stderr: error } = await runCli({
+        args: ["create", "template", "lang", "demo"],
+        config: {
+          cli: polywrapCli,
+        }
       });
 
-      for (const format of Object.values(UrlFormat)) {
-        const url = urlExamples(format);
+      expect(code).toEqual(1);
+      expect(error).toContain(`URL 'lang' uses an invalid format. Valid URL formats: ${Object.values(UrlFormat).join(", ")}`);
+      expect(output).toBe("");
+    });
 
-        describe(format, () => {
-          it("Should throw error for missing path argument for --output-dir option", async () => {
-            const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-              args: ["create", "template", url, "name", "-o"],
+    for (const format of Object.values(UrlFormat)) {
+      const url = urlExamples(format);
+
+      describe(format, () => {
+        it("Should throw error for missing path argument for --output-dir option", async () => {
+          const { exitCode: code, stdout: output, stderr: error } = await runCli({
+            args: ["create", "template", url, "name", "-o"],
+            config: {
               cli: polywrapCli,
-            });
-
-            expect(code).toEqual(1);
-            expect(error).toContain(
-              "error: option '-o, --output-dir <path>' argument missing"
-            );
-            expect(output).toBe("");
+            }
           });
 
-          it("Should successfully generate project", async () => {
-            rimraf.sync(`${__dirname}/test`);
+          expect(code).toEqual(1);
+          expect(error).toContain(
+            "error: option '-o, --output-dir <path>' argument missing"
+          );
+          expect(output).toBe("");
+        });
 
-            const { exitCode: code, stdout: output } = await runCLI({
-              args: [
-                "create",
-                "template",
-                url,
-                "test",
-                "-o",
-                `${__dirname}/test`,
-              ],
+        it("Should successfully generate project", async () => {
+          rimraf.sync(`${__dirname}/test`);
+
+          const { exitCode: code, stdout: output } = await runCli({
+            args: [
+              "create",
+              "template",
+              url,
+              "test",
+              "-o",
+              `${__dirname}/test`,
+            ],
+            config: {
               cwd: __dirname,
               cli: polywrapCli,
-            });
+            }
+          });
 
-            expect(code).toEqual(0);
-            expect(clearStyle(output)).toContain(
-              "🔥 You are ready "
-            );
+          expect(code).toEqual(0);
+          expect(clearStyle(output)).toContain(
+            "🔥 You are ready "
+          );
 
-            rimraf.sync(`${__dirname}/test`);
-          }, 60000);
-        })
-      }
-    });
+          rimraf.sync(`${__dirname}/test`);
+        }, 60000);
+      })
+    }
+  });
 });

@@ -1,0 +1,20 @@
+import * as Types from "..";
+
+import {
+  BigInt,
+  BigNumber,
+  Box,
+  JSON,
+} from "@polywrap/wasm-as";
+
+export abstract class ModuleBase {
+  {{#methods}}
+  abstract {{#detectKeyword}}{{name}}{{/detectKeyword}}(
+    args: Types.Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}{{#env}},
+    env: {{#required}}Types.Env{{/required}}{{^required}}Types.Env | null{{/required}}{{/env}}
+  ): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}};
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+}
