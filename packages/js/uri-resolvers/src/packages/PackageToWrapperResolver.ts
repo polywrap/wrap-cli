@@ -1,4 +1,4 @@
-import { UriResolutionResult, UriResolver, UriResolverLike } from ".";
+import { UriResolutionResult, UriResolver, UriResolverLike } from "../helpers";
 
 import {
   IUriResolver,
