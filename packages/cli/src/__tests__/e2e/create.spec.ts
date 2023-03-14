@@ -175,7 +175,7 @@ describe("e2e tests for create command", () => {
     });
   }
 
-  describe.skip("template", () => {
+  describe("template", () => {
     it("Should throw error for missing required argument - url", async () => {
       const { exitCode: code, stdout: output, stderr: error } = await runCli({
         args: ["create", "template"],
