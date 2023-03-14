@@ -141,6 +141,10 @@ export class WrapError extends Error {
     return `${this.name}: ${this.message}`;
   }
 
+  toJSON(): string {
+    return this.toString();
+  }
+
   // remove escape characters that may have been added by Rust
   private static sanitizeUnwrappedRustResult(error: string): string {
     if (
