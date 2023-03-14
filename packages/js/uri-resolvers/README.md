@@ -257,7 +257,8 @@ export class WrapperCache implements IWrapperCache
 ```ts
 /**
  * An IUriResolver implementation that caches wrappers once they are resolved.
- * It does not cache URIs and packages.
+ * As it is a wrapper cache resolver, URI and package caching is outside of the scope for this resolver
+ * and can be achieved through other resolvers if necessary.
  * The WrapperCacheResolver wraps an IUriResolver implementation and delegates resolution to it.
  * */
 export class WrapperCacheResolver<TError>
@@ -269,11 +270,11 @@ export class WrapperCacheResolver<TError>
   /**
    * Creates a WrapperCacheResolver
    *
-   * @param _resolverToCache - a resolver to delegate resolution to
+   * @param _innerResolver - a resolver to delegate resolution to
    * @param _cache - a wrapper cache
    * */
   constructor(
-    private _resolverToCache: IUriResolver<TError>,
+    private _innerResolver: IUriResolver<TError>,
     private _cache: IWrapperCache
   ) 
 ```
@@ -285,14 +286,14 @@ export class WrapperCacheResolver<TError>
   /**
    * Creates a WrapperCacheResolver from a resolver-like object
    *
-   * @param resolver - a resolver-like item to delegate resolution to
+   * @param innerResolver - a resolver-like item to delegate resolution to
    * @param cache - a wrapper cache
    * @param options - control wrapper manifest deserialization
    *
    * @returns a WrapperCacheResolver
    * */
   static from<TResolverError = unknown>(
-    resolver: UriResolverLike,
+    innerResolver: UriResolverLike,
     cache: IWrapperCache
   ): WrapperCacheResolver<TResolverError> 
 ```
@@ -482,11 +483,11 @@ export class PackageToWrapperResolver<TError>
   /**
    * Creates a PackageToWrapperResolver
    *
-   * @param _resolver - a resolver to delegate resolution to
+   * @param _innerResolver - a resolver to delegate resolution to
    * @param _options - control wrapper manifest deserialization
    * */
   constructor(
-    private _resolver: IUriResolver<TError>,
+    private _innerResolver: IUriResolver<TError>,
     private _options?: {
       deserializeManifestOptions?: DeserializeManifestOptions;
     }
@@ -500,13 +501,13 @@ export class PackageToWrapperResolver<TError>
   /**
    * Creates a PackageToWrapperResolver from a resolver-like object
    *
-   * @param resolver - a resolver-like item to delegate resolution to
+   * @param innerResolver - a resolver-like item to delegate resolution to
    * @param options - control wrapper manifest deserialization
    *
    * @returns a PackageToWrapperResolver
    * */
   static from<TResolverError = unknown>(
-    resolver: UriResolverLike,
+    innerResolver: UriResolverLike,
     options?: { deserializeManifestOptions?: DeserializeManifestOptions }
   ): PackageToWrapperResolver<TResolverError> 
 ```

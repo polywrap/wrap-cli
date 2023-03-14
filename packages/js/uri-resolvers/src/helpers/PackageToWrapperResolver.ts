@@ -21,11 +21,11 @@ export class PackageToWrapperResolver<TError>
   /**
    * Creates a PackageToWrapperResolver
    *
-   * @param _resolver - a resolver to delegate resolution to
+   * @param _innerResolver - a resolver to delegate resolution to
    * @param _options - control wrapper manifest deserialization
    * */
   constructor(
-    private _resolver: IUriResolver<TError>,
+    private _innerResolver: IUriResolver<TError>,
     private _options?: {
       deserializeManifestOptions?: DeserializeManifestOptions;
     }
@@ -35,17 +35,17 @@ export class PackageToWrapperResolver<TError>
   /**
    * Creates a PackageToWrapperResolver from a resolver-like object
    *
-   * @param resolver - a resolver-like item to delegate resolution to
+   * @param innerResolver - a resolver-like item to delegate resolution to
    * @param options - control wrapper manifest deserialization
    *
    * @returns a PackageToWrapperResolver
    * */
   static from<TResolverError = unknown>(
-    resolver: UriResolverLike,
+    innerResolver: UriResolverLike,
     options?: { deserializeManifestOptions?: DeserializeManifestOptions }
   ): PackageToWrapperResolver<TResolverError> /* $ */ {
     return new PackageToWrapperResolver(
-      UriResolver.from<TResolverError>(resolver),
+      UriResolver.from<TResolverError>(innerResolver),
       options
     );
   }
@@ -67,7 +67,11 @@ export class PackageToWrapperResolver<TError>
   ): Promise<Result<UriPackageOrWrapper, TError | Error>> /* $ */ {
     const subContext = resolutionContext.createSubHistoryContext();
 
-    let result = await this._resolver.tryResolveUri(uri, client, subContext);
+    let result = await this._innerResolver.tryResolveUri(
+      uri,
+      client,
+      subContext
+    );
 
     if (result.ok && result.value.type === "package") {
       const wrapPackage = result.value.package;

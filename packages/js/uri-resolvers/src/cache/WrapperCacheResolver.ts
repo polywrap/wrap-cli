@@ -23,11 +23,11 @@ export class WrapperCacheResolver<TError>
   /**
    * Creates a WrapperCacheResolver
    *
-   * @param _resolverToCache - a resolver to delegate resolution to
+   * @param _innerResolver - a resolver to delegate resolution to
    * @param _cache - a wrapper cache
    * */
   constructor(
-    private _resolverToCache: IUriResolver<TError>,
+    private _innerResolver: IUriResolver<TError>,
     private _cache: IWrapperCache
   ) /* $ */ {}
 
@@ -35,18 +35,18 @@ export class WrapperCacheResolver<TError>
   /**
    * Creates a WrapperCacheResolver from a resolver-like object
    *
-   * @param resolver - a resolver-like item to delegate resolution to
+   * @param innerResolver - a resolver-like item to delegate resolution to
    * @param cache - a wrapper cache
    * @param options - control wrapper manifest deserialization
    *
    * @returns a WrapperCacheResolver
    * */
   static from<TResolverError = unknown>(
-    resolver: UriResolverLike,
+    innerResolver: UriResolverLike,
     cache: IWrapperCache
   ): WrapperCacheResolver<TResolverError> /* $ */ {
     return new WrapperCacheResolver(
-      UriResolver.from<TResolverError>(resolver),
+      UriResolver.from<TResolverError>(innerResolver),
       cache
     );
   }
@@ -83,7 +83,7 @@ export class WrapperCacheResolver<TError>
     // Resolve uri if not in cache
     const subContext = resolutionContext.createSubHistoryContext();
 
-    const result = await this._resolverToCache.tryResolveUri(
+    const result = await this._innerResolver.tryResolveUri(
       uri,
       client,
       subContext
