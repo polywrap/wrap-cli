@@ -1,25 +1,25 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { WrapExports } from "./types";
-import { createImports } from "./imports";
-import { IFileReader } from "./IFileReader";
+import { createImports } from "./createImports";
+import { createWasmWrapper } from "./createWasmWrapper";
 import { WRAP_MODULE_PATH } from "./constants";
-import { createWasmWrapper } from "./helpers/createWasmWrapper";
+import { isBuffer } from "./helpers/buffer";
+import { IFileReader } from "./IFileReader";
+import { WrapExports } from "./WrapExports";
 
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
-import { msgpackDecode, msgpackEncode } from "@polywrap/msgpack-js";
-import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import {
-  CoreClient,
+  ErrorSource,
   GetFileOptions,
   GetManifestOptions,
   InvocableResult,
   InvokeOptions,
-  isBuffer,
-  Wrapper,
+  WrapClient,
   WrapError,
   WrapErrorCode,
-  ErrorSource,
-} from "@polywrap/core-js";
+  Wrapper
+} from "@polywrap/wrap-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { msgpackDecode, msgpackEncode } from "@polywrap/msgpack-js";
+import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export interface State {
@@ -130,7 +130,7 @@ export class WasmWrapper implements Wrapper {
 
   public async invoke(
     options: InvokeOptions,
-    client: CoreClient
+    client: WrapClient
   ): Promise<InvocableResult<Uint8Array>> {
     try {
       const { method } = options;

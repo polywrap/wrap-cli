@@ -1,17 +1,16 @@
-import { IFileReader } from "./IFileReader";
-import { IWasmPackage } from "./IWasmPackage";
-import { WasmWrapper } from "./WasmWrapper";
 import { WRAP_MODULE_PATH, WRAP_MANIFEST_PATH } from "./constants";
-import { createWasmPackage } from "./helpers/createWasmPackage";
+import { createWasmPackage } from "./createWasmPackage";
+import { IFileReader } from "./IFileReader";
+import { WasmWrapper } from "./WasmWrapper";
 
 import {
   deserializeWrapManifest,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
-import { GetManifestOptions, Wrapper } from "@polywrap/core-js";
+import { GetManifestOptions, Wrapper, WrapPackage } from "@polywrap/wrap-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
-export class WasmPackage implements IWasmPackage {
+export class WasmPackage implements WrapPackage {
   constructor(private readonly _fileReader: IFileReader) {}
 
   static from(manifestBuffer: Uint8Array, wasmModule: Uint8Array): WasmPackage;

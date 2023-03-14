@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@polywrap/asyncify-js": "0.10.0-pre.12",
-    "@polywrap/core-js": "0.10.0-pre.12",
+    "@polywrap/wrap-js": "0.10.0-pre.12",
     "@polywrap/msgpack-js": "0.10.0-pre.12",
     "@polywrap/result": "0.10.0-pre.12",
     "@polywrap/tracing-js": "0.10.0-pre.12",

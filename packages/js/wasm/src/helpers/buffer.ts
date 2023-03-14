@@ -1,4 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+export function isBuffer(maybeBuf: unknown): maybeBuf is BufferSource {
+  if (maybeBuf instanceof ArrayBuffer || ArrayBuffer.isView(maybeBuf)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 export function writeString(
   str: string,
   dst: ArrayBuffer,

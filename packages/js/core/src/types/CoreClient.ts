@@ -19,15 +19,6 @@ export interface CoreClientConfig {
   readonly resolver: Readonly<IUriResolver<unknown>>;
 }
 
-/** Options for CoreClient's getImplementations method */
-export interface GetImplementationsOptions {
-  /** If true, follow redirects to resolve URIs */
-  applyResolution?: boolean;
-
-  /** Use and update an existing resolution context */
-  resolutionContext?: IUriResolutionContext;
-}
-
 /** Options for CoreClient's validate method */
 export interface ValidateOptions {
   /** Validate full ABI */
@@ -94,19 +85,6 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
     uri: Uri,
     options: GetFileOptions
   ): Promise<Result<string | Uint8Array, WrapError>>;
-
-  /**
-   * returns the interface implementations associated with an interface URI
-   *  from the configuration used to instantiate the client
-   *
-   * @param uri - a wrap URI
-   * @param options - { applyResolution?: boolean; resolutionContext?: IUriResolutionContext }
-   * @returns a Result containing URI array if the request was successful
-   */
-  getImplementations(
-    uri: Uri,
-    options: GetImplementationsOptions
-  ): Promise<Result<Uri[], WrapError>>;
 }
 
 // $end

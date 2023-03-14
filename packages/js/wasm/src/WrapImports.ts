@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/ban-types */
 
-export type u32 = number;
-
-export interface WrapExports extends WebAssembly.Exports {
-  _wrap_invoke: (nameLen: u32, argsLen: u32, envLen: u32) => boolean;
-}
+import { u32 } from "./helpers/types";
 
 export interface WrapImports extends WebAssembly.Imports {
   wrap: {

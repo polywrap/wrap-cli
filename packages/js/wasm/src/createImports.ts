@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { u32, WrapImports } from "./types";
-import { readBytes, readString, writeBytes, writeString } from "./buffer";
+import { WrapImports } from "./WrapImports";
 import { State } from "./WasmWrapper";
+import { u32 } from "./helpers/types";
+import { readBytes, readString, writeBytes, writeString } from "./helpers/buffer";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { CoreClient, Uri, ErrorSource } from "@polywrap/core-js";
+import { WrapClient, Uri, ErrorSource } from "@polywrap/wrap-js";
 
 export const createImports = (config: {
-  client: CoreClient;
+  client: WrapClient;
   memory: WebAssembly.Memory;
   state: State;
   abortWithInvokeAborted: (message: string, source: ErrorSource) => never;

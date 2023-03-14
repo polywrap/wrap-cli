@@ -1,4 +1,4 @@
-import { IFileReader, WasmWrapper } from "..";
+import { IFileReader, WasmWrapper } from ".";
 import { createWasmPackage } from "./createWasmPackage";
 
 import { GetManifestOptions } from "@polywrap/core-js";

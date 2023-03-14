@@ -1,4 +1,4 @@
-import { IFileReader, WasmPackage, InMemoryFileReader } from "..";
+import { IFileReader, WasmPackage, InMemoryFileReader } from ".";
 
 // Helper function for creating wasm packages
 // Not meant for exporting out of this library
