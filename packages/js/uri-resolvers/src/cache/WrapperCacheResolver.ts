@@ -80,7 +80,7 @@ export class WrapperCacheResolver<TError>
       return result;
     }
 
-    // Resolve uri if not in cache
+    // Resolve URI if not in cache
     const subContext = resolutionContext.createSubHistoryContext();
 
     const result = await this._innerResolver.tryResolveUri(
