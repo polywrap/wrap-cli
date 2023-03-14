@@ -2,14 +2,14 @@ import { PluginModule } from "./PluginModule";
 import { PluginWrapper } from "./PluginWrapper";
 import { GetPluginMethodsFunc, PluginModuleWithMethods } from "./utils";
 
-import { IWrapPackage, Wrapper } from "@polywrap/core-js";
+import { WrapPackage, Wrapper } from "@polywrap/wrap-js";
 import { Result, ResultOk } from "@polywrap/result";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 export class PluginPackage<
   TConfig,
   TEnv extends Record<string, unknown> = Record<string, unknown>
-> implements IWrapPackage {
+> implements WrapPackage {
   constructor(
     private _pluginModule: PluginModule<TConfig, TEnv>,
     private _manifest: WrapManifest

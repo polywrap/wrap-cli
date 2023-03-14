@@ -1,16 +1,16 @@
 import { PluginModule } from "./PluginModule";
 import { getErrorSource } from "./utils/getErrorSource";
+import { isBuffer } from "./utils/isBuffer";
 
 import {
   Wrapper,
-  CoreClient,
+  WrapClient,
   InvokeOptions,
   InvocableResult,
   GetFileOptions,
-  isBuffer,
   WrapError,
   WrapErrorCode,
-} from "@polywrap/core-js";
+} from "@polywrap/wrap-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
@@ -35,7 +35,7 @@ export class PluginWrapper implements Wrapper {
 
   public async invoke(
     options: InvokeOptions,
-    client: CoreClient
+    client: WrapClient
   ): Promise<InvocableResult<unknown>> {
     const { method } = options;
     const args = options.args || {};

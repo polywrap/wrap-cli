@@ -26,6 +26,9 @@
     "@polywrap/tracing-js": "0.10.0-pre.12",
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.12"
   },
+  "peerDependencies": {
+    "@polywrap/wrap-js": "0.10.x"
+  },
   "devDependencies": {
     "@polywrap/cli-js": "0.10.0-pre.12",
     "@types/jest": "26.0.8",

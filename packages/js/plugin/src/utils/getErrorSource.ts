@@ -1,4 +1,4 @@
-import { ErrorSource } from "@polywrap/core-js";
+import { ErrorSource } from "@polywrap/wrap-js";
 
 type RegExpGroups<T extends string> =
   | (RegExpExecArray & {
