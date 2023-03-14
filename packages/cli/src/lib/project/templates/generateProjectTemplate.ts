@@ -93,7 +93,8 @@ export const generateProjectTemplate = async (
   const isOnline = checkIfOnline(useYarn);
 
   const root = path.resolve(projectDir);
-  const dependencies: string[] = ["@polywrap/templates"];
+  const packageNameOverride = process.env.OVERRIDE_CREATE_TEMPLATES_NPM;
+  const dependencies: string[] = [packageNameOverride || "@polywrap/templates"];
 
   fs.writeFileSync(
     path.join(root, "package.json"),

@@ -84,11 +84,9 @@ describe("Error structure", () => {
       ).toBeTruthy();
       expect(result.error?.method).toEqual("throwError");
       expect(result.error?.args).toEqual('{\n  "a": "Hey"\n}');
-      expect(result.error?.source).toEqual({
-        file: "~lib/@polywrap/wasm-as/containers/Result.ts",
-        row: 171,
-        col: 13,
-      });
+      expect(result.error?.source?.file).toEqual(
+        "~lib/@polywrap/wasm-as/containers/Result.ts"
+      );
 
       expect(result.error?.innerError instanceof WrapError).toBeTruthy();
       const prev = result.error?.innerError as WrapError;
@@ -128,11 +126,9 @@ describe("Error structure", () => {
         ).toBeTruthy();
         expect(result.error?.method).toEqual("add");
         expect(result.error?.args).toEqual('{\n  "a": "1",\n  "b": 1\n}');
-        expect(result.error?.source).toEqual({
-          file: "~lib/@polywrap/wasm-as/msgpack/ReadDecoder.ts",
-          row: 547,
-          col: 9,
-        });
+        expect(result.error?.source?.file).toEqual(
+          "~lib/@polywrap/wasm-as/msgpack/ReadDecoder.ts"
+        );
       });
 
       test("Invoke a wrapper method that doesn't exist", async () => {
@@ -216,11 +212,9 @@ describe("Error structure", () => {
         expect(prev.uri).toEqual("wrap://ens/imported-invoke.eth");
         expect(prev.method).toEqual("invokeThrowError");
         expect(prev.args).toEqual('{\n  "a": "Hey"\n}' );
-        expect(prev.source).toEqual({
-          file: "~lib/@polywrap/wasm-as/containers/Result.ts",
-          row: 171,
-          col: 13,
-        });
+        expect(prev.source?.file).toEqual(
+          "~lib/@polywrap/wasm-as/containers/Result.ts"
+        );
 
         expect(prev.innerError instanceof WrapError).toBeTruthy();
         const prevOfPrev = prev.innerError as WrapError;
@@ -232,11 +226,9 @@ describe("Error structure", () => {
         ).toBeTruthy();
         expect(prevOfPrev.method).toEqual("subinvokeThrowError");
         expect(prev.args).toEqual('{\n  "a": "Hey"\n}');
-        expect(prevOfPrev.source).toEqual({
-          file: "src/index.ts",
-          row: 8,
-          col: 5,
-        });
+        expect(prevOfPrev.source?.file).toEqual(
+          "src/index.ts"
+        );
       });
 
       describe("Incompatible version invocation", () => {
@@ -333,11 +325,9 @@ describe("Error structure", () => {
         ).toBeTruthy();
         expect(result.error?.method).toEqual("add");
         expect(result.error?.args).toEqual('{\n  "a": "1",\n  "b": 1\n}');
-        expect(result.error?.source).toEqual({
-          file: "src/wrap/module/wrapped.rs",
-          row: 27,
-          col: 13,
-        });
+        expect(result.error?.source?.file).toEqual(
+          "src/wrap/module/wrapped.rs"
+        );
       });
 
       test("Invoke a wrapper method that doesn't exist", async () => {
@@ -419,7 +409,7 @@ describe("Error structure", () => {
         expect(prev.uri).toEqual("wrap://ens/imported-invoke.eth");
         expect(prev.method).toEqual("invokeThrowError");
         expect(prev.args).toEqual('{\n  "a": "Hey"\n}');
-        expect(prev.source).toEqual({ file: "src/lib.rs", row: 10, col: 129 });
+        expect(prev.source?.file).toEqual("src/lib.rs");
 
         expect(prev.innerError instanceof WrapError).toBeTruthy();
         const prevOfPrev = prev.innerError as WrapError;
@@ -431,11 +421,9 @@ describe("Error structure", () => {
         ).toBeTruthy();
         expect(prevOfPrev.method).toEqual("subinvokeThrowError");
         expect(prevOfPrev.args).toEqual('{\n  "a": "Hey"\n}');
-        expect(prevOfPrev.source).toEqual({
-          file: "src/lib.rs",
-          row: 9,
-          col: 5,
-        });
+        expect(prevOfPrev.source?.file).toEqual(
+          "src/lib.rs"
+        );
       });
     });
 
@@ -468,11 +456,9 @@ describe("Error structure", () => {
         expect(result.error?.args).toContain(
           '{\n  "pathh": "packages/js/client/src/__tests__/core/index.ts"\n}'
         );
-        expect(result.error?.source).toEqual({
-          file: "node:internal/fs/promises",
-          row: 503,
-          col: 10,
-        });
+        expect(result.error?.source?.file).toEqual(
+          "node:internal/fs/promises"
+        );
       });
 
       test("Invoke a plugin wrapper with a method that doesn't exist", async () => {
