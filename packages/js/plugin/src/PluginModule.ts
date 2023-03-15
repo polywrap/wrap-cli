@@ -4,7 +4,10 @@ import { PluginMethod } from "./PluginMethod";
 import { CoreClient, WrapErrorCode } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
-export abstract class PluginModule<TConfig> {
+export abstract class PluginModule<
+  TConfig,
+  TEnv extends Record<string, unknown> = Record<string, unknown>
+> {
   private _config: TConfig;
 
   constructor(config: TConfig) {
@@ -17,13 +20,12 @@ export abstract class PluginModule<TConfig> {
 
   public async _wrap_invoke<
     TArgs extends Record<string, unknown> = Record<string, unknown>,
-    TResult = unknown,
-    TEnv extends Record<string, unknown> = Record<string, unknown>
+    TResult = unknown
   >(
     method: string,
     args: TArgs,
-    env: TEnv,
-    client: CoreClient
+    client: CoreClient,
+    env: TEnv
   ): Promise<Result<TResult, Error>> {
     const fn = this.getMethod<TArgs, TResult, TEnv>(method);
 
@@ -38,7 +40,7 @@ export abstract class PluginModule<TConfig> {
     }
 
     try {
-      const data = await fn(args, env, client);
+      const data = await fn(args, client, env);
       return ResultOk(data);
     } catch (e) {
       e.code = WrapErrorCode.WRAPPER_INVOKE_ABORTED;

@@ -18,13 +18,13 @@ export interface Args_{{name}} {
 {{/methods}}
 {{/moduleType}}
 
-export abstract class Module<TConfig> extends PluginModule<TConfig> {
+export abstract class Module<TConfig> extends PluginModule<TConfig{{#envType}}, Types.Env{{/envType}}> {
   {{#moduleType}}
   {{#methods}}
   abstract {{name}}(
     args: Args_{{name}},
-    env: {{#env}}{{#required}}Types.Env{{/required}}{{^required}}Types.Env | null{{/required}}{{/env}}{{^env}}null{{/env}},
-    client: CoreClient
+    client: CoreClient,
+    {{^env}}env?: null{{/env}}{{#env}}env{{^required}}?{{/required}}: Types.Env{{^required}} | null{{/required}}{{/env}},
   ): MaybeAsync<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
   {{^last}}
 

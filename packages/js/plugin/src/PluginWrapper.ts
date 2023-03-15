@@ -49,6 +49,15 @@ export class PluginWrapper implements Wrapper {
       return ResultErr(error);
     }
 
+    // NOTE: this is used just in case the module instance
+    //       we're interacting with is from versions < 0.10
+    const genericModule = this._module as unknown as Record<string, unknown>;
+    if (genericModule.setEnv) {
+      (genericModule.setEnv as ((env: unknown) => void))(
+        options.env || {}
+      );
+    }
+
     let jsArgs: Record<string, unknown>;
 
     // If the args are a msgpack buffer, deserialize it
@@ -77,8 +86,8 @@ export class PluginWrapper implements Wrapper {
     const result = await this._module._wrap_invoke(
       method,
       jsArgs,
-      options.env || {},
-      client
+      client,
+      options.env || {}
     );
 
     if (result.ok) {

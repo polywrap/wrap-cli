@@ -13,4 +13,4 @@ export type PluginMethod<
   TArgs extends Record<string, unknown> = Record<string, unknown>,
   TResult = unknown,
   TEnv extends Record<string, unknown> = Record<string, unknown>
-> = (args: TArgs, env: TEnv, client: CoreClient) => MaybeAsync<TResult>;
+> = (args: TArgs, client: CoreClient, env: TEnv) => MaybeAsync<TResult>;
