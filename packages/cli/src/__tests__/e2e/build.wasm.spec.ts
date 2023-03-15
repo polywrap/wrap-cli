@@ -192,7 +192,6 @@ describe("e2e tests for build command", () => {
     const logFileAbsPath = path.join(testCaseDir, logFilePath);
     const { exitCode: code } = await Commands.build({
       logFile: logFilePath,
-      codegen: true
     }, {
       cwd: testCaseDir,
       cli: polywrapCli,
@@ -209,7 +208,6 @@ describe("e2e tests for build command", () => {
     it("Builds for assemblyscript", async () => {
       const { exitCode: code, stdout: output } = await Commands.build({
         strategy: "image",
-        codegen: true
       }, {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,

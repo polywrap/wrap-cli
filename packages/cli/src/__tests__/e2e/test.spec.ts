@@ -8,7 +8,7 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import { Commands } from "@polywrap/cli-js";
 import { TestCommandOptions } from "../../commands";
 
-jest.setTimeout(200000);
+jest.setTimeout(100000);
 
 const HELP = `Usage: polywrap test|t [options]
 
