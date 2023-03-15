@@ -16,6 +16,6 @@ export abstract class Module<TConfig> extends PluginModule<TConfig, Types.Env> {
   abstract method(
     args: Args_method,
     client: CoreClient,
-    env?: null
+    env?: Types.Env | null
   ): MaybeAsync<Types.String>;
 }
