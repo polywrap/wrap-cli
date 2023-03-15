@@ -484,7 +484,7 @@ export const uriResolverExts: UriResolverExtBootloader = [
 
 interface IDefaultPlugin {
   uri: Uri;
-  plugin: PluginPackage<unknown>;
+  plugin: IWrapPackage;
   implements: Uri[];
 }
 
@@ -512,7 +512,7 @@ export const plugins: IDefaultPlugins = {
   },
   fileSystem: {
     uri: Uri.from("plugin/file-system@1.0.0"),
-    plugin: fileSystemPlugin({}),
+    plugin: fileSystemPlugin({}) as any,
     implements: [Uri.from("ens/wraps.eth:file-system@1.0.0")],
   },
   concurrent: {
