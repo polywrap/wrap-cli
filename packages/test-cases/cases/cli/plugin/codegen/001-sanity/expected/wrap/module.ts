@@ -20,11 +20,13 @@ export interface Args_methodTwo {
 export abstract class Module<TConfig> extends PluginModule<TConfig, Types.Env> {
   abstract methodOne(
     args: Args_methodOne,
-    client: CoreClient
+    client: CoreClient,
+    env?: null
   ): MaybeAsync<Types.Object>;
 
   abstract methodTwo(
     args: Args_methodTwo,
-    client: CoreClient
+    client: CoreClient,
+    env?: null
   ): MaybeAsync<Types.String>;
 }

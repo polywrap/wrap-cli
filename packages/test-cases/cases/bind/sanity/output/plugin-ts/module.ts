@@ -40,28 +40,28 @@ export interface Args_if {
   if: Types._else;
 }
 
-export abstract class Module<TConfig> extends PluginModule<TConfig> {
+export abstract class Module<TConfig> extends PluginModule<TConfig, Types.Env> {
   abstract moduleMethod(
     args: Args_moduleMethod,
-    env: null,
-    client: CoreClient
+    client: CoreClient,
+    env?: null
   ): MaybeAsync<Types.Int>;
 
   abstract objectMethod(
     args: Args_objectMethod,
-    env: Types.Env,
-    client: CoreClient
+    client: CoreClient,
+    env: Types.Env
   ): MaybeAsync<Types.AnotherType | null>;
 
   abstract optionalEnvMethod(
     args: Args_optionalEnvMethod,
-    env: Types.Env | null,
-    client: CoreClient
+    client: CoreClient,
+    env?: Types.Env | null
   ): MaybeAsync<Types.AnotherType | null>;
 
   abstract if(
     args: Args_if,
-    env: null,
-    client: CoreClient
+    client: CoreClient,
+    env?: null
   ): MaybeAsync<Types._else>;
 }

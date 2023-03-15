@@ -43,6 +43,9 @@ export const manifest: WrapManifest = {
             "type": "String"
           }
         ],
+        "env": {
+          "required": false
+        },
         "kind": 64,
         "name": "method",
         "required": true,
