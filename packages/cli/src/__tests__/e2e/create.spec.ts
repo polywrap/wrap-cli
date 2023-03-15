@@ -144,7 +144,7 @@ describe("e2e tests for create command", () => {
           it("Should successfully generate project", async () => {
             rimraf.sync(`${__dirname}/test`);
         
-            const { exitCode: code, stdout: output, stderr: error } = await runCli({
+            const { exitCode: code, stdout: output } = await runCli({
               args: [
                 "create",
                 project,
@@ -162,8 +162,6 @@ describe("e2e tests for create command", () => {
                 }
               }
             });
-
-            console.log({ code, output, error })
 
             expect(code).toEqual(0);
             expect(clearStyle(output)).toContain(
