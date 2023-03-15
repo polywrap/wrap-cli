@@ -22,9 +22,7 @@ export class PluginPackage<
     pluginModule: PluginModule<TConfig, TEnv>,
     manifest?: WrapManifest
   ): PluginPackage<TConfig, TEnv>;
-  static from<
-    TEnv extends Record<string, unknown> = Record<string, unknown>
-  >(
+  static from<TEnv extends Record<string, unknown> = Record<string, unknown>>(
     getPluginFuncs: GetPluginMethodsFunc<TEnv>,
     manifest?: WrapManifest
   ): PluginPackage<never, TEnv>;
@@ -32,7 +30,9 @@ export class PluginPackage<
     TConfig,
     TEnv extends Record<string, unknown> = Record<string, unknown>
   >(
-    pluginModuleOrGetPluginFuncs: PluginModule<TConfig, TEnv> | GetPluginMethodsFunc<TEnv>,
+    pluginModuleOrGetPluginFuncs:
+      | PluginModule<TConfig, TEnv>
+      | GetPluginMethodsFunc<TEnv>,
     manifest?: WrapManifest
   ): PluginPackage<TConfig, TEnv> {
     if (typeof pluginModuleOrGetPluginFuncs === "function") {

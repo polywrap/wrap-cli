@@ -51,11 +51,9 @@ export class PluginWrapper implements Wrapper {
 
     // NOTE: this is used just in case the module instance
     //       we're interacting with is from versions < 0.10
-    const genericModule = this._module as unknown as Record<string, unknown>;
+    const genericModule = (this._module as unknown) as Record<string, unknown>;
     if (genericModule.setEnv) {
-      (genericModule.setEnv as ((env: unknown) => void))(
-        options.env || {}
-      );
+      (genericModule.setEnv as (env: unknown) => void)(options.env || {});
     }
 
     let jsArgs: Record<string, unknown>;
