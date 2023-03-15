@@ -1,0 +1,9 @@
+format: 0.3.0
+project:
+  name: template-wasm-as
+  type: wasm/assemblyscript
+source:
+  module: ./src/index.ts
+  schema: ./src/schema.graphql
+extensions:
+  build: ./polywrap.wasm-linked.build.yaml

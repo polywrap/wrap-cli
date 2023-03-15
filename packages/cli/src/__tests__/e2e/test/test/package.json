@@ -1,0 +1,6 @@
+{
+  "name": "template",
+  "dependencies": {
+    "@polywrap/templates": "0.9.6"
+  }
+}
