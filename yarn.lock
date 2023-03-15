@@ -2142,11 +2142,6 @@
   resolved "https://registry.yarnpkg.com/@opentelemetry/semantic-conventions/-/semantic-conventions-1.6.0.tgz#ed410c9eb0070491cff9fe914246ce41f88d6f74"
   integrity sha512-aPfcBeLErM/PPiAuAbNFLN5sNbZLc3KZlar27uohllN8Zs6jJbHyJU1y7cMA6W/zuq+thkaG8mujiS+3iD/FWQ==
 
-"@polywrap/asyncify-js@0.9.6":
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/@polywrap/asyncify-js/-/asyncify-js-0.9.6.tgz#a546a77e84c026bde4037d3e72e06a8035f4993b"
-  integrity sha512-cSfbrh+GZjzSSVm55YJNnyLEy0YkXdXLjLIlXKjUqg30d1nPB3qHvmZ32I0itcDIPYfyHiEu3dA33GG7Xo+5Gw==
-
 "@polywrap/concurrent-plugin-js@~0.10.0-pre":
   version "0.10.0-pre.10"
   resolved "https://registry.yarnpkg.com/@polywrap/concurrent-plugin-js/-/concurrent-plugin-js-0.10.0-pre.10.tgz#106e015173cabed5b043cbc2fac00a6ccf58f9a0"
@@ -2164,22 +2159,6 @@
     "@polywrap/result" "0.10.0-pre.10"
     "@polywrap/tracing-js" "0.10.0-pre.10"
     "@polywrap/wrap-manifest-types-js" "0.10.0-pre.10"
-
-"@polywrap/core-js@0.9.6":
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/@polywrap/core-js/-/core-js-0.9.6.tgz#fe94e2c2f7b631f74f72920154ad2998498886c7"
-  integrity sha512-quvzASpFyk/Wp3wpdjir/9CNQXqzORnJD5YmJIzE/Hpe7r7FB3k0kLnn5f/0gxeMJccrCx/pXZFHp5GE2zJj2Q==
-  dependencies:
-    "@polywrap/asyncify-js" "0.9.6"
-    "@polywrap/msgpack-js" "0.9.6"
-    "@polywrap/result" "0.9.6"
-    "@polywrap/tracing-js" "0.9.6"
-    "@polywrap/wrap-manifest-types-js" "0.9.6"
-    graphql "15.5.0"
-    graphql-tag "2.10.4"
-    jsonschema "1.4.0"
-    semver "7.3.5"
-    yaml "2.1.3"
 
 "@polywrap/ethereum-provider-js@~0.2.3":
   version "0.2.4"
@@ -2199,13 +2178,6 @@
   dependencies:
     "@polywrap/core-js" "0.10.0-pre.10"
     "@polywrap/plugin-js" "0.10.0-pre.10"
-
-"@polywrap/fs-plugin-js@0.9.6":
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/@polywrap/fs-plugin-js/-/fs-plugin-js-0.9.6.tgz#6b0e24db256d08eb398ecfb53926a12ce341e05f"
-  integrity sha512-gQ8LhvoRhoedVy88ywb+xI8PQ13bJIMy8W13MEpREXZbb9WjAeaMPqO+Q6kim6uophE0Ck7JTmSNglkTx8C0ng==
-  dependencies:
-    "@polywrap/core-js" "0.9.6"
 
 "@polywrap/http-plugin-js@~0.10.0-pre":
   version "0.10.0-pre.10"
@@ -2232,13 +2204,6 @@
   dependencies:
     "@msgpack/msgpack" "2.7.2"
 
-"@polywrap/msgpack-js@0.9.6":
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/@polywrap/msgpack-js/-/msgpack-js-0.9.6.tgz#d600c106f265562b8421c2368ccb7ef32e19eb2c"
-  integrity sha512-TDmkrmEgdhDNwHKfhO74FTFbHyhhLP2tf5lgeEuT48gtkVT5UMoOmRG7sjPi59KMdb6Py2eXXb3/8JuHMu3JFg==
-  dependencies:
-    "@msgpack/msgpack" "2.7.2"
-
 "@polywrap/plugin-js@0.10.0-pre.10":
   version "0.10.0-pre.10"
   resolved "https://registry.yarnpkg.com/@polywrap/plugin-js/-/plugin-js-0.10.0-pre.10.tgz#090c1963f40ab862a09deda8c18e6d522fd2e3f2"
@@ -2255,27 +2220,10 @@
   resolved "https://registry.yarnpkg.com/@polywrap/result/-/result-0.10.0-pre.10.tgz#6e88ac447d92d8a10c7e7892a6371af29a072240"
   integrity sha512-SqNnEbXky4dFXgps2B2juFShq1024do0f1HLUbuj3MlIPp5aW9g9sfBslsy3YTnpg2QW7LFVT15crrJMgbowIQ==
 
-"@polywrap/result@0.9.6":
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/@polywrap/result/-/result-0.9.6.tgz#11592e485bd7a683276387dbe1a8e82dd00abb3c"
-  integrity sha512-YgjBfiuu7exBxVmCqrPOiUkiq4ew3CTN3U8wA1LIJK47PKnLmmmpl7JwNtkm6cAqm5th9B0mwUgSRsEBW99IzA==
-
 "@polywrap/tracing-js@0.10.0-pre.10":
   version "0.10.0-pre.10"
   resolved "https://registry.yarnpkg.com/@polywrap/tracing-js/-/tracing-js-0.10.0-pre.10.tgz#f50fb01883dcba4217a1711718aa53f3dd61cb1c"
   integrity sha512-6wFw/zANVPG0tWMTSxwDzIpABVSSR9wO4/XxhCnKKgXwW6YANhtLj86uSRMTWqXeX2rpHwpMoWh4MDgYeAf+ng==
-  dependencies:
-    "@fetsorn/opentelemetry-console-exporter" "0.0.3"
-    "@opentelemetry/api" "1.2.0"
-    "@opentelemetry/exporter-trace-otlp-http" "0.32.0"
-    "@opentelemetry/resources" "1.6.0"
-    "@opentelemetry/sdk-trace-base" "1.6.0"
-    "@opentelemetry/sdk-trace-web" "1.6.0"
-
-"@polywrap/tracing-js@0.9.6":
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/@polywrap/tracing-js/-/tracing-js-0.9.6.tgz#0d95b7cd31b45f6f9f57eb8999af800266afbbf6"
-  integrity sha512-Q8k/FeQUYGNDelaBx2L4oqzkSyDSgr7Nxl4Rm1B16liqUy+hsqyeGxiJ3obp5hnPCPq4hlogahyZA+8V+WGpzQ==
   dependencies:
     "@fetsorn/opentelemetry-console-exporter" "0.0.3"
     "@opentelemetry/api" "1.2.0"
@@ -2297,16 +2245,6 @@
     "@apidevtools/json-schema-ref-parser" "9.0.9"
     jsonschema "1.4.0"
     semver "7.3.8"
-
-"@polywrap/wrap-manifest-types-js@0.9.6":
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/@polywrap/wrap-manifest-types-js/-/wrap-manifest-types-js-0.9.6.tgz#339a157a58e276b3d08a5e87615b181d71e78c1d"
-  integrity sha512-OmO0XPnIpTMV2UNmMlyizJOwG41EjwsUCBTYyIEDnJOoe4E97ZUzZWfzHx+e0pb6r97ZfOIyR3a14kHymT7A+A==
-  dependencies:
-    "@polywrap/msgpack-js" "0.9.6"
-    json-schema-ref-parser "9.0.9"
-    jsonschema "1.4.0"
-    semver "7.3.5"
 
 "@sinclair/typebox@^0.24.1":
   version "0.24.51"
@@ -5463,11 +5401,6 @@ graphql-json-transform@^1.1.0-alpha.0:
   resolved "https://registry.yarnpkg.com/graphql-json-transform/-/graphql-json-transform-1.1.0-alpha.0.tgz#fb0c88d24840067e6c55ac64bbc8d4e5de245d2d"
   integrity sha512-I6lR/lYEezSz4iru0f7a/wR8Rzi3pCafk7S0bX2b/WQOtK0vKabxLShGBXIslsi0arMehIjvOPHJl7MpOUqj0w==
 
-graphql-tag@2.10.4:
-  version "2.10.4"
-  resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.10.4.tgz#2f301a98219be8b178a6453bb7e33b79b66d8f83"
-  integrity sha512-O7vG5BT3w6Sotc26ybcvLKNTdfr4GfsIVMD+LdYqXCeJIYPRyp8BIsDOUtxw7S1PYvRw5vH3278J2EDezR6mfA==
-
 graphql@15.5.0:
   version "15.5.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.5.0.tgz#39d19494dbe69d1ea719915b578bf920344a69d5"
@@ -6975,13 +6908,6 @@ json-parse-even-better-errors@^2.3.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/json-parse-even-better-errors/-/json-parse-even-better-errors-2.3.1.tgz#7c47805a94319928e05777405dc12e1f7a4ee02d"
   integrity sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==
-
-json-schema-ref-parser@9.0.9:
-  version "9.0.9"
-  resolved "https://registry.yarnpkg.com/json-schema-ref-parser/-/json-schema-ref-parser-9.0.9.tgz#66ea538e7450b12af342fa3d5b8458bc1e1e013f"
-  integrity sha512-qcP2lmGy+JUoQJ4DOQeLaZDqH9qSkeGCK3suKWxJXS82dg728Mn3j97azDMaOUmJAN4uCq91LdPx4K7E8F1a7Q==
-  dependencies:
-    "@apidevtools/json-schema-ref-parser" "9.0.9"
 
 json-schema-to-typescript@11.0.2:
   version "11.0.2"
@@ -9322,13 +9248,6 @@ scrypt-js@3.0.1:
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.1.tgz#a954f931aeba508d307bbf069eff0c01c96116f7"
   integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
-
-semver@7.3.5:
-  version "7.3.5"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.5.tgz#0b621c879348d8998e4b0e4be94b3f12e6018ef7"
-  integrity sha512-PoeGJYh8HK4BTO/a9Tf6ZG3veo/A7ZVsYrSA6J8ny9nb3B1VrpkuN+z9OE5wfE5p6H4LchYZsegiQgbJD94ZFQ==
-  dependencies:
-    lru-cache "^6.0.0"
 
 semver@7.3.8, semver@7.x, semver@^7.1.1, semver@^7.1.3, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4, semver@^7.3.5:
   version "7.3.8"

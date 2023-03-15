@@ -24,7 +24,7 @@ export abstract class Module<TConfig> extends PluginModule<TConfig{{#envType}}, 
   abstract {{name}}(
     args: Args_{{name}},
     client: CoreClient,
-    {{^env}}env?: null{{/env}}{{#env}}env{{^required}}?{{/required}}: Types.Env{{^required}} | null{{/required}}{{/env}},
+    {{^env}}env?: null{{/env}}{{#env}}env{{^required}}?{{/required}}: Types.Env{{^required}} | null{{/required}}{{/env}}
   ): MaybeAsync<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
   {{^last}}
 
