@@ -1,4 +1,6 @@
-import { MaybeAsync, Uri, Wrapper } from "@polywrap/core-js";
+import { MaybeAsync } from "../helpers/MaybeAsync";
+
+import { Uri, Wrapper } from "@polywrap/wrap-js";
 
 // $start: IWrapperCache
 /** A Wrapper cache */

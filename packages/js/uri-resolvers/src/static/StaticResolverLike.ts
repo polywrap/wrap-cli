@@ -1,4 +1,4 @@
-import { IUriRedirect, IUriPackage, IUriWrapper } from "@polywrap/core-js";
+import { UriRedirect, UriPackage, UriWrapper } from "@polywrap/wrap-js";
 
 // $start: StaticResolverLike
 /** A StaticResolverLike can be one of two things:
@@ -6,8 +6,8 @@ import { IUriRedirect, IUriPackage, IUriWrapper } from "@polywrap/core-js";
  * - An array of StaticResolverLike
  * */
 export type StaticResolverLike =
-  | IUriRedirect
-  | IUriPackage
-  | IUriWrapper
+  | UriRedirect
+  | UriPackage
+  | UriWrapper
   | StaticResolverLike[];
 // $end

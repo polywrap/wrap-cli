@@ -1,16 +1,16 @@
 import { InfiniteLoopError } from "./InfiniteLoopError";
 import { UriResolverLike } from "./UriResolverLike";
 import { UriResolutionResult } from "./UriResolutionResult";
-import { UriResolver } from "./UriResolver";
+import { UriResolverFactory } from "./UriResolverFactory";
 
 import { Result } from "@polywrap/result";
 import {
-  IUriResolver,
+  UriResolver,
   Uri,
-  CoreClient,
-  IUriResolutionContext,
+  WrapClient,
+  UriResolutionContext,
   UriPackageOrWrapper,
-} from "@polywrap/core-js";
+} from "@polywrap/wrap-js";
 
 // $start: RecursiveResolver
 /**
@@ -19,14 +19,14 @@ import {
  * The RecursiveResolver wraps one or more resolvers and delegates resolution to them.
  * */
 export class RecursiveResolver<TError = undefined>
-  implements IUriResolver<TError | InfiniteLoopError> /* $ */ {
+  implements UriResolver<TError | InfiniteLoopError> /* $ */ {
   // $start: RecursiveResolver-constructor
   /**
    * Construct a RecursiveResolver
    *
    * @param _resolver - a resolver to delegate resolution to
    * */
-  constructor(private _resolver: IUriResolver<TError>) /* $ */ {}
+  constructor(private _resolver: UriResolver<TError>) /* $ */ {}
 
   // $start: RecursiveResolver-from
   /**
@@ -39,7 +39,7 @@ export class RecursiveResolver<TError = undefined>
   static from<TResolverError = unknown>(
     resolver: UriResolverLike
   ): RecursiveResolver<TResolverError> /* $ */ {
-    return new RecursiveResolver(UriResolver.from<TResolverError>(resolver));
+    return new RecursiveResolver(UriResolverFactory.from<TResolverError>(resolver));
   }
 
   // $start: RecursiveResolver-tryResolveUri
@@ -54,8 +54,8 @@ export class RecursiveResolver<TError = undefined>
    */
   async tryResolveUri(
     uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
+    client: WrapClient,
+    resolutionContext: UriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> /* $ */ {
     if (resolutionContext.isResolving(uri)) {
       return UriResolutionResult.err(
@@ -86,8 +86,8 @@ export class RecursiveResolver<TError = undefined>
   private async _tryResolveAgainIfRedirect(
     result: Result<UriPackageOrWrapper, TError | InfiniteLoopError>,
     uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
+    client: WrapClient,
+    resolutionContext: UriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
     if (result.ok && result.value.type === "uri") {
       const resultUri = result.value.uri;

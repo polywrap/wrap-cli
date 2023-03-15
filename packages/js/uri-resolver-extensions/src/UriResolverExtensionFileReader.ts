@@ -1,12 +1,12 @@
 import {
-  CoreClient,
-  combinePaths,
+  WrapClient,
   InvokeOptions,
   InvokeResult,
   Uri,
-  UriResolverInterface,
   Wrapper,
-} from "@polywrap/core-js";
+  combinePaths,
+  UriResolverInterface,
+} from "@polywrap/wrap-js";
 import { IFileReader } from "@polywrap/wasm-js";
 import { Result, ResultErr } from "@polywrap/result";
 
@@ -19,12 +19,12 @@ export class UriResolverExtensionFileReader implements IFileReader /* $ */ {
    *
    * @param _resolverExtensionUri - URI of the URI Resolver Extension wrapper
    * @param _wrapperUri - URI of the wrap package to read from
-   * @param _client - A CoreClient instance
+   * @param _client - A WrapClient instance
    * */
   constructor(
     private readonly _resolverExtensionUri: Uri,
     private readonly _wrapperUri: Uri,
-    private readonly _client: CoreClient
+    private readonly _client: WrapClient
   ) /* $ */ {}
 
   // $start: UriResolverExtensionFileReader-readFile

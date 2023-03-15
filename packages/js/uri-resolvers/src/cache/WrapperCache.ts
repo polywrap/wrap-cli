@@ -1,6 +1,6 @@
 import { IWrapperCache } from "./IWrapperCache";
 
-import { Wrapper, Uri } from "@polywrap/core-js";
+import { Wrapper, Uri } from "@polywrap/wrap-js";
 
 // $start: WrapperCache
 /**

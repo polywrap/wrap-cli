@@ -1,8 +1,8 @@
 import { UriResolverAggregatorBase } from "./UriResolverAggregatorBase";
-import { UriResolver, UriResolverLike } from "../helpers";
+import { UriResolverFactory, UriResolverLike } from "../helpers";
 
 import { Result, ResultOk } from "@polywrap/result";
-import { IUriResolver, Uri, CoreClient } from "@polywrap/core-js";
+import { UriResolver, Uri, WrapClient } from "@polywrap/wrap-js";
 
 // $start: UriResolverAggregator-GetResolversFunc
 /**
@@ -13,8 +13,8 @@ import { IUriResolver, Uri, CoreClient } from "@polywrap/core-js";
  * */
 export type GetResolversFunc = (
   uri: Uri,
-  client: CoreClient
-) => Promise<IUriResolver<unknown>[]>;
+  client: WrapClient
+) => Promise<UriResolver<unknown>[]>;
 // $end
 
 // $start: UriResolverAggregator-GetResolversWithErrorFunc
@@ -26,8 +26,8 @@ export type GetResolversFunc = (
  * */
 export type GetResolversWithErrorFunc<TError> = (
   uri: Uri,
-  client: CoreClient
-) => Promise<Result<IUriResolver<unknown>[], TError>>;
+  client: WrapClient
+) => Promise<Result<UriResolver<unknown>[], TError>>;
 // $end
 
 // $start: UriResolverAggregator
@@ -42,7 +42,7 @@ export class UriResolverAggregator<
   TGetResolversError
 > /* $ */ {
   private _resolvers:
-    | IUriResolver<unknown>[]
+    | UriResolver<unknown>[]
     | GetResolversFunc
     | GetResolversWithErrorFunc<TGetResolversError>;
 
@@ -55,8 +55,8 @@ export class UriResolverAggregator<
   constructor(
     resolvers: (
       uri: Uri,
-      client: CoreClient
-    ) => Promise<Result<IUriResolver<unknown>[], TGetResolversError>>,
+      client: WrapClient
+    ) => Promise<Result<UriResolver<unknown>[], TGetResolversError>>,
     resolverName?: string
   );
   constructor(resolvers: GetResolversFunc, resolverName?: string);
@@ -69,7 +69,7 @@ export class UriResolverAggregator<
   ) /* $ */ {
     super();
     if (Array.isArray(resolvers)) {
-      this._resolvers = resolvers.map((x) => UriResolver.from(x));
+      this._resolvers = resolvers.map((x) => UriResolverFactory.from(x));
     } else {
       this._resolvers = resolvers;
     }
@@ -86,8 +86,8 @@ export class UriResolverAggregator<
    * */
   async getUriResolvers(
     uri: Uri,
-    client: CoreClient
-  ): Promise<Result<IUriResolver<unknown>[], TGetResolversError>> /* $ */ {
+    client: WrapClient
+  ): Promise<Result<UriResolver<unknown>[], TGetResolversError>> /* $ */ {
     if (Array.isArray(this._resolvers)) {
       return ResultOk(this._resolvers);
     } else {

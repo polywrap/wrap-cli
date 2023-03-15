@@ -3,12 +3,12 @@ import { loadResolverExtension } from "./ResolverExtensionLoader";
 
 import {
   Uri,
-  CoreClient,
-  UriResolverInterface,
-  IUriResolutionContext,
+  WrapClient,
+  UriResolutionContext,
   UriPackageOrWrapper,
+  UriResolverInterface,
   getEnvFromUriHistory,
-} from "@polywrap/core-js";
+} from "@polywrap/wrap-js";
 import { Result, ResultOk } from "@polywrap/result";
 import { WasmPackage } from "@polywrap/wasm-js";
 import {
@@ -53,8 +53,8 @@ export class UriResolverWrapper extends ResolverWithHistory<unknown> /* $ */ {
    */
   protected async _tryResolveUri(
     uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
+    client: WrapClient,
+    resolutionContext: UriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, unknown>> /* $ */ {
     const result = await tryResolveUriWithImplementation(
       uri,
@@ -97,8 +97,8 @@ export class UriResolverWrapper extends ResolverWithHistory<unknown> /* $ */ {
 const tryResolveUriWithImplementation = async (
   uri: Uri,
   implementationUri: Uri,
-  client: CoreClient,
-  resolutionContext: IUriResolutionContext
+  client: WrapClient,
+  resolutionContext: UriResolutionContext
 ): Promise<
   Result<UriResolverInterface.MaybeUriOrManifest | undefined, unknown>
 > /* $ */ => {

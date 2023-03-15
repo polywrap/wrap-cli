@@ -1,4 +1,3 @@
-export * from "./MaybeAsync";
 export * from "./PluginFactory";
 export * from "./PluginMethod";
 export * from "./PluginModule";

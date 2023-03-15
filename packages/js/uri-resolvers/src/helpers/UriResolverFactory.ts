@@ -6,17 +6,17 @@ import { RedirectResolver } from "../redirects";
 
 import { Result } from "@polywrap/result";
 import {
-  IUriResolver,
+  UriResolver,
   Uri,
-  CoreClient,
-  IUriRedirect,
-  IUriPackage,
-  IUriWrapper,
-} from "@polywrap/core-js";
+  WrapClient,
+  UriRedirect,
+  UriPackage,
+  UriWrapper,
+} from "@polywrap/wrap-js";
 
 // $start: UriResolver
 /** An IUriResolver factory */
-export class UriResolver /* $ */ {
+export class UriResolverFactory /* $ */ {
   // $start: UriResolver-from
   /**
    * Create an IUriResolver instance
@@ -27,51 +27,51 @@ export class UriResolver /* $ */ {
   static from<TError = undefined>(
     resolverLike: UriResolverLike,
     resolverName?: string
-  ): IUriResolver<TError> /* $ */ {
+  ): UriResolver<TError> /* $ */ {
     if (Array.isArray(resolverLike)) {
       return new UriResolverAggregator(
         (resolverLike as UriResolverLike[]).map((x) =>
-          UriResolver.from(x, resolverName)
+          UriResolverFactory.from(x, resolverName)
         ),
         resolverName
-      ) as IUriResolver<TError>;
+      ) as UriResolver<TError>;
     } else if (typeof resolverLike === "function") {
       return new UriResolverAggregator(
         resolverLike as (
           uri: Uri,
-          client: CoreClient
-        ) => Promise<Result<IUriResolver[], unknown>>,
+          client: WrapClient
+        ) => Promise<Result<UriResolver[], unknown>>,
         resolverName
-      ) as IUriResolver<TError>;
-    } else if ((resolverLike as IUriResolver).tryResolveUri !== undefined) {
-      return resolverLike as IUriResolver<TError>;
+      ) as UriResolver<TError>;
+    } else if ((resolverLike as UriResolver).tryResolveUri !== undefined) {
+      return resolverLike as UriResolver<TError>;
     } else if (
-      (resolverLike as IUriRedirect).from !== undefined &&
-      (resolverLike as IUriRedirect).to !== undefined
+      (resolverLike as UriRedirect).from !== undefined &&
+      (resolverLike as UriRedirect).to !== undefined
     ) {
-      const uriRedirect = resolverLike as IUriRedirect;
+      const uriRedirect = resolverLike as UriRedirect;
       return (new RedirectResolver(
         uriRedirect.from,
         uriRedirect.to
-      ) as unknown) as IUriResolver<TError>;
+      ) as unknown) as UriResolver<TError>;
     } else if (
-      (resolverLike as IUriPackage).uri !== undefined &&
-      (resolverLike as IUriPackage).package !== undefined
+      (resolverLike as UriPackage).uri !== undefined &&
+      (resolverLike as UriPackage).package !== undefined
     ) {
-      const uriPackage = resolverLike as IUriPackage;
+      const uriPackage = resolverLike as UriPackage;
       return (new PackageResolver(
         Uri.from(uriPackage.uri),
         uriPackage.package
-      ) as unknown) as IUriResolver<TError>;
+      ) as unknown) as UriResolver<TError>;
     } else if (
-      (resolverLike as IUriWrapper).uri !== undefined &&
-      (resolverLike as IUriWrapper).wrapper !== undefined
+      (resolverLike as UriWrapper).uri !== undefined &&
+      (resolverLike as UriWrapper).wrapper !== undefined
     ) {
-      const uriWrapper = resolverLike as IUriWrapper;
+      const uriWrapper = resolverLike as UriWrapper;
       return (new WrapperResolver(
         Uri.from(uriWrapper.uri),
         uriWrapper.wrapper
-      ) as unknown) as IUriResolver<TError>;
+      ) as unknown) as UriResolver<TError>;
     } else {
       throw new Error("Unknown resolver-like type");
     }

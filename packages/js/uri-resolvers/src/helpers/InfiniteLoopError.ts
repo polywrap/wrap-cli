@@ -1,6 +1,6 @@
 import { getUriResolutionPath } from "./getUriResolutionPath";
 
-import { Uri, IUriResolutionStep } from "@polywrap/core-js";
+import { Uri, UriResolutionStep } from "@polywrap/wrap-js";
 
 // $start: InfiniteLoopError
 /**
@@ -16,7 +16,7 @@ export class InfiniteLoopError extends Error /* $ */ {
    * */
   constructor(
     private readonly _uri: Uri,
-    private readonly _history: IUriResolutionStep<unknown>[]
+    private readonly _history: UriResolutionStep<unknown>[]
   ) /* $ */ {
     super();
   }

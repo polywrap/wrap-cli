@@ -1,4 +1,4 @@
-import { IUriResolutionStep } from "@polywrap/core-js";
+import { UriResolutionStep } from "@polywrap/wrap-js";
 
 // $start: getUriResolutionPath
 /**
@@ -8,8 +8,8 @@ import { IUriResolutionStep } from "@polywrap/core-js";
  * @returns the URI's resolution path
  * */
 export const getUriResolutionPath = (
-  history: IUriResolutionStep<unknown>[]
-): IUriResolutionStep<unknown>[] /* $ */ => {
+  history: UriResolutionStep<unknown>[]
+): UriResolutionStep<unknown>[] /* $ */ => {
   // Get all non-empty items from the resolution history
   return (
     history

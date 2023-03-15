@@ -1,12 +1,12 @@
-import { UriResolver, UriResolverLike } from "../helpers";
+import { UriResolverFactory, UriResolverLike } from "../helpers";
 
 import {
-  IUriResolver,
+  UriResolver,
   Uri,
-  CoreClient,
-  IUriResolutionContext,
+  WrapClient,
+  UriResolutionContext,
   UriPackageOrWrapper,
-} from "@polywrap/core-js";
+} from "@polywrap/wrap-js";
 import { Result } from "@polywrap/result";
 
 // $start: RequestSynchronizerResolver
@@ -17,7 +17,7 @@ import { Result } from "@polywrap/result";
  * (default is to use the cache)
  */
 export class RequestSynchronizerResolver<TError>
-  implements IUriResolver<TError> /* $ */ {
+  implements UriResolver<TError> /* $ */ {
   private requestCache: Map<
     string,
     Promise<Result<UriPackageOrWrapper, TError>>
@@ -31,7 +31,7 @@ export class RequestSynchronizerResolver<TError>
    * @param options - the optional options containing the `shouldIgnoreCache` error handler
    * */
   constructor(
-    private resolverToSynchronize: IUriResolver<TError>,
+    private resolverToSynchronize: UriResolver<TError>,
     private options?: {
       shouldIgnoreCache?: (error: TError | undefined) => boolean;
     }
@@ -53,7 +53,7 @@ export class RequestSynchronizerResolver<TError>
     }
   ): RequestSynchronizerResolver<TResolverError> /* $ */ {
     return new RequestSynchronizerResolver(
-      UriResolver.from<TResolverError>(resolver),
+      UriResolverFactory.from<TResolverError>(resolver),
       options
     );
   }
@@ -70,8 +70,8 @@ export class RequestSynchronizerResolver<TError>
    */
   async tryResolveUri(
     uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
+    client: WrapClient,
+    resolutionContext: UriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError>> /* $ */ {
     const subContext = resolutionContext.createSubHistoryContext();
 
@@ -122,8 +122,8 @@ export class RequestSynchronizerResolver<TError>
    * */
   private resolveAndCacheRequest(
     uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
+    client: WrapClient,
+    resolutionContext: UriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError>> {
     const resolutionRequest = new Promise<Result<UriPackageOrWrapper, TError>>(
       (resolve, reject) => {
@@ -152,8 +152,8 @@ export class RequestSynchronizerResolver<TError>
 
 const trackStep = (
   uri: Uri,
-  resolutionContext: IUriResolutionContext,
-  subContext: IUriResolutionContext
+  resolutionContext: UriResolutionContext,
+  subContext: UriResolutionContext
 ) => <TError>(result: Result<UriPackageOrWrapper, TError>) => {
   resolutionContext.trackStep({
     sourceUri: uri,

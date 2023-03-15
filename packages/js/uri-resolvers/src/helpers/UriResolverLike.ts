@@ -1,9 +1,9 @@
 import {
-  IUriResolver,
-  IUriRedirect,
-  IUriPackage,
-  IUriWrapper,
-} from "@polywrap/core-js";
+  UriResolver,
+  UriRedirect,
+  UriPackage,
+  UriWrapper,
+} from "@polywrap/wrap-js";
 
 // $start: UriResolverLike
 /** An UriResolverLike can be one of three things:
@@ -12,9 +12,9 @@ import {
  * - An array of UriResolverLike
  * */
 export type UriResolverLike =
-  | IUriResolver<unknown>
-  | IUriRedirect
-  | IUriPackage
-  | IUriWrapper
+  | UriResolver<unknown>
+  | UriRedirect
+  | UriPackage
+  | UriWrapper
   | UriResolverLike[];
 // $end

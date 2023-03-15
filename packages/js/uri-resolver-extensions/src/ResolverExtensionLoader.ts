@@ -1,9 +1,9 @@
 import {
   Uri,
-  CoreClient,
+  WrapClient,
   Wrapper,
-  IUriResolutionContext,
-} from "@polywrap/core-js";
+  UriResolutionContext,
+} from "@polywrap/wrap-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 /*
@@ -11,7 +11,7 @@ import { Result, ResultErr, ResultOk } from "@polywrap/result";
  *
  * @param currentUri - The URI currently being resolved
  * @param resolverExtensionUri - A URI that resolves to the Resolver Extension
- * @param client - A CoreClient instance
+ * @param client - A WrapClient instance
  * @param resolutionContext - The current URI resolution context
  *
  * @returns a Result containing a Wrapper or an error
@@ -19,8 +19,8 @@ import { Result, ResultErr, ResultOk } from "@polywrap/result";
 export const loadResolverExtension = async (
   currentUri: Uri,
   resolverExtensionUri: Uri,
-  client: CoreClient,
-  resolutionContext: IUriResolutionContext
+  client: WrapClient,
+  resolutionContext: UriResolutionContext
 ): Promise<Result<Wrapper, unknown>> => {
   const result = await client.tryResolveUri({
     uri: resolverExtensionUri,

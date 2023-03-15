@@ -1,6 +1,6 @@
 import { ResolverWithHistory, UriResolutionResult } from "../helpers";
 
-import { Uri, IWrapPackage, UriPackageOrWrapper } from "@polywrap/core-js";
+import { Uri, WrapPackage, UriPackageOrWrapper } from "@polywrap/wrap-js";
 import { Result } from "@polywrap/result";
 
 // $start: PackageResolver
@@ -16,7 +16,7 @@ export class PackageResolver extends ResolverWithHistory /* $ */ {
    * @param _uri - the URI to redirect to the wrap package
    * @param wrapPackage - a wrap package
    * */
-  constructor(private _uri: Uri, private wrapPackage: IWrapPackage) /* $ */ {
+  constructor(private _uri: Uri, private wrapPackage: WrapPackage) /* $ */ {
     super();
   }
 

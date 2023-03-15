@@ -1,15 +1,15 @@
 import { UriResolutionResult, UriResolverLike } from "../helpers";
 
 import {
-  CoreClient,
-  IUriResolutionContext,
-  IUriResolver,
+  WrapClient,
+  UriResolutionContext,
+  UriResolver,
   Uri,
   UriPackageOrWrapper,
-  IUriRedirect,
-  IUriPackage,
-  IUriWrapper,
-} from "@polywrap/core-js";
+  UriRedirect,
+  UriPackage,
+  UriWrapper,
+} from "@polywrap/wrap-js";
 import { Result } from "@polywrap/result";
 
 // $start: StaticResolver
@@ -18,7 +18,7 @@ import { Result } from "@polywrap/result";
  * static resolvers--i.e. those that resolve to embedded URIs, Wrappers, and Packages
  * */
 export class StaticResolver<TError = undefined>
-  implements IUriResolver<TError> /* $ */ {
+  implements UriResolver<TError> /* $ */ {
   // $start: StaticResolver-constructor
   /**
    * Construct a Static Resolver
@@ -46,10 +46,10 @@ export class StaticResolver<TError = undefined>
           uriMap.set(uri, uriPackageOrWrapper);
         }
       } else if (
-        (staticResolverLike as IUriRedirect).from !== undefined &&
-        (staticResolverLike as IUriRedirect).to !== undefined
+        (staticResolverLike as UriRedirect).from !== undefined &&
+        (staticResolverLike as UriRedirect).to !== undefined
       ) {
-        const uriRedirect = staticResolverLike as IUriRedirect;
+        const uriRedirect = staticResolverLike as UriRedirect;
         const from = Uri.from(uriRedirect.from);
 
         uriMap.set(from.uri, {
@@ -57,10 +57,10 @@ export class StaticResolver<TError = undefined>
           uri: Uri.from(uriRedirect.to),
         });
       } else if (
-        (staticResolverLike as IUriPackage).uri !== undefined &&
-        (staticResolverLike as IUriPackage).package !== undefined
+        (staticResolverLike as UriPackage).uri !== undefined &&
+        (staticResolverLike as UriPackage).package !== undefined
       ) {
-        const uriPackage = staticResolverLike as IUriPackage;
+        const uriPackage = staticResolverLike as UriPackage;
         const uri = Uri.from(uriPackage.uri);
 
         uriMap.set(uri.uri, {
@@ -69,10 +69,10 @@ export class StaticResolver<TError = undefined>
           package: uriPackage.package,
         });
       } else if (
-        (staticResolverLike as IUriWrapper).uri !== undefined &&
-        (staticResolverLike as IUriWrapper).wrapper !== undefined
+        (staticResolverLike as UriWrapper).uri !== undefined &&
+        (staticResolverLike as UriWrapper).wrapper !== undefined
       ) {
-        const uriWrapper = staticResolverLike as IUriWrapper;
+        const uriWrapper = staticResolverLike as UriWrapper;
         const uri = Uri.from(uriWrapper.uri);
 
         uriMap.set(uri.uri, {
@@ -99,8 +99,8 @@ export class StaticResolver<TError = undefined>
    */
   async tryResolveUri(
     uri: Uri,
-    _: CoreClient,
-    resolutionContext: IUriResolutionContext
+    _: WrapClient,
+    resolutionContext: UriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError>> /* $ */ {
     const uriPackageOrWrapper = this.uriMap.get(uri.uri);
 

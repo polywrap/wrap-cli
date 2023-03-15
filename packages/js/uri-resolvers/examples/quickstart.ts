@@ -1,4 +1,4 @@
-import { IUriResolver } from "@polywrap/core-js";
+import { UriResolver } from "@polywrap/wrap-js";
 import {
   PackageResolver,
   PackageToWrapperCacheResolver,
@@ -9,7 +9,7 @@ import {
 } from "../build";
 import { WrapperResolver } from "../build/wrappers";
 
-export function example(): IUriResolver<unknown> {
+export function example(): UriResolver<unknown> {
   const redirects: RedirectResolver[] = [];
   const wrappers: WrapperResolver[] = [];
   const packages: PackageResolver[] = [];

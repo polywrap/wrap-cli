@@ -1,12 +1,12 @@
 import { UriResolutionResult } from "../helpers";
 
 import {
-  IUriResolver,
+  UriResolver,
   Uri,
-  CoreClient,
-  IUriResolutionContext,
+  WrapClient,
+  UriResolutionContext,
   UriPackageOrWrapper,
-} from "@polywrap/core-js";
+} from "@polywrap/wrap-js";
 import { Result } from "@polywrap/result";
 
 // $start: UriResolverAggregatorBase
@@ -18,7 +18,7 @@ import { Result } from "@polywrap/result";
 export abstract class UriResolverAggregatorBase<
   TResolutionError = undefined,
   TGetResolversError = undefined
-> implements IUriResolver<TResolutionError | TGetResolversError> /* $ */ {
+> implements UriResolver<TResolutionError | TGetResolversError> /* $ */ {
   // $start: UriResolverAggregatorBase-getUriResolvers
   /**
    * Get a list of URI Resolvers
@@ -31,9 +31,9 @@ export abstract class UriResolverAggregatorBase<
    * */
   abstract getUriResolvers(
     uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
-  ): Promise<Result<IUriResolver<unknown>[], TGetResolversError>>;
+    client: WrapClient,
+    resolutionContext: UriResolutionContext
+  ): Promise<Result<UriResolver<unknown>[], TGetResolversError>>;
   // $end
 
   // $start: UriResolverAggregatorBase-tryResolveUri
@@ -48,8 +48,8 @@ export abstract class UriResolverAggregatorBase<
    */
   async tryResolveUri(
     uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
+    client: WrapClient,
+    resolutionContext: UriResolutionContext
   ): Promise<
     Result<UriPackageOrWrapper, TResolutionError | TGetResolversError>
   > /* $ */ {
@@ -63,7 +63,7 @@ export abstract class UriResolverAggregatorBase<
       return resolverResult;
     }
 
-    const resolvers = resolverResult.value as IUriResolver[];
+    const resolvers = resolverResult.value as UriResolver[];
 
     return await this.tryResolveUriWithResolvers(
       uri,
@@ -101,14 +101,14 @@ export abstract class UriResolverAggregatorBase<
    * */
   protected async tryResolveUriWithResolvers(
     uri: Uri,
-    client: CoreClient,
-    resolvers: IUriResolver<unknown>[],
-    resolutionContext: IUriResolutionContext
+    client: WrapClient,
+    resolvers: UriResolver<unknown>[],
+    resolutionContext: UriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TResolutionError>> /* $ */ {
     const subContext = resolutionContext.createSubHistoryContext();
 
     for (const resolver of resolvers) {
-      const typeResolver = resolver as IUriResolver<TResolutionError>;
+      const typeResolver = resolver as UriResolver<TResolutionError>;
 
       const result = await typeResolver.tryResolveUri(uri, client, subContext);
 

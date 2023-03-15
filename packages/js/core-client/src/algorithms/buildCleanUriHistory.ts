@@ -1,8 +1,9 @@
-import { IUriResolutionStep } from "../..";
-import { CleanResolutionStep } from "./CleanResolutionStep";
+import { UriResolutionStep } from "@polywrap/wrap-js";
+
+export type CleanResolutionStep = (string | CleanResolutionStep)[];
 
 export const buildCleanUriHistory = (
-  history: IUriResolutionStep<unknown>[],
+  history: UriResolutionStep<unknown>[],
   depth?: number
 ): CleanResolutionStep => {
   const cleanHistory: CleanResolutionStep = [];

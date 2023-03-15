@@ -1,10 +1,10 @@
 import {
   UriPackageOrWrapper,
-  IUriResolutionStep,
+  UriResolutionStep,
   Uri,
-  IWrapPackage,
+  WrapPackage,
   Wrapper,
-} from "@polywrap/core-js";
+} from "@polywrap/wrap-js";
 import { Result, ResultOk, ResultErr } from "@polywrap/result";
 
 // $start: UriResolutionResult
@@ -12,14 +12,14 @@ import { Result, ResultOk, ResultErr } from "@polywrap/result";
 export class UriResolutionResult<TError = undefined> /* $ */ {
   // TODO: are the result and history fields ever assigned or used?
   public result: Result<UriPackageOrWrapper, TError>;
-  public history?: IUriResolutionStep<unknown>[];
+  public history?: UriResolutionStep<unknown>[];
 
   // $start: UriResolutionResult-ok
   /** Returns a Result with `ok` set to true */
   static ok<TError = undefined>(uri: Uri): Result<UriPackageOrWrapper, TError>;
   static ok<TError = undefined>(
     uri: Uri,
-    wrapPackage: IWrapPackage
+    wrapPackage: WrapPackage
   ): Result<UriPackageOrWrapper, TError>;
   static ok<TError = undefined>(
     uri: Uri,
@@ -30,7 +30,7 @@ export class UriResolutionResult<TError = undefined> /* $ */ {
   ): Result<UriPackageOrWrapper, TError>;
   static ok<TError = undefined>(
     uriPackageOrWrapper: Uri | UriPackageOrWrapper,
-    packageOrWrapper?: IWrapPackage | Wrapper
+    packageOrWrapper?: WrapPackage | Wrapper
   ): Result<UriPackageOrWrapper, TError> /* $ */ {
     if (!packageOrWrapper) {
       if ((uriPackageOrWrapper as UriPackageOrWrapper).type) {
@@ -45,13 +45,13 @@ export class UriResolutionResult<TError = undefined> /* $ */ {
 
     const uri = uriPackageOrWrapper as Uri;
 
-    const wrapPackage = packageOrWrapper as Partial<IWrapPackage>;
+    const wrapPackage = packageOrWrapper as Partial<WrapPackage>;
 
     if (wrapPackage.createWrapper) {
       return ResultOk({
         type: "package",
         uri,
-        package: wrapPackage as IWrapPackage,
+        package: wrapPackage as WrapPackage,
       } as UriPackageOrWrapper);
     }
 

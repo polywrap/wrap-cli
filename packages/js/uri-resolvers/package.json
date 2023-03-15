@@ -24,9 +24,12 @@
     "build:readme": "yarn build:readme:subsections && yarn build:readme:final"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.10.0-pre.12",
+    "@polywrap/wrap-js": "0.10.0-pre.12",
     "@polywrap/result": "0.10.0-pre.12",
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.12"
+  },
+  "peerDependencies": {
+    "@polywrap/wrap-js": "0.10.x"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

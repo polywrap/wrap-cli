@@ -22,7 +22,7 @@
     "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.10.0-pre.12",
+    "@polywrap/wrap-js": "0.10.0-pre.12",
     "@polywrap/result": "0.10.0-pre.12",
     "@polywrap/uri-resolvers-js": "0.10.0-pre.12",
     "@polywrap/wasm-js": "0.10.0-pre.12",

@@ -1,6 +1,6 @@
 import { ResolverWithHistory, UriResolutionResult } from "../helpers";
 
-import { Uri, UriPackageOrWrapper, Wrapper } from "@polywrap/core-js";
+import { Uri, UriPackageOrWrapper, Wrapper } from "@polywrap/wrap-js";
 import { Result } from "@polywrap/result";
 
 // $start: WrapperResolver

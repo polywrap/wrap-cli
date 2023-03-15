@@ -1,16 +1,16 @@
 import {
-  IUriResolver,
+  UriResolver,
   Uri,
-  CoreClient,
-  IUriResolutionContext,
+  WrapClient,
+  UriResolutionContext,
   UriPackageOrWrapper,
-} from "@polywrap/core-js";
+} from "@polywrap/wrap-js";
 import { Result } from "@polywrap/result";
 
 // $start: ResolverWithHistory
 /** An abstract IUriResolver implementation that updates the resolution context */
 export abstract class ResolverWithHistory<TError = undefined>
-  implements IUriResolver<TError> /* $ */ {
+  implements UriResolver<TError> /* $ */ {
   // $start: ResolverWithHistory-tryResolveUri
   /**
    * Resolve a URI to a wrap package, a wrapper, or a URI.
@@ -28,8 +28,8 @@ export abstract class ResolverWithHistory<TError = undefined>
    */
   async tryResolveUri(
     uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
+    client: WrapClient,
+    resolutionContext: UriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError>> /* $ */ {
     const result = await this._tryResolveUri(uri, client, resolutionContext);
 
@@ -69,8 +69,8 @@ export abstract class ResolverWithHistory<TError = undefined>
    */
   protected abstract _tryResolveUri(
     uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
+    client: WrapClient,
+    resolutionContext: UriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError>>;
   // $end
 }

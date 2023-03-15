@@ -1,13 +1,13 @@
 import { IWrapperCache } from "./IWrapperCache";
-import { UriResolutionResult, UriResolver, UriResolverLike } from "../helpers";
+import { UriResolutionResult, UriResolverFactory, UriResolverLike } from "../helpers";
 
 import {
-  IUriResolver,
+  UriResolver,
   Uri,
-  CoreClient,
-  IUriResolutionContext,
+  WrapClient,
+  UriResolutionContext,
   UriPackageOrWrapper,
-} from "@polywrap/core-js";
+} from "@polywrap/wrap-js";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
 
@@ -18,7 +18,7 @@ import { Result } from "@polywrap/result";
  * implementations and delegates resolution to them.
  * */
 export class PackageToWrapperCacheResolver<TError>
-  implements IUriResolver<TError | Error> /* $ */ {
+  implements UriResolver<TError | Error> /* $ */ {
   // TODO: the name property is never assigned
   // $start: PackageToWrapperCacheResolver-constructor
   /**
@@ -29,7 +29,7 @@ export class PackageToWrapperCacheResolver<TError>
    * @param _options - control wrapper manifest deserialization
    * */
   constructor(
-    private _resolverToCache: IUriResolver<TError>,
+    private _resolverToCache: UriResolver<TError>,
     private _cache: IWrapperCache,
     private _options?: {
       deserializeManifestOptions?: DeserializeManifestOptions;
@@ -52,7 +52,7 @@ export class PackageToWrapperCacheResolver<TError>
     options?: { deserializeManifestOptions?: DeserializeManifestOptions }
   ): PackageToWrapperCacheResolver<TResolverError> /* $ */ {
     return new PackageToWrapperCacheResolver(
-      UriResolver.from<TResolverError>(resolver),
+      UriResolverFactory.from<TResolverError>(resolver),
       cache,
       options
     );
@@ -70,8 +70,8 @@ export class PackageToWrapperCacheResolver<TError>
    */
   async tryResolveUri(
     uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
+    client: WrapClient,
+    resolutionContext: UriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | Error>> /* $ */ {
     const wrapper = await this._cache.get(uri);
 

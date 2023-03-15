@@ -2,11 +2,11 @@ import { UriResolverWrapper } from "./UriResolverWrapper";
 
 import {
   Uri,
-  CoreClient,
-  IUriResolver,
-  IUriResolutionContext,
+  WrapClient,
+  UriResolver,
+  UriResolutionContext,
   UriPackageOrWrapper,
-} from "@polywrap/core-js";
+} from "@polywrap/wrap-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 import {
   UriResolverAggregatorBase,
@@ -64,9 +64,9 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
    * */
   async getUriResolvers(
     uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
-  ): Promise<Result<IUriResolver<unknown>[], Error>> /* $ */ {
+    client: WrapClient,
+    resolutionContext: UriResolutionContext
+  ): Promise<Result<UriResolver<unknown>[], Error>> /* $ */ {
     const uriResolverImpls: Uri[] = [];
 
     for (const extInterfaceUri of this.extInterfaceUris) {
@@ -103,8 +103,8 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<
    */
   async tryResolveUri(
     uri: Uri,
-    client: CoreClient,
-    resolutionContext: IUriResolutionContext
+    client: WrapClient,
+    resolutionContext: UriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, Error>> /* $ */ {
     const result = await this.getUriResolvers(uri, client, resolutionContext);
     if (!result.ok) {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { MaybeAsync } from "./MaybeAsync";
+import { MaybeAsync } from "./utils/MaybeAsync";
 
 import { WrapClient } from "@polywrap/wrap-js";
 
