@@ -205,9 +205,9 @@ export const envTestCases = (implementation: string) => {
         resolver: RecursiveResolver.from([
           {
             uri: implementationUri,
-            package: PluginPackage.from<MockEnv>((module) => ({
-              mockEnv: (): MockEnv => {
-                return module.env;
+            package: PluginPackage.from<MockEnv>(() => ({
+              mockEnv: (_, __, env: MockEnv): MockEnv => {
+                return env;
               },
             })),
           },

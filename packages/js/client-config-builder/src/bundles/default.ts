@@ -4,7 +4,6 @@ import * as ipfsHttpClient from "./embeds/ipfs-http-client/wrap";
 import * as ipfsResolver from "./embeds/async-ipfs-resolver/wrap";
 
 import { IWrapPackage, Uri } from "@polywrap/core-js";
-import { PluginPackage } from "@polywrap/plugin-js";
 import {
   ethereumProviderPlugin,
   Connection,
@@ -64,7 +63,7 @@ export const uriResolverExts: UriResolverExtBootloader = [
 
 interface IDefaultPlugin {
   uri: Uri;
-  plugin: PluginPackage<unknown>;
+  plugin: IWrapPackage;
   implements: Uri[];
 }
 

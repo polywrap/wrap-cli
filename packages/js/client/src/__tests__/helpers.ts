@@ -46,8 +46,8 @@ export const mockPluginRegistration = (uri: string | Uri) => {
       methodThatThrows: (_: unknown): string => {
         throw Error("I'm throwing!");
       },
-      mockEnv(): { a: number } & Record<string, unknown> {
-        return this.env;
+      mockEnv(_, __, env): { a: number } & Record<string, unknown> {
+        return env as unknown as { a: number } & Record<string, unknown>;
       },
     })),
   };

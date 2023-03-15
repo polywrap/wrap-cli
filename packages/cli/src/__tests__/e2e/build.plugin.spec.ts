@@ -38,7 +38,6 @@ describe("e2e tests for build command - plugin project", () => {
         }, {
           cwd: testCaseDir,
         });
-
         testCliOutput(testCaseDir, code, output, error);
         testBuildOutput(testCaseDir, buildDir);
       });
