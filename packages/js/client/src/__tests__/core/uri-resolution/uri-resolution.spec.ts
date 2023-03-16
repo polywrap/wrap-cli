@@ -6,15 +6,10 @@ import {
   UriResolutionContext,
   buildCleanUriHistory,
 } from "@polywrap/core-js";
-import {
-  UriResolutionResult,
-} from "@polywrap/uri-resolvers-js";
+import { UriResolutionResult } from "@polywrap/uri-resolvers-js";
 import fs from "fs";
 import { Result } from "@polywrap/result";
-import {
-  PolywrapClient,
-  ClientConfigBuilder,
-} from "../../../";
+import { PolywrapClient, ClientConfigBuilder } from "../../../";
 
 jest.setTimeout(200000);
 
@@ -77,32 +72,8 @@ describe("URI resolution", () => {
   });
 
   it("can resolve uri with custom resolver", async () => {
-    const ensUri = new Uri(`ens/test`);
-    const redirectUri = new Uri(`ens/redirect.eth`);
-
-    const config = new ClientConfigBuilder()
-      .addDefaults()
-      .addResolver({
-        tryResolveUri: async (uri: Uri) => {
-          if (uri.uri === ensUri.uri) {
-            return UriResolutionResult.ok(redirectUri);
-          }
-
-          return UriResolutionResult.ok(uri);
-        },
-      })
-      .build();
-
-    const client = new PolywrapClient(config);
-
-    const result = await client.tryResolveUri({ uri: ensUri });
-
-    expect(result).toEqual(UriResolutionResult.ok(redirectUri));
-  });
-
-  it("can resolve uri with custom resolver at invoke-time", async () => {
-    const fromUri = new Uri(`ens/from.eth`);
-    const redirectUri = new Uri(`ens/to.eth`);
+    const fromUri = new Uri(`test/from.eth`);
+    const redirectUri = new Uri(`test/to.eth`);
 
     const config = new ClientConfigBuilder()
       .addDefaults()
