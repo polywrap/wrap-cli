@@ -1,4 +1,4 @@
-import { CoreClientConfig, Uri } from "@polywrap/core-js";
+import { CoreClientConfig, Uri, UriMap } from "@polywrap/core-js";
 import {
   PackageResolver,
   RecursiveResolver,
@@ -14,16 +14,16 @@ export function example(): CoreClientConfig {
   const packages: PackageResolver[] = [];
   // $start: quickstart-example
   const clientConfig: CoreClientConfig = {
-    interfaces: [
-      {
-        interface: Uri.from("wrap://ens/uri-resolver.core.polywrap.eth"),
-        implementations: [
+    interfaces: new UriMap<Uri[]>([
+      [
+        Uri.from("wrap://ens/uri-resolver.core.polywrap.eth"),
+        [
           Uri.from("wrap://ens/fs-resolver.polywrap.eth"),
           Uri.from("wrap://ens/ipfs-resolver.polywrap.eth"),
-          Uri.from("wrap://ens/ens-resolver.polywrap.eth")
-        ]
-      }
-    ],
+          Uri.from("wrap://ens/ens-resolver.polywrap.eth"),
+        ],
+      ],
+    ]),
     resolver: RecursiveResolver.from(
       [
         StaticResolver.from([

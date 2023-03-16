@@ -484,7 +484,7 @@ export const uriResolverExts: UriResolverExtBootloader = [
 
 interface IDefaultPlugin {
   uri: Uri;
-  plugin: PluginPackage<unknown>;
+  plugin: IWrapPackage;
   implements: Uri[];
 }
 

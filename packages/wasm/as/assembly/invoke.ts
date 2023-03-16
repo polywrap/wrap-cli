@@ -12,9 +12,6 @@ export declare function __wrap_invoke_result(ptr: u32, len: u32): void;
 @external("wrap", "__wrap_invoke_error")
 export declare function __wrap_invoke_error(ptr: u32, len: u32): void;
 
-// Keep track of all invokable functions
-export type InvokeFunction = (argsBuf: ArrayBuffer, env_size: u32) => ArrayBuffer;
-
 export class InvokeArgs {
   constructor(
     public method: string,
@@ -38,23 +35,20 @@ export function wrap_invoke_args(method_size: u32, args_size: u32): InvokeArgs {
   );
 }
 
-// Helper for handling _wrap_invoke
-export function wrap_invoke(args: InvokeArgs, env_size: u32, fn: InvokeFunction | null): bool {
-  if (fn) {
-    const result = fn(args.args, env_size);
-    __wrap_invoke_result(
-      changetype<u32>(result),
-      result.byteLength
-    );
-    return true;
-  } else {
-    const message = String.UTF8.encode(
-      `Could not find invoke function "${args.method}"`
-    );
-    __wrap_invoke_error(
-      changetype<u32>(message),
-      message.byteLength
-    );
-    return false;
-  }
+// Helper for handling __wrap_invoke_result
+export function wrap_invoke_result(result: ArrayBuffer): void {
+  __wrap_invoke_result(
+    changetype<u32>(result),
+    result.byteLength
+  );
+}
+
+
+// Helper for handling __wrap_invoke_error
+export function wrap_invoke_error(message: string): void {
+  const messageBuf = String.UTF8.encode(message);
+  __wrap_invoke_error(
+    changetype<u32>(messageBuf),
+    messageBuf.byteLength
+  );
 }

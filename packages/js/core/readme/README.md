@@ -18,12 +18,6 @@ $snippet: CoreClient.ts
 $snippet: Env.ts
 ```
 
-### InterfaceImplementations
-
-```ts
-$snippet: InterfaceImplementations.ts
-```
-
 ### Invoke
 
 ```ts

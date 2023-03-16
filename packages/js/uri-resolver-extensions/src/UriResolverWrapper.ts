@@ -126,7 +126,7 @@ const tryResolveUriWithImplementation = async (
         authority: uri.authority,
         path: uri.path,
       },
-      env: env?.env,
+      env: env,
     }
   );
 
