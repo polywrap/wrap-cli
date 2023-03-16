@@ -4,6 +4,8 @@ import {
   Uri,
   IUriResolver,
   UriPackageOrWrapper,
+  IWrapPackage,
+  Wrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 import { DefaultBundle } from "../bundles";
@@ -167,7 +169,9 @@ describe("Client config builder", () => {
     expect(clientConfig).toBeTruthy();
 
     const expectedBuilderConfig = DefaultBundle.getConfig();
-    expect(JSON.stringify(builderConfig)).toBe(JSON.stringify(expectedBuilderConfig));
+    expect(JSON.stringify(builderConfig)).toBe(
+      JSON.stringify(expectedBuilderConfig)
+    );
   });
 
   it("should successfully add an env", () => {
@@ -659,5 +663,244 @@ describe("Client config builder", () => {
     expect(config).toBeTruthy();
 
     expect(builderConfig.resolvers).toStrictEqual([uriResolver1, uriResolver2]);
+  });
+
+  it("should sanitize incoming URIs for envs", () => {
+    const shortUri = "ens/some1.wrapper.eth";
+    const longUri = "wrap://ens/some2.wrapper.eth";
+
+    const builderConfig1 = new ClientConfigBuilder()
+      .addEnv(shortUri, { foo: "bar" })
+      .addEnv(longUri, { bar: "baz" }).config;
+
+    expect(builderConfig1.envs).toStrictEqual({
+      [Uri.from(shortUri).uri]: {
+        foo: "bar",
+      },
+      [Uri.from(longUri).uri]: {
+        bar: "baz",
+      },
+    });
+
+    const builderConfig2 = new ClientConfigBuilder()
+      .add(builderConfig1)
+      .removeEnv(shortUri).config;
+
+    expect(builderConfig2.envs).toStrictEqual({
+      [Uri.from(longUri).uri]: {
+        bar: "baz",
+      },
+    });
+  });
+
+  it("should sanitize incoming URIs for interface implementations", () => {
+    const shortUri = "ens/some1.wrapper.eth";
+    const longUri = "wrap://ens/some2.wrapper.eth";
+
+    const builderConfig1 = new ClientConfigBuilder()
+      .addInterfaceImplementation(shortUri, longUri)
+      .addInterfaceImplementation(longUri, shortUri).config;
+
+    expect(builderConfig1.interfaces).toStrictEqual({
+      [Uri.from(shortUri).uri]: new Set([Uri.from(longUri).uri]),
+      [Uri.from(longUri).uri]: new Set([Uri.from(shortUri).uri]),
+    });
+
+    const builderConfig2 = new ClientConfigBuilder()
+      .add(builderConfig1)
+      .removeInterfaceImplementation(shortUri, longUri).config;
+
+    expect(builderConfig2.interfaces).toStrictEqual({
+      [Uri.from(longUri).uri]: new Set([Uri.from(shortUri).uri]),
+    });
+  });
+
+  it("should sanitize incoming URIs for redirects", () => {
+    const shortUri = "ens/some1.wrapper.eth";
+    const longUri = "wrap://ens/some2.wrapper.eth";
+
+    const builderConfig1 = new ClientConfigBuilder()
+      .addRedirect(shortUri, longUri)
+      .addRedirect(longUri, shortUri).config;
+
+    expect(builderConfig1.redirects).toStrictEqual({
+      [Uri.from(shortUri).uri]: Uri.from(longUri).uri,
+      [Uri.from(longUri).uri]: Uri.from(shortUri).uri,
+    });
+
+    const builderConfig2 = new ClientConfigBuilder()
+      .add(builderConfig1)
+      .removeRedirect(shortUri).config;
+
+    expect(builderConfig2.redirects).toStrictEqual({
+      [Uri.from(longUri).uri]: Uri.from(shortUri).uri,
+    });
+  });
+
+  it("should add a package", () => {
+    const uri = "wrap://ens/some.package.eth";
+    const pkg: IWrapPackage = {
+      createWrapper: jest.fn(),
+      getManifest: jest.fn(),
+    };
+
+    const builderConfig = new ClientConfigBuilder().addPackage(uri, pkg).config;
+
+    expect(builderConfig.packages).toStrictEqual({
+      [uri]: pkg,
+    });
+  });
+
+  it("should add multiple packages", () => {
+    const uri1 = "wrap://ens/some1.package.eth";
+    const uri2 = "wrap://ens/some2.package.eth";
+    const pkg: IWrapPackage = {
+      createWrapper: jest.fn(),
+      getManifest: jest.fn(),
+    };
+
+    const builderConfig = new ClientConfigBuilder().addPackages({
+      [uri1]: pkg,
+      [uri2]: pkg,
+    }).config;
+
+    expect(builderConfig.packages).toStrictEqual({
+      [uri1]: pkg,
+      [uri2]: pkg,
+    });
+  });
+
+  it("should remove a package", () => {
+    const uri1 = "wrap://ens/some1.package.eth";
+    const uri2 = "wrap://ens/some2.package.eth";
+    const pkg: IWrapPackage = {
+      createWrapper: jest.fn(),
+      getManifest: jest.fn(),
+    };
+
+    const builderConfig = new ClientConfigBuilder()
+      .addPackages({
+        [uri1]: pkg,
+        [uri2]: pkg,
+      })
+      .removePackage(uri1).config;
+
+    expect(builderConfig.packages).toStrictEqual({
+      [uri2]: pkg,
+    });
+  });
+
+  it("should sanitize incoming URIs for packages", () => {
+    const shortUri = "ens/some1.package.eth";
+    const longUri = "wrap://ens/some2.package.eth";
+    const pkg: IWrapPackage = {
+      createWrapper: jest.fn(),
+      getManifest: jest.fn(),
+    };
+
+    const builderConfig1 = new ClientConfigBuilder().addPackages({
+      [shortUri]: pkg,
+      [longUri]: pkg,
+    }).config;
+
+    expect(builderConfig1.packages).toStrictEqual({
+      [Uri.from(shortUri).uri]: pkg,
+      [Uri.from(longUri).uri]: pkg,
+    });
+
+    const builderConfig2 = new ClientConfigBuilder()
+      .add(builderConfig1)
+      .removePackage(shortUri).config;
+
+    expect(builderConfig2.packages).toStrictEqual({
+      [Uri.from(longUri).uri]: pkg,
+    });
+  });
+
+  it("should add a wrapper", () => {
+    const uri = "wrap://ens/some.wrapper.eth";
+    const wrapper: Wrapper = {
+      getFile: jest.fn(),
+      getManifest: jest.fn(),
+      invoke: jest.fn(),
+    };
+
+    const builderConfig = new ClientConfigBuilder().addWrapper(uri, wrapper)
+      .config;
+
+    expect(builderConfig.wrappers).toStrictEqual({
+      [uri]: wrapper,
+    });
+  });
+
+  it("should add multiple wrappers", () => {
+    const uri1 = "wrap://ens/some1.wrapper.eth";
+    const uri2 = "wrap://ens/some2.wrapper.eth";
+
+    const wrapper: Wrapper = {
+      getFile: jest.fn(),
+      getManifest: jest.fn(),
+      invoke: jest.fn(),
+    };
+
+    const builderConfig = new ClientConfigBuilder().addWrappers({
+      [uri1]: wrapper,
+      [uri2]: wrapper,
+    }).config;
+
+    expect(builderConfig.wrappers).toStrictEqual({
+      [uri1]: wrapper,
+      [uri2]: wrapper,
+    });
+  });
+
+  it("should remove a wrapper", () => {
+    const uri1 = "wrap://ens/some1.wrapper.eth";
+    const uri2 = "wrap://ens/some2.wrapper.eth";
+
+    const wrapper: Wrapper = {
+      getFile: jest.fn(),
+      getManifest: jest.fn(),
+      invoke: jest.fn(),
+    };
+
+    const builderConfig = new ClientConfigBuilder()
+      .addWrappers({
+        [uri1]: wrapper,
+        [uri2]: wrapper,
+      })
+      .removeWrapper(uri1).config;
+
+    expect(builderConfig.wrappers).toStrictEqual({
+      [uri2]: wrapper,
+    });
+  });
+
+  it("should sanitize incoming URIs for wrappers", () => {
+    const shortUri = "ens/some1.wrapper.eth";
+    const longUri = "wrap://ens/some2.wrapper.eth";
+    const wrapper: Wrapper = {
+      getFile: jest.fn(),
+      getManifest: jest.fn(),
+      invoke: jest.fn(),
+    };
+
+    const builderConfig1 = new ClientConfigBuilder().addWrappers({
+      [shortUri]: wrapper,
+      [longUri]: wrapper,
+    }).config;
+
+    expect(builderConfig1.wrappers).toStrictEqual({
+      [Uri.from(shortUri).uri]: wrapper,
+      [Uri.from(longUri).uri]: wrapper,
+    });
+
+    const builderConfig2 = new ClientConfigBuilder()
+      .add(builderConfig1)
+      .removeWrapper(shortUri).config;
+
+    expect(builderConfig2.wrappers).toStrictEqual({
+      [Uri.from(longUri).uri]: wrapper,
+    });
   });
 });
