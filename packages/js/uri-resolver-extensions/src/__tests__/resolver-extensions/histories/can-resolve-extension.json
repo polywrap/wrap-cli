@@ -1,0 +1,47 @@
+[
+  "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => UriResolverAggregator => uri (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
+  [
+    "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => StaticResolver - Miss",
+    "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ExtendableUriResolver => uri (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
+    [
+      "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
+      [
+        "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => StaticResolver - Miss",
+        "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
+        [
+          "wrap://package/fs-resolver => UriResolverAggregator => package (wrap://package/fs-resolver)",
+          [
+            "wrap://package/fs-resolver => StaticResolver - Package (wrap://package/fs-resolver) => package (wrap://package/fs-resolver)"
+          ],
+          "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)"
+        ]
+      ],
+      "wrap://custom-fs/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ResolverExtension (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs) => uri (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)"
+    ]
+  ],
+  "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
+  [
+    "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => StaticResolver - Miss",
+    "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
+    [
+      "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
+      [
+        "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => StaticResolver - Miss",
+        "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
+        [
+          "wrap://package/fs-resolver => UriResolverAggregator => package (wrap://package/fs-resolver)",
+          [
+            "wrap://package/fs-resolver => StaticResolver - Package (wrap://package/fs-resolver) => package (wrap://package/fs-resolver)"
+          ],
+          "wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)"
+        ]
+      ],
+      "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ResolverExtension (wrap://file/$root-wrapper-dir/resolver/02-fs/implementations/rs)",
+      "wrap://package/fs-resolver => UriResolverAggregator => package (wrap://package/fs-resolver)",
+      [
+        "wrap://package/fs-resolver => StaticResolver - Package (wrap://package/fs-resolver) => package (wrap://package/fs-resolver)"
+      ],
+      "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => ResolverExtension (wrap://package/fs-resolver) => package (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)"
+    ]
+  ]
+]

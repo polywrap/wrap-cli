@@ -1,0 +1,6 @@
+[
+  "wrap://test/wrapper => PackageToWrapperResolver => wrapper (wrap://test/wrapper)",
+  [
+    "wrap://test/wrapper => SimplePackageResolver => wrapper (wrap://test/wrapper)"
+  ]
+]

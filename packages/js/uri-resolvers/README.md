@@ -19,17 +19,17 @@ This example is similar to the default resolver used by the ClientConfigBuilder 
 
 ```ts
   const resolver = RecursiveResolver.from(
-      PackageToWrapperCacheResolver.from(
-        [
-          StaticResolver.from([
-              ...redirects,
-              ...wrappers,
-              ...packages,
-            ]),
-          ],
-          new WrapperCache()
-        )
-      );
+    WrapperCacheResolver.from(
+      [
+        StaticResolver.from([
+            ...redirects,
+            ...wrappers,
+            ...packages,
+          ]),
+      ],
+      new WrapperCache()
+    )
+  );
 ```
 
 # Reference
@@ -253,32 +253,29 @@ export class WrapperCache implements IWrapperCache
   set(uris: Uri, wrapper: Wrapper): void 
 ```
 
-## PackageToWrapperCacheResolver
+## WrapperCacheResolver
 ```ts
 /**
  * An IUriResolver implementation that caches wrappers once they are resolved.
- * The PackageToWrapeprCacheResolver wraps one or more IUriResolver
- * implementations and delegates resolution to them.
+ * As it is a wrapper cache resolver, URI and package caching is outside of the scope for this resolver
+ * and can be achieved through other resolvers if necessary.
+ * The WrapperCacheResolver wraps an IUriResolver implementation and delegates resolution to it.
  * */
-export class PackageToWrapperCacheResolver<TError>
+export class WrapperCacheResolver<TError>
   implements IUriResolver<TError | Error> 
 ```
 
 ### constructor
 ```ts
   /**
-   * Create a PackageToWrapperCacheResolver
+   * Creates a WrapperCacheResolver
    *
-   * @param _resolverToCache - a resolver to delegate resolution to
+   * @param _innerResolver - a resolver to delegate resolution to
    * @param _cache - a wrapper cache
-   * @param _options - control wrapper manifest deserialization
    * */
   constructor(
-    private _resolverToCache: IUriResolver<TError>,
-    private _cache: IWrapperCache,
-    private _options?: {
-      deserializeManifestOptions?: DeserializeManifestOptions;
-    }
+    private _innerResolver: IUriResolver<TError>,
+    private _cache: IWrapperCache
   ) 
 ```
 
@@ -287,19 +284,18 @@ export class PackageToWrapperCacheResolver<TError>
 #### from
 ```ts
   /**
-   * Create a PackageToWrapperCacheResolver from a resolver-like object
+   * Creates a WrapperCacheResolver from a resolver-like object
    *
-   * @param resolver - a resolver-like item to delegate resolution to
+   * @param innerResolver - a resolver-like item to delegate resolution to
    * @param cache - a wrapper cache
    * @param options - control wrapper manifest deserialization
    *
-   * @returns a PackageToWrapperCacheResolver
+   * @returns a WrapperCacheResolver
    * */
   static from<TResolverError = unknown>(
-    resolver: UriResolverLike,
-    cache: IWrapperCache,
-    options?: { deserializeManifestOptions?: DeserializeManifestOptions }
-  ): PackageToWrapperCacheResolver<TResolverError> 
+    innerResolver: UriResolverLike,
+    cache: IWrapperCache
+  ): WrapperCacheResolver<TResolverError> 
 ```
 
 #### tryResolveUri
@@ -470,6 +466,68 @@ export class ResolverWithLoopGuard<TError = undefined>
     client: CoreClient,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> 
+```
+
+## PackageToWrapperResolver
+```ts
+/**
+ * An IUriResolver implementation that initalizes wrappers from resolved packages.
+ * The PackageToWrapperResolver wraps an IUriResolver implementation and delegates resolution to it.
+ * */
+export class PackageToWrapperResolver<TError>
+  implements IUriResolver<TError | Error> 
+```
+
+### constructor
+```ts
+  /**
+   * Creates a PackageToWrapperResolver
+   *
+   * @param _innerResolver - a resolver to delegate resolution to
+   * @param _options - control wrapper manifest deserialization
+   * */
+  constructor(
+    private _innerResolver: IUriResolver<TError>,
+    private _options?: {
+      deserializeManifestOptions?: DeserializeManifestOptions;
+    }
+  ) 
+```
+
+### Methods
+
+#### from
+```ts
+  /**
+   * Creates a PackageToWrapperResolver from a resolver-like object
+   *
+   * @param innerResolver - a resolver-like item to delegate resolution to
+   * @param options - control wrapper manifest deserialization
+   *
+   * @returns a PackageToWrapperResolver
+   * */
+  static from<TResolverError = unknown>(
+    innerResolver: UriResolverLike,
+    options?: { deserializeManifestOptions?: DeserializeManifestOptions }
+  ): PackageToWrapperResolver<TResolverError> 
+```
+
+#### tryResolveUri
+```ts
+  /**
+   * Resolve a URI to a wrap package, a wrapper, or a URI.
+   * If successful, cache the result.
+   *
+   * @param uri - the URI to resolve
+   * @param client - a CoreClient instance that may be used to invoke a wrapper that implements the UriResolver interface
+   * @param resolutionContext - the current URI resolution context
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
+  async tryResolveUri(
+    uri: Uri,
+    client: CoreClient,
+    resolutionContext: IUriResolutionContext
+  ): Promise<Result<UriPackageOrWrapper, TError | Error>> 
 ```
 
 ## UriResolutionResult

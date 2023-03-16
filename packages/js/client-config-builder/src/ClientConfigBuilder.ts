@@ -16,7 +16,8 @@ import {
   RecursiveResolver,
   StaticResolver,
   WrapperCache,
-  PackageToWrapperCacheResolver,
+  WrapperCacheResolver,
+  PackageToWrapperResolver,
   RequestSynchronizerResolver,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
@@ -46,8 +47,8 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
         resolver ??
         RecursiveResolver.from(
           RequestSynchronizerResolver.from(
-            PackageToWrapperCacheResolver.from(
-              [
+            WrapperCacheResolver.from(
+              PackageToWrapperResolver.from([
                 StaticResolver.from([
                   ...this.buildRedirects(),
                   ...this.buildWrappers(),
@@ -55,7 +56,7 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
                 ]),
                 ...this._config.resolvers,
                 new ExtendableUriResolver(),
-              ],
+              ]),
               wrapperCache ?? new WrapperCache()
             )
           )

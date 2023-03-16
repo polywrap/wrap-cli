@@ -1,0 +1,10 @@
+[
+  "wrap://test/not-a-match => UriResolverAggregator => error (While resolving wrap://test/not-a-match with URI resolver extension wrap://test/undefined-resolver, the extension could not be fully resolved. Last tried URI is wrap://test/undefined-resolver)",
+  [
+    "wrap://test/not-a-match => ExtendableUriResolver => error (While resolving wrap://test/not-a-match with URI resolver extension wrap://test/undefined-resolver, the extension could not be fully resolved. Last tried URI is wrap://test/undefined-resolver)",
+    [
+      "wrap://test/undefined-resolver => UriResolverAggregator",
+      "wrap://test/not-a-match => ResolverExtension (wrap://test/undefined-resolver) => error (While resolving wrap://test/not-a-match with URI resolver extension wrap://test/undefined-resolver, the extension could not be fully resolved. Last tried URI is wrap://test/undefined-resolver)"
+    ]
+  ]
+]
