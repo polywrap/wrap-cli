@@ -8,9 +8,10 @@ import {
   UriResolutionContext,
 } from "@polywrap/core-js";
 import { expectHistory } from "../helpers/expectHistory";
-import { PackageToWrapperResolver, UriResolutionResult } from "../../helpers";
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
 import { PluginPackage } from "@polywrap/plugin-js";
+import { UriResolutionResult } from "../../helpers";
+import { PackageToWrapperResolver } from "../../packages";
 
 jest.setTimeout(20000);
 
@@ -30,7 +31,9 @@ class SimplePackageResolver implements IUriResolver<Error> {
         );
         break;
       case "wrap://test/wrapper":
-        let wrapperResult = await PluginPackage.from(() => ({})).createWrapper();
+        let wrapperResult = await PluginPackage.from(
+          () => ({})
+        ).createWrapper();
         if (!wrapperResult.ok) {
           throw wrapperResult.error;
         }
@@ -41,9 +44,7 @@ class SimplePackageResolver implements IUriResolver<Error> {
         );
         break;
       case "wrap://test/from":
-        result = UriResolutionResult.ok(
-          Uri.from("test/to"),
-        );
+        result = UriResolutionResult.ok(Uri.from("test/to"));
         break;
       default:
         throw new Error(`Unexpected URI: ${uri.uri}`);
@@ -64,9 +65,7 @@ describe("PackageToWrapperResolver", () => {
     const uri = new Uri("test/package");
 
     const client = new PolywrapCoreClient({
-      resolver: PackageToWrapperResolver.from(
-        new SimplePackageResolver()
-      ),
+      resolver: PackageToWrapperResolver.from(new SimplePackageResolver()),
     });
 
     let resolutionContext = new UriResolutionContext();
@@ -93,9 +92,7 @@ describe("PackageToWrapperResolver", () => {
     const uri = new Uri("test/wrapper");
 
     const client = new PolywrapCoreClient({
-      resolver: PackageToWrapperResolver.from(
-        new SimplePackageResolver()
-      ),
+      resolver: PackageToWrapperResolver.from(new SimplePackageResolver()),
     });
 
     let resolutionContext = new UriResolutionContext();
@@ -122,9 +119,7 @@ describe("PackageToWrapperResolver", () => {
     const uri = new Uri("test/from");
 
     const client = new PolywrapCoreClient({
-      resolver: PackageToWrapperResolver.from(
-        new SimplePackageResolver()
-      ),
+      resolver: PackageToWrapperResolver.from(new SimplePackageResolver()),
     });
 
     let resolutionContext = new UriResolutionContext();
