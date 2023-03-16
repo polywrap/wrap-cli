@@ -1,4 +1,4 @@
-import { Uri, UriResolutionContext } from "@polywrap/core-js";
+import { Uri, UriMap, UriResolutionContext } from "@polywrap/core-js";
 import { expectHistory } from "../helpers/expectHistory";
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
 import { RecursiveResolver, StaticResolver } from "@polywrap/uri-resolvers-js";
@@ -20,7 +20,7 @@ const fsRedirectResolverWrapperUri = new Uri(
 
 const fileSystemInterfaceUri = Uri.from(
   "wrap://ens/wraps.eth:file-system@1.0.0"
-);
+)
 
 const customFileResolverUri = Uri.from("wrap://package/fs-resolver");
 const customFileResolver = PluginPackage.from(() => ({
@@ -88,15 +88,13 @@ describe("Resolver extensions", () => {
     const redirectedUri = wrapperUri;
 
     const client = new PolywrapCoreClient({
-      interfaces: [
-        {
-          interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
-          implementations: [
-            fsRedirectResolverWrapperUri,
-            customFileResolverUri,
-          ],
-        },
-      ],
+      interfaces: new UriMap<Uri[]>([[
+        ExtendableUriResolver.defaultExtInterfaceUris[0],
+        [
+          fsRedirectResolverWrapperUri,
+          customFileResolverUri,
+        ],
+      ]]),
       resolver: RecursiveResolver.from([
         StaticResolver.from([
           {
@@ -141,15 +139,13 @@ describe("Resolver extensions", () => {
     const uri = new Uri("test/not-a-match");
 
     const client = new PolywrapCoreClient({
-      interfaces: [
-        {
-          interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
-          implementations: [
-            fsRedirectResolverWrapperUri,
-            Uri.from(customFileResolverUri),
-          ],
-        },
-      ],
+      interfaces: new UriMap<Uri[]>([[
+        ExtendableUriResolver.defaultExtInterfaceUris[0],
+        [
+          fsRedirectResolverWrapperUri,
+          Uri.from(customFileResolverUri),
+        ],
+      ]]),
       resolver: RecursiveResolver.from([
         StaticResolver.from([
           {
@@ -191,12 +187,10 @@ describe("Resolver extensions", () => {
     const undefinedResolverUri = Uri.from("test/undefined-resolver");
 
     const client = new PolywrapCoreClient({
-      interfaces: [
-        {
-          interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
-          implementations: [undefinedResolverUri],
-        },
-      ],
+      interfaces: new UriMap<Uri[]>([[
+        ExtendableUriResolver.defaultExtInterfaceUris[0],
+        [undefinedResolverUri],
+      ]]),
       resolver: RecursiveResolver.from([new ExtendableUriResolver()]),
     });
 
