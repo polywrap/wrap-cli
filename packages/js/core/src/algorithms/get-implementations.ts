@@ -1,9 +1,9 @@
 import {
   Uri,
-  InterfaceImplementations,
   CoreClient,
   WrapError,
   WrapErrorCode,
+  ReadonlyUriMap,
 } from "../types";
 import { IUriResolutionContext } from "../uri-resolution";
 import { applyResolution } from "./applyResolution";
@@ -12,7 +12,7 @@ import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export const getImplementations = async (
   wrapperInterfaceUri: Uri,
-  interfaces: readonly InterfaceImplementations[],
+  interfaces: ReadonlyUriMap<readonly Uri[]>,
   client?: CoreClient,
   resolutionContext?: IUriResolutionContext
 ): Promise<Result<Uri[], WrapError>> => {
@@ -26,20 +26,20 @@ export const getImplementations = async (
   };
 
   const addAllImplementationsFromImplementationsArray = async (
-    implementationsArray: readonly InterfaceImplementations[],
+    impls: ReadonlyUriMap<readonly Uri[]>,
     wrapperInterfaceUri: Uri
   ): Promise<Result<undefined, WrapError>> => {
-    for (const interfaceImplementations of implementationsArray) {
+    for (const impl of impls.keys()) {
       let fullyResolvedUri: Uri;
       if (client) {
         const redirectsResult = await applyResolution(
-          interfaceImplementations.interface,
+          impl,
           client,
           resolutionContext
         );
         if (!redirectsResult.ok) {
           const error = new WrapError("Failed to resolve redirects", {
-            uri: interfaceImplementations.interface.uri,
+            uri: impl.uri,
             code: WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS_ERROR,
             cause: redirectsResult.error,
           });
@@ -47,12 +47,15 @@ export const getImplementations = async (
         }
         fullyResolvedUri = redirectsResult.value;
       } else {
-        fullyResolvedUri = interfaceImplementations.interface;
+        fullyResolvedUri = impl;
       }
 
       if (Uri.equals(fullyResolvedUri, wrapperInterfaceUri)) {
-        for (const implementation of interfaceImplementations.implementations) {
-          addUniqueResult(implementation);
+        const implementations = impls.get(impl);
+        if (implementations) {
+          for (const implementation of implementations) {
+            addUniqueResult(Uri.from(implementation));
+          }
         }
       }
     }

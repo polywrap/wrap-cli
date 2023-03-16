@@ -4,12 +4,13 @@ import { BuildOptions, IClientConfigBuilder, BuilderConfig } from "./types";
 
 import {
   CoreClientConfig,
-  Env,
-  InterfaceImplementations,
   IUriPackage,
   IUriRedirect,
   IUriWrapper,
   Uri,
+  WrapperEnv,
+  ReadonlyUriMap,
+  UriMap,
 } from "@polywrap/core-js";
 import {
   RecursiveResolver,
@@ -66,32 +67,27 @@ export class ClientConfigBuilder extends BaseClientConfigBuilder {
     return this._config;
   }
 
-  private buildEnvs(): Env[] {
-    const envs: Env[] = [];
+  private buildEnvs(): ReadonlyUriMap<WrapperEnv> {
+    const envs = new UriMap<WrapperEnv>();
 
-    for (const [uri, env] of Object.entries(this._config.envs)) {
-      envs.push({ uri: Uri.from(uri), env });
+    for (const uri in this._config.envs) {
+      envs.set(Uri.from(uri), this._config.envs[uri]);
     }
 
     return envs;
   }
 
-  private buildInterfaces(): InterfaceImplementations[] {
-    const interfaces: InterfaceImplementations[] = [];
+  private buildInterfaces(): ReadonlyUriMap<readonly Uri[]> {
+    const interfaceImplementations = new UriMap<readonly Uri[]>();
 
-    for (const [interfaceUri, implementations] of Object.entries(
-      this._config.interfaces
-    )) {
-      if (implementations.size === 0) continue;
-      interfaces.push({
-        interface: Uri.from(interfaceUri),
-        implementations: Array.from(implementations).map((uri) =>
-          Uri.from(uri)
-        ),
-      });
+    for (const uri in this._config.interfaces) {
+      const uriImpls = [...this._config.interfaces[uri]].map((x) =>
+        Uri.from(x)
+      );
+      interfaceImplementations.set(Uri.from(uri), uriImpls);
     }
 
-    return interfaces;
+    return interfaceImplementations;
   }
 
   private buildRedirects(): IUriRedirect[] {

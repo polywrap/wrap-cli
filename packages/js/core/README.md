@@ -12,11 +12,11 @@ A TypeScript / JavaScript implementation of the WRAP standard, including all fun
 
 /** Core Client configuration that can be passed to the PolywrapClient or PolywrapCoreClient constructors */
 export interface CoreClientConfig {
-  /** set environmental variables for a wrapper */
-  readonly interfaces?: Readonly<InterfaceImplementations[]>;
-
   /** register interface implementations */
-  readonly envs?: Readonly<Env[]>;
+  readonly interfaces?: ReadonlyUriMap<readonly Uri[]>;
+
+  /** set environmental variables for a wrapper */
+  readonly envs?: ReadonlyUriMap<WrapperEnv>;
 
   /** configure URI resolution for redirects, packages, and wrappers */
   readonly resolver: Readonly<IUriResolver<unknown>>;
@@ -61,16 +61,16 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
   /**
    * returns all interfaces from the configuration used to instantiate the client
    *
-   * @returns an array of interfaces and their registered implementations
+   * @returns a Set of interfaces and their registered implementations
    */
-  getInterfaces(): readonly InterfaceImplementations[] | undefined;
+  getInterfaces(): ReadonlyUriMap<readonly Uri[]> | undefined;
 
   /**
    * returns all env registrations from the configuration used to instantiate the client
    *
    * @returns an array of env objects containing wrapper environmental variables
    */
-  getEnvs(): readonly Env[] | undefined;
+  getEnvs(): ReadonlyUriMap<WrapperEnv> | undefined;
 
   /**
    * returns an env (a set of environmental variables) from the configuration used to instantiate the client
@@ -78,7 +78,7 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
    * @param uri - the URI used to register the env
    * @returns an env, or undefined if an env is not found at the given URI
    */
-  getEnvByUri(uri: Uri): Env | undefined;
+  getEnvByUri(uri: Uri): WrapperEnv | undefined;
 
   /**
    * returns the URI resolver from the configuration used to instantiate the client
@@ -128,28 +128,9 @@ export interface CoreClient extends Invoker, UriResolverHandler<unknown> {
 ```ts
 
 /** A map of string-indexed, Msgpack-serializable environmental variables associated with a wrapper */
-export interface Env {
-  /** Uri of wrapper */
-  uri: Uri;
-
-  /** Env variables used by the module */
-  env: Record<string, unknown>;
+export interface WrapperEnv {
+  readonly [k: string]: unknown;
 }
-```
-
-### InterfaceImplementations
-
-```ts
-
-/** An interface and a list of wrappers that implement the interface */
-export interface InterfaceImplementations {
-  /** Uri of interface */
-  interface: Uri;
-
-  /** Uris of implementations */
-  implementations: Uri[];
-}
-
 ```
 
 ### Invoke

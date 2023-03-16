@@ -1,10 +1,8 @@
 import {
   Wrapper,
   CoreClient,
-  Env,
   GetFileOptions,
   GetImplementationsOptions,
-  InterfaceImplementations,
   InvokeOptions,
   InvokerOptions,
   Uri,
@@ -20,6 +18,9 @@ import {
   CoreClientConfig,
   WrapError,
   WrapErrorCode,
+  WrapperEnv,
+  ReadonlyUriMap,
+  UriMap,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import {
@@ -53,9 +54,7 @@ export class PolywrapCoreClient implements CoreClient {
    *
    * @returns an array of interfaces and their registered implementations
    */
-  public getInterfaces():
-    | readonly InterfaceImplementations[]
-    | undefined /* $ */ {
+  public getInterfaces(): ReadonlyUriMap<readonly Uri[]> | undefined /* $ */ {
     return this._config.interfaces;
   }
 
@@ -65,7 +64,7 @@ export class PolywrapCoreClient implements CoreClient {
    *
    * @returns an array of env objects containing wrapper environmental variables
    */
-  public getEnvs(): readonly Env[] | undefined /* $ */ {
+  public getEnvs(): ReadonlyUriMap<WrapperEnv> | undefined /* $ */ {
     return this._config.envs;
   }
 
@@ -86,15 +85,13 @@ export class PolywrapCoreClient implements CoreClient {
    * @param uri - the URI used to register the env
    * @returns an env, or undefined if an env is not found at the given URI
    */
-  public getEnvByUri(uri: Uri): Env | undefined /* $ */ {
-    const uriUri = Uri.from(uri);
-
+  public getEnvByUri(uri: Uri): WrapperEnv | undefined /* $ */ {
     const envs = this.getEnvs();
     if (!envs) {
       return undefined;
     }
 
-    return envs.find((environment) => Uri.equals(environment.uri, uriUri));
+    return envs.get(uri);
   }
 
   // $start: PolywrapCoreClient-getManifest
@@ -163,7 +160,7 @@ export class PolywrapCoreClient implements CoreClient {
 
     const getImplResult = await getImplementations(
       Uri.from(uri),
-      this.getInterfaces() ?? [],
+      this.getInterfaces() ?? new UriMap<readonly Uri[]>(),
       applyResolution ? this : undefined,
       applyResolution ? options.resolutionContext : undefined
     );
@@ -295,7 +292,7 @@ export class PolywrapCoreClient implements CoreClient {
       );
 
       const invokeResult = await this.invokeWrapper<TData>({
-        env: env?.env,
+        env: env,
         ...typedOptions,
         wrapper,
       });

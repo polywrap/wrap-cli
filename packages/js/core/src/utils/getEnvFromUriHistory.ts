@@ -1,9 +1,9 @@
-import { Uri, CoreClient, Env } from "../types";
+import { Uri, CoreClient, WrapperEnv } from "../types";
 
 export const getEnvFromUriHistory = (
   uriHistory: Uri[],
   client: CoreClient
-): Env | undefined => {
+): Readonly<WrapperEnv> | undefined => {
   for (const uri of uriHistory) {
     const env = client.getEnvByUri(uri);
 

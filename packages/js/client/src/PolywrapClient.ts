@@ -3,18 +3,18 @@ import { InvokerOptions, TryResolveUriOptions } from "./types";
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
 import {
   CoreClientConfig,
-  Env,
   GetFileOptions,
   GetImplementationsOptions,
-  InterfaceImplementations,
   InvokeResult,
   IUriResolutionContext,
   IUriResolver,
+  ReadonlyUriMap,
   Uri,
   UriPackageOrWrapper,
   ValidateOptions,
   WrapError,
   Wrapper,
+  WrapperEnv,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 import {
@@ -60,12 +60,12 @@ export class PolywrapClient extends PolywrapCoreClient {
   }
 
   @Tracer.traceMethod("PolywrapClient: getInterfaces")
-  public getInterfaces(): readonly InterfaceImplementations[] | undefined {
+  public getInterfaces(): ReadonlyUriMap<readonly Uri[]> | undefined {
     return super.getInterfaces();
   }
 
   @Tracer.traceMethod("PolywrapClient: getEnvs")
-  public getEnvs(): readonly Env[] | undefined {
+  public getEnvs(): ReadonlyUriMap<WrapperEnv> | undefined {
     return super.getEnvs();
   }
 
@@ -77,7 +77,7 @@ export class PolywrapClient extends PolywrapCoreClient {
   @Tracer.traceMethod("PolywrapClient: getEnvByUri")
   public getEnvByUri<TUri extends Uri | string = string>(
     uri: TUri
-  ): Env | undefined {
+  ): WrapperEnv | undefined {
     return super.getEnvByUri(Uri.from(uri));
   }
 
