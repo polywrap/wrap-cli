@@ -199,8 +199,8 @@ export const envTestCases = (implementation: string) => {
           {
             uri: Uri.from(implementationUri),
             package: PluginPackage.from<MockEnv>((module) => ({
-              mockEnv: (): MockEnv => {
-                return module.env;
+              mockEnv: (_, __, env: MockEnv): MockEnv => {
+                return env;
               },
             })),
           },

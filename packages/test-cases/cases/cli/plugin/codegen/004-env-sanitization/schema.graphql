@@ -5,5 +5,5 @@ type Env {
 type Module {
   method(
     str: String!
-  ): String!
+  ): String! @env(required: false)
 }
