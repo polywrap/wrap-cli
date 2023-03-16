@@ -3,10 +3,10 @@ import { expectHistory } from "../helpers/expectHistory";
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
 import { RecursiveResolver, StaticResolver } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "../../ExtendableUriResolver";
-import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { fileSystemPlugin } from "@polywrap/file-system-plugin-js";
-import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { PluginPackage } from "@polywrap/plugin-js";
+import path from "path";
 
 jest.setTimeout(20000);
 
@@ -18,10 +18,69 @@ const fsRedirectResolverWrapperUri = new Uri(
   `wrap://file/${fsRedirectResolverWrapperPath}`
 );
 
-const fileSystemResolverUri = Uri.from("wrap://package/fs-resolver");
 const fileSystemInterfaceUri = Uri.from(
   "wrap://ens/wraps.eth:file-system@1.0.0"
 );
+
+const customFileResolverUri = Uri.from("wrap://package/fs-resolver");
+const customFileResolver = PluginPackage.from(() => ({
+  tryResolveUri: async (args: any, client: PolywrapCoreClient): Promise<{
+    uri: string | null,
+    manifest: Uint8Array | null
+  } | null> => {
+    if (args.authority !== "fs" && args.authority !== "file") {
+      return null;
+    }
+
+    const manifestSearchPattern = "wrap.info";
+
+    let manifest: Uint8Array | null = null;
+
+    const manifestPath = path.resolve(args.path, manifestSearchPattern);
+    const manifestExistsResult = await client.invoke<boolean>({
+      uri: fileSystemInterfaceUri,
+      method: "exists",
+      args: {
+        path: manifestPath
+      }
+    });
+
+    if (manifestExistsResult.ok && manifestExistsResult.value) {
+      const manifestResult = await client.invoke<Uint8Array>({
+        uri: fileSystemInterfaceUri,
+        method: "readFile",
+        args: {
+          path: manifestPath
+        }
+      });
+      if (!manifestResult.ok) {
+        console.warn(manifestResult.error);
+        return { uri: null, manifest: null };
+      }
+      manifest = manifestResult.value;
+    }
+
+    return { uri: null, manifest };
+  },
+  getFile: async (args: any, client: PolywrapCoreClient): Promise<Uint8Array | null> => {
+    const result = await client.invoke<Uint8Array>({
+      uri: fileSystemInterfaceUri,
+      method: "readFile",
+      args: {
+        path: args.path
+      }
+    }).catch(() => ({
+      ok: false,
+      value: null
+    }));
+
+    if (!result.ok) {
+      return null;
+    }
+
+    return result.value;
+  }
+}));
 
 describe("Resolver extensions", () => {
   it("can resolve a resolver extension", async () => {
@@ -34,7 +93,7 @@ describe("Resolver extensions", () => {
           interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
           implementations: [
             fsRedirectResolverWrapperUri,
-            fileSystemResolverUri,
+            customFileResolverUri,
           ],
         },
       ],
@@ -47,8 +106,8 @@ describe("Resolver extensions", () => {
             ) as unknown) as PluginPackage<unknown>,
           },
           {
-            uri: Uri.from(fileSystemResolverUri),
-            package: fileSystemResolverPlugin({}),
+            uri: Uri.from(customFileResolverUri),
+            package: customFileResolver,
           },
         ]),
         new ExtendableUriResolver(),
@@ -87,7 +146,7 @@ describe("Resolver extensions", () => {
           interface: ExtendableUriResolver.defaultExtInterfaceUris[0],
           implementations: [
             fsRedirectResolverWrapperUri,
-            Uri.from(fileSystemResolverUri),
+            Uri.from(customFileResolverUri),
           ],
         },
       ],
@@ -100,8 +159,8 @@ describe("Resolver extensions", () => {
             ) as unknown) as PluginPackage<unknown>,
           },
           {
-            uri: Uri.from(fileSystemResolverUri),
-            package: fileSystemResolverPlugin({}),
+            uri: Uri.from(customFileResolverUri),
+            package: customFileResolver,
           },
         ]),
         new ExtendableUriResolver(),
