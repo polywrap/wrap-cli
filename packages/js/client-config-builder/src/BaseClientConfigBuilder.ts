@@ -98,8 +98,9 @@ export abstract class BaseClientConfigBuilder implements IClientConfigBuilder {
   }
 
   addEnv(uri: string, env: Record<string, unknown>): IClientConfigBuilder {
-    this._config.envs[this.sanitizeUri(uri)] = {
-      ...this._config.envs[this.sanitizeUri(uri)],
+    const sanitizedUri = this.sanitizeUri(uri);
+    this._config.envs[sanitizedUri] = {
+      ...this._config.envs[sanitizedUri],
       ...env,
     };
 
