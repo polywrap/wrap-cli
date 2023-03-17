@@ -263,7 +263,7 @@ export class WasmWrapper implements Wrapper {
       const result = await this._fileReader.readFile(WRAP_MODULE_PATH);
 
       if (!result.ok) {
-        return ResultErr("Wrapper does not contain a wasm module");
+        return ResultErr(`WasmWrapper: Wrapper does not contain a wasm module. ${result.error}`);
       }
 
       this._wasmModule = result.value;
