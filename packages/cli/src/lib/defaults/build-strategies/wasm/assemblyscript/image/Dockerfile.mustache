@@ -32,12 +32,15 @@ COPY {{.}} {{.}}
 {{#polywrap_module}}
 COPY {{dir}} {{dir}}
 
+ENV ASYNCIFY_STACK_SIZE=24576
+
 # Build the module at {{dir}}
 RUN ./node_modules/.bin/asc {{dir}}/wrap/entry.ts \
     --path ./node_modules \
     --outFile ./build/wrap.wasm \
     --use abort={{dir}}/wrap/entry/wrapAbort \
-    --optimize --importMemory \
+    --optimize --optimizeLevel 3 --shrinkLevel 2 \
+    --importMemory \
     --runtime stub \
     --runPasses asyncify
 {{/polywrap_module}}
