@@ -4,11 +4,8 @@ import * as ipfsHttpClient from "./embeds/ipfs-http-client/wrap";
 import * as ipfsResolver from "./embeds/async-ipfs-resolver/wrap";
 
 import { IWrapPackage, Uri } from "@polywrap/core-js";
-import {
-  ethereumProviderPlugin,
-  Connection,
-  Connections,
-} from "@polywrap/ethereum-provider-js";
+import * as EthProviderV1 from "@polywrap/ethereum-provider-js-v1";
+import * as EthProviderV2 from "@polywrap/ethereum-provider-js-v2";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { fileSystemPlugin } from "@polywrap/file-system-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
@@ -72,7 +69,8 @@ interface IDefaultPlugins {
   http: IDefaultPlugin;
   fileSystem: IDefaultPlugin;
   concurrent: IDefaultPlugin;
-  ethereumProvider: IDefaultPlugin;
+  ethereumProviderV1: IDefaultPlugin;
+  ethereumProviderV2: IDefaultPlugin;
 }
 
 export const plugins: IDefaultPlugins = {
@@ -99,16 +97,16 @@ export const plugins: IDefaultPlugins = {
     plugin: concurrentPromisePlugin({}),
     implements: [Uri.from("ens/wraps.eth:concurrent@1.0.0")],
   },
-  ethereumProvider: {
+  ethereumProviderV1: {
     uri: Uri.from("plugin/ethereum-provider@1.1.0"),
-    plugin: ethereumProviderPlugin({
-      connections: new Connections({
+    plugin: EthProviderV1.plugin({
+      connections: new EthProviderV1.Connections({
         networks: {
-          mainnet: new Connection({
+          mainnet: new EthProviderV1.Connection({
             provider:
               "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
           }),
-          goerli: new Connection({
+          goerli: new EthProviderV1.Connection({
             provider:
               "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
           }),
@@ -118,6 +116,26 @@ export const plugins: IDefaultPlugins = {
     implements: [
       Uri.from("ens/wraps.eth:ethereum-provider@1.1.0"),
       Uri.from("ens/wraps.eth:ethereum-provider@1.0.0"),
+    ],
+  },
+  ethereumProviderV2: {
+    uri: Uri.from("plugin/ethereum-provider@2.0.0"),
+    plugin: EthProviderV2.plugin({
+      connections: new EthProviderV2.Connections({
+        networks: {
+          mainnet: new EthProviderV2.Connection({
+            provider:
+              "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+          }),
+          goerli: new EthProviderV2.Connection({
+            provider:
+              "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+          }),
+        },
+      }),
+    }),
+    implements: [
+      Uri.from("ens/wraps.eth:ethereum-provider@2.0.0"),
     ],
   },
 };
