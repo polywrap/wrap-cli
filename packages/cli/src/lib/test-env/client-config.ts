@@ -10,7 +10,7 @@ import {
   ethereumProviderPlugin,
   Connections,
   Connection,
-} from "@polywrap/ethereum-provider-js";
+} from "@polywrap/ethereum-provider-js-v1";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   // TODO: move this into its own package, since it's being used everywhere?
@@ -41,7 +41,8 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
         "ens/wraps.eth:ens-uri-resolver-ext@1.0.0",
     },
     packages: {
-      [DefaultBundle.plugins.ethereumProvider.uri.uri]: ethereumProviderPlugin({
+      [DefaultBundle.plugins.ethereumProviderV1.uri
+        .uri]: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({

@@ -12,7 +12,7 @@ import {
   Connection,
   Connections,
   ethereumProviderPlugin,
-} from "@polywrap/ethereum-provider-js";
+} from "@polywrap/ethereum-provider-js-v1";
 
 class ENSRecursiveNameRegisterPublisher implements DeployModule {
   async execute(
@@ -52,7 +52,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
     const clientConfig = new ClientConfigBuilder()
       .addDefaults()
       .addPackage(
-        DefaultBundle.plugins.ethereumProvider.uri.uri,
+        DefaultBundle.plugins.ethereumProviderV1.uri.uri,
         ethereumProviderPlugin({
           connections: new Connections({
             networks: {
