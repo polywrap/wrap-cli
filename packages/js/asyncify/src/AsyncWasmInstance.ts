@@ -230,11 +230,24 @@ export class AsyncWasmInstance {
       let result = exportFn(...args);
 
       while (this._getAsyncifyState() === AsyncifyState.Unwinding) {
-        this._wrappedExports.asyncify_stop_unwind();
-        this._importFnResult = await this._importFnResult;
-        this._assertNoneState();
-        this._wrappedExports.asyncify_start_rewind(AsyncWasmInstance._dataAddr);
-        result = exportFn();
+        try {
+          this._wrappedExports.asyncify_stop_unwind();
+          this._importFnResult = await this._importFnResult;
+          this._assertNoneState();
+          this._wrappedExports.asyncify_start_rewind(
+            AsyncWasmInstance._dataAddr
+          );
+          result = exportFn();
+        } catch (e) {
+          const msg = e.toString();
+          if (msg.indexOf("RuntimeError: unreachable") > -1) {
+            throw new Error(
+              `${msg}. "unreachable" may be due to ASYNCIFY_STACK_SIZE not being large enough (try increasing it),` +
+                ` or the wasm module being too large (try optimizing it).`
+            );
+          }
+          throw e;
+        }
       }
 
       this._assertNoneState();
