@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/uri-resolver-extensions-js",
   "description": "Polywrap URI resolver extensions",
-  "version": "0.10.0-pre.12",
+  "version": "0.10.0-pre.13",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,17 +22,17 @@
     "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.10.0-pre.12",
-    "@polywrap/result": "0.10.0-pre.12",
-    "@polywrap/uri-resolvers-js": "0.10.0-pre.12",
-    "@polywrap/wasm-js": "0.10.0-pre.12",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.12"
+    "@polywrap/core-js": "0.10.0-pre.13",
+    "@polywrap/result": "0.10.0-pre.13",
+    "@polywrap/uri-resolvers-js": "0.10.0-pre.13",
+    "@polywrap/wasm-js": "0.10.0-pre.13",
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.13"
   },
   "devDependencies": {
-    "@polywrap/test-cases": "0.10.0-pre.12",
-    "@polywrap/core-client-js": "0.10.0-pre.12",
-    "@polywrap/plugin-js": "0.10.0-pre.12",
+    "@polywrap/core-client-js": "0.10.0-pre.13",
     "@polywrap/file-system-plugin-js": "~0.10.0-pre",
+    "@polywrap/plugin-js": "0.10.0-pre.13",
+    "@polywrap/test-cases": "0.10.0-pre.13",
     "@types/jest": "26.0.8",
     "doc-snippets": "~1.0.0",
     "jest": "26.6.3",
