@@ -41,7 +41,8 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
         "ens/wraps.eth:ens-uri-resolver-ext@1.0.0",
     },
     packages: {
-      [DefaultBundle.plugins.ethereumProviderV1.uri.uri]: ethereumProviderPlugin({
+      [DefaultBundle.plugins.ethereumProviderV1.uri
+        .uri]: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({

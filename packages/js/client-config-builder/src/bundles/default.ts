@@ -134,9 +134,7 @@ export const plugins: IDefaultPlugins = {
         },
       }),
     }),
-    implements: [
-      Uri.from("ens/wraps.eth:ethereum-provider@2.0.0"),
-    ],
+    implements: [Uri.from("ens/wraps.eth:ethereum-provider@2.0.0")],
   },
 };
 
