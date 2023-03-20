@@ -24,7 +24,12 @@ async function main() {
     values: ["0xB1B7586656116D546033e3bAFF69BFcD6592225E", "500"]
   }, client);
 
-  console.log(`Ethereum_Module.encodeParams:\n${result.data}`);
+  if (!result.ok) {
+    console.log(`Error:\n${result.error}`);
+    return;
+  }
+
+  console.log(`Ethereum_Module.encodeParams:\n${result.value}`);
 }
 
 main()
