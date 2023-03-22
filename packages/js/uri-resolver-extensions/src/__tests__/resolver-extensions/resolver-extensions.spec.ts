@@ -3,109 +3,58 @@ import { expectHistory } from "../helpers/expectHistory";
 import { PolywrapCoreClient } from "@polywrap/core-client-js";
 import { RecursiveResolver, StaticResolver } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "../../ExtendableUriResolver";
-import { fileSystemPlugin } from "@polywrap/file-system-plugin-js";
-import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { PluginPackage } from "@polywrap/plugin-js";
-import path from "path";
+import { wasmPackage as testResolverPackage } from "../embeds/test-resolver/wrap";
 
 jest.setTimeout(20000);
 
-const wrapperPath = `${GetPathToTestWrappers()}/subinvoke/00-subinvoke/implementations/as`;
-const wrapperUri = new Uri(`wrap://file/${wrapperPath}`);
-
-const fsRedirectResolverWrapperPath = `${GetPathToTestWrappers()}/resolver/02-fs/implementations/rs`;
-const fsRedirectResolverWrapperUri = new Uri(
-  `wrap://file/${fsRedirectResolverWrapperPath}`
-);
-
-const fileSystemInterfaceUri = Uri.from(
-  "wrap://ens/wraps.eth:file-system@1.0.0"
-)
-
-const customFileResolverUri = Uri.from("wrap://package/fs-resolver");
-const customFileResolver = PluginPackage.from(() => ({
-  tryResolveUri: async (args: any, client: PolywrapCoreClient): Promise<{
-    uri: string | null,
-    manifest: Uint8Array | null
+const customPluginResolverUri = Uri.from("wrap://package/test-resolver");
+const customPluginResolver = PluginPackage.from(() => ({
+  tryResolveUri: async (
+    args: any,
+    client: PolywrapCoreClient
+  ): Promise<{
+    uri?: string | null;
+    manifest?: Uint8Array | null;
   } | null> => {
-    if (args.authority !== "fs" && args.authority !== "file") {
+    if (args.authority !== "test") {
       return null;
     }
 
-    const manifestSearchPattern = "wrap.info";
-
-    let manifest: Uint8Array | null = null;
-
-    const manifestPath = path.resolve(args.path, manifestSearchPattern);
-    const manifestExistsResult = await client.invoke<boolean>({
-      uri: fileSystemInterfaceUri,
-      method: "exists",
-      args: {
-        path: manifestPath
-      }
-    });
-
-    if (manifestExistsResult.ok && manifestExistsResult.value) {
-      const manifestResult = await client.invoke<Uint8Array>({
-        uri: fileSystemInterfaceUri,
-        method: "readFile",
-        args: {
-          path: manifestPath
-        }
-      });
-      if (!manifestResult.ok) {
-        console.warn(manifestResult.error);
-        return { uri: null, manifest: null };
-      }
-      manifest = manifestResult.value;
+    switch (args.path) {
+      case "from":
+        return {
+          uri: Uri.from("test/to").uri,
+        };
+      case "package":
+        return {
+          manifest: new Uint8Array([]),
+        };
+      case "error":
+        throw new Error("Test error");
+      default:
+        return null;
     }
-
-    return { uri: null, manifest };
   },
-  getFile: async (args: any, client: PolywrapCoreClient): Promise<Uint8Array | null> => {
-    const result = await client.invoke<Uint8Array>({
-      uri: fileSystemInterfaceUri,
-      method: "readFile",
-      args: {
-        path: args.path
-      }
-    }).catch(() => ({
-      ok: false,
-      value: null
-    }));
-
-    if (!result.ok) {
-      return null;
-    }
-
-    return result.value;
-  }
 }));
 
 describe("Resolver extensions", () => {
-  it("can resolve a resolver extension", async () => {
-    const sourceUri = new Uri(`custom-fs/${wrapperPath}`);
-    const redirectedUri = wrapperUri;
+  it("can resolve URI with plugin extension", async () => {
+    const sourceUri = Uri.from(`test/from`);
+    const redirectedUri = Uri.from("test/to");
 
     const client = new PolywrapCoreClient({
-      interfaces: new UriMap<Uri[]>([[
-        ExtendableUriResolver.defaultExtInterfaceUris[0],
+      interfaces: new UriMap<Uri[]>([
         [
-          fsRedirectResolverWrapperUri,
-          customFileResolverUri,
+          ExtendableUriResolver.defaultExtInterfaceUris[0],
+          [customPluginResolverUri],
         ],
-      ]]),
+      ]),
       resolver: RecursiveResolver.from([
         StaticResolver.from([
           {
-            uri: Uri.from(fileSystemInterfaceUri),
-            package: (fileSystemPlugin(
-              {}
-            ) as unknown) as PluginPackage<unknown>,
-          },
-          {
-            uri: Uri.from(customFileResolverUri),
-            package: customFileResolver,
+            uri: customPluginResolverUri,
+            package: customPluginResolver,
           },
         ]),
         new ExtendableUriResolver(),
@@ -121,7 +70,52 @@ describe("Resolver extensions", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "resolver-extensions",
-      "can-resolve-extension"
+      "can-resolve-uri-with-plugin-extension"
+    );
+
+    if (!result.ok) {
+      fail(result.error);
+    }
+
+    if (result.value.type !== "uri") {
+      fail("Expected a URI, received: " + result.value.type);
+    }
+
+    expect(result.value.uri.uri).toEqual(redirectedUri.uri);
+  });
+
+  it("can resolve a package with plugin extension", async () => {
+    const sourceUri = Uri.from(`test/package`);
+    const redirectedUri = Uri.from("test/package");
+
+    const client = new PolywrapCoreClient({
+      interfaces: new UriMap<Uri[]>([
+        [
+          ExtendableUriResolver.defaultExtInterfaceUris[0],
+          [customPluginResolverUri],
+        ],
+      ]),
+      resolver: RecursiveResolver.from([
+        StaticResolver.from([
+          {
+            uri: customPluginResolverUri,
+            package: customPluginResolver,
+          },
+        ]),
+        new ExtendableUriResolver(),
+      ]),
+    });
+
+    let resolutionContext = new UriResolutionContext();
+    let result = await client.tryResolveUri({
+      uri: sourceUri,
+      resolutionContext,
+    });
+
+    await expectHistory(
+      resolutionContext.getHistory(),
+      "resolver-extensions",
+      "can-resolve-package-with-plugin-extension"
     );
 
     if (!result.ok) {
@@ -135,28 +129,70 @@ describe("Resolver extensions", () => {
     expect(result.value.uri.uri).toEqual(redirectedUri.uri);
   });
 
-  it("does not resolve a uri when not a match", async () => {
-    const uri = new Uri("test/not-a-match");
+  it("shows the plugin resolver extension error", async () => {
+    const sourceUri = Uri.from(`test/error`);
 
     const client = new PolywrapCoreClient({
-      interfaces: new UriMap<Uri[]>([[
-        ExtendableUriResolver.defaultExtInterfaceUris[0],
+      interfaces: new UriMap<Uri[]>([
         [
-          fsRedirectResolverWrapperUri,
-          Uri.from(customFileResolverUri),
+          ExtendableUriResolver.defaultExtInterfaceUris[0],
+          [customPluginResolverUri],
         ],
-      ]]),
+      ]),
       resolver: RecursiveResolver.from([
         StaticResolver.from([
           {
-            uri: Uri.from(fileSystemInterfaceUri),
-            package: (fileSystemPlugin(
-              {}
-            ) as unknown) as PluginPackage<unknown>,
+            uri: customPluginResolverUri,
+            package: customPluginResolver,
           },
+        ]),
+        new ExtendableUriResolver(),
+      ]),
+    });
+
+    let resolutionContext = new UriResolutionContext();
+    let result = await client.tryResolveUri({
+      uri: sourceUri,
+      resolutionContext,
+    });
+
+    await expectHistory(
+      resolutionContext.getHistory(),
+      "resolver-extensions",
+      "shows-plugin-extension-error"
+    );
+
+    if (result.ok) {
+      fail("Expected an error, received: " + result.value.type);
+    }
+
+    expect((result.error as Error)?.message).toEqual(
+      `Test error
+code: 51 WRAPPER INVOKE ABORTED
+uri: wrap://package/test-resolver
+method: tryResolveUri
+args: {
+  "authority": "test",
+  "path": "error"
+} `
+    );
+  });
+
+  it("does not resolve a URI when not a match with plugin extension", async () => {
+    const uri = new Uri("test/not-a-match");
+
+    const client = new PolywrapCoreClient({
+      interfaces: new UriMap<Uri[]>([
+        [
+          ExtendableUriResolver.defaultExtInterfaceUris[0],
+          [customPluginResolverUri],
+        ],
+      ]),
+      resolver: RecursiveResolver.from([
+        StaticResolver.from([
           {
-            uri: Uri.from(customFileResolverUri),
-            package: customFileResolver,
+            uri: customPluginResolverUri,
+            package: customPluginResolver,
           },
         ]),
         new ExtendableUriResolver(),
@@ -169,7 +205,188 @@ describe("Resolver extensions", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "resolver-extensions",
-      "not-a-match"
+      "plugin-extension-not-a-match"
+    );
+
+    if (!result.ok) {
+      fail(result.error);
+    }
+
+    if (result.value.type !== "uri") {
+      fail("Expected a uri, received: " + result.value.type);
+    }
+
+    expect(result.value.uri.uri).toEqual("wrap://test/not-a-match");
+  });
+
+  it("can resolve URI with wasm extension", async () => {
+    const sourceUri = Uri.from(`test/from`);
+    const redirectedUri = Uri.from("test/to");
+
+    const client = new PolywrapCoreClient({
+      interfaces: new UriMap<Uri[]>([
+        [
+          ExtendableUriResolver.defaultExtInterfaceUris[0],
+          [customPluginResolverUri],
+        ],
+      ]),
+      resolver: RecursiveResolver.from([
+        StaticResolver.from([
+          {
+            uri: customPluginResolverUri,
+            package: testResolverPackage,
+          },
+        ]),
+        new ExtendableUriResolver(),
+      ]),
+    });
+
+    let resolutionContext = new UriResolutionContext();
+    let result = await client.tryResolveUri({
+      uri: sourceUri,
+      resolutionContext,
+    });
+
+    await expectHistory(
+      resolutionContext.getHistory(),
+      "resolver-extensions",
+      "can-resolve-uri-with-wasm-extension"
+    );
+
+    if (!result.ok) {
+      fail(result.error);
+    }
+
+    if (result.value.type !== "uri") {
+      fail("Expected a URI, received: " + result.value.type);
+    }
+
+    expect(result.value.uri.uri).toEqual(redirectedUri.uri);
+  });
+
+  it("can resolve a package with wrapper extension", async () => {
+    const sourceUri = Uri.from(`test/package`);
+    const redirectedUri = Uri.from("test/package");
+
+    const client = new PolywrapCoreClient({
+      interfaces: new UriMap<Uri[]>([
+        [
+          ExtendableUriResolver.defaultExtInterfaceUris[0],
+          [customPluginResolverUri],
+        ],
+      ]),
+      resolver: RecursiveResolver.from([
+        StaticResolver.from([
+          {
+            uri: customPluginResolverUri,
+            package: testResolverPackage,
+          },
+        ]),
+        new ExtendableUriResolver(),
+      ]),
+    });
+
+    let resolutionContext = new UriResolutionContext();
+    let result = await client.tryResolveUri({
+      uri: sourceUri,
+      resolutionContext,
+    });
+
+    await expectHistory(
+      resolutionContext.getHistory(),
+      "resolver-extensions",
+      "can-resolve-package-with-wasm-extension"
+    );
+
+    if (!result.ok) {
+      fail(result.error);
+    }
+
+    if (result.value.type !== "package") {
+      fail("Expected a package, received: " + result.value.type);
+    }
+
+    expect(result.value.uri.uri).toEqual(redirectedUri.uri);
+  });
+
+  it("shows the wasm resolver extension error", async () => {
+    const sourceUri = Uri.from(`test/error`);
+
+    const client = new PolywrapCoreClient({
+      interfaces: new UriMap<Uri[]>([
+        [
+          ExtendableUriResolver.defaultExtInterfaceUris[0],
+          [customPluginResolverUri],
+        ],
+      ]),
+      resolver: RecursiveResolver.from([
+        StaticResolver.from([
+          {
+            uri: customPluginResolverUri,
+            package: testResolverPackage,
+          },
+        ]),
+        new ExtendableUriResolver(),
+      ]),
+    });
+
+    let resolutionContext = new UriResolutionContext();
+    let result = await client.tryResolveUri({
+      uri: sourceUri,
+      resolutionContext,
+    });
+
+    await expectHistory(
+      resolutionContext.getHistory(),
+      "resolver-extensions",
+      "shows-wasm-extension-error"
+    );
+
+    if (result.ok) {
+      fail("Expected an error, received: " + result.value.type);
+    }
+
+    expect((result.error as Error)?.message).toEqual(
+      `__wrap_abort: Test error
+code: 51 WRAPPER INVOKE ABORTED
+uri: wrap://package/test-resolver
+method: tryResolveUri
+args: {
+  "authority": "test",
+  "path": "error"
+} 
+source: { file: "src/lib.rs", row: 23, col: 20 }`
+    );
+  });
+
+  it("does not resolve a URI when not a match with wasm extension", async () => {
+    const uri = new Uri("test/not-a-match");
+
+    const client = new PolywrapCoreClient({
+      interfaces: new UriMap<Uri[]>([
+        [
+          ExtendableUriResolver.defaultExtInterfaceUris[0],
+          [customPluginResolverUri],
+        ],
+      ]),
+      resolver: RecursiveResolver.from([
+        StaticResolver.from([
+          {
+            uri: customPluginResolverUri,
+            package: testResolverPackage,
+          },
+        ]),
+        new ExtendableUriResolver(),
+      ]),
+    });
+
+    const resolutionContext = new UriResolutionContext();
+    const result = await client.tryResolveUri({ uri, resolutionContext });
+
+    await expectHistory(
+      resolutionContext.getHistory(),
+      "resolver-extensions",
+      "wasm-extension-not-a-match"
     );
 
     if (!result.ok) {
@@ -187,10 +404,12 @@ describe("Resolver extensions", () => {
     const undefinedResolverUri = Uri.from("test/undefined-resolver");
 
     const client = new PolywrapCoreClient({
-      interfaces: new UriMap<Uri[]>([[
-        ExtendableUriResolver.defaultExtInterfaceUris[0],
-        [undefinedResolverUri],
-      ]]),
+      interfaces: new UriMap<Uri[]>([
+        [
+          ExtendableUriResolver.defaultExtInterfaceUris[0],
+          [undefinedResolverUri],
+        ],
+      ]),
       resolver: RecursiveResolver.from([new ExtendableUriResolver()]),
     });
 

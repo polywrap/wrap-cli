@@ -34,10 +34,8 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.12"
   },
   "devDependencies": {
-    "@polywrap/test-cases": "0.10.0-pre.12",
     "@polywrap/core-client-js": "0.10.0-pre.12",
     "@polywrap/plugin-js": "0.10.0-pre.12",
-    "@polywrap/file-system-plugin-js": "~0.10.0-pre",
     "base64-to-uint8array": "1.0.0",
     "copyfiles": "2.4.1",
     "@types/jest": "26.0.8",
