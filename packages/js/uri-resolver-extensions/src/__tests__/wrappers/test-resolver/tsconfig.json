@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "es2015",
+      "es5",
+      "dom"
+    ],
+    "esModuleInterop": true,
+    "outDir": "build",
+    "moduleResolution": "node",
+    "declaration": true,
+    "preserveSymlinks": true,
+    "preserveWatchOutput": true,
+    "pretty": false,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "module": "commonjs",
+    "sourceMap": true,
+    "target": "es5",
+    "resolveJsonModule": true,
+    "strictNullChecks": true,
+    "experimentalDecorators": true
+  },
+  "typeAcquisition": { "include": ["jest"] }
+}
