@@ -493,7 +493,8 @@ interface IDefaultPlugins {
   http: IDefaultPlugin;
   fileSystem: IDefaultPlugin;
   concurrent: IDefaultPlugin;
-  ethereumProvider: IDefaultPlugin;
+  ethereumProviderV1: IDefaultPlugin;
+  ethereumProviderV2: IDefaultPlugin;
 }
 
 export const plugins: IDefaultPlugins = {
@@ -520,16 +521,16 @@ export const plugins: IDefaultPlugins = {
     plugin: concurrentPromisePlugin({}),
     implements: [Uri.from("ens/wraps.eth:concurrent@1.0.0")],
   },
-  ethereumProvider: {
+  ethereumProviderV1: {
     uri: Uri.from("plugin/ethereum-provider@1.1.0"),
-    plugin: ethereumProviderPlugin({
-      connections: new Connections({
+    plugin: EthProviderV1.plugin({
+      connections: new EthProviderV1.Connections({
         networks: {
-          mainnet: new Connection({
+          mainnet: new EthProviderV1.Connection({
             provider:
               "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
           }),
-          goerli: new Connection({
+          goerli: new EthProviderV1.Connection({
             provider:
               "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
           }),
@@ -539,6 +540,26 @@ export const plugins: IDefaultPlugins = {
     implements: [
       Uri.from("ens/wraps.eth:ethereum-provider@1.1.0"),
       Uri.from("ens/wraps.eth:ethereum-provider@1.0.0"),
+    ],
+  },
+  ethereumProviderV2: {
+    uri: Uri.from("plugin/ethereum-provider@2.0.0"),
+    plugin: EthProviderV2.plugin({
+      connections: new EthProviderV2.Connections({
+        networks: {
+          mainnet: new EthProviderV2.Connection({
+            provider:
+              "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+          }),
+          goerli: new EthProviderV2.Connection({
+            provider:
+              "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+          }),
+        },
+      }),
+    }),
+    implements: [
+      Uri.from("ens/wraps.eth:ethereum-provider@2.0.0"),
     ],
   },
 };

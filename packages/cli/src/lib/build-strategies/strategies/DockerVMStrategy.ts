@@ -41,7 +41,7 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
   "wasm/assemblyscript": {
     defaultIncludes: ["package.json", "package-lock.json", "yarn.lock"],
     baseImage: "polywrap/vm-base-as",
-    version: "0.1.0",
+    version: "0.2.0",
   },
 };
 
