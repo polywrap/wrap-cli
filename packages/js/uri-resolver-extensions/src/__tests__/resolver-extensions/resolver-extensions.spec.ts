@@ -264,7 +264,7 @@ args: {
     expect(result.value.uri.uri).toEqual(redirectedUri.uri);
   });
 
-  it("can resolve a package with wrapper extension", async () => {
+  it("can resolve a package with wasm extension", async () => {
     const sourceUri = Uri.from(`test/package`);
     const redirectedUri = Uri.from("test/package");
 
