@@ -70,7 +70,7 @@ describe("Resolver extensions", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "resolver-extensions",
-      "can-resolve-uri-with-plugin-extension"
+      "can-resolve-uri"
     );
 
     if (!result.ok) {
@@ -115,7 +115,7 @@ describe("Resolver extensions", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "resolver-extensions",
-      "can-resolve-package-with-plugin-extension"
+      "can-resolve-package"
     );
 
     if (!result.ok) {
@@ -205,7 +205,7 @@ args: {
     await expectHistory(
       resolutionContext.getHistory(),
       "resolver-extensions",
-      "plugin-extension-not-a-match"
+      "not-a-match"
     );
 
     if (!result.ok) {
@@ -250,7 +250,7 @@ args: {
     await expectHistory(
       resolutionContext.getHistory(),
       "resolver-extensions",
-      "can-resolve-uri-with-wasm-extension"
+      "can-resolve-uri"
     );
 
     if (!result.ok) {
@@ -295,7 +295,7 @@ args: {
     await expectHistory(
       resolutionContext.getHistory(),
       "resolver-extensions",
-      "can-resolve-package-with-wasm-extension"
+      "can-resolve-package"
     );
 
     if (!result.ok) {
@@ -386,7 +386,7 @@ source: { file: "src/lib.rs", row: 23, col: 20 }`
     await expectHistory(
       resolutionContext.getHistory(),
       "resolver-extensions",
-      "wasm-extension-not-a-match"
+      "not-a-match"
     );
 
     if (!result.ok) {
