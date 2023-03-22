@@ -558,7 +558,7 @@ export interface MaybeUriOrManifest {
     invoker: Invoker,
     wrapper: Uri,
     path: string
-  ): Promise<Result<Uint8Array | undefined, WrapError>> 
+  ): Promise<Result<Uint8Array | null, WrapError>> 
 ```
 
 ## Uri Resolution
