@@ -136,11 +136,15 @@ export class WrapError extends Error {
     return `${this.name}: ${this.message}`;
   }
 
+  toJSON(): string {
+    return this.toString();
+  }
+
   // remove escape characters that may have been added by Rust
   private static sanitizeUnwrappedRustResult(error: string): string {
     if (
       error.startsWith(
-        '__wrap_abort: called `Result::unwrap()` on an `Err` value: "'
+        "__wrap_abort: called `Result::unwrap()` on an `Err` value: "
       )
     ) {
       error = error.replace(/\\"/g, '"');

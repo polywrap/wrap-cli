@@ -76,6 +76,8 @@
   "commands_deploy_error_pathMissing": "{option} option missing {argument} argument",
   "commands_deploy_error_nameMissing": "{option} option missing {argument} argument",
   "commands_deploy_error_cidMissing": "{option} option missing {argument} argument",
+  "commands_deploy_error_primaryJobNotFound": "A primary job was indicated but not found in the manifest",
+  "commands_deploy_deployment_written": "The URI result from job {primaryJobName} has been written to {deploymentFilepath}. It is recommended to store this file at the root of your wrap package and commit it to your repository.",
   "commands_codegen_description": "Generate Code For Polywrap Projects",
   "commands_codegen_error_domain": "domain",
   "commands_codegen_error_optionMissingArgument": "{option} option missing {argument} argument",

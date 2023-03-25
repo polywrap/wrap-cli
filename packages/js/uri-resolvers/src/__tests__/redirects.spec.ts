@@ -21,7 +21,7 @@ describe("redirects", () => {
     }
 
     if (redirectsResult.value.type !== "uri") {
-      console.log(`Expected URI, received: `, redirectsResult.value);
+      console.error(`Expected URI, received: `, redirectsResult.value);
       fail();
     }
 
@@ -72,7 +72,7 @@ describe("redirects", () => {
     }
 
     if (redirectsResult.value.type !== "uri") {
-      console.log(`Expected URI, received: `, redirectsResult.value);
+      console.error(`Expected URI, received: `, redirectsResult.value);
       fail();
     }
 
@@ -129,7 +129,7 @@ describe("redirects", () => {
     const redirectsResult = await resolver.tryResolveUri(uri1, {} as CoreClient, new UriResolutionContext());
 
     if (redirectsResult.ok) {
-      console.log(`Expected error`, redirectsResult.value);
+      console.error(`Expected error`, redirectsResult.value);
       fail();
     }
 

@@ -1,0 +1,20 @@
+[package]
+name = "test-uri-resolver-wasm-rs"
+version = "0.1.0"
+description = "A URI resolver extension wrapper for testing"
+authors = ["Polywrap"]
+repository = "https://github.com/polywrap/monorepo"
+license = "MIT"
+edition = "2021"
+
+[dependencies]
+polywrap-wasm-rs = { version = "0.10.0-pre.8" }
+serde = { version = "1.0", features = ["derive"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+opt-level = 's'
+lto = true
+panic = 'abort'

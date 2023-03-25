@@ -1,4 +1,5 @@
 import { getTestEnvProviders } from "./providers";
+import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "../../lib";
 
 import {
   BuilderConfig,
@@ -9,8 +10,7 @@ import {
   ethereumProviderPlugin,
   Connections,
   Connection,
-} from "@polywrap/ethereum-provider-js";
-import { ensAddresses } from "@polywrap/test-env-js";
+} from "@polywrap/ethereum-provider-js-v1";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   // TODO: move this into its own package, since it's being used everywhere?
@@ -23,7 +23,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
     throw Error("Test environment not found.");
   }
 
-  const ensAddress = ensAddresses.ensAddress;
+  const ensAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress;
 
   return {
     envs: {
@@ -41,7 +41,8 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
         "ens/wraps.eth:ens-uri-resolver-ext@1.0.0",
     },
     packages: {
-      [DefaultBundle.plugins.ethereumProvider.uri.uri]: ethereumProviderPlugin({
+      [DefaultBundle.plugins.ethereumProviderV1.uri
+        .uri]: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({

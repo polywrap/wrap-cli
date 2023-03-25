@@ -101,7 +101,9 @@ function parseOptions<TOptions extends BaseCommandOptions>(
   if (options) {
     for (const [key, value] of Object.entries(options)) {
       if (value === undefined) continue;
-      parsed.push(`--${toKebabCase(key)}`);
+      if (key !== "args") {
+        parsed.push(`--${toKebabCase(key)}`);
+      }
       parsed.push(parseValue(value));
     }
   }

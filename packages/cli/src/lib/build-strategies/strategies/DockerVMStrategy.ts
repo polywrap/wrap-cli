@@ -41,7 +41,7 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
   "wasm/assemblyscript": {
     defaultIncludes: ["package.json", "package-lock.json", "yarn.lock"],
     baseImage: "polywrap/vm-base-as",
-    version: "0.1.0",
+    version: "0.2.0",
   },
 };
 
@@ -176,10 +176,12 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         });
 
         // For rust, we want to also mount the cargo registry's cache directory
-        const localCargoCache = `${process.env.HOME}/.cargo/registry`;
-        let cacheVolume = "";
+        const localCargoCache = `${process.env.HOME}/.cargo`;
+        const cacheVolumes: string[] = [];
         if (language === "wasm/rust" && fse.existsSync(localCargoCache)) {
-          cacheVolume = `-v ${localCargoCache}:/usr/local/cargo/registry`;
+          cacheVolumes.push(`-v ${localCargoCache}:/usr/local/cargo`);
+          // Ignore the bin folder, without this an exception is thrown upon exe exec
+          cacheVolumes.push(`-v /usr/local/cargo/bin/`);
         }
 
         let buildError: Error | undefined = undefined;
@@ -196,7 +198,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
               `${path.resolve(
                 this._volumePaths.linkedPackages
               )}:/linked-packages`,
-              cacheVolume,
+              ...cacheVolumes,
               `${CONFIGS[language].baseImage}:${CONFIGS[language].version}`,
               "/bin/bash",
               "--verbose",

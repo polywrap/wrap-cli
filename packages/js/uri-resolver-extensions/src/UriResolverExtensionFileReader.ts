@@ -52,7 +52,11 @@ export class UriResolverExtensionFileReader implements IFileReader /* $ */ {
     );
     if (!result.ok) return result;
     if (!result.value) {
-      return ResultErr(new Error(`File not found at ${path}`));
+      return ResultErr(
+        new Error(
+          `File not found at ${path} using resolver ${this._resolverExtensionUri.uri}`
+        )
+      );
     }
     return {
       value: result.value,

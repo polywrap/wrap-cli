@@ -2,20 +2,16 @@
 import { wrap_load_env } from "@polywrap/wasm-as";
 import {
   {{#methods}}
-  {{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
-  {{/methods}}
-} from "../../index";
-import {
-  {{#methods}}
   deserialize{{name}}Args,
   serialize{{name}}Result{{^last}},{{/last}}
   {{/methods}}
 } from "./serialization";
 {{/methods.length}}
+import { ModuleBase } from "./module";
 import * as Types from "..";
 
 {{#methods}}
-export function {{name}}Wrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
+export function {{name}}Wrapped(module: ModuleBase, argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
   {{#env}}
   {{#required}}
   if (env_size == 0) {
@@ -37,7 +33,7 @@ export function {{name}}Wrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffe
   const args = deserialize{{name}}Args(argsBuf);
   {{/arguments.length}}
 
-  const result = {{#detectKeyword}}{{name}}{{/detectKeyword}}({{#arguments.length}}
+  const result = module.{{#detectKeyword}}{{name}}{{/detectKeyword}}({{#arguments.length}}
     {
       {{#arguments}}
       {{#detectKeyword}}{{name}}{{/detectKeyword}}: args.{{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}

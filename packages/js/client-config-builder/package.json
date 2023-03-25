@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/client-config-builder-js",
   "description": "Polywrap Javascript Client configuration",
-  "version": "0.10.0-pre.10",
+  "version": "0.10.0-pre.13",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -23,18 +23,17 @@
     "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.10.0-pre.10",
-    "@polywrap/ethereum-provider-js": "0.2.2",
-    "@polywrap/fs-plugin-js": "~0.10.0-pre",
+    "@polywrap/concurrent-plugin-js": "~0.10.0-pre",
+    "@polywrap/core-js": "0.10.0-pre.13",
+    "@polywrap/ethereum-provider-js-v1": "npm:@polywrap/ethereum-provider-js@~0.2.4",
+    "@polywrap/ethereum-provider-js-v2": "npm:@polywrap/ethereum-provider-js@~0.3.0",
+    "@polywrap/file-system-plugin-js": "~0.10.0-pre",
     "@polywrap/http-plugin-js": "~0.10.0-pre",
-    "@polywrap/ipfs-plugin-js": "~0.10.0-pre",
-    "@polywrap/logger-plugin-js": "0.10.0",
-    "@polywrap/plugin-js": "0.10.0-pre.10",
-    "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.10",
-    "@polywrap/uri-resolvers-js": "0.10.0-pre.10",
-    "@polywrap/wasm-js": "0.10.0-pre.10",
-    "base64-to-uint8array": "1.0.0",
-    "concurrent-plugin-js": "0.1.2"
+    "@polywrap/logger-plugin-js": "0.10.0-pre.10",
+    "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.13",
+    "@polywrap/uri-resolvers-js": "0.10.0-pre.13",
+    "@polywrap/wasm-js": "0.10.0-pre.13",
+    "base64-to-uint8array": "1.0.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

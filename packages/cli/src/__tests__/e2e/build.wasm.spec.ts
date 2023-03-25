@@ -1,11 +1,12 @@
 import { clearStyle, polywrapCli } from "./utils";
+import { testBuildOutput } from "./helpers/testBuildOutput";
 
-import { runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
+import { Commands, runCli } from "@polywrap/cli-js";
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { testBuildOutput } from "./helpers/testBuildOutput";
+import { BuildCommandOptions } from "../../commands";
 
 const HELP = `Usage: polywrap build|b [options]
 
@@ -93,8 +94,9 @@ describe("e2e tests for build command", () => {
   };
 
   it("Should show help text", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["build", "--help"],
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.build({
+      help: true,
+    }, {
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
@@ -105,10 +107,12 @@ describe("e2e tests for build command", () => {
   });
 
   it("Should throw error for unknown option --invalid", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+    const { exitCode: code, stdout: output, stderr: error } = await runCli({
       args: ["build", "--invalid"],
-      cwd: getTestCaseDir(0),
-      cli: polywrapCli,
+      config: {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+      }
     });
 
     expect(code).toEqual(1);
@@ -125,10 +129,12 @@ describe("e2e tests for build command", () => {
 
     for (const [option, errorMessage] of Object.entries(missingOptionArgs)) {
       it(`Should throw error if params not specified for ${option} option`, async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+        const { exitCode: code, stdout: output, stderr: error } = await runCli({
           args: ["build", option],
-          cwd: getTestCaseDir(0),
-          cli: polywrapCli,
+          config: {
+            cwd: getTestCaseDir(0),
+            cli: polywrapCli,
+          }
         });
 
         expect(code).toEqual(1);
@@ -141,10 +147,12 @@ describe("e2e tests for build command", () => {
   });
 
   it("Should throw error if params not specified for --client-config option", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+    const { exitCode: code, stdout: output, stderr: error } = await runCli({
       args: ["build", "--client-config"],
-      cwd: getTestCaseDir(0),
-      cli: polywrapCli,
+      config: {
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+      }
     });
 
     expect(code).toEqual(1);
@@ -159,14 +167,16 @@ describe("e2e tests for build command", () => {
       path.join(os.tmpdir(), `polywrap-cli-tests`)
     );
     const testCaseDir = getTestCaseDir(0);
-    const { exitCode: code, stdout: output } = await runCLI({
-      args: ["build", "-v", "--output-dir", outputDir],
+    const { exitCode: code, stdout: output } = await Commands.build({
+      outputDir,
+      verbose: true
+    }, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
 
     const displayPath = "./" + path.relative(
-      getTestCaseDir(0), outputDir
+      testCaseDir, outputDir
     );
 
     expect(code).toEqual(0);
@@ -180,11 +190,13 @@ describe("e2e tests for build command", () => {
     const testCaseDir = getTestCaseDir(0);
     const logFilePath = "./log-file.txt";
     const logFileAbsPath = path.join(testCaseDir, logFilePath);
-    const { exitCode: code } = await runCLI({
-      args: ["build", "-v", "-l", logFilePath],
+    const { exitCode: code } = await Commands.build({
+      logFile: logFilePath,
+    }, {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
+
 
     expect(code).toEqual(0);
     expect(fs.existsSync(logFileAbsPath)).toBeTruthy();
@@ -194,8 +206,9 @@ describe("e2e tests for build command", () => {
 
   describe("Image strategy", () => {
     it("Builds for assemblyscript", async () => {
-      const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v", "-s", "image"],
+      const { exitCode: code, stdout: output } = await Commands.build({
+        strategy: "image",
+      }, {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
@@ -234,8 +247,10 @@ describe("e2e tests for build command", () => {
     });
 
     it("Builds for assemblyscript", async () => {
-      const { exitCode: code, stdout: output } = await runCLI({
-        args: ["build", "-v", "-s", "local"],
+      const { exitCode: code, stdout: output } = await Commands.build({
+        strategy: "local",
+        verbose: true
+      }, {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
       });
@@ -253,21 +268,24 @@ describe("e2e tests for build command", () => {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 
-      let cmdArgs: string[] = [];
+      let args: BuildCommandOptions;
       let cmdFile = path.join(testCaseDir, "cmd.json");
       if (fs.existsSync(cmdFile)) {
         const cmdConfig = JSON.parse(fs.readFileSync(cmdFile, "utf-8"));
-        if (cmdConfig.args) {
-          cmdArgs.push(...cmdConfig.args);
+        if (cmdConfig) {
+          args = cmdConfig;
         }
       }
 
       test(testCaseName, async () => {
-        let { exitCode, stdout, stderr } = await runCLI({
-          args: ["build", "-v", ...cmdArgs],
+        const { exitCode, stdout, stderr } = await Commands.build({
+          ...args,
+          verbose: true
+        }, {
           cwd: testCaseDir,
           cli: polywrapCli,
         });
+
         const buildDir = path.join(testCaseDir, "build");
 
         testCliOutput(testCaseDir, exitCode, stdout, stderr);

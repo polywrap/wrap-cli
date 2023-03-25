@@ -1,3 +1,4 @@
 {
-  "args": ["docusaurus", "-c", "./config.ts"]
+  "clientConfig": "./config.ts",
+  "doc": "docusaurus"
 }

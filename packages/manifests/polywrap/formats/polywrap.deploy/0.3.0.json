@@ -1,0 +1,80 @@
+{
+  "id": "DeployManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "jobs"],
+  "properties": {
+    "format": {
+      "description": "Polywrap deployment manifest format version.",
+      "type": "string",
+      "const": "0.3.0"
+    },
+    "primaryJobName": {
+      "description": "Name of the job that runs the primary deployment sequence.",
+      "type": "string"
+    },
+    "jobs": {
+      "description": "Sequences of deployment steps",
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/definitions/job"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "job": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["steps"],
+      "properties": {
+        "steps": {
+          "description": "Deployment steps",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/step"
+          }
+        },
+        "config": {
+          "description": "Sequence-level custom configuration.",
+          "type": "object"
+        }
+      }
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "package", "uri"],
+      "properties": {
+        "name": {
+          "description": "Name of the step",
+          "type": "string"
+        },
+        "package": {
+          "description": "Name of the deployer package.",
+          "type": "string"
+        },
+        "config": {
+          "description": "Step-level custom configuration.",
+          "type": "object"
+        },
+        "uri": {
+          "description": "URI to pass into the deploy step.",
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Valid WRAP URI",
+              "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
+            },
+            {
+              "type": "string",
+              "description": "Name of another step, prefixed with '$'",
+              "pattern": "^\\$.*"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

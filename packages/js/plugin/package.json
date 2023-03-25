@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/plugin-js",
   "description": "Polywrap plugin core package for plugin wrappers",
-  "version": "0.10.0-pre.10",
+  "version": "0.10.0-pre.13",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,11 +19,14 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.10.0-pre.10",
-    "@polywrap/msgpack-js": "0.10.0-pre.10",
-    "@polywrap/result": "0.10.0-pre.10",
-    "@polywrap/tracing-js": "0.10.0-pre.10",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.10"
+    "@polywrap/core-js": "0.10.0-pre.13",
+    "@polywrap/msgpack-js": "0.10.0-pre.13",
+    "@polywrap/result": "0.10.0-pre.13",
+    "@polywrap/tracing-js": "0.10.0-pre.13",
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.13"
+  },
+  "peerDependencies": {
+    "@polywrap/core-js": "0.10.x"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
