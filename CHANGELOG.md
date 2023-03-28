@@ -1,3 +1,7 @@
+# Polywrap Origin (0.9.7)
+## Bugs
+* [PR-1635](https://github.com/polywrap/toolchain/pull/1635) `@polywrap/templates`: Fix the `ts-node` template code as it wouldn't build without changes.
+
 # Polywrap Origin (0.9.6)
 ## Bugs
 * [PR-1565](https://github.com/polywrap/toolchain/pull/1565) `@polywrap/ipfs-plugin-js`: Added optional support for provider authentication via the plugin's environment variables.

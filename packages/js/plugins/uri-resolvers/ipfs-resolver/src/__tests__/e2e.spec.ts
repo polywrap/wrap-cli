@@ -11,6 +11,7 @@ import { ipfsResolverPlugin } from "..";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { Result } from "@polywrap/core-js";
 import { ResultOk } from "@polywrap/result";
+import { UriResolver_MaybeUriOrManifest } from "../wrap";
 
 jest.setTimeout(300000);
 
@@ -83,12 +84,13 @@ describe("IPFS Plugin", () => {
     expect(manifest?.name).toBe("SimpleStorage");
   });
 
-  const createRacePromise = (
-    timeout: number
-  ): Promise<Result<Uint8Array, Error>> => {
-    return new Promise<Result<Uint8Array, Error>>((resolve) =>
+  const createRacePromise = <TResult>(
+    timeout: number,
+    result: TResult
+  ): Promise<Result<TResult, Error>> => {
+    return new Promise<Result<TResult, Error>>((resolve) =>
       setTimeout(() => {
-        resolve(ResultOk(Uint8Array.from([1, 2, 3, 4])));
+        resolve(ResultOk(result));
       }, timeout)
     );
   };
@@ -109,8 +111,8 @@ describe("IPFS Plugin", () => {
         },
       });
 
-      const fasterRacePromise = createRacePromise(timeout - 100);
-      const slowerRacePromise = createRacePromise(timeout + 100);
+      const fasterRacePromise = createRacePromise(timeout - 100, null);
+      const slowerRacePromise = createRacePromise(timeout + 100, null);
 
       const fasterRaceResult = await Promise.race([
         fasterRacePromise,
@@ -166,7 +168,7 @@ describe("IPFS Plugin", () => {
       const nonExistentFileCid = "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
       const client = new PolywrapClient(getClientConfigWithIpfsResolverEnv(env));
 
-      const getFilePromise = client.invoke<Uint8Array>({
+      const getFilePromise = client.invoke<UriResolver_MaybeUriOrManifest>({
         uri: ipfsResolverUri,
         method: "tryResolveUri",
         args: {
@@ -175,8 +177,13 @@ describe("IPFS Plugin", () => {
         },
       });
 
-      const fasterRacePromise = createRacePromise(timeout - 100);
-      const slowerRacePromise = createRacePromise(timeout + 100);
+      const expectedResult: UriResolver_MaybeUriOrManifest = {
+        manifest: null,
+        uri: null
+      };
+
+      const fasterRacePromise = createRacePromise(timeout - 100, expectedResult);
+      const slowerRacePromise = createRacePromise(timeout + 100, expectedResult);
 
       const fasterRaceResult = await Promise.race([
         fasterRacePromise,
