@@ -53,6 +53,9 @@ class TestResolver implements IUriResolver<Error> {
       case "wrap://test/B":
         result = UriResolutionResult.ok(Uri.from("test/wrapper"));
         break;
+      case "wrap://test/error":
+        result = UriResolutionResult.err(new Error("A test error"));
+        break;
       default:
         throw new Error(`Unexpected URI: ${uri.uri}`);
     }
@@ -213,6 +216,95 @@ describe("ResolutionResultCacheResolver", () => {
     }
 
     expect(result.value.uri.uri).toEqual("wrap://test/package");
+  });
+
+  it("does not cache error by default", async () => {
+    const client = new PolywrapCoreClient({
+      resolver: ResolutionResultCacheResolver.from(
+        new TestResolver(),
+        new ResolutionResultCache()
+      ),
+    });
+
+    let resolutionContext = new UriResolutionContext();
+    let result = await client.tryResolveUri({
+      uri: Uri.from("test/error"),
+      resolutionContext,
+    });
+
+    await expectHistory(
+      resolutionContext.getHistory(),
+      "resolution-result-cache-resolver",
+      "error-without-cache"
+    );
+
+    if (result.ok) {
+      fail("Expected an error, received: " + result.value.type);
+    }
+    expect((result.error as Error)?.message).toEqual("A test error");
+
+    resolutionContext = new UriResolutionContext();
+    result = await client.tryResolveUri({
+      uri: Uri.from("test/error"),
+      resolutionContext,
+    });
+
+    await expectHistory(
+      resolutionContext.getHistory(),
+      "resolution-result-cache-resolver",
+      "error-without-cache"
+    );
+
+    if (result.ok) {
+      fail("Expected an error, received: " + result.value.type);
+    }
+    expect((result.error as Error)?.message).toEqual("A test error");
+  });
+
+  it("caches error if configured", async () => {
+    const client = new PolywrapCoreClient({
+      resolver: ResolutionResultCacheResolver.from(
+        new TestResolver(),
+        new ResolutionResultCache(),
+        {
+          cacheErrors: true,
+        }
+      ),
+    });
+
+    let resolutionContext = new UriResolutionContext();
+    let result = await client.tryResolveUri({
+      uri: Uri.from("test/error"),
+      resolutionContext,
+    });
+
+    await expectHistory(
+      resolutionContext.getHistory(),
+      "resolution-result-cache-resolver",
+      "error-without-cache"
+    );
+
+    if (result.ok) {
+      fail("Expected an error, received: " + result.value.type);
+    }
+    expect((result.error as Error)?.message).toEqual("A test error");
+
+    resolutionContext = new UriResolutionContext();
+    result = await client.tryResolveUri({
+      uri: Uri.from("test/error"),
+      resolutionContext,
+    });
+
+    await expectHistory(
+      resolutionContext.getHistory(),
+      "resolution-result-cache-resolver",
+      "error-with-cache"
+    );
+
+    if (result.ok) {
+      fail("Expected an error, received: " + result.value.type);
+    }
+    expect((result.error as Error)?.message).toEqual("A test error");
   });
 
   it("keeps the same resolution path after caching", async () => {

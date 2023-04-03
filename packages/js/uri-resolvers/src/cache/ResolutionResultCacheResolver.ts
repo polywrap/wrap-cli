@@ -24,7 +24,7 @@ export class ResolutionResultCacheResolver<TError>
    * Creates a ResolutionResultCacheResolver
    *
    * @param _innerResolver - a resolver to delegate resolution to
-   * @param _cache - a wrapper cache
+   * @param _cache - a resolution result cache
    * @param options - cacheErrors (default: false)
    * */
   constructor(
@@ -38,7 +38,7 @@ export class ResolutionResultCacheResolver<TError>
    * Creates a ResolutionResultCacheResolver from a resolver-like object
    *
    * @param innerResolver - a resolver-like item to delegate resolution to
-   * @param cache - a wrapper cache
+   * @param cache - a resolution result cache
    * @param options - cacheErrors (default: false)
    *
    * @returns a ResolutionResultCacheResolver
