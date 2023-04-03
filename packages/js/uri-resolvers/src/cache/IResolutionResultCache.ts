@@ -7,7 +7,7 @@ import {
 
 // $start: IResolutionResultCache
 /** A ResolutionResultCache cache */
-export interface IResolutionResultCache<TError> {
+export interface IResolutionResultCache<TError = unknown> {
   /** get a Result from the cache, given its URI index */
   get(uri: Uri): MaybeAsync<Result<UriPackageOrWrapper, TError> | undefined>;
 
