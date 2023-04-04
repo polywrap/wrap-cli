@@ -55,5 +55,6 @@ wasm-snip "$2"/strip_module.wasm -o "$2"/snipped_module.wasm
 rm -rf "$2"/strip_module.wasm
 
 # Use wasm-opt to perform the "asyncify" post-processing step over all modules
+export ASYNCIFY_STACK_SIZE=24576
 npx wasm-opt --asyncify -Os "$2"/snipped_module.wasm -o "$2"/wrap.wasm
 rm -rf "$2"/snipped_module.wasm

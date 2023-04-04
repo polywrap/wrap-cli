@@ -21,25 +21,25 @@ $snippet: WrapperCache-get
 $snippet: WrapperCache-set
 ```
 
-## PackageToWrapperCacheResolver
+## WrapperCacheResolver
 ```ts
-$snippet: PackageToWrapperCacheResolver
+$snippet: WrapperCacheResolver
 ```
 
 ### constructor
 ```ts
-$snippet: PackageToWrapperCacheResolver-constructor
+$snippet: WrapperCacheResolver-constructor
 ```
 
 ### Methods
 
 #### from
 ```ts
-$snippet: PackageToWrapperCacheResolver-from
+$snippet: WrapperCacheResolver-from
 ```
 
 #### tryResolveUri
 ```ts
-$snippet: PackageToWrapperCacheResolver-tryResolveUri
+$snippet: WrapperCacheResolver-tryResolveUri
 ```
 $end

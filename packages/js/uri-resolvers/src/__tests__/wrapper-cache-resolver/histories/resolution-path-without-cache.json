@@ -1,0 +1,14 @@
+[
+  "wrap://test/A => WrapperCacheResolver => uri (wrap://test/B)",
+  [
+    "wrap://test/A => TestResolver => uri (wrap://test/B)"
+  ],
+  "wrap://test/B => WrapperCacheResolver => uri (wrap://test/wrapper)",
+  [
+    "wrap://test/B => TestResolver => uri (wrap://test/wrapper)"
+  ],
+  "wrap://test/wrapper => WrapperCacheResolver => wrapper (wrap://test/wrapper)",
+  [
+    "wrap://test/wrapper => TestResolver => wrapper (wrap://test/wrapper)"
+  ]
+]

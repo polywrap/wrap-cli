@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/core-js",
   "description": "Polywrap Javascript Core",
-  "version": "0.10.0-pre.11",
+  "version": "0.10.0-pre.13",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -23,9 +23,9 @@
     "build:readme": "yarn build:readme:subsections && yarn build:readme:final"
   },
   "dependencies": {
-    "@polywrap/result": "0.10.0-pre.11",
-    "@polywrap/tracing-js": "0.10.0-pre.11",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.11"
+    "@polywrap/result": "0.10.0-pre.13",
+    "@polywrap/tracing-js": "0.10.0-pre.13",
+    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.13"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

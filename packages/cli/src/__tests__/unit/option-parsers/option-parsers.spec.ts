@@ -4,13 +4,13 @@ import { parseWrapperEnvsOption } from "../../../lib";
 describe("unit tests for option-parsers", () => {
   describe("wrapper-envs", () => {
     const sampleFileEnvs = {
-      "ens/wraps.eth:ethereum@1.0.0": {
+      "wrap://ens/wraps.eth:ethereum@1.0.0": {
         connection: {
           networkNameOrChainId: "mainnet",
           node: "https://mainnet.infura.io/v3/some_api_key",
         },
       },
-      "ens/hello-world.polywrap.eth": { foo: "bar" },
+      "wrap://ens/hello-world.polywrap.eth": { foo: "bar" },
     };
 
     it("Should return undefined when undefined is provided for wrapperEnvsPath", async () => {

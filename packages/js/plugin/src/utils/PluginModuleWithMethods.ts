@@ -20,7 +20,8 @@ export class PluginModuleWithMethods<
   >(
     method: string,
     args: TArgs,
-    client: CoreClient
+    client: CoreClient,
+    env: TEnv
   ): Promise<Result<TResult, Error>> {
     const fn = this.getMethod<TArgs, TResult>(method);
 
@@ -35,7 +36,7 @@ export class PluginModuleWithMethods<
     }
 
     try {
-      const data = await fn(args, client);
+      const data = await fn(args, client, env);
       return ResultOk(data);
     } catch (e) {
       e.code = WrapErrorCode.WRAPPER_INVOKE_ABORTED;
@@ -47,9 +48,13 @@ export class PluginModuleWithMethods<
     TArgs extends Record<string, unknown> = Record<string, unknown>,
     TResult = unknown
   >(method: string): PluginMethod<TArgs, TResult> | undefined {
-    const fn: PluginMethod<TArgs, TResult> | undefined = this._getPluginMethods(
-      this
-    )[method] as PluginMethod<TArgs, TResult>;
+    const fn:
+      | PluginMethod<TArgs, TResult, TEnv>
+      | undefined = this._getPluginMethods(this)[method] as PluginMethod<
+      TArgs,
+      TResult,
+      TEnv
+    >;
 
     return fn?.bind(this);
   }

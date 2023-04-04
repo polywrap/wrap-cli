@@ -49,8 +49,12 @@ export class PluginWrapper implements Wrapper {
       return ResultErr(error);
     }
 
-    // Set the module's environment
-    this._module.setEnv(options.env || {});
+    // NOTE: this is used just in case the module instance
+    //       we're interacting with is from versions < 0.10
+    const genericModule = (this._module as unknown) as Record<string, unknown>;
+    if (genericModule.setEnv) {
+      (genericModule.setEnv as (env: unknown) => void)(options.env || {});
+    }
 
     let jsArgs: Record<string, unknown>;
 
@@ -77,7 +81,12 @@ export class PluginWrapper implements Wrapper {
     }
 
     // Invoke the function
-    const result = await this._module._wrap_invoke(method, jsArgs, client);
+    const result = await this._module._wrap_invoke(
+      method,
+      jsArgs,
+      client,
+      options.env || {}
+    );
 
     if (result.ok) {
       const data = result.value;

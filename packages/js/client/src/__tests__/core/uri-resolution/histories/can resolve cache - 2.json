@@ -1,6 +1,0 @@
-[
-  "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => RequestSynchronizerResolver => wrapper (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)",
-  [
-    "wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://file/$root-wrapper-dir/subinvoke/00-subinvoke/implementations/as)"
-  ]
-]

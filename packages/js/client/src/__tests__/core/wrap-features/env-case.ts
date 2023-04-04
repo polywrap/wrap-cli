@@ -4,7 +4,7 @@ import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { PolywrapClient } from "../../../PolywrapClient";
 import { mockPluginRegistration } from "../../helpers";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { Uri } from "@polywrap/core-js";
+import { Uri, UriMap } from "@polywrap/core-js";
 
 jest.setTimeout(200000);
 
@@ -175,14 +175,7 @@ export const envTestCases = (implementation: string) => {
           },
           { from: Uri.from("ens/hello.eth"), to: implementationUri },
         ]),
-        envs: [
-          {
-            uri: Uri.from("ens/hello.eth"),
-            env: {
-              arg1: "10",
-            },
-          },
-        ],
+        envs: new UriMap([[Uri.from("wrap://ens/hello.eth"), { arg1: "10" }]]),
       });
 
       const mockEnv = await client.invoke({
@@ -196,7 +189,7 @@ export const envTestCases = (implementation: string) => {
     });
 
     test("inline plugin env types", async () => {
-      const implementationUri = Uri.from("wrap://ens/some-implementation.eth");
+      const implementationUri = "wrap://ens/some-implementation.eth";
       interface MockEnv extends Record<string, unknown> {
         arg1: number;
       }
@@ -204,26 +197,19 @@ export const envTestCases = (implementation: string) => {
       const client = new PolywrapClient({
         resolver: RecursiveResolver.from([
           {
-            uri: implementationUri,
+            uri: Uri.from(implementationUri),
             package: PluginPackage.from<MockEnv>((module) => ({
-              mockEnv: (): MockEnv => {
-                return module.env;
+              mockEnv: (_, __, env: MockEnv): MockEnv => {
+                return env;
               },
             })),
           },
         ]),
-        envs: [
-          {
-            uri: implementationUri,
-            env: {
-              arg1: "10",
-            },
-          },
-        ],
+        envs: new UriMap([[Uri.from(implementationUri), { arg1: "10" }]]),
       });
 
       const mockEnv = await client.invoke({
-        uri: implementationUri,
+        uri: Uri.from(implementationUri),
         method: "mockEnv",
       });
 

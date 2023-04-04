@@ -48,8 +48,8 @@ export const module = {
     invoker: Invoker,
     wrapper: Uri,
     path: string
-  ): Promise<Result<Uint8Array | undefined, WrapError>> /* $ */ => {
-    return invoker.invoke<Uint8Array | undefined>({
+  ): Promise<Result<Uint8Array | null, WrapError>> /* $ */ => {
+    return invoker.invoke<Uint8Array | null>({
       uri: wrapper,
       method: "getFile",
       args: {

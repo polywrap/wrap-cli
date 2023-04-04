@@ -1,0 +1,6 @@
+[
+  "wrap://test/from => PackageToWrapperResolver => uri (wrap://test/to)",
+  [
+    "wrap://test/from => SimplePackageResolver => uri (wrap://test/to)"
+  ]
+]
