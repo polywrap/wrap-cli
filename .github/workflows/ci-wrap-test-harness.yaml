@@ -91,17 +91,6 @@ jobs:
           toolchain: nightly
           override: true
 
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/
-            ./target/
-          key: cargo-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            cargo-${{ runner.os }}-${{ github.job }}
-
       - name: Set environment variable
         run: echo POLYWRAP_CLI_PATH=$(pwd)/toolchain/packages/cli >> $GITHUB_ENV
 
