@@ -10,7 +10,7 @@ import {
   addFirstLast,
   toPrefixedGraphQLType,
   hasImports,
-  methodParentPointers
+  methodParentPointers,
 } from "@polywrap/schema-parse";
 import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
 import path from "path";
