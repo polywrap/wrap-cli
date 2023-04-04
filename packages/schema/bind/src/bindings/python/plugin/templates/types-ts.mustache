@@ -1,0 +1,170 @@
+### NOTE: This is an auto-generated file.
+###       All modifications will be overwritten.
+
+from dataclasses import dataclass
+from enum import Enum
+
+from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
+
+UInt = int;
+UInt8 = int;
+UInt16 = int;
+UInt32 = int;
+Int = int;
+Int8 = int;
+Int16 = int;
+Int32 = int;
+Bytes = bytes;
+BigInt = str;
+BigNumber = str;
+Json = str;
+String = str;
+Boolean = bool;
+
+### Env START ###
+{{#envType}}
+@dataclass
+class {{#detectKeyword}}{{type}}{{/detectKeyword}}:
+    {{#properties}}
+    {{name}}: {{^required}}Optional[{{/required}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{^required}}]{{/required}}
+    {{/properties}}
+{{/envType}}
+### Env END ###
+
+### Objects START ###
+{{#objectTypes}}
+@dataclass
+class {{#detectKeyword}}{{type}}{{/detectKeyword}}:
+    {{#properties}}
+    {{name}}: {{^required}}Optional[{{/required}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{^required}}]{{/required}}
+    {{/properties}}
+
+{{/objectTypes}}
+### Objects END ###
+
+### Enums START ###
+{{#enumTypes}}
+class {{type}}(Enum):
+    {{#constants}}
+    {{.}},
+    {{/constants}}
+
+{{/enumTypes}}
+### Enums END ###
+
+### Imported Objects START ###
+
+{{#importedObjectTypes}}
+/* URI: "{{uri}}" */
+@dataclass
+class {{#detectKeyword}}{{type}}{{/detectKeyword}}:
+    {{#properties}}
+    {{name}}: {{^required}}Optional[{{/required}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{^required}}]{{/required}};
+    {{/properties}}
+
+{{/importedObjectTypes}}
+### Imported Objects END ###
+
+### Imported Enums START ###
+
+{{#importedEnumTypes}}
+/* URI: "{{uri}}" */
+class {{type}}(Enum):
+    {{#constants}}
+    {{.}},
+    {{/constants}}
+
+{{/importedEnumTypes}}
+
+### Imported Enums END ###
+
+### Imported Modules START ###
+
+{{#importedModuleTypes}}
+{{#methods}}
+/* URI: "{{parent.uri}}" */
+@dataclass
+class {{parent.type}}Args{{name}}:
+    {{#arguments}}
+    {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+    {{/arguments}}
+
+{{/methods}}
+/* URI: "{{uri}}" */
+{{^isInterface}}
+class {{type}}:
+    {{#methods}}
+    @staticmethod
+    async def {{name}}(
+      args: {{parent.type}}Args{{name}},
+      client: InvokerClient[UriPackageOrWrapper]
+    ) -> {{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}:
+        return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>(
+            InvokeOptions(
+                uri=Uri.from_str("{{parent.uri}}"),
+                method="{{name}}",
+                args=args,
+            )
+        )
+    {{^last}}
+
+    {{/last}}
+    {{/methods}}
+
+
+{{/isInterface}}
+{{#isInterface}}
+class {{#detectKeyword}}{{type}}{{/detectKeyword}}:
+    INTERFACE_URI: Uri = Uri.from_str("{{uri}}")
+    uri: Uri
+
+    def __init__(uri: Uri) {
+      this.uri = uri
+    }
+
+    {{#methods}}
+    async def {{name}}(
+      self,
+      args: {{parent.type}}Args{{name}},
+      client: InvokerClient[UriPackageOrWrapper]
+    ): {{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}:
+        return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>(
+            InvokeOptions(
+                uri=self.uri,
+                method="{{name}}",
+                args=args,
+            )
+        );
+    {{^last}}
+
+    {{/last}}
+    {{/methods}}
+
+{{/isInterface}}
+{{/importedModuleTypes}}
+### Imported Modules END ###
+
+### Interface START ###
+
+{{#interfaceTypes.length}}
+{{#interfaceTypes}}
+
+class {{#detectKeyword}}{{namespace}}{{/detectKeyword}}:
+    URI: Uri = Uri.from_str("{{uri}}")
+
+    {{#capabilities}}
+    {{#getImplementations}}
+    {{#enabled}}
+    async def get_implementations(
+      client: InvokerClient[UriPackageOrWrapper]
+    ): string[] {
+        impls = await client.getImplementations(self.uri)
+        return [impl.uri for impl in impls]
+    }
+    {{/enabled}}
+    {{/getImplementations}}
+    {{/capabilities}}
+{{/interfaceTypes}}
+{{/interfaceTypes.length}}
+
+### Interface END ###

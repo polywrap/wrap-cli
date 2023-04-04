@@ -1,0 +1,12 @@
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+from polywrap_manifest import WrapManifest
+
+{{#manifest}}
+manifest = WrapManifest.parse_obj({
+    name: "{{name}}",
+    type: "{{type}}",
+    version: "{{version}}",
+    abi: {{abi}}
+})
+{{/manifest}}
