@@ -5,15 +5,13 @@ import {
   InvokeArgs
 } from "@polywrap/wasm-as";
 
-{{#moduleType}}
-{{#methods.length}}
+{{#functions.length}}
 import {
-  {{#methods}}
+  {{#functions}}
   {{name}}Wrapped{{^last}},{{/last}}
-  {{/methods}}
+  {{/functions}}
 } from "./{{type}}/wrapped";
-{{/methods.length}}
-{{/moduleType}}
+{{/functions.length}}
 
 export function _wrap_invoke(method_size: u32, args_size: u32): bool {
   const args: InvokeArgs = wrap_invoke_args(
@@ -21,13 +19,11 @@ export function _wrap_invoke(method_size: u32, args_size: u32): bool {
     args_size
   );
 
-  {{#moduleType}}
-  {{#methods}}
+  {{#functions}}
   {{^first}}else {{/first}}if (args.method == "{{name}}") {
     return wrap_invoke(args, {{name}}Wrapped);
   }
-  {{/methods}}
-  {{/moduleType}}
+  {{/functions}}
   else {
     return wrap_invoke(args, null);
   }

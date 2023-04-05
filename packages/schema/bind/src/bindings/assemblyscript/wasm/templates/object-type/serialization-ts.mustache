@@ -1,19 +1,19 @@
 {{> serialization_imports}}
-import { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./";
+import { {{#detectKeyword}}{{name}}{{/detectKeyword}} } from "./";
 import * as Types from "..";
 
-export function serialize{{type}}(type: {{#detectKeyword}}{{type}}{{/detectKeyword}}): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) object-type: {{type}}");
+export function serialize{{name}}(type: {{#detectKeyword}}{{name}}{{/detectKeyword}}): ArrayBuffer {
+  const sizerContext: Context = new Context("Serializing (sizing) object-type: {{name}}");
   const sizer = new WriteSizer(sizerContext);
-  write{{type}}(sizer, type);
+  write{{name}}(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) object-type: {{type}}");
+  const encoderContext: Context = new Context("Serializing (encoding) object-type: {{name}}");
   const encoder = new WriteEncoder(buffer, sizer, encoderContext);
-  write{{type}}(encoder, type);
+  write{{name}}(encoder, type);
   return buffer;
 }
 
-export function write{{type}}(writer: Write, type: {{#detectKeyword}}{{type}}{{/detectKeyword}}): void {
+export function write{{name}}(writer: Write, type: {{#detectKeyword}}{{name}}{{/detectKeyword}}): void {
   {{#properties.length}}
   writer.writeMapLength({{properties.length}});
   {{/properties.length}}
@@ -40,11 +40,11 @@ export function write{{type}}(writer: Write, type: {{#detectKeyword}}{{type}}{{/
   {{/map}}
   {{#object}}
   {{#required}}
-  Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}.write(writer, type.{{#detectKeyword}}{{name}}{{/detectKeyword}});
+  Types.{{#detectKeyword}}{{name}}{{/detectKeyword}}.write(writer, type.{{#detectKeyword}}{{name}}{{/detectKeyword}});
   {{/required}}
   {{^required}}
   if (type.{{#detectKeyword}}{{name}}{{/detectKeyword}}) {
-    Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}.write(writer, type.{{#detectKeyword}}{{name}}{{/detectKeyword}} as Types.{{#detectKeyword}}{{type}}{{/detectKeyword}});
+    Types.{{#detectKeyword}}{{name}}{{/detectKeyword}}.write(writer, type.{{#detectKeyword}}{{name}}{{/detectKeyword}} as Types.{{#detectKeyword}}{{name}}{{/detectKeyword}});
   } else {
     writer.writeNil();
   }
@@ -62,13 +62,13 @@ export function write{{type}}(writer: Write, type: {{#detectKeyword}}{{type}}{{/
   {{/properties}}
 }
 
-export function deserialize{{type}}(buffer: ArrayBuffer): {{#detectKeyword}}{{type}}{{/detectKeyword}} {
-  const context: Context = new Context("Deserializing object-type {{type}}");
+export function deserialize{{name}}(buffer: ArrayBuffer): {{#detectKeyword}}{{name}}{{/detectKeyword}} {
+  const context: Context = new Context("Deserializing object-type {{name}}");
   const reader = new ReadDecoder(buffer, context);
-  return read{{type}}(reader);
+  return read{{name}}(reader);
 }
 
-export function read{{type}}(reader: Read): {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+export function read{{name}}(reader: Read): {{#detectKeyword}}{{name}}{{/detectKeyword}} {
   let numFields = reader.readMapLength();
 
   {{#properties}}
@@ -136,7 +136,7 @@ export function read{{type}}(reader: Read): {{#detectKeyword}}{{type}}{{/detectK
   {{#object}}
   if (!_{{name}} || !_{{name}}Set) {
   {{/object}}
-    throw new Error(reader.context().printWithContext("Missing required property: '{{name}}: {{type}}'"));
+    throw new Error(reader.context().printWithContext("Missing required property: '{{name}}: {{name}}'"));
   }
   {{/required}}
   {{/properties}}

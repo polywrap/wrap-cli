@@ -1,35 +1,35 @@
-export enum {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+export enum {{#detectKeyword}}{{name}}{{/detectKeyword}} {
   {{#constants}}
   {{#detectKeyword}}{{.}}{{/detectKeyword}},
   {{/constants}}
   _MAX_
 }
 
-export function sanitize{{type}}Value(value: i32): void {
-  const valid = value >= 0 && value < {{#detectKeyword}}{{type}}{{/detectKeyword}}._MAX_;
+export function sanitize{{name}}Value(value: i32): void {
+  const valid = value >= 0 && value < {{#detectKeyword}}{{name}}{{/detectKeyword}}._MAX_;
   if (!valid) {
-    throw new Error("Invalid value for enum '{{#detectKeyword}}{{type}}{{/detectKeyword}}': " + value.toString());
+    throw new Error("Invalid value for enum '{{#detectKeyword}}{{name}}{{/detectKeyword}}': " + value.toString());
   }
 }
 
-export function get{{type}}Value(key: string): {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+export function get{{name}}Value(key: string): {{#detectKeyword}}{{name}}{{/detectKeyword}} {
   {{#constants}}
   if (key == "{{#detectKeyword}}{{.}}{{/detectKeyword}}") {
-    return {{#detectKeyword}}{{type}}{{/detectKeyword}}.{{#detectKeyword}}{{.}}{{/detectKeyword}};
+    return {{#detectKeyword}}{{name}}{{/detectKeyword}}.{{#detectKeyword}}{{.}}{{/detectKeyword}};
   }
   {{/constants}}
 
-  throw new Error("Invalid key for enum '{{#detectKeyword}}{{type}}{{/detectKeyword}}': " + key);
+  throw new Error("Invalid key for enum '{{#detectKeyword}}{{name}}{{/detectKeyword}}': " + key);
 }
 
-export function get{{type}}Key(value: {{#detectKeyword}}{{type}}{{/detectKeyword}}): string {
-  sanitize{{type}}Value(value);
+export function get{{name}}Key(value: {{#detectKeyword}}{{name}}{{/detectKeyword}}): string {
+  sanitize{{name}}Value(value);
 
   switch (value) {
     {{#constants}}
-    case {{#detectKeyword}}{{type}}{{/detectKeyword}}.{{#detectKeyword}}{{.}}{{/detectKeyword}}: return "{{#detectKeyword}}{{.}}{{/detectKeyword}}";
+    case {{#detectKeyword}}{{name}}{{/detectKeyword}}.{{#detectKeyword}}{{.}}{{/detectKeyword}}: return "{{#detectKeyword}}{{.}}{{/detectKeyword}}";
     {{/constants}}
     default:
-      throw new Error("Invalid value for enum '{{#detectKeyword}}{{type}}{{/detectKeyword}}': " + value.toString());
+      throw new Error("Invalid value for enum '{{#detectKeyword}}{{name}}{{/detectKeyword}}': " + value.toString());
   }
 }

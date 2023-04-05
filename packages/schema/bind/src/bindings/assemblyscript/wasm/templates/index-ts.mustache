@@ -1,46 +1,41 @@
-{{#moduleType}}
-{{#methods.length}}
+{{#functions.length}}
 import {
-  {{#methods}}
+  {{#functions}}
   Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
-  {{/methods}}
-} from "./{{type}}";
-{{/methods.length}}
-{{/moduleType}}
-{{#moduleType}}
-{{#methods.length}}
+  {{/functions}}
+} from "./{{name}}";
+{{/functions.length}}
+{{#functions.length}}
 export {
-  {{#methods}}
+  {{#functions}}
   Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
-  {{/methods}}
+  {{/functions}}
 };
-{{/methods.length}}
-{{/moduleType}}
-{{#objectTypes}}
-export { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./{{type}}";
-{{/objectTypes}}
-{{#enumTypes}}
+{{/functions.length}}
+{{#objects}}
+export { {{#detectKeyword}}{{name}}{{/detectKeyword}} } from "./{{name}}";
+{{/objects}}
+{{#enums}}
 export {
-  {{#detectKeyword}}{{type}}{{/detectKeyword}},
-  get{{type}}Key,
-  get{{type}}Value,
-  sanitize{{type}}Value
-} from "./{{type}}";
-{{/enumTypes}}
-{{#importedModuleTypes}}
-export { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./imported/{{type}}";
-{{/importedModuleTypes}}
-{{#importedObjectTypes}}
-export { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./imported/{{type}}";
-{{/importedObjectTypes}}
-{{#importedEnumTypes}}
+  {{#detectKeyword}}{{name}}{{/detectKeyword}},
+  get{{name}}Key,
+  get{{name}}Value,
+  sanitize{{name}}Value
+} from "./{{name}}";
+{{/enums}}
+{{#imports}}
+{{#functions}}
+export { {{#detectKeyword}}{{name}}{{/detectKeyword}} } from "./imported/{{name}}";
+{{/functions}}
+{{#objects}}
+export { {{#detectKeyword}}{{name}}{{/detectKeyword}} } from "./imported/{{name}}";
+{{/objects}}
+{{#enums}}
 export {
-  {{#detectKeyword}}{{type}}{{/detectKeyword}},
-  get{{type}}Key,
-  get{{type}}Value,
-  sanitize{{type}}Value
-} from "./imported/{{type}}";
-{{/importedEnumTypes}}
-{{#interfaceTypes}}
-export { {{#detectKeyword}}{{namespace}}{{/detectKeyword}} } from "./{{namespace}}";
-{{/interfaceTypes}}
+  {{#detectKeyword}}{{name}}{{/detectKeyword}},
+  get{{name}}Key,
+  get{{name}}Value,
+  sanitize{{name}}Value
+} from "./imported/{{name}}";
+{{/enums}}
+{{/imports}}

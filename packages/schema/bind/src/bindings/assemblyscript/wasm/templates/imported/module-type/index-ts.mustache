@@ -7,23 +7,23 @@ import {
   JSON,
   Result
 } from "@polywrap/wasm-as";
-{{#methods.length}}
+{{#functions.length}}
 import {
-  {{#methods}}
+  {{#functions}}
   serialize{{name}}Args,
   deserialize{{name}}Result,
   Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
-  {{/methods}}
+  {{/functions}}
 } from "./serialization";
-{{/methods.length}}
+{{/functions.length}}
 import * as Types from "../..";
 
 {{^isInterface}}
-export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+export class {{#detectKeyword}}{{name}}{{/detectKeyword}} {
 
   public static uri: string = "{{uri}}";
 
-  {{#methods}}
+  {{#functions}}
   public static {{name}}(
     args: Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
@@ -47,7 +47,7 @@ export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   {{^last}}
 
   {{/last}}
-  {{/methods}}
+  {{/functions}}
 }
 {{/isInterface}}
 {{#isInterface}}
@@ -61,7 +61,7 @@ export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
     this.uri = uri;
   }
 
-  {{#methods}}
+  {{#functions}}
   public {{name}}(
     args: Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
@@ -86,6 +86,6 @@ export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   {{^last}}
 
   {{/last}}
-  {{/methods}}
+  {{/functions}}
 }
 {{/isInterface}}

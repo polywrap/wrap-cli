@@ -1,19 +1,19 @@
-{{#methods.length}}
+{{#functions.length}}
 import {
-  {{#methods}}
+  {{#functions}}
   {{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
-  {{/methods}}
+  {{/functions}}
 } from "../../index";
 import {
-  {{#methods}}
+  {{#functions}}
   deserialize{{name}}Args,
   serialize{{name}}Result{{^last}},{{/last}}
-  {{/methods}}
+  {{/functions}}
 } from "./serialization";
-{{/methods.length}}
+{{/functions.length}}
 import * as Types from "..";
 
-{{#methods}}
+{{#functions}}
 export function {{name}}Wrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   {{#arguments.length}}
   const args = deserialize{{name}}Args(argsBuf);
@@ -31,4 +31,4 @@ export function {{name}}Wrapped(argsBuf: ArrayBuffer): ArrayBuffer {
 {{^last}}
 
 {{/last}}
-{{/methods}}
+{{/functions}}

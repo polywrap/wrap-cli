@@ -7,31 +7,31 @@ import {
   JSON
 } from "@polywrap/wasm-as";
 import {
-  serialize{{type}},
-  deserialize{{type}},
-  write{{type}},
-  read{{type}}
+  serialize{{name}},
+  deserialize{{name}},
+  write{{name}},
+  read{{name}}
 } from "./serialization";
 import * as Types from "..";
 
-export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+export class {{#detectKeyword}}{{name}}{{/detectKeyword}} {
   {{#properties}}
   {{#detectKeyword}}{{name}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/properties}}
 
-  static toBuffer(type: {{#detectKeyword}}{{type}}{{/detectKeyword}}): ArrayBuffer {
-    return serialize{{type}}(type);
+  static toBuffer(type: {{#detectKeyword}}{{name}}{{/detectKeyword}}): ArrayBuffer {
+    return serialize{{name}}(type);
   }
 
-  static fromBuffer(buffer: ArrayBuffer): {{#detectKeyword}}{{type}}{{/detectKeyword}} {
-    return deserialize{{type}}(buffer);
+  static fromBuffer(buffer: ArrayBuffer): {{#detectKeyword}}{{name}}{{/detectKeyword}} {
+    return deserialize{{name}}(buffer);
   }
 
-  static write(writer: Write, type: {{#detectKeyword}}{{type}}{{/detectKeyword}}): void {
-    write{{type}}(writer, type);
+  static write(writer: Write, type: {{#detectKeyword}}{{name}}{{/detectKeyword}}): void {
+    write{{name}}(writer, type);
   }
 
-  static read(reader: Read): {{#detectKeyword}}{{type}}{{/detectKeyword}} {
-    return read{{type}}(reader);
+  static read(reader: Read): {{#detectKeyword}}{{name}}{{/detectKeyword}} {
+    return read{{name}}(reader);
   }
 }

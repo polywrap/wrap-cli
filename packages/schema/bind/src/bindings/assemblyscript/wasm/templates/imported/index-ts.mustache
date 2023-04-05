@@ -1,9 +1,11 @@
-{{#importedModuleTypes}}
+{{#imports}}
+{{#functions}}
 export * from "./{{type}}";
-{{/importedModuleTypes}}
-{{#importedObjectTypes}}
+{{/functions}}
+{{#objects}}
 export * from "./{{type}}";
-{{/importedObjectTypes}}
-{{#importedEnumTypes}}
+{{/objects}}
+{{#enums}}
 export * from "./{{type}}";
-{{/importedEnumTypes}}
+{{/enums}}
+{{/imports}}

@@ -1,7 +1,7 @@
 {{> serialization_imports}}
 import * as Types from "..";
 
-{{#methods}}
+{{#functions}}
 export class Args_{{#detectKeyword}}{{name}}{{/detectKeyword}} {
   {{#arguments}}
   {{#detectKeyword}}{{name}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
@@ -245,4 +245,4 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
 {{^last}}
 
 {{/last}}
-{{/methods}}
+{{/functions}}
