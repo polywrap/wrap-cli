@@ -2,39 +2,24 @@
 ###       All modifications will be overwritten.
 
 from typing import TypedDict, Optional
-from enum import Enum
+from enum import Enum, auto
 
 from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
 
-UInt = int;
-UInt8 = int;
-UInt16 = int;
-UInt32 = int;
-Int = int;
-Int8 = int;
-Int16 = int;
-Int32 = int;
-Bytes = bytes;
-BigInt = str;
-BigNumber = str;
-Json = str;
-String = str;
-Boolean = bool;
-
 ### Env START ###
 {{#envType}}
-class {{#detectKeyword}}{{type}}{{/detectKeyword}}(TypedDict):
+class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(TypedDict):
     {{#properties}}
-    {{name}}: {{^required}}Optional[{{/required}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{^required}}]{{/required}}
+    {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toPython}}{{toGraphQLType}}{{/toPython}}
     {{/properties}}
 {{/envType}}
 ### Env END ###
 
 ### Objects START ###
 {{#objectTypes}}
-class {{#detectKeyword}}{{type}}{{/detectKeyword}}(TypedDict):
+class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(TypedDict):
     {{#properties}}
-    {{name}}: {{^required}}Optional[{{/required}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{^required}}]{{/required}}
+    {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toPython}}{{toGraphQLType}}{{/toPython}}
     {{/properties}}
 
 {{/objectTypes}}
@@ -44,7 +29,7 @@ class {{#detectKeyword}}{{type}}{{/detectKeyword}}(TypedDict):
 {{#enumTypes}}
 class {{type}}(Enum):
     {{#constants}}
-    {{.}},
+    {{.}} = "auto()"
     {{/constants}}
 
 {{/enumTypes}}
@@ -53,10 +38,10 @@ class {{type}}(Enum):
 ### Imported Objects START ###
 
 {{#importedObjectTypes}}
-/* URI: "{{uri}}" */
-class {{#detectKeyword}}{{type}}{{/detectKeyword}}(TypedDict):
+# URI: "{{uri}}" #
+class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(TypedDict):
     {{#properties}}
-    {{name}}: {{^required}}Optional[{{/required}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{^required}}]{{/required}};
+    {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toPython}}{{toGraphQLType}}{{/toPython}}
     {{/properties}}
 
 {{/importedObjectTypes}}
@@ -65,10 +50,10 @@ class {{#detectKeyword}}{{type}}{{/detectKeyword}}(TypedDict):
 ### Imported Enums START ###
 
 {{#importedEnumTypes}}
-/* URI: "{{uri}}" */
-class {{type}}(Enum):
+# URI: "{{uri}}" #
+class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(Enum):
     {{#constants}}
-    {{.}},
+    {{#detectKeyword}}{{.}}{{/detectKeyword}} = "auto()"
     {{/constants}}
 
 {{/importedEnumTypes}}
@@ -79,23 +64,23 @@ class {{type}}(Enum):
 
 {{#importedModuleTypes}}
 {{#methods}}
-/* URI: "{{parent.uri}}" */
-class {{parent.type}}Args{{name}}(TypedDict):
+# URI: "{{parent.uri}}" #
+class {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}}(TypedDict):
     {{#arguments}}
-    {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+    {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toPython}}{{toGraphQLType}}{{/toPython}}
     {{/arguments}}
 
 {{/methods}}
-/* URI: "{{uri}}" */
+# URI: "{{uri}}" #
 {{^isInterface}}
-class {{type}}:
+class {{#detectKeyword}}{{toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}:
     {{#methods}}
     @staticmethod
-    async def {{name}}(
-      args: {{parent.type}}Args{{name}},
+    async def {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(
+      args: {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}},
       client: InvokerClient[UriPackageOrWrapper]
-    ) -> {{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}:
-        return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>(
+    ) -> {{#return}}{{#toPython}}{{toGraphQLType}}{{/toPython}}{{/return}}:
+        return client.invoke(
             InvokeOptions(
                 uri=Uri.from_str("{{parent.uri}}"),
                 method="{{name}}",
@@ -110,7 +95,7 @@ class {{type}}:
 
 {{/isInterface}}
 {{#isInterface}}
-class {{#detectKeyword}}{{type}}{{/detectKeyword}}:
+class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}:
     INTERFACE_URI: Uri = Uri.from_str("{{uri}}")
     uri: Uri
 
@@ -119,12 +104,12 @@ class {{#detectKeyword}}{{type}}{{/detectKeyword}}:
     }
 
     {{#methods}}
-    async def {{name}}(
+    async def {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(
       self,
-      args: {{parent.type}}Args{{name}},
+      args: {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}},
       client: InvokerClient[UriPackageOrWrapper]
-    ): {{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}:
-        return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>(
+    ): {{#return}}{{#toPython}}{{toGraphQLType}}{{/toPython}}{{/return}}:
+        return client.invoke(
             InvokeOptions(
                 uri=self.uri,
                 method="{{name}}",
@@ -145,16 +130,16 @@ class {{#detectKeyword}}{{type}}{{/detectKeyword}}:
 {{#interfaceTypes.length}}
 {{#interfaceTypes}}
 
-class {{#detectKeyword}}{{namespace}}{{/detectKeyword}}:
+class {{#detectKeyword}}{{#toUpper}}{{namespace}}{{/toUpper}}{{/detectKeyword}}:
     URI: Uri = Uri.from_str("{{uri}}")
 
     {{#capabilities}}
     {{#getImplementations}}
     {{#enabled}}
-    async def get_implementations(
+    def get_implementations(
       client: InvokerClient[UriPackageOrWrapper]
     ): string[] {
-        impls = await client.getImplementations(self.uri)
+        impls = client.getImplementations(self.uri)
         return [impl.uri for impl in impls]
     }
     {{/enabled}}
