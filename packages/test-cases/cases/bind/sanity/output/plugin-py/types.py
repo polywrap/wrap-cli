@@ -10,8 +10,8 @@ from polywrap_msgpack import GenericMap
 ### Env START ###
 class Env(TypedDict):
     prop: str
-    optProp: Optional[str]
-    optMap: Optional[GenericMap[str, Optional[int]], None]
+    optProp: str | None
+    optMap: Optional[GenericMap[str, Optional[int]]]
 ### Env END ###
 
 ### Objects START ###
