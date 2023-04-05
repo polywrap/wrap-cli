@@ -19,18 +19,15 @@ export function renderTemplates(
       if (dirent.type === "File") {
         const name = path.parse(dirent.name).name;
 
-        // file templates don't contain '_'
-        if (name.indexOf("_") === -1) {
-          const data = Mustache.render(dirent.data, view, subTemplates);
+        const data = Mustache.render(dirent.data, view, subTemplates);
 
-          // If the file isn't empty, add it to the output
-          if (data) {
-            output.push({
-              type: "File",
-              name: name.replace("-", "."),
-              data,
-            });
-          }
+        // If the file isn't empty, add it to the output
+        if (data) {
+          output.push({
+            type: "File",
+            name: name.replace("-", "."),
+            data,
+          });
         }
       } else if (dirent.type === "Directory" && subDirectories) {
         const subOutput: OutputEntry[] = [];

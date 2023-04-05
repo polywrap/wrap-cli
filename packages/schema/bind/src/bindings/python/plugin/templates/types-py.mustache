@@ -27,9 +27,9 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(Typed
 
 ### Enums START ###
 {{#enumTypes}}
-class {{type}}(Enum):
+class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(Enum):
     {{#constants}}
-    {{.}} = "auto()"
+    {{#detectKeyword}}{{.}}{{/detectKeyword}} = auto()
     {{/constants}}
 
 {{/enumTypes}}
@@ -53,7 +53,7 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(Typed
 # URI: "{{uri}}" #
 class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(Enum):
     {{#constants}}
-    {{#detectKeyword}}{{.}}{{/detectKeyword}} = "auto()"
+    {{#detectKeyword}}{{.}}{{/detectKeyword}} = auto()
     {{/constants}}
 
 {{/importedEnumTypes}}
@@ -73,12 +73,12 @@ class {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}
 {{/methods}}
 # URI: "{{uri}}" #
 {{^isInterface}}
-class {{#detectKeyword}}{{toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}:
+class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}:
     {{#methods}}
     @staticmethod
     async def {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(
-      args: {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}},
-      client: InvokerClient[UriPackageOrWrapper]
+        args: {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}},
+        client: InvokerClient[UriPackageOrWrapper]
     ) -> {{#return}}{{#toPython}}{{toGraphQLType}}{{/toPython}}{{/return}}:
         return client.invoke(
             InvokeOptions(
@@ -99,23 +99,22 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}:
     INTERFACE_URI: Uri = Uri.from_str("{{uri}}")
     uri: Uri
 
-    def __init__(uri: Uri) {
-      this.uri = uri
-    }
+    def __init__(self, uri: Uri):
+        self.uri = uri
 
     {{#methods}}
     async def {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(
-      self,
-      args: {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}},
-      client: InvokerClient[UriPackageOrWrapper]
-    ): {{#return}}{{#toPython}}{{toGraphQLType}}{{/toPython}}{{/return}}:
+        self,
+        args: {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}},
+        client: InvokerClient[UriPackageOrWrapper]
+    ) -> {{#return}}{{#toPython}}{{toGraphQLType}}{{/toPython}}{{/return}}:
         return client.invoke(
             InvokeOptions(
                 uri=self.uri,
                 method="{{name}}",
                 args=args,
             )
-        );
+        )
     {{^last}}
 
     {{/last}}
@@ -137,11 +136,10 @@ class {{#detectKeyword}}{{#toUpper}}{{namespace}}{{/toUpper}}{{/detectKeyword}}:
     {{#getImplementations}}
     {{#enabled}}
     def get_implementations(
-      client: InvokerClient[UriPackageOrWrapper]
-    ): string[] {
+        client: InvokerClient[UriPackageOrWrapper]
+    ) -> list[str]:
         impls = client.getImplementations(self.uri)
         return [impl.uri for impl in impls]
-    }
     {{/enabled}}
     {{/getImplementations}}
     {{/capabilities}}

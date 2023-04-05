@@ -2,9 +2,9 @@
 ///       All modifications will be overwritten.
 
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, TypedDict
 
-import .types import *
+from .types import *
 
 from polywrap_core import InvokerClient, MaybeAsync, UriPackageOrWrapper
 from polywrap_plugin import PluginModule
@@ -17,7 +17,7 @@ TConfig = TypeVar("TConfig")
 
 class Args{{#toUpper}}{{name}}{{/toUpper}}(TypedDict):
     {{#arguments}}
-    {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toPython}}{{toGraphQLType}}{{/toPython}};
+    {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toPython}}{{toGraphQLType}}{{/toPython}}
     {{/arguments}}
 {{/methods}}
 {{/moduleType}}

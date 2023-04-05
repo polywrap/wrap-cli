@@ -6,6 +6,10 @@ import { isKeyword } from "./types";
 export const detectKeyword: MustacheFn = () => {
   return (value: string, render: (template: string) => string): string => {
     const type = render(value);
+    if (type == "str") {
+      console.log(type);
+      console.log(isKeyword(type));
+    }
     if (isKeyword(type)) {
       return "p_" + type; // `p_` is the prefix we use for keywords
     }
@@ -114,7 +118,7 @@ const _toPython = (value: string, render: (template: string) => string) => {
     case "String":
     case "BigInt":
     case "BigNumber":
-      type = "String";
+      type = "str";
       break;
     case "Boolean":
       type = "bool";
@@ -141,7 +145,7 @@ const toPythonList = (type: string, optional: boolean): string => {
   }
 
   const tsType = _toPython(result[2], (str) => str);
-  return applyOptional("List[" + tsType + "]", optional);
+  return applyOptional("list[" + tsType + "]", optional);
 };
 
 const toPythonGenericMap = (type: string, optional: boolean): string => {

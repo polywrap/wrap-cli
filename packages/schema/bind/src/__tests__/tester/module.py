@@ -2,9 +2,9 @@
 ///       All modifications will be overwritten.
 
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, TypedDict
 
-import .types as types
+from .types import *
 
 from polywrap_core import InvokerClient, MaybeAsync, UriPackageOrWrapper
 from polywrap_plugin import PluginModule
@@ -13,60 +13,64 @@ TConfig = TypeVar("TConfig")
 
 
 
-class ArgsmoduleMethod(TypedDict):
-    str: Types.String;
-    optStr: Optional[Union[Types.String, None]];
-    en: Types.CustomEnum;
-    optEnum: Optional[Union[Types.CustomEnum, None]];
-    enumArray: List[Types.CustomEnum];
-    optEnumArray: Optional[Union[List[Union[Types.CustomEnum, None]], None]];
-    map: GenericMap[Types.String, Types.Int];
-    mapOfArr: GenericMap[Types.String, List[Types.Int]];
-    mapOfMap: GenericMap[Types.String, GenericMap[Types.String, Types.Int]];
-    mapOfObj: GenericMap[Types.String, Types.AnotherType];
-    mapOfArrOfObj: GenericMap[Types.String, List[Types.AnotherType]];
+class ArgsModuleMethod(TypedDict):
+    p_str: str
+    opt_str: str | None
+    en: CustomEnum
+    opt_enum: CustomEnum | None
+    enum_array: list[CustomEnum]
+    opt_enum_array: list[CustomEnum | None] | None
+    p_map: GenericMap[str, int]
+    map_of_arr: GenericMap[str, list[int]]
+    map_of_map: GenericMap[str, GenericMap[str, int]]
+    map_of_obj: GenericMap[str, AnotherType]
+    map_of_arr_of_obj: GenericMap[str, list[AnotherType]]
 
-class ArgsobjectMethod(TypedDict):
-    object: Types.AnotherType;
-    optObject: Optional[Union[Types.AnotherType, None]];
-    objectArray: List[Types.AnotherType];
-    optObjectArray: Optional[Union[List[Union[Types.AnotherType, None]], None]];
+class ArgsObjectMethod(TypedDict):
+    p_object: AnotherType
+    opt_object: AnotherType | None
+    object_array: list[AnotherType]
+    opt_object_array: list[AnotherType | None] | None
 
-class ArgsoptionalEnvMethod(TypedDict):
-    object: Types.AnotherType;
-    optObject: Optional[Union[Types.AnotherType, None]];
-    objectArray: List[Types.AnotherType];
-    optObjectArray: Optional[Union[List[Union[Types.AnotherType, None]], None]];
+class ArgsOptionalEnvMethod(TypedDict):
+    p_object: AnotherType
+    opt_object: AnotherType | None
+    object_array: list[AnotherType]
+    opt_object_array: list[AnotherType | None] | None
 
-class Argsif(TypedDict):
-    if: Types._else;
+class ArgsIf(TypedDict):
+    p_if: Else
 
 class Module(Generic[TConfig], PluginModule[TConfig]) {
-  @abstractmethod
-  def moduleMethod(
-    args: ArgsmoduleMethod,
-    client: InvokerClient[UriPackageOrWrapper],
-    env: None
-  ): MaybeAsync<Types.Int>;
+    @abstractmethod
+    def module_method(
+        args: ArgsModuleMethod,
+        client: InvokerClient[UriPackageOrWrapper],
+        env: None
+    ) -> int:
+        pass
 
-  @abstractmethod
-  def objectMethod(
-    args: ArgsobjectMethod,
-    client: InvokerClient[UriPackageOrWrapper],
-    env: types.Env
-  ): MaybeAsync<Union[Types.AnotherType, None]>;
+    @abstractmethod
+    def object_method(
+        args: ArgsObjectMethod,
+        client: InvokerClient[UriPackageOrWrapper],
+        env: Env
+    ) -> AnotherType | None:
+        pass
 
-  @abstractmethod
-  def optionalEnvMethod(
-    args: ArgsoptionalEnvMethod,
-    client: InvokerClient[UriPackageOrWrapper],
-    env: Optional[types.Env] = None
-  ): MaybeAsync<Union[Types.AnotherType, None]>;
+    @abstractmethod
+    def optional_env_method(
+        args: ArgsOptionalEnvMethod,
+        client: InvokerClient[UriPackageOrWrapper],
+        env: Optional[Env] = None
+    ) -> AnotherType | None:
+        pass
 
-  @abstractmethod
-  def if(
-    args: Argsif,
-    client: InvokerClient[UriPackageOrWrapper],
-    env: None
-  ): MaybeAsync<Types._else>;
+    @abstractmethod
+    def p_if(
+        args: ArgsIf,
+        client: InvokerClient[UriPackageOrWrapper],
+        env: None
+    ) -> Else:
+        pass
 }
