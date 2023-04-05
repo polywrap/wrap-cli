@@ -23,7 +23,7 @@ Boolean = bool;
 
 ### Env START ###
 class Env(TypedDict):
-    prop: String
+    prop: Types.String
     optProp: Optional[Union[Types.String, None]]
     optMap: Optional[Union[GenericMap[Types.String, Optional[Types.Int]], None]]
 ### Env END ###

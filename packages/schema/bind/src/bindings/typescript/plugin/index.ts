@@ -3,6 +3,7 @@ import * as Functions from "../functions";
 import { GenerateBindingFn, renderTemplates } from "../..";
 import { BindOptions, BindOutput } from "../../..";
 
+import fs from "fs";
 import {
   transformAbi,
   extendType,
@@ -41,6 +42,12 @@ export const generateBinding: GenerateBindingFn = (
 ): BindOutput => {
   // Apply Abi transforms
   const abi = applyTransforms(options.abi);
+
+  fs.writeFileSync(
+    path.join(__dirname, "abi.json"),
+    JSON.stringify(abi, null, 2),
+    "utf8"
+  );
 
   // Generate Bindings
   const result: BindOutput = {
