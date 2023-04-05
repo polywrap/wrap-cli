@@ -1,0 +1,311 @@
+import {
+  bindSchema,
+  BindLanguage,
+  BindOptions,
+  BindOutput
+} from "..";
+
+import { parseSchema } from "@polywrap/schema-parse";
+
+import path from "path";
+import fs from "fs";
+import { writeFileSync } from "@polywrap/os-js";
+
+
+const schema = `
+### Polywrap Header START ###
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Bytes
+scalar BigInt
+scalar BigNumber
+scalar JSON
+scalar Map
+
+directive @imported(
+  uri: String!
+  namespace: String!
+  nativeType: String!
+) on OBJECT | ENUM
+
+directive @imports(
+  types: [String!]!
+) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
+### Polywrap Header END ###
+
+type Module @imports(
+  types: [
+    "TestImport_Module",
+    "TestImport_Object",
+    "TestImport_AnotherObject",
+    "TestImport_Enum",
+    "TestImport_Enum_Return"
+  ]
+) @capability(
+  type: "getImplementations",
+  uri: "testimport.uri.eth",
+  namespace: "TestImport"
+) {
+  moduleMethod(
+    str: String!
+    optStr: String
+    en: CustomEnum!
+    optEnum: CustomEnum
+    enumArray: [CustomEnum!]!
+    optEnumArray: [CustomEnum]
+    map: Map! @annotate(type: "Map<String!, Int!>!")
+    mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+    mapOfMap: Map! @annotate(type: "Map<String!, Map<String!, Int!>!>!")
+    mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
+    mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
+  ): Int!
+
+  objectMethod(
+    object: AnotherType!
+    optObject: AnotherType
+    objectArray: [AnotherType!]!
+    optObjectArray: [AnotherType]
+  ): AnotherType @env(required: true)
+
+  optionalEnvMethod(
+    object: AnotherType!
+    optObject: AnotherType
+    objectArray: [AnotherType!]!
+    optObjectArray: [AnotherType]
+  ): AnotherType @env(required: false)
+
+  if(
+    if: else!
+  ): else!
+}
+
+type Env {
+  prop: String!
+  optProp: String
+  optMap: Map @annotate(type: "Map<String!, Int>")
+}
+
+type CustomType {
+  str: String!
+  optStr: String
+  u: UInt!
+  optU: UInt
+  u8: UInt8!
+  u16: UInt16!
+  u32: UInt32!
+  i: Int!
+  i8: Int8!
+  i16: Int16!
+  i32: Int32!
+  bigint: BigInt!
+  optBigint: BigInt
+  bignumber: BigNumber!
+  optBignumber: BigNumber
+  json: JSON!
+  optJson: JSON
+  bytes: Bytes!
+  optBytes: Bytes
+  boolean: Boolean!
+  optBoolean: Boolean
+  uArray: [UInt!]!
+  uOptArray: [UInt!]
+  optUOptArray: [UInt]
+  optStrOptArray: [String]
+  uArrayArray: [[UInt!]!]!
+  uOptArrayOptArray: [[UInt32]]!
+  uArrayOptArrayArray: [[[UInt32!]!]]!
+  crazyArray: [[[[UInt32!]]!]]
+  object: AnotherType!
+  optObject: AnotherType
+  objectArray: [AnotherType!]!
+  optObjectArray: [AnotherType]
+  en: CustomEnum!
+  optEnum: CustomEnum
+  enumArray: [CustomEnum!]!
+  optEnumArray: [CustomEnum]
+  map: Map! @annotate(type: "Map<String!, Int!>!")
+  mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+  mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
+  mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
+  mapCustomValue: Map! @annotate(type: "Map<String!, CustomMapValue>!")
+}
+
+type AnotherType {
+  prop: String
+  circular: CustomType
+  const: String
+}
+
+enum CustomEnum {
+  STRING
+  BYTES
+}
+
+type CustomMapValue {
+  foo: String!
+}
+
+type else {
+  else: String!
+}
+
+enum while {
+  for,
+  in,
+}
+
+### Imported Modules START ###
+
+type TestImport_Module @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Module"
+) @enabled_interface {
+  importedMethod(
+    str: String!
+    optStr: String
+    u: UInt!
+    optU: UInt
+    uArrayArray: [[UInt]]!
+    object: TestImport_Object!
+    optObject: TestImport_Object
+    objectArray: [TestImport_Object!]!
+    optObjectArray: [TestImport_Object]
+    en: TestImport_Enum!
+    optEnum: TestImport_Enum
+    enumArray: [TestImport_Enum!]!
+    optEnumArray: [TestImport_Enum]
+  ): TestImport_Object @env(required: true)
+
+  anotherMethod(
+    arg: [String!]!
+  ): Int32!
+
+  returnsArrayOfEnums(
+    arg: String!
+  ): [TestImport_Enum_Return]!
+}
+
+### Imported Modules END ###
+
+### Imported Objects START ###
+
+type TestImport_Object @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Object"
+) {
+  object: TestImport_AnotherObject!
+  optObject: TestImport_AnotherObject
+  objectArray: [TestImport_AnotherObject!]!
+  optObjectArray: [TestImport_AnotherObject]
+  en: TestImport_Enum!
+  optEnum: TestImport_Enum
+  enumArray: [TestImport_Enum!]!
+  optEnumArray: [TestImport_Enum]
+}
+
+type TestImport_AnotherObject @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "AnotherObject"
+) {
+  prop: String!
+}
+
+enum TestImport_Enum @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Enum"
+) {
+  STRING
+  BYTES
+}
+
+enum TestImport_Enum_Return @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Enum"
+) {
+  STRING
+  BYTES
+}
+
+### Imported Objects END ###
+
+### Imported Envs START ###
+
+type TestImport_Env @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Env"
+) {
+  enviroProp: String!
+}
+
+### Imported Envs END ###
+`
+
+
+function main() {
+
+  const abi = parseSchema(schema);
+  
+
+  const options: BindOptions = {
+    projectName: "tester",
+    bindLanguage: "plugin-py" as BindLanguage,
+    abi: abi,
+    outputDirAbs: "tester"
+  }
+  const output: BindOutput = bindSchema(options);
+
+  const testResultDir = path.join(__dirname, "tester");
+
+  if (!fs.existsSync(testResultDir)) {
+    fs.mkdirSync(testResultDir);
+  }
+
+  for (const {name, data} of output.output.entries) {
+    writeFileSync(
+      path.join(
+        testResultDir,
+        name
+      ),
+      data,
+    );
+  }
+
+  // writeFileSync(
+  //   path.join(
+  //     testResultDir,
+  //     `plugin-py-output.json`
+  //   ),
+  //   JSON.stringify(output, null, 2),
+  // );
+  
+  console.log(output);
+}
+
+describe("test", () => {
+  it("test", () => {
+    main();
+  });
+});
