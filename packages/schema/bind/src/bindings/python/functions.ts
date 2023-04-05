@@ -16,9 +16,6 @@ export const detectKeyword: MustacheFn = () => {
 const firstUpper = (str: string) =>
   str ? str[0].toUpperCase() + str.slice(1) : "";
 
-const firstLower = (str: string) =>
-  str ? str[0].toLowerCase() + str.slice(1) : "";
-
 export const toLowerCase: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     const rendered = render(value);
@@ -41,13 +38,7 @@ export const toFuncName: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let rendered = render(value);
     rendered = rendered.replace(/([^A-Za-z0-9])+/g, ",");
-    return rendered
-      .split(",")
-      .map((x, index) => {
-        x = x.replace(",", "");
-        return index === 0 ? firstLower(x) : firstUpper(x);
-      })
-      .join();
+    return rendered.replace(/,/g, "_");
   };
 };
 
@@ -79,7 +70,7 @@ const _toTypescript = (
 
   switch (type) {
     case "JSON":
-      type = "Types.Json";
+      type = "types.Json";
       break;
     default:
       if (type.includes("Enum_")) {
@@ -102,7 +93,7 @@ const toTypescriptArray = (type: string, optional: boolean): string => {
   }
 
   const tsType = _toTypescript(result[2], (str) => str);
-  return applyOptional("Array<" + tsType + ">", optional);
+  return applyOptional("List[" + tsType + "]", optional);
 };
 
 const toTypescriptMap = (type: string, optional: boolean): string => {
@@ -121,12 +112,12 @@ const toTypescriptMap = (type: string, optional: boolean): string => {
   const tsKeyType = _toTypescript(keyType, (str) => str);
   const tsValType = _toTypescript(valType, (str) => str, true);
 
-  return applyOptional(`Map<${tsKeyType}, ${tsValType}>`, optional);
+  return applyOptional(`GenericMap[${tsKeyType}, ${tsValType}]`, optional);
 };
 
 const applyOptional = (type: string, optional: boolean): string => {
   if (optional) {
-    return `${type} | null`;
+    return `Union[${type}, None]`;
   } else {
     return type;
   }
@@ -134,7 +125,7 @@ const applyOptional = (type: string, optional: boolean): string => {
 
 const applyUndefinable = (type: string, undefinable: boolean): string => {
   if (undefinable) {
-    return `${type} | undefined`;
+    return `Optional[${type}]`;
   } else {
     return type;
   }

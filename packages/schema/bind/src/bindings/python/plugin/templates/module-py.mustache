@@ -1,0 +1,39 @@
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
+from abc import ABC, abstractmethod
+from typing import TypeVar, Generic
+
+import .types as types
+
+from polywrap_core import InvokerClient, MaybeAsync, UriPackageOrWrapper
+from polywrap_plugin import PluginModule
+
+TConfig = TypeVar("TConfig")
+
+
+{{#moduleType}}
+{{#methods}}
+
+class Args{{name}}(TypedDict):
+    {{#arguments}}
+    {{name}}: {{^required}}Optional[{{/required}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{^required}}]{{/required}};
+    {{/arguments}}
+{{/methods}}
+{{/moduleType}}
+
+class Module(Generic[TConfig], PluginModule[TConfig]) {
+  {{#moduleType}}
+  {{#methods}}
+  @abstractmethod
+  def {{name}}(
+    args: Args{{name}},
+    client: InvokerClient[UriPackageOrWrapper],
+    {{^env}}env: None{{/env}}{{#env}}env: {{^required}}Optional[{{/required}}types.Env{{^required}}] = None{{/required}}{{/env}}
+  ): MaybeAsync<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+  {{/moduleType}}
+}

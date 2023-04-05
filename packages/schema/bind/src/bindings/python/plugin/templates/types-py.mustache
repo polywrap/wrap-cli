@@ -1,7 +1,7 @@
 ### NOTE: This is an auto-generated file.
 ###       All modifications will be overwritten.
 
-from dataclasses import dataclass
+from typing import TypedDict, Optional
 from enum import Enum
 
 from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
@@ -23,8 +23,7 @@ Boolean = bool;
 
 ### Env START ###
 {{#envType}}
-@dataclass
-class {{#detectKeyword}}{{type}}{{/detectKeyword}}:
+class {{#detectKeyword}}{{type}}{{/detectKeyword}}(TypedDict):
     {{#properties}}
     {{name}}: {{^required}}Optional[{{/required}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{^required}}]{{/required}}
     {{/properties}}
@@ -33,8 +32,7 @@ class {{#detectKeyword}}{{type}}{{/detectKeyword}}:
 
 ### Objects START ###
 {{#objectTypes}}
-@dataclass
-class {{#detectKeyword}}{{type}}{{/detectKeyword}}:
+class {{#detectKeyword}}{{type}}{{/detectKeyword}}(TypedDict):
     {{#properties}}
     {{name}}: {{^required}}Optional[{{/required}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{^required}}]{{/required}}
     {{/properties}}
@@ -56,8 +54,7 @@ class {{type}}(Enum):
 
 {{#importedObjectTypes}}
 /* URI: "{{uri}}" */
-@dataclass
-class {{#detectKeyword}}{{type}}{{/detectKeyword}}:
+class {{#detectKeyword}}{{type}}{{/detectKeyword}}(TypedDict):
     {{#properties}}
     {{name}}: {{^required}}Optional[{{/required}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{^required}}]{{/required}};
     {{/properties}}
@@ -83,8 +80,7 @@ class {{type}}(Enum):
 {{#importedModuleTypes}}
 {{#methods}}
 /* URI: "{{parent.uri}}" */
-@dataclass
-class {{parent.type}}Args{{name}}:
+class {{parent.type}}Args{{name}}(TypedDict):
     {{#arguments}}
     {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
     {{/arguments}}
