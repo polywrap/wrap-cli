@@ -43,12 +43,6 @@ export const generateBinding: GenerateBindingFn = (
   // Apply Abi transforms
   const abi = applyTransforms(options.abi);
 
-  fs.writeFileSync(
-    path.join(__dirname, "abi.json"),
-    JSON.stringify(abi, null, 2),
-    "utf8"
-  );
-
   // Generate Bindings
   const result: BindOutput = {
     output: {

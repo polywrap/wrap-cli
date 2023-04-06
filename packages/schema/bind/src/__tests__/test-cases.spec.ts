@@ -20,7 +20,6 @@ describe("Polywrap Binding Test Suite", () => {
 
   for (const test of cases) {
     it(`Case: ${test.name}`, async () => {
-      console.log(">", test.name)
       const testCase = await test.promise;
 
       if (!testCase) {
@@ -31,8 +30,6 @@ describe("Polywrap Binding Test Suite", () => {
       for (const outputLanguage of testCase.outputLanguages) {
         // Verify it binds correctly
         const { language, directory } = outputLanguage;
-
-        console.log(">>", language)
 
         // Read the expected output directories
         let expectedOutput: BindOutput = {
