@@ -1,12 +1,12 @@
-/// NOTE: This is an auto-generated file.
-///       All modifications will be overwritten.
+# NOTE: This is an auto-generated file. All modifications will be overwritten.
+from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic, TypedDict
+from typing import TypeVar, Generic, TypedDict, Optional
 
 from .types import *
 
-from polywrap_core import InvokerClient, MaybeAsync, UriPackageOrWrapper
+from polywrap_core import InvokerClient, UriPackageOrWrapper
 from polywrap_plugin import PluginModule
 
 TConfig = TypeVar("TConfig")
@@ -22,7 +22,7 @@ class Args{{#toUpper}}{{name}}{{/toUpper}}(TypedDict):
 {{/methods}}
 {{/moduleType}}
 
-class Module(Generic[TConfig], PluginModule[TConfig]) {
+class Module(ABC, Generic[TConfig], PluginModule[TConfig]):
     {{#moduleType}}
     {{#methods}}
     @abstractmethod
@@ -37,4 +37,4 @@ class Module(Generic[TConfig], PluginModule[TConfig]) {
     {{/last}}
     {{/methods}}
     {{/moduleType}}
-}
+

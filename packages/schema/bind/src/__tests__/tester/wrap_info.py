@@ -1,12 +1,12 @@
-/// NOTE: This is an auto-generated file.
-///       All modifications will be overwritten.
+# NOTE: This is an auto-generated file. All modifications will be overwritten.
+from __future__ import annotations
+
+import json
+
 from polywrap_manifest import WrapManifest
 
-manifest = WrapManifest.parse_obj({
-    name: "tester",
-    type: "plugin",
-    version: "0.1",
-    abi: {
+abi = json.loads("""
+{
   "enumTypes": [
     {
       "constants": [
@@ -2310,4 +2310,11 @@ manifest = WrapManifest.parse_obj({
   ],
   "version": "0.1"
 }
+""")
+
+manifest = WrapManifest.parse_obj({
+    "name": "tester",
+    "type": "plugin",
+    "version": "0.1",
+    "abi": abi,
 })

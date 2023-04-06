@@ -132,6 +132,7 @@ const _toPython = (value: string, render: (template: string) => string) => {
       }
       type = toUpper()(type, (str) => str);
       type = detectKeyword()(type, (str) => str);
+      type = `"${type}"`;
   }
 
   return applyOptional(type, optional);
@@ -169,7 +170,7 @@ const toPythonGenericMap = (type: string, optional: boolean): string => {
 
 const applyOptional = (type: string, optional: boolean): string => {
   if (optional) {
-    return `${type} | None`;
+    return `Optional[${type}]`;
   } else {
     return type;
   }

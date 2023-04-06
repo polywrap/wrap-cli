@@ -1,24 +1,24 @@
-### NOTE: This is an auto-generated file.
-###       All modifications will be overwritten.
+# NOTE: This is an auto-generated file. All modifications will be overwritten.
+from __future__ import annotations
 
 from typing import TypedDict, Optional
-from enum import Enum, auto
+from enum import IntEnum, auto
 
 from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
 
 ### Env START ###
 class Env(TypedDict):
     prop: str
-    opt_prop: str | None
-    opt_map: GenericMap[str, int | None] | None
+    opt_prop: Optional[str]
+    opt_map: Optional[GenericMap[str, Optional[int]]]
 ### Env END ###
 
 ### Objects START ###
 class CustomType(TypedDict):
     p_str: str
-    opt_str: str | None
+    opt_str: Optional[str]
     u: int
-    opt_u: int | None
+    opt_u: Optional[int]
     u8: int
     u16: int
     u32: int
@@ -27,41 +27,41 @@ class CustomType(TypedDict):
     i16: int
     i32: int
     bigint: str
-    opt_bigint: str | None
+    opt_bigint: Optional[str]
     bignumber: str
-    opt_bignumber: str | None
+    opt_bignumber: Optional[str]
     json: str
-    opt_json: str | None
+    opt_json: Optional[str]
     p_bytes: bytes
-    opt_bytes: bytes | None
+    opt_bytes: Optional[bytes]
     boolean: bool
-    opt_boolean: bool | None
+    opt_boolean: Optional[bool]
     u_array: list[int]
-    u_opt_array: list[int] | None
-    opt_u_opt_array: list[int | None] | None
-    opt_str_opt_array: list[str | None] | None
+    u_opt_array: Optional[list[int]]
+    opt_u_opt_array: Optional[list[Optional[int]]]
+    opt_str_opt_array: Optional[list[Optional[str]]]
     u_array_array: list[list[int]]
-    u_opt_array_opt_array: list[list[int | None] | None]
-    u_array_opt_array_array: list[list[list[int]] | None]
-    crazy_array: list[list[list[list[int] | None]] | None] | None
-    p_object: AnotherType
-    opt_object: AnotherType | None
-    object_array: list[AnotherType]
-    opt_object_array: list[AnotherType | None] | None
-    en: CustomEnum
-    opt_enum: CustomEnum | None
-    enum_array: list[CustomEnum]
-    opt_enum_array: list[CustomEnum | None] | None
+    u_opt_array_opt_array: list[Optional[list[Optional[int]]]]
+    u_array_opt_array_array: list[Optional[list[list[int]]]]
+    crazy_array: Optional[list[Optional[list[list[Optional[list[int]]]]]]]
+    p_object: "AnotherType"
+    opt_object: Optional["AnotherType"]
+    object_array: list["AnotherType"]
+    opt_object_array: Optional[list[Optional["AnotherType"]]]
+    en: "CustomEnum"
+    opt_enum: Optional["CustomEnum"]
+    enum_array: list["CustomEnum"]
+    opt_enum_array: Optional[list[Optional["CustomEnum"]]]
     p_map: GenericMap[str, int]
     map_of_arr: GenericMap[str, list[int]]
-    map_of_obj: GenericMap[str, AnotherType]
-    map_of_arr_of_obj: GenericMap[str, list[AnotherType]]
-    map_custom_value: GenericMap[str, CustomMapValue | None]
+    map_of_obj: GenericMap[str, "AnotherType"]
+    map_of_arr_of_obj: GenericMap[str, list["AnotherType"]]
+    map_custom_value: GenericMap[str, Optional["CustomMapValue"]]
 
 class AnotherType(TypedDict):
-    prop: str | None
-    circular: CustomType | None
-    const: str | None
+    prop: Optional[str]
+    circular: Optional["CustomType"]
+    const: Optional[str]
 
 class CustomMapValue(TypedDict):
     foo: str
@@ -72,13 +72,13 @@ class Else(TypedDict):
 ### Objects END ###
 
 ### Enums START ###
-class CustomEnum(Enum):
-    STRING = auto()
-    BYTES = auto()
+class CustomEnum(IntEnum):
+    STRING = auto() - 1
+    BYTES = auto() - 1
 
-class While(Enum):
-    p_for = auto()
-    p_in = auto()
+class While(IntEnum):
+    p_for = auto() - 1
+    p_in = auto() - 1
 
 ### Enums END ###
 
@@ -86,14 +86,14 @@ class While(Enum):
 
 # URI: "testimport.uri.eth" #
 class TestImportObject(TypedDict):
-    p_object: TestImportAnotherObject
-    opt_object: TestImportAnotherObject | None
-    object_array: list[TestImportAnotherObject]
-    opt_object_array: list[TestImportAnotherObject | None] | None
-    en: TestImportEnum
-    opt_enum: TestImportEnum | None
-    enum_array: list[TestImportEnum]
-    opt_enum_array: list[TestImportEnum | None] | None
+    p_object: "TestImportAnotherObject"
+    opt_object: Optional["TestImportAnotherObject"]
+    object_array: list["TestImportAnotherObject"]
+    opt_object_array: Optional[list[Optional["TestImportAnotherObject"]]]
+    en: "TestImportEnum"
+    opt_enum: Optional["TestImportEnum"]
+    enum_array: list["TestImportEnum"]
+    opt_enum_array: Optional[list[Optional["TestImportEnum"]]]
 
 # URI: "testimport.uri.eth" #
 class TestImportAnotherObject(TypedDict):
@@ -104,14 +104,14 @@ class TestImportAnotherObject(TypedDict):
 ### Imported Enums START ###
 
 # URI: "testimport.uri.eth" #
-class TestImportEnum(Enum):
-    STRING = auto()
-    BYTES = auto()
+class TestImportEnum(IntEnum):
+    STRING = auto() - 1
+    BYTES = auto() - 1
 
 # URI: "testimport.uri.eth" #
-class TestImportEnumReturn(Enum):
-    STRING = auto()
-    BYTES = auto()
+class TestImportEnumReturn(IntEnum):
+    STRING = auto() - 1
+    BYTES = auto() - 1
 
 
 ### Imported Enums END ###
@@ -121,18 +121,18 @@ class TestImportEnumReturn(Enum):
 # URI: "testimport.uri.eth" #
 class TestImportModuleArgsImportedMethod(TypedDict):
     p_str: str
-    opt_str: str | None
+    opt_str: Optional[str]
     u: int
-    opt_u: int | None
-    u_array_array: list[list[int | None] | None]
-    p_object: TestImportObject
-    opt_object: TestImportObject | None
-    object_array: list[TestImportObject]
-    opt_object_array: list[TestImportObject | None] | None
-    en: TestImportEnum
-    opt_enum: TestImportEnum | None
-    enum_array: list[TestImportEnum]
-    opt_enum_array: list[TestImportEnum | None] | None
+    opt_u: Optional[int]
+    u_array_array: list[Optional[list[Optional[int]]]]
+    p_object: "TestImportObject"
+    opt_object: Optional["TestImportObject"]
+    object_array: list["TestImportObject"]
+    opt_object_array: Optional[list[Optional["TestImportObject"]]]
+    en: "TestImportEnum"
+    opt_enum: Optional["TestImportEnum"]
+    enum_array: list["TestImportEnum"]
+    opt_enum_array: Optional[list[Optional["TestImportEnum"]]]
 
 # URI: "testimport.uri.eth" #
 class TestImportModuleArgsAnotherMethod(TypedDict):
@@ -154,7 +154,7 @@ class TestImportModule:
         self,
         args: TestImportModuleArgsImportedMethod,
         client: InvokerClient[UriPackageOrWrapper]
-    ) -> TestImportObject | None:
+    ) -> Optional["TestImportObject"]:
         return client.invoke(
             InvokeOptions(
                 uri=self.uri,
@@ -180,7 +180,7 @@ class TestImportModule:
         self,
         args: TestImportModuleArgsReturnsArrayOfEnums,
         client: InvokerClient[UriPackageOrWrapper]
-    ) -> list[TestImportEnumReturn | None]:
+    ) -> list[Optional["TestImportEnumReturn"]]:
         return client.invoke(
             InvokeOptions(
                 uri=self.uri,

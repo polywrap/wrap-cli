@@ -63,7 +63,7 @@ export const generateBinding: GenerateBindingFn = (
 
   output.entries = renderTemplates(templatePath(""), { ...abi, manifest }, {});
 
-  return result;
+  return result
 };
 
 function applyTransforms(abi: WrapAbi): WrapAbi {

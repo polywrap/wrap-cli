@@ -1,8 +1,8 @@
-### NOTE: This is an auto-generated file.
-###       All modifications will be overwritten.
+# NOTE: This is an auto-generated file. All modifications will be overwritten.
+from __future__ import annotations
 
 from typing import TypedDict, Optional
-from enum import Enum, auto
+from enum import IntEnum, auto
 
 from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
 
@@ -27,9 +27,9 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(Typed
 
 ### Enums START ###
 {{#enumTypes}}
-class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(Enum):
+class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEnum):
     {{#constants}}
-    {{#detectKeyword}}{{.}}{{/detectKeyword}} = auto()
+    {{#detectKeyword}}{{.}}{{/detectKeyword}} = auto() - 1
     {{/constants}}
 
 {{/enumTypes}}
@@ -51,9 +51,9 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(Typed
 
 {{#importedEnumTypes}}
 # URI: "{{uri}}" #
-class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(Enum):
+class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEnum):
     {{#constants}}
-    {{#detectKeyword}}{{.}}{{/detectKeyword}} = auto()
+    {{#detectKeyword}}{{.}}{{/detectKeyword}} = auto() - 1
     {{/constants}}
 
 {{/importedEnumTypes}}
