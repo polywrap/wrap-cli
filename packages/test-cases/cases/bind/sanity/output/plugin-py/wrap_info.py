@@ -1,12 +1,12 @@
-/// NOTE: This is an auto-generated file.
-///       All modifications will be overwritten.
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js"
+# NOTE: This is an auto-generated file. All modifications will be overwritten.
+from __future__ import annotations
 
-export const manifest: WrapManifest = {
-  name: "Test",
-  type: "plugin",
-  version: "0.1",
-  abi: {
+import json
+
+from polywrap_manifest import WrapManifest
+
+abi = json.loads("""
+{
   "enumTypes": [
     {
       "constants": [
@@ -2310,4 +2310,11 @@ export const manifest: WrapManifest = {
   ],
   "version": "0.1"
 }
-}
+""")
+
+manifest = WrapManifest.parse_obj({
+    "name": "Test",
+    "type": "plugin",
+    "version": "0.1",
+    "abi": abi,
+})

@@ -1,195 +1,193 @@
-### NOTE: This is an auto-generated file.
-###       All modifications will be overwritten.
+# NOTE: This is an auto-generated file. All modifications will be overwritten.
+from __future__ import annotations
 
 from typing import TypedDict, Optional
-from enum import Enum
+from enum import IntEnum, auto
 
 from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
-from polywrap_msgpack import GenericMap
 
 ### Env START ###
 class Env(TypedDict):
     prop: str
-    optProp: str | None
-    optMap: Optional[GenericMap[str, Optional[int]]]
+    opt_prop: Optional[str]
+    opt_map: Optional[GenericMap[str, Optional[int]]]
 ### Env END ###
 
 ### Objects START ###
 class CustomType(TypedDict):
-    str: str
+    p_str: str
     opt_str: Optional[str]
-    u: Types.UInt
-    optU: Optional[Union[Types.UInt, None]]
-    u8: Types.UInt8
-    u16: Types.UInt16
-    u32: Types.UInt32
-    i: Types.Int
-    i8: Types.Int8
-    i16: Types.Int16
-    i32: Types.Int32
-    bigint: Types.BigInt
-    optBigint: Optional[Union[Types.BigInt, None]]
-    bignumber: Types.BigNumber
-    optBignumber: Optional[Union[Types.BigNumber, None]]
-    json: types.Json
-    optJson: Optional[Union[types.Json, None]]
-    bytes: Types.Bytes
-    optBytes: Optional[Union[Types.Bytes, None]]
-    boolean: Types.Boolean
-    optBoolean: Optional[Union[Types.Boolean, None]]
-    uArray: List[Types.UInt]
-    uOptArray: Optional[Union[List[Types.UInt], None]]
-    optUOptArray: Optional[Union[List[Union[Types.UInt, None]], None]]
-    optStrOptArray: Optional[Union[List[Union[Types.String, None]], None]]
-    uArrayArray: List[List[Types.UInt]]
-    uOptArrayOptArray: List[Union[List[Union[Types.UInt32, None]], None]]
-    uArrayOptArrayArray: List[Union[List[List[Types.UInt32]], None]]
-    crazyArray: Optional[Union[List[Union[List[List[Union[List[Types.UInt32], None]]], None]], None]]
-    object: Types.AnotherType
-    optObject: Optional[Union[Types.AnotherType, None]]
-    objectArray: List[Types.AnotherType]
-    optObjectArray: Optional[Union[List[Union[Types.AnotherType, None]], None]]
-    en: Types.CustomEnum
-    optEnum: Optional[Union[Types.CustomEnum, None]]
-    enumArray: List[Types.CustomEnum]
-    optEnumArray: Optional[Union[List[Union[Types.CustomEnum, None]], None]]
-    map: GenericMap[Types.String, Types.Int]
-    mapOfArr: GenericMap[Types.String, List[Types.Int]]
-    mapOfObj: GenericMap[Types.String, Types.AnotherType]
-    mapOfArrOfObj: GenericMap[Types.String, List[Types.AnotherType]]
-    mapCustomValue: GenericMap[Types.String, Optional[Types.CustomMapValue]]
+    u: int
+    opt_u: Optional[int]
+    u8: int
+    u16: int
+    u32: int
+    i: int
+    i8: int
+    i16: int
+    i32: int
+    bigint: str
+    opt_bigint: Optional[str]
+    bignumber: str
+    opt_bignumber: Optional[str]
+    json: str
+    opt_json: Optional[str]
+    p_bytes: bytes
+    opt_bytes: Optional[bytes]
+    boolean: bool
+    opt_boolean: Optional[bool]
+    u_array: list[int]
+    u_opt_array: Optional[list[int]]
+    opt_u_opt_array: Optional[list[Optional[int]]]
+    opt_str_opt_array: Optional[list[Optional[str]]]
+    u_array_array: list[list[int]]
+    u_opt_array_opt_array: list[Optional[list[Optional[int]]]]
+    u_array_opt_array_array: list[Optional[list[list[int]]]]
+    crazy_array: Optional[list[Optional[list[list[Optional[list[int]]]]]]]
+    p_object: "AnotherType"
+    opt_object: Optional["AnotherType"]
+    object_array: list["AnotherType"]
+    opt_object_array: Optional[list[Optional["AnotherType"]]]
+    en: "CustomEnum"
+    opt_enum: Optional["CustomEnum"]
+    enum_array: list["CustomEnum"]
+    opt_enum_array: Optional[list[Optional["CustomEnum"]]]
+    p_map: GenericMap[str, int]
+    map_of_arr: GenericMap[str, list[int]]
+    map_of_obj: GenericMap[str, "AnotherType"]
+    map_of_arr_of_obj: GenericMap[str, list["AnotherType"]]
+    map_custom_value: GenericMap[str, Optional["CustomMapValue"]]
 
 class AnotherType(TypedDict):
-    prop: Optional[Union[Types.String, None]]
-    circular: Optional[Union[Types.CustomType, None]]
-    const: Optional[Union[Types.String, None]]
+    prop: Optional[str]
+    circular: Optional["CustomType"]
+    const: Optional[str]
 
 class CustomMapValue(TypedDict):
-    foo: Types.String
+    foo: str
 
-class _else(TypedDict):
-    else: Types.String
+class Else(TypedDict):
+    p_else: str
 
 ### Objects END ###
 
 ### Enums START ###
-class CustomEnum(Enum):
-    STRING,
-    BYTES,
+class CustomEnum(IntEnum):
+    STRING = auto() - 1
+    BYTES = auto() - 1
 
-class while(Enum):
-    for,
-    in,
+class While(IntEnum):
+    p_for = auto() - 1
+    p_in = auto() - 1
 
 ### Enums END ###
 
 ### Imported Objects START ###
 
-/* URI: "testimport.uri.eth" */
-class TestImport_Object(TypedDict):
-    object: Types.TestImport_AnotherObject;
-    optObject: Optional[Union[Types.TestImport_AnotherObject, None]];
-    objectArray: List[Types.TestImport_AnotherObject];
-    optObjectArray: Optional[Union[List[Union[Types.TestImport_AnotherObject, None]], None]];
-    en: Types.TestImport_Enum;
-    optEnum: Optional[Union[Types.TestImport_Enum, None]];
-    enumArray: List[Types.TestImport_Enum];
-    optEnumArray: Optional[Union[List[Union[Types.TestImport_Enum, None]], None]];
+# URI: "testimport.uri.eth" #
+class TestImportObject(TypedDict):
+    p_object: "TestImportAnotherObject"
+    opt_object: Optional["TestImportAnotherObject"]
+    object_array: list["TestImportAnotherObject"]
+    opt_object_array: Optional[list[Optional["TestImportAnotherObject"]]]
+    en: "TestImportEnum"
+    opt_enum: Optional["TestImportEnum"]
+    enum_array: list["TestImportEnum"]
+    opt_enum_array: Optional[list[Optional["TestImportEnum"]]]
 
-/* URI: "testimport.uri.eth" */
-class TestImport_AnotherObject(TypedDict):
-    prop: Types.String;
+# URI: "testimport.uri.eth" #
+class TestImportAnotherObject(TypedDict):
+    prop: str
 
 ### Imported Objects END ###
 
 ### Imported Enums START ###
 
-/* URI: "testimport.uri.eth" */
-class TestImport_Enum(Enum):
-    STRING,
-    BYTES,
+# URI: "testimport.uri.eth" #
+class TestImportEnum(IntEnum):
+    STRING = auto() - 1
+    BYTES = auto() - 1
 
-/* URI: "testimport.uri.eth" */
-class TestImport_Enum_Return(Enum):
-    STRING,
-    BYTES,
+# URI: "testimport.uri.eth" #
+class TestImportEnumReturn(IntEnum):
+    STRING = auto() - 1
+    BYTES = auto() - 1
 
 
 ### Imported Enums END ###
 
 ### Imported Modules START ###
 
-/* URI: "testimport.uri.eth" */
-class TestImport_ModuleArgsimportedMethod(TypedDict):
-    str: Types.String;
-    optStr?: Union[Types.String, None];
-    u: Types.UInt;
-    optU?: Union[Types.UInt, None];
-    uArrayArray: List[Union[List[Union[Types.UInt, None]], None]];
-    object: Types.TestImport_Object;
-    optObject?: Union[Types.TestImport_Object, None];
-    objectArray: List[Types.TestImport_Object];
-    optObjectArray?: Union[List[Union[Types.TestImport_Object, None]], None];
-    en: Types.TestImport_Enum;
-    optEnum?: Union[Types.TestImport_Enum, None];
-    enumArray: List[Types.TestImport_Enum];
-    optEnumArray?: Union[List[Union[Types.TestImport_Enum, None]], None];
+# URI: "testimport.uri.eth" #
+class TestImportModuleArgsImportedMethod(TypedDict):
+    p_str: str
+    opt_str: Optional[str]
+    u: int
+    opt_u: Optional[int]
+    u_array_array: list[Optional[list[Optional[int]]]]
+    p_object: "TestImportObject"
+    opt_object: Optional["TestImportObject"]
+    object_array: list["TestImportObject"]
+    opt_object_array: Optional[list[Optional["TestImportObject"]]]
+    en: "TestImportEnum"
+    opt_enum: Optional["TestImportEnum"]
+    enum_array: list["TestImportEnum"]
+    opt_enum_array: Optional[list[Optional["TestImportEnum"]]]
 
-/* URI: "testimport.uri.eth" */
-class TestImport_ModuleArgsanotherMethod(TypedDict):
-    arg: List[Types.String];
+# URI: "testimport.uri.eth" #
+class TestImportModuleArgsAnotherMethod(TypedDict):
+    arg: list[str]
 
-/* URI: "testimport.uri.eth" */
-class TestImport_ModuleArgsreturnsArrayOfEnums(TypedDict):
-    arg: Types.String;
+# URI: "testimport.uri.eth" #
+class TestImportModuleArgsReturnsArrayOfEnums(TypedDict):
+    arg: str
 
-/* URI: "testimport.uri.eth" */
-class TestImport_Module:
+# URI: "testimport.uri.eth" #
+class TestImportModule:
     INTERFACE_URI: Uri = Uri.from_str("testimport.uri.eth")
     uri: Uri
 
-    def __init__(uri: Uri) {
-      this.uri = uri
-    }
+    def __init__(self, uri: Uri):
+        self.uri = uri
 
-    async def importedMethod(
-      self,
-      args: TestImport_ModuleArgsimportedMethod,
-      client: InvokerClient[UriPackageOrWrapper]
-    ): Union[Types.TestImport_Object, None]:
-        return client.invoke<Union[Types.TestImport_Object, None]>(
+    async def imported_method(
+        self,
+        args: TestImportModuleArgsImportedMethod,
+        client: InvokerClient[UriPackageOrWrapper]
+    ) -> Optional["TestImportObject"]:
+        return client.invoke(
             InvokeOptions(
                 uri=self.uri,
                 method="importedMethod",
                 args=args,
             )
-        );
+        )
 
-    async def anotherMethod(
-      self,
-      args: TestImport_ModuleArgsanotherMethod,
-      client: InvokerClient[UriPackageOrWrapper]
-    ): Types.Int32:
-        return client.invoke<Types.Int32>(
+    async def another_method(
+        self,
+        args: TestImportModuleArgsAnotherMethod,
+        client: InvokerClient[UriPackageOrWrapper]
+    ) -> int:
+        return client.invoke(
             InvokeOptions(
                 uri=self.uri,
                 method="anotherMethod",
                 args=args,
             )
-        );
+        )
 
-    async def returnsArrayOfEnums(
-      self,
-      args: TestImport_ModuleArgsreturnsArrayOfEnums,
-      client: InvokerClient[UriPackageOrWrapper]
-    ): List[Union[Types.TestImport_Enum_Return, None]]:
-        return client.invoke<List[Union[Types.TestImport_Enum_Return, None]]>(
+    async def returns_array_of_enums(
+        self,
+        args: TestImportModuleArgsReturnsArrayOfEnums,
+        client: InvokerClient[UriPackageOrWrapper]
+    ) -> list[Optional["TestImportEnumReturn"]]:
+        return client.invoke(
             InvokeOptions(
                 uri=self.uri,
                 method="returnsArrayOfEnums",
                 args=args,
             )
-        );
+        )
 
 ### Imported Modules END ###
 
@@ -199,11 +197,10 @@ class TestImport_Module:
 class TestImport:
     URI: Uri = Uri.from_str("testimport.uri.eth")
 
-    async def get_implementations(
-      client: InvokerClient[UriPackageOrWrapper]
-    ): string[] {
-        impls = await client.getImplementations(self.uri)
+    def get_implementations(
+        client: InvokerClient[UriPackageOrWrapper]
+    ) -> list[str]:
+        impls = client.getImplementations(self.uri)
         return [impl.uri for impl in impls]
-    }
 
 ### Interface END ###

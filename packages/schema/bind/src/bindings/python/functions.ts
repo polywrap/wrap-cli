@@ -6,10 +6,6 @@ import { isKeyword } from "./types";
 export const detectKeyword: MustacheFn = () => {
   return (value: string, render: (template: string) => string): string => {
     const type = render(value);
-    if (type == "str") {
-      console.log(type);
-      console.log(isKeyword(type));
-    }
     if (isKeyword(type)) {
       return "p_" + type; // `p_` is the prefix we use for keywords
     }

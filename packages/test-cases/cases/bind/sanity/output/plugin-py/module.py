@@ -1,67 +1,76 @@
-/// NOTE: This is an auto-generated file.
-///       All modifications will be overwritten.
+# NOTE: This is an auto-generated file. All modifications will be overwritten.
+from __future__ import annotations
 
-// @ts-ignore
-import * as Types from "./types";
+from abc import ABC, abstractmethod
+from typing import TypeVar, Generic, TypedDict, Optional
 
-// @ts-ignore
-import { CoreClient, MaybeAsync } from "@polywrap/core-js";
-import { PluginModule } from "@polywrap/plugin-js";
+from .types import *
 
-export interface Args_moduleMethod {
-  str: Types.String;
-  optStr?: Types.String | null;
-  en: Types.CustomEnum;
-  optEnum?: Types.CustomEnum | null;
-  enumArray: Array<Types.CustomEnum>;
-  optEnumArray?: Array<Types.CustomEnum | null> | null;
-  map: Map<Types.String, Types.Int>;
-  mapOfArr: Map<Types.String, Array<Types.Int>>;
-  mapOfMap: Map<Types.String, Map<Types.String, Types.Int>>;
-  mapOfObj: Map<Types.String, Types.AnotherType>;
-  mapOfArrOfObj: Map<Types.String, Array<Types.AnotherType>>;
-}
+from polywrap_core import InvokerClient, UriPackageOrWrapper
+from polywrap_plugin import PluginModule
 
-export interface Args_objectMethod {
-  object: Types.AnotherType;
-  optObject?: Types.AnotherType | null;
-  objectArray: Array<Types.AnotherType>;
-  optObjectArray?: Array<Types.AnotherType | null> | null;
-}
+TConfig = TypeVar("TConfig")
 
-export interface Args_optionalEnvMethod {
-  object: Types.AnotherType;
-  optObject?: Types.AnotherType | null;
-  objectArray: Array<Types.AnotherType>;
-  optObjectArray?: Array<Types.AnotherType | null> | null;
-}
 
-export interface Args_if {
-  if: Types._else;
-}
 
-export abstract class Module<TConfig> extends PluginModule<TConfig, Types.Env> {
-  abstract moduleMethod(
-    args: Args_moduleMethod,
-    client: CoreClient,
-    env?: null
-  ): MaybeAsync<Types.Int>;
+class ArgsModuleMethod(TypedDict):
+    p_str: str
+    opt_str: Optional[str]
+    en: "CustomEnum"
+    opt_enum: Optional["CustomEnum"]
+    enum_array: list["CustomEnum"]
+    opt_enum_array: Optional[list[Optional["CustomEnum"]]]
+    p_map: GenericMap[str, int]
+    map_of_arr: GenericMap[str, list[int]]
+    map_of_map: GenericMap[str, GenericMap[str, int]]
+    map_of_obj: GenericMap[str, "AnotherType"]
+    map_of_arr_of_obj: GenericMap[str, list["AnotherType"]]
 
-  abstract objectMethod(
-    args: Args_objectMethod,
-    client: CoreClient,
-    env: Types.Env
-  ): MaybeAsync<Types.AnotherType | null>;
+class ArgsObjectMethod(TypedDict):
+    p_object: "AnotherType"
+    opt_object: Optional["AnotherType"]
+    object_array: list["AnotherType"]
+    opt_object_array: Optional[list[Optional["AnotherType"]]]
 
-  abstract optionalEnvMethod(
-    args: Args_optionalEnvMethod,
-    client: CoreClient,
-    env?: Types.Env | null
-  ): MaybeAsync<Types.AnotherType | null>;
+class ArgsOptionalEnvMethod(TypedDict):
+    p_object: "AnotherType"
+    opt_object: Optional["AnotherType"]
+    object_array: list["AnotherType"]
+    opt_object_array: Optional[list[Optional["AnotherType"]]]
 
-  abstract if(
-    args: Args_if,
-    client: CoreClient,
-    env?: null
-  ): MaybeAsync<Types._else>;
-}
+class ArgsIf(TypedDict):
+    p_if: "Else"
+
+class Module(ABC, Generic[TConfig], PluginModule[TConfig]):
+    @abstractmethod
+    def module_method(
+        args: ArgsModuleMethod,
+        client: InvokerClient[UriPackageOrWrapper],
+        env: None
+    ) -> int:
+        pass
+
+    @abstractmethod
+    def object_method(
+        args: ArgsObjectMethod,
+        client: InvokerClient[UriPackageOrWrapper],
+        env: Env
+    ) -> Optional["AnotherType"]:
+        pass
+
+    @abstractmethod
+    def optional_env_method(
+        args: ArgsOptionalEnvMethod,
+        client: InvokerClient[UriPackageOrWrapper],
+        env: Optional[Env] = None
+    ) -> Optional["AnotherType"]:
+        pass
+
+    @abstractmethod
+    def p_if(
+        args: ArgsIf,
+        client: InvokerClient[UriPackageOrWrapper],
+        env: None
+    ) -> "Else":
+        pass
+
