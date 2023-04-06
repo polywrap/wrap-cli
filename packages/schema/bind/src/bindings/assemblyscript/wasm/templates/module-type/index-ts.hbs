@@ -1,0 +1,13 @@
+{{#if functions.length}}
+import {
+  {{#each functions}}
+  Args_{{detectKeyword name}}{{#unless @last}},{{/unless}}
+  {{/each}}
+} from "./serialization";
+
+export {
+  {{#each functions}}
+  Args_{{detectKeyword name}}{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}

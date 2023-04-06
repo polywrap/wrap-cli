@@ -1,0 +1,35 @@
+export enum {{detectKeyword name}} {
+  {{#each constants}}
+  {{detectKeyword this}},
+  {{/each}}
+  _MAX_
+}
+
+export function sanitize{{name}}Value(value: i32): void {
+  const valid = value >= 0 && value < {{detectKeyword name}}._MAX_;
+  if (!valid) {
+    throw new Error("Invalid value for enum '{{detectKeyword name}}': " + value.toString());
+  }
+}
+
+export function get{{name}}Value(key: string): {{detectKeyword name}} {
+  {{#each constants}}
+  if (key == "{{detectKeyword this}}") {
+    return {{detectKeyword name}}.{{detectKeyword this}};
+  }
+  {{/each}}
+
+  throw new Error("Invalid key for enum '{{detectKeyword name}}': " + key);
+}
+
+export function get{{name}}Key(value: {{detectKeyword name}}): string {
+  sanitize{{name}}Value(value);
+
+  switch (value) {
+    {{#each constants}}
+    case {{detectKeyword name}}.{{detectKeyword this}}: return "{{detectKeyword this}}";
+    {{/each}}
+    default:
+      throw new Error("Invalid value for enum '{{detectKeyword name}}': " + value.toString());
+  }
+}

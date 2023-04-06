@@ -1,0 +1,40 @@
+import {
+  Read,
+  Write,
+  Box,
+  BigInt,
+  BigNumber,
+  JSON
+} from "@polywrap/wasm-as";
+import {
+  serialize{{name}},
+  deserialize{{name}},
+  write{{name}},
+  read{{name}}
+} from "./serialization";
+import * as Types from "../..";
+
+export class {{#detectKeyword name}}{{name}}{{/detectKeyword}} {
+
+  public static uri: string = "{{uri}}";
+
+  {{#properties}}
+  {{#detectKeyword name}}{{name}}{{/detectKeyword}}: {{#toWasm toGraphQLType}}{{/toWasm}};
+  {{/properties}}
+
+  static toBuffer(type: {{#detectKeyword name}}{{name}}{{/detectKeyword}}): ArrayBuffer {
+    return serialize{{name}}(type);
+  }
+
+  static fromBuffer(buffer: ArrayBuffer): {{#detectKeyword name}}{{name}}{{/detectKeyword}} {
+    return deserialize{{name}}(buffer);
+  }
+
+  static write(writer: Write, type: {{#detectKeyword name}}{{name}}{{/detectKeyword}}): void {
+    write{{name}}(writer, type);
+  }
+
+  static read(reader: Read): {{#detectKeyword name}}{{name}}{{/detectKeyword}} {
+    return read{{name}}(reader);
+  }
+}

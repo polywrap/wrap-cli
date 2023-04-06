@@ -1,0 +1,33 @@
+{{#if (eq kind "Scalar")}}
+  writer.write{{toMsgPack toGraphQLType}}(value);
+{{/if}}
+{{#if (eq kind "Array")}}
+  writer.write{{toMsgPack toGraphQLType}}(value, (writer: Write, item: {{#item}}{{toWasm toGraphQLType}}{{/item}}) => {
+    {{> serialize_array}}
+  });
+{{/if}}
+{{#if (eq kind "Map")}}
+  writer.write{{toMsgPack toGraphQLType}}(value, (writer: Write, key: {{#key}}{{toWasm toGraphQLType}}{{/key}}) => {
+    writer.write{{toMsgPack toGraphQLType}}(key);
+  }, (writer: Write, value: {{#value}}{{toWasm toGraphQLType}}{{/value}}) => {
+    {{> serialize_map_value}}
+  });
+{{/if}}
+{{#if (eq kind "Enum")}}
+  {{#if required}}
+    writer.writeInt32(value);
+  {{else}}
+    writer.writeOptionalInt32(value);
+  {{/if}}
+{{/if}}
+{{#if (eq kind "Object")}}
+  {{#if required}}
+    Types.{{detectKeyword type}}.write(writer, value);
+  {{else}}
+    {{#if value}}
+      Types.{{detectKeyword type}}.write(writer, value as Types.{{detectKeyword type}});
+    {{else}}
+      writer.writeNil();
+    {{/if}}
+  {{/if}}
+{{/if}}

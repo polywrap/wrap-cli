@@ -1,0 +1,34 @@
+{{#if functions.length}}
+import {
+{{#each functions}}
+{{#detectKeyword}}{{name}}{{/detectKeyword}}{{#unless @last}}, {{/unless}}
+{{/each}}
+} from "../../index";
+import {
+{{#each functions}}
+deserialize{{name}}Args,
+serialize{{name}}Result{{#unless @last}}, {{/unless}}
+{{/each}}
+} from "./serialization";
+{{/if}}
+import * as Types from "..";
+
+{{#each functions}}
+export function {{name}}Wrapped(argsBuf: ArrayBuffer): ArrayBuffer {
+{{#if arguments.length}}
+const args = deserialize{{name}}Args(argsBuf);
+{{/if}}
+
+const result = {{name}}({{#if arguments.length}}
+{
+{{#each arguments}}
+{{#detectKeyword}}{{name}}{{/detectKeyword}}: args.{{#detectKeyword}}{{name}}{{/detectKeyword}}{{#unless @last}},
+{{/unless}}
+{{/each}}
+}{{/if}}{{#unless arguments.length}}{}{{/unless}});
+return serialize{{name}}Result(result);
+}
+{{#unless @last}}
+
+{{/unless}}
+{{/each}}

@@ -1,0 +1,25 @@
+{{#if required}}
+  let value: Types.{{detectKeyword type}};
+  if (reader.isNextString()) {
+    value = Types.get{{type}}Value(reader.readString());
+  } else {
+    value = reader.readInt32();
+    Types.sanitize{{type}}Value(value);
+  }
+{{else}}
+  let value: Box<Types.{{detectKeyword type}}> | null;
+  if (!reader.isNextNil()) {
+    if (reader.isNextString()) {
+      value = Box.from(
+        Types.get{{type}}Value(reader.readString())
+      );
+    } else {
+      value = Box.from(
+        reader.readInt32()
+      );
+      Types.sanitize{{type}}Value(value.unwrap());
+    }
+  } else {
+    value = null;
+  }
+{{/if}}

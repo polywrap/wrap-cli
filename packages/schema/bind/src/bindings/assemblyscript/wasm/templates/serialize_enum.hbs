@@ -1,0 +1,5 @@
+{{#if required}}
+  writer.writeInt32(item);
+{{else}}
+  writer.writeOptionalInt32(item);
+{{/if}}

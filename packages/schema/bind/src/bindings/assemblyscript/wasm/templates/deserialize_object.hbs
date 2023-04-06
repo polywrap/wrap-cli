@@ -1,0 +1,8 @@
+{{#if required}}
+  const object = Types.{{detectKeyword type}}.read(reader);
+{{else}}
+  let object: {{toWasm}}{{toGraphQLType}} | null = null;
+  if (!reader.isNextNil()) {
+    object = Types.{{detectKeyword type}}.read(reader);
+  }
+{{/if}}

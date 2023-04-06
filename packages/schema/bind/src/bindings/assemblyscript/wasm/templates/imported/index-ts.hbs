@@ -1,0 +1,11 @@
+{{#each imports}}
+  {{#each functions}}
+    export * from "./{{type}}";
+  {{/each}}
+  {{#each objects}}
+    export * from "./{{type}}";
+  {{/each}}
+  {{#each enums}}
+    export * from "./{{type}}";
+  {{/each}}
+{{/each}}

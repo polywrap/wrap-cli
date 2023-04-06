@@ -7,25 +7,25 @@ import {
   JSON,
   Result
 } from "@polywrap/wasm-as";
-{{#functions.length}}
+{{#if functions.length}}
 import {
-  {{#functions}}
+  {{#each functions}}
   serialize{{name}}Args,
   deserialize{{name}}Result,
-  Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
-  {{/functions}}
+  Args_{{detectKeyword name}}{{^@last}},{{/@last}}
+  {{/each}}
 } from "./serialization";
-{{/functions.length}}
+{{/if}}
 import * as Types from "../..";
 
 {{^isInterface}}
-export class {{#detectKeyword}}{{name}}{{/detectKeyword}} {
+export class {{detectKeyword name}} {
 
   public static uri: string = "{{uri}}";
 
-  {{#functions}}
+  {{#each functions}}
   public static {{name}}(
-    args: Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}
+    args: Args_{{detectKeyword name}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
     const argsBuf = serialize{{name}}Args(args);
     const result = wrap_subinvoke(
@@ -44,14 +44,14 @@ export class {{#detectKeyword}}{{name}}{{/detectKeyword}} {
       deserialize{{name}}Result(result.unwrap())
     );
   }
-  {{^last}}
+  {{^@last}}
 
-  {{/last}}
-  {{/functions}}
+  {{/@last}}
+  {{/each}}
 }
 {{/isInterface}}
 {{#isInterface}}
-export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+export class {{detectKeyword type}} {
 
   public static interfaceUri: string = "{{uri}}";
 
@@ -61,9 +61,9 @@ export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
     this.uri = uri;
   }
 
-  {{#functions}}
+  {{#each functions}}
   public {{name}}(
-    args: Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}
+    args: Args_{{detectKeyword name}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
     const argsBuf = serialize{{name}}Args(args);
     const result = wrap_subinvokeImplementation(
@@ -83,9 +83,9 @@ export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
       deserialize{{name}}Result(result.unwrap())
     );
   }
-  {{^last}}
+  {{^@last}}
 
-  {{/last}}
-  {{/functions}}
+  {{/@last}}
+  {{/each}}
 }
 {{/isInterface}}

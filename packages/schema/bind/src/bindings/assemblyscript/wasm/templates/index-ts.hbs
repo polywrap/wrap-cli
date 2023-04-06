@@ -1,0 +1,56 @@
+{{#if functions.length}}
+import {
+  {{#each functions}}
+    Args_{{detectKeyword name}}{{#unless @last}},{{/unless}}
+  {{/each}}
+} from "./{{name}}";
+{{/if}}
+{{#if functions.length}}
+export {
+  {{#each functions}}
+    Args_{{detectKeyword name}}{{#unless @last}},{{/unless}}
+  {{/each}}
+};
+{{/if}}
+{{#each objects}}
+export { {{detectKeyword name}} } from "./{{name}}";
+{{/each}}
+{{#each enums}}
+export {
+  {{detectKeyword name}},
+  get{{name}}Key,
+  get{{name}}Value,
+  sanitize{{name}}Value
+} from "./{{name}}";
+{{/each}}
+{{#if imports}}
+{{#each imports}}
+  {{#if functions}}
+    export {
+      {{#each functions}}
+        {{detectKeyword name}} 
+        {{#unless @last}},{{/unless}}
+      {{/each}}
+    } from "./imported/{{name}}";
+  {{/if}}
+  {{#if objects}}
+    export {
+      {{#each objects}}
+        {{detectKeyword name}} 
+        {{#unless @last}},{{/unless}}
+      {{/each}}
+    } from "./imported/{{name}}";
+  {{/if}}
+  {{#if enums}}
+    export {
+      {{#each enums}}
+        {{detectKeyword name}}, 
+        get{{name}}Key,
+        get{{name}}Value,
+        sanitize{{name}}Value
+        {{#unless @last}},{{/unless}}
+      {{/each}}
+    } from "./imported/{{name}}";
+  {{/if}}
+{{/each}}
+{{/if}}

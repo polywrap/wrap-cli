@@ -1,0 +1,23 @@
+{{#if scalar}}
+  return reader.read{{toMsgPack}}{{toGraphQLType}}();
+{{/if}}
+{{#if array}}
+  return reader.read{{toMsgPack}}{{toGraphQLType}}((reader: Read): {{#item}}{{toWasm}}{{toGraphQLType}}{{/item}} => {
+    {{> deserialize_array}}
+  });
+{{/if}}
+{{#if map}}
+  return reader.read{{toMsgPack}}{{toGraphQLType}}((reader: Read): {{#key}}{{toWasm}}{{toGraphQLType}}{{/key}} => {
+    return reader.read{{toMsgPack}}{{toGraphQLType}}();
+  }, (reader: Read): {{#value}}{{toWasm}}{{toGraphQLType}}{{/value}} => {
+    {{> deserialize_map_value}}
+  });
+{{/if}}
+{{#if enum}}
+  {{> deserialize_enum}}
+  return value;
+{{/if}}
+{{#if object}}
+  {{> deserialize_object}}
+  return object;
+{{/if}}

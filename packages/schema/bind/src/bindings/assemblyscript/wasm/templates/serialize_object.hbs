@@ -1,0 +1,9 @@
+{{#if required}}
+  Types.{{detectKeyword type}}.write(writer, item);
+{{else}}
+  if (item) {
+    Types.{{detectKeyword type}}.write(writer, item as Types.{{detectKeyword type}});
+  } else {
+    writer.writeNil();
+  }
+{{/if}}

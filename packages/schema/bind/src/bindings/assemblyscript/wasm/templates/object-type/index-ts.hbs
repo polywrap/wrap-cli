@@ -1,0 +1,37 @@
+import {
+  Read,
+  Write,
+  Box,
+  BigInt,
+  BigNumber,
+  JSON
+} from "@polywrap/wasm-as";
+import {
+  serialize{{name}},
+  deserialize{{name}},
+  write{{name}},
+  read{{name}}
+} from "./serialization";
+import * as Types from "..";
+
+export class {{detectKeyword name}} {
+  {{#each properties}}
+    {{detectKeyword this.name}}: {{toWasm this.type}};
+  {{/each}}
+
+  static toBuffer(type: {{detectKeyword name}}): ArrayBuffer {
+    return serialize{{name}}(type);
+  }
+
+  static fromBuffer(buffer: ArrayBuffer): {{detectKeyword name}} {
+    return deserialize{{name}}(buffer);
+  }
+
+  static write(writer: Write, type: {{detectKeyword name}}): void {
+    write{{name}}(writer, type);
+  }
+
+  static read(reader: Read): {{detectKeyword name}} {
+    return read{{name}}(reader);
+  }
+}
