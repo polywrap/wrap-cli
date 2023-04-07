@@ -34,6 +34,7 @@
     "build:core:client": "lerna run build --scope @polywrap/core-client-js",
     "build:client": "lerna run build --scope @polywrap/client-js",
     "build:cli": "lerna run build --scope polywrap && lerna run build --scope @polywrap/cli-js",
+    "build:docs": "lerna run build:docs",
     "link:manifests": "yarn link:manifests:polywrap && yarn link:manifests:wrap",
     "link:manifests:polywrap": "cd packages/js/manifests/polywrap && (yarn unlink || true) && yarn link && cd ../../../../dependencies && yarn link @polywrap/polywrap-manifest-types-js && cd ../",
     "link:manifests:wrap": "cd packages/js/manifests/wrap && (yarn unlink || true) && yarn link && cd ../../../../dependencies && yarn link @polywrap/wrap-manifest-types-js && cd ../",
