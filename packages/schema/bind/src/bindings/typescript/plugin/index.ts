@@ -3,7 +3,6 @@ import * as Functions from "../functions";
 import { GenerateBindingFn, renderTemplates } from "../..";
 import { BindOptions, BindOutput } from "../../..";
 
-import fs from "fs";
 import {
   transformAbi,
   extendType,
