@@ -472,14 +472,14 @@ type UriResolverExtBootloader = [IDefaultEmbed, IUriRedirect, ...Uri[]];
 export const uriResolverExts: UriResolverExtBootloader = [
   embeds.ipfsResolver,
   {
-    from: Uri.from("ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0"),
-    to: Uri.from("ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw"),
+    from: Uri.from("ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.1"),
+    to: Uri.from("ipfs/QmXcHWtKkfrFmcczdMSXH7udsSyV3UJeoWzkaUqGBm1oYs"),
   },
-  Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.0"),
+  Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.1"),
+  Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.1"),
+  Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.1"),
+  Uri.from("ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.1"),
+  Uri.from("ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.1"),
 ];
 
 interface IDefaultPlugin {
