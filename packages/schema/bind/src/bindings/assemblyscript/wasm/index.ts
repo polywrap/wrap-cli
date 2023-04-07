@@ -1,14 +1,7 @@
-import { Functions } from "../";
 import { GenerateBindingFn, renderTemplates } from "../..";
 import { loadSubTemplates } from "../../utils";
 import { BindOptions, BindOutput } from "../../..";
 
-import {
-  addFirstLast,
-  extendType,
-  toPrefixedGraphQLType,
-} from "@polywrap/schema-parse";
-import { AbiVisitor, IAbiVisitorEnterAndLeave } from "@polywrap/schema-abi";
 import { Abi, EnumDef, FunctionDef, ObjectDef } from "@polywrap/abi-types";
 import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
 import path from "path";
@@ -79,7 +72,7 @@ export const generateBinding: GenerateBindingFn = (
     outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-  const abi = applyTransforms(options.abi);
+  const abi = options.abi;
 
   // Generate object type folders
   if (abi.objects) {
@@ -187,26 +180,3 @@ export const generateBinding: GenerateBindingFn = (
 
   return result;
 };
-
-const transformAbi = (abi: Abi, transform: IAbiVisitorEnterAndLeave) => {
-  const abiClone: Abi = JSON.parse(JSON.stringify(abi));
-  const visitor = new AbiVisitor(transform);
-
-  visitor.visit(abiClone);
-
-  return abiClone;
-}
-
-function applyTransforms(abi: Abi): Abi {
-  const transforms: IAbiVisitorEnterAndLeave[] = [
-    extendType(Functions),
-    addFirstLast,
-    toPrefixedGraphQLType,
-  ];
-
-  for (const transform of transforms) {
-    abi = transformAbi(abi, transform);
-  }
-
-  return abi;
-}

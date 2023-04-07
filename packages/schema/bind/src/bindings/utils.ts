@@ -1,5 +1,4 @@
 import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
-import Mustache from "mustache";
 import path from "path";
 
 export function renderTemplates(
@@ -21,7 +20,11 @@ export function renderTemplates(
 
         // file templates don't contain '_'
         if (name.indexOf("_") === -1) {
-          const data = Mustache.render(dirent.data, view, subTemplates);
+          Object.entries(subTemplates).forEach(([partialName, partialTemplate]) => {
+            Handlebars.registerPartial(partialName, partialTemplate)
+          })
+          
+          const data = Handlebars.compile(dirent.data)(view)
 
           // If the file isn't empty, add it to the output
           if (data) {
