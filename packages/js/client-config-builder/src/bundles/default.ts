@@ -37,9 +37,9 @@ export const embeds: IDefaultEmbeds = {
     source: Uri.from("ens/wraps.eth:ipfs-http-client@1.0.0"),
   },
   ipfsResolver: {
-    uri: Uri.from("embed/async-ipfs-uri-resolver-ext@1.0.0"),
+    uri: Uri.from("embed/async-ipfs-uri-resolver-ext@1.0.1"),
     package: ipfsResolver.wasmPackage,
-    source: Uri.from("ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0"),
+    source: Uri.from("ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.1"),
   },
 };
 
