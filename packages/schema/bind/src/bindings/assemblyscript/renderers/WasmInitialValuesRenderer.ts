@@ -1,10 +1,10 @@
 import { AnyType, RefType, ImportRefType, MapType, ArrayType, ScalarType } from "@polywrap/abi-types";
-import { isKeyword } from "./bindings/assemblyscript/types";
-import { WasmRenderer } from "./WasmRenderer";
+import { isKeyword } from "../types";
+import { Renderer } from "./types";
 
-export class WasmInitRenderer {
+export class AssemblyscriptWasmInitRenderer {
 
-  constructor(protected wasmRenderer: WasmRenderer) {}
+  constructor(protected wasmRenderer: Renderer) {}
 
   private escapeKeyword(typeName: string): string {
     return isKeyword(typeName) ? `_${typeName}`: typeName
