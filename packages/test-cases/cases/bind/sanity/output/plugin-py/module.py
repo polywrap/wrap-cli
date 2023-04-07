@@ -1,7 +1,7 @@
 # NOTE: This is an auto-generated file. All modifications will be overwritten.
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import TypeVar, Generic, TypedDict, Optional
 
 from .types import *
@@ -41,7 +41,7 @@ class ArgsOptionalEnvMethod(TypedDict):
 class ArgsIf(TypedDict):
     p_if: "Else"
 
-class Module(ABC, Generic[TConfig], PluginModule[TConfig]):
+class Module(Generic[TConfig], PluginModule[TConfig]):
     @abstractmethod
     def module_method(
         args: ArgsModuleMethod,

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "sample"
+version = "0.1.0"
+description = ""
+authors = ["Niraj <niraj@polywrap.io>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+polywrap-core = "^0.1.0a14"
+polywrap-plugin = "^0.1.0a14"
+polywrap-manifest = "^0.1.0a14"
