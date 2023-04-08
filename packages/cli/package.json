@@ -30,9 +30,10 @@
     "build:intl": "ts-node ./scripts/generateIntlTypes.ts",
     "install:tracer": "ts-node ./scripts/installTracerInfraModule.ts",
     "lint": "eslint --color -c ../../.eslintrc.js .",
-    "test": "yarn test:unit && yarn test:e2e",
+    "test": "yarn test:unit && yarn test:e2e:p1 && yarn test:e2e:p2",
     "test:unit": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose ./src/__tests__/unit/**/*.spec.ts",
-    "test:e2e": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose ./src/__tests__/e2e/**/*.spec.ts",
+    "test:e2e:p1": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose ./src/__tests__/e2e/p1/**/*.spec.ts",
+    "test:e2e:p2": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose ./src/__tests__/e2e/p2/**/*.spec.ts",
     "test:rust": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose --config ./jest.rs.config.js",
     "test:watch": "yarn test -- --watch"
   },

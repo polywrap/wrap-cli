@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from "path";
 import net from "net";
-import { clearStyle, polywrapCli } from "./utils";
+import { clearStyle, polywrapCli } from "../utils";
 
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import { Commands, runCli } from '@polywrap/cli-js';

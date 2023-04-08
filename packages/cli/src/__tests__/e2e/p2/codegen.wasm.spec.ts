@@ -3,10 +3,10 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
 
-import { polywrapCli } from "./utils";
-import { testCliOutput } from "./helpers/testCliOutput";
-import { testCodegenOutput } from "./helpers/testCodegenOutput";
-import { CodegenCommandOptions } from "../../commands";
+import { polywrapCli } from "../utils";
+import { testCliOutput } from "../helpers/testCliOutput";
+import { testCodegenOutput } from "../helpers/testCodegenOutput";
+import { CodegenCommandOptions } from "../../../commands";
 
 describe("e2e tests for codegen command - wasm/interface project", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/codegen");

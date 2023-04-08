@@ -1,6 +1,6 @@
-import { clearStyle, polywrapCli } from "./utils";
-import { ProjectType, supportedLangs } from "../../commands";
-import { UrlFormat } from "../../lib";
+import { clearStyle, polywrapCli } from "../utils";
+import { ProjectType, supportedLangs } from "../../../commands";
+import { UrlFormat } from "../../../lib";
 
 import { runCli } from "@polywrap/cli-js";
 import rimraf from "rimraf";

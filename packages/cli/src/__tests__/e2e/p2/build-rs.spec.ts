@@ -1,4 +1,4 @@
-import { polywrapCli } from "./utils";
+import { polywrapCli } from "../utils";
 import { Commands } from "@polywrap/cli-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import fs from "fs";

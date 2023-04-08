@@ -1,4 +1,4 @@
-import { clearStyle, polywrapCli } from "./utils";
+import { clearStyle, polywrapCli } from "../utils";
 
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import { Commands, runCli } from "@polywrap/cli-js"

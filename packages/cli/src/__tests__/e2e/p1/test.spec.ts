@@ -2,11 +2,11 @@ import fs from "fs";
 import path from "path";
 import yaml from "yaml";
 
-import { clearStyle, parseOutput, polywrapCli } from "./utils";
+import { clearStyle, parseOutput, polywrapCli } from "../utils";
+import { TestCommandOptions } from "../../../commands";
 
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import { Commands } from "@polywrap/cli-js";
-import { TestCommandOptions } from "../../commands";
 
 jest.setTimeout(100000);
 
