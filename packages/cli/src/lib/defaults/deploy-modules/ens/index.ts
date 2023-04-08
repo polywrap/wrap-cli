@@ -82,7 +82,9 @@ class ENSPublisher implements DeployModule {
     });
 
     if (!resolver.ok) {
-      throw new Error(`Could not get resolver for '${config.domainName}'. ${resolver.error}`);
+      throw new Error(
+        `Could not get resolver for '${config.domainName}'. ${resolver.error}`
+      );
     }
 
     if (resolver.value === "0x0000000000000000000000000000000000000000") {
@@ -105,7 +107,9 @@ class ENSPublisher implements DeployModule {
     });
 
     if (!setContenthashData.ok) {
-      throw new Error(`Could not set contentHash for '${config.domainName}'. ${setContenthashData.error}`);
+      throw new Error(
+        `Could not set contentHash for '${config.domainName}'. ${setContenthashData.error}`
+      );
     }
 
     await invokeWithTimeout(
