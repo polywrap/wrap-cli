@@ -12,18 +12,13 @@
     "build"
   ],
   "scripts": {
-    "build": "yarn build:fast && yarn build:snippets && yarn build:readme && yarn build:wrappers",
+    "build": "yarn build:fast && yarn build:snippets && yarn build:readme",
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "yarn test -- --watch",
     "build:snippets": "tsc --project ./examples/tsconfig.examples.json",
-    "build:readme": "yarn doc-snippets combine",
-    "build:wrappers": "yarn build:test-resolver && yarn copy:wrappers && yarn embed:wrappers",
-    "copy:wrappers": "yarn copy:test-resolver",
-    "embed:wrappers": "ts-node ./scripts/embed-wrappers.ts",
-    "build:test-resolver": "yarn --cwd ./src/__tests__/wrappers/test-resolver build",
-    "copy:test-resolver": "npx rimraf ./src/__tests__/embeds && mkdir -p ./src/__tests__/embeds/test-resolver/ && npx copyfiles -f ./src/__tests__/wrappers/test-resolver/build/* ./src/__tests__/embeds/test-resolver/"
+    "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
     "@polywrap/core-js": "0.10.0-pre.13",
@@ -33,12 +28,13 @@
     "@polywrap/wrap-manifest-types-js": "0.10.0-pre.13"
   },
   "devDependencies": {
+    "@polywrap/cli-js": "0.10.0-pre.13",
     "@polywrap/core-client-js": "0.10.0-pre.13",
-    "base64-to-uint8array": "1.0.0",
-    "copyfiles": "2.4.1",
     "@polywrap/plugin-js": "0.10.0-pre.13",
     "@polywrap/test-cases": "0.10.0-pre.13",
     "@types/jest": "26.0.8",
+    "base64-to-uint8array": "1.0.0",
+    "copyfiles": "2.4.1",
     "doc-snippets": "~1.0.0",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
