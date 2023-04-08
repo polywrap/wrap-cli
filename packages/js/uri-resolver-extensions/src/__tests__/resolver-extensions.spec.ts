@@ -97,7 +97,6 @@ describe("Resolver extensions", () => {
 
     await expectHistory(
       resolutionContext.getHistory(),
-      "resolver-extensions",
       "can-resolve-uri"
     );
 
@@ -142,7 +141,6 @@ describe("Resolver extensions", () => {
 
     await expectHistory(
       resolutionContext.getHistory(),
-      "resolver-extensions",
       "can-resolve-package"
     );
 
@@ -186,7 +184,6 @@ describe("Resolver extensions", () => {
 
     await expectHistory(
       resolutionContext.getHistory(),
-      "resolver-extensions",
       "shows-plugin-extension-error"
     );
 
@@ -232,7 +229,6 @@ args: {
 
     await expectHistory(
       resolutionContext.getHistory(),
-      "resolver-extensions",
       "not-a-match"
     );
 
@@ -277,7 +273,6 @@ args: {
 
     await expectHistory(
       resolutionContext.getHistory(),
-      "resolver-extensions",
       "can-resolve-uri"
     );
 
@@ -322,7 +317,6 @@ args: {
 
     await expectHistory(
       resolutionContext.getHistory(),
-      "resolver-extensions",
       "can-resolve-package"
     );
 
@@ -366,7 +360,6 @@ args: {
 
     await expectHistory(
       resolutionContext.getHistory(),
-      "resolver-extensions",
       "shows-wasm-extension-error"
     );
 
@@ -413,7 +406,6 @@ source: { file: "src/lib.rs", row: 23, col: 20 }`
 
     await expectHistory(
       resolutionContext.getHistory(),
-      "resolver-extensions",
       "not-a-match"
     );
 
@@ -449,7 +441,6 @@ source: { file: "src/lib.rs", row: 23, col: 20 }`
 
     await expectHistory(
       resolutionContext.getHistory(),
-      "resolver-extensions",
       "not-found-extension"
     );
 
