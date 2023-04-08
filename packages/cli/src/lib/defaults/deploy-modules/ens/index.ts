@@ -46,20 +46,23 @@ class ENSPublisher implements DeployModule {
       ? new Wallet(config.privateKey).connect(connectionProvider)
       : undefined;
 
+    // Default connections
+    const connections = new Connections({
+      networks: {
+        [network]: new Connection({
+          provider: config.provider,
+          signer,
+        }),
+      },
+      defaultNetwork: network,
+    });
+
     const clientConfig = new ClientConfigBuilder()
       .addDefaults()
       .addPackage(
         DefaultBundle.plugins.ethereumProviderV1.uri.uri,
         ethereumProviderPlugin({
-          connections: new Connections({
-            networks: {
-              [network]: new Connection({
-                provider: config.provider,
-                signer,
-              }),
-            },
-            defaultNetwork: network,
-          }),
+          connections: connections,
         })
       )
       .build();
@@ -79,7 +82,7 @@ class ENSPublisher implements DeployModule {
     });
 
     if (!resolver.ok) {
-      throw new Error(`Could not get resolver for '${config.domainName}'`);
+      throw new Error(`Could not get resolver for '${config.domainName}'. ${resolver.error}`);
     }
 
     if (resolver.value === "0x0000000000000000000000000000000000000000") {
@@ -102,7 +105,7 @@ class ENSPublisher implements DeployModule {
     });
 
     if (!setContenthashData.ok) {
-      throw new Error(`Could not set contentHash for '${config.domainName}'`);
+      throw new Error(`Could not set contentHash for '${config.domainName}'. ${setContenthashData.error}`);
     }
 
     await invokeWithTimeout(

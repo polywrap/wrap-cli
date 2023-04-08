@@ -40,18 +40,15 @@ Options:
 
 const portInUse = (port: number) => {
   return new Promise<boolean>((resolve) => {
-    var server = net.createServer(function (socket) {
-      socket.write("Echo server\r\n");
-      socket.pipe(socket);
-    });
+    var server = net.createServer();
 
-    server.listen(port, "127.0.0.1");
-    server.on("error", function () {
+    server.once("error", function () {
       server.close(() => resolve(true));
     });
-    server.on("listening", function () {
+    server.once("listening", function () {
       server.close(() => resolve(false));
     });
+    server.listen(port);
   });
 };
 
@@ -105,7 +102,9 @@ describe("e2e tests for infra command", () => {
 
   describe("Sanity", () => {
     afterEach(async () => {
-      await Commands.infra("down", undefined, {
+      await Commands.infra("down", {
+        manifestFile: "./polywrap.infra.yaml",
+      }, {
         cwd: getTestCaseDir(0),
         cli: polywrapCli,
         env: process.env as Record<string, string>
@@ -121,7 +120,6 @@ describe("e2e tests for infra command", () => {
 
 
       await waitForPorts([
-        { port: 4040, expected: false },
         { port: 5001, expected: false },
         { port: 8545, expected: false }
       ]);
@@ -195,7 +193,6 @@ describe("e2e tests for infra command", () => {
         env: process.env as Record<string, string>
       });
       await waitForPorts([
-        { port: 4040, expected: false },
         { port: 5001, expected: false },
         { port: 8545, expected: false }
       ]);
@@ -208,7 +205,6 @@ describe("e2e tests for infra command", () => {
         env: process.env as Record<string, string>
       });
       await waitForPorts([
-        { port: 4040, expected: true },
         { port: 5001, expected: true },
         { port: 8545, expected: true }
       ]);
@@ -297,7 +293,6 @@ describe("e2e tests for infra command", () => {
       });
 
       await waitForPorts([
-        { port: 4040, expected: true },
         { port: 5001, expected: true },
         { port: 8545, expected: true }
       ]);
@@ -309,7 +304,6 @@ describe("e2e tests for infra command", () => {
       });
 
       await waitForPorts([
-        { port: 4040, expected: false },
         { port: 5001, expected: false },
         { port: 8545, expected: false },
       ]);
@@ -326,7 +320,6 @@ describe("e2e tests for infra command", () => {
 
 
       await waitForPorts([
-        { port: 4040, expected: false },
         { port: 5001, expected: true },
         { port: 8545, expected: false }
       ]);

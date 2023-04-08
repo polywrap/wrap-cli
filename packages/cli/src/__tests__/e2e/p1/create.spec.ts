@@ -28,7 +28,7 @@ Commands:
 
 const VERSION =
   fs.readFileSync(
-    path.join(__dirname, "../../../../../VERSION"),
+    path.join(__dirname, "../../../../../../VERSION"),
     "utf-8"
   )
   .replace(/\n/g, "")
