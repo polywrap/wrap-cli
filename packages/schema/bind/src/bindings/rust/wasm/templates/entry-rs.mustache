@@ -19,7 +19,6 @@ pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32, env_size: u32) 
     // Ensure the abort handler is properly setup
     abort::wrap_abort_setup();
 
-    let mut module = Module::__new__();
     let args: InvokeArgs = invoke::wrap_invoke_args(method_size, args_size);
     let result: Vec<u8>;
 
@@ -27,7 +26,7 @@ pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32, env_size: u32) 
         {{#moduleType}}
         {{#methods}}
         "{{name}}" => {
-            result = {{#toLower}}{{name}}{{/toLower}}_wrapped(&mut module, args.args.as_slice(), env_size);
+            result = {{#toLower}}{{name}}{{/toLower}}_wrapped(args.args.as_slice(), env_size);
         }
         {{/methods}}
         {{/moduleType}}

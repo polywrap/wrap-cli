@@ -14,12 +14,12 @@ use crate::{
 {{/methods.length}}
 
 use crate::module::{ModuleTrait, Module};
-{{#hasEnv}}
+{{#envType}}
 use crate::Env;
-{{/hasEnv}}
+{{/envType}}
 
 {{#methods}}
-pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(module: &mut Module, args: &[u8], env_size: u32) -> Vec<u8> {
+pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
     {{#env}}
     {{#required}}
     if env_size == 0 {
@@ -43,14 +43,14 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(module: &mut Module, args: &[u8]
     match deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args) {
         Ok(args) => {
     {{/arguments.length}}
-            let result = module.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(Args{{#toUpper}}{{name}}{{/toUpper}} {
+            let result = Module::{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(Args{{#toUpper}}{{name}}{{/toUpper}} {
                 {{#arguments}}
                 {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}},
                 {{/arguments}}
             }{{#env}}, env{{/env}});
             match result {
                 Ok(res) => {
-            serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}res).unwrap()
+                    serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}res).unwrap()
                 }
                 Err(e) => {
                     panic!("{}", e.to_string())
