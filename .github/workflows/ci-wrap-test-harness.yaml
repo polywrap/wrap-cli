@@ -108,6 +108,9 @@ jobs:
       - name: Set environment variable
         run: echo POLYWRAP_WASM_PATH=$(pwd)/toolchain/packages/wasm >> $GITHUB_ENV
 
+      - name: Modify permissions of cargo registry
+        run: sudo chown -R runner:runner ${HOME}/.cargo/registry
+
       - name: Run wrappers build
         run: cargo run -- -w
         env:
