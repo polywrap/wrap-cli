@@ -19,3 +19,6 @@ wasm-pack.log
 .env
 packages/test-cases/cases/wrappers
 polywrap.deployment.txt
+**/.hypothesis/
+**/.pytest_cache/
+**/__pycache__/
