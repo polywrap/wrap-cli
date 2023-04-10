@@ -13,6 +13,11 @@ describe("Templates", () => {
   // Define the commands to run for each language
   const languageTestCommands: Record<string, Record<string, string>> = {
     typescript: { build: "yarn build", test: "yarn test" },
+    python: {
+      install: "poetry install",
+      build: "poetry build",
+      test: "poetry run pytest",
+    },
     assemblyscript: {
       codegen: "yarn codegen",
       build: "npx polywrap build -m ./polywrap.wasm-linked.yaml",

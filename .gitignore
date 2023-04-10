@@ -22,3 +22,4 @@ polywrap.deployment.txt
 **/.hypothesis/
 **/.pytest_cache/
 **/__pycache__/
+**/dist/
