@@ -9,7 +9,7 @@ import {
   PolywrapManifestLanguage,
   polywrapManifestLanguages,
   polywrapManifestLanguageToBindLanguage,
-  polywrapManifestOverrideCodegenDir
+  polywrapManifestOverrideCodegenDir,
 } from "./manifests";
 import { resetDir } from "../system";
 import { createUUID } from "../helpers";
@@ -149,7 +149,9 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const codegenDirectory = await this.getGenerationDirectory(generationSubPath);
+    const codegenDirectory = await this.getGenerationDirectory(
+      generationSubPath
+    );
 
     // Clean the code generation
     resetDir(codegenDirectory);
@@ -350,9 +352,12 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       // 1. Use what the user has specified
       useDefinedPath ||
       // 2. Check to see if there exists an override for this language type
-      polywrapManifestOverrideCodegenDir(manifest.project.type as PolywrapManifestLanguage) ||
+      polywrapManifestOverrideCodegenDir(
+        manifest.project.type as PolywrapManifestLanguage
+      ) ||
       // 3. If a module path exists, generate within a "wrap" dir next to it
-      (manifest.source.module && path.join(path.dirname(manifest.source.module), "wrap")) ||
+      (manifest.source.module &&
+        path.join(path.dirname(manifest.source.module), "wrap")) ||
       // 4. Use the default
       defaultDir;
 

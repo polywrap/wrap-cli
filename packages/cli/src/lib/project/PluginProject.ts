@@ -5,7 +5,7 @@ import {
   pluginManifestLanguages,
   isPluginManifestLanguage,
   pluginManifestLanguageToBindLanguage,
-  pluginManifestOverrideCodegenDir
+  pluginManifestOverrideCodegenDir,
 } from "./manifests";
 import { resetDir } from "../system";
 
@@ -114,7 +114,9 @@ export class PluginProject extends Project<PluginManifest> {
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const moduleDirectory = await this.getGenerationDirectory(generationSubPath);
+    const moduleDirectory = await this.getGenerationDirectory(
+      generationSubPath
+    );
 
     // Clean the code generation
     resetDir(moduleDirectory);
@@ -141,9 +143,12 @@ export class PluginProject extends Project<PluginManifest> {
       // 1. Use what the user has specified
       useDefinedPath ||
       // 2. Check to see if there exists an override for this language type
-      pluginManifestOverrideCodegenDir(manifest.project.type as PluginManifestLanguage) ||
+      pluginManifestOverrideCodegenDir(
+        manifest.project.type as PluginManifestLanguage
+      ) ||
       // 3. If a module path exists, generate within a "wrap" dir next to it
-      (manifest.source.module && path.join(path.dirname(manifest.source.module), "wrap")) ||
+      (manifest.source.module &&
+        path.join(path.dirname(manifest.source.module), "wrap")) ||
       // 4. Use the default
       defaultDir;
 
