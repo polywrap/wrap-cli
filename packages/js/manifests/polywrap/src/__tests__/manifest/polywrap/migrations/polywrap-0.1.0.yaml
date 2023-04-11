@@ -8,4 +8,4 @@ meta: ./polywrap.meta.yaml
 deploy: ./polywrap.deploy.yaml
 import_redirects:
   - uri: "wrap://ens/some.domain.eth"
-    schema: ../some/path
+    schema: ../some/path/schema.graphql
