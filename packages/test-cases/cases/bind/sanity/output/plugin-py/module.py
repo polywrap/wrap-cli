@@ -8,6 +8,7 @@ from .types import *
 
 from polywrap_core import InvokerClient, UriPackageOrWrapper
 from polywrap_plugin import PluginModule
+from polywrap_msgpack import GenericMap
 
 TConfig = TypeVar("TConfig")
 
@@ -44,6 +45,7 @@ class ArgsIf(TypedDict):
 class Module(Generic[TConfig], PluginModule[TConfig]):
     @abstractmethod
     def module_method(
+        self,
         args: ArgsModuleMethod,
         client: InvokerClient[UriPackageOrWrapper],
         env: None
@@ -52,6 +54,7 @@ class Module(Generic[TConfig], PluginModule[TConfig]):
 
     @abstractmethod
     def object_method(
+        self,
         args: ArgsObjectMethod,
         client: InvokerClient[UriPackageOrWrapper],
         env: Env
@@ -60,6 +63,7 @@ class Module(Generic[TConfig], PluginModule[TConfig]):
 
     @abstractmethod
     def optional_env_method(
+        self,
         args: ArgsOptionalEnvMethod,
         client: InvokerClient[UriPackageOrWrapper],
         env: Optional[Env] = None
@@ -68,6 +72,7 @@ class Module(Generic[TConfig], PluginModule[TConfig]):
 
     @abstractmethod
     def p_if(
+        self,
         args: ArgsIf,
         client: InvokerClient[UriPackageOrWrapper],
         env: None

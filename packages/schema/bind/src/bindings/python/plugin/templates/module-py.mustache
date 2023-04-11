@@ -8,6 +8,7 @@ from .types import *
 
 from polywrap_core import InvokerClient, UriPackageOrWrapper
 from polywrap_plugin import PluginModule
+from polywrap_msgpack import GenericMap
 
 TConfig = TypeVar("TConfig")
 
@@ -27,6 +28,7 @@ class Module(Generic[TConfig], PluginModule[TConfig]):
     {{#methods}}
     @abstractmethod
     def {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(
+        self,
         args: Args{{#toUpper}}{{name}}{{/toUpper}},
         client: InvokerClient[UriPackageOrWrapper],
         {{^env}}env: None{{/env}}{{#env}}env: {{^required}}Optional[{{/required}}Env{{^required}}] = None{{/required}}{{/env}}
