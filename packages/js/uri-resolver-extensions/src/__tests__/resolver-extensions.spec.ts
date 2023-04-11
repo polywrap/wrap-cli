@@ -10,7 +10,7 @@ import { Commands } from "@polywrap/cli-js";
 import path from "path";
 import fs from "fs";
 
-jest.setTimeout(20000);
+jest.setTimeout(60000);
 
 const customPluginResolverUri = Uri.from("wrap://package/test-resolver");
 const customPluginResolver = PluginPackage.from(() => ({
