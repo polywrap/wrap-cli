@@ -14,7 +14,8 @@ describe("Templates", () => {
   const languageTestCommands: Record<string, Record<string, string>> = {
     typescript: { build: "yarn build", test: "yarn test" },
     python: {
-      install: "poetry install",
+      install: "poetry install && yarn",
+      codegen: "npx polywrap codegen",
       build: "poetry build",
       test: "poetry run pytest",
     },
