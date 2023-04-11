@@ -97,6 +97,12 @@ export class AppProject extends Project<AppManifest> {
     return manifest.source.import_abis || [];
   }
 
+  public async getGenerationDirectory(
+    generationSubPath?: string
+  ): Promise<string> {
+    return this._getGenerationDirectory(generationSubPath);
+  }
+
   public async generateSchemaBindings(
     abi: WrapAbi,
     generationSubPath?: string
@@ -104,14 +110,23 @@ export class AppProject extends Project<AppManifest> {
     return bindSchema({
       projectName: await this.getName(),
       abi,
-      outputDirAbs: this._getGenerationDirectory(generationSubPath),
+      outputDirAbs: await this.getGenerationDirectory(generationSubPath),
       bindLanguage: appManifestLanguageToBindLanguage(
         await this.getManifestLanguage()
       ),
     });
   }
 
-  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
-    return path.join(this.getManifestDir(), generationSubPath);
+  private _getGenerationDirectory(
+    useDefinedPath: string | undefined,
+    defaultDir = "./src/wrap"
+  ): string {
+    const genSubPath =
+      // 1. Use what the user has specified
+      useDefinedPath ||
+      // 2. Use the default
+      defaultDir;
+
+    return path.join(this.getManifestDir(), genSubPath);
   }
 }

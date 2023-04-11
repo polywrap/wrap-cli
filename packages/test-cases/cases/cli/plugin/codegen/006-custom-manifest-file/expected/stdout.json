@@ -1,6 +1,6 @@
 {
   "stdout": [
-    "Manifest loaded from ./polywrap.custom.plugin.yaml",
+    "Manifest loaded from ./polywrap.custom.yaml",
     "Generate types",
     "Types were generated successfully"
   ],

@@ -5,6 +5,7 @@ import {
   pluginManifestLanguages,
   isPluginManifestLanguage,
   pluginManifestLanguageToBindLanguage,
+  pluginManifestOverrideCodegenDir,
 } from "./manifests";
 import { resetDir } from "../system";
 
@@ -101,12 +102,21 @@ export class PluginProject extends Project<PluginManifest> {
     return manifest.source.import_abis || [];
   }
 
+  public async getGenerationDirectory(
+    generationSubPath?: string
+  ): Promise<string> {
+    const manifest = await this.getManifest();
+    return this._getGenerationDirectory(generationSubPath, manifest);
+  }
+
   public async generateSchemaBindings(
     abi: WrapAbi,
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const moduleDirectory = this._getGenerationDirectory(generationSubPath);
+    const moduleDirectory = await this.getGenerationDirectory(
+      generationSubPath
+    );
 
     // Clean the code generation
     resetDir(moduleDirectory);
@@ -124,7 +134,24 @@ export class PluginProject extends Project<PluginManifest> {
     return bindSchema(options);
   }
 
-  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
-    return path.join(this.getManifestDir(), generationSubPath);
+  private _getGenerationDirectory(
+    useDefinedPath: string | undefined,
+    manifest: PluginManifest,
+    defaultDir = "./src/wrap"
+  ): string {
+    const genSubPath =
+      // 1. Use what the user has specified
+      useDefinedPath ||
+      // 2. Check to see if there exists an override for this language type
+      pluginManifestOverrideCodegenDir(
+        manifest.project.type as PluginManifestLanguage
+      ) ||
+      // 3. If a module path exists, generate within a "wrap" dir next to it
+      (manifest.source.module &&
+        path.join(path.dirname(manifest.source.module), "wrap")) ||
+      // 4. Use the default
+      defaultDir;
+
+    return path.join(this.getManifestDir(), genSubPath);
   }
 }

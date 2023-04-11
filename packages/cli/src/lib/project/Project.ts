@@ -66,6 +66,10 @@ export abstract class Project<TManifest extends AnyProjectManifest> {
     PolywrapManifest["source"]["import_abis"]
   >;
 
+  public abstract getGenerationDirectory(
+    generationSubPath?: string
+  ): Promise<string>;
+
   public abstract generateSchemaBindings(
     abi: Abi,
     generationSubPath?: string
