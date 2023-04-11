@@ -1,11 +1,11 @@
-import { clearStyle, polywrapCli } from "./utils";
+import { clearStyle, polywrapCli } from "../utils";
 
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
+import { Commands, runCli } from "@polywrap/cli-js";
 import path from "path";
 import fs from "fs";
 import os from "os";
 import rimraf from "rimraf";
-import { Commands, runCli } from "@polywrap/cli-js";
 
 const HELP = `Usage: polywrap codegen|g [options]
 

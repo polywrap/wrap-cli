@@ -1,4 +1,5 @@
-import { clearStyle, polywrapCli } from "./utils";
+import { clearStyle, polywrapCli } from "../utils";
+import { DocgenCommandOptions } from "../../../commands";
 
 import { Commands, runCli } from "@polywrap/cli-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
@@ -7,7 +8,6 @@ import fs from "fs";
 import os from "os";
 import rimraf from "rimraf";
 import { compareSync } from "dir-compare";
-import { DocgenCommandOptions } from "../../commands";
 
 const HELP = `Usage: polywrap docgen|o <action> [options]
 
