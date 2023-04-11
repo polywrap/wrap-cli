@@ -217,5 +217,11 @@ jobs:
           rm -rf packages/test-cases/cases/wrappers
           mv wrappers packages/test-cases/cases
 
-      - name: Test
-        run: yarn test:cli
+      - name: Test cli:unit
+        run: yarn test:cli:unit
+
+      - name: Test cli:e2e:p1
+        run: yarn test:cli:e2e:p1
+
+      - name: Test cli:e2e:p2
+        run: yarn test:cli:e2e:p2

@@ -1,12 +1,12 @@
-import { clearStyle, polywrapCli } from "./utils";
-import { testBuildOutput } from "./helpers/testBuildOutput";
+import { clearStyle, polywrapCli } from "../utils";
+import { testBuildOutput } from "../helpers/testBuildOutput";
+import { BuildCommandOptions } from "../../../commands";
 
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import { Commands, runCli } from "@polywrap/cli-js";
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { BuildCommandOptions } from "../../commands";
 
 const HELP = `Usage: polywrap build|b [options]
 

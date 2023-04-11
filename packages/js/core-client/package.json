@@ -16,7 +16,6 @@
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose=true --detectOpenHandles --forceExit",
-    "test:ci": "yarn test",
     "build:snippets": "tsc --project ./examples/tsconfig.examples.json",
     "build:readme": "yarn doc-snippets combine"
   },

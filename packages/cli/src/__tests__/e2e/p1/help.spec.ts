@@ -1,4 +1,4 @@
-import { clearStyle, polywrapCli } from "./utils";
+import { clearStyle, polywrapCli } from "../utils";
 
 import { runCli } from "@polywrap/cli-js";
 
@@ -20,29 +20,18 @@ Commands:
   help [command]               display help for command
 `;
 
-describe("e2e tests for no command", () => {
-  
-  it("Should throw error for unrecognized command", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCli({
-      args: ["unknown"],
-      config: {
-        cli: polywrapCli
-      }
-    });
-    expect(code).toEqual(1);
-    expect(error).toBe(`error: unknown command 'unknown'\n`);
-    expect(output).toEqual(``);
-  });
+describe("e2e tests for no help", () => {
 
-  it("Should let the user to type polywrap help", async () => {
+  it("Should display the help content", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCli({
-      args: [],
+      args: ["help"],
       config: {
-        cli: polywrapCli
+        cli: polywrapCli,
       }
     });
-    expect(code).toEqual(1);
-    expect(clearStyle(error)).toBe(clearStyle(HELP));
-    expect(output).toEqual(``);
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(clearStyle(output)).toEqual(HELP);
   });
 });
