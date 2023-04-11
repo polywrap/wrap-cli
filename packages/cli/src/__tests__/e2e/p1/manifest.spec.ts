@@ -1,4 +1,5 @@
-import { clearStyle, polywrapCli } from "./utils";
+import { clearStyle, polywrapCli } from "../utils";
+import { ManifestType } from "../../../commands";
 
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import { Commands, runCli } from "@polywrap/cli-js"
@@ -6,7 +7,6 @@ import fs from "fs";
 import fse from "fs-extra";
 import path from "path";
 import rimraf from "rimraf";
-import { ManifestType } from "../../commands";
 
 const HELP = `Usage: polywrap manifest|m [options] [command]
 

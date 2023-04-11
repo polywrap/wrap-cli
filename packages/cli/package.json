@@ -30,10 +30,13 @@
     "build:intl": "ts-node ./scripts/generateIntlTypes.ts",
     "install:tracer": "ts-node ./scripts/installTracerInfraModule.ts",
     "lint": "eslint --color -c ../../.eslintrc.js .",
-    "test": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
-    "test:rust": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose --config ./jest.rs.config.js",
-    "test:ci": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "cross-env TEST=true jest --watch --passWithNoTests --verbose"
+    "test": "yarn test:unit && yarn test:e2e:p1 && yarn test:e2e:p2",
+    "test:cmd": "jest --passWithNoTests --runInBand --verbose --forceExit",
+    "test:unit": "yarn test:cmd -- ./src/__tests__/unit/**/*.spec.ts",
+    "test:e2e:p1": "yarn test:cmd -- ./src/__tests__/e2e/p1/*.spec.ts",
+    "test:e2e:p2": "yarn test:cmd -- ./src/__tests__/e2e/p2/*.spec.ts",
+    "test:rust": "yarn test:cmd -- --config ./jest.rs.config.js",
+    "test:watch": "yarn test -- --watch"
   },
   "resolutions": {
     "colors": "1.4.0"
@@ -90,7 +93,6 @@
     "@types/node": "^18.14.6",
     "@types/prettier": "2.6.0",
     "@types/rimraf": "3.0.0",
-    "cross-env": "7.0.3",
     "dir-compare": "3.3.0",
     "eslint-plugin-formatjs": "2.12.7",
     "jest": "26.6.3",

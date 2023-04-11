@@ -49,20 +49,23 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
       ? new Wallet(config.privateKey).connect(connectionProvider)
       : undefined;
 
+    // Default connections
+    const connections = new Connections({
+      networks: {
+        [network]: new Connection({
+          provider: config.provider,
+          signer,
+        }),
+      },
+      defaultNetwork: network,
+    });
+
     const clientConfig = new ClientConfigBuilder()
       .addDefaults()
       .addPackage(
         DefaultBundle.plugins.ethereumProviderV1.uri.uri,
         ethereumProviderPlugin({
-          connections: new Connections({
-            networks: {
-              [network]: new Connection({
-                provider: config.provider,
-                signer,
-              }),
-            },
-            defaultNetwork: network,
-          }),
+          connections: connections,
         })
       )
       .build();
@@ -80,7 +83,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
     });
 
     if (!signerAddress.ok) {
-      throw new Error("Could not get signer");
+      throw new Error("Could not get signer. " + signerAddress.error);
     }
 
     const registerData = await client.invoke<
