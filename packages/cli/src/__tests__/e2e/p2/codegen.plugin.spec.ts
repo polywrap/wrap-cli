@@ -1,13 +1,15 @@
+import { testCliOutput } from "../helpers/testCliOutput";
+import { testCodegenOutput } from "../helpers/testCodegenOutput";
+import { CodegenCommandOptions } from "../../../commands";
+
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import { Commands } from "@polywrap/cli-js";
+
 import path from "path";
 import fs from "fs";
-import { testCliOutput } from "./helpers/testCliOutput";
-import { testBuildOutput } from "./helpers/testBuildOutput";
-import { BuildCommandOptions } from "../../commands";
 
-describe("e2e tests for build command - plugin project", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin/build-cmd");
+describe("e2e tests for codegen command - plugin project", () => {
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin/codegen");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
@@ -20,26 +22,26 @@ describe("e2e tests for build command - plugin project", () => {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 
-      let buildDir = path.join(testCaseDir, "build");
+      let codegenDir = path.join(testCaseDir, "src", "wrap");
+      let args: CodegenCommandOptions;
       let cmdFile = path.join(testCaseDir, "cmd.json");
-      let args: BuildCommandOptions;
       if (fs.existsSync(cmdFile)) {
         const cmdConfig = JSON.parse(fs.readFileSync(cmdFile, "utf-8"));
-        args = cmdConfig;
+        if (cmdConfig) {
+          args = cmdConfig;
+        }
 
-        if (args.buildDir) {
-          buildDir = path.join(testCaseDir, cmdConfig.buildDir);
+        if (cmdConfig.codegenDir) {
+          codegenDir = path.join(testCaseDir, cmdConfig.codegenDir);
         }
       }
 
       test(testCaseName, async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await Commands.build({
-          ...args,
-        }, {
+        const { exitCode: code, stdout: output, stderr: error } = await Commands.codegen(args, {
           cwd: testCaseDir,
         });
         testCliOutput(testCaseDir, code, output, error);
-        testBuildOutput(testCaseDir, buildDir);
+        testCodegenOutput(testCaseDir, codegenDir);
       });
     }
   });

@@ -1,9 +1,0 @@
-{
-  "name": "@polywrap/uri-resolvers-js-test-resolver",
-  "version": "0.1.0",
-  "scripts": {
-    "build": "yarn codegen && node ../../../../../../../dependencies/node_modules/polywrap/bin/polywrap build",
-    "codegen": "node ../../../../../../../dependencies/node_modules/polywrap/bin/polywrap codegen",
-    "deploy": "node ../../../../../../../dependencies/node_modules/polywrap/bin/polywrap -o deployment.json"
-  }
-}

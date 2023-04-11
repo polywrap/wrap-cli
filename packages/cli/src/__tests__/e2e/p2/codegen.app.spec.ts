@@ -1,12 +1,12 @@
-import { polywrapCli } from "./utils";
+import { polywrapCli } from "../utils";
+import { testCliOutput } from "../helpers/testCliOutput";
+import { testCodegenOutput } from "../helpers/testCodegenOutput";
+import { CodegenCommandOptions } from "../../../commands";
 
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
+import { Commands } from "@polywrap/cli-js";
 import path from "path";
 import fs from "fs";
-import { testCliOutput } from "./helpers/testCliOutput";
-import { testCodegenOutput } from "./helpers/testCodegenOutput";
-import { Commands } from "@polywrap/cli-js";
-import { CodegenCommandOptions } from "../../commands";
 
 describe("e2e tests for codegen command - app project", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "app", "codegen");

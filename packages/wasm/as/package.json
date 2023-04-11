@@ -18,7 +18,7 @@
     "build": "asc ./assembly/index.ts -o ./build/index.wasm -d ./build/index.d.ts",
     "lint": "eslint --color assembly/",
     "test": "asp --verbose",
-    "test:ci": "asp --summary"
+    "test:ci": "yarn test"
   },
   "dependencies": {
     "@web3api/assemblyscript-json": "1.2.0",

@@ -15,8 +15,7 @@
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
-    "test:ci": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose"
+    "test:watch": "yarn test -- --watch"
   },
   "dependencies": {
     "@dorgjelli/graphql-schema-cycles": "1.1.4",

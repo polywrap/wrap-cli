@@ -1,11 +1,11 @@
-import { clearStyle, polywrapCli } from "./utils";
+import { clearStyle, polywrapCli } from "../utils";
 
 import { Commands, ETH_ENS_IPFS_MODULE_CONSTANTS } from "@polywrap/cli-js";
+import { Uri } from "@polywrap/core-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
 import yaml from "yaml";
-import { Uri } from "@polywrap/core-js";
 
 const HELP = `Usage: polywrap deploy|d [options]
 
@@ -160,7 +160,7 @@ describe("e2e tests for deploy command", () => {
   });
 
   it("Should output the results to a file if -o is passed", async () => {
-    await Commands.deploy({
+    const yamlRes = await Commands.deploy({
       outputFile: "./output.yaml",
     }, {
       cwd: getTestCaseDir(0),
@@ -168,13 +168,17 @@ describe("e2e tests for deploy command", () => {
       env: process.env as Record<string, string>
     });
 
-    await Commands.deploy({
+    expect(yamlRes.exitCode).toBe(0);
+
+    const jsonRes = await Commands.deploy({
       outputFile: "./output.json",
     }, {
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
       env: process.env as Record<string, string>
     });
+
+    expect(jsonRes.exitCode).toBe(0);
 
     const yamlOutputFileContents = JSON.parse(
       JSON.stringify(
