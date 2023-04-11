@@ -1,6 +1,6 @@
-import { clearStyle, polywrapCli } from "./utils";
-import { ProjectType, supportedLangs } from "../../commands";
-import { UrlFormat } from "../../lib";
+import { clearStyle, polywrapCli } from "../utils";
+import { ProjectType, supportedLangs } from "../../../commands";
+import { UrlFormat } from "../../../lib";
 
 import { runCli } from "@polywrap/cli-js";
 import rimraf from "rimraf";
@@ -28,7 +28,7 @@ Commands:
 
 const VERSION =
   fs.readFileSync(
-    path.join(__dirname, "../../../../../VERSION"),
+    path.join(__dirname, "../../../../../../VERSION"),
     "utf-8"
   )
   .replace(/\n/g, "")

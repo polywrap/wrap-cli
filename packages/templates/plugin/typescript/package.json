@@ -8,8 +8,7 @@
     "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.json",
     "codegen": "npx polywrap codegen",
     "test": "jest --passWithNoTests --runInBand --verbose",
-    "test:ci": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose"
+    "test:watch": "yarn test -- --watch"
   },
   "dependencies": {
     "@polywrap/core-js": "0.10.0-pre.13",
