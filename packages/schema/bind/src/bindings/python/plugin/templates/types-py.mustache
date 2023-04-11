@@ -9,20 +9,25 @@ from polywrap_msgpack import GenericMap
 
 
 ### Env START ###
+
 {{#envType}}
-class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(TypedDict):
+{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} = TypedDict("{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}", {
     {{#properties}}
-    {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toPython}}{{toGraphQLType}}{{/toPython}}
+    "{{name}}": {{#toPython}}{{toGraphQLType}}{{/toPython}},
     {{/properties}}
+})
+
 {{/envType}}
 ### Env END ###
 
 ### Objects START ###
+
 {{#objectTypes}}
-class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(TypedDict):
+{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} = TypedDict("{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}", {
     {{#properties}}
-    {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toPython}}{{toGraphQLType}}{{/toPython}}
+    "{{name}}": {{#toPython}}{{toGraphQLType}}{{/toPython}},
     {{/properties}}
+})
 
 {{/objectTypes}}
 ### Objects END ###
@@ -31,8 +36,15 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(Typed
 {{#enumTypes}}
 class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEnum):
     {{#constants}}
-    {{#detectKeyword}}{{.}}{{/detectKeyword}} = auto() - 1
+    {{#detectKeyword}}{{.}}{{/detectKeyword}} = auto() - 1, "{{.}}"
     {{/constants}}
+
+    def __new__(cls, value: int, *aliases: str):
+        obj = int.__new__(cls)
+        obj._value_ = value
+        for alias in aliases:
+            cls._value2member_map_[alias] = obj
+        return obj
 
 {{/enumTypes}}
 ### Enums END ###
@@ -41,10 +53,11 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEn
 
 {{#importedObjectTypes}}
 # URI: "{{uri}}" #
-class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(TypedDict):
+{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} = TypedDict("{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}", {
     {{#properties}}
-    {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toPython}}{{toGraphQLType}}{{/toPython}}
+    "{{name}}": {{#toPython}}{{toGraphQLType}}{{/toPython}},
     {{/properties}}
+})
 
 {{/importedObjectTypes}}
 ### Imported Objects END ###
@@ -58,6 +71,13 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEn
     {{#detectKeyword}}{{.}}{{/detectKeyword}} = auto() - 1
     {{/constants}}
 
+    def __new__(cls, value: int, *aliases: str):
+        obj = int.__new__(cls)
+        obj._value_ = value
+        for alias in aliases:
+            cls._value2member_map_[alias] = obj
+        return obj
+
 {{/importedEnumTypes}}
 
 ### Imported Enums END ###
@@ -67,10 +87,11 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEn
 {{#importedModuleTypes}}
 {{#methods}}
 # URI: "{{parent.uri}}" #
-class {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}}(TypedDict):
+{{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}} = TypedDict("{{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}}", {
     {{#arguments}}
-    {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toPython}}{{toGraphQLType}}{{/toPython}}
+    "{{name}}": {{#toPython}}{{toGraphQLType}}{{/toPython}},
     {{/arguments}}
+})
 
 {{/methods}}
 # URI: "{{uri}}" #

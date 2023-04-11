@@ -13,36 +13,49 @@ from polywrap_msgpack import GenericMap
 TConfig = TypeVar("TConfig")
 
 
+ArgsModuleMethod = TypedDict("ArgsModuleMethod", {
+    "str": str,
+    "optStr": Optional[str],
+    "en": "CustomEnum",
+    "optEnum": Optional["CustomEnum"],
+    "enumArray": list["CustomEnum"],
+    "optEnumArray": Optional[list[Optional["CustomEnum"]]],
+    "map": GenericMap[str, int],
+    "mapOfArr": GenericMap[str, list[int]],
+    "mapOfMap": GenericMap[str, GenericMap[str, int]],
+    "mapOfObj": GenericMap[str, "AnotherType"],
+    "mapOfArrOfObj": GenericMap[str, list["AnotherType"]]
+})
 
-class ArgsModuleMethod(TypedDict):
-    p_str: str
-    opt_str: Optional[str]
-    en: "CustomEnum"
-    opt_enum: Optional["CustomEnum"]
-    enum_array: list["CustomEnum"]
-    opt_enum_array: Optional[list[Optional["CustomEnum"]]]
-    p_map: GenericMap[str, int]
-    map_of_arr: GenericMap[str, list[int]]
-    map_of_map: GenericMap[str, GenericMap[str, int]]
-    map_of_obj: GenericMap[str, "AnotherType"]
-    map_of_arr_of_obj: GenericMap[str, list["AnotherType"]]
+ArgsObjectMethod = TypedDict("ArgsObjectMethod", {
+    "object": "AnotherType",
+    "optObject": Optional["AnotherType"],
+    "objectArray": list["AnotherType"],
+    "optObjectArray": Optional[list[Optional["AnotherType"]]]
+})
 
-class ArgsObjectMethod(TypedDict):
-    p_object: "AnotherType"
-    opt_object: Optional["AnotherType"]
-    object_array: list["AnotherType"]
-    opt_object_array: Optional[list[Optional["AnotherType"]]]
+ArgsOptionalEnvMethod = TypedDict("ArgsOptionalEnvMethod", {
+    "object": "AnotherType",
+    "optObject": Optional["AnotherType"],
+    "objectArray": list["AnotherType"],
+    "optObjectArray": Optional[list[Optional["AnotherType"]]]
+})
 
-class ArgsOptionalEnvMethod(TypedDict):
-    p_object: "AnotherType"
-    opt_object: Optional["AnotherType"]
-    object_array: list["AnotherType"]
-    opt_object_array: Optional[list[Optional["AnotherType"]]]
+ArgsIf = TypedDict("ArgsIf", {
+    "if": "Else"
+})
 
-class ArgsIf(TypedDict):
-    p_if: "Else"
 
 class Module(Generic[TConfig], PluginModule[TConfig]):
+    def __new__(cls, *args, **kwargs):
+        # NOTE: This is used to dynamically add WRAP ABI compatible methods to the class
+        instance = super().__new__(cls)
+        setattr(instance, "moduleMethod", instance.module_method)
+        setattr(instance, "objectMethod", instance.object_method)
+        setattr(instance, "optionalEnvMethod", instance.optional_env_method)
+        setattr(instance, "if", instance.r_if)
+        return instance
+
     @abstractmethod
     def module_method(
         self,
@@ -71,7 +84,7 @@ class Module(Generic[TConfig], PluginModule[TConfig]):
         pass
 
     @abstractmethod
-    def p_if(
+    def r_if(
         self,
         args: ArgsIf,
         client: InvokerClient[UriPackageOrWrapper],
