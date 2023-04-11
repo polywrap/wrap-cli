@@ -15,6 +15,7 @@ describe("Templates", () => {
     typescript: { build: "yarn build", test: "yarn test" },
     python: {
       install: "poetry install",
+      codegen: "npx polywrap codegen",
       build: "poetry build",
       test: "poetry run pytest",
     },
