@@ -49,7 +49,6 @@ jobs:
 
   Test-Core:
     runs-on: ubuntu-latest
-    needs: CI-WRAP-Test-Harness
     timeout-minutes: 60
     if: ${{ always() }}
     steps:
@@ -65,7 +64,18 @@ jobs:
         with:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
 
-      - uses: actions/setup-go@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: '1.4.2'
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
         with:
           go-version: '^1.13.1'
 
@@ -91,19 +101,6 @@ jobs:
 
       - name: Build
         run: yarn build
-
-      - name: Get updated wrappers
-        if: ${{ needs.CI-WRAP-Test-Harness.outputs.rebuild_required == 'true' }}
-        uses: actions/download-artifact@v3
-        id: get-wrappers
-        with:
-          name: rebuilt-wrappers
-          path: ./wrappers
-
-      - if: ${{ needs.CI-WRAP-Test-Harness.outputs.rebuild_required == 'true' }}
-        run: |
-          rm -rf packages/test-cases/cases/wrappers
-          mv wrappers packages/test-cases/cases
 
       - name: Test
         run: yarn test:core
