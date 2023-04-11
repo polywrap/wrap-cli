@@ -1,4 +1,6 @@
 {
+  "name": "templates-plugin-python",
+  "private": true,
   "dependencies": {
     "polywrap": "0.10.0-pre.13"
   }

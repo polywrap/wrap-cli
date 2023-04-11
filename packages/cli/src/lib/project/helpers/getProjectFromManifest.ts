@@ -37,8 +37,6 @@ export async function getProjectFromManifest(
 
   let project: Project<AnyProjectManifest> | undefined = undefined;
 
-  console.log("HERER", isPluginManifestLanguage(type));
-
   if (isPolywrapManifestLanguage(type)) {
     project = new PolywrapProject({
       rootDir: path.dirname(manifestPath),

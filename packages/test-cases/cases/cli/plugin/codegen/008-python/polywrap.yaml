@@ -3,5 +3,5 @@ project:
   name: Sample
   type: plugin/python
 source:
-  schema: ./src/schema.graphql
+  schema: ./schema.graphql
   module: ./sample/__init__.py
