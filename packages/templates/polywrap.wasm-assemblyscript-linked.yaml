@@ -6,4 +6,4 @@ source:
   module: ./src/index.ts
   schema: ./src/schema.graphql
 extensions:
-  build: ./polywrap.wasm-linked.build.yaml
+  build: ./polywrap.wasm-assemblyscript-linked.build.yaml
