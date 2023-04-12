@@ -20,10 +20,10 @@ use crate::{
 use crate::module::{ModuleTrait, Module};
 use crate::Env;
 
-pub fn module_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) -> Vec<u8> {
+pub fn module_method_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
     match deserialize_module_method_args(args) {
         Ok(args) => {
-            let result = module.module_method(ArgsModuleMethod {
+            let result = Module::module_method(ArgsModuleMethod {
                 str: args.str,
                 opt_str: args.opt_str,
                 en: args.en,
@@ -38,7 +38,7 @@ pub fn module_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) ->
             });
             match result {
                 Ok(res) => {
-            serialize_module_method_result(&res).unwrap()
+                    serialize_module_method_result(&res).unwrap()
                 }
                 Err(e) => {
                     panic!("{}", e.to_string())
@@ -51,7 +51,7 @@ pub fn module_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) ->
     }
 }
 
-pub fn object_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) -> Vec<u8> {
+pub fn object_method_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
     if env_size == 0 {
         panic!("Environment is not set, and it is required by method 'objectMethod'");
     }
@@ -61,7 +61,7 @@ pub fn object_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) ->
 
     match deserialize_object_method_args(args) {
         Ok(args) => {
-            let result = module.object_method(ArgsObjectMethod {
+            let result = Module::object_method(ArgsObjectMethod {
                 object: args.object,
                 opt_object: args.opt_object,
                 object_array: args.object_array,
@@ -69,7 +69,7 @@ pub fn object_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) ->
             }, env);
             match result {
                 Ok(res) => {
-            serialize_object_method_result(&res).unwrap()
+                    serialize_object_method_result(&res).unwrap()
                 }
                 Err(e) => {
                     panic!("{}", e.to_string())
@@ -82,7 +82,7 @@ pub fn object_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) ->
     }
 }
 
-pub fn optional_env_method_wrapped(module: &mut Module, args: &[u8], env_size: u32) -> Vec<u8> {
+pub fn optional_env_method_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
     let mut env: Option<Env> = None;
     if env_size > 0 {
       let env_buf = wrap_load_env(env_size);
@@ -91,7 +91,7 @@ pub fn optional_env_method_wrapped(module: &mut Module, args: &[u8], env_size: u
 
     match deserialize_optional_env_method_args(args) {
         Ok(args) => {
-            let result = module.optional_env_method(ArgsOptionalEnvMethod {
+            let result = Module::optional_env_method(ArgsOptionalEnvMethod {
                 object: args.object,
                 opt_object: args.opt_object,
                 object_array: args.object_array,
@@ -99,7 +99,7 @@ pub fn optional_env_method_wrapped(module: &mut Module, args: &[u8], env_size: u
             }, env);
             match result {
                 Ok(res) => {
-            serialize_optional_env_method_result(&res).unwrap()
+                    serialize_optional_env_method_result(&res).unwrap()
                 }
                 Err(e) => {
                     panic!("{}", e.to_string())
@@ -112,15 +112,15 @@ pub fn optional_env_method_wrapped(module: &mut Module, args: &[u8], env_size: u
     }
 }
 
-pub fn if_wrapped(module: &mut Module, args: &[u8], env_size: u32) -> Vec<u8> {
+pub fn if_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
     match deserialize_if_args(args) {
         Ok(args) => {
-            let result = module._if(ArgsIf {
+            let result = Module::_if(ArgsIf {
                 _if: args._if,
             });
             match result {
                 Ok(res) => {
-            serialize_if_result(&res).unwrap()
+                    serialize_if_result(&res).unwrap()
                 }
                 Err(e) => {
                     panic!("{}", e.to_string())

@@ -16,22 +16,21 @@ pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32, env_size: u32) 
     // Ensure the abort handler is properly setup
     abort::wrap_abort_setup();
 
-    let mut module = Module::__new__();
     let args: InvokeArgs = invoke::wrap_invoke_args(method_size, args_size);
     let result: Vec<u8>;
 
     match args.method.as_str() {
         "moduleMethod" => {
-            result = module_method_wrapped(&mut module, args.args.as_slice(), env_size);
+            result = module_method_wrapped(args.args.as_slice(), env_size);
         }
         "objectMethod" => {
-            result = object_method_wrapped(&mut module, args.args.as_slice(), env_size);
+            result = object_method_wrapped(args.args.as_slice(), env_size);
         }
         "optionalEnvMethod" => {
-            result = optional_env_method_wrapped(&mut module, args.args.as_slice(), env_size);
+            result = optional_env_method_wrapped(args.args.as_slice(), env_size);
         }
         "if" => {
-            result = if_wrapped(&mut module, args.args.as_slice(), env_size);
+            result = if_wrapped(args.args.as_slice(), env_size);
         }
         _ => {
             invoke::wrap_invoke_error(format!("Could not find invoke function {}", args.method));
