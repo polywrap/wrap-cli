@@ -8,7 +8,7 @@ import {
   AnyDefinition,
   ModuleDefinition,
   EnvDefinition,
-  Abi
+  Abi,
 } from "@polywrap/wrap-manifest-types-js";
 import { AbiTransforms } from "@polywrap/schema-parse";
 
@@ -87,9 +87,7 @@ export function propertyDeps(): AbiTransforms {
           };
 
           const isKnownType = (name: string) =>
-            isBaseType(name) ||
-            isBuiltInType(name) ||
-            name === rootType;
+            isBaseType(name) || isBuiltInType(name) || name === rootType;
 
           // if type is map and the value is custom,
           // we need to add it into property dependency
