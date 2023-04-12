@@ -1,0 +1,53 @@
+# NOTE: This is an auto-generated file. All modifications will be overwritten.
+from __future__ import annotations
+
+from abc import abstractmethod
+from typing import TypeVar, Generic, TypedDict, Optional
+
+from .types import *
+
+from polywrap_core import InvokerClient, UriPackageOrWrapper
+from polywrap_plugin import PluginModule
+from polywrap_msgpack import GenericMap
+
+TConfig = TypeVar("TConfig")
+
+
+{{#moduleType}}
+{{#methods}}
+Args{{#toUpper}}{{name}}{{/toUpper}} = TypedDict("Args{{#toUpper}}{{name}}{{/toUpper}}", {
+    {{#arguments}}
+    "{{name}}": {{#toPython}}{{toGraphQLType}}{{/toPython}}{{^last}},{{/last}}
+    {{/arguments}}
+})
+
+{{/methods}}
+{{/moduleType}}
+
+class Module(Generic[TConfig], PluginModule[TConfig]):
+    def __new__(cls, *args, **kwargs):
+        # NOTE: This is used to dynamically add WRAP ABI compatible methods to the class
+        instance = super().__new__(cls)
+        {{#moduleType}}
+        {{#methods}}
+        setattr(instance, "{{name}}", instance.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}})
+        {{/methods}}
+        {{/moduleType}}
+        return instance
+
+    {{#moduleType}}
+    {{#methods}}
+    @abstractmethod
+    def {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(
+        self,
+        args: Args{{#toUpper}}{{name}}{{/toUpper}},
+        client: InvokerClient[UriPackageOrWrapper],
+        {{^env}}env: None{{/env}}{{#env}}env: {{^required}}Optional[{{/required}}Env{{^required}}] = None{{/required}}{{/env}}
+    ) -> {{#return}}{{#toPython}}{{toGraphQLType}}{{/toPython}}{{/return}}:
+        pass
+    {{^last}}
+
+    {{/last}}
+    {{/methods}}
+    {{/moduleType}}
+

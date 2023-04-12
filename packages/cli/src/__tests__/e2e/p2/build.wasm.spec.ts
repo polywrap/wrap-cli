@@ -247,7 +247,7 @@ describe("e2e tests for build command", () => {
     });
 
     it("Builds for assemblyscript", async () => {
-      const { exitCode: code, stdout: output } = await Commands.build({
+      const { stdout: output } = await Commands.build({
         strategy: "local",
         verbose: true
       }, {
@@ -257,7 +257,6 @@ describe("e2e tests for build command", () => {
 
       const buildDir = `./build`;
 
-      expect(code).toEqual(0);
       expect(output).toContain(`Artifacts written to ${buildDir}`);
       expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
     });

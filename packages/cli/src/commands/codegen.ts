@@ -5,7 +5,7 @@ import {
   CodeGenerator,
   SchemaComposer,
   intlMsg,
-  parseDirOption,
+  parseDirOptionNoDefault,
   parseCodegenScriptOption,
   parseManifestFileOption,
   parseClientConfigOption,
@@ -26,7 +26,7 @@ const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
 export interface CodegenCommandOptions extends BaseCommandOptions {
   manifestFile: string;
-  codegenDir: string;
+  codegenDir: string | false;
   script: string | false;
   clientConfig: string | false;
   wrapperEnvs: string | false;
@@ -76,7 +76,7 @@ export const codegen: Command = {
             options.manifestFile,
             defaultProjectManifestFiles
           ),
-          codegenDir: parseDirOption(options.codegenDir, DEFAULT_CODEGEN_DIR),
+          codegenDir: parseDirOptionNoDefault(options.codegenDir),
           script: parseCodegenScriptOption(options.script),
           clientConfig: options.clientConfig || false,
           wrapperEnvs: options.wrapperEnvs || false,
@@ -131,7 +131,7 @@ async function run(options: Required<CodegenCommandOptions>) {
 
   const codeGenerator = script
     ? new ScriptCodegenerator({
-        codegenDirAbs: codegenDir,
+        codegenDirAbs: codegenDir || undefined,
         script,
         schemaComposer,
         project,
@@ -139,7 +139,7 @@ async function run(options: Required<CodegenCommandOptions>) {
         mustacheView: undefined,
       })
     : new CodeGenerator({
-        codegenDirAbs: codegenDir,
+        codegenDirAbs: codegenDir || undefined,
         schemaComposer,
         project,
       });
