@@ -8,17 +8,26 @@ from .types import *
 
 from polywrap_core import InvokerClient, UriPackageOrWrapper
 from polywrap_plugin import PluginModule
+from polywrap_msgpack import GenericMap
 
 TConfig = TypeVar("TConfig")
 
 
+ArgsSampleMethod = TypedDict("ArgsSampleMethod", {
+    "data": str
+})
 
-class ArgsSampleMethod(TypedDict):
-    data: str
 
 class Module(Generic[TConfig], PluginModule[TConfig]):
+    def __new__(cls, *args, **kwargs):
+        # NOTE: This is used to dynamically add WRAP ABI compatible methods to the class
+        instance = super().__new__(cls)
+        setattr(instance, "sampleMethod", instance.sample_method)
+        return instance
+
     @abstractmethod
     def sample_method(
+        self,
         args: ArgsSampleMethod,
         client: InvokerClient[UriPackageOrWrapper],
         env: None
