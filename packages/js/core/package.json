@@ -12,12 +12,12 @@
     "build"
   ],
   "scripts": {
-    "build": "yarn build:fast && yarn build:readme",
+    "build": "yarn build:fast",
+    "build:docs": "yarn build:readme",
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
-    "test:ci": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose",
+    "test:watch": "yarn test -- --watch",
     "build:readme:subsections": "yarn doc-snippets combine -c ./readme/config/sub-sections.json",
     "build:readme:final": "yarn doc-snippets combine -c ./readme/config/final.json",
     "build:readme": "yarn build:readme:subsections && yarn build:readme:final"

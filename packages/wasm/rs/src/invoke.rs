@@ -57,3 +57,16 @@ pub fn wrap_invoke(args: InvokeArgs, env_size: u32, opt_invoke_func: Option<Invo
         }
     }
 }
+
+/// Helper for handling `wrap_invoke_result`
+pub fn wrap_invoke_result(result: Vec<u8>) {
+    let res_len = result.len() as u32;
+    unsafe { __wrap_invoke_result(result.as_ptr() as u32, res_len) };
+}
+
+/// Helper for handling `wrap_invoke_error`
+pub fn wrap_invoke_error(message: String) {
+    let msg_bytes = message.as_bytes();
+    let msg_len = msg_bytes.len() as u32;
+    unsafe { __wrap_invoke_error(msg_bytes.as_ptr() as u32, msg_len) };
+}

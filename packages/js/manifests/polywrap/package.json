@@ -12,8 +12,7 @@
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "prebuild": "ts-node ./scripts/generate.ts",
     "test": "jest --passWithNoTests --runInBand --verbose",
-    "test:ci": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose"
+    "test:watch": "yarn test -- --watch"
   },
   "dependencies": {
     "@polywrap/logging-js": "0.10.0-pre.13",

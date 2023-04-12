@@ -14,6 +14,7 @@ use polywrap_wasm_rs::{
     JSON,
 };
 
+use crate::Env;
 use crate::{
     CustomEnum,
     get_custom_enum_value,

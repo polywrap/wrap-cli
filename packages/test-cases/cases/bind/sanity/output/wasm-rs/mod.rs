@@ -44,6 +44,8 @@ pub mod test_import;
 pub use test_import::TestImport;
 pub mod module;
 pub use module::{
+    Module,
+    ModuleTrait,
     deserialize_module_method_args,
     serialize_module_method_result,
     module_method_wrapped,
