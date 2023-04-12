@@ -1,7 +1,6 @@
 import {
-  Logger_Module,
+  Logging_Module,
   Ethereum_Module,
-  Logger_Logger_LogLevelEnum,
 } from "./wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
@@ -9,31 +8,21 @@ import { PolywrapClient } from "@polywrap/client-js";
 const client = new PolywrapClient();
 
 async function main() {
-  console.log("Invoking: logMessage");
+  console.log("Invoking: Logging.info(...)");
 
-  await Logger_Module.log(
-    {
-      message: "Hello there",
-      level: Logger_Logger_LogLevelEnum.INFO,
-    },
-    client
-  );
+  await Logging_Module.info({
+    message: "Hello there",
+  }, client);
 
-  await Logger_Module.log(
-    {
-      message: "Hello again",
-      level: Logger_Logger_LogLevelEnum.INFO,
-    },
-    client
-  );
+  await Logging_Module.info({
+    message: "Hello again",
+  }, client);
 
-  await Logger_Module.log(
-    {
-      message: "One last time...",
-      level: Logger_Logger_LogLevelEnum.INFO,
-    },
-    client
-  );
+  await Logging_Module.info({
+    message: "One last time...",
+  }, client);
+
+  console.log("Invoking: Ethereum.encodeParams(...)");
 
   const result = await Ethereum_Module.encodeParams(
     {
@@ -44,9 +33,9 @@ async function main() {
   );
 
   if (result.ok) {
-    console.log(`Ethereum_Module.encodeParams:\n${result.value}`);
+    console.log(`Ethereum.encodeParams:\n${result.value}`);
   } else {
-    console.log(`Error - Ethereum_Module.encodeParams:\n${result.error}`);
+    console.log(`Error - Ethereum.encodeParams:\n${result.error}`);
   }
 }
 
