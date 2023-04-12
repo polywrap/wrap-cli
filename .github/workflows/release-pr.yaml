@@ -138,6 +138,8 @@ jobs:
         run: |
           yarn
           yarn run version:apply
+          yarn run build
+          yarn run build:docs
 
       - name: Create Pull Request
         id: cpr

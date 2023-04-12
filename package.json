@@ -30,6 +30,7 @@
     "build:core:client": "lerna run build --scope @polywrap/core-client-js",
     "build:client": "lerna run build --scope @polywrap/client-js",
     "build:cli": "lerna run build --scope polywrap && lerna run build --scope @polywrap/cli-js",
+    "build:docs": "lerna run build:docs",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint -- --fix",
     "lint:ci": "yarn lint",

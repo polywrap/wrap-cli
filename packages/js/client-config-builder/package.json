@@ -12,7 +12,8 @@
     "build"
   ],
   "scripts": {
-    "build": "yarn embed:wrappers && yarn build:fast && yarn build:snippets && yarn build:readme",
+    "build": "yarn embed:wrappers && yarn build:fast",
+    "build:docs": "yarn build:snippets && yarn build:readme",
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
     "embed:wrappers": "ts-node ./scripts/embed-wrappers.ts",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
