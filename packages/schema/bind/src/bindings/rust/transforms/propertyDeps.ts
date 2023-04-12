@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable no-useless-escape */
-import { isBaseType, isBuiltInType } from "../../types";
+import { isBaseType, isBuiltInType } from "../types";
 
 import {
   ImportedModuleDefinition,
@@ -8,6 +8,7 @@ import {
   AnyDefinition,
   ModuleDefinition,
   EnvDefinition,
+  Abi
 } from "@polywrap/wrap-manifest-types-js";
 import { AbiTransforms } from "@polywrap/schema-parse";
 
@@ -18,6 +19,7 @@ interface PropertyDep {
 }
 
 interface PropertyDepsState {
+  abiEnvDefinition?: EnvDefinition;
   envDefinition?: EnvDefinition;
   objectDefinition?: ObjectDefinition;
   moduleDefinition?: ModuleDefinition;
@@ -30,6 +32,12 @@ export function propertyDeps(): AbiTransforms {
 
   return {
     enter: {
+      Abi: (abi: Abi) => {
+        if (abi.envType) {
+          state.abiEnvDefinition = abi.envType;
+        }
+        return abi;
+      },
       EnvDefinition: (def: EnvDefinition) => {
         state.envDefinition = def;
         state.propertyDeps = [];
@@ -43,6 +51,13 @@ export function propertyDeps(): AbiTransforms {
       ModuleDefinition: (def: ModuleDefinition) => {
         state.moduleDefinition = def;
         state.propertyDeps = [];
+        if (state.abiEnvDefinition) {
+          state.propertyDeps.push({
+            crate: "crate",
+            type: "Env",
+            isEnum: false,
+          });
+        }
         return def;
       },
       ImportedModuleDefinition: (def: ImportedModuleDefinition) => {
@@ -74,7 +89,6 @@ export function propertyDeps(): AbiTransforms {
           const isKnownType = (name: string) =>
             isBaseType(name) ||
             isBuiltInType(name) ||
-            name === "Env" ||
             name === rootType;
 
           // if type is map and the value is custom,

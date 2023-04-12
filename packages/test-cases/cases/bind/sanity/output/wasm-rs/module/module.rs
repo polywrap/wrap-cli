@@ -1,4 +1,3 @@
-use crate::Env;
 use crate::{
     ArgsModuleMethod,
     ArgsObjectMethod,
@@ -12,6 +11,7 @@ use polywrap_wasm_rs::{
     JSON,
 };
 
+use crate::Env;
 use crate::{
     CustomEnum,
 };
