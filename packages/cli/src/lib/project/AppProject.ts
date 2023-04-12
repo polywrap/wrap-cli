@@ -121,12 +121,16 @@ export class AppProject extends Project<AppManifest> {
     useDefinedPath: string | undefined,
     defaultDir = "./src/wrap"
   ): string {
-    const genSubPath =
+    const genPath =
       // 1. Use what the user has specified
       useDefinedPath ||
       // 2. Use the default
       defaultDir;
 
-    return path.join(this.getManifestDir(), genSubPath);
+    if (path.isAbsolute(genPath)) {
+      return genPath;
+    } else {
+      return path.join(this.getManifestDir(), genPath);
+    }
   }
 }

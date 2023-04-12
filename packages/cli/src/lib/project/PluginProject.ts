@@ -139,7 +139,7 @@ export class PluginProject extends Project<PluginManifest> {
     manifest: PluginManifest,
     defaultDir = "./src/wrap"
   ): string {
-    const genSubPath =
+    const genPath =
       // 1. Use what the user has specified
       useDefinedPath ||
       // 2. Check to see if there exists an override for this language type
@@ -152,6 +152,10 @@ export class PluginProject extends Project<PluginManifest> {
       // 4. Use the default
       defaultDir;
 
-    return path.join(this.getManifestDir(), genSubPath);
+    if (path.isAbsolute(genPath)) {
+      return genPath;
+    } else {
+      return path.join(this.getManifestDir(), genPath);
+    }
   }
 }
