@@ -72,7 +72,10 @@ export function propertyDeps(): AbiTransforms {
           };
 
           const isKnownType = (name: string) =>
-            isBaseType(name) || isBuiltInType(name) || name === rootType;
+            isBaseType(name) ||
+            isBuiltInType(name) ||
+            name === "Env" ||
+            name === rootType;
 
           // if type is map and the value is custom,
           // we need to add it into property dependency
