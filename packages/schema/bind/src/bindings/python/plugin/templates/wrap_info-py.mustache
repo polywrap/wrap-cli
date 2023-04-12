@@ -1,14 +1,14 @@
 # NOTE: This is an auto-generated file. All modifications will be overwritten.
+# type: ignore
 from __future__ import annotations
 
 import json
+from base64 import b64decode
 
 from polywrap_manifest import WrapManifest
 
 {{#manifest}}
-abi = json.loads("""
-{{abi}}
-""")
+abi = json.loads(b64decode("{{abi}}").decode("utf-8"))
 
 manifest = WrapManifest.parse_obj({
     "name": "{{name}}",
