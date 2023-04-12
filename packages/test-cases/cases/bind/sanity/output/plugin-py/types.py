@@ -5,99 +5,125 @@ from typing import TypedDict, Optional
 from enum import IntEnum, auto
 
 from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
+from polywrap_msgpack import GenericMap
+
 
 ### Env START ###
-class Env(TypedDict):
-    prop: str
-    opt_prop: Optional[str]
-    opt_map: Optional[GenericMap[str, Optional[int]]]
+
+Env = TypedDict("Env", {
+    "prop": str,
+    "optProp": Optional[str],
+    "optMap": Optional[GenericMap[str, Optional[int]]],
+})
+
 ### Env END ###
 
 ### Objects START ###
-class CustomType(TypedDict):
-    p_str: str
-    opt_str: Optional[str]
-    u: int
-    opt_u: Optional[int]
-    u8: int
-    u16: int
-    u32: int
-    i: int
-    i8: int
-    i16: int
-    i32: int
-    bigint: str
-    opt_bigint: Optional[str]
-    bignumber: str
-    opt_bignumber: Optional[str]
-    json: str
-    opt_json: Optional[str]
-    p_bytes: bytes
-    opt_bytes: Optional[bytes]
-    boolean: bool
-    opt_boolean: Optional[bool]
-    u_array: list[int]
-    u_opt_array: Optional[list[int]]
-    opt_u_opt_array: Optional[list[Optional[int]]]
-    opt_str_opt_array: Optional[list[Optional[str]]]
-    u_array_array: list[list[int]]
-    u_opt_array_opt_array: list[Optional[list[Optional[int]]]]
-    u_array_opt_array_array: list[Optional[list[list[int]]]]
-    crazy_array: Optional[list[Optional[list[list[Optional[list[int]]]]]]]
-    p_object: "AnotherType"
-    opt_object: Optional["AnotherType"]
-    object_array: list["AnotherType"]
-    opt_object_array: Optional[list[Optional["AnotherType"]]]
-    en: "CustomEnum"
-    opt_enum: Optional["CustomEnum"]
-    enum_array: list["CustomEnum"]
-    opt_enum_array: Optional[list[Optional["CustomEnum"]]]
-    p_map: GenericMap[str, int]
-    map_of_arr: GenericMap[str, list[int]]
-    map_of_obj: GenericMap[str, "AnotherType"]
-    map_of_arr_of_obj: GenericMap[str, list["AnotherType"]]
-    map_custom_value: GenericMap[str, Optional["CustomMapValue"]]
 
-class AnotherType(TypedDict):
-    prop: Optional[str]
-    circular: Optional["CustomType"]
-    const: Optional[str]
+CustomType = TypedDict("CustomType", {
+    "str": str,
+    "optStr": Optional[str],
+    "u": int,
+    "optU": Optional[int],
+    "u8": int,
+    "u16": int,
+    "u32": int,
+    "i": int,
+    "i8": int,
+    "i16": int,
+    "i32": int,
+    "bigint": str,
+    "optBigint": Optional[str],
+    "bignumber": str,
+    "optBignumber": Optional[str],
+    "json": str,
+    "optJson": Optional[str],
+    "bytes": bytes,
+    "optBytes": Optional[bytes],
+    "boolean": bool,
+    "optBoolean": Optional[bool],
+    "uArray": list[int],
+    "uOptArray": Optional[list[int]],
+    "optUOptArray": Optional[list[Optional[int]]],
+    "optStrOptArray": Optional[list[Optional[str]]],
+    "uArrayArray": list[list[int]],
+    "uOptArrayOptArray": list[Optional[list[Optional[int]]]],
+    "uArrayOptArrayArray": list[Optional[list[list[int]]]],
+    "crazyArray": Optional[list[Optional[list[list[Optional[list[int]]]]]]],
+    "object": "AnotherType",
+    "optObject": Optional["AnotherType"],
+    "objectArray": list["AnotherType"],
+    "optObjectArray": Optional[list[Optional["AnotherType"]]],
+    "en": "CustomEnum",
+    "optEnum": Optional["CustomEnum"],
+    "enumArray": list["CustomEnum"],
+    "optEnumArray": Optional[list[Optional["CustomEnum"]]],
+    "map": GenericMap[str, int],
+    "mapOfArr": GenericMap[str, list[int]],
+    "mapOfObj": GenericMap[str, "AnotherType"],
+    "mapOfArrOfObj": GenericMap[str, list["AnotherType"]],
+    "mapCustomValue": GenericMap[str, Optional["CustomMapValue"]],
+})
 
-class CustomMapValue(TypedDict):
-    foo: str
+AnotherType = TypedDict("AnotherType", {
+    "prop": Optional[str],
+    "circular": Optional["CustomType"],
+    "const": Optional[str],
+})
 
-class Else(TypedDict):
-    p_else: str
+CustomMapValue = TypedDict("CustomMapValue", {
+    "foo": str,
+})
+
+Else = TypedDict("Else", {
+    "else": str,
+})
 
 ### Objects END ###
 
 ### Enums START ###
 class CustomEnum(IntEnum):
-    STRING = auto() - 1
-    BYTES = auto() - 1
+    STRING = auto() - 1, "STRING"
+    BYTES = auto() - 1, "BYTES"
+
+    def __new__(cls, value: int, *aliases: str):
+        obj = int.__new__(cls)
+        obj._value_ = value
+        for alias in aliases:
+            cls._value2member_map_[alias] = obj
+        return obj
 
 class While(IntEnum):
-    p_for = auto() - 1
-    p_in = auto() - 1
+    r_for = auto() - 1, "for"
+    r_in = auto() - 1, "in"
+
+    def __new__(cls, value: int, *aliases: str):
+        obj = int.__new__(cls)
+        obj._value_ = value
+        for alias in aliases:
+            cls._value2member_map_[alias] = obj
+        return obj
 
 ### Enums END ###
 
 ### Imported Objects START ###
 
 # URI: "testimport.uri.eth" #
-class TestImportObject(TypedDict):
-    p_object: "TestImportAnotherObject"
-    opt_object: Optional["TestImportAnotherObject"]
-    object_array: list["TestImportAnotherObject"]
-    opt_object_array: Optional[list[Optional["TestImportAnotherObject"]]]
-    en: "TestImportEnum"
-    opt_enum: Optional["TestImportEnum"]
-    enum_array: list["TestImportEnum"]
-    opt_enum_array: Optional[list[Optional["TestImportEnum"]]]
+TestImportObject = TypedDict("TestImportObject", {
+    "object": "TestImportAnotherObject",
+    "optObject": Optional["TestImportAnotherObject"],
+    "objectArray": list["TestImportAnotherObject"],
+    "optObjectArray": Optional[list[Optional["TestImportAnotherObject"]]],
+    "en": "TestImportEnum",
+    "optEnum": Optional["TestImportEnum"],
+    "enumArray": list["TestImportEnum"],
+    "optEnumArray": Optional[list[Optional["TestImportEnum"]]],
+})
 
 # URI: "testimport.uri.eth" #
-class TestImportAnotherObject(TypedDict):
-    prop: str
+TestImportAnotherObject = TypedDict("TestImportAnotherObject", {
+    "prop": str,
+})
 
 ### Imported Objects END ###
 
@@ -108,10 +134,24 @@ class TestImportEnum(IntEnum):
     STRING = auto() - 1
     BYTES = auto() - 1
 
+    def __new__(cls, value: int, *aliases: str):
+        obj = int.__new__(cls)
+        obj._value_ = value
+        for alias in aliases:
+            cls._value2member_map_[alias] = obj
+        return obj
+
 # URI: "testimport.uri.eth" #
 class TestImportEnumReturn(IntEnum):
     STRING = auto() - 1
     BYTES = auto() - 1
+
+    def __new__(cls, value: int, *aliases: str):
+        obj = int.__new__(cls)
+        obj._value_ = value
+        for alias in aliases:
+            cls._value2member_map_[alias] = obj
+        return obj
 
 
 ### Imported Enums END ###
@@ -119,28 +159,31 @@ class TestImportEnumReturn(IntEnum):
 ### Imported Modules START ###
 
 # URI: "testimport.uri.eth" #
-class TestImportModuleArgsImportedMethod(TypedDict):
-    p_str: str
-    opt_str: Optional[str]
-    u: int
-    opt_u: Optional[int]
-    u_array_array: list[Optional[list[Optional[int]]]]
-    p_object: "TestImportObject"
-    opt_object: Optional["TestImportObject"]
-    object_array: list["TestImportObject"]
-    opt_object_array: Optional[list[Optional["TestImportObject"]]]
-    en: "TestImportEnum"
-    opt_enum: Optional["TestImportEnum"]
-    enum_array: list["TestImportEnum"]
-    opt_enum_array: Optional[list[Optional["TestImportEnum"]]]
+TestImportModuleArgsImportedMethod = TypedDict("TestImportModuleArgsImportedMethod", {
+    "str": str,
+    "optStr": Optional[str],
+    "u": int,
+    "optU": Optional[int],
+    "uArrayArray": list[Optional[list[Optional[int]]]],
+    "object": "TestImportObject",
+    "optObject": Optional["TestImportObject"],
+    "objectArray": list["TestImportObject"],
+    "optObjectArray": Optional[list[Optional["TestImportObject"]]],
+    "en": "TestImportEnum",
+    "optEnum": Optional["TestImportEnum"],
+    "enumArray": list["TestImportEnum"],
+    "optEnumArray": Optional[list[Optional["TestImportEnum"]]],
+})
 
 # URI: "testimport.uri.eth" #
-class TestImportModuleArgsAnotherMethod(TypedDict):
-    arg: list[str]
+TestImportModuleArgsAnotherMethod = TypedDict("TestImportModuleArgsAnotherMethod", {
+    "arg": list[str],
+})
 
 # URI: "testimport.uri.eth" #
-class TestImportModuleArgsReturnsArrayOfEnums(TypedDict):
-    arg: str
+TestImportModuleArgsReturnsArrayOfEnums = TypedDict("TestImportModuleArgsReturnsArrayOfEnums", {
+    "arg": str,
+})
 
 # URI: "testimport.uri.eth" #
 class TestImportModule:

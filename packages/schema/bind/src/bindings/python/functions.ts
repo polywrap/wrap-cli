@@ -2,12 +2,13 @@ import { MustacheFn } from "../types";
 import { isKeyword } from "./types";
 
 // check if any of the keywords match the property name;
-// if there's a match, insert `_` at the beginning of the property name.
+// if there's a match, insert `r_` at the beginning of the property name.
+// `_` has special meaning in Python, so we use `r_` to avoid conflicts.
 export const detectKeyword: MustacheFn = () => {
   return (value: string, render: (template: string) => string): string => {
     const type = render(value);
     if (isKeyword(type)) {
-      return "p_" + type; // `p_` is the prefix we use for keywords
+      return "r_" + type; // `r_` is the prefix we use for reserved keywords
     }
     return type;
   };
