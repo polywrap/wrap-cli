@@ -5,11 +5,15 @@ from typing import TypedDict, Optional
 from enum import IntEnum, auto
 
 from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
+from polywrap_msgpack import GenericMap
+
 
 ### Env START ###
+
 ### Env END ###
 
 ### Objects START ###
+
 ### Objects END ###
 
 ### Enums START ###
