@@ -263,14 +263,14 @@ export const interfaceInvokeCase = (implementation: string) => {
     });
 
     test("getImplementations - pass string or Uri", async () => {
-      const oldInterfaceUri = Uri.from("ens/old.eth");
-      const newInterfaceUri = Uri.from("ens/new.eth");
+      const oldInterfaceUri = Uri.from("mock/old");
+      const newInterfaceUri = Uri.from("mock/new");
 
       const implementation1Uri = Uri.from(
-        "wrap://ens/some-implementation1.eth"
+        "wrap://mock/some-implementation1"
       );
       const implementation2Uri = Uri.from(
-        "wrap://ens/some-implementation2.eth"
+        "wrap://mock/some-implementation2"
       );
 
       const config = new ClientConfigBuilder()
