@@ -19,15 +19,18 @@ export function renderTemplates(
       if (dirent.type === "File") {
         const name = path.parse(dirent.name).name;
 
-        const data = Mustache.render(dirent.data, view, subTemplates);
+        // file templates don't start with '$'
+        if (!name.startsWith("$")) {
+          const data = Mustache.render(dirent.data, view, subTemplates);
 
-        // If the file isn't empty, add it to the output
-        if (data) {
-          output.push({
-            type: "File",
-            name: name.replace("-", "."),
-            data,
-          });
+          // If the file isn't empty, add it to the output
+          if (data) {
+            output.push({
+              type: "File",
+              name: name.replace("-", "."),
+              data,
+            });
+          }
         }
       } else if (dirent.type === "Directory" && subDirectories) {
         const subOutput: OutputEntry[] = [];
@@ -63,9 +66,11 @@ export function loadSubTemplates(
 
     const name = path.parse(file.name).name;
 
-    // sub-templates contain '_' in their file names
-    if (name.indexOf("_") > -1) {
-      subTemplates[name] = file.data as string;
+    // sub-templates start with '$' in their file names
+    if (name.startsWith("$")) {
+      // remove the $ from the name
+      const subTemplateName = name.substring(1);
+      subTemplates[subTemplateName] = file.data as string;
     }
   }
 
