@@ -48,10 +48,8 @@ describe("Error structure", () => {
       if (result.ok) throw Error("should never happen");
 
       expect(result.error?.name).toEqual("WrapError");
-      expect(result.error?.code).toEqual(WrapErrorCode.URI_NOT_FOUND);
-      expect(
-        result.error?.reason.startsWith("Unable to find URI ")
-      ).toBeTruthy();
+      expect(result.error?.code).toEqual(WrapErrorCode.URI_RESOLVER_ERROR);
+      expect(result.error?.reason).toContain("A URI Resolver returned an error.");
       expect(
         result.error?.uri.endsWith(
           "packages/test-cases/cases/wrappers/subinvoke/00-subinvoke/implementations/as-not-found"
@@ -74,9 +72,7 @@ describe("Error structure", () => {
 
       expect(result.error?.name).toEqual("WrapError");
       expect(result.error?.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
-      expect(
-        result.error?.reason.startsWith("SubInvocation exception encountered")
-      ).toBeTruthy();
+      expect(result.error?.reason).toContain("SubInvocation exception encountered");
       expect(
         result.error?.uri.endsWith(
           "packages/test-cases/cases/wrappers/subinvoke/02-consumer/implementations/as"
@@ -91,12 +87,11 @@ describe("Error structure", () => {
       expect(result.error?.innerError instanceof WrapError).toBeTruthy();
       const prev = result.error?.innerError as WrapError;
       expect(prev.name).toEqual("WrapError");
-      expect(prev.code).toEqual(WrapErrorCode.URI_NOT_FOUND);
-      expect(prev.reason).toEqual(
-        "Unable to find URI wrap://ens/imported-invoke.eth."
+      expect(prev.code).toEqual(WrapErrorCode.WRAPPER_INVOKE_ABORTED);
+      expect(prev.reason).toContain(
+        "A URI Resolver returned an error."
       );
-      expect(prev.uri).toEqual("wrap://ens/imported-invoke.eth");
-      expect(prev.resolutionStack).toBeTruthy();
+      expect(prev.uri).toEqual("wrap://ens/wraps.eth:ens-uri-resolver-ext@1.0.1");
     });
 
     describe("Wasm wrapper - Assemblyscript", () => {

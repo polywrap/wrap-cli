@@ -1,4 +1,5 @@
 # NOTE: This is an auto-generated file. All modifications will be overwritten.
+# type: ignore
 from __future__ import annotations
 
 from abc import abstractmethod
@@ -26,7 +27,7 @@ class Module(Generic[TConfig], PluginModule[TConfig]):
         return instance
 
     @abstractmethod
-    def sample_method(
+    async def sample_method(
         self,
         args: ArgsSampleMethod,
         client: InvokerClient[UriPackageOrWrapper],

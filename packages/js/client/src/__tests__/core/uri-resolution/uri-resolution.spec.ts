@@ -23,7 +23,17 @@ const expectResultWithHistory = async (
     await expectHistory(uriHistory, historyFileName);
   }
 
-  expect(receivedResult).toEqual(expectedResult);
+  expect(expectedResult.ok).toEqual(receivedResult.ok);
+
+  if (expectedResult.ok) {
+    expect((receivedResult as { value: UriPackageOrWrapper }).value).toEqual(
+      expect.objectContaining(expectedResult.value)
+    );
+  } else {
+    expect(expectedResult.error).toEqual(
+      (receivedResult as { error: unknown }).error
+    );
+  }
 };
 
 const expectHistory = async (
@@ -56,16 +66,24 @@ function replaceAll(str: string, strToReplace: string, replaceStr: string) {
 
 describe("URI resolution", () => {
   it("sanity", async () => {
-    const uri = new Uri("ens/uri.eth");
+    const uri = new Uri("ens/wraps.eth:uri-resolver-ext@1.1.0");
 
     const client = new PolywrapClient();
 
     const resolutionContext = new UriResolutionContext();
     const result = await client.tryResolveUri({ uri, resolutionContext });
 
+    const expectResult = UriResolutionResult.ok(
+      Uri.from("wrap://ipfs/QmSAXrSLcmGUkQRrApAtG5qTPmuRMMX2Zf1wihpguDQfbm")
+    );
+
+    if (expectResult.ok) {
+      expectResult.value.type = "wrapper"
+    }
+
     await expectResultWithHistory(
       result,
-      UriResolutionResult.ok(uri),
+      expectResult,
       resolutionContext.getHistory(),
       "sanity"
     );

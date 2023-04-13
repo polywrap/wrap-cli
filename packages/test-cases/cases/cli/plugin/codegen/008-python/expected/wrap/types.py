@@ -1,4 +1,5 @@
 # NOTE: This is an auto-generated file. All modifications will be overwritten.
+# type: ignore
 from __future__ import annotations
 
 from typing import TypedDict, Optional

@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "polywrap": "~0.10.0-pre"
+  },
+  "resolutions": {
+    "colors": "1.4.0"
+  }
+}

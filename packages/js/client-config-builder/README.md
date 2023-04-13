@@ -462,9 +462,9 @@ export const embeds: IDefaultEmbeds = {
     source: Uri.from("ens/wraps.eth:ipfs-http-client@1.0.0"),
   },
   ipfsResolver: {
-    uri: Uri.from("embed/async-ipfs-uri-resolver-ext@1.0.0"),
+    uri: Uri.from("embed/async-ipfs-uri-resolver-ext@1.0.1"),
     package: ipfsResolver.wasmPackage,
-    source: Uri.from("ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0"),
+    source: Uri.from("ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.1"),
   },
 };
 
@@ -473,13 +473,13 @@ type UriResolverExtBootloader = [IDefaultEmbed, IUriRedirect, ...Uri[]];
 export const uriResolverExts: UriResolverExtBootloader = [
   embeds.ipfsResolver,
   {
-    from: Uri.from("ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0"),
-    to: Uri.from("ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw"),
+    from: Uri.from("ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.1"),
+    to: Uri.from("ipfs/QmXcHWtKkfrFmcczdMSXH7udsSyV3UJeoWzkaUqGBm1oYs"),
   },
-  Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0"),
+  Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.1"),
+  Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.1"),
+  Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.1"),
+  Uri.from("ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.1"),
 ];
 
 interface IDefaultPlugin {
