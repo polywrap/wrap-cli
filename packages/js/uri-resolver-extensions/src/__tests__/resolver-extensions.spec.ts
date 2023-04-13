@@ -376,7 +376,7 @@ args: {
   "authority": "test",
   "path": "error"
 } 
-source: { file: "src/lib.rs", row: 23, col: 20 }`
+source: { file: "src/wrap/module/wrapped.rs", row: 35, col: 21 }`
     );
   });
 
