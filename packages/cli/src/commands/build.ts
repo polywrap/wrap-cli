@@ -23,7 +23,7 @@ import {
   SupportedStrategies,
   DockerImageBuildStrategy,
   LocalBuildStrategy,
-  NoopBuildStrategy
+  NoopBuildStrategy,
 } from "../lib/build-strategies";
 import { DEFAULT_CODEGEN_DIR } from "../lib/defaults";
 import { watchProject } from "../lib/watchProject";
@@ -217,7 +217,7 @@ async function run(options: Required<BuildCommandOptions>) {
     if (isInterface) {
       buildStrategy = new NoopBuildStrategy({
         project: project as PolywrapProject,
-        outputDir
+        outputDir,
       });
     } else {
       buildStrategy = createBuildStrategy(
