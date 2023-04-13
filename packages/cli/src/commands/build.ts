@@ -23,6 +23,7 @@ import {
   SupportedStrategies,
   DockerImageBuildStrategy,
   LocalBuildStrategy,
+  NoopBuildStrategy
 } from "../lib/build-strategies";
 import { DEFAULT_CODEGEN_DIR } from "../lib/defaults";
 import { watchProject } from "../lib/watchProject";
@@ -211,13 +212,22 @@ async function run(options: Required<BuildCommandOptions>) {
   if (isPolywrapManifestLanguage(language)) {
     await validateManifestModules(manifest as PolywrapManifest);
 
-    buildStrategy = createBuildStrategy(
-      strategy,
-      outputDir,
-      project as PolywrapProject
-    );
+    const isInterface = language === "interface";
 
-    canRunCodegen = language !== "interface";
+    if (isInterface) {
+      buildStrategy = new NoopBuildStrategy({
+        project: project as PolywrapProject,
+        outputDir
+      });
+    } else {
+      buildStrategy = createBuildStrategy(
+        strategy,
+        outputDir,
+        project as PolywrapProject
+      );
+    }
+
+    canRunCodegen = !isInterface;
   }
 
   const execute = async (): Promise<boolean> => {
