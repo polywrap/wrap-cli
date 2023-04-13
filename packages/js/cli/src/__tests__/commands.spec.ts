@@ -53,7 +53,7 @@ const clearDir = (dir: string) => {
 const testData: CommandTestCaseData<CommandTypings> = {
   build: [{
     options: { strategy: "vm" },
-    cwd: path.join(GetPathToCliTestFiles(), "wasm/build-cmd/assemblyscript/001-sanity"),
+    cwd: path.join(GetPathToCliTestFiles(), "build-cmd/wasm/assemblyscript/001-sanity"),
     before: async (test) => {
       // clear build dir
       if (!test.cwd) throw Error("This shouldn't happen");
@@ -72,7 +72,7 @@ const testData: CommandTestCaseData<CommandTypings> = {
   }],
   codegen: [{
     options: { codegenDir: "./test" },
-    cwd: path.join(GetPathToCliTestFiles(), "wasm/codegen/001-sanity-assemblyscript"),
+    cwd: path.join(GetPathToCliTestFiles(), "codegen/wasm/001-sanity-assemblyscript"),
     before: (test) => {
       // clear build dir
       if (!test.cwd || !test.options?.codegenDir)
@@ -144,7 +144,7 @@ const testData: CommandTestCaseData<CommandTypings> = {
     }]
   },
   deploy: [{
-    cwd: path.join(GetPathToCliTestFiles(), "wasm/deploy/001-sanity"),
+    cwd: path.join(GetPathToCliTestFiles(), "deploy/001-sanity"),
     env: {
       PATH: process.env.PATH || "",
       IPFS_GATEWAY_URI: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,

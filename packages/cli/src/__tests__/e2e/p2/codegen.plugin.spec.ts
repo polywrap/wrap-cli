@@ -15,7 +15,7 @@ import path from "path";
 import fs from "fs";
 
 describe("e2e tests for codegen command - plugin project", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin/codegen");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "codegen/plugin");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())

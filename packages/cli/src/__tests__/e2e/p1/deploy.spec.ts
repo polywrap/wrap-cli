@@ -22,7 +22,7 @@ Options:
   -h, --help                  display help for command
 `;
 
-const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/deploy");
+const testCaseRoot = path.join(GetPathToCliTestFiles(), "deploy");
   const testCases =
     fs.readdirSync(testCaseRoot, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())

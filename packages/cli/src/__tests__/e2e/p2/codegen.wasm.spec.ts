@@ -9,7 +9,7 @@ import { testCodegenOutput } from "../helpers/testCodegenOutput";
 import { CodegenCommandOptions } from "../../../commands";
 
 describe("e2e tests for codegen command - wasm/interface project", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/codegen");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "codegen/wasm");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
