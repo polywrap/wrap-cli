@@ -1,6 +1,8 @@
 pub mod wrap;
 pub use wrap::*;
 
-pub fn method(args: wrap::module::ArgsMethod) -> String {
-  args.arg
+impl ModuleTrait for Module {
+  fn method(args: wrap::module::ArgsMethod) -> Result<String, String> {
+    Ok(args.arg)
+  }
 }

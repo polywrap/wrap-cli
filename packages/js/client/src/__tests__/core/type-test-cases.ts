@@ -690,9 +690,9 @@ export const typeTestCases = (implementation: string) => {
         },
       ]);
 
-      const method5 = await client.invoke({
+      const method4 = await client.invoke({
         uri,
-        method: "method5",
+        method: "method4",
         args: {
           arg: {
             prop: [49, 50, 51, 52],
@@ -700,9 +700,9 @@ export const typeTestCases = (implementation: string) => {
         },
       });
 
-      if (!method5.ok) fail(method5.error);
-      expect(method5.value).toBeTruthy();
-      expect(method5.value).toEqual({
+      if (!method4.ok) fail(method4.error);
+      expect(method4.value).toBeTruthy();
+      expect(method4.value).toEqual({
         prop: "1234",
         nested: {
           prop: "nested prop",

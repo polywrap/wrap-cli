@@ -12,13 +12,13 @@
     "build"
   ],
   "scripts": {
-    "build": "yarn build:fast && yarn build:snippets && yarn build:readme",
+    "build": "yarn build:fast",
+    "build:docs": "yarn build:snippets && yarn build:readme",
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
-    "test": "jest --passWithNoTests --runInBand --verbose=true --detectOpenHandles --forceExit",
-    "test:ci": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit",
+    "test": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit",
     "test:rust": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit -t 'client <-> wrappers .* rs'",
-    "test:watch": "jest --watch --passWithNoTests --verbose --detectOpenHandles",
+    "test:watch": "yarn test -- --watch",
     "build:snippets": "tsc --project ./examples/tsconfig.examples.json",
     "build:readme": "yarn doc-snippets combine"
   },

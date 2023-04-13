@@ -9,6 +9,7 @@ import {
   PolywrapManifestLanguage,
   polywrapManifestLanguages,
   polywrapManifestLanguageToBindLanguage,
+  polywrapManifestOverrideCodegenDir,
 } from "./manifests";
 import { resetDir } from "../system";
 import { createUUID } from "../helpers";
@@ -136,12 +137,21 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     return manifest.source.import_abis || [];
   }
 
+  public async getGenerationDirectory(
+    generationSubPath?: string
+  ): Promise<string> {
+    const manifest = await this.getManifest();
+    return this._getGenerationDirectory(generationSubPath, manifest);
+  }
+
   public async generateSchemaBindings(
     abi: WrapAbi,
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const codegenDirectory = this._getGenerationDirectory(generationSubPath);
+    const codegenDirectory = await this.getGenerationDirectory(
+      generationSubPath
+    );
 
     // Clean the code generation
     resetDir(codegenDirectory);
@@ -333,7 +343,28 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     return undefined;
   }
 
-  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
-    return path.join(this.getManifestDir(), generationSubPath);
+  private _getGenerationDirectory(
+    useDefinedPath: string | undefined,
+    manifest: PolywrapManifest,
+    defaultDir = "./src/wrap"
+  ): string {
+    const genPath =
+      // 1. Use what the user has specified
+      useDefinedPath ||
+      // 2. Check to see if there exists an override for this language type
+      polywrapManifestOverrideCodegenDir(
+        manifest.project.type as PolywrapManifestLanguage
+      ) ||
+      // 3. If a module path exists, generate within a "wrap" dir next to it
+      (manifest.source.module &&
+        path.join(path.dirname(manifest.source.module), "wrap")) ||
+      // 4. Use the default
+      defaultDir;
+
+    if (path.isAbsolute(genPath)) {
+      return genPath;
+    } else {
+      return path.join(this.getManifestDir(), genPath);
+    }
   }
 }

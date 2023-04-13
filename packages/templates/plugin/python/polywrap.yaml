@@ -1,0 +1,7 @@
+format: 0.3.0
+project:
+  name: Sample
+  type: plugin/python
+source:
+  schema: ./schema.graphql
+  module: ./sample/__init__.py

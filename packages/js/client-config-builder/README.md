@@ -34,12 +34,10 @@ Add client configuration with [add](#add), or flexibly mix and match builder [co
   builder
     .addPackage("wrap://plugin/package", httpPlugin({}))
     .removePackage("wrap://plugin/package")
-    .addPackages(
-      {
-        "wrap://plugin/http": httpPlugin({}),
-        "wrap://plugin/filesystem": fileSystemPlugin({}),
-      }
-    );
+    .addPackages({
+      "wrap://plugin/http": httpPlugin({}),
+      "wrap://plugin/filesystem": fileSystemPlugin({}),
+    });
 ```
 
 You can add the entire [default client configuration bundle](#bundle--defaultconfig) at once with [addDefaults](#adddefaults)
@@ -58,7 +56,7 @@ Finally, build a ClientConfig or CoreClientConfig to pass to the PolywrapClient 
 
   // build with a custom cache
   coreClientConfig = builder.build({
-    wrapperCache: new WrapperCache(),
+    resolutionResultCache: new ResolutionResultCache(),
   });
 
   // or build with a custom resolver
@@ -90,25 +88,28 @@ A complete example using all or most of the available methods.
 
   // add and remove wrappers
   builder
-    .addWrapper("wrap://ens/wrapper.eth", await WasmWrapper.from(
-      new Uint8Array([1, 2, 3]),
-      new Uint8Array([1, 2, 3])
-    ))
+    .addWrapper(
+      "wrap://ens/wrapper.eth",
+      await WasmWrapper.from(
+        new Uint8Array([1, 2, 3]),
+        new Uint8Array([1, 2, 3])
+      )
+    )
     .removeWrapper("wrap://ens/wrapper.eth")
     .addWrappers({
       "wrap://ens/wrapper.eth": await WasmWrapper.from(
-          new Uint8Array([1, 2, 3]),
-          new Uint8Array([1, 2, 3])
-      )}
-    );
+        new Uint8Array([1, 2, 3]),
+        new Uint8Array([1, 2, 3])
+      ),
+    });
 
   // add and remove wrap packages
   builder
     .addPackage("wrap://plugin/package", httpPlugin({}))
     .removePackage("wrap://plugin/package")
     .addPackages({
-      "wrap://plugin/package": httpPlugin({})
-    })
+      "wrap://plugin/package": httpPlugin({}),
+    });
 
   // add and remove Envs
   builder
@@ -140,7 +141,7 @@ A complete example using all or most of the available methods.
     .addRedirect("wrap://ens/from.eth", "wrap://ens/to.eth")
     .removeRedirect("wrap://ens/from.eth")
     .addRedirects({
-       "wrap://ens/from.eth": "wrap://ens/to.eth",
+      "wrap://ens/from.eth": "wrap://ens/to.eth",
     });
 
   // add resolvers
@@ -479,7 +480,6 @@ export const uriResolverExts: UriResolverExtBootloader = [
   Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.1"),
   Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.1"),
   Uri.from("ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.1"),
-  Uri.from("ens/wraps.eth:ens-ocr-contenthash-uri-resolver-ext@1.0.1"),
 ];
 
 interface IDefaultPlugin {
