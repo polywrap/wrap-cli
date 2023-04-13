@@ -7,7 +7,7 @@ import path from "path";
 jest.setTimeout(1200000);
 
 describe("e2e tests for build command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/build-cmd/rust");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "build-cmd/wasm/rust");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())

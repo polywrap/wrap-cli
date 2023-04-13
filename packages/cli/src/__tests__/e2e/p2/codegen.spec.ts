@@ -31,7 +31,7 @@ Options:
 `;
 
 describe("e2e tests for codegen command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/codegen");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "codegen/wasm");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
