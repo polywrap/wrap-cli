@@ -1,4 +1,5 @@
 # NOTE: This is an auto-generated file. All modifications will be overwritten.
+# type: ignore
 from __future__ import annotations
 
 from typing import TypedDict, Optional
@@ -83,23 +84,23 @@ Else = TypedDict("Else", {
 
 ### Enums START ###
 class CustomEnum(IntEnum):
-    STRING = auto() - 1, "STRING"
-    BYTES = auto() - 1, "BYTES"
+    STRING = auto(), "STRING"
+    BYTES = auto(), "BYTES"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value
+        obj._value_ = value - 1
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
 
 class While(IntEnum):
-    r_for = auto() - 1, "for"
-    r_in = auto() - 1, "in"
+    r_for = auto(), "for"
+    r_in = auto(), "in"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value
+        obj._value_ = value - 1
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
@@ -131,24 +132,24 @@ TestImportAnotherObject = TypedDict("TestImportAnotherObject", {
 
 # URI: "testimport.uri.eth" #
 class TestImportEnum(IntEnum):
-    STRING = auto() - 1
-    BYTES = auto() - 1
+    STRING = auto()
+    BYTES = auto()
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value
+        obj._value_ = value - 1
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
 
 # URI: "testimport.uri.eth" #
 class TestImportEnumReturn(IntEnum):
-    STRING = auto() - 1
-    BYTES = auto() - 1
+    STRING = auto()
+    BYTES = auto()
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value
+        obj._value_ = value - 1
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj

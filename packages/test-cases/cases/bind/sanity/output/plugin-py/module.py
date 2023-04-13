@@ -1,4 +1,5 @@
 # NOTE: This is an auto-generated file. All modifications will be overwritten.
+# type: ignore
 from __future__ import annotations
 
 from abc import abstractmethod
@@ -57,7 +58,7 @@ class Module(Generic[TConfig], PluginModule[TConfig]):
         return instance
 
     @abstractmethod
-    def module_method(
+    async def module_method(
         self,
         args: ArgsModuleMethod,
         client: InvokerClient[UriPackageOrWrapper],
@@ -66,7 +67,7 @@ class Module(Generic[TConfig], PluginModule[TConfig]):
         pass
 
     @abstractmethod
-    def object_method(
+    async def object_method(
         self,
         args: ArgsObjectMethod,
         client: InvokerClient[UriPackageOrWrapper],
@@ -75,7 +76,7 @@ class Module(Generic[TConfig], PluginModule[TConfig]):
         pass
 
     @abstractmethod
-    def optional_env_method(
+    async def optional_env_method(
         self,
         args: ArgsOptionalEnvMethod,
         client: InvokerClient[UriPackageOrWrapper],
@@ -84,7 +85,7 @@ class Module(Generic[TConfig], PluginModule[TConfig]):
         pass
 
     @abstractmethod
-    def r_if(
+    async def r_if(
         self,
         args: ArgsIf,
         client: InvokerClient[UriPackageOrWrapper],
