@@ -1,9 +1,9 @@
-import { IWrapperCache } from "@polywrap/uri-resolvers-js";
+import { IResolutionResultCache } from "@polywrap/uri-resolvers-js";
 import { IUriResolver } from "@polywrap/core-js";
 
 export type BuildOptions =
   | {
-      wrapperCache: IWrapperCache;
+      resolutionResultCache: IResolutionResultCache;
     }
   | {
       resolver: IUriResolver<unknown>;
