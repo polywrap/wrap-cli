@@ -41,9 +41,6 @@ describe('typesHandler', () => {
 
     const stringified = JSON.stringify(myObject, typesHandler, 2);
 
-    console.log(expected)
-    console.log(stringified)
-
     expect(stringified).toEqual(expected);
   });
 
