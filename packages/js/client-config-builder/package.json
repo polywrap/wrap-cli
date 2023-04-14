@@ -26,7 +26,7 @@
     "@polywrap/concurrent-plugin-js": "~0.10.0-pre",
     "@polywrap/core-js": "0.10.0-pre.14",
     "@polywrap/ethereum-provider-js-v1": "npm:@polywrap/ethereum-provider-js@~0.2.4",
-    "@polywrap/ethereum-provider-js-v2": "npm:@polywrap/ethereum-provider-js@~0.3.0",
+    "@polywrap/ethereum-provider-js": "npm:@polywrap/ethereum-provider-js@~0.3.0",
     "@polywrap/file-system-plugin-js": "~0.10.0-pre",
     "@polywrap/http-plugin-js": "~0.10.0-pre",
     "@polywrap/logger-plugin-js": "0.10.0-pre.10",
