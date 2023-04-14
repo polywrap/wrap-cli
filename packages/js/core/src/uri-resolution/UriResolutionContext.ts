@@ -72,6 +72,11 @@ export class UriResolutionContext implements IUriResolutionContext {
   }
 
   createSubContext(): IUriResolutionContext {
-    return new UriResolutionContext(this._resolvingUriMap, this._history);
+    const map = new Map<string, boolean>();
+    // Copy the resolvingUriMap to the new map, so that changes to the new map don't affect the old map
+    for (const key of this._resolvingUriMap.keys()) {
+      this._resolvingUriMap.get(key) && map.set(key, true);
+    }
+    return new UriResolutionContext(map, []);
   }
 }
