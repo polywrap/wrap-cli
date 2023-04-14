@@ -5,7 +5,7 @@ import * as ipfsResolver from "./embeds/async-ipfs-resolver/wrap";
 
 import { IWrapPackage, Uri } from "@polywrap/core-js";
 import * as EthProviderV1 from "@polywrap/ethereum-provider-js-v1";
-import * as EthProviderV2 from "@polywrap/ethereum-provider-js-v2";
+import * as EthProvider from "@polywrap/ethereum-provider-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { fileSystemPlugin } from "@polywrap/file-system-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
@@ -119,14 +119,14 @@ export const plugins: IDefaultPlugins = {
   },
   ethereumProviderV2: {
     uri: Uri.from("plugin/ethereum-provider@2.0.0"),
-    plugin: EthProviderV2.plugin({
-      connections: new EthProviderV2.Connections({
+    plugin: EthProvider.plugin({
+      connections: new EthProvider.Connections({
         networks: {
-          mainnet: new EthProviderV2.Connection({
+          mainnet: new EthProvider.Connection({
             provider:
               "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
           }),
-          goerli: new EthProviderV2.Connection({
+          goerli: new EthProvider.Connection({
             provider:
               "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
           }),
