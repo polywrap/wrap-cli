@@ -96,13 +96,15 @@ export const generateBinding: GenerateBindingFn = (
   const importedFuncs = getImportedFuncs(abi)
 
   // Generate imported module type folders
-  for (const importedModuleType of importedFuncs) {
+  if (importedFuncs.length) {
     importEntries.push({
       type: "Directory",
-      name: importedModuleType.name,
+      name: "Module",
       data: renderTemplates(
         templatePath("imported/module-type"),
-        importedModuleType,
+        {
+          functions: importedFuncs
+        },
         subTemplates
       ),
     });

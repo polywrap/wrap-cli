@@ -15,8 +15,8 @@ import {
 import * as Types from "..";
 
 export class {{detectKeyword name}} {
-  {{#each properties}}
-    {{detectKeyword this.name}}: {{toWasm this.type}};
+  {{#each props}}
+    {{detectKeyword name}}: {{toWasm type}};
   {{/each}}
 
   static toBuffer(type: {{detectKeyword name}}): ArrayBuffer {
