@@ -16,10 +16,10 @@ import {
   parseManifestFileOption,
   parseLogFileOption,
   parseWrapperEnvsOption,
-  typesHandler,
 } from "../lib";
 import { createLogger } from "./utils/createLogger";
 
+import { typesHandler } from "@polywrap/core-js";
 import path from "path";
 import yaml from "yaml";
 import fs from "fs";
