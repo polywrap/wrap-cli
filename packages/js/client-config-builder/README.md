@@ -544,14 +544,14 @@ export const plugins: IDefaultPlugins = {
   },
   ethereumProviderV2: {
     uri: Uri.from("plugin/ethereum-provider@2.0.0"),
-    plugin: EthProviderV2.plugin({
-      connections: new EthProviderV2.Connections({
+    plugin: EthProvider.plugin({
+      connections: new EthProvider.Connections({
         networks: {
-          mainnet: new EthProviderV2.Connection({
+          mainnet: new EthProvider.Connection({
             provider:
               "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
           }),
-          goerli: new EthProviderV2.Connection({
+          goerli: new EthProvider.Connection({
             provider:
               "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
           }),
