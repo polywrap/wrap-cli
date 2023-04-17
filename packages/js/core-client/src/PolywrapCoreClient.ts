@@ -287,7 +287,7 @@ export class PolywrapCoreClient implements CoreClient {
         result: loadWrapperResult.ok
           ? UriResolutionResult.ok(typedOptions.uri, loadWrapperResult.value)
           : UriResolutionResult.err(loadWrapperResult.error),
-        description: `Client- loadWrapper(${typedOptions.uri.uri})`,
+        description: `Client.loadWrapper(${typedOptions.uri.uri})`,
         subHistory: loadWrapperContext.getHistory(),
       });
 
@@ -318,7 +318,7 @@ export class PolywrapCoreClient implements CoreClient {
         result: invokeResult.ok
           ? UriResolutionResult.ok(finalUri)
           : ResultErr(invokeResult.error),
-        description: `Client - Invoke(${finalUri.uri})`,
+        description: `Client.invoke(${finalUri.uri})`,
         subHistory: invokeContext.getHistory(),
       });
 

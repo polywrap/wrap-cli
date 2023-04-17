@@ -1,5 +1,4 @@
 import { UriResolverExtensionFileReader } from "./UriResolverExtensionFileReader";
-import { loadResolverExtension } from "./ResolverExtensionLoader";
 
 import {
   Uri,
@@ -7,7 +6,6 @@ import {
   UriResolverInterface,
   IUriResolutionContext,
   UriPackageOrWrapper,
-  getEnvFromUriHistory,
   IUriResolver,
 } from "@polywrap/core-js";
 import { Result, ResultOk } from "@polywrap/result";
@@ -96,56 +94,27 @@ const tryResolveUriWithImplementation = async (
 ): Promise<
   Result<UriResolverInterface.MaybeUriOrManifest | undefined, unknown>
 > /* $ */ => {
-  const loadResolverContext = resolutionContext.createSubContext();
-  const result = await loadResolverExtension(
-    uri,
-    implementationUri,
-    client,
-    loadResolverContext
-  );
+  const resolverExtensionContext = resolutionContext.createSubContext();
 
-  resolutionContext.trackStep({
-    sourceUri: uri,
-    result: result.ok
-      ? UriResolutionResult.ok(implementationUri, result.value)
-      : UriResolutionResult.err(result.error),
-    description: `ResolverExtension - Load(${implementationUri.uri})`,
-    subHistory: loadResolverContext.getHistory(),
-  });
-
-  if (!result.ok) {
-    return result;
-  }
-
-  const extensionWrapper = result.value;
-
-  const resolveWithExtensionContext = resolutionContext.createSubContext();
-
-  const env = getEnvFromUriHistory(
-    loadResolverContext.getResolutionPath(),
-    client
-  );
-  const invokeResult = await client.invokeWrapper<UriResolverInterface.MaybeUriOrManifest>(
+  const invokeResult = await client.invoke<UriResolverInterface.MaybeUriOrManifest>(
     {
-      wrapper: extensionWrapper,
       uri: implementationUri,
       method: "tryResolveUri",
       args: {
         authority: uri.authority,
         path: uri.path,
       },
-      env: env,
-      resolutionContext: resolveWithExtensionContext,
+      resolutionContext: resolverExtensionContext,
     }
   );
 
   resolutionContext.trackStep({
     sourceUri: uri,
     result: invokeResult.ok
-      ? getResult(invokeResult.value, uri, implementationUri, client)
-      : UriResolutionResult.err(result),
-    description: `ResolverExtension - Invoke(${implementationUri.uri})`,
-    subHistory: resolveWithExtensionContext.getHistory(),
+      ? UriResolutionResult.ok(implementationUri)
+      : UriResolutionResult.err(invokeResult.error),
+    description: `ResolverExtension (${implementationUri.uri})`,
+    subHistory: resolverExtensionContext.getHistory(),
   });
 
   if (!invokeResult.ok) {
