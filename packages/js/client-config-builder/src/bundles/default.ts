@@ -5,7 +5,7 @@ import * as ipfsResolver from "./embeds/async-ipfs-resolver/wrap";
 
 import { IWrapPackage, Uri } from "@polywrap/core-js";
 import * as EthProviderV1 from "@polywrap/ethereum-provider-js-v1";
-import * as EthProviderV2 from "@polywrap/ethereum-provider-js-v2";
+import * as EthProvider from "@polywrap/ethereum-provider-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { fileSystemPlugin } from "@polywrap/file-system-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
@@ -37,9 +37,9 @@ export const embeds: IDefaultEmbeds = {
     source: Uri.from("ens/wraps.eth:ipfs-http-client@1.0.0"),
   },
   ipfsResolver: {
-    uri: Uri.from("embed/async-ipfs-uri-resolver-ext@1.0.0"),
+    uri: Uri.from("embed/async-ipfs-uri-resolver-ext@1.0.1"),
     package: ipfsResolver.wasmPackage,
-    source: Uri.from("ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.0"),
+    source: Uri.from("ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.1"),
   },
 };
 
@@ -48,13 +48,13 @@ type UriResolverExtBootloader = [IDefaultEmbed, IUriRedirect, ...Uri[]];
 export const uriResolverExts: UriResolverExtBootloader = [
   embeds.ipfsResolver,
   {
-    from: Uri.from("ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0"),
-    to: Uri.from("ipfs/QmaM318ABUXDhc5eZGGbmDxkb2ZgnbLxigm5TyZcCsh1Kw"),
+    from: Uri.from("ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.1"),
+    to: Uri.from("ipfs/QmXcHWtKkfrFmcczdMSXH7udsSyV3UJeoWzkaUqGBm1oYs"),
   },
-  Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.0"),
-  Uri.from("ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0"),
+  Uri.from("ens/wraps.eth:http-uri-resolver-ext@1.0.1"),
+  Uri.from("ens/wraps.eth:file-system-uri-resolver-ext@1.0.1"),
+  Uri.from("ens/wraps.eth:ens-uri-resolver-ext@1.0.1"),
+  Uri.from("ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.1"),
 ];
 
 interface IDefaultPlugin {
@@ -119,14 +119,14 @@ export const plugins: IDefaultPlugins = {
   },
   ethereumProviderV2: {
     uri: Uri.from("plugin/ethereum-provider@2.0.0"),
-    plugin: EthProviderV2.plugin({
-      connections: new EthProviderV2.Connections({
+    plugin: EthProvider.plugin({
+      connections: new EthProvider.Connections({
         networks: {
-          mainnet: new EthProviderV2.Connection({
+          mainnet: new EthProvider.Connection({
             provider:
               "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
           }),
-          goerli: new EthProviderV2.Connection({
+          goerli: new EthProvider.Connection({
             provider:
               "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
           }),

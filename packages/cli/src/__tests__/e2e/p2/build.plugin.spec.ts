@@ -7,7 +7,7 @@ import { testBuildOutput } from "../helpers/testBuildOutput";
 import { BuildCommandOptions } from "../../../commands";
 
 describe("e2e tests for build command - plugin project", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin/build-cmd");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "build-cmd/plugin");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())

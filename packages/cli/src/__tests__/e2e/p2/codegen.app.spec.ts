@@ -9,7 +9,7 @@ import path from "path";
 import fs from "fs";
 
 describe("e2e tests for codegen command - app project", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "app", "codegen");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "codegen/app");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())

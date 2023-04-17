@@ -3,6 +3,7 @@ import { Logger } from "../logging";
 import { intlMsg } from "../intl";
 import { Status, WorkflowOutput } from "../workflow";
 
+import { typesHandler } from "@polywrap/core-js";
 import path from "path";
 import fs from "fs";
 import os from "os";
@@ -13,20 +14,6 @@ export function cueExists(logger: Logger): boolean {
   const { stdout } = runCommandSync("cue", ["version"], logger);
   return stdout ? stdout.startsWith("cue version ") : false;
 }
-
-export const typesHandler = (_: unknown, value: unknown): unknown => {
-  if (value instanceof Map) {
-    return Array.from(value).reduce(
-      (obj: Record<string, unknown>, [key, value]) => {
-        obj[key] = value;
-        return obj;
-      },
-      {}
-    );
-  }
-
-  return value;
-};
 
 export function validateOutput(
   output: WorkflowOutput,

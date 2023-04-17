@@ -31,7 +31,9 @@ class TestResolver implements IUriResolver<Error> {
         );
         break;
       case "wrap://test/wrapper":
-        let wrapperResult = await PluginPackage.from(() => ({})).createWrapper();
+        let wrapperResult = await PluginPackage.from(
+          () => ({})
+        ).createWrapper();
         if (!wrapperResult.ok) {
           throw wrapperResult.error;
         }
@@ -42,19 +44,13 @@ class TestResolver implements IUriResolver<Error> {
         );
         break;
       case "wrap://test/from":
-        result = UriResolutionResult.ok(
-          Uri.from("test/to"),
-        );
+        result = UriResolutionResult.ok(Uri.from("test/to"));
         break;
       case "wrap://test/A":
-        result = UriResolutionResult.ok(
-          Uri.from("test/B"),
-        );
+        result = UriResolutionResult.ok(Uri.from("test/B"));
         break;
       case "wrap://test/B":
-        result = UriResolutionResult.ok(
-          Uri.from("test/wrapper"),
-        );
+        result = UriResolutionResult.ok(Uri.from("test/wrapper"));
         break;
       default:
         throw new Error(`Unexpected URI: ${uri.uri}`);
@@ -76,10 +72,7 @@ describe("WrapperCacheResolver", () => {
 
     const cache = new WrapperCache();
     const client = new PolywrapCoreClient({
-      resolver: WrapperCacheResolver.from(
-        new TestResolver(),
-        cache
-      ),
+      resolver: WrapperCacheResolver.from(new TestResolver(), cache),
     });
 
     let resolutionContext = new UriResolutionContext();
@@ -88,7 +81,7 @@ describe("WrapperCacheResolver", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
-      "wrapper-without-cache",
+      "wrapper-without-cache"
     );
 
     if (!result.ok) {
@@ -107,7 +100,7 @@ describe("WrapperCacheResolver", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
-      "wrapper-with-cache",
+      "wrapper-with-cache"
     );
 
     if (!result.ok) {
@@ -137,7 +130,7 @@ describe("WrapperCacheResolver", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
-      "uri-without-cache",
+      "uri-without-cache"
     );
 
     if (!result.ok) {
@@ -156,7 +149,7 @@ describe("WrapperCacheResolver", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
-      "uri-without-cache",
+      "uri-without-cache"
     );
 
     if (!result.ok) {
@@ -186,7 +179,7 @@ describe("WrapperCacheResolver", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
-      "package-without-cache",
+      "package-without-cache"
     );
 
     if (!result.ok) {
@@ -205,7 +198,7 @@ describe("WrapperCacheResolver", () => {
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
-      "package-without-cache",
+      "package-without-cache"
     );
 
     if (!result.ok) {
@@ -223,20 +216,20 @@ describe("WrapperCacheResolver", () => {
     const cache = new WrapperCache();
     const client = new PolywrapCoreClient({
       resolver: RecursiveResolver.from(
-        WrapperCacheResolver.from(
-          new TestResolver(),
-          cache
-        )
+        WrapperCacheResolver.from(new TestResolver(), cache)
       ),
     });
 
     let resolutionContext = new UriResolutionContext();
-    let result = await client.tryResolveUri({ uri: Uri.from("test/A"), resolutionContext });
+    let result = await client.tryResolveUri({
+      uri: Uri.from("test/A"),
+      resolutionContext,
+    });
 
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
-      "resolution-path-without-cache",
+      "resolution-path-without-cache"
     );
 
     if (!result.ok) {
@@ -250,12 +243,15 @@ describe("WrapperCacheResolver", () => {
     expect(result.value.uri.uri).toEqual("wrap://test/wrapper");
 
     resolutionContext = new UriResolutionContext();
-    result = await client.tryResolveUri({ uri: Uri.from("test/A"), resolutionContext });
+    result = await client.tryResolveUri({
+      uri: Uri.from("test/A"),
+      resolutionContext,
+    });
 
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
-      "resolution-path-A-with-cache",
+      "resolution-path-A-with-cache"
     );
 
     if (!result.ok) {
@@ -269,12 +265,15 @@ describe("WrapperCacheResolver", () => {
     expect(result.value.uri.uri).toEqual("wrap://test/A");
 
     resolutionContext = new UriResolutionContext();
-    result = await client.tryResolveUri({ uri: Uri.from("test/B"), resolutionContext });
+    result = await client.tryResolveUri({
+      uri: Uri.from("test/B"),
+      resolutionContext,
+    });
 
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
-      "resolution-path-B-with-cache",
+      "resolution-path-B-with-cache"
     );
 
     if (!result.ok) {
@@ -288,12 +287,15 @@ describe("WrapperCacheResolver", () => {
     expect(result.value.uri.uri).toEqual("wrap://test/B");
 
     resolutionContext = new UriResolutionContext();
-    result = await client.tryResolveUri({ uri: Uri.from("test/wrapper"), resolutionContext });
+    result = await client.tryResolveUri({
+      uri: Uri.from("test/wrapper"),
+      resolutionContext,
+    });
 
     await expectHistory(
       resolutionContext.getHistory(),
       "wrapper-cache-resolver",
-      "resolution-path-wrapper-with-cache",
+      "resolution-path-wrapper-with-cache"
     );
 
     if (!result.ok) {

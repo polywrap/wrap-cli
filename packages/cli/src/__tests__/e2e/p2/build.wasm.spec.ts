@@ -37,7 +37,7 @@ Options:
 jest.setTimeout(500000);
 
 describe("e2e tests for build command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/build-cmd/assemblyscript");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "build-cmd/wasm/assemblyscript");
   const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
