@@ -1,6 +1,7 @@
-import { ILogger } from "@polywrap/logging-js";
 import { PolywrapManifest as OldManifest } from "../0.2.0";
 import { PolywrapManifest as NewManifest } from "../0.3.0";
+
+import { ILogger } from "@polywrap/logging-js";
 
 export function migrate(migrate: OldManifest, logger?: ILogger): NewManifest {
   if (migrate.extensions?.meta) {
@@ -21,8 +22,11 @@ export function migrate(migrate: OldManifest, logger?: ILogger): NewManifest {
     );
     delete migrate.extensions.infra;
   }
+  const hasExtensions =
+    migrate.extensions && Object.keys(migrate.extensions).length > 0;
   return {
     ...migrate,
     format: "0.3.0",
+    extensions: hasExtensions ? migrate.extensions : undefined,
   };
 }
