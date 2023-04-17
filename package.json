@@ -1,11 +1,11 @@
 {
   "name": "root",
-  "description": "Polywrap Monorepo",
+  "description": "Polywrap Toolchain",
   "license": "MIT",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/polywrap/monorepo.git"
+    "url": "https://github.com/polywrap/toolchain.git"
   },
   "workspaces": {
     "packages": [
@@ -15,7 +15,6 @@
       "./packages/schema/**",
       "./packages/templates/**",
       "./packages/test-cases",
-      "./packages/test-env/**",
       "./packages/wasm/**"
     ]
   },
