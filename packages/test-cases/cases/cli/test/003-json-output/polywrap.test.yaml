@@ -1,0 +1,42 @@
+name: run-test-wrapper
+format: 0.2.0
+jobs:
+  cases:
+    steps:
+    - uri: fs/../run-test-wrapper/build
+      method: add
+      args:
+        x: 1
+        y: 1
+    jobs:
+      case1:
+        steps:
+        - uri: fs/../run-test-wrapper/build
+          method: add
+          args:
+            x: "$cases.0.data"
+            y: 1
+        jobs:
+          case12:
+            steps:
+              - uri: fs/../run-test-wrapper/build
+                method: add
+                args:
+                  x: "$cases.case1.0.data"
+                  y: 1
+      case2:
+        steps:
+          - uri: fs/../run-test-wrapper/build
+            method: add
+            args:
+              x: "$cases.0.data"
+              y: "$cases.0.data"
+      case3:
+        steps:
+          - uri: fs/../run-test-wrapper/build
+            method: returnMap
+            args:
+              map:
+                nested_map:
+                  Hello: 1
+                  Heyo: 50

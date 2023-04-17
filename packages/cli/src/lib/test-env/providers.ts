@@ -1,11 +1,11 @@
-import { providers } from "@polywrap/test-env-js";
+import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "../../lib";
 
-export async function getTestEnvProviders(
+export function getTestEnvProviders(
   ipfsProvider?: string,
   ethProvider?: string
-): Promise<{ ipfsProvider?: string; ethProvider?: string }> {
+): { ipfsProvider?: string; ethProvider?: string } {
   return {
-    ipfsProvider: ipfsProvider ?? providers.ipfs,
-    ethProvider: ethProvider ?? providers.ethereum,
+    ipfsProvider: ipfsProvider ?? ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,
+    ethProvider: ethProvider ?? ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider,
   };
 }

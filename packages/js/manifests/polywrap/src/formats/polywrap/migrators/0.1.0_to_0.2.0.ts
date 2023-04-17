@@ -1,7 +1,8 @@
+import { ILogger } from "@polywrap/logging-js";
 import { PolywrapManifest as OldManifest } from "../0.1.0";
 import { PolywrapManifest as NewManifest } from "../0.2.0";
 
-export function migrate(manifest: OldManifest): NewManifest {
+export function migrate(manifest: OldManifest, logger?: ILogger): NewManifest {
   const shouldHaveExtensions =
     manifest.build || manifest.deploy || manifest.meta;
 
@@ -10,6 +11,16 @@ export function migrate(manifest: OldManifest): NewManifest {
     deploy: manifest.deploy,
     meta: manifest.meta,
   };
+
+  if (
+    manifest.import_redirects?.some((x) =>
+      x.schema.includes("build/schema.graphql")
+    )
+  ) {
+    logger?.warn(
+      `Detected a reference to "build/schema.graphql" in "import_redirects". Consider using "build/wrap.info" instead of "build/schema.graphql" in "source.import_abis", schema.graphql is no longer emitted as a build artifact.`
+    );
+  }
 
   return {
     format: "0.2.0",
@@ -30,4 +41,4 @@ export function migrate(manifest: OldManifest): NewManifest {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     __type: "PolywrapManifest",
   };
-};
+}

@@ -1,0 +1,15 @@
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+use wrap_manifest_schemas::versions::{WrapManifest, WrapManifestAbi};
+use serde_json::{json, from_value};
+
+{{#manifest}}
+pub fn get_manifest() -> WrapManifest {
+  WrapManifest {
+    name: "{{name}}".to_string(),
+    type_: "{{type}}".to_string(),
+    version: "{{version}}".to_string(),
+    abi: from_value::<WrapManifestAbi>(json!({{abi}})).unwrap()
+  }
+}
+{{/manifest}}

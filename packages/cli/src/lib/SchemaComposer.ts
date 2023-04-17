@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable no-empty */
 
 import { Project, AnyProjectManifest, intlMsg } from "./";
 
@@ -11,8 +12,7 @@ import {
 } from "@polywrap/schema-compose";
 import fs from "fs";
 import path from "path";
-import * as gluegun from "gluegun";
-import YAML from "js-yaml";
+import YAML from "yaml";
 import {
   deserializeWrapManifest,
   validateWrapManifest,
@@ -58,10 +58,8 @@ export class SchemaComposer {
 
     const options: ComposerOptions = {
       schema: schemaFile,
-      resolvers: {
-        external: (uri: string) => this._fetchExternalAbi(uri, import_abis),
-        local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
-      },
+      abiResolver: (importFrom: string, schemaFile: SchemaFile) =>
+        this._abiResolver(schemaFile, importFrom, import_abis),
     };
 
     this._abi = await composeSchema(options);
@@ -72,16 +70,32 @@ export class SchemaComposer {
     this._abi = undefined;
   }
 
-  private _fetchLocalSchema(schemaPath: string) {
-    return fs.readFileSync(
-      path.isAbsolute(schemaPath)
-        ? schemaPath
-        : path.join(this._config.project.getManifestDir(), schemaPath),
-      "utf-8"
-    );
+  private _abiResolver(
+    schemaFile: SchemaFile,
+    importFrom: string,
+    import_abis?: PolywrapManifest["source"]["import_abis"]
+  ): Promise<WrapAbi | SchemaFile> {
+    if (Uri.isValidUri(importFrom)) {
+      return this._resolveUri(importFrom, import_abis);
+    } else {
+      return Promise.resolve(
+        this._resolvePath(importFrom, path.dirname(schemaFile.absolutePath))
+      );
+    }
   }
 
-  private async _fetchExternalAbi(
+  private _resolvePath(importFrom: string, sourceDir: string): SchemaFile {
+    const schemaPath = path.isAbsolute(importFrom)
+      ? importFrom
+      : path.join(sourceDir, importFrom);
+    const schema = fs.readFileSync(schemaPath, "utf-8");
+    return {
+      schema,
+      absolutePath: schemaPath,
+    };
+  }
+
+  private async _resolveUri(
     uri: string,
     import_abis?: PolywrapManifest["source"]["import_abis"]
   ): Promise<WrapAbi> {
@@ -127,13 +141,16 @@ export class SchemaComposer {
       }
     }
 
-    try {
-      const manifest = await this._client.getManifest(new Uri(uri));
-      return manifest.abi;
-    } catch (e) {
-      gluegun.print.error(e);
-      throw e;
+    const manifest = await this._client.getManifest(new Uri(uri));
+    if (!manifest.ok) {
+      if (manifest.error) {
+        this._config.project.logger.error(
+          JSON.stringify(manifest.error, null, 2)
+        );
+      }
+      throw manifest.error;
     }
+    return manifest.value.abi;
   }
 
   private async _loadGraphqlAbi(
@@ -147,10 +164,8 @@ export class SchemaComposer {
         schema: schema,
         absolutePath: path,
       },
-      resolvers: {
-        external: (uri: string) => this._fetchExternalAbi(uri, import_abis),
-        local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
-      },
+      abiResolver: (importFrom, schemaFile) =>
+        this._abiResolver(schemaFile, importFrom, import_abis),
     });
   }
 
@@ -179,7 +194,11 @@ export class SchemaComposer {
   private async _loadYamlAbi(path: string): Promise<WrapAbi> {
     // Load the YAML ABI
     const yaml = fs.readFileSync(path, "utf-8");
-    const result = YAML.safeLoad(yaml);
+    let result: unknown | undefined;
+
+    try {
+      result = YAML.parse(yaml);
+    } catch (_) {}
 
     if (!result) {
       throw Error(

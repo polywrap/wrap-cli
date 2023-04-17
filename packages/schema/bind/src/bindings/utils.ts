@@ -33,8 +33,8 @@ export function renderTemplates(
       if (dirent.type === "File") {
         const name = path.parse(dirent.name).name;
 
-        // file templates don't contain '_'
-        if (name.indexOf("_") === -1) {
+        // file templates don't start with '$'
+        if (!name.startsWith("$")) {
           const data = Mustache.render(dirent.data, view, subTemplates);
 
           // If the file isn't empty, add it to the output
@@ -80,9 +80,11 @@ export function loadSubTemplates(
 
     const name = path.parse(file.name).name;
 
-    // sub-templates contain '_' in their file names
-    if (name.indexOf("_") > -1) {
-      subTemplates[name] = file.data as string;
+    // sub-templates start with '$' in their file names
+    if (name.startsWith("$")) {
+      // remove the $ from the name
+      const subTemplateName = name.substring(1);
+      subTemplates[subTemplateName] = file.data as string;
     }
   }
 

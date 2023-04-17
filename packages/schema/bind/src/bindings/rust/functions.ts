@@ -154,13 +154,30 @@ export const toWasmInit: MustacheFn = () => {
     }
 
     if (type.startsWith("Map<")) {
-      const openBracketIdx = type.indexOf("<");
-      const closeBracketIdx = type.lastIndexOf(">");
-      const [key, value] = type
-        .substring(openBracketIdx + 1, closeBracketIdx)
-        .split(",")
-        .map((x) => toWasm()(x.trim(), render));
-      return optionalModifier(`Map::<${key}, ${value}>::new()`);
+      const firstOpenBracketIdx = type.indexOf("<");
+      const lastCloseBracketIdx = type.lastIndexOf(">");
+
+      if (firstOpenBracketIdx === -1 || lastCloseBracketIdx === -1) {
+        throw new Error(`Invalid Map: ${type}`);
+      }
+
+      const keyValTypes = type.substring(
+        firstOpenBracketIdx + 1,
+        lastCloseBracketIdx
+      );
+
+      const firstCommaIdx = keyValTypes.indexOf(",");
+      if (firstCommaIdx === -1) {
+        throw new Error(`Invalid Map: ${type}`);
+      }
+
+      const keyType = keyValTypes.substring(0, firstCommaIdx).trim();
+      const valType = keyValTypes.substring(firstCommaIdx + 1).trim();
+
+      const wasmKeyType = toWasm()(keyType, (str) => str);
+      const wasmValType = toWasm()(valType, (str) => str);
+
+      return optionalModifier(`Map::<${wasmKeyType}, ${wasmValType}>::new()`);
     }
 
     switch (type) {
@@ -287,6 +304,16 @@ export const detectKeyword: MustacheFn = () => {
   };
 };
 
+export const serdeKeyword: MustacheFn = () => {
+  return (value: string, render: (template: string) => string): string => {
+    const type = render(value);
+    if (isKeyword(type)) {
+      return `#[serde(rename = "${type}")]\n    `;
+    }
+    return "";
+  };
+};
+
 const toWasmArray = (type: string, optional: boolean): string => {
   const result = type.match(/(\[)([[\]A-Za-z1-9_.!]+)(\])/);
 
@@ -302,23 +329,27 @@ const toWasmMap = (type: string, optional: boolean): string => {
   const firstOpenBracketIdx = type.indexOf("<");
   const lastCloseBracketIdx = type.lastIndexOf(">");
 
-  if (!(firstOpenBracketIdx !== -1 && lastCloseBracketIdx !== -1)) {
+  if (firstOpenBracketIdx === -1 || lastCloseBracketIdx === -1) {
     throw new Error(`Invalid Map: ${type}`);
   }
 
-  const keyValTypes = type
-    .substring(firstOpenBracketIdx + 1, lastCloseBracketIdx)
-    .split(",")
-    .map((x) => x.trim());
+  const keyValTypes = type.substring(
+    firstOpenBracketIdx + 1,
+    lastCloseBracketIdx
+  );
 
-  if (keyValTypes.length !== 2 || !keyValTypes[0] || !keyValTypes[1]) {
+  const firstCommaIdx = keyValTypes.indexOf(",");
+  if (firstCommaIdx === -1) {
     throw new Error(`Invalid Map: ${type}`);
   }
 
-  const keyType = toWasm()(keyValTypes[0], (str) => str);
-  const valType = toWasm()(keyValTypes[1], (str) => str);
+  const keyType = keyValTypes.substring(0, firstCommaIdx).trim();
+  const valType = keyValTypes.substring(firstCommaIdx + 1).trim();
 
-  return applyOptional(`Map<${keyType}, ${valType}>`, optional);
+  const wasmKeyType = toWasm()(keyType, (str) => str);
+  const wasmValType = toWasm()(valType, (str) => str);
+
+  return applyOptional(`Map<${wasmKeyType}, ${wasmValType}>`, optional);
 };
 
 const applyOptional = (type: string, optional: boolean): string => {

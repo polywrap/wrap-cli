@@ -9,7 +9,13 @@ import path from "path";
 export class NodeDependencyFetcher extends InfraDependencyFetcher {
   public async installPackages(packages: InfraPackageArg[]): Promise<void> {
     this.composePackageJson(packages);
-    await runCommand(`cd ${this.config.installationDirectory} && npm i`, true);
+    await runCommand(
+      "npm",
+      ["i"],
+      this.config.logger,
+      undefined,
+      this.config.installationDirectory
+    );
   }
 
   public getPackageDir(packageName: string): string {
@@ -44,6 +50,12 @@ export class NodeDependencyFetcher extends InfraDependencyFetcher {
 export class YarnDependencyFetcher extends NodeDependencyFetcher {
   public async installPackages(packages: InfraPackageArg[]): Promise<void> {
     this.composePackageJson(packages);
-    await runCommand(`cd ${this.config.installationDirectory} && yarn`, true);
+    await runCommand(
+      "yarn",
+      [],
+      this.config.logger,
+      undefined,
+      this.config.installationDirectory
+    );
   }
 }

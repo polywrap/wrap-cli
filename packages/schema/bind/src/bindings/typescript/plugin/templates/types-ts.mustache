@@ -6,8 +6,10 @@ import * as Types from "./";
 
 // @ts-ignore
 import {
-  Client,
-  InvokeResult
+  CoreClient,{{#interfaceTypes.length}}
+  Result,{{/interfaceTypes.length}}
+  InvokeResult,
+  Uri,
 } from "@polywrap/core-js";
 
 export type UInt = number;
@@ -98,7 +100,7 @@ export type {{#detectKeyword}}{{type}}{{/detectKeyword}} = {{type}}Enum | {{type
 {{#importedModuleTypes}}
 {{#methods}}
 /* URI: "{{parent.uri}}" */
-interface {{parent.type}}_Args_{{name}} extends Record<string, unknown> {
+export interface {{parent.type}}_Args_{{name}} {
   {{#arguments}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
@@ -111,12 +113,12 @@ export const {{type}} = {
   {{#methods}}
   {{name}}: async (
     args: {{parent.type}}_Args_{{name}},
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
-      uri: "{{parent.uri}}",
+      uri: Uri.from("{{parent.uri}}"),
       method: "{{name}}",
-      args
+      args: (args as unknown) as Record<string, unknown>,
     });
   }{{^last}},{{/last}}
   {{^last}}
@@ -129,19 +131,21 @@ export const {{type}} = {
 {{#isInterface}}
 export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   public static interfaceUri: string = "{{uri}}";
+  public uri: Uri;
 
-  constructor(public uri: string) {
+  constructor(uri: string) {
+    this.uri = Uri.from(uri);
   }
 
   {{#methods}}
-  public async {{name}} (
+  public async {{name}}(
     args: {{parent.type}}_Args_{{name}},
-    client: Client
+    client: CoreClient
   ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: this.uri,
       method: "{{name}}",
-      args
+      args: (args as unknown) as Record<string, unknown>,
     });
   }
   {{^last}}
@@ -157,13 +161,20 @@ export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
 {{#interfaceTypes}}
 
 export class {{#detectKeyword}}{{namespace}}{{/detectKeyword}} {
-  static uri: string = "{{uri}}";
+  static uri: Uri = Uri.from("{{uri}}");
 
   {{#capabilities}}
   {{#getImplementations}}
   {{#enabled}}
-  public static getImplementations(client: Client): string[] {
-    return client.getImplementations(this.uri, {});
+  public static async getImplementations(
+    client: CoreClient
+  ): Promise<Result<string[], Error>> {
+    const impls = await client.getImplementations(this.uri, {});
+    if (!impls.ok) {
+      return { ok: false, error: impls.error};
+    }
+
+    return { ok: true, value: impls.value.map((impl) => (impl.uri))};
   }
   {{/enabled}}
   {{/getImplementations}}

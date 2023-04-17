@@ -7,7 +7,8 @@ A simple starter template for an AssemblyScript Wasm wrapper. For more informati
 `nvm install && nvm use`  
 `yarn`  
 
-## Build
+## Codegen & Build
+`yarn codegen`  
 `yarn build`  
 
 ## Test

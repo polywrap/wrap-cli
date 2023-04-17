@@ -1,0 +1,18 @@
+#import { Module } into Ethereum from "ens/wraps.eth:ethereum@1.0.0"
+
+type Module {
+  method(
+    str: String!
+    optStr: String
+  ): Object!
+}
+
+type Object {
+  u: UInt!
+  array: [Boolean!]!
+  bytes: Bytes
+}
+
+type Env {
+  arg1: String!
+}

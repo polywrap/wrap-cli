@@ -1,0 +1,46 @@
+FROM node:{{node_version}}-alpine as base
+
+RUN apk --no-cache --virtual build-dependencies add bash
+
+{{#polywrap_linked_packages.length}}
+WORKDIR /linked-packages
+{{/polywrap_linked_packages.length}}
+
+{{#polywrap_linked_packages}}
+COPY {{dir}} ./{{name}}
+{{/polywrap_linked_packages}}
+
+WORKDIR /project
+
+# Install deps in its own step, making rebuilds faster
+# when just the Polywrap schema & implementation files change
+COPY package.json .
+{{#polywrap_linked_packages}}
+RUN npx json -I -f package.json -e "this.dependencies['{{name}}']='../linked-packages/{{name}}'"
+{{/polywrap_linked_packages}}
+RUN yarn
+
+# Copy all manifest files
+{{#polywrap_manifests}}
+COPY {{.}} .
+{{/polywrap_manifests}}
+
+# Copy all source files
+{{#include}}
+COPY {{.}} {{.}}
+{{/include}}
+{{#polywrap_module}}
+COPY {{dir}} {{dir}}
+
+ENV ASYNCIFY_STACK_SIZE=24576
+
+# Build the module at {{dir}}
+RUN ./node_modules/.bin/asc {{dir}}/wrap/entry.ts \
+    --path ./node_modules \
+    --outFile ./build/wrap.wasm \
+    --use abort={{dir}}/wrap/entry/wrapAbort \
+    --optimize --optimizeLevel 3 --shrinkLevel 2 \
+    --importMemory \
+    --runtime stub \
+    --runPasses asyncify
+{{/polywrap_module}}

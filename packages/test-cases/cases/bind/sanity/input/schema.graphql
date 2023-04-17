@@ -40,7 +40,8 @@ type Module @imports(
     "TestImport_Module",
     "TestImport_Object",
     "TestImport_AnotherObject",
-    "TestImport_Enum"
+    "TestImport_Enum",
+    "TestImport_Enum_Return"
   ]
 ) @capability(
   type: "getImplementations",
@@ -56,6 +57,7 @@ type Module @imports(
     optEnumArray: [CustomEnum]
     map: Map! @annotate(type: "Map<String!, Int!>!")
     mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+    mapOfMap: Map! @annotate(type: "Map<String!, Map<String!, Int!>!>!")
     mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
     mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
   ): Int!
@@ -180,6 +182,10 @@ type TestImport_Module @imported(
   anotherMethod(
     arg: [String!]!
   ): Int32!
+
+  returnsArrayOfEnums(
+    arg: String!
+  ): [TestImport_Enum_Return]!
 }
 
 ### Imported Modules END ###
@@ -210,6 +216,15 @@ type TestImport_AnotherObject @imported(
 }
 
 enum TestImport_Enum @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Enum"
+) {
+  STRING
+  BYTES
+}
+
+enum TestImport_Enum_Return @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
   nativeType: "Enum"

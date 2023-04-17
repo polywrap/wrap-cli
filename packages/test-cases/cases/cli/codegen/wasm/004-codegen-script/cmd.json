@@ -1,0 +1,4 @@
+{
+  "script": "polywrap.gen.ts",
+  "codegenDir": "./wrap"
+}

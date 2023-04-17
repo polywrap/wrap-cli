@@ -5,6 +5,7 @@ import {
   CacheDirectory,
   CacheDirectoryConfig,
 } from "../";
+import { Logger } from "../logging";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { BindOutput } from "@polywrap/schema-bind";
@@ -12,7 +13,7 @@ import { Abi } from "@polywrap/schema-parse";
 
 export interface ProjectConfig {
   rootDir: string;
-  quiet?: boolean;
+  logger: Logger;
 }
 
 export abstract class Project<TManifest extends AnyProjectManifest> {
@@ -65,13 +66,17 @@ export abstract class Project<TManifest extends AnyProjectManifest> {
     PolywrapManifest["source"]["import_abis"]
   >;
 
+  public abstract getGenerationDirectory(
+    generationSubPath?: string
+  ): Promise<string>;
+
   public abstract generateSchemaBindings(
     abi: Abi,
     generationSubPath?: string,
     bindConfig?: Record<string, unknown>
   ): Promise<BindOutput>;
 
-  public get quiet(): boolean {
-    return !!this._config.quiet;
+  public get logger(): Logger {
+    return this._config.logger;
   }
 }

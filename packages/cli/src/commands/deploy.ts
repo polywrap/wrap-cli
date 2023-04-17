@@ -1,31 +1,26 @@
 /* eslint-disable prefer-const */
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
+import { createLogger } from "./utils/createLogger";
 import {
-  defaultPolywrapManifest,
-  DeployerHandler,
-  DeployPackage,
   intlMsg,
-  parseWasmManifestFileOption,
-  PolywrapProject,
-  ResultList,
+  parseManifestFileOption,
+  parseLogFileOption,
+  Deployer,
+  defaultDeployManifest,
+  DeployJobResult,
 } from "../lib";
 
-import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
-import nodePath from "path";
-import { print } from "gluegun";
-import yaml from "js-yaml";
-import { Uri } from "@polywrap/core-js";
-import { validate } from "jsonschema";
+import path from "path";
+import yaml from "yaml";
 
-const defaultManifestStr = defaultPolywrapManifest.join(" | ");
+const defaultManifestStr = defaultDeployManifest.join(" | ");
 const pathStr = intlMsg.commands_deploy_options_o_path();
 
-type DeployCommandOptions = {
+export interface DeployCommandOptions extends BaseCommandOptions {
   manifestFile: string;
-  outputFile?: string;
-  verbose?: boolean;
-};
+  outputFile: string | false;
+}
 
 export const deploy: Command = {
   setup: (program: Program) => {
@@ -43,181 +38,93 @@ export const deploy: Command = {
         `-o, --output-file <${pathStr}>`,
         `${intlMsg.commands_deploy_options_o()}`
       )
-      .option(`-v, --verbose`, `${intlMsg.commands_deploy_options_v()}`)
-      .action(async (options) => {
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
+      .action(async (options: Partial<DeployCommandOptions>) => {
         await run({
-          ...options,
-          manifestFile: parseWasmManifestFileOption(options.manifestFile),
+          manifestFile: parseManifestFileOption(
+            options.manifestFile,
+            defaultDeployManifest
+          ),
+          outputFile: options.outputFile || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
+          logFile: parseLogFileOption(options.logFile),
         });
       });
   },
 };
 
-async function run(options: DeployCommandOptions): Promise<void> {
-  const { manifestFile, verbose, outputFile } = options;
+async function run(options: Required<DeployCommandOptions>): Promise<void> {
+  const { manifestFile, outputFile, verbose, quiet, logFile } = options;
+  const logger = createLogger({ verbose, quiet, logFile });
 
-  const project = new PolywrapProject({
-    rootDir: nodePath.dirname(manifestFile),
-    polywrapManifestPath: manifestFile,
-    quiet: !verbose,
-  });
-  await project.validate();
+  const deployer = await Deployer.create(manifestFile, logger);
 
-  const deployManifest = await project.getDeployManifest();
-
-  if (!deployManifest) {
-    throw new Error("No deploy manifest found.");
-  }
-
-  const packageNames = [
-    ...new Set(Object.values(deployManifest.stages).map((d) => d.package)),
-  ];
-
-  sanitizePackages(packageNames);
-
-  await project.cacheDeployModules(packageNames);
-
-  const packageMap: Record<string, DeployPackage> = {};
-  const stageToPackageMap: Record<string, DeployPackage> = {};
-
-  for await (const packageName of packageNames) {
-    packageMap[packageName] = await project.getDeployModule(packageName);
-  }
-
-  Object.entries(deployManifest.stages).forEach(([stageName, stageValue]) => {
-    stageToPackageMap[stageName] = packageMap[stageValue.package];
-  });
-
-  validateManifestWithExts(deployManifest, stageToPackageMap);
-
-  const handlers: Record<string, DeployerHandler> = {};
-  const roots: { handler: DeployerHandler; uri: Uri }[] = [];
-
-  // Create all handlers
-  Object.entries(deployManifest.stages).forEach(([stageName, stageValue]) => {
-    const publisher = stageToPackageMap[stageName].deployer;
-    handlers[stageName] = new DeployerHandler(
-      stageName,
-      publisher,
-      stageValue.config,
-      print
-    );
-  });
-
-  // Establish dependency chains
-  Object.entries(deployManifest.stages).forEach(([key, value]) => {
-    const thisHandler = handlers[key];
-
-    if (value.depends_on) {
-      // Depends on another stage
-      handlers[value.depends_on].addNext(thisHandler);
-    } else if (value.uri) {
-      // It is a root node
-      roots.push({ uri: new Uri(value.uri), handler: thisHandler });
-    } else {
-      throw new Error(
-        `Stage '${key}' needs either previous (depends_on) stage or URI`
-      );
+  // set primary job before running
+  let primaryJobName = deployer.manifest.primaryJobName;
+  const jobNames = Object.keys(deployer.manifest.jobs);
+  if (primaryJobName) {
+    // validate primary job name
+    if (!jobNames.find((jobName) => jobName === primaryJobName)) {
+      logger.error(intlMsg.commands_deploy_error_primaryJobNotFound());
+      process.exit(1);
     }
-  });
-
-  // Execute roots
-
-  const resultLists: ResultList[] = [];
-
-  for await (const root of roots) {
-    print.info(`\nExecuting deployment chain: \n`);
-    root.handler.getDependencyTree().printTree();
-    print.info("");
-    await root.handler.handle(root.uri);
-    resultLists.push(root.handler.getResultsList());
+  } else {
+    // default to first job
+    primaryJobName = jobNames[0];
   }
 
-  const getResults = (
-    resultList: ResultList,
-    prefix?: string
-  ): {
-    name: string;
-    input: unknown;
-    result: string;
-    id: string;
-  }[] => {
-    const id = prefix ? `${prefix}.${resultList.name}` : resultList.name;
+  const jobResults = await deployer.run();
 
-    return [
-      {
-        id,
-        name: resultList.name,
-        input: resultList.input,
-        result: resultList.result,
-      },
-      ...resultList.children.flatMap((r) => getResults(r, id)),
-    ];
-  };
+  // get deployment uri
+  const primaryJob = jobResults.find(
+    (job) => job.name === primaryJobName
+  ) as DeployJobResult;
+  const deploymentStep = primaryJob.steps.length - 1;
+  const deploymentUri = primaryJob.steps[deploymentStep].result.uri;
+
+  // write deployment uri to file
+  const manifestDir = path.dirname(manifestFile);
+  const deploymentFilepath = path.join(manifestDir, "URI.txt");
+  fs.writeFileSync(deploymentFilepath, deploymentUri);
+  logger.info(
+    intlMsg.commands_deploy_deployment_written({
+      primaryJobName,
+      deploymentFilepath,
+    })
+  );
+
+  // update historic deployment log
+  deployer
+    .getCacheDir()
+    .appendToCacheFile(
+      `deploy.log`,
+      `${new Date().toISOString()} ${deploymentUri}\n`
+    );
 
   if (outputFile) {
-    const resultOutput = resultLists.flatMap((r) => getResults(r));
-
-    const outputFileExt = nodePath.extname(outputFile).substring(1);
+    const outputFileExt = path.extname(outputFile).substring(1);
     if (!outputFileExt) throw new Error("Require output file extension");
     switch (outputFileExt) {
       case "yaml":
       case "yml":
-        fs.writeFileSync(outputFile, yaml.dump(resultOutput));
+        fs.writeFileSync(outputFile, yaml.stringify(jobResults, null, 2));
         break;
       case "json":
-        fs.writeFileSync(outputFile, JSON.stringify(resultOutput, null, 2));
+        fs.writeFileSync(outputFile, JSON.stringify(jobResults, null, 2));
         break;
       default:
         throw new Error(
-          intlMsg.commands_run_error_unsupportedOutputFileExt({ outputFileExt })
+          intlMsg.commands_test_error_unsupportedOutputFileExt({
+            outputFileExt,
+          })
         );
     }
   }
-  return;
-}
-
-function sanitizePackages(packages: string[]) {
-  const unrecognizedPackages: string[] = [];
-
-  const availableDeployers = fs.readdirSync(
-    nodePath.join(__dirname, "..", "lib", "defaults", "deploy-modules")
-  );
-
-  packages.forEach((p) => {
-    if (!availableDeployers.includes(p)) {
-      unrecognizedPackages.push(p);
-    }
-  });
-
-  if (unrecognizedPackages.length) {
-    throw new Error(
-      `Unrecognized packages: ${unrecognizedPackages.join(", ")}`
-    );
-  }
-}
-
-function validateManifestWithExts(
-  deployManifest: DeployManifest,
-  stageToPackageMap: Record<string, DeployPackage>
-) {
-  const errors = Object.entries(
-    stageToPackageMap
-  ).flatMap(([stageName, deployPackage]) =>
-    deployPackage.manifestExt
-      ? validate(
-          deployManifest.stages[stageName].config,
-          deployPackage.manifestExt
-        ).errors
-      : []
-  );
-
-  if (errors.length) {
-    throw new Error(
-      [
-        `Validation errors encountered while sanitizing DeployManifest format ${deployManifest.format}`,
-        ...errors.map((error) => error.toString()),
-      ].join("\n")
-    );
-  }
+  process.exit(0);
 }

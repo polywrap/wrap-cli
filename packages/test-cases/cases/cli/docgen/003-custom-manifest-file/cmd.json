@@ -1,3 +1,4 @@
 {
-  "args": ["docusaurus", "-m", "./polywrap.custom.yaml"]
+  "doc": "docusaurus",
+  "manifestFile": "./polywrap.custom.yaml"
 }

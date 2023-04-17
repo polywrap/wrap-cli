@@ -1,0 +1,11 @@
+name: run-test-wrapper
+format: 0.2.0
+validation: "./validator.cue"
+jobs:
+  cases:
+    steps:
+    - uri: fs/../run-test-wrapper/build
+      method: add
+      args:
+        x: "foo"
+        y: 1

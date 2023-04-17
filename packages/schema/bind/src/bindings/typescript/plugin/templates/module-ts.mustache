@@ -1,17 +1,16 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
+// @ts-ignore
 import * as Types from "./types";
 
-import {
-  Client,
-  PluginModule,
-  MaybeAsync
-} from "@polywrap/core-js";
+// @ts-ignore
+import { CoreClient, MaybeAsync } from "@polywrap/core-js";
+import { PluginModule } from "@polywrap/plugin-js";
 {{#moduleType}}
 {{#methods}}
 
-export interface Args_{{name}} extends Record<string, unknown> {
+export interface Args_{{name}} {
   {{#arguments}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
@@ -19,19 +18,17 @@ export interface Args_{{name}} extends Record<string, unknown> {
 {{/methods}}
 {{/moduleType}}
 
-export abstract class Module<
-  TConfig
-> extends PluginModule<
-  TConfig{{#envType}},
-  Types.Env{{/envType}}
-> {
+export abstract class Module<TConfig> extends PluginModule<TConfig{{#envType}}, Types.Env{{/envType}}> {
   {{#moduleType}}
   {{#methods}}
-
   abstract {{name}}(
     args: Args_{{name}},
-    client: Client
+    client: CoreClient,
+    {{^env}}env?: null{{/env}}{{#env}}env{{^required}}?{{/required}}: Types.Env{{^required}} | null{{/required}}{{/env}}
   ): MaybeAsync<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
+  {{^last}}
+
+  {{/last}}
   {{/methods}}
   {{/moduleType}}
 }

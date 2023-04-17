@@ -1,9 +1,0 @@
-#import { Module } into HTTP from "ens/http.polywrap.eth"
-
-type Module {
-  querySubgraph(
-    subgraphAuthor: String!
-    subgraphName: String!
-    query: String!
-  ): String!
-}

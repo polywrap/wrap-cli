@@ -1,36 +1,57 @@
-import { Command, Program } from "./types";
+import { Command, Program, BaseCommandOptions } from "./types";
+import { createLogger } from "./utils/createLogger";
 import {
   Compiler,
   PolywrapProject,
   SchemaComposer,
-  Watcher,
-  WatchEvent,
-  watchEventName,
   intlMsg,
   defaultPolywrapManifest,
-  isDockerInstalled,
-  FileLock,
-  parseWasmManifestFileOption,
   parseDirOption,
   parseClientConfigOption,
+  parseManifestFileOption,
+  parseLogFileOption,
+  getProjectFromManifest,
+  isPolywrapManifestLanguage,
+  polywrapManifestLanguages,
+  pluginManifestLanguages,
+  parseWrapperEnvsOption,
 } from "../lib";
+import { CodeGenerator } from "../lib/codegen";
+import {
+  DockerVMBuildStrategy,
+  BuildStrategy,
+  SupportedStrategies,
+  DockerImageBuildStrategy,
+  LocalBuildStrategy,
+  NoopBuildStrategy,
+} from "../lib/build-strategies";
+import { DEFAULT_CODEGEN_DIR } from "../lib/defaults";
+import { watchProject } from "../lib/watchProject";
 
-import { print } from "gluegun";
-import path from "path";
-import readline from "readline";
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
+import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 
 const defaultOutputDir = "./build";
+const defaultStrategy = SupportedStrategies.VM;
+const strategyStr = Object.values(SupportedStrategies).join(" | ");
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
 
-type BuildCommandOptions = {
+const supportedProjectTypes = [
+  ...Object.values(polywrapManifestLanguages),
+  ...Object.values(pluginManifestLanguages),
+];
+
+export interface BuildCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputDir: string;
-  clientConfig: Partial<PolywrapClientConfig>;
-  watch?: boolean;
-  verbose?: boolean;
-};
+  clientConfig: string | false;
+  wrapperEnvs: string | false;
+  noCodegen: boolean;
+  codegenDir: string;
+  watch: boolean;
+  strategy: `${SupportedStrategies}`;
+}
 
 export const build: Command = {
   setup: (program: Program) => {
@@ -54,130 +75,210 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
-      .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
-      .option(`-v, --verbose`, `${intlMsg.commands_build_options_v()}`)
-      .action(async (options) => {
-        await run({
-          ...options,
-          manifestFile: parseWasmManifestFileOption(options.manifestFile),
-          clientConfig: await parseClientConfigOption(options.clientConfig),
-          outputDir: parseDirOption(options.outputDir, defaultOutputDir),
-        });
-      });
+      .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_codegen()}`)
+      .option(
+        `--codegen-dir`,
+        `${intlMsg.commands_build_options_codegen_dir({
+          default: DEFAULT_CODEGEN_DIR,
+        })}`
+      )
+      .option(
+        `--wrapper-envs <${intlMsg.commands_common_options_wrapperEnvsPath()}>`,
+        `${intlMsg.commands_common_options_wrapperEnvs()}`
+      )
+      .option(
+        `-s, --strategy <${strategyStr}>`,
+        `${intlMsg.commands_build_options_s({
+          default: defaultStrategy,
+        })}`
+      )
+      .option(`-w, --watch`, `${intlMsg.commands_common_options_w()}`)
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
+      .action(
+        async (
+          options: Partial<BuildCommandOptions> & { codegen: boolean }
+        ) => {
+          await run({
+            manifestFile: parseManifestFileOption(
+              options.manifestFile,
+              defaultPolywrapManifest
+            ),
+            clientConfig: options.clientConfig || false,
+            wrapperEnvs: options.wrapperEnvs || false,
+            outputDir: parseDirOption(options.outputDir, defaultOutputDir),
+            noCodegen: !options.codegen || false,
+            codegenDir: parseDirOption(options.codegenDir, DEFAULT_CODEGEN_DIR),
+            strategy: options.strategy || defaultStrategy,
+            watch: options.watch || false,
+            verbose: options.verbose || false,
+            quiet: options.quiet || false,
+            logFile: parseLogFileOption(options.logFile),
+          });
+        }
+      );
   },
 };
 
-async function run(options: BuildCommandOptions) {
-  const { watch, verbose, manifestFile, outputDir, clientConfig } = options;
+async function validateManifestModules(polywrapManifest: PolywrapManifest) {
+  if (
+    polywrapManifest.project.type !== "interface" &&
+    !polywrapManifest.source.module
+  ) {
+    const missingModuleMessage = intlMsg.lib_compiler_missingModule();
+    throw Error(missingModuleMessage);
+  }
+
+  if (
+    polywrapManifest.project.type === "interface" &&
+    polywrapManifest.source.module
+  ) {
+    const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
+    throw Error(noInterfaceModule);
+  }
+}
+
+function createBuildStrategy(
+  strategy: BuildCommandOptions["strategy"],
+  outputDir: string,
+  project: PolywrapProject
+): BuildStrategy {
+  switch (strategy) {
+    case SupportedStrategies.LOCAL:
+      return new LocalBuildStrategy({ outputDir, project });
+    case SupportedStrategies.IMAGE:
+      return new DockerImageBuildStrategy({ outputDir, project });
+    case SupportedStrategies.VM:
+      return new DockerVMBuildStrategy({ outputDir, project });
+    default:
+      throw Error(`Unknown strategy: ${strategy}`);
+  }
+}
+
+async function run(options: Required<BuildCommandOptions>) {
+  const {
+    watch,
+    manifestFile,
+    clientConfig,
+    wrapperEnvs,
+    outputDir,
+    strategy,
+    noCodegen,
+    codegenDir,
+    verbose,
+    quiet,
+    logFile,
+  } = options;
+
+  const logger = createLogger({ verbose, quiet, logFile });
+
+  const envs = await parseWrapperEnvsOption(wrapperEnvs);
+  const configBuilder = await parseClientConfigOption(clientConfig);
+
+  if (envs) {
+    configBuilder.addEnvs(envs);
+  }
 
   // Get Client
-  const client = new PolywrapClient(clientConfig);
+  const client = new PolywrapClient(configBuilder.build());
 
-  // Ensure docker is installed
-  if (!isDockerInstalled()) {
-    console.log(intlMsg.lib_docker_noInstall());
+  const project = await getProjectFromManifest(manifestFile, logger);
+
+  if (!project) {
     return;
   }
 
-  const project = new PolywrapProject({
-    rootDir: path.dirname(manifestFile),
-    polywrapManifestPath: manifestFile,
-    quiet: !verbose,
-  });
   await project.validate();
 
-  const dockerLock = new FileLock(
-    project.getCachePath("build/DOCKER_LOCK"),
-    print.error
-  );
+  const manifest = await project.getManifest();
+  const language = manifest.project.type;
 
-  const schemaComposer = new SchemaComposer({
-    project,
-    client,
-  });
+  if (supportedProjectTypes.indexOf(language) === -1) {
+    logger.error(
+      intlMsg.commands_build_error_unsupportedProjectType({
+        supportedTypes: supportedProjectTypes.join(", "),
+      })
+    );
+    process.exit(1);
+  }
 
-  const compiler = new Compiler({
-    project,
-    outputDir,
-    schemaComposer,
-  });
+  let buildStrategy: BuildStrategy<unknown>;
+  let canRunCodegen = true;
 
-  const execute = async (): Promise<boolean> => {
-    compiler.reset();
-    const result = await compiler.compile();
+  if (isPolywrapManifestLanguage(language)) {
+    await validateManifestModules(manifest as PolywrapManifest);
 
-    if (!result) {
-      return result;
+    const isInterface = language === "interface";
+
+    if (isInterface) {
+      buildStrategy = new NoopBuildStrategy({
+        project: project as PolywrapProject,
+        outputDir,
+      });
+    } else {
+      buildStrategy = createBuildStrategy(
+        strategy,
+        outputDir,
+        project as PolywrapProject
+      );
     }
 
-    return true;
+    canRunCodegen = !isInterface;
+  }
+
+  const execute = async (): Promise<boolean> => {
+    try {
+      const schemaComposer = new SchemaComposer({
+        project,
+        client,
+      });
+
+      if (canRunCodegen && !noCodegen) {
+        const codeGenerator = new CodeGenerator({
+          project,
+          schemaComposer,
+          codegenDirAbs: codegenDir,
+        });
+        const codegenSuccess = await codeGenerator.generate();
+
+        if (!codegenSuccess) {
+          logger.error(intlMsg.commands_build_error_codegen_failed());
+          return false;
+        }
+      }
+
+      const compiler = new Compiler({
+        project: project as PolywrapProject,
+        outputDir,
+        schemaComposer,
+        buildStrategy,
+      });
+
+      return await compiler.compile();
+    } catch (err) {
+      logger.error(err.message);
+      return false;
+    }
   };
 
   if (!watch) {
-    await dockerLock.request();
     const result = await execute();
-    await dockerLock.release();
 
     if (!result) {
-      process.exitCode = 1;
-      return;
+      process.exit(1);
     }
+
+    process.exit(0);
   } else {
-    // Execute
-    await dockerLock.request();
-    await execute();
-    await dockerLock.release();
-
-    const keyPressListener = () => {
-      // Watch for escape key presses
-      console.log(
-        `${intlMsg.commands_build_keypressListener_watching()}: ${project.getManifestDir()}`
-      );
-      console.log(intlMsg.commands_build_keypressListener_exit());
-      readline.emitKeypressEvents(process.stdin);
-      process.stdin.on("keypress", async (str, key) => {
-        if (
-          key.name == "escape" ||
-          key.name == "q" ||
-          (key.name == "c" && key.ctrl)
-        ) {
-          await watcher.stop();
-          await dockerLock.release();
-          process.kill(process.pid, "SIGINT");
-        }
-      });
-
-      if (process.stdin.setRawMode) {
-        process.stdin.setRawMode(true);
-      }
-
-      process.stdin.resume();
-    };
-
-    keyPressListener();
-
-    // Watch the directory
-    const watcher = new Watcher();
-
-    watcher.start(project.getManifestDir(), {
+    await watchProject({
+      execute,
+      logger,
+      project,
       ignored: [outputDir + "/**", project.getManifestDir() + "/**/wrap/**"],
-      ignoreInitial: true,
-      execute: async (events: WatchEvent[]) => {
-        // Log all of the events encountered
-        for (const event of events) {
-          console.log(`${watchEventName(event.type)}: ${event.path}`);
-        }
-
-        // Execute the build
-        await dockerLock.request();
-        await execute();
-        await dockerLock.release();
-
-        // Process key presses
-        keyPressListener();
-      },
     });
   }
-
-  process.exitCode = 0;
 }

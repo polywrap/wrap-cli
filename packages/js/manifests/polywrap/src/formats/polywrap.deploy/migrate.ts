@@ -8,35 +8,38 @@ import {
   AnyDeployManifest,
   DeployManifest,
   DeployManifestFormats,
-  latestDeployManifestFormat
 } from ".";
-
-
-type Migrator = {
-  [key in DeployManifestFormats]?: (m: AnyDeployManifest) => DeployManifest;
-};
-
-export const migrators: Migrator = {
-};
+import { findShortestMigrationPath } from "../../migrations";
+import { migrators } from "./migrators";
+import { ILogger } from "@polywrap/logging-js";
 
 export function migrateDeployManifest(
   manifest: AnyDeployManifest,
-  to: DeployManifestFormats
+  to: DeployManifestFormats,
+  logger?: ILogger
 ): DeployManifest {
   let from = manifest.format as DeployManifestFormats;
-
-  // HACK: Patch fix for backwards compatability
-  if(from === "0.1" && ("0.1.0" in migrators)) {
-    from = "0.1.0" as DeployManifestFormats;
-  }
-
-  if (from === latestDeployManifestFormat) {
-    return manifest as DeployManifest;
-  }
 
   if (!(Object.values(DeployManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized DeployManifestFormat "${manifest.format}"`);
   }
 
-  throw new Error(`This should never happen, DeployManifest migrators is empty. from: ${from}, to: ${to}`);
+  if (!(Object.values(DeployManifestFormats).some(x => x === to))) {
+    throw new Error(`Unrecognized DeployManifestFormat "${to}"`);
+  }
+
+  const migrationPath = findShortestMigrationPath(migrators, from, to);
+  if (!migrationPath) {
+    throw new Error(
+      `Migration path from DeployManifestFormat "${from}" to "${to}" is not available`
+    );
+  }
+
+  let newManifest = manifest;
+
+  for(const migrator of migrationPath){
+    newManifest = migrator.migrate(newManifest, logger) as AnyDeployManifest;
+  }
+
+  return newManifest as DeployManifest;
 }

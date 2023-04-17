@@ -1,28 +1,49 @@
-import { Command, Program } from "./types";
-import { generateProjectTemplate, intlMsg } from "../lib";
+import { Command, Program, BaseCommandOptions } from "./types";
+import { createLogger } from "./utils/createLogger";
+import {
+  downloadProjectTemplate,
+  generateProjectTemplate,
+  intlMsg,
+  parseLogFileOption,
+  parseUrlFormat,
+  UrlFormat,
+} from "../lib";
 
-import { prompt, filesystem } from "gluegun";
+import fse from "fs-extra";
+import path from "path";
+import yesno from "yesno";
+import rimraf from "rimraf";
 import { Argument } from "commander";
 
 const nameStr = intlMsg.commands_create_options_projectName();
 const langStr = intlMsg.commands_create_options_lang();
 const langsStr = intlMsg.commands_create_options_langs();
+const formatsStr = intlMsg.commands_create_options_formats();
 const createProjStr = intlMsg.commands_create_options_createProject();
 const createAppStr = intlMsg.commands_create_options_createApp();
 const createPluginStr = intlMsg.commands_create_options_createPlugin();
+const createTemplateStr = intlMsg.commands_create_options_t();
 const pathStr = intlMsg.commands_create_options_o_path();
+const urlStr = intlMsg.commands_create_options_t_url();
 
 export const supportedLangs = {
   wasm: ["assemblyscript", "rust", "interface"] as const,
-  app: ["typescript-node", "typescript-react"] as const,
+  app: ["typescript"] as const,
   plugin: ["typescript"] as const,
 };
 
 export type ProjectType = keyof typeof supportedLangs;
-export type SupportedLangs = typeof supportedLangs[ProjectType][number];
-type CreateCommandOptions = {
-  outputDir?: string;
-};
+export type SupportedWasmLangs = typeof supportedLangs.wasm[number];
+export type SupportedAppLangs = typeof supportedLangs.app[number];
+export type SupportedPluginLangs = typeof supportedLangs.plugin[number];
+type SupportedLangs =
+  | SupportedWasmLangs
+  | SupportedAppLangs
+  | SupportedPluginLangs;
+
+export interface CreateCommandOptions extends BaseCommandOptions {
+  outputDir: string | false;
+}
 
 export const create: Command = {
   setup: (program: Program) => {
@@ -46,9 +67,22 @@ export const create: Command = {
         `-o, --output-dir <${pathStr}>`,
         `${intlMsg.commands_create_options_o()}`
       )
-      .action(async (langStr, nameStr, options) => {
-        await run("wasm", langStr, nameStr, options);
-      });
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
+      .action(
+        async (language, name, options: Partial<CreateCommandOptions>) => {
+          await run("wasm", language, name, {
+            outputDir: options.outputDir || false,
+            verbose: options.verbose || false,
+            quiet: options.quiet || false,
+            logFile: parseLogFileOption(options.logFile),
+          });
+        }
+      );
 
     createCommand
       .command("app")
@@ -65,9 +99,22 @@ export const create: Command = {
         `-o, --output-dir <${pathStr}>`,
         `${intlMsg.commands_create_options_o()}`
       )
-      .action(async (langStr, nameStr, options) => {
-        await run("app", langStr, nameStr, options);
-      });
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
+      .action(
+        async (language, name, options: Partial<CreateCommandOptions>) => {
+          await run("app", language, name, {
+            outputDir: options.outputDir || false,
+            verbose: options.verbose || false,
+            quiet: options.quiet || false,
+            logFile: parseLogFileOption(options.logFile),
+          });
+        }
+      );
 
     createCommand
       .command(`plugin`)
@@ -84,62 +131,116 @@ export const create: Command = {
         `-o, --output-dir <${pathStr}>`,
         `${intlMsg.commands_create_options_o()}`
       )
-      .action(async (langStr, nameStr, options) => {
-        await run("plugin", langStr, nameStr, options);
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
+      .action(
+        async (language, name, options: Partial<CreateCommandOptions>) => {
+          await run("plugin", language, name, {
+            outputDir: options.outputDir || false,
+            verbose: options.verbose || false,
+            quiet: options.quiet || false,
+            logFile: parseLogFileOption(options.logFile),
+          });
+        }
+      );
+
+    createCommand
+      .command("template")
+      .description(
+        `${createTemplateStr} ${formatsStr}: ${Object.values(UrlFormat).join(
+          ", "
+        )}`
+      )
+      .addArgument(new Argument("<url>", urlStr).argRequired())
+      .addArgument(new Argument("<name>", nameStr))
+      .option(
+        `-o, --output-dir <${pathStr}>`,
+        `${intlMsg.commands_create_options_o()}`
+      )
+      .option("-v, --verbose", intlMsg.commands_common_options_verbose())
+      .option("-q, --quiet", intlMsg.commands_common_options_quiet())
+      .option(
+        `-l, --log-file [${pathStr}]`,
+        `${intlMsg.commands_build_options_l()}`
+      )
+      .action(async (url, name, options: Partial<CreateCommandOptions>) => {
+        await run("template", url, name, {
+          outputDir: options.outputDir || false,
+          verbose: options.verbose || false,
+          quiet: options.quiet || false,
+          logFile: parseLogFileOption(options.logFile),
+        });
       });
   },
 };
 
 async function run(
-  command: ProjectType,
-  lang: SupportedLangs,
+  command: ProjectType | "template",
+  languageOrUrl: SupportedLangs | string,
   name: string,
-  options: CreateCommandOptions
+  options: Required<CreateCommandOptions>
 ) {
-  const { outputDir } = options;
+  const { outputDir, verbose, quiet, logFile } = options;
+  const logger = createLogger({ verbose, quiet, logFile });
 
-  const projectDir = outputDir ? `${outputDir}/${name}` : name;
+  // if using custom template, check url validity before creating project dir
+  let urlFormat: UrlFormat | undefined;
+  if (command === "template") {
+    try {
+      urlFormat = parseUrlFormat(languageOrUrl);
+    } catch (e) {
+      logger.error(e.message);
+      process.exit(1);
+    }
+  }
+
+  const projectDir = path.resolve(outputDir ? `${outputDir}/${name}` : name);
 
   // check if project already exists
-  if (!filesystem.exists(projectDir)) {
-    console.log();
-    console.info(intlMsg.commands_create_settingUp());
+  if (!fse.existsSync(projectDir)) {
+    logger.info(intlMsg.commands_create_settingUp());
+    fse.mkdirSync(projectDir, { recursive: true });
   } else {
     const directoryExistsMessage = intlMsg.commands_create_directoryExists({
       dir: projectDir,
     });
-    console.info(directoryExistsMessage);
-    const overwrite = await prompt.confirm(
-      intlMsg.commands_create_overwritePrompt()
-    );
+    logger.info(directoryExistsMessage);
+    const overwrite = await yesno({
+      question: intlMsg.commands_create_overwritePrompt(),
+    });
     if (overwrite) {
       const overwritingMessage = intlMsg.commands_create_overwriting({
         dir: projectDir,
       });
-      console.info(overwritingMessage);
-      filesystem.remove(projectDir);
+      logger.info(overwritingMessage);
+      rimraf.sync(projectDir);
     } else {
       process.exit(8);
     }
   }
 
-  generateProjectTemplate(command, lang, projectDir, filesystem)
-    .then(() => {
-      console.log();
-      let readyMessage;
-      if (command === "wasm") {
-        readyMessage = intlMsg.commands_create_readyProtocol();
-      } else if (command === "app") {
-        readyMessage = intlMsg.commands_create_readyApp();
-      } else if (command === "plugin") {
-        readyMessage = intlMsg.commands_create_readyPlugin();
-      }
-      console.info(`🔥 ${readyMessage} 🔥`);
-    })
-    .catch((err) => {
-      const commandFailError = intlMsg.commands_create_error_commandFail({
-        error: err.command,
-      });
-      console.error(commandFailError);
+  try {
+    if (command === "template") {
+      await downloadProjectTemplate(
+        languageOrUrl,
+        projectDir,
+        logger,
+        urlFormat
+      );
+    } else {
+      await generateProjectTemplate(command, languageOrUrl, projectDir);
+    }
+    logger.info(`🔥 ${intlMsg.commands_create_ready()} 🔥`);
+    process.exit(0);
+  } catch (err) {
+    const commandFailError = intlMsg.commands_create_error_commandFail({
+      error: JSON.stringify(err, null, 2),
     });
+    logger.error(commandFailError);
+    process.exit(1);
+  }
 }

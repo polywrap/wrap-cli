@@ -1,0 +1,21 @@
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
+// @ts-ignore
+import * as Types from "./types";
+
+// @ts-ignore
+import { CoreClient, MaybeAsync } from "@polywrap/core-js";
+import { PluginModule } from "@polywrap/plugin-js";
+
+export interface Args_method {
+  str: Types.String;
+}
+
+export abstract class Module<TConfig> extends PluginModule<TConfig, Types.Env> {
+  abstract method(
+    args: Args_method,
+    client: CoreClient,
+    env?: Types.Env | null
+  ): MaybeAsync<Types.String>;
+}

@@ -1,7 +1,6 @@
 import { ExternalImport, LocalImport, SYNTAX_REFERENCE, Use } from "./types";
 import { getDuplicates } from "./utils";
 
-import Path from "path";
 import { CapabilityType } from "@polywrap/schema-parse";
 
 export function parseUse(useStatements: RegExpMatchArray[]): Use[] {
@@ -82,7 +81,7 @@ export function parseExternalImports(
     externalImports.push({
       importedTypes,
       namespace,
-      uri,
+      importFrom: uri,
     });
   }
 
@@ -96,34 +95,31 @@ export function parseExternalImports(
   // Make sure all uris have the same namespace
   const uriToNamespace: Record<string, string> = {};
   for (const ext of externalImports) {
-    if (uriToNamespace[ext.uri]) {
-      if (uriToNamespace[ext.uri] !== ext.namespace) {
+    if (uriToNamespace[ext.importFrom]) {
+      if (uriToNamespace[ext.importFrom] !== ext.namespace) {
         throw Error(
           `Imports from a single URI must be imported into the same namespace.\nURI: ${
-            ext.uri
+            ext.importFrom
           }\nNamespace 1: ${ext.namespace}\nNamespace 2: ${
-            uriToNamespace[ext.uri]
+            uriToNamespace[ext.importFrom]
           }`
         );
       }
     } else {
-      uriToNamespace[ext.uri] = ext.namespace;
+      uriToNamespace[ext.importFrom] = ext.namespace;
     }
   }
 
   return externalImports;
 }
 
-export function parseLocalImports(
-  imports: RegExpMatchArray[],
-  schemaPath: string
-): LocalImport[] {
+export function parseLocalImports(imports: RegExpMatchArray[]): LocalImport[] {
   const localImports: LocalImport[] = [];
 
   for (const importStatement of imports) {
     if (importStatement.length !== 3) {
       throw Error(
-        `Invalid external import statement found:\n${importStatement[0]}\n` +
+        `Invalid local import statement found:\n${importStatement[0]}\n` +
           `Please use the following syntax...\n${SYNTAX_REFERENCE}`
       );
     }
@@ -134,8 +130,7 @@ export function parseLocalImports(
       .map((str) => str.replace(/(\s+|\{|\})/g, ""))
       // Remove empty strings
       .filter(Boolean);
-    const importPath = importStatement[2];
-    const path = Path.join(Path.dirname(schemaPath), importPath);
+    const importFrom = importStatement[2];
 
     // Make sure the developer does not try to import a dependencies dependency
     const index = importTypes.findIndex((str) => str.indexOf("_") > -1);
@@ -147,7 +142,7 @@ export function parseLocalImports(
 
     localImports.push({
       importedTypes: importTypes,
-      path,
+      importFrom: importFrom,
     });
   }
 

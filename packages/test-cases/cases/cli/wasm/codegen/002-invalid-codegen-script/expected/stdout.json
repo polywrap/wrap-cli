@@ -1,4 +1,0 @@
-{
-  "stdout": "Failed to generate types: The generation file provided doesn't have the 'generateBinding' method.",
-  "exitCode": 1
-}

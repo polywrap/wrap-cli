@@ -1,0 +1,17 @@
+set -e
+
+{{#polywrap_linked_packages}}
+json -I -f package.json -e 'this.dependencies["{{name}}"]="../linked-packages/{{name}}"'
+{{/polywrap_linked_packages}}
+{{#polywrap_module}}
+yarn
+export ASYNCIFY_STACK_SIZE=24576
+asc {{dir}}/wrap/entry.ts \
+    --path ./node_modules \
+    --outFile ./build/wrap.wasm \
+    --use abort={{dir}}/wrap/entry/wrapAbort \
+    --optimize --optimizeLevel 3 --shrinkLevel 2 \
+    --importMemory \
+    --runtime stub \
+    --runPasses asyncify
+{{/polywrap_module}}

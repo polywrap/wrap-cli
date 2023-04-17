@@ -1,3 +1,463 @@
+# Polywrap Origin (0.10.0)
+## Features
+### Toolchain
+**`polywrap` CLI:**
+* [PR-1592](https://github.com/polywrap/toolchain/pull/1592) **Add `primaryJob` to deploy manifest and output `URI.txt` when running `polywrap deploy`**
+  * The `primaryJob` option in the deploy manifest identifies the name of the job that is used for the primary deployment. The URI that is emitted from the `primaryJob` will be output to a `URI.txt` file next to the deploy manifest.
+* [PR-1529](https://github.com/polywrap/toolchain/pull/1529) **`polywrap create template` Command**
+  * Added the `polywrap create template` command to the CLI, enabling users to provide a url to a template project.
+* [PR-1584](https://github.com/polywrap/toolchain/pull/1584) **Codegen Command Now Supports `--watch`**
+  * You can now run npx `polywrap codegen --watch` which will automatically watch files within your project directory and re-run codegen whenever changes are detected.
+* [PR-1677](https://github.com/polywrap/toolchain/pull/1677) **Python Plugin Support**
+  * Add bindings for `plugin/python` projects.
+* [PR-1428](https://github.com/polywrap/toolchain/pull/1428) **Rust Plugin Support**
+  * Add bindings for `plugin/rust` projects.
+* [PR-1437](https://github.com/polywrap/toolchain/pull/1437) **Support Custom Wrapper Environment Variables**
+  * Enable users to customize the CLI's internal client's wrapper environment via a `--wrapper-envs` option, added to the `build`, `codegen`, `docgen`, and `test` commands.
+* [PR-1430](https://github.com/polywrap/toolchain/pull/1430) **Support Arbitrary Resources Files**
+  * Polywrap `wasm/` & `interface/` projects can now include a `resources:` directory, specified in the `polywrap.yaml` manifest. This resources directory will be copied into the `build/` folder upon runnin `polywrap build`. For example:
+    ```yaml
+    format: 0.3.0
+    project:
+      type: interface | wasm/...
+      ...
+    source:
+      ...
+    resources: ./resources
+    ```
+* [PR-1349](https://github.com/polywrap/toolchain/pull/1349) **Log File Support**
+  * A `-l, --log-file [path]` option has been added to all commands. Its purpose is to configure a `Log file to save console output to`, useful in situations when the console log overflows.
+
+**`@polywrap/cli-js`:**
+* [PR-1359](https://github.com/polywrap/toolchain/pull/1359) **Polywrap CLI JS Wrapper**
+  * Created the `polywrap/cli-js` package to wrap the `polywrap` CLI with a JavaScript/TypeScript interface.
+
+**`@polywrap/polywrap-manifest-schemas`:**
+* [PR-1430](https://github.com/polywrap/toolchain/pull/1430) **Support Arbitrary Resources Files**
+  * Added version `0.3.0` of the `PolywrapManifest`, which includes the new `resources: string` field.
+
+**`@polywrap/polywrap-manifest-types-js`:**
+* [PR-1379](https://github.com/polywrap/toolchain/pull/1379) **Add Logging to Manifest Migrators**
+  * Added an optional logger parameter to the deserialization function of all manifest types.
+* [PR-1430](https://github.com/polywrap/toolchain/pull/1430) **Support Arbitrary Resources Files**
+  * Added version `0.3.0` of the `PolywrapManifest`, which includes the new `resources: string` field.
+
+**`@polywrap/schema-bind`:**
+* [PR-1677](https://github.com/polywrap/toolchain/pull/1677) **Python Plugin Support**
+  * Add bindings for `plugin/python` projects.
+* [PR-1464](https://github.com/polywrap/toolchain/pull/1464) **`wasm/rust` Bindings Now Use `ModuleTrait` Trait**
+  * Codegen for `wasm/rust` wraps now generates a `ModuleTrait` trait that must be implemented for the root `Module` struct.
+* [PR-1460](https://github.com/polywrap/toolchain/pull/1460) **`wasm/assemblyscript` Bindings Now Use `ModuleBase` Interface**
+  * Codegen for `wasm/assemblyscript` wraps now generates a `ModuleBase` interface that must be extended by a root `Module` class.
+* [PR-1428](https://github.com/polywrap/toolchain/pull/1428) **Rust Plugin Support**
+    * Add bindings for `plugin/rust` projects.
+* [PR-1236](https://github.com/polywrap/toolchain/pull/1236) **Plugin Refactor**
+  * In `plugin-ts` bindings, the `PluginModule` type is now imported fron `@polywrap/plugin-js` instead of `@polywrap/core-js`.
+
+**`@polywrap/schema-compose`:**
+* [PR-1600](https://github.com/polywrap/toolchain/pull/1600) **Allow WRAP URIs in Un-Namespaced Imports**
+  * Support URIs within un-namespaced import statements like so `#import { Object, Module } from "wrap://..."`
+  * This effectively enables the "embedding" of external ABIs, which is useful when you'd like to copy 1:1 an ABI that lives elsewhere.
+
+### JS Client
+**`@polywrap/client-js`:**
+* [PR-1582](https://github.com/polywrap/toolchain/pull/1582) **Support ENS Text Record WRAP URIs**
+  * Support has been added for using ENS text records as valid `wrap://` URIs.
+  * Example: [`wrap://ens/uniswap.wraps.eth:v3`](https://app.ens.domains/name/uniswap.wraps.eth/details)
+  * NOTE: Text record key names must begin with `wrap/`
+* [PR-1431](https://github.com/polywrap/toolchain/pull/1431) **WRAP Error Structure**
+  * Integrate the `WrapError` structure, helping debug common client error scenarios.
+* [PR-1340](https://github.com/polywrap/toolchain/pull/1340) **Wrapper Validation**
+  * Added a `validate(uri, options)` method to the `PolywrapClient` class, allowing users to guarantee the client can communicate with the provided wrapper located at the provided URI.
+* [PR-1236](https://github.com/polywrap/toolchain/pull/1236) **Plugin Refactor**
+  * Polywrap Client now re-exports the config builder and uri-resolvers (in addition to core) packages. This is done to improve dev exp and remove the need for users to import those package themselves.
+    * For users who do not need those packages and are using noDefaults there will be a separate PR that refactor core client functionality into a core-client package that does not depend on the config builder and uri-resolvers packages, but has no defaults.
+
+**`@polywrap/client-config-builder-js`:**
+* [PR-1582](https://github.com/polywrap/toolchain/pull/1582) **Integrate URI Resolver Extension Wraps**
+  * The default configuration bundle now has the following uri-resolver-ext wraps registered as interface implementations:
+    * [`wrap://ens/wraps.eth:ipfs-uri-resolver-ext@1.0.0](https://github.com/polywrap/uri-resolver-extensions/tree/master/implementations/ipfs)
+    * [`wrap://ens/wraps.eth:ens-text-record-uri-resolver-ext@1.0.0`](https://github.com/polywrap/uri-resolver-extensions/tree/master/implementations/ens-text-record)
+    * [`wrap://ens/wraps.eth:http-uri-resolver-ext@1.0.0`](https://github.com/polywrap/uri-resolver-extensions/tree/master/implementations/http)
+    * [`wrap://ens/wraps.eth:file-system-uri-resolver-ext@1.0.0`](https://github.com/polywrap/uri-resolver-extensions/tree/master/implementations/file-system)
+    * [`wrap://ens/wraps.eth:ens-uri-resolver-ext@1.0.0`](https://github.com/polywrap/uri-resolver-extensions/tree/master/implementations/ens-contenthash)
+    * [`wrap://ens/wraps.eth:ens-ipfs-contenthash-uri-resolver-ext@1.0.0`](https://github.com/polywrap/uri-resolver-extensions/tree/master/implementations/ens-ipfs-contenthash)
+* [PR-1560](https://github.com/polywrap/toolchain/pull/1560) **Add `BuildOptions` to build method in `IClientConfigBuilder`**
+  * This makes it possible to add a custom cache or resolver without casting.
+* [PR-1475](https://github.com/polywrap/toolchain/pull/1475) **Embed IPFS HTTP Client & IPFS URI Resolver Wraps**
+  * The default configuration bundle now comes with two embedded wraps that enable interactions with IPFS:
+    * `ipfs-http-client` @ `wrap://ens/wraps.eth:ipfs-http-client@1.0.0`
+    * `async-ipfs-uri-resolver-ext` @ `wrap://ens/wraps.eth:async-ipfs-uri-resolver-ext@1.0.1`
+* [PR-1518](https://github.com/polywrap/toolchain/pull/1518) **Optional Build Method Arguments**
+  * The `build(...)` method now accepts a single argument of type `BuildOptions`.
+* [PR-1496](https://github.com/polywrap/toolchain/pull/1496) **Use New Concurrent Wrapper**
+  * The default config bundle now uses the `wrap://ens/wrappers.polywrap.eth:concurrent@1.0.0` interface, and adds the `concurrent-plugin-js` package @ `wrap://plugin/concurrent` as an implementation.
+* [PR-1468](https://github.com/polywrap/toolchain/pull/1468) **Export Default Config Bundle URIs**
+  * The default config now exports constants for all URIs used within the config.
+* [PR-1436](https://github.com/polywrap/toolchain/pull/1436) **Use New Logger Wrapper**
+  * The default config bundle now uses the `wrap://ens/wrappers.polywrap.eth:logger@1.0.0` interface, and adds the `@polywrap/logger-plugin-js` package @ `wrap://plugin/logger` as an implementation.
+* [PR-1411](https://github.com/polywrap/toolchain/pull/1411) **Add `ens-text-record-resolver` to Default Config Bundle**
+  * The `ens-text-record-resolver` wrapper @ [`wrap://ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY`](https://wrappers.io/v/ipfs/QmfRCVA1MSAjUbrXXjya4xA9QHkbWeiKRsT7Um1cvrR7FY) has been added to the default client config bundle. This resolver enables ENS, text-record based, WRAP URI resolution. The text-record's key must be prepended with the `wrap/...` identifier. For example, the URI `wrap://ens/domain.eth:foo` maps to `domain.eth`'s `wrap/foo` text record. The `wrap/foo` text-record's value must contain another valid WRAP URI. For examples, see [dev.polywrap.eth](https://app.ens.domains/name/dev.polywrap.eth/details).
+* [PR-1236](https://github.com/polywrap/toolchain/pull/1236) **Plugin Refactor**
+  * Added `addRedirects`, `addWrappers`, `addPackages` methods to the `ClientConfigBuilder`, so users can add many items at once.
+  * Added `buildDefault` to the `ClientConfigBuilder` which builds a `ClientConfig` using default resolvers.
+
+**`@polywrap/plugin-js`:**
+* [PR-1614](https://github.com/polywrap/toolchain/pull/1614) **Add `env` To `PluginModule` Invocation Method Arguments**
+  * `PluginModule` invocation methods will now be given an `env` the method's arguments.
+* [PR-1236](https://github.com/polywrap/toolchain/pull/1236) **Plugin Refactor**
+  * New package for js plugins.
+  * Can create plugin packages with `PluginPackage.from`.
+    * Accepts `manifest` and a `PluginModule`, or an inline `PluginModule`.
+
+**`@polywrap/uri-resolvers-js`:**
+* [PR-1646](https://github.com/polywrap/toolchain/pull/1646) **Resolution Result Cache Resolver**
+  * Added a new cache resolver `ResolutionResultCacheResolver`.
+  * Unlike the `WrapperCacheResolver`, which caches wrappers (URI => Wrapper), this resolver caches the result of the resolution process: URI, wrapper, package or error (URI => URI, URI => wrapper, URI => package, URI => error).
+  * By default, it does not cache errors, but a flag can be passed to enable that functionality.
+* [PR-1528](https://github.com/polywrap/toolchain/pull/1528) **Request Synchronizer Resolver**
+  * With URI resolvers, multiple requests for the same URI, in most cases, needlessly repeat the same process (usually a network request). Using a cache resolver (like PackageToWrapperCacheResolver) helps if the resolution requests are synchronous (one after another). This new `RequestSynchronizerResolver` can be used to reuse parallel requests for the same URI, this way, only the first one needs to do the work (e.g. a network request) while others will await that same promise.
+* [PR-1236](https://github.com/polywrap/toolchain/pull/1236) **Plugin Refactor**
+  * Added `StaticResolver` and `StaticResolver.from` to optimize building resolvers with `IUriRedirect`, `IUriWrapper` and `IUriPackage`.
+
+**`@polywrap/uri-resolver-extensions-js`:**
+* [PR-1582](https://github.com/polywrap/toolchain/pull/1582) **Update Default URI-Resolver-Ext Interface URI**
+  * The `ExtendableUriResolver` has been updated to get uri-resolver-ext implementations from the following interface URIs:
+    * `wrap://ens/wraps.eth:uri-resolver-ext@1.1.0`
+    * `wrap://ens/wraps.eth:uri-resolver-ext@1.0.0`
+
+**`@polywrap/core-js`:**
+* [PR-1431](https://github.com/polywrap/toolchain/pull/1431) **WRAP Error Structure**
+  * Created a custom `WrapError` structure that improves debugging ability for common client error scenarios.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) **Remove Legacy Redirects**
+  * `GetImplementationsOptions` now accepts an optional resolution context, to be used to handle infinite recursion when a resolver uses `getImplementations`
+  * `GetImplementationsOptions` now accepts an optional `applyResolution`. This can be used to apply URI resolution to interfaces.
+
+**`@polywrap/logging-js`:**
+* [PR-1379](https://github.com/polywrap/toolchain/pull/1379) **Create `@polywrap/logging-js` Package**
+  * Created the `@polywrap/logging-js` package from the logging lib previously in the CLI's codebase.
+
+### JS Plugins
+**`@polywrap/http-plugin-js`:**
+* [PR-1471](https://github.com/polywrap/toolchain/pull/1471) **Add form-data Support**
+  * Added form-data support through the inclusion of the `formData: [FormDataEntry!]` property on the `Request` object.
+
+
+## Breaking Changes
+### Toolchain
+**`polywrap` CLI:**
+* [PR-1561](https://github.com/polywrap/toolchain/pull/1561) **Remove buildx builder by default**
+  * Added new `keepBuilder` option which is default to false and removed the previous `removeBuilder` option from the build manifest.
+* [PR-1525](https://github.com/polywrap/toolchain/pull/1525) **Unify Typescript App Templates**
+  * Remove `typescript-node` & `typescript-react` app templates, and replace them with a single `typescript`.
+* [PR-1432](https://github.com/polywrap/toolchain/pull/1432) **Remove Legacy Polywrap Project Metadata**
+  * Remove the `polywrap.meta.yaml` manifest.
+* [PR-1367](https://github.com/polywrap/toolchain/pull/1367) **Client Configuration Refactor**
+  * The JS/TS module passed into the `--client-config` option has a new function entrypoint signature. Instead of exporting a `getCustomConfig` function, users should export the following: `configure(builder: IClientConfigBuilder): IClientConfigBuilder`.
+  * See example [config.ts](https://github.com/polywrap/toolchain/blob/1096f2f4dfb35fdcc29e9b66057f91ade8b82c67/packages/test-cases/cases/cli/test/008-custom-config/config.ts).
+* [PR-1348](https://github.com/polywrap/toolchain/pull/1348) **Rename `run` to `test`**
+  * Rename the `run` command to `test`, which uses the `test` project extension, as defined in the `polywrap.test.yaml` manifest file.
+* [PR-1545](https://github.com/polywrap/toolchain/pull/1545) **Remove `config` section from test manifest
+  * The Polywrap Test manifest (`polywrap.test.yaml`) has been upgraded to version `0.2.0` with the following change:
+    * The `config` section inside `step` has been removed, and manifest migrations will warn the user regarding this change.
+
+**`@polywrap/schema-bind`**
+* [PR-1464](https://github.com/polywrap/toolchain/pull/1464) **`wasm/rust` Bindings Now Use `ModuleTrait` Trait**
+  * Rust-based wraps no longer pub functions, but instead pub a `impl ModuleTrait for Module`.
+* [PR-1460](https://github.com/polywrap/toolchain/pull/1460) **`wasm/assemblyscript` Bindings Now Use `ModuleBase` Interface**
+  * AssemblyScript-based wraps no longer export functions, but instead export a `class Module` which `extends ModuleBase`.
+
+**`@polywrap/test-env-js`**
+* [PR-1530](https://github.com/polywrap/toolchain/pull/1530) **Deprecate Legacy Test-Env Package**
+  * The `test-env-js` package has been deprecated, in favor of `@polywrap/cli-js`
+
+### JS Client
+**`@polywrap/client-js`:**
+* [PR-1534](https://github.com/polywrap/toolchain/pull/1534) **Remove legacy config types from `PolywrapClient`**
+  * The `PolywrapClient` now simply accepts a `CoreClientConfig`, which is expected to come from the config builder.
+* [PR-1461](https://github.com/polywrap/toolchain/pull/1461) **Remove Legacy Invocation Methods**
+  * Remove `client.query(...)` & `client.subscribe(...)` methods.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) **Remove Legacy Redirects**
+  * `PolywrapClient` config when using `noDefaults: true` no longer accepts `redirects` (Since redirects have been removed from `CoreClientConfig`).
+* [PR-1236](https://github.com/polywrap/toolchain/pull/1236) **Plugin Refactor**
+  * The Polywrap Client with `noDefaults: false` no longer accepts a `plugins` field, but it accepts `wrappers` and `packages`.
+    * `resolver` field has been replaced with `resolvers`, since with default client the resolver used is the `RecursiveResolver` with the `PackageToWrapperCacheResolver`.
+  * The Polywrap Client with `noDefaults: true`, no longer accepts a `plugins` field. It is expected that devs using this option will manually configure their own resolver.
+  * removed `getPlugins` and `getPluginByUri`. Will add `getWrapper`, `getWrapperByUri`, `getPackage`, `getPackageByUri`, in a follow up PR.
+  * `createPolywrapClient` function has been deprecated.
+* [PR-1534](https://github.com/polywrap/toolchain/pull/1534) **Remove legacy config types from PolywrapClient**
+  * The `PolywrapClient`'s constructor now accepts only an optional `CoreClientConfig` type as its configuration object.
+  * It is now advised to use the `ClientConfigBuilder` found in `@polywrap/client-config-builder-js` and exported by `@polywrap/client-js` in order to set up their client configurations.
+
+**`@polywrap/client-config-builder-js`:**
+* [PR-1480](https://github.com/polywrap/toolchain/pull/1480) **ClientConfigBuilder-specific `BuilderConfig` Object**
+  * The `ClientConfigBuilder` now uses a specific `BuilderConfig` that is easier for users to work with. It will then be turned into a `CoreClientConfig` through the use of the `build()` method.
+* [PR-1498](https://github.com/polywrap/toolchain/pull/1498) **Refactor `ClientConfigBuilder.build()`**
+  * Rename `buildCoreConfig()` to `build()`, which returns a `CoreClientConfig` instance.
+* [PR-1494](https://github.com/polywrap/toolchain/pull/1494) **Deprecate Legacy HTTP URIs in Default Config Bundle**
+  * The `wrap://ens/http.polywrap.eth` interface and wrapper have been removed from the default configuration bundle.
+* [PR-1436](https://github.com/polywrap/toolchain/pull/1436) **Deprecate Legacy Logger URIs in Default Config Bundle**
+  * The `wrap://ens/logger.core.polywrap.eth` interface and the `wrap://ens/js-logger.polywrap.eth` plugin wrapper have both been removed from the default configuration bundle.
+* [PR-1446](https://github.com/polywrap/toolchain/pull/1446) **Deprecate Legacy Ethereum URI in Default Config Bundle**
+  * The `wrap://ens/ethereum.polywrap.eth` URI + wrap has been removed from the default configuration bundle.
+* [PR-1475](https://github.com/polywrap/toolchain/pull/1475) **Deprecate Legacy IPFS URIs in Default Config Bundle**
+  * The `wrap://ens/ipfs.polywrap.eth` & `wrap://ens/ipfs-resolver.polywrap.eth` URIs + wraps have been removed from the default configuration bundle.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) **Remove Legacy Redirects**
+  * Calling `buildCoreConfig` no longer returns a `CoreClientConfig` with redirects since redirects are no longer a part of `CoreClientConfig`.
+* [PR-1367](https://github.com/polywrap/toolchain/pull/1367) **URI Redirect Renaming**
+  * Renamed `removeUriRedirect(...)` to `removeRedirePR-15e `plugins` and a `resolver`, but now has `wrappers`, `packages` and `resolvers`
+  * Calling build returns an instance of the `CustomClientConfig`, which can be used with defaults from the `PolywrapClient`, but can not be used if `noDefaults: true` is passed to the `PolywrapClient` constructor.
+  * Removed `addPlugin` from the `ClientConfigBuilder`, users can now use `addWrapper` or `addPackage` where appropriate.
+
+**`@polywrap/plugin-js`:**
+* [PR-1614](https://github.com/polywrap/toolchain/pull/1614) **Remove `env` Property From `PluginModule`**
+  * `PluginModule` instances no longer have an `env` property, and instead will be given an `env` within the invocation method's arguments.
+
+**`@polywrap/core-js`:**
+* [PR-1613](https://github.com/polywrap/toolchain/pull/1613) **Core Client Config Unique Maps**
+  * The `CoreClientConfig` now `ReadonlyUriMap`s for its `interface` and `env` properties.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) **Remove Legacy Redirects**
+  * `redirects` are no longer a part of `CoreClientConfig`.
+  * `getRedirects` are no longer a part of `CoreClient`.
+  * `getUriResolver` on `CoreClient` has been renamed to `getResolver`.
+  * `getImplementations` returns a promise now.
+  * `GetImplementationsOptions` no longer accepts `applyRedirects`. This has been replaces with `applyResolution`.
+  * `applyRedirects` helper function has been replaced with `applyResolution`.
+* [PR-1236](https://github.com/polywrap/toolchain/pull/1236) **Plugin Refactor**
+  * Plugins are no longer a part of this package, they have been moved to the plugin-js package
+  * Renamed `UriRedirect` to `IUriRedirect` to match `IUriWrapper` and `IUriPackage`
+  * `IUriRedirect`, `IUriWrapper` and `IUriPackage` are now generic and their generic param implements `Uri | string`
+  * Removed `options` argument from `client.getManifest` method since all wrappers have a deserialized manifest
+
+**`@polywrap/uri-resolvers-js`:**
+* [PR-1586](https://github.com/polywrap/toolchain/pull/1586) **Separate the `PackageToWrapperCacheResolver` Into Two Resolvers**
+  * The `PackageToWrapperCacheResolver` has been split into the `PackageToWrapperResolver` & `WrapperCacheResolver` resolvers.
+* [PR-1369](https://github.com/polywrap/toolchain/pull/1369) **Remove Legacy Redirects**
+  * `LegacyRedirectsResolver` has been removed.
+* [PR-1236](https://github.com/polywrap/toolchain/pull/1236) **Plugin Refactor**
+  * Replaced helper func `buildUriResolver` with `UriResolver.from`
+  * Constructors of built-in resolvers like `RecursiveResolver` and `PackageToWrapperCacheResolver` now accept a concrete `IUriResolver` while their static `from` methods accept a `UriResolverLike` 
+  * Remove `PluginsResolver` and `PluginResolver`, users can now use `WrapperResolver` or `PackageResolver`
+
+**`@polywrap/uri-resolver-extensions-js`:**
+* [PR-1582](https://github.com/polywrap/toolchain/pull/1582) **Remove Legacy uri-resolver-ext Interface URI**
+  * The `ExtendableUriResolver` no longer supports the legacy interface URI `wrap://ens/uri-resolver.core.polywrap.eth`.
+
+**`@polywrap/react`:**
+* [PR-1236](https://github.com/polywrap/toolchain/pull/1236) **Plugin Refactor**
+  * Replaced `plugins` on the `PolywrapProvider` with `wrappers` and `packages`
+
+### JS Plugins
+**`@polywrap/http-plugin-js`:**
+* [PR-1494](https://github.com/polywrap/toolchain/pull/1494) Migrated to [polywrap/http](https://github.com/polywrap/http)
+
+**`@polywrap/fs-plugin-js`:**
+* [PR-1495](https://github.com/polywrap/toolchain/pull/1495) Migrate to [polywrap/file-system](https://github.com/polywrap/file-system)
+
+**`@polywrap/ws-plugin-js`:**
+* [PR-1547](https://github.com/polywrap/toolchain/pull/1547) Migrate to [polywrap/websocket](https://github.com/polywrap/websocket)
+
+**`@polywrap/ethereum-plugin-js`:**
+* [PR-1446](https://github.com/polywrap/toolchain/pull/1446) Deprecated in favor of the [polywrap/ethereum](https://github.com/polywrap/ethereum) wasm-based wrap
+
+**`@polywrap/ipfs-plugin-js`:**
+* [PR-1475](https://github.com/polywrap/toolchain/pull/1475) Deprecated in favor of the [polywrap/ipfs](https://github.com/polywrap/ipfs) wasm-based wrap
+
+### Interface Wrappers
+**`@polywrap/http-interface`:**
+* [PR-1494](https://github.com/polywrap/toolchain/pull/1494) Migrated to [polywrap/http](https://github.com/polywrap/http)
+
+**`@polywrap/file-system-interface`:**
+* [PR-1495](https://github.com/polywrap/toolchain/pull/1495) Migrate to [polywrap/file-system](https://github.com/polywrap/file-system)
+
+## Bugs
+### Toolchain
+**`polywrap` CLI:**
+* [PR-1683](https://github.com/polywrap/toolchain/pull/1683) **Don't Require Docker `polywrap build` On Interface Projects**
+  * When building `type: interface` projects, the CLI no longer requires docker to be running.
+* [PR-1610](https://github.com/polywrap/toolchain/pull/1610) **`polywrap test` Non-Zero Exit Codes**
+  * `polywrap test` now exits with an exit code of 1 if a test fails.
+* [PR-1470](https://github.com/polywrap/toolchain/pull/1470) **Fix Build Manifest Absolute Path Support**
+  * Accept absolute paths within the `polywrap.build.yaml` manifest's `linked_packages` property.
+* [PR-1438](https://github.com/polywrap/toolchain/pull/1438) **Support Maps In Workflows**
+  * Properly handle map types when running workflows using the `test` command.
+* [PR-1396](https://github.com/polywrap/toolchain/pull/1396) **Remove Wasm "Interface Types" Custom Section**
+  * The rust build images have been updated to properly remove the needless inclusion of the `wasm-interface-types` custom section, as a result of running wasm-bindgen. More information can be found [here](https://github.com/polywrap/toolchain/issues/1420).
+* [PR-1379](https://github.com/polywrap/toolchain/pull/1379) **Manifest Upgrade Warning Message**
+  * Automatically upgrading manifests now emits a warning, suggesting users to upgrade their manifest.
+* [PR-1382](https://github.com/polywrap/toolchain/pull/1382) **Execute `asc` Using `npx`**
+  * Invoke `asc` using `npx` to help with program resolution.
+* [PR-1368](https://github.com/polywrap/toolchain/pull/1368) **Client Config Error Messaging**
+  * Update error messaging for the `--client-config` option.
+
+**`@polywrap/schema-bind`:**
+* [PR-1444](https://github.com/polywrap/toolchain/pull/1444) **TypeScript Bindings Export Imports**
+  * The `plugin/typescript` and `app/typescript` bindings now properly export all interfaces.
+* [PR-1443](https://github.com/polywrap/toolchain/pull/1443) **Rust Bindings Use String**
+  * The `wasm/rust` bindings now use `String` instead of `str` within imported interface module typings.
+
+### JS Client
+**`@polywrap/core-js`:**
+* [PR-1593](https://github.com/polywrap/toolchain/pull/1593) **Display decoded args when errors are thrown in subinvocations**
+  * Args used to be displayed as-is in error messages when errors were thrown in Wasm wrapper invocations. This meant args for subinvocations were byte arrays. Now the args are always decoded for errors so they are human-readable.
+* [PR-1556](https://github.com/polywrap/toolchain/pull/1556) **`WrapError` now correctly parses Rust unwrap errors**
+  * When calling `.unwrap()` on a Rust result that contains an error, Rust will panic with an error message that contains the Err. For fidelity to the original Err, Rust inserts escape characters in the string. For example, "\n" becomes "\\n". This behavior was not being handled correctly by WrapError's string parsing logic.
+
+**`@polywrap/uri-resolvers-extensions-js`:**
+* [PR-1487](https://github.com/polywrap/toolchain/pull/1487) **Handle `null` URI Resolver Extension Return Results**
+  * Update the `MaybeUriOrManifest` & `getFile` interfaces to properly reflect the URI resolver extension interface.
+
+### Templates
+**`@polywrap/templates`:**
+* [PR-1383](https://github.com/polywrap/toolchain/pull/1383) **Default Deploy Gateway**
+  * Add the `https://ipfs.wrappers.io` gateway to the interface template's `polywrap.deploy.yaml` manifest.
+
+# Polywrap Origin (0.9.3)
+## Bugs
+* [PR-1344](https://github.com/polywrap/toolchain/pull/1344) `@polywrap/cli`: Improve workflow validation.
+* [PR-1345](https://github.com/polywrap/toolchain/pull/1345) `@polywrap/cli`: The `ens-recursive-name-register` deploy step now properly registers ENS sub-domains recursively.
+* [PR-1342](https://github.com/polywrap/toolchain/pull/1342) `@polywrap/polywrap-manifest-schemas`: Accept @ character in folder paths.
+* [PR-1333](https://github.com/polywrap/toolchain/pull/1333) `@polywrap/client-js`: Added TsDoc comments to the `PolywrapClient` class.
+* [PR-1337](https://github.com/polywrap/toolchain/pull/1337) `@polywrap/schema-bind`: In Rust bindings, enum imports are now added in serialization modules when the enum is a subtype of an array (Vec) or map.
+
+# Polywrap Origin (0.9.2)
+## Bugs
+* [PR-1327](https://github.com/polywrap/toolchain/pull/1327) `@polywrap/schema-bind`: Added missing serialization bindings for module method arguments & return values.
+
+# Polywrap Origin (0.9.1)
+## Bugs
+* [PR-1320](https://github.com/polywrap/toolchain/pull/1320) `@polywrap/ethereum-plugin-js`: Proper `view` method result parsing.
+* [PR-1317](https://github.com/polywrap/toolchain/pull/1317) `@polywrap/core-js`, `@polywrap/uri-resolvers-extensions-js`: Properly check for null when using UriResolverExtensionFileReader to read wasm module.
+* [PR-1318](https://github.com/polywrap/toolchain/pull/1318) `polywrap` CLI: The `codegen` command properly applies the `-g, --codegen-dir` option.
+* [PR-1318](https://github.com/polywrap/toolchain/pull/1318) `@polywrap/templates`: Fix several issues within the `wasm` template projects.
+* [PR-1316](https://github.com/polywrap/toolchain/pull/1316) `polywrap` CLI: Fix an issue where the CLI process would hang after the command had completed.
+* [PR-1315](https://github.com/polywrap/toolchain/pull/1315) `polywrap` CLI: Minor cleanup post logging refactor.
+* [PR-1310](https://github.com/polywrap/toolchain/pull/1310) `polywrap` CLI: Use base images from the "polywrap" Docker Hub organization.
+
+# Polywrap Origin (0.9.0)
+## Features
+* [PR-1306](https://github.com/polywrap/toolchain/pull/1306) `polywrap` CLI: Console logging has been improved, and all commands now support `-q, --quiet` and `-v, --verbose` options.
+* [PR-1204](https://github.com/polywrap/toolchain/pull/1204) `polywrap` CLI: **Build times are faster for wasm wrappers!!!** The `build` command has been updated to include the concept of "build strategies". The existing way of building (via `Dockerfile` image layers) is available through the `polywrap build --strategy image` command. Building without Docker (if all build-time dependencies are installed locally) can be performed using `--strategy local`. And lastly, the new default build strategy is `--strategy vm`, which runs all build steps in a pre-built base image, allowing for near-local speeds (once the image has been downloaded).
+  * NOTE: `--strategy image` is useful for source-code verification, something we'll be better supporting in the future.
+* [PR-1297](https://github.com/polywrap/toolchain/pull/1297) `@polywrap/schema-bind`: `wasm/rust` now has support for `println!(...)` and `print!(...)` macros. They have been redefined to use the `polywrap_wasm_rs::wrap_debug_log(...)` function.
+* [PR-1192](https://github.com/polywrap/toolchain/pull/1192) `@polywrap/client-js`: `PolywrapClient.invoke(...)` now supports invoke-time environment variables, passed in via the `env` property.
+* [PR-1270](https://github.com/polywrap/toolchain/pull/1270) `polywrap` CLI: The `manifest` command has been added:
+```
+Usage: polywrap manifest|m [options] [command]
+Inspect & Migrade Polywrap Manifests
+Options:
+  -h, --help                  display help for command
+Commands:
+  schema|s [options] [type]   Prints out the schema for the current manifest format.
+  migrate|m [options] [type]  Migrates the polywrap project manifest to the latest version.
+  help [command]              display help for command
+```
+  * [PR-1301](https://github.com/polywrap/toolchain/pull/1301) Added a `--format` option to the `migrate` command, enabling the targeting of specific format versions when migrating manifests (ex: `polywrap manifest migrate -f 0.2.0`).
+* [PR-1218](https://github.com/polywrap/toolchain/pull/1218) `polywrap` CLI, `@polywrap/tracing-js`: The `tracing` infrastructure module (i.e. `polywrap infra up --modules tracing`) now uses version `0.11.0` of the `SizNoz` tracing service. Additionally the underlying `@polywrap/tracing-js` library has been updated to support this, and also now has named traces via the `traceName` configuration property.
+
+## Bugs
+* [PR-1304](https://github.com/polywrap/toolchain/pull/1304) `polywrap` CLI: Generated build files from the `vm` strategy now have proper file-system permissions.
+* [PR-1305](https://github.com/polywrap/toolchain/pull/1305) `@polywrap/ipfs-plugin-js`: Fallback providers are now properly being used.
+* [PR-1296](https://github.com/polywrap/toolchain/pull/1296) `polywrap` CLI: The `polywrap.app.yaml` and `polywrap.plugin.yaml` project manifest file names are being deprecated in favor of a unified `polywrap.yaml` file for all types of projects (wasm, interface, plugin, app). They will still silently work now, but in the future will no longer be recognized defaults.
+* [PR-1303](https://github.com/polywrap/toolchain/pull/1303) `@polywrap/core-js`: The `Uri` class now properly formats itself when being `JSON.stringify(...)`'d.
+* [PR-1288](https://github.com/polywrap/toolchain/pull/1288) `@polywrap/core-js`: Correctly handle errors in the `getImplementations` algorithm.
+* [PR-1298](https://github.com/polywrap/toolchain/pull/1298) `@polywrap/ipfs-plugin-js`, `@polywrap/ipfs-resolver-plugin-js`: Remove the use of `require(...)` statements.
+* [PR-1286](https://github.com/polywrap/toolchain/pull/1286) `@polywrap/polywrap-manifest-types-js`: Manifest migration logic has been upgraded to use a strategy that finds a "shortest path" between the `from` and `to` format versions, using predefined migration functions.
+
+## Breaking Changes
+* [PR-1284](https://github.com/polywrap/toolchain/pull/1284) `@polywrap/core-js`: `Wrapper.getFile(...)` and `Wrapper.getManifest(...)` no longer require a `Client` instance as a second function argument.
+* [PR-1291](https://github.com/polywrap/toolchain/pull/1291) `@polywrap/core-js`, `@polywrap/client-js`: All `ClientConfig` properties are now `readonly`.
+* [PR-1287](https://github.com/polywrap/toolchain/pull/1287) `@polywrap/core-js`: `executeMaybeAsyncFunction` has been removed.
+* [PR-1277](https://github.com/polywrap/toolchain/pull/1277) `@polywrap/client-js`: The following methods now return the `Result<T, E>` type, and will not throw exceptions: `getManifest(...)`, `getFile(...)`, `getImplementations(...)`, `query(...)`, `invokeWrapper(...)`, `invoke(...)`, `loadWrapper(...)`.
+* [PR-1192](https://github.com/polywrap/toolchain/pull/1192) `@polywrap/client-js`: `PolywrapClient.invoke(...)` no longer accepts invoke-time reconfiguration via the `config` property. Users who wish to reconfigure the client can do so by calling `client.getConfig()`, modifying it via the `ClientConfigBuilder`, and constructing a new `PolywrapClient` instance.
+
+# Polywrap Origin (0.8.0)
+## Features
+* [PR-1083](https://github.com/polywrap/toolchain/pull/1083) `@polywrap/client-config-builder-js`: The default client config now has the ability to resolve `http` URIs (ex: `wrap://http/domain.com/path`) via the `@polywrap/http-resolver-plugin-js`.
+* [PR-1083](https://github.com/polywrap/toolchain/pull/1083) `polywrap` CLI: Hosting & deploying wrappers via HTTP is now possible with the new `http` deploy & infra modules.
+* [PR-1097](https://github.com/polywrap/toolchain/pull/1097) & [PR-1272](https://github.com/polywrap/toolchain/pull/1272) `polywrap` CLI, `@polywrap/polywrap-manifest-schemas`, `@polywrap/polywrap-manifest-types-js`: `polywrap.deploy.yaml` format version `0.2.0` has been added, making the schema similar to the `polywrap.test.yaml` schema, where users define a series of `jobs` to be performed.
+* [PR-1097](https://github.com/polywrap/toolchain/pull/1097) `polywrap` CLI: Recursive ENS domain name registration is now supported via the `ens-recursive-name-register` deploy module.
+* [PR-1060](https://github.com/polywrap/toolchain/pull/1060) `@polywrap/ipfs-interface`: Added `fallbackProviders: [String!]` to `type Options`.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/core-js`, `@polywrap/client-js`: URI resolution has been refactored. Resolution is now implemented in a single `IUriResolver` instance.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/client-js`: `invokeWrapper(...)` has been added to the `PolywrapClient` class.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/client-config-builder-js`: `setResolver(...)` has been added, enabling users to set the `IUriResolver` instance on the builder's `ClientConfig`.
+* [PR-1133](https://github.com/polywrap/toolchain/pull/1133) `@polywrap/core-js`, `@polywrap/client-js`: `getPluginByUri(...)` has been added to the `Client` interface, and `PolywrapClient` class.
+* [PR-1231](https://github.com/polywrap/toolchain/pull/1231) `polywrap` CLI: `build` command now supports the `--no-codegen` option, which disables the automatic codegen step when compiling projects.
+
+## Bugs
+* [PR-1244](https://github.com/polywrap/toolchain/pull/1244) `polywrap` CLI: Workflows can now properly access nested properties of previous job step output.
+* [PR-1243](https://github.com/polywrap/toolchain/pull/1243) `@polywrap/schema-compose`: Multi-line imports are now properly supported within block comments.
+* [PR-1097](https://github.com/polywrap/toolchain/pull/1097) `polywrap` CLI: ENS deployment URIs generated via the `deploy` command now properly contain the network's name in the URI.
+* [PR-1234](https://github.com/polywrap/toolchain/pull/1234) `polywrap` CLI: The `run` command and underlying `Workflow` system has had multiple bug fixes added.
+  * Workflow validation always printed "SUCCESS" and errors were never printed.
+  * Workflow manifest was not being validated.
+  * The stderr messages were not being output (previously unnoticed because errors were not printed).
+* [PR-1220](https://github.com/polywrap/toolchain/pull/1220) `@polywrap/schema-bind`: `wasm/rust` bindings handle the serialization of reserved words via serde, so that the original name of properties is reserved during encoding.
+* [PR-1219](https://github.com/polywrap/toolchain/pull/1219) `@polywrap/schema-bind`: `wasm/rust` bindings now properly handle imported interface modules.
+* [PR-1229](https://github.com/polywrap/toolchain/pull/1229) `polywrap` CLI: `run` command now properly resolves the `validation: ...` property within the `polywrap.test.yaml` manifest relative to the manifest's directory, instead of the user's cwd.
+
+## Breaking Changes
+* [PR-1097](https://github.com/polywrap/toolchain/pull/1097) `polywrap` CLI: The `local-dev-ens` deploy module has been removed.
+* [PR-1060](https://github.com/polywrap/toolchain/pull/1060) `@polywrap/ipfs-plugin-js`: `IpfsPluginConfig` has been removed, and all properties (`provider`, `fallbackProviders`) have been moved into the wrapper's `Env`.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/client-js`: `loadUriResolvers(...)` has been removed from the `PolywrapClient` class.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/client-js`: `resolveUri(...)` has been renamed to `tryResolveUri(...)` on the `PolywrapClient` class.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/core-js`, `@polywrap/client-js`: `getUriResolvers(...)` has been renamed to `getUriResolver(...)` on the `Client` interface and `PolywrapClient` class.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/client-config-builder-js`: `addUriResolver(...)` and `setUriResolvers(...)` have been removed from the `ClientConfigBuilder` class.
+* [PR-1169](https://github.com/polywrap/toolchain/pull/1169) `@polywrap/core-js`, `@polywrap/wasm-js`: Moved the `WasmWrapper` class and all related types into their own package named `@polywrap/wasm-js`.
+* [PR-1235](https://github.com/polywrap/toolchain/pull/1235) `@polywrap/core-js`: `Uri.from(...)` has been added, and `toUri(...)` has been removed.
+
+# Polywrap Origin (0.7.0)
+## Bugs
+* [PR-1158](https://github.com/polywrap/toolchain/pull/1158) `@polywrap/client-config-builder-js`: The following plugins have been removed from the default config, and replaced with their WebAssembly wrapper equivalents available at the same URIs:
+  * `wrap://ens/uts46.polywrap.eth`
+  * `wrap://ens/sha3.polywrap.eth`
+  * `wrap://ens/graph-node.polywrap.eth`
+* [PR-1213](https://github.com/polywrap/toolchain/pull/1213) `@polywrap/schema-bind`: Nested map types (i.e. `Map<K, Map<K, V>>`) are now properly supported for `wasm/rust` and `wasm/assemblyscript`.
+* [PR-1213](https://github.com/polywrap/toolchain/pull/1213) `@polywrap/wasm-as`: Nested map types (i.e. `Map<K, Map<K, V>>`) are now properly msgpack encoded.
+* [PR-1212](https://github.com/polywrap/toolchain/pull/1212) `polywrap` CLI: `wasm/rust` build image now uses the `build-deps` cargo extension to properly build dependencies in a seperate Dockerfile layer, enabling the caching of compiled artifacts.
+
+## Breaking Changes
+* [PR-1217](https://github.com/polywrap/toolchain/pull/1217) `@polywrap/schema-bind`: `plugin/typescript` and `app/typescript` bindings have been updated to improve type safety, and no longer accept generic properties for all method argument types.
+* [PR-1051](https://github.com/polywrap/toolchain/pull/1051) `polywrap` CLI: `polywrap plugin codegen` and `polywrap app codegen` commands have been moved into the `polywrap codegen`, which can now generate types for any Polywrap project (wasm, plugin, app).
+* [PR-1154](https://github.com/polywrap/toolchain/pull/1154) `@polywrap/schema-bind`: The `wasm/assemblyscript` bindings have been updated to use `Box<T> | null` for all optional scalar types, instead of the `Option<T>` class used before.
+* [PR-1154](https://github.com/polywrap/toolchain/pull/1154) `@polywrap/ws-plugin-js`: The WebSocket plugin's schema has been updated to use `UInt32` for socket IDs, instead of `Int32`.
+
+# Polywrap Origin (0.6.0)
+## Features
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `polywrap` CLI: A new manifest named `polywrap.test.yaml` has been added, which encapsulates workflows and validation scripts.
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `@polywrap/polywrap-manifest-types-js`: `polywrap.test` manifest types have been added.
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `@polywrap/polywrap-manifest-schemas`: `polywrap.test` manifest schema has been added.
+
+## Bugs
+* [PR-1205](https://github.com/polywrap/toolchain/pull/1205) `polywrap` CLI: The `run` command's output now has deterministic ordering for text emitted from both workflow & validation steps.
+* [PR-1194](https://github.com/polywrap/toolchain/pull/1194) `@polywrap/msgpack-js`: Nested `Map<K, V>` serialization is now supported.
+* [PR-1199](https://github.com/polywrap/toolchain/pull/1199) `@polywrap/core-js` `@polywrap/client-js`: Runtime type inference has been improved to be compatible with JavaScript minimization optimizations where the `Class.name` static property is removed.
+* [PR-1196](https://github.com/polywrap/toolchain/pull/1196) `@polywrap/core-js`: All `WrapperCache` interface methods have been updated to return `MaybeAsync` promises, allowing developers to implement async logic.
+
+## Breaking Changes
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `polywrap` CLI: `run` command no longer accepts the `<workflow>` argument, and instead uses the new `polywrap.test.yaml` manifest.
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `@polywrap/client-js`: The `run` method has been removed.
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `@polywrap/core-js`: All `Workflow` related types have been removed, and migrated into the manifest packages and the CLI.
+
+# Polywrap Origin (0.5.0)
+## Features
+* [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `@polywrap/client-js`: The `PolywrapClientConfig` now has a `tracerConfig: Partial<TracerConfig>` property, allowing users to easily configure the tracing level, and various toggles related to tracing.
+* [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `polywrap` CLI: Added the `tracer` infra module, allowing developers to easily spin up an OpenTelemetry compatible tracing server. This can be used to gather runtime tracelog events from the `PolywrapClient`.
+* [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `@polywrap/tracing-js`: The `@Tracer.traceMethod()` function decorator now has an optional `TracingLevel` argument.
+* [PR-1143](https://github.com/polywrap/toolchain/pull/1143) `@polywrap/ethereum-plugin-js`: The `EthereumPluginConfig` now has a `connections` property, which takes an instance of the `Connections` class. This new implementation makes configuring new network connections at runtime easier and more application developer friendly.
+* [PR-1045](https://github.com/polywrap/toolchain/pull/1045) `@polywrap/client-config-builder-js`: The `ClientConfigBuilder` has been added to make building & customizing `PolywrapClientConfigs` easier than before with a simple user friendly interface.
+* [PR-1036](https://github.com/polywrap/toolchain/pull/1036) `@polywrap/client-js`: Added the `wrapperCache: WrapperCache` property to the `PolywrapClientConfig` interface.
+* [PR-1036](https://github.com/polywrap/toolchain/pull/1036) `@polywrap/core-js`: Added the `WrapperCache` core type, along with a `SimpleCache` implementation that persists wrappers within a map.
+
+## Bugs
+* [PR-1186](https://github.com/polywrap/toolchain/pull/1186) `@polywrap/schema-bind`: Using a `Map<K, V>` type within the `Map`'s value (`V`) template argument has been fixed.
+* [PR-1179](https://github.com/polywrap/toolchain/pull/1179) `polywrap` CLI: Improved the readability of the `polywrap build -v` command's output from the Docker child process.
+
+## Breaking Changes
+* [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `@polywrap/client-js`: The `PolywrapClientConfig`'s `tracingEnabled` property has been removed, and replaced by `tracerConfig`.
+* [PR-1143](https://github.com/polywrap/toolchain/pull/1143) `@polywrap/ethereum-plugin-js`: The `EthereumPluginConfig`'s `networks` property has been removed, and replaced by `connections`.
+* [PR-1045](https://github.com/polywrap/toolchain/pull/1045) `@polywrap/client-js`: The `getDefaultClientConfig()` & `defaultIpfsProviders` exports have been moved to the `@polywrap/client-config-builder-js` package.
+
 # Polywrap Origin (0.4.1)
 ## Features
 * [PR-1171](https://github.com/polywrap/monorepo/pull/1171) `@polywrap/schema-bind`: Handle reserve words (keywords) for object, enum, and method names.

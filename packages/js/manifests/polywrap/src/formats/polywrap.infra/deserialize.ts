@@ -15,7 +15,7 @@ import {
 import { DeserializeManifestOptions } from "../../";
 
 import * as Semver from "semver";
-import YAML from "js-yaml";
+import YAML from "yaml";
 
 export function deserializeInfraManifest(
   manifest: string,
@@ -24,10 +24,10 @@ export function deserializeInfraManifest(
   let anyInfraManifest: AnyInfraManifest | undefined;
   try {
     anyInfraManifest = JSON.parse(manifest) as AnyInfraManifest;
-  } catch (e) {
-    anyInfraManifest = YAML.safeLoad(manifest) as
-    | AnyInfraManifest
-    | undefined;
+  } catch (_) {
+    try {
+      anyInfraManifest = YAML.parse(manifest) as AnyInfraManifest;
+    } catch (_) { }
   }
 
   if (!anyInfraManifest) {
@@ -46,8 +46,11 @@ export function deserializeInfraManifest(
   );
 
   if (versionCompare === -1) {
+    // Warn user to migrate their manifest
+    options?.logger?.warn(`InfraManifest is using an older version of the manifest format (${anyInfraManifest.format}). Please update your manifest to the latest version (${latestInfraManifestFormat}) by using the "polywrap manifest migrate <type>" command.`);
+
     // Upgrade
-    return migrateInfraManifest(anyInfraManifest, latestInfraManifestFormat);
+    return migrateInfraManifest(anyInfraManifest, latestInfraManifestFormat, options?.logger);
   } else if (versionCompare === 1) {
     // Downgrade
     throw Error(

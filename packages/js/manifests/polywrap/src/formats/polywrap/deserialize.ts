@@ -15,7 +15,7 @@ import {
 import { DeserializeManifestOptions } from "../../";
 
 import * as Semver from "semver";
-import YAML from "js-yaml";
+import YAML from "yaml";
 
 export function deserializePolywrapManifest(
   manifest: string,
@@ -24,10 +24,10 @@ export function deserializePolywrapManifest(
   let anyPolywrapManifest: AnyPolywrapManifest | undefined;
   try {
     anyPolywrapManifest = JSON.parse(manifest) as AnyPolywrapManifest;
-  } catch (e) {
-    anyPolywrapManifest = YAML.safeLoad(manifest) as
-    | AnyPolywrapManifest
-    | undefined;
+  } catch (_) {
+    try {
+      anyPolywrapManifest = YAML.parse(manifest) as AnyPolywrapManifest;
+    } catch (_) { }
   }
 
   if (!anyPolywrapManifest) {
@@ -46,8 +46,11 @@ export function deserializePolywrapManifest(
   );
 
   if (versionCompare === -1) {
+    // Warn user to migrate their manifest
+    options?.logger?.warn(`PolywrapManifest is using an older version of the manifest format (${anyPolywrapManifest.format}). Please update your manifest to the latest version (${latestPolywrapManifestFormat}) by using the "polywrap manifest migrate <type>" command.`);
+
     // Upgrade
-    return migratePolywrapManifest(anyPolywrapManifest, latestPolywrapManifestFormat);
+    return migratePolywrapManifest(anyPolywrapManifest, latestPolywrapManifestFormat, options?.logger);
   } else if (versionCompare === 1) {
     // Downgrade
     throw Error(

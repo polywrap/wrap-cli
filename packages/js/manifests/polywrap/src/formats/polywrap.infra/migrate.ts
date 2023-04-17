@@ -8,35 +8,38 @@ import {
   AnyInfraManifest,
   InfraManifest,
   InfraManifestFormats,
-  latestInfraManifestFormat
 } from ".";
-
-
-type Migrator = {
-  [key in InfraManifestFormats]?: (m: AnyInfraManifest) => InfraManifest;
-};
-
-export const migrators: Migrator = {
-};
+import { findShortestMigrationPath } from "../../migrations";
+import { migrators } from "./migrators";
+import { ILogger } from "@polywrap/logging-js";
 
 export function migrateInfraManifest(
   manifest: AnyInfraManifest,
-  to: InfraManifestFormats
+  to: InfraManifestFormats,
+  logger?: ILogger
 ): InfraManifest {
   let from = manifest.format as InfraManifestFormats;
-
-  // HACK: Patch fix for backwards compatability
-  if(from === "0.1" && ("0.1.0" in migrators)) {
-    from = "0.1.0" as InfraManifestFormats;
-  }
-
-  if (from === latestInfraManifestFormat) {
-    return manifest as InfraManifest;
-  }
 
   if (!(Object.values(InfraManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized InfraManifestFormat "${manifest.format}"`);
   }
 
-  throw new Error(`This should never happen, InfraManifest migrators is empty. from: ${from}, to: ${to}`);
+  if (!(Object.values(InfraManifestFormats).some(x => x === to))) {
+    throw new Error(`Unrecognized InfraManifestFormat "${to}"`);
+  }
+
+  const migrationPath = findShortestMigrationPath(migrators, from, to);
+  if (!migrationPath) {
+    throw new Error(
+      `Migration path from InfraManifestFormat "${from}" to "${to}" is not available`
+    );
+  }
+
+  let newManifest = manifest;
+
+  for(const migrator of migrationPath){
+    newManifest = migrator.migrate(newManifest, logger) as AnyInfraManifest;
+  }
+
+  return newManifest as InfraManifest;
 }

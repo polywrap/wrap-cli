@@ -1,7 +1,9 @@
-import { Args_sampleMethod, SampleResult } from "./wrap";
+import { Args_sampleMethod, SampleResult, ModuleBase } from "./wrap";
 
-export function sampleMethod(args: Args_sampleMethod): SampleResult {
-  return {
-    value: args.arg,
-  };
+export class Module extends ModuleBase {
+  sampleMethod(args: Args_sampleMethod): SampleResult {
+    return {
+      result: args.arg,
+    };
+  }
 }

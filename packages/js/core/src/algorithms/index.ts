@@ -1,5 +1,3 @@
-export * from "./apply-redirects";
-export * from "./combine-paths";
-export * from "./find-plugin-package";
+export * from "./applyResolution";
 export * from "./get-implementations";
-export * from "./parse-query";
+export * from "./clean-uri-history";

@@ -5,6 +5,7 @@ import {
   pluginManifestLanguages,
   isPluginManifestLanguage,
   pluginManifestLanguageToBindLanguage,
+  pluginManifestOverrideCodegenDir,
 } from "./manifests";
 import { resetDir } from "../system";
 
@@ -59,7 +60,7 @@ export class PluginProject extends Project<PluginManifest> {
     if (!this._pluginManifest) {
       this._pluginManifest = await loadPluginManifest(
         this.getManifestPath(),
-        this.quiet
+        this.logger
       );
     }
 
@@ -101,14 +102,19 @@ export class PluginProject extends Project<PluginManifest> {
     return manifest.source.import_abis || [];
   }
 
+  public async getGenerationDirectory(
+    generationSubPath?: string
+  ): Promise<string> {
+    const manifest = await this.getManifest();
+    return this._getGenerationDirectory(generationSubPath, manifest);
+  }
+
   public async generateSchemaBindings(
     abi: WrapAbi,
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const module = manifest.source.module as string;
-    const moduleDirectory = this._getGenerationDirectory(
-      module,
+    const moduleDirectory = await this.getGenerationDirectory(
       generationSubPath
     );
 
@@ -129,12 +135,27 @@ export class PluginProject extends Project<PluginManifest> {
   }
 
   private _getGenerationDirectory(
-    entryPoint: string,
-    generationSubPath = "wrap"
+    useDefinedPath: string | undefined,
+    manifest: PluginManifest,
+    defaultDir = "./src/wrap"
   ): string {
-    const absolute = path.isAbsolute(entryPoint)
-      ? entryPoint
-      : path.join(this.getManifestDir(), entryPoint);
-    return path.join(path.dirname(absolute), generationSubPath);
+    const genPath =
+      // 1. Use what the user has specified
+      useDefinedPath ||
+      // 2. Check to see if there exists an override for this language type
+      pluginManifestOverrideCodegenDir(
+        manifest.project.type as PluginManifestLanguage
+      ) ||
+      // 3. If a module path exists, generate within a "wrap" dir next to it
+      (manifest.source.module &&
+        path.join(path.dirname(manifest.source.module), "wrap")) ||
+      // 4. Use the default
+      defaultDir;
+
+    if (path.isAbsolute(genPath)) {
+      return genPath;
+    } else {
+      return path.join(this.getManifestDir(), genPath);
+    }
   }
 }

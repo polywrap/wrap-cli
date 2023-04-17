@@ -1,0 +1,75 @@
+{
+  "id": "PluginManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "project", "source"],
+  "properties": {
+    "format": {
+      "description": "Polywrap manifest format version.",
+      "type": "string",
+      "enum": ["0.3.0"]
+    },
+    "project": {
+      "description": "Basic project properties.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "description": "Name of this project.",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+        },
+        "type": {
+          "description": "Type of this project.",
+          "type": "string",
+          "pattern": "^plugin\\/[a-z0-9]+$"
+        }
+      }
+    },
+    "source": {
+      "description": "Project source files.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "module"],
+      "properties": {
+        "module": {
+          "description": "Path to the project's entry point.",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
+        },
+        "schema": {
+          "description": "Path to the project's graphql schema.",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
+        },
+        "import_abis": {
+          "description": "Specify ABIs to be used for the import URIs within your schema.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/import_abis"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "import_abis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "description": "One of the schema's import URI.",
+          "type": "string",
+          "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
+        },
+        "abi": {
+          "description": "Path to a local ABI (or schema). Supported file formats: [*.graphql, *.info, *.json, *.yaml]",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.(info|graphql|json|yaml)$"
+        }
+      },
+      "required": ["uri", "abi"]
+    }
+  }
+}

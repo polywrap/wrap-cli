@@ -10,6 +10,7 @@ export {
   Args_optionalEnvMethod,
   Args__if
 };
+export { ModuleBase } from "./Module";
 export { CustomType } from "./CustomType";
 export { AnotherType } from "./AnotherType";
 export { CustomMapValue } from "./CustomMapValue";
@@ -36,5 +37,11 @@ export {
   getTestImport_EnumValue,
   sanitizeTestImport_EnumValue
 } from "./imported/TestImport_Enum";
+export {
+  TestImport_Enum_Return,
+  getTestImport_Enum_ReturnKey,
+  getTestImport_Enum_ReturnValue,
+  sanitizeTestImport_Enum_ReturnValue
+} from "./imported/TestImport_Enum_Return";
 export { TestImport } from "./TestImport";
 export { Env } from "./Env";

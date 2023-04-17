@@ -10,7 +10,6 @@
   "workspaces": {
     "packages": [
       "./packages/cli",
-      "./packages/interfaces/**",
       "./packages/js/**",
       "./packages/manifests/**",
       "./packages/schema/**",
@@ -21,36 +20,31 @@
     ]
   },
   "scripts": {
+    "postinstall": "ts-node ./scripts/patch-peer-deps.ts",
     "reset": "yarn clean && yarn && yarn build",
     "clean": "npx rimraf ./**/node_modules ./**/yarn.lock ./**/build ./**/coverage ./**/.polywrap",
-    "dependencies:install": "cd dependencies && yarn",
-    "preinstall": "yarn dependencies:install",
-    "build": "yarn build:core && yarn build:interfaces && yarn build:plugins && yarn build:client && yarn build:test-env && yarn build:cli",
-    "build:core": "lerna run build --no-private --ignore @polywrap/*-plugin-js --ignore polywrap --ignore @polywrap/client-js --ignore @polywrap/react --ignore @polywrap/test-env-js --ignore @polywrap/*-interface",
-    "build:interfaces": "lerna run build --scope @polywrap/*-interface --concurrency 1",
-    "build:plugins": "lerna run build --scope @polywrap/*-plugin-js --concurrency 1",
-    "build:client": "lerna run build --scope @polywrap/client-js --scope @polywrap/react",
-    "build:test-env": "lerna run build --scope @polywrap/test-env-js",
-    "build:cli": "lerna run build --scope polywrap",
-    "link:interface:deps": "yarn link:manifests && yarn link:schema",
-    "link:manifests": "yarn link:manifests:polywrap && yarn link:manifests:wrap",
-    "link:manifests:polywrap": "cd packages/js/manifests/polywrap && (yarn unlink || true) && yarn link && cd ../../../../dependencies && yarn link @polywrap/polywrap-manifest-types-js && cd ../",
-    "link:manifests:wrap": "cd packages/js/manifests/wrap && (yarn unlink || true) && yarn link && cd ../../../../dependencies && yarn link @polywrap/wrap-manifest-types-js && cd ../",
-    "link:schema": "yarn link:schema:parse && yarn link:schema:compose",
-    "link:schema:parse": "cd packages/schema/parse && (yarn unlink || true) && yarn link && cd ../../../dependencies && yarn link @polywrap/schema-parse && cd ../",
-    "link:schema:compose": "cd packages/schema/compose && (yarn unlink || true) && yarn link && cd ../../../dependencies && yarn link @polywrap/schema-compose && cd ../",
+    "install:test-wrappers": "lerna run generate:wrappers --scope @polywrap/test-cases",
+    "build": "yarn build:core && yarn build:config && yarn build:core:client && yarn build:client && yarn build:cli && yarn install:test-wrappers",
+    "build:core": "lerna run build --no-private --ignore @polywrap/*-plugin-js --ignore @polywrap/client-config-builder-js --ignore polywrap --ignore @polywrap/core-client-js --ignore @polywrap/client-js --ignore @polywrap/cli-js",
+    "build:config": "lerna run build --scope @polywrap/client-config-builder-js",
+    "build:core:client": "lerna run build --scope @polywrap/core-client-js",
+    "build:client": "lerna run build --scope @polywrap/client-js",
+    "build:cli": "lerna run build --scope polywrap && lerna run build --scope @polywrap/cli-js",
+    "build:docs": "lerna run build:docs",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint -- --fix",
     "lint:ci": "yarn lint",
     "test": "lerna run test --no-private --ignore @polywrap/client-js --concurrency 1 && lerna run test --scope @polywrap/client-js",
-    "test:ci": "lerna run test:ci --no-private --ignore @polywrap/client-js --concurrency 1 && lerna run test:ci --scope @polywrap/client-js",
-    "test:core": "lerna run test:ci --no-private --ignore @polywrap/*-plugin-js --ignore polywrap* --ignore @polywrap/client-js --concurrency 1",
-    "test:plugins": "lerna run test:ci --no-private --scope @polywrap/*-plugin-js --concurrency 1",
-    "test:client": "lerna run test:ci --no-private --scope @polywrap/client-js --concurrency 1",
-    "test:cli": "lerna run test:ci --no-private --scope polywrap --concurrency 1",
+    "test:core": "lerna run test --no-private --ignore @polywrap/*-plugin-js --ignore polywrap* --ignore @polywrap/client-js --concurrency 1",
+    "test:client": "lerna run test --no-private --scope @polywrap/client-js --concurrency 1",
+    "test:cli": "yarn test:cli:unit && yarn test:cli:e2e",
+    "test:cli:unit": "lerna run test:unit --no-private --scope polywrap --concurrency 1",
+    "test:cli:e2e:p1": "lerna run test:e2e:p1 --no-private --scope polywrap --concurrency 1",
+    "test:cli:e2e:p2": "lerna run test:e2e:p2 --no-private --scope polywrap --concurrency 1",
     "version:apply": "lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
     "postversion:apply": "git add . && git commit -m \"build(release): migrate to `cat ./VERSION`\"",
-    "publish:npm": "lerna exec --no-private --concurrency 1 -- yarn publish --access public --non-interactive --verbose"
+    "publish:npm": "lerna exec --no-private --concurrency 1 -- yarn publish --access public --non-interactive --verbose",
+    "publish:pre:npm": "lerna exec --no-private --concurrency 1 -- yarn publish --access public --non-interactive --verbose --tag pre"
   },
   "devDependencies": {
     "@types/prettier": "2.6.0",
@@ -64,6 +58,7 @@
     "graphql": "15.5.0",
     "lerna": "4.0.0",
     "prettier": "2.2.1",
+    "ts-node": "10.9.1",
     "rimraf": "3.0.2"
   },
   "resolutions": {
@@ -71,3 +66,4 @@
     "@types/react-dom": "16.9.0"
   }
 }
+

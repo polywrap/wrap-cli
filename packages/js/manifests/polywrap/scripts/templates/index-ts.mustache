@@ -7,13 +7,19 @@
 
 {{#formats}}
 import {
-  {{type}} as {{type}}_{{tsVersion}}
+  {{type}} as {{type}}_{{tsVersion}},
+  {{#isWorkflow}}
+  Jobs as WorkflowJobs_{{tsVersion}},
+  {{/isWorkflow}}
 } from "./{{version}}";
 {{/formats}}
 
 export {
   {{#formats}}
   {{type}}_{{tsVersion}},
+  {{#isWorkflow}}
+  WorkflowJobs_{{tsVersion}},
+  {{/isWorkflow}}
   {{/formats}}
 };
 
@@ -25,10 +31,25 @@ export enum {{#latest}}{{type}}{{/latest}}Formats {
   {{/formats}}
 }
 
+export const {{#latest}}{{type}}{{/latest}}SchemaFiles: Record<string, string> = {
+  // NOTE: Patch fix for backwards compatability
+  "0.1": "formats/{{#latest}}{{formatTypeName}}{{/latest}}/0.1.0.json",
+  {{#formats}}
+  "{{version}}": "{{{schemaFilePath}}}",
+  {{/formats}}
+}
+
 export type Any{{#latest}}{{type}}{{/latest}} =
 {{#formats}}
   | {{type}}_{{tsVersion}}
 {{/formats}}
+
+{{#latest.isWorkflow}}
+export type WorkflowJobs =
+{{#formats}}
+   | WorkflowJobs_{{tsVersion}}
+{{/formats}}
+{{/latest.isWorkflow}}
 
 export type {{#latest}}{{type}}{{/latest}} = {{#latest}}{{type}}_{{tsVersion}}{{/latest}};
 

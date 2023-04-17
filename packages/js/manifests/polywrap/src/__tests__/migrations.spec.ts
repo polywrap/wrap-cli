@@ -1,11 +1,107 @@
-import { deserializePolywrapManifest } from "../";
+import {
+  deserializeDeployManifest,
+  deserializePolywrapManifest,
+  deserializePolywrapWorkflow,
+} from "../";
 
 import fs from "fs";
+import { findShortestMigrationPath, Migrator } from "../migrations";
+import { ILogger } from "@polywrap/logging-js";
 
-describe("Polywrap Manifest Migrations", () => {
-  it("Should succesfully migrate from 0.1.0 to 0.2.0", async() => {
-    const manifestPath = __dirname + "/manifest/polywrap/migrations/polywrap-0.1.0.yaml";
-    const expectedManifestPath = __dirname + "/manifest/polywrap/migrations/polywrap-0.2.0.yaml";
+function getMockLogger(): {
+  logger: ILogger;
+  debug: jest.Mock;
+  warn: jest.Mock;
+  info: jest.Mock;
+  error: jest.Mock;
+  log: jest.Mock;
+} {
+  const warn = jest.fn();
+  const debug = jest.fn();
+  const error = jest.fn();
+  const info = jest.fn();
+  const log = jest.fn();
+
+  const logger: ILogger = {
+    warn,
+    debug,
+    error,
+    info,
+    log,
+  };
+
+  return {
+    logger,
+    warn,
+    debug,
+    error,
+    info,
+    log,
+  };
+}
+
+describe("Manifest migration pathfinding", () => {
+  const migrators: Migrator[] = [
+    {
+      from: "0.1.0",
+      to: "0.2.0",
+      migrate: (x) => x,
+    },
+    {
+      from: "0.2.0",
+      to: "0.3.0",
+      migrate: (x) => x,
+    },
+    {
+      from: "0.3.0",
+      to: "0.4.0",
+      migrate: (x) => x,
+    },
+    {
+      from: "0.4.0",
+      to: "0.5.0",
+      migrate: (x) => x,
+    },
+    {
+      from: "0.2.0",
+      to: "0.4.0",
+      migrate: (x) => x,
+    },
+  ];
+
+  it("Should return undefined when no migration path exists", async () => {
+    const path = findShortestMigrationPath(migrators, "0.1.0", "0.6.0");
+
+    expect(path).toBeUndefined();
+
+    const reverseUnsupportedPath = findShortestMigrationPath(
+      migrators,
+      "0.2.0",
+      "0.1.0"
+    );
+
+    expect(reverseUnsupportedPath).toBeUndefined();
+  });
+
+  it("Should return an empty array when from and to are the same", async () => {
+    const path = findShortestMigrationPath(migrators, "0.1.0", "0.1.0");
+
+    expect(path).toEqual([]);
+  });
+
+  it("Should return the shortest migration path", async () => {
+    const path = findShortestMigrationPath(migrators, "0.1.0", "0.5.0");
+
+    expect(path).toEqual([migrators[0], migrators[4], migrators[3]]);
+  });
+});
+
+describe("Polywrap Project Manifest Migrations", () => {
+  it("Should succesfully migrate from 0.1.0 to 0.2.0", async () => {
+    const manifestPath =
+      __dirname + "/manifest/polywrap/migrations/polywrap-0.1.0.yaml";
+    const expectedManifestPath =
+      __dirname + "/manifest/polywrap/migrations/polywrap-0.2.0.yaml";
 
     const manifestFile = fs.readFileSync(manifestPath, "utf-8");
     const expectedManifestFile = fs.readFileSync(expectedManifestPath, "utf-8");
@@ -14,5 +110,67 @@ describe("Polywrap Manifest Migrations", () => {
     const expectedManifest = deserializePolywrapManifest(expectedManifestFile);
 
     expect(manifest).toEqual(expectedManifest);
+  });
+});
+
+describe("Polywrap Deploy Manifest Migrations", () => {
+  it("Should succesfully migrate from 0.1.0 to 0.2.0", async () => {
+    const manifestPath =
+      __dirname + "/manifest/deploy/migrations/polywrap-0.1.0.yaml";
+    const expectedManifestPath =
+      __dirname + "/manifest/deploy/migrations/polywrap-0.2.0.yaml";
+
+    const manifestFile = fs.readFileSync(manifestPath, "utf-8");
+    const expectedManifestFile = fs.readFileSync(expectedManifestPath, "utf-8");
+
+    const manifest = deserializeDeployManifest(manifestFile);
+    const expectedManifest = deserializeDeployManifest(expectedManifestFile);
+
+    expect(manifest).toEqual(expectedManifest);
+  });
+});
+
+describe("Polywrap Test Manifest Migrations", () => {
+  const stepConfigWarning_0_1_0 =
+    "One or more of the steps in your test manifest have a config property. This is no longer supported, and will be removed.";
+
+  it("Should succesfully migrate from 0.1.0 to 0.2.0 - no steps with config", async () => {
+    const { logger, warn } = getMockLogger();
+
+    const manifestPath =
+      __dirname + "/manifest/test/migrations/polywrap.test-0.1.0.yaml";
+    const expectedManifestPath =
+      __dirname + "/manifest/test/migrations/polywrap.test-0.2.0.yaml";
+
+    const manifestFile = fs.readFileSync(manifestPath, "utf-8");
+    const expectedManifestFile = fs.readFileSync(expectedManifestPath, "utf-8");
+
+    const manifest = deserializePolywrapWorkflow(manifestFile, {
+      logger: logger,
+    });
+    const expectedManifest = deserializePolywrapWorkflow(expectedManifestFile);
+
+    expect(manifest).toEqual(expectedManifest);
+    expect(warn).not.toHaveBeenCalledWith(stepConfigWarning_0_1_0);
+  });
+
+  it("Should succesfully migrate from 0.1.0 to 0.2.0 - steps with config", async () => {
+    const { logger, warn } = getMockLogger();
+
+    const manifestPath =
+      __dirname + "/manifest/test/migrations/polywrap.test-0.1.0-config.yaml";
+    const expectedManifestPath =
+      __dirname + "/manifest/test/migrations/polywrap.test-0.2.0.yaml";
+
+    const manifestFile = fs.readFileSync(manifestPath, "utf-8");
+    const expectedManifestFile = fs.readFileSync(expectedManifestPath, "utf-8");
+
+    const manifest = deserializePolywrapWorkflow(manifestFile, {
+      logger: logger,
+    });
+    const expectedManifest = deserializePolywrapWorkflow(expectedManifestFile);
+
+    expect(manifest).toEqual(expectedManifest);
+    expect(warn).toHaveBeenCalledWith(stepConfigWarning_0_1_0);
   });
 });

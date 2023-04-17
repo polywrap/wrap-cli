@@ -1,6 +1,7 @@
 import {
   wrap_invoke_args,
-  wrap_invoke,
+  wrap_invoke_result,
+  wrap_invoke_error,
   wrap_abort,
   InvokeArgs
 } from "@polywrap/wasm-as";
@@ -12,27 +13,35 @@ import {
   ifWrapped
 } from "./Module/wrapped";
 
+import { Module } from "../index";
+
 export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): bool {
+  const module = new Module();
   const args: InvokeArgs = wrap_invoke_args(
     method_size,
     args_size
   );
-
+  let result: ArrayBuffer;
   if (args.method == "moduleMethod") {
-    return wrap_invoke(args, env_size, moduleMethodWrapped);
+    result = moduleMethodWrapped(module, args.args, env_size);
   }
   else if (args.method == "objectMethod") {
-    return wrap_invoke(args, env_size, objectMethodWrapped);
+    result = objectMethodWrapped(module, args.args, env_size);
   }
   else if (args.method == "optionalEnvMethod") {
-    return wrap_invoke(args, env_size, optionalEnvMethodWrapped);
+    result = optionalEnvMethodWrapped(module, args.args, env_size);
   }
   else if (args.method == "if") {
-    return wrap_invoke(args, env_size, ifWrapped);
+    result = ifWrapped(module, args.args, env_size);
   }
   else {
-    return wrap_invoke(args, env_size, null);
+    wrap_invoke_error(
+      `Could not find invoke function "${args.method}"`
+    );
+    return false;
   }
+  wrap_invoke_result(result);
+  return true;
 }
 
 export function wrapAbort(

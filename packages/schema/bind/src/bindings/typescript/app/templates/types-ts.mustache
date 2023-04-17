@@ -3,8 +3,9 @@ import * as Types from "./";
 
 // @ts-ignore
 import {
-  Client,
-  InvokeResult
+  CoreClient,
+  InvokeResult,
+  Uri,
 } from "@polywrap/core-js";
 
 export type UInt = number;
@@ -88,7 +89,7 @@ export type {{#detectKeyword}}{{type}}{{/detectKeyword}} = {{type}}Enum | {{type
 {{#methods}}
 
 /* URI: "{{parent.uri}}" */
-interface {{parent.type}}_Args_{{name}} extends Record<string, unknown> {
+export interface {{parent.type}}_Args_{{name}} {
   {{#arguments}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
@@ -100,20 +101,20 @@ export const {{type}} = {
   {{#methods}}
   {{name}}: async (
     args: {{parent.type}}_Args_{{name}},
-    client: Client,
+    client: CoreClient,
     uri: string = "{{parent.uri}}"
   ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
-      uri,
+      uri: Uri.from(uri),
       method: "{{name}}",
-      args
+      args: (args as unknown) as Record<string, unknown>,
     });
   }{{^last}},{{/last}}
   {{^last}}
 
   {{/last}}
   {{/methods}}
-}
+};
 {{/importedModuleTypes}}
 
 /// Imported Modules END ///

@@ -1,0 +1,6 @@
+format: 0.2.0
+strategies:
+  image:
+    node_version: "17.9.1"
+    include:
+      - ./package.json

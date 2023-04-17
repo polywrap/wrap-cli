@@ -1,6 +1,0 @@
-format: 0.1.0
-docker:
-  name: bignumber-type-wasm-rs
-linked_packages:
-  - name: polywrap-wasm-rs
-    path: ../../../../../wasm/rs

@@ -20,3 +20,6 @@ pub use serialization::{
     serialize_if_result,
     ArgsIf
 };
+
+pub mod module;
+pub use module::*;

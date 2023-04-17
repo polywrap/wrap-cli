@@ -1,15 +1,14 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
+// @ts-ignore
 import * as Types from "./types";
 
-import {
-  Client,
-  PluginModule,
-  MaybeAsync
-} from "@polywrap/core-js";
+// @ts-ignore
+import { CoreClient, MaybeAsync } from "@polywrap/core-js";
+import { PluginModule } from "@polywrap/plugin-js";
 
-export interface Args_moduleMethod extends Record<string, unknown> {
+export interface Args_moduleMethod {
   str: Types.String;
   optStr?: Types.String | null;
   en: Types.CustomEnum;
@@ -18,52 +17,51 @@ export interface Args_moduleMethod extends Record<string, unknown> {
   optEnumArray?: Array<Types.CustomEnum | null> | null;
   map: Map<Types.String, Types.Int>;
   mapOfArr: Map<Types.String, Array<Types.Int>>;
+  mapOfMap: Map<Types.String, Map<Types.String, Types.Int>>;
   mapOfObj: Map<Types.String, Types.AnotherType>;
   mapOfArrOfObj: Map<Types.String, Array<Types.AnotherType>>;
 }
 
-export interface Args_objectMethod extends Record<string, unknown> {
+export interface Args_objectMethod {
   object: Types.AnotherType;
   optObject?: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
   optObjectArray?: Array<Types.AnotherType | null> | null;
 }
 
-export interface Args_optionalEnvMethod extends Record<string, unknown> {
+export interface Args_optionalEnvMethod {
   object: Types.AnotherType;
   optObject?: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
   optObjectArray?: Array<Types.AnotherType | null> | null;
 }
 
-export interface Args_if extends Record<string, unknown> {
+export interface Args_if {
   if: Types._else;
 }
 
-export abstract class Module<
-  TConfig
-> extends PluginModule<
-  TConfig,
-  Types.Env
-> {
-
+export abstract class Module<TConfig> extends PluginModule<TConfig, Types.Env> {
   abstract moduleMethod(
     args: Args_moduleMethod,
-    client: Client
+    client: CoreClient,
+    env?: null
   ): MaybeAsync<Types.Int>;
 
   abstract objectMethod(
     args: Args_objectMethod,
-    client: Client
+    client: CoreClient,
+    env: Types.Env
   ): MaybeAsync<Types.AnotherType | null>;
 
   abstract optionalEnvMethod(
     args: Args_optionalEnvMethod,
-    client: Client
+    client: CoreClient,
+    env?: Types.Env | null
   ): MaybeAsync<Types.AnotherType | null>;
 
   abstract if(
     args: Args_if,
-    client: Client
+    client: CoreClient,
+    env?: null
   ): MaybeAsync<Types._else>;
 }

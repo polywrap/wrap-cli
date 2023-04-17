@@ -1,7 +1,0 @@
-format: 0.2.0
-project:
-  name: invalid-manifest
-  type: wasm/assemblyscript
-source:
-  schema: ./src/wrong/schema.graphql
-  module: ./src/wrong/index.ts

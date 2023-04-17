@@ -6,8 +6,8 @@ source:
   schema: ../schema.graphql
   module: ../index.ts
   import_abis:
-    - uri: "ens/ipfs.polywrap.eth"
-      abi: ../../../../../../../../interfaces/ipfs/build/schema.graphql
+    - uri: "wrap://ens/some.domain.eth"
+      abi: ../some/path/schema.graphql
 extensions:
   build: ./polywrap.build.yaml
   meta: ./polywrap.meta.yaml

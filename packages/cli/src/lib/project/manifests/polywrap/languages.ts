@@ -40,3 +40,18 @@ export function polywrapManifestLanguageToBindLanguage(
       );
   }
 }
+
+// By default, codegen is placed in a directory next to the
+// `module:` file, specified within the project manifest source section.
+export function polywrapManifestOverrideCodegenDir(
+  manifestLanguage: PolywrapManifestLanguage
+): string | undefined {
+  switch (manifestLanguage) {
+    // For rust, `module:` is set to `Cargo.toml`, so we override
+    // the codegen directory to be `./src/wrap`
+    case "wasm/rust":
+      return "./src/wrap";
+    default:
+      return undefined;
+  }
+}

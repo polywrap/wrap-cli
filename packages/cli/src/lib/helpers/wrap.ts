@@ -1,4 +1,4 @@
-import { withSpinner } from "./spinner";
+import { Logger, logActivity } from "../logging";
 import { intlMsg } from "../intl";
 import { displayPath } from "../system";
 
@@ -10,10 +10,16 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 import { normalizePath, writeFileSync } from "@polywrap/os-js";
 
+export const supportedWrapTypes: WrapManifest["type"][] = [
+  "interface",
+  "wasm",
+  "plugin",
+];
+
 const run = async (
   abi: WrapAbi,
   name: string,
-  type: "interface" | "wasm" | "plugin",
+  type: WrapManifest["type"],
   path: string
 ): Promise<void> => {
   const manifest: WrapManifest = {
@@ -31,27 +37,30 @@ const run = async (
 export const generateWrapFile = async (
   abi: WrapAbi,
   name: string,
-  type: "interface" | "wasm" | "plugin",
+  type: string,
   path: string,
-  quiet = false
+  logger: Logger
 ): Promise<void> => {
-  if (quiet) {
-    return run(abi, name, type, path);
-  } else {
-    const relativePath = displayPath(path);
-    return await withSpinner(
-      intlMsg.lib_helpers_manifest_outputText({
-        path: normalizePath(relativePath),
-      }),
-      intlMsg.lib_helpers_manifest_outputError({
-        path: normalizePath(relativePath),
-      }),
-      intlMsg.lib_helpers_manifest_outputWarning({
-        path: normalizePath(relativePath),
-      }),
-      async (_spinner): Promise<void> => {
-        await run(abi, name, type, path);
-      }
-    );
+  if (!supportedWrapTypes.includes(type as WrapManifest["type"])) {
+    throw Error(intlMsg.lib_helpers_wrap_unsupportedType({ type }));
   }
+
+  const wrapType = type as WrapManifest["type"];
+
+  const relativePath = displayPath(path);
+  return await logActivity(
+    logger,
+    intlMsg.lib_helpers_manifest_outputText({
+      path: normalizePath(relativePath),
+    }),
+    intlMsg.lib_helpers_manifest_outputError({
+      path: normalizePath(relativePath),
+    }),
+    intlMsg.lib_helpers_manifest_outputWarning({
+      path: normalizePath(relativePath),
+    }),
+    async (): Promise<void> => {
+      await run(abi, name, wrapType, path);
+    }
+  );
 };

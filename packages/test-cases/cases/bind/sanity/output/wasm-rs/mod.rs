@@ -32,12 +32,20 @@ pub use imported::test_import_enum::{
     sanitize_test_import_enum_value,
     TestImportEnum
 };
+pub use imported::test_import_enum_return::{
+    get_test_import_enum_return_key,
+    get_test_import_enum_return_value,
+    sanitize_test_import_enum_return_value,
+    TestImportEnumReturn
+};
 pub use imported::test_import_env::TestImportEnv;
 pub use imported::test_import_module::TestImportModule;
 pub mod test_import;
 pub use test_import::TestImport;
 pub mod module;
 pub use module::{
+    Module,
+    ModuleTrait,
     deserialize_module_method_args,
     serialize_module_method_result,
     module_method_wrapped,
@@ -55,3 +63,9 @@ pub use module::{
     if_wrapped,
     ArgsIf
 };
+
+// Override print!(...) & println!(...) macros
+#[macro_export]
+macro_rules! println { ($($args:tt)*) => { polywrap_wasm_rs::wrap_debug_log(format!($($args)*).as_str()); } }
+#[macro_export]
+macro_rules! print { ($($args:tt)*) => { polywrap_wasm_rs::wrap_debug_log(format!($($args)*).as_str()); } }

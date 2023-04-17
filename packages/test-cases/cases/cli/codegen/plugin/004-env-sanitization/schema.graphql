@@ -1,0 +1,9 @@
+type Env {
+  queryArg: String!
+}
+
+type Module {
+  method(
+    str: String!
+  ): String! @env(required: false)
+}

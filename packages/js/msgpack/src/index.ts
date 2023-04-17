@@ -1,10 +1,4 @@
-import {
-  Encoder,
-  Decoder,
-  ExtensionCodec,
-  encode,
-  decode,
-} from "@msgpack/msgpack";
+import { Encoder, Decoder, ExtensionCodec } from "@msgpack/msgpack";
 
 enum ExtensionTypes {
   // must be in range 0-127
@@ -22,14 +16,19 @@ extensionCodec.register({
       for (const [key, value] of object) {
         optimized[key] = value;
       }
-      return encode(optimized);
+      return msgpackEncode(optimized);
     } else {
       return null;
     }
   },
   decode: (data: Uint8Array) => {
-    const map = decode(data) as Record<string | number, unknown>;
-    return new Map(Object.entries(map));
+    const obj = msgpackDecode(data) as Record<string | number, unknown>;
+    const map = new Map();
+
+    for (const [key, value] of Object.entries(obj)) {
+      map.set(key, value);
+    }
+    return map;
   },
 });
 

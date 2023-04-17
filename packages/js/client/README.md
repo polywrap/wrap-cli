@@ -1,6 +1,72 @@
 # @polywrap/client-js
+<a href="https://www.npmjs.com/package/@polywrap/client-js" target="_blank" rel="noopener noreferrer">
+<img src="https://img.shields.io/npm/v/@polywrap/client-js.svg" alt="npm"/>
+</a>
 
-The Polywrap client invokes functions of wrappers and plugins. It's designed to run in any environment that can execute TypeScript / JavaScript - browser, node, etc.
+<br/>
+<br/>
+The Polywrap client extends the PolywrapCoreClient to provide UX features, such as an additional constructor and additional configuration options.
 
-## Documentation
-https://docs.polywrap.io/quick-start/integrate-wrappers/install-client
+## Installation
+
+```bash
+npm install --save @polywrap/client-js
+```
+
+## Usage
+
+### Instantiate
+
+Use the PolywrapClient [constructor](#constructor) to instantiate the client with the default configuration bundle.
+
+```ts
+  import { PolywrapClient } from "@polywrap/client-js";
+
+  const client = new PolywrapClient();
+```
+
+### Configure
+
+Use the `@polywrap/client-config-builder-js` package to build a custom configuration for your project.
+
+```ts
+  const config = new ClientConfigBuilder().addDefaults().build();
+
+  const client = new PolywrapClient(config);
+```
+
+### Invoke
+
+Invoke a wrapper.
+
+```ts
+  const result = await client.invoke({
+    uri: "ens/helloworld.dev.polywrap.eth",
+    method: "logMessage",
+    args: {
+      message: "Hello World!"
+    }
+  });
+
+  if (!result.ok) throw result.error;
+
+  const value = result.value;
+```
+
+# Reference
+
+## Configuration
+
+Below you will find a reference of object definitions which can be used to configure the Polywrap client. Please note that the intended way of configuring the client is to use the `ClientConfigBuilder`, as explained above.
+
+## PolywrapClient
+
+### Constructor
+```ts
+  /**
+   * Instantiate a PolywrapClient
+   *
+   * @param config - a client configuration
+   */
+  constructor(config?: CoreClientConfig) 
+```

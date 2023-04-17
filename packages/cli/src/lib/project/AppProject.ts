@@ -8,14 +8,12 @@ import {
 } from "./manifests";
 
 import { AppManifest } from "@polywrap/polywrap-manifest-types-js";
-import { Client } from "@polywrap/core-js";
 import { bindSchema, BindOutput } from "@polywrap/schema-bind";
 import path from "path";
 import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export interface AppProjectConfig extends ProjectConfig {
   appManifestPath: string;
-  client: Client;
 }
 
 export class AppProject extends Project<AppManifest> {
@@ -60,7 +58,7 @@ export class AppProject extends Project<AppManifest> {
     if (!this._appManifest) {
       this._appManifest = await loadAppManifest(
         this.getManifestPath(),
-        this.quiet
+        this.logger
       );
     }
 
@@ -99,6 +97,12 @@ export class AppProject extends Project<AppManifest> {
     return manifest.source.import_abis || [];
   }
 
+  public async getGenerationDirectory(
+    generationSubPath?: string
+  ): Promise<string> {
+    return this._getGenerationDirectory(generationSubPath);
+  }
+
   public async generateSchemaBindings(
     abi: WrapAbi,
     generationSubPath?: string
@@ -106,14 +110,27 @@ export class AppProject extends Project<AppManifest> {
     return bindSchema({
       projectName: await this.getName(),
       abi,
-      outputDirAbs: this._getGenerationDirectory(generationSubPath),
+      outputDirAbs: await this.getGenerationDirectory(generationSubPath),
       bindLanguage: appManifestLanguageToBindLanguage(
         await this.getManifestLanguage()
       ),
     });
   }
 
-  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
-    return path.join(this.getManifestDir(), generationSubPath);
+  private _getGenerationDirectory(
+    useDefinedPath: string | undefined,
+    defaultDir = "./src/wrap"
+  ): string {
+    const genPath =
+      // 1. Use what the user has specified
+      useDefinedPath ||
+      // 2. Use the default
+      defaultDir;
+
+    if (path.isAbsolute(genPath)) {
+      return genPath;
+    } else {
+      return path.join(this.getManifestDir(), genPath);
+    }
   }
 }

@@ -1,31 +1,30 @@
-import { runCommand } from "../system";
+import { runCommandSync } from "../system";
+import { Logger } from "../logging";
 import { intlMsg } from "../intl";
+import { Status, WorkflowOutput } from "../workflow";
 
+import { typesHandler } from "@polywrap/core-js";
 import path from "path";
 import fs from "fs";
 import os from "os";
-import { InvokeResult } from "@polywrap/core-js";
 
 const TMPDIR = fs.mkdtempSync(path.join(os.tmpdir(), `polywrap-cli`));
 
-export async function cueExists(): Promise<boolean> {
-  try {
-    const { stdout } = await runCommand("cue version", true);
-    return stdout.startsWith("cue version ");
-  } catch (e) {
-    return false;
-  }
+export function cueExists(logger: Logger): boolean {
+  const { stdout } = runCommandSync("cue", ["version"], logger);
+  return stdout ? stdout.startsWith("cue version ") : false;
 }
 
-export async function validateOutput(
-  id: string,
-  result: InvokeResult,
+export function validateOutput(
+  output: WorkflowOutput,
   validateScriptPath: string,
-  quiet?: boolean
-): Promise<void> {
-  if (!(await cueExists())) {
-    console.warn(intlMsg.commands_run_error_cueDoesNotExist());
+  logger: Logger
+): void {
+  if (!cueExists(logger)) {
+    console.warn(intlMsg.commands_test_error_cueDoesNotExist());
   }
+
+  const { id, data, error } = output;
 
   const index = id.lastIndexOf(".");
   const jobId = id.substring(0, index);
@@ -34,32 +33,25 @@ export async function validateOutput(
   const selector = `${jobId}.\\$${stepId}`;
   const jsonOutput = `${TMPDIR}/${id}.json`;
 
-  await fs.promises.writeFile(jsonOutput, JSON.stringify(result, null, 2));
+  fs.writeFileSync(
+    jsonOutput,
+    JSON.stringify({ data, error: error?.message }, typesHandler, 2)
+  );
 
-  try {
-    await runCommand(
-      `cue vet -d ${selector} ${validateScriptPath} ${jsonOutput}`,
-      true
-    );
-    if (!quiet) {
-      console.log("Validation: SUCCEED");
-    }
-  } catch (e) {
-    const msgLines = e.stderr.split(/\r?\n/);
-    msgLines[1] = `${validateScriptPath}:${msgLines[1]
-      .split(":")
-      .slice(1)
-      .join(":")}`;
-    const errMsg = msgLines.slice(0, 2).join("\n");
-
-    if (!quiet) {
-      console.log("Validation: FAILED");
-      console.log(`Error: ${errMsg}`);
-    }
-    process.exitCode = 1;
-  }
+  const { stderr } = runCommandSync(
+    "cue",
+    ["vet", "-d", selector, validateScriptPath, jsonOutput],
+    logger
+  );
 
   if (fs.existsSync(jsonOutput)) {
-    await fs.promises.unlink(jsonOutput);
+    fs.unlinkSync(jsonOutput);
+  }
+
+  if (!stderr) {
+    output.validation = { status: Status.SUCCEED };
+  } else {
+    process.exitCode = 1;
+    output.validation = { status: Status.FAILED, error: stderr.stderr };
   }
 }

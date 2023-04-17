@@ -9,8 +9,6 @@ sidebar_position: 1
 ```graphql
 awaitTransaction(
   txHash: String! 
-  confirmations: UInt32! 
-  timeout: UInt32! 
   connection: Ethereum_Connection 
 ): Ethereum_TxReceipt!
 ```
@@ -22,8 +20,8 @@ callContractMethod(
   address: String! 
   method: String! 
   args: String[] 
+  options: Ethereum_TxOptions 
   connection: Ethereum_Connection 
-  txOverrides: Ethereum_TxOverrides 
 ): Ethereum_TxResponse!
 ```
 
@@ -34,8 +32,8 @@ callContractMethodAndWait(
   address: String! 
   method: String! 
   args: String[] 
+  options: Ethereum_TxOptions 
   connection: Ethereum_Connection 
-  txOverrides: Ethereum_TxOverrides 
 ): Ethereum_TxReceipt!
 ```
 
@@ -46,8 +44,8 @@ callContractStatic(
   address: String! 
   method: String! 
   args: String[] 
+  options: Ethereum_TxOptions 
   connection: Ethereum_Connection 
-  txOverrides: Ethereum_TxOverrides 
 ): Ethereum_StaticTxResult!
 ```
 
@@ -67,7 +65,18 @@ callContractView(
 ```graphql
 checkAddress(
   address: String! 
+  connection: Ethereum_Connection 
 ): Boolean!
+```
+
+### decodeFunction 
+
+```graphql
+decodeFunction(
+  method: String! 
+  data: String! 
+  connection: Ethereum_Connection 
+): String[]!
 ```
 
 ### deployContract 
@@ -77,6 +86,7 @@ deployContract(
   abi: String! 
   bytecode: String! 
   args: String[] 
+  options: Ethereum_TxOptions 
   connection: Ethereum_Connection 
 ): String!
 ```
@@ -87,6 +97,7 @@ deployContract(
 encodeFunction(
   method: String! 
   args: String[] 
+  connection: Ethereum_Connection 
 ): String!
 ```
 
@@ -96,6 +107,7 @@ encodeFunction(
 encodeParams(
   types: String[]! 
   values: String[]! 
+  connection: Ethereum_Connection 
 ): String!
 ```
 
@@ -106,9 +118,17 @@ estimateContractCallGas(
   address: String! 
   method: String! 
   args: String[] 
+  options: Ethereum_TxOptions 
   connection: Ethereum_Connection 
-  txOverrides: Ethereum_TxOverrides 
 ): BigInt!
+```
+
+### estimateEip1559Fees 
+
+```graphql
+estimateEip1559Fees(
+  connection: Ethereum_Connection 
+): Ethereum_Eip1559FeesEstimate!
 ```
 
 ### estimateTransactionGas 
@@ -130,20 +150,20 @@ getBalance(
 ): BigInt!
 ```
 
+### getChainId 
+
+```graphql
+getChainId(
+  connection: Ethereum_Connection 
+): String!
+```
+
 ### getGasPrice 
 
 ```graphql
 getGasPrice(
   connection: Ethereum_Connection 
 ): BigInt!
-```
-
-### getNetwork 
-
-```graphql
-getNetwork(
-  connection: Ethereum_Connection 
-): Ethereum_Network!
 ```
 
 ### getSignerAddress 
@@ -172,22 +192,14 @@ getSignerTransactionCount(
 ): BigInt!
 ```
 
-### requestAccounts 
+### sendRpc 
 
 ```graphql
-requestAccounts(
-  connection: Ethereum_Connection 
-): String[]!
-```
-
-### sendRPC 
-
-```graphql
-sendRPC(
+sendRpc(
   method: String! 
   params: String[]! 
   connection: Ethereum_Connection 
-): String
+): String!
 ```
 
 ### sendTransaction 
@@ -217,30 +229,12 @@ signMessage(
 ): String!
 ```
 
-### solidityKeccak256 
+### signMessageBytes 
 
 ```graphql
-solidityKeccak256(
-  types: String[]! 
-  values: String[]! 
-): String!
-```
-
-### solidityPack 
-
-```graphql
-solidityPack(
-  types: String[]! 
-  values: String[]! 
-): String!
-```
-
-### soliditySha256 
-
-```graphql
-soliditySha256(
-  types: String[]! 
-  values: String[]! 
+signMessageBytes(
+  bytes: Bytes! 
+  connection: Ethereum_Connection 
 ): String!
 ```
 
@@ -248,7 +242,7 @@ soliditySha256(
 
 ```graphql
 toEth(
-  wei: BigInt! 
+  wei: String! 
 ): String!
 ```
 
@@ -257,18 +251,6 @@ toEth(
 ```graphql
 toWei(
   eth: String! 
-): BigInt!
-```
-
-### waitForEvent 
-
-```graphql
-waitForEvent(
-  address: String! 
-  event: String! 
-  args: String[] 
-  timeout: UInt32 
-  connection: Ethereum_Connection 
-): Ethereum_EventNotification!
+): String!
 ```
 

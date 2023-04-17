@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/asyncify-js",
   "description": "Async Wasm Imports Support Using Asyncify",
-  "version": "0.4.1",
+  "version": "0.10.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -15,20 +15,18 @@
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js --ignore-pattern src/__tests__/cases/* src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
-    "test:ci": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose"
+    "test:watch": "yarn test -- --watch"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
-    "assemblyscript": "0.19.10",
+    "assemblyscript": "0.19.23",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
     "ts-loader": "8.0.17",
-    "ts-morph": "10.0.1",
-    "ts-node": "8.10.2",
-    "typescript": "4.0.7"
+    "ts-node": "10.9.1",
+    "typescript": "4.9.5"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

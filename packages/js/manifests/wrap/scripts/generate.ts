@@ -1,100 +1,72 @@
 import path from "path";
 import fs from "fs";
+import axios from "axios";
 import * as os from "@polywrap/os-js";
 import Mustache from "mustache";
 import { compile } from "json-schema-to-typescript";
-import { FileInfo, bundle, JSONSchema } from "json-schema-ref-parser";
+import { FileInfo, bundle, JSONSchema } from "@apidevtools/json-schema-ref-parser";
+// Workaround: https://github.com/APIDevTools/json-schema-ref-parser/issues/139#issuecomment-940500698
+import $RefParser from '@apidevtools/json-schema-ref-parser';
+$RefParser.bundle = $RefParser.bundle.bind($RefParser);
 
-async function generateFormatTypes() {
-  // Fetch all schemas within the @polywrap/wrap-manifest-schemas/schemas/formats directory
-  const schemasPackageDir = path.dirname(
-    require.resolve("@polywrap/wrap-manifest-schemas")
-  );
-  const formatsDir = path.join(schemasPackageDir, "formats");
-
-  // Resolve json-schema to typescript for wrap format type
+async function wrapCodegen() {
   const formatTypeName = "wrap.info";
-  const wrapDir = path.join(formatsDir, formatTypeName);
   const wrapOutputDir = path.join(
     __dirname,
     `../src/formats/${formatTypeName}`
   );
+
+  const wrapSchemas: JSONSchema[] = [];
+
   const wrapModules: {
     interface: string;
     version: string;
     abiVersion: string;
   }[] = [];
 
-  // Get all JSON schemas for this format type (v1, v2, etc)
-  const wrapSchemaFiles = fs.readdirSync(wrapDir);
-  const wrapSchemas: JSONSchema[] = [];
+  const versions = (
+    await axios.get(
+      "https://raw.githubusercontent.com/polywrap/wrap/master/manifest/wrap.info/versions.json"
+    )
+  ).data;
+  for (const version of versions) {
+    const wrapSchema = (await axios.get(
+      `https://raw.githubusercontent.com/polywrap/wrap/master/manifest/wrap.info/${version}.json`
+    )).data;
 
-  for (let k = 0; k < wrapSchemaFiles.length; ++k) {
-    const wrapSchemaName = wrapSchemaFiles[k];
-    const wrapVersion = wrapSchemaName.replace(".json", "");
-    const wrapSchemaPath = path.join(wrapDir, wrapSchemaName);
-
-    try {
-      // Parse the JSON schema
-      const wrapSchema = JSON.parse(
-        fs.readFileSync(wrapSchemaPath, { encoding: "utf-8" })
-      );
-
-      const abiJsonSchemaRelPath = wrapSchema.properties.abi.$ref;
-      const abiJsonSchemaPath = path.join(wrapDir, abiJsonSchemaRelPath);
-      const abiJsonSchema = JSON.parse(
-        fs.readFileSync(abiJsonSchemaPath, { encoding: "utf-8" })
-      );
-      const abiVersion = path
-        .parse(abiJsonSchemaPath)
-        .base.replace(".json", "");
-
-      const bundledSchema = await bundle(wrapSchema, {
-        resolve: {
-          file: {
-            read: (file: FileInfo) => {
-              // If both url is same
-              if (!path.relative(abiJsonSchemaRelPath, file.url)) {
-                return abiJsonSchema;
-              }
-              return file.data;
-            },
+    const bundledSchema = await bundle(wrapSchema, {
+      resolve: {
+        http: {
+          read: async (file: FileInfo) => {
+            const response = await axios.get(file.url);
+            return response.data;
           },
         },
-      });
+      },
+    });
 
-      wrapSchemas.push(bundledSchema);
+    wrapSchemas.push(bundledSchema);
 
-      // Convert it to a TypeScript interface
-      let tsFile = await compile(bundledSchema as any, wrapSchema.id, {additionalProperties: false});
+    // Convert it to a TypeScript interface
+    let tsFile = await compile(bundledSchema as any, wrapSchema.id, {additionalProperties: false});
 
-      // Hack: replace all instances of `abi: unknown;` with `abi: Abi;`
-      tsFile = tsFile.replace("abi: unknown;", "abi: Abi;");
+    // Emit the result
+    const tsOutputPath = path.join(wrapOutputDir, `${version}.ts`);
+    fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
+    os.writeFileSync(
+      tsOutputPath,
+      `/* eslint-disable @typescript-eslint/naming-convention */\n${tsFile}`
+    );
 
-      // Emit the result
-      const tsOutputPath = path.join(wrapOutputDir, `${wrapVersion}.ts`);
-      fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
-      os.writeFileSync(
-        tsOutputPath,
-        `/* eslint-disable @typescript-eslint/naming-convention */\n${tsFile}`
-      );
+    const schemaOutputPath = path.join(wrapOutputDir, `${version}.schema.json`);
+    os.writeFileSync(schemaOutputPath, JSON.stringify(bundledSchema, null ,2));
 
-      const schemaOutputPath = path.join(wrapOutputDir, `${wrapVersion}.schema.json`);
-      os.writeFileSync(schemaOutputPath, JSON.stringify(bundledSchema, null ,2));
-
-      // Add metadata for the root index.ts file to use
-      wrapModules.push({
-        interface: wrapSchema.id,
-        version: wrapVersion,
-        abiVersion: abiVersion,
-      });
-    } catch (error) {
-      console.error(
-        `Error generating the Manifest file ${wrapSchemaPath}: `,
-        error
-      );
-      throw error;
-    }
+    // Add metadata for the root index.ts file to use
+    wrapModules.push({
+      interface: wrapSchema.id,
+      version: version,
+      abiVersion: version,
+    });
   }
 
   const renderTemplate = (name: string, context: unknown) => {
@@ -199,7 +171,7 @@ async function generateFormatTypes() {
   return Promise.resolve();
 }
 
-generateFormatTypes()
+wrapCodegen()
   .then(() => {
     process.exit();
   })

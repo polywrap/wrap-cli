@@ -1,39 +1,30 @@
-import { ClientConfig, Uri } from ".";
-import { ResolveUriResult } from "..";
+import { Uri } from ".";
+import { IUriResolutionContext, UriPackageOrWrapper } from "../uri-resolution";
 
-/** Options required for an URI resolution. */
-export interface ResolveUriOptions<
-  TClientConfig extends ClientConfig = ClientConfig
-> {
-  /**
-   * If set to true, the resolveUri function will not use the cache to resolve the uri.
-   */
-  noCacheRead?: boolean;
+import { Result } from "@polywrap/result";
 
-  /**
-   * If set to true, the resolveUri function will not cache the results
-   */
-  noCacheWrite?: boolean;
+// $start: UriResolver.ts
 
-  /**
-   * Override the client's config for all resolutions.
-   */
-  config?: Partial<TClientConfig>;
+/** Options required for URI resolution. */
+export interface TryResolveUriOptions {
+  /** The Wrapper's URI */
+  uri: Uri;
 
-  /**
-   * Id used to track context data set internally.
-   */
-  contextId?: string;
+  /** A URI resolution context */
+  resolutionContext?: IUriResolutionContext;
 }
 
-export interface UriResolverHandler {
-  resolveUri<TUri extends Uri | string>(
-    uri: TUri,
-    options?: ResolveUriOptions<ClientConfig>
-  ): Promise<ResolveUriResult>;
-
-  loadUriResolvers(): Promise<{
-    success: boolean;
-    failedUriResolvers: string[];
-  }>;
+/** An entity capable of resolving a wrap URI, typically by using an IUriResolver implementation */
+export interface UriResolverHandler<TError = undefined> {
+  /**
+   * Resolve a URI to a wrap package, a wrapper, or a uri
+   *
+   * @param options - TryResolveUriOptions
+   * @returns A Promise with a Result containing either a wrap package, a wrapper, or a URI if successful
+   */
+  tryResolveUri(
+    options?: TryResolveUriOptions
+  ): Promise<Result<UriPackageOrWrapper, TError>>;
 }
+
+// $end

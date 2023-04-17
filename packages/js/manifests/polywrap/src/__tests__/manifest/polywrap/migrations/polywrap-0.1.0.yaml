@@ -7,5 +7,5 @@ build: ./polywrap.build.yaml
 meta: ./polywrap.meta.yaml
 deploy: ./polywrap.deploy.yaml
 import_redirects:
-  - uri: "ens/ipfs.polywrap.eth"
-    schema: ../../../../../../../../interfaces/ipfs/build/schema.graphql
+  - uri: "wrap://ens/some.domain.eth"
+    schema: ../some/path/schema.graphql

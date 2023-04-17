@@ -14,6 +14,7 @@ use polywrap_wasm_rs::{
     JSON,
 };
 
+use crate::Env;
 use crate::{
     CustomEnum,
     get_custom_enum_value,
@@ -32,13 +33,14 @@ pub struct ArgsModuleMethod {
     pub opt_enum_array: Option<Vec<Option<CustomEnum>>>,
     pub map: Map<String, i32>,
     pub map_of_arr: Map<String, Vec<i32>>,
+    pub map_of_map: Map<String, Map<String, i32>>,
     pub map_of_obj: Map<String, AnotherType>,
     pub map_of_arr_of_obj: Map<String, Vec<AnotherType>>,
 }
 
 pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, DecodeError> {
     let mut context = Context::new();
-    context.description = "Deserializing module-type: module_method".to_string();
+    context.description = "Deserializing module-type: module_method Args".to_string();
 
     let mut reader = ReadDecoder::new(args, context);
     let mut num_of_fields = reader.read_map_length()?;
@@ -56,6 +58,8 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
     let mut _map_set = false;
     let mut _map_of_arr: Map<String, Vec<i32>> = Map::<String, Vec<i32>>::new();
     let mut _map_of_arr_set = false;
+    let mut _map_of_map: Map<String, Map<String, i32>> = Map::<String, Map<String, i32>>::new();
+    let mut _map_of_map_set = false;
     let mut _map_of_obj: Map<String, AnotherType> = Map::<String, AnotherType>::new();
     let mut _map_of_obj_set = false;
     let mut _map_of_arr_of_obj: Map<String, Vec<AnotherType>> = Map::<String, Vec<AnotherType>>::new();
@@ -161,6 +165,20 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
                 _map_of_arr_set = true;
                 reader.context().pop();
             }
+            "mapOfMap" => {
+                reader.context().push(&field, "Map<String, Map<String, i32>>", "type found, reading argument");
+                _map_of_map = reader.read_ext_generic_map(|reader| {
+                    reader.read_string()
+                }, |reader| {
+                    reader.read_ext_generic_map(|reader| {
+                        reader.read_string()
+                    }, |reader| {
+                        reader.read_i32()
+                    })
+                })?;
+                _map_of_map_set = true;
+                reader.context().pop();
+            }
             "mapOfObj" => {
                 reader.context().push(&field, "Map<String, AnotherType>", "type found, reading argument");
                 _map_of_obj = reader.read_ext_generic_map(|reader| {
@@ -203,6 +221,9 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
     if !_map_of_arr_set {
         return Err(DecodeError::MissingField("mapOfArr: Map<String, [Int]>.".to_string()));
     }
+    if !_map_of_map_set {
+        return Err(DecodeError::MissingField("mapOfMap: Map<String, Map<String, Int>>.".to_string()));
+    }
     if !_map_of_obj_set {
         return Err(DecodeError::MissingField("mapOfObj: Map<String, AnotherType>.".to_string()));
     }
@@ -219,14 +240,104 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
         opt_enum_array: _opt_enum_array,
         map: _map,
         map_of_arr: _map_of_arr,
+        map_of_map: _map_of_map,
         map_of_obj: _map_of_obj,
         map_of_arr_of_obj: _map_of_arr_of_obj,
     })
 }
 
+pub fn serialize_module_method_args(args: &ArgsModuleMethod) -> Result<Vec<u8>, EncodeError> {
+    let mut encoder_context = Context::new();
+    encoder_context.description = "Serializing (encoding) module-type: module_method Args".to_string();
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_module_method_args(args, &mut encoder)?;
+    Ok(encoder.get_buffer())
+}
+
+pub fn write_module_method_args<W: Write>(args: &ArgsModuleMethod, writer: &mut W) -> Result<(), EncodeError> {
+    writer.write_map_length(&11)?;
+    writer.context().push("str", "String", "writing property");
+    writer.write_string("str")?;
+    writer.write_string(&args.str)?;
+    writer.context().pop();
+    writer.context().push("optStr", "Option<String>", "writing property");
+    writer.write_string("optStr")?;
+    writer.write_optional_string(&args.opt_str)?;
+    writer.context().pop();
+    writer.context().push("en", "CustomEnum", "writing property");
+    writer.write_string("en")?;
+    writer.write_i32(&(args.en as i32))?;
+    writer.context().pop();
+    writer.context().push("optEnum", "Option<CustomEnum>", "writing property");
+    writer.write_string("optEnum")?;
+    writer.write_optional_i32(&args.opt_enum.map(|f| f as i32))?;
+    writer.context().pop();
+    writer.context().push("enumArray", "Vec<CustomEnum>", "writing property");
+    writer.write_string("enumArray")?;
+    writer.write_array(&args.enum_array, |writer, item| {
+        writer.write_i32(&(*item as i32))
+    })?;
+    writer.context().pop();
+    writer.context().push("optEnumArray", "Option<Vec<Option<CustomEnum>>>", "writing property");
+    writer.write_string("optEnumArray")?;
+    writer.write_optional_array(&args.opt_enum_array, |writer, item| {
+        writer.write_optional_i32(&item.map(|f| f as i32))
+    })?;
+    writer.context().pop();
+    writer.context().push("map", "Map<String, i32>", "writing property");
+    writer.write_string("map")?;
+    writer.write_ext_generic_map(&args.map, |writer, key| {
+        writer.write_string(key)
+    }, |writer, value| {
+        writer.write_i32(value)
+    })?;
+    writer.context().pop();
+    writer.context().push("mapOfArr", "Map<String, Vec<i32>>", "writing property");
+    writer.write_string("mapOfArr")?;
+    writer.write_ext_generic_map(&args.map_of_arr, |writer, key| {
+        writer.write_string(key)
+    }, |writer, value| {
+        writer.write_array(value, |writer, item| {
+            writer.write_i32(item)
+        })
+    })?;
+    writer.context().pop();
+    writer.context().push("mapOfMap", "Map<String, Map<String, i32>>", "writing property");
+    writer.write_string("mapOfMap")?;
+    writer.write_ext_generic_map(&args.map_of_map, |writer, key| {
+        writer.write_string(key)
+    }, |writer, value| {
+        writer.write_ext_generic_map(value, |writer, key| {
+            writer.write_string(key)
+        }, |writer, value| {
+            writer.write_i32(value)
+        })
+    })?;
+    writer.context().pop();
+    writer.context().push("mapOfObj", "Map<String, AnotherType>", "writing property");
+    writer.write_string("mapOfObj")?;
+    writer.write_ext_generic_map(&args.map_of_obj, |writer, key| {
+        writer.write_string(key)
+    }, |writer, value| {
+        AnotherType::write(value, writer)
+    })?;
+    writer.context().pop();
+    writer.context().push("mapOfArrOfObj", "Map<String, Vec<AnotherType>>", "writing property");
+    writer.write_string("mapOfArrOfObj")?;
+    writer.write_ext_generic_map(&args.map_of_arr_of_obj, |writer, key| {
+        writer.write_string(key)
+    }, |writer, value| {
+        writer.write_array(value, |writer, item| {
+            AnotherType::write(item, writer)
+        })
+    })?;
+    writer.context().pop();
+    Ok(())
+}
+
 pub fn serialize_module_method_result(result: &i32) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) module-type: module_method".to_string();
+    encoder_context.description = "Serializing (encoding) module-type: module_method Result".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
     write_module_method_result(result, &mut encoder)?;
     Ok(encoder.get_buffer())
@@ -239,6 +350,17 @@ pub fn write_module_method_result<W: Write>(result: &i32, writer: &mut W) -> Res
     Ok(())
 }
 
+pub fn deserialize_module_method_result(result: &[u8]) -> Result<i32, DecodeError> {
+    let mut context = Context::new();
+    context.description = "Deserializing module-type: module_method Result".to_string();
+    let mut reader = ReadDecoder::new(result, context);
+
+    reader.context().push("moduleMethod", "i32", "reading function output");
+    let res = reader.read_i32()?;
+    reader.context().pop();
+    Ok(res)
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ArgsObjectMethod {
     pub object: AnotherType,
@@ -249,7 +371,7 @@ pub struct ArgsObjectMethod {
 
 pub fn deserialize_object_method_args(args: &[u8]) -> Result<ArgsObjectMethod, DecodeError> {
     let mut context = Context::new();
-    context.description = "Deserializing module-type: object_method".to_string();
+    context.description = "Deserializing module-type: object_method Args".to_string();
 
     let mut reader = ReadDecoder::new(args, context);
     let mut num_of_fields = reader.read_map_length()?;
@@ -324,9 +446,50 @@ pub fn deserialize_object_method_args(args: &[u8]) -> Result<ArgsObjectMethod, D
     })
 }
 
+pub fn serialize_object_method_args(args: &ArgsObjectMethod) -> Result<Vec<u8>, EncodeError> {
+    let mut encoder_context = Context::new();
+    encoder_context.description = "Serializing (encoding) module-type: object_method Args".to_string();
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_object_method_args(args, &mut encoder)?;
+    Ok(encoder.get_buffer())
+}
+
+pub fn write_object_method_args<W: Write>(args: &ArgsObjectMethod, writer: &mut W) -> Result<(), EncodeError> {
+    writer.write_map_length(&4)?;
+    writer.context().push("object", "AnotherType", "writing property");
+    writer.write_string("object")?;
+    AnotherType::write(&args.object, writer)?;
+    writer.context().pop();
+    writer.context().push("optObject", "Option<AnotherType>", "writing property");
+    writer.write_string("optObject")?;
+    if args.opt_object.is_some() {
+        AnotherType::write(args.opt_object.as_ref().as_ref().unwrap(), writer)?;
+    } else {
+        writer.write_nil()?;
+    }
+    writer.context().pop();
+    writer.context().push("objectArray", "Vec<AnotherType>", "writing property");
+    writer.write_string("objectArray")?;
+    writer.write_array(&args.object_array, |writer, item| {
+        AnotherType::write(item, writer)
+    })?;
+    writer.context().pop();
+    writer.context().push("optObjectArray", "Option<Vec<Option<AnotherType>>>", "writing property");
+    writer.write_string("optObjectArray")?;
+    writer.write_optional_array(&args.opt_object_array, |writer, item| {
+        if item.is_some() {
+            AnotherType::write(item.as_ref().as_ref().unwrap(), writer)
+        } else {
+            writer.write_nil()
+        }
+    })?;
+    writer.context().pop();
+    Ok(())
+}
+
 pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) module-type: object_method".to_string();
+    encoder_context.description = "Serializing (encoding) module-type: object_method Result".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
     write_object_method_result(result, &mut encoder)?;
     Ok(encoder.get_buffer())
@@ -343,6 +506,23 @@ pub fn write_object_method_result<W: Write>(result: &Option<AnotherType>, writer
     Ok(())
 }
 
+pub fn deserialize_object_method_result(result: &[u8]) -> Result<Option<AnotherType>, DecodeError> {
+    let mut context = Context::new();
+    context.description = "Deserializing module-type: object_method Result".to_string();
+    let mut reader = ReadDecoder::new(result, context);
+
+    reader.context().push("objectMethod", "Option<AnotherType>", "reading function output");
+    let mut object: Option<AnotherType> = None;
+    if !reader.is_next_nil()? {
+        object = Some(AnotherType::read(&mut reader)?);
+    } else {
+        object = None;
+    }
+    let res = object;
+    reader.context().pop();
+    Ok(res)
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ArgsOptionalEnvMethod {
     pub object: AnotherType,
@@ -353,7 +533,7 @@ pub struct ArgsOptionalEnvMethod {
 
 pub fn deserialize_optional_env_method_args(args: &[u8]) -> Result<ArgsOptionalEnvMethod, DecodeError> {
     let mut context = Context::new();
-    context.description = "Deserializing module-type: optional_env_method".to_string();
+    context.description = "Deserializing module-type: optional_env_method Args".to_string();
 
     let mut reader = ReadDecoder::new(args, context);
     let mut num_of_fields = reader.read_map_length()?;
@@ -428,9 +608,50 @@ pub fn deserialize_optional_env_method_args(args: &[u8]) -> Result<ArgsOptionalE
     })
 }
 
+pub fn serialize_optional_env_method_args(args: &ArgsOptionalEnvMethod) -> Result<Vec<u8>, EncodeError> {
+    let mut encoder_context = Context::new();
+    encoder_context.description = "Serializing (encoding) module-type: optional_env_method Args".to_string();
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_optional_env_method_args(args, &mut encoder)?;
+    Ok(encoder.get_buffer())
+}
+
+pub fn write_optional_env_method_args<W: Write>(args: &ArgsOptionalEnvMethod, writer: &mut W) -> Result<(), EncodeError> {
+    writer.write_map_length(&4)?;
+    writer.context().push("object", "AnotherType", "writing property");
+    writer.write_string("object")?;
+    AnotherType::write(&args.object, writer)?;
+    writer.context().pop();
+    writer.context().push("optObject", "Option<AnotherType>", "writing property");
+    writer.write_string("optObject")?;
+    if args.opt_object.is_some() {
+        AnotherType::write(args.opt_object.as_ref().as_ref().unwrap(), writer)?;
+    } else {
+        writer.write_nil()?;
+    }
+    writer.context().pop();
+    writer.context().push("objectArray", "Vec<AnotherType>", "writing property");
+    writer.write_string("objectArray")?;
+    writer.write_array(&args.object_array, |writer, item| {
+        AnotherType::write(item, writer)
+    })?;
+    writer.context().pop();
+    writer.context().push("optObjectArray", "Option<Vec<Option<AnotherType>>>", "writing property");
+    writer.write_string("optObjectArray")?;
+    writer.write_optional_array(&args.opt_object_array, |writer, item| {
+        if item.is_some() {
+            AnotherType::write(item.as_ref().as_ref().unwrap(), writer)
+        } else {
+            writer.write_nil()
+        }
+    })?;
+    writer.context().pop();
+    Ok(())
+}
+
 pub fn serialize_optional_env_method_result(result: &Option<AnotherType>) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) module-type: optional_env_method".to_string();
+    encoder_context.description = "Serializing (encoding) module-type: optional_env_method Result".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
     write_optional_env_method_result(result, &mut encoder)?;
     Ok(encoder.get_buffer())
@@ -447,14 +668,32 @@ pub fn write_optional_env_method_result<W: Write>(result: &Option<AnotherType>, 
     Ok(())
 }
 
+pub fn deserialize_optional_env_method_result(result: &[u8]) -> Result<Option<AnotherType>, DecodeError> {
+    let mut context = Context::new();
+    context.description = "Deserializing module-type: optional_env_method Result".to_string();
+    let mut reader = ReadDecoder::new(result, context);
+
+    reader.context().push("optionalEnvMethod", "Option<AnotherType>", "reading function output");
+    let mut object: Option<AnotherType> = None;
+    if !reader.is_next_nil()? {
+        object = Some(AnotherType::read(&mut reader)?);
+    } else {
+        object = None;
+    }
+    let res = object;
+    reader.context().pop();
+    Ok(res)
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ArgsIf {
+    #[serde(rename = "if")]
     pub _if: Else,
 }
 
 pub fn deserialize_if_args(args: &[u8]) -> Result<ArgsIf, DecodeError> {
     let mut context = Context::new();
-    context.description = "Deserializing module-type: if".to_string();
+    context.description = "Deserializing module-type: if Args".to_string();
 
     let mut reader = ReadDecoder::new(args, context);
     let mut num_of_fields = reader.read_map_length()?;
@@ -486,9 +725,26 @@ pub fn deserialize_if_args(args: &[u8]) -> Result<ArgsIf, DecodeError> {
     })
 }
 
+pub fn serialize_if_args(args: &ArgsIf) -> Result<Vec<u8>, EncodeError> {
+    let mut encoder_context = Context::new();
+    encoder_context.description = "Serializing (encoding) module-type: if Args".to_string();
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_if_args(args, &mut encoder)?;
+    Ok(encoder.get_buffer())
+}
+
+pub fn write_if_args<W: Write>(args: &ArgsIf, writer: &mut W) -> Result<(), EncodeError> {
+    writer.write_map_length(&1)?;
+    writer.context().push("if", "Else", "writing property");
+    writer.write_string("if")?;
+    Else::write(&args._if, writer)?;
+    writer.context().pop();
+    Ok(())
+}
+
 pub fn serialize_if_result(result: &Else) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) module-type: if".to_string();
+    encoder_context.description = "Serializing (encoding) module-type: if Result".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
     write_if_result(result, &mut encoder)?;
     Ok(encoder.get_buffer())
@@ -499,4 +755,16 @@ pub fn write_if_result<W: Write>(result: &Else, writer: &mut W) -> Result<(), En
     Else::write(&result, writer)?;
     writer.context().pop();
     Ok(())
+}
+
+pub fn deserialize_if_result(result: &[u8]) -> Result<Else, DecodeError> {
+    let mut context = Context::new();
+    context.description = "Deserializing module-type: if Result".to_string();
+    let mut reader = ReadDecoder::new(result, context);
+
+    reader.context().push("if", "Else", "reading function output");
+    let object = Else::read(&mut reader)?;
+    let res = object;
+    reader.context().pop();
+    Ok(res)
 }

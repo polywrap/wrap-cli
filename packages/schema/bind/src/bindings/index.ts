@@ -2,6 +2,7 @@ import { GenerateBindingFn } from "./types";
 import { BindLanguage } from "../";
 import * as AssemblyScript from "./assemblyscript";
 import * as Rust from "./rust";
+import * as Python from "./python";
 import * as TypeScript from "./typescript";
 import * as Golang from "./golang";
 
@@ -21,6 +22,10 @@ export function getGenerateBindingFn(
       return Golang.Wasm.generateBinding;
     case "plugin-ts":
       return TypeScript.Plugin.generateBinding;
+    case "plugin-rs":
+      return Rust.Plugin.generateBinding;
+    case "plugin-py":
+      return Python.Plugin.generateBinding;
     case "app-ts":
       return TypeScript.App.generateBinding;
     default:

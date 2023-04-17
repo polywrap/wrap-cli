@@ -1,49 +1,90 @@
-import { Uri, UriRedirect, InterfaceImplementations } from "../types";
-import { applyRedirects } from "./apply-redirects";
+import {
+  Uri,
+  CoreClient,
+  WrapError,
+  WrapErrorCode,
+  ReadonlyUriMap,
+} from "../types";
+import { IUriResolutionContext } from "../uri-resolution";
+import { applyResolution } from "./applyResolution";
 
-import { Tracer } from "@polywrap/tracing-js";
+import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
-export const getImplementations = Tracer.traceFunc(
-  "core: getImplementations",
-  (
-    wrapperInterfaceUri: Uri,
-    interfaces: readonly InterfaceImplementations<Uri>[],
-    redirects?: readonly UriRedirect<Uri>[]
-  ): Uri[] => {
-    const result: Uri[] = [];
+export const getImplementations = async (
+  wrapperInterfaceUri: Uri,
+  interfaces: ReadonlyUriMap<readonly Uri[]>,
+  client?: CoreClient,
+  resolutionContext?: IUriResolutionContext
+): Promise<Result<Uri[], WrapError>> => {
+  const result: Uri[] = [];
 
-    const addUniqueResult = (uri: Uri) => {
-      // If the URI hasn't been added already
-      if (result.findIndex((i) => Uri.equals(i, uri)) === -1) {
-        result.push(uri);
+  const addUniqueResult = (uri: Uri) => {
+    // If the URI hasn't been added already
+    if (result.findIndex((i) => Uri.equals(i, uri)) === -1) {
+      result.push(uri);
+    }
+  };
+
+  const addAllImplementationsFromImplementationsArray = async (
+    impls: ReadonlyUriMap<readonly Uri[]>,
+    wrapperInterfaceUri: Uri
+  ): Promise<Result<undefined, WrapError>> => {
+    for (const impl of impls.keys()) {
+      let fullyResolvedUri: Uri;
+      if (client) {
+        const redirectsResult = await applyResolution(
+          impl,
+          client,
+          resolutionContext
+        );
+        if (!redirectsResult.ok) {
+          const error = new WrapError("Failed to resolve redirects", {
+            uri: impl.uri,
+            code: WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS_ERROR,
+            cause: redirectsResult.error,
+          });
+          return ResultErr(error);
+        }
+        fullyResolvedUri = redirectsResult.value;
+      } else {
+        fullyResolvedUri = impl;
       }
-    };
 
-    const addAllImplementationsFromImplementationsArray = (
-      implementationsArray: readonly InterfaceImplementations<Uri>[],
-      wrapperInterfaceUri: Uri
-    ) => {
-      for (const interfaceImplementations of implementationsArray) {
-        const fullyResolvedUri = redirects
-          ? applyRedirects(interfaceImplementations.interface, redirects)
-          : interfaceImplementations.interface;
-
-        if (Uri.equals(fullyResolvedUri, wrapperInterfaceUri)) {
-          for (const implementation of interfaceImplementations.implementations) {
-            addUniqueResult(implementation);
+      if (Uri.equals(fullyResolvedUri, wrapperInterfaceUri)) {
+        const implementations = impls.get(impl);
+        if (implementations) {
+          for (const implementation of implementations) {
+            addUniqueResult(Uri.from(implementation));
           }
         }
       }
-    };
-
-    let finalUri = wrapperInterfaceUri;
-
-    if (redirects) {
-      finalUri = applyRedirects(wrapperInterfaceUri, redirects);
     }
+    return ResultOk(undefined);
+  };
 
-    addAllImplementationsFromImplementationsArray(interfaces, finalUri);
+  let finalUri = wrapperInterfaceUri;
 
-    return result;
+  if (client) {
+    const redirectsResult = await applyResolution(
+      wrapperInterfaceUri,
+      client,
+      resolutionContext
+    );
+    if (!redirectsResult.ok) {
+      const error = new WrapError("Failed to resolve redirects", {
+        uri: wrapperInterfaceUri.uri,
+        code: WrapErrorCode.CLIENT_GET_IMPLEMENTATIONS_ERROR,
+        cause: redirectsResult.error,
+      });
+      return ResultErr(error);
+    }
+    finalUri = redirectsResult.value;
   }
-);
+
+  const addAllImp = await addAllImplementationsFromImplementationsArray(
+    interfaces,
+    finalUri
+  );
+
+  return addAllImp.ok ? ResultOk(result) : addAllImp;
+};

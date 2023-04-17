@@ -1,8 +1,5 @@
 import {
-  Uri,
-  Client,
   GetFileOptions,
-  GetManifestOptions,
   InvokeOptions,
   Invocable,
   Invoker,
@@ -10,6 +7,9 @@ import {
 } from ".";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { Result } from "@polywrap/result";
+
+// $start: Wrapper.ts
 
 /**
  * The Wrapper definition, which can be used to spawn
@@ -17,7 +17,7 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
  * this class may do things like caching WASM bytecode, spawning
  * worker threads, or indexing into resolvers to find the requested method.
  */
-export abstract class Wrapper implements Invocable {
+export interface Wrapper extends Invocable {
   /**
    * Invoke the Wrapper based on the provided [[InvokeOptions]]
    *
@@ -25,33 +25,22 @@ export abstract class Wrapper implements Invocable {
    * @param invoker The client instance requesting this invocation.
    * This client will be used for any sub-invokes that occur.
    */
-  public abstract invoke(
-    options: InvokeOptions<Uri>,
+  invoke(
+    options: InvokeOptions,
     invoker: Invoker
   ): Promise<InvocableResult<unknown>>;
 
   /**
    * Get a file from the Wrapper package.
-   * Not implemented for plugin wrappers.
    *
    * @param options Configuration options for file retrieval
-   * @param client The client instance requesting the file.
    */
-  public abstract getFile(
-    options: GetFileOptions,
-    client: Client
-  ): Promise<Uint8Array | string>;
+  getFile(options: GetFileOptions): Promise<Result<Uint8Array | string, Error>>;
 
   /**
    * Get a manifest from the Wrapper package.
-   * Not implemented for plugin wrappers.
-   *
-   * @param client The client instance requesting the manifest.
    */
-  public abstract getManifest(
-    options: GetManifestOptions,
-    client: Client
-  ): Promise<WrapManifest>;
+  getManifest(): WrapManifest;
 }
 
-export type WrapperCache = Map<string, Wrapper>;
+// $end

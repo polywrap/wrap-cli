@@ -1,7 +1,0 @@
-format: 0.2.0
-project:
-  name: Sample
-  type: plugin/typescript
-source:
-  schema: ./src/schema.graphql
-  module: ./src/index.ts

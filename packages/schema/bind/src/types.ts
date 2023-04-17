@@ -6,6 +6,8 @@ export type BindLanguage =
   | "wasm-rs"
   | "wasm-go"
   | "plugin-ts"
+  | "plugin-rs"
+  | "plugin-py"
   | "app-ts";
 
 export interface BindOutput {

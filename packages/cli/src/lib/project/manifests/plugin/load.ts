@@ -1,4 +1,4 @@
-import { displayPath, withSpinner, intlMsg } from "../../../";
+import { displayPath, Logger, logActivity, intlMsg } from "../../../";
 
 import {
   PluginManifest,
@@ -7,14 +7,13 @@ import {
 import fs from "fs";
 
 export const defaultPluginManifest = [
-  "polywrap.yaml",
   "polywrap.plugin.yaml",
   "polywrap.plugin.yml",
 ];
 
 export async function loadPluginManifest(
   manifestPath: string,
-  quiet = false
+  logger: Logger
 ): Promise<PluginManifest> {
   const run = (): Promise<PluginManifest> => {
     const manifest = fs.readFileSync(manifestPath, "utf-8");
@@ -27,24 +26,21 @@ export async function loadPluginManifest(
     }
 
     try {
-      const result = deserializePluginManifest(manifest);
+      const result = deserializePluginManifest(manifest, { logger: logger });
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
     }
   };
 
-  if (quiet) {
-    return await run();
-  } else {
-    manifestPath = displayPath(manifestPath);
-    return (await withSpinner(
-      intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
-      intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
-      intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
-      async (_spinner) => {
-        return await run();
-      }
-    )) as PluginManifest;
-  }
+  manifestPath = displayPath(manifestPath);
+  return await logActivity<PluginManifest>(
+    logger,
+    intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
+    intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
+    intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
+    async () => {
+      return await run();
+    }
+  );
 }

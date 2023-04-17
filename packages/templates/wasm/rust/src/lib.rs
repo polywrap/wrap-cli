@@ -1,9 +1,10 @@
 pub mod wrap;
 pub use wrap::*;
 
-pub fn sample_method(args: ArgsSampleMethod) -> SampleResult {
-    return SampleResult {
-        value: args.arg
-    };
+impl ModuleTrait for Module {
+    fn sample_method(args: ArgsSampleMethod) -> Result<SampleResult, String> {
+        return Ok(SampleResult {
+            result: args.arg
+        });
+    }
 }
-
