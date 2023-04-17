@@ -5,16 +5,7 @@ import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { State } from "./WasmWrapper";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import {
-  CoreClient,
-  Uri,
-  ErrorSource,
-  UriPackageOrWrapper,
-  UriResolutionContext,
-  Wrapper,
-  getEnvFromUriHistory,
-} from "@polywrap/core-js";
-import { ResultErr, ResultOk } from "@polywrap/result";
+import { CoreClient, Uri, ErrorSource } from "@polywrap/core-js";
 
 export const createImports = (config: {
   client: CoreClient;
@@ -49,73 +40,21 @@ export const createImports = (config: {
         const method = readString(memory.buffer, methodPtr, methodLen);
         const args = readBytes(memory.buffer, argsPtr, argsLen);
 
-        const loadSubinvokeContext =
-          state.resolutionContext?.createSubContext() ??
-          new UriResolutionContext();
-        const wrapperResult = await client.loadWrapper(
-          Uri.from(uri),
-          loadSubinvokeContext
-        );
+        const result = await client.invoke<Uint8Array>({
+          uri: Uri.from(uri),
+          method: method,
+          args: new Uint8Array(args),
+          encodeResult: true,
+          resolutionContext: state.resolutionContext,
+        });
 
-        if (state.resolutionContext) {
-          state.resolutionContext.trackStep({
-            sourceUri: Uri.from(uri),
-            result: wrapperResult.ok
-              ? ResultOk({
-                  type: "wrapper",
-                  uri: Uri.from(uri),
-                  wrapper: wrapperResult.value as Wrapper,
-                } as UriPackageOrWrapper)
-              : ResultErr(wrapperResult.error),
-            description: `Subinvoke - Load(${uri})`,
-            subHistory: loadSubinvokeContext.getHistory(),
-          });
-        }
-
-        if (!wrapperResult.ok) {
-          state.subinvoke.error = `${wrapperResult.error?.name}: ${wrapperResult.error?.message}`;
-
-          return false;
+        if (result.ok) {
+          state.subinvoke.result = result.value;
         } else {
-          const env = getEnvFromUriHistory(
-            loadSubinvokeContext.getResolutionPath(),
-            client
-          );
-
-          const subinvokeContext =
-            state.resolutionContext?.createSubContext() ??
-            new UriResolutionContext();
-          const result = await client.invokeWrapper<Uint8Array>({
-            wrapper: wrapperResult.value,
-            uri: Uri.from(uri),
-            method: method,
-            args: new Uint8Array(args),
-            encodeResult: true,
-            env,
-            resolutionContext: subinvokeContext,
-          });
-
-          if (state.resolutionContext) {
-            state.resolutionContext.trackStep({
-              sourceUri: Uri.from(uri),
-              result: result.ok
-                ? ResultOk({
-                    type: "uri",
-                    uri: Uri.from(uri),
-                  } as UriPackageOrWrapper)
-                : ResultErr(result.error),
-              description: `Subinvoke - Invoke(${uri})`,
-              subHistory: subinvokeContext.getHistory(),
-            });
-          }
-          if (result.ok) {
-            state.subinvoke.result = result.value;
-          } else {
-            state.subinvoke.error = `${result.error?.name}: ${result.error?.message}`;
-          }
-
-          return result.ok;
+          state.subinvoke.error = `${result.error?.name}: ${result.error?.message}`;
         }
+
+        return result.ok;
       },
       // Give WASM the size of the result
       __wrap_subinvoke_result_len: (): u32 => {

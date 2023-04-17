@@ -28,6 +28,7 @@ import {
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
+import { UriResolutionResult } from "@polywrap/uri-resolvers-js";
 
 export class PolywrapCoreClient implements CoreClient {
   // $start: PolywrapCoreClient-constructor
@@ -274,27 +275,51 @@ export class PolywrapCoreClient implements CoreClient {
       const resolutionContext =
         options.resolutionContext ?? new UriResolutionContext();
 
+      const loadWrapperContext = resolutionContext.createSubContext();
+
       const loadWrapperResult = await this.loadWrapper(
         typedOptions.uri,
-        resolutionContext
+        loadWrapperContext
       );
+
+      resolutionContext.trackStep({
+        sourceUri: typedOptions.uri,
+        result: loadWrapperResult.ok
+          ? UriResolutionResult.ok(typedOptions.uri, loadWrapperResult.value)
+          : UriResolutionResult.err(loadWrapperResult.error),
+        description: `Client- loadWrapper(${typedOptions.uri.uri})`,
+        subHistory: loadWrapperContext.getHistory(),
+      });
 
       if (!loadWrapperResult.ok) {
         return loadWrapperResult;
       }
       const wrapper = loadWrapperResult.value;
 
-      const resolutionPath = resolutionContext.getResolutionPath();
+      let resolutionPath = loadWrapperContext.getResolutionPath();
+      resolutionPath =
+        resolutionPath.length > 0 ? resolutionPath : [typedOptions.uri];
 
-      const env = getEnvFromUriHistory(
-        resolutionPath.length > 0 ? resolutionPath : [typedOptions.uri],
-        this
-      );
+      const env = getEnvFromUriHistory(resolutionPath, this);
+
+      const invokeContext = resolutionContext.createSubContext();
 
       const invokeResult = await this.invokeWrapper<TData>({
-        env: env,
         ...typedOptions,
+        env: env,
+        resolutionContext: invokeContext,
         wrapper,
+      });
+
+      const finalUri = resolutionPath[resolutionPath.length - 1];
+
+      resolutionContext.trackStep({
+        sourceUri: finalUri,
+        result: invokeResult.ok
+          ? UriResolutionResult.ok(finalUri)
+          : ResultErr(invokeResult.error),
+        description: `Client - Invoke(${finalUri.uri})`,
+        subHistory: invokeContext.getHistory(),
       });
 
       if (!invokeResult.ok) {
