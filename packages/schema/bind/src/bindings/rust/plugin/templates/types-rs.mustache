@@ -114,7 +114,7 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     }
 
     {{#methods}}
-    pub async fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(args: &{{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, PluginError> {
+    pub fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(args: &{{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, PluginError> {
         let uri = {{#parent}}{{#toUpper}}{{type}}{{/toUpper}}{{/parent}}::URI;
         let serialized_args = serialize(args.clone()).unwrap();
         let opt_args = Some(serialized_args.as_slice());
@@ -126,7 +126,6 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
             None,
             None
         )
-        .await
         .map_err(|e| PluginError::SubinvocationError {
             uri: uri.to_string(),
             method: "{{name}}".to_string(),
@@ -156,7 +155,7 @@ impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a
     }
 
     {{#methods}}
-    pub async fn {{#toLower}}{{name}}{{/toLower}}(&self, args: &{{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, PluginError> {
+    pub fn {{#toLower}}{{name}}{{/toLower}}(&self, args: &{{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, PluginError> {
         let uri = self.uri;
         let serialized_args = serialize(args.clone()).unwrap();
         let result = invoker.invoke_raw(
@@ -165,7 +164,6 @@ impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a
             serialized_args,
             None,
             None
-        .await
         .map_err(|e| PluginError::SubinvocationError {
             uri: uri.to_string(),
             method: "{{name}}".to_string(),
