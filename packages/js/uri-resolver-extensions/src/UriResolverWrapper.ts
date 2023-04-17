@@ -56,15 +56,6 @@ export class UriResolverWrapper implements IUriResolver<unknown> /* $ */ {
 
     return getResult(result.value, uri, this.implementationUri, client);
   }
-
-  // $start: UriResolverWrapper-getStepDescription
-  /**
-   * A utility function for generating step descriptions to facilitate resolution context updates
-   *
-   * @returns text describing the URI resolution step
-   * */
-  protected getStepDescription = (): string /* $ */ =>
-    `ResolverExtension (${this.implementationUri.uri})`;
 }
 
 const getResult = (
