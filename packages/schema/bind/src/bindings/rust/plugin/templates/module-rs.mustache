@@ -23,6 +23,9 @@ pub trait Module: PluginModule {
   {{#moduleType}}
   {{#methods}}
   fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(&mut self, args: &Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>{{#env}}, env: {{^required}}Option<{{/required}}Env{{^required}}>{{/required}}{{/env}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, PluginError>;
+  {{^last}}
+
+  {{/last}}
   {{/methods}}
   {{/moduleType}}
 }

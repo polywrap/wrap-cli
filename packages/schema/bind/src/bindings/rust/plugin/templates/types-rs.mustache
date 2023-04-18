@@ -164,6 +164,7 @@ impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a
             serialized_args,
             None,
             None
+        )
         .map_err(|e| PluginError::SubinvocationError {
             uri: uri.to_string(),
             method: "{{name}}".to_string(),
