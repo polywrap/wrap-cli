@@ -1,7 +1,7 @@
 import { intlMsg } from "../intl";
 import { WorkflowOutput } from "./types";
-import { typesHandler } from "../helpers";
 
+import { typesHandler } from "@polywrap/core-js";
 import path from "path";
 import fs from "fs";
 import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";

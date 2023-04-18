@@ -19,6 +19,7 @@ import {
   WrapError,
   WrapErrorCode,
   ErrorSource,
+  typesHandler,
 } from "@polywrap/core-js";
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
@@ -141,7 +142,7 @@ export class WasmWrapper implements Wrapper {
           code: WrapErrorCode.WRAPPER_READ_FAIL,
           uri: options.uri.uri,
           method,
-          args: JSON.stringify(WasmWrapper._decodeArgs(args), null, 2),
+          args: JSON.stringify(WasmWrapper._decodeArgs(args), typesHandler, 2),
         });
         return ResultErr(error);
       }
@@ -174,7 +175,7 @@ export class WasmWrapper implements Wrapper {
           code: WrapErrorCode.WRAPPER_INVOKE_ABORTED,
           uri: options.uri.uri,
           method,
-          args: JSON.stringify(WasmWrapper._decodeArgs(args), null, 2),
+          args: JSON.stringify(WasmWrapper._decodeArgs(args), typesHandler, 2),
           source,
           innerError: prev,
         });
@@ -185,7 +186,7 @@ export class WasmWrapper implements Wrapper {
           code: WrapErrorCode.WRAPPER_INTERNAL_ERROR,
           uri: options.uri.uri,
           method,
-          args: JSON.stringify(WasmWrapper._decodeArgs(args), null, 2),
+          args: JSON.stringify(WasmWrapper._decodeArgs(args), typesHandler, 2),
         });
       };
 
@@ -222,7 +223,7 @@ export class WasmWrapper implements Wrapper {
           code: WrapErrorCode.WRAPPER_INVOKE_FAIL,
           uri: options.uri.uri,
           method,
-          args: JSON.stringify(WasmWrapper._decodeArgs(args), null, 2),
+          args: JSON.stringify(WasmWrapper._decodeArgs(args), typesHandler, 2),
         });
         return ResultErr(error);
       }

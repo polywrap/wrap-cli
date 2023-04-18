@@ -13,14 +13,13 @@ import path from "path";
 export class ScriptCodegenerator extends CodeGenerator {
   private readonly _script: string;
   private readonly _mustacheView: Record<string, unknown> | undefined;
-  private readonly _codegenDirAbs: string;
   private readonly _omitHeader: boolean;
   private readonly _schema: string | undefined = "";
 
   constructor(config: {
     project: Project<AnyProjectManifest>;
     schemaComposer: SchemaComposer;
-    codegenDirAbs: string;
+    codegenDirAbs?: string;
     script: string;
     mustacheView: Record<string, unknown> | undefined;
     omitHeader: boolean;
@@ -34,7 +33,6 @@ export class ScriptCodegenerator extends CodeGenerator {
 
     this._script = config.script;
     this._mustacheView = config.mustacheView;
-    this._codegenDirAbs = config.codegenDirAbs;
     this._omitHeader = config.omitHeader;
 
     if (config.schema) {
@@ -59,17 +57,21 @@ export class ScriptCodegenerator extends CodeGenerator {
       throw Error(intlMsg.lib_codeGenerator_nogenerateBindingMethod());
     }
 
+    const outputDirAbs = await this._config.project.getGenerationDirectory(
+      this._config.codegenDirAbs
+    );
+
     const binding = await generateBinding({
       projectName: await this._config.project.getName(),
       abi: await this._config.schemaComposer.getComposedAbis(),
-      outputDirAbs: this._codegenDirAbs,
+      outputDirAbs,
       bindLanguage,
       config: this._mustacheView,
     });
 
-    resetDir(this._codegenDirAbs);
+    resetDir(outputDirAbs);
     return writeDirectorySync(
-      this._codegenDirAbs,
+      outputDirAbs,
       binding.output,
       (templatePath: string) => this._generateTemplate(templatePath, {})
     );

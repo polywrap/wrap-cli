@@ -1,4 +1,0 @@
-format: 0.2.0
-strategies:
-  image:
-    name: object-types-wasm-rs

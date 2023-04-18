@@ -1,0 +1,12 @@
+type Module {
+    methodOne(
+        str: String!
+        optStr: String
+    ): Object!
+}
+
+type Object {
+    u: UInt!
+    array: [Boolean!]!
+    bytes: Bytes
+}

@@ -1,4 +1,4 @@
-import * as Transforms from "./transforms";
+import * as Transforms from "../transforms";
 import { Functions } from "../";
 import { GenerateBindingFn, renderTemplates } from "../..";
 import { loadSubTemplates } from "../../utils";

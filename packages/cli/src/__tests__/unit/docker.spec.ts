@@ -8,7 +8,7 @@ describe("e2e tests for docker", () => {
     await Commands.infra("down", {
       modules: ["eth-ens-ipfs"]
     }, {
-      cwd: path.join(GetPathToCliTestFiles(), "wasm/build-cmd/assemblyscript/001-sanity"),
+      cwd: path.join(GetPathToCliTestFiles(), "build-cmd/wasm/assemblyscript/001-sanity"),
       cli: polywrapCli,
       env: process.env as Record<string, string>
     });
@@ -18,7 +18,7 @@ describe("e2e tests for docker", () => {
     await Commands.infra("down", {
       modules: ["eth-ens-ipfs"]
     }, {
-      cwd: path.join(GetPathToCliTestFiles(), "wasm/build-cmd/assemblyscript/001-sanity"),
+      cwd: path.join(GetPathToCliTestFiles(), "build-cmd/wasm/assemblyscript/001-sanity"),
       cli: polywrapCli,
       env: process.env as Record<string, string>
     });
@@ -31,7 +31,7 @@ describe("e2e tests for docker", () => {
         strategy: "image",
         verbose: true,
       }, {
-        cwd: path.join(GetPathToCliTestFiles(), "wasm/build-cmd/assemblyscript/001-sanity"),
+        cwd: path.join(GetPathToCliTestFiles(), "build-cmd/wasm/assemblyscript/001-sanity"),
         cli: polywrapCli
       }).then((result: { exitCode: number; stdout: string; stderr: string }) => {
         const { exitCode, stderr } = result;

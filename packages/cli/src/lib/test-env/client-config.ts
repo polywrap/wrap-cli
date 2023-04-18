@@ -38,7 +38,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
     },
     redirects: {
       "proxy/testnet-ens-uri-resolver-ext":
-        "ens/wraps.eth:ens-uri-resolver-ext@1.0.0",
+        "ens/wraps.eth:ens-uri-resolver-ext@1.0.1",
     },
     packages: {
       [DefaultBundle.plugins.ethereumProviderV1.uri

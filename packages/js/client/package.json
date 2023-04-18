@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/client-js",
   "description": "Polywrap Javascript Client",
-  "version": "0.10.0-pre.13",
+  "version": "0.10.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -12,7 +12,8 @@
     "build"
   ],
   "scripts": {
-    "build": "yarn build:fast && yarn build:snippets && yarn build:readme",
+    "build": "yarn build:fast",
+    "build:docs": "yarn build:snippets && yarn build:readme",
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose --detectOpenHandles --forceExit",
@@ -22,27 +23,27 @@
     "build:readme": "yarn doc-snippets combine"
   },
   "dependencies": {
-    "@polywrap/client-config-builder-js": "0.10.0-pre.13",
-    "@polywrap/core-client-js": "0.10.0-pre.13",
-    "@polywrap/core-js": "0.10.0-pre.13",
-    "@polywrap/msgpack-js": "0.10.0-pre.13",
-    "@polywrap/plugin-js": "0.10.0-pre.13",
-    "@polywrap/result": "0.10.0-pre.13",
-    "@polywrap/tracing-js": "0.10.0-pre.13",
-    "@polywrap/uri-resolver-extensions-js": "0.10.0-pre.13",
-    "@polywrap/uri-resolvers-js": "0.10.0-pre.13",
-    "@polywrap/wrap-manifest-types-js": "0.10.0-pre.13"
+    "@polywrap/client-config-builder-js": "0.10.0",
+    "@polywrap/core-client-js": "0.10.0",
+    "@polywrap/core-js": "0.10.0",
+    "@polywrap/msgpack-js": "0.10.0",
+    "@polywrap/plugin-js": "0.10.0",
+    "@polywrap/result": "0.10.0",
+    "@polywrap/tracing-js": "0.10.0",
+    "@polywrap/uri-resolver-extensions-js": "0.10.0",
+    "@polywrap/uri-resolvers-js": "0.10.0",
+    "@polywrap/wrap-manifest-types-js": "0.10.0"
   },
   "devDependencies": {
-    "@polywrap/cli-js": "0.10.0-pre.13",
-    "@polywrap/test-cases": "0.10.0-pre.13",
+    "@polywrap/cli-js": "0.10.0",
+    "@polywrap/test-cases": "0.10.0",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "@types/uuid": "8.3.0",
     "bignumber.js": "9.0.2",
     "doc-snippets": "~1.0.0",
     "jest": "26.6.3",
-    "polywrap": "0.10.0-pre.13",
+    "polywrap": "0.10.0",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
     "ts-loader": "8.0.17",

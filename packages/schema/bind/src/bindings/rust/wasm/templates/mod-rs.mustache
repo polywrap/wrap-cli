@@ -43,6 +43,8 @@ pub use {{#detectKeyword}}{{#toLower}}{{namespace}}{{/toLower}}{{/detectKeyword}
 {{#moduleType}}
 pub mod {{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}};
 pub use {{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}}::{
+    Module,
+    ModuleTrait,
     {{#methods}}
     deserialize_{{#toLower}}{{name}}{{/toLower}}_args,
     serialize_{{#toLower}}{{name}}{{/toLower}}_result,

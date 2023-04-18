@@ -1,16 +1,15 @@
 {
   "name": "@polywrap/templates",
   "description": "Polywrap Templates",
-  "version": "0.10.0-pre.13",
+  "version": "0.10.0",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/polywrap/monorepo.git"
   },
   "scripts": {
-    "wasm-linked:up": "cp ./polywrap.wasm-linked* ./wasm/assemblyscript/",
-    "wasm-linked:down": "rm ./wasm/assemblyscript/polywrap.wasm-linked*",
-    "test": "yarn wasm-linked:up && jest --passWithNoTests --runInBand --verbose && yarn wasm-linked:down"
+    "test": "jest --passWithNoTests --runInBand --verbose",
+    "test:ci": "yarn test"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

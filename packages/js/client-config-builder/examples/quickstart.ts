@@ -3,7 +3,10 @@ import { ClientConfigBuilder } from "../build";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { WasmWrapper } from "@polywrap/wasm-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
-import { RecursiveResolver, WrapperCache } from "@polywrap/uri-resolvers-js";
+import {
+  RecursiveResolver,
+  ResolutionResultCache,
+} from "@polywrap/uri-resolvers-js";
 import { fileSystemPlugin } from "@polywrap/file-system-plugin-js";
 import { CoreClientConfig } from "@polywrap/core-js";
 
@@ -34,12 +37,10 @@ export function configure(): ClientConfigBuilder {
   builder
     .addPackage("wrap://plugin/package", httpPlugin({}))
     .removePackage("wrap://plugin/package")
-    .addPackages(
-      {
-        "wrap://plugin/http": httpPlugin({}),
-        "wrap://plugin/filesystem": fileSystemPlugin({}),
-      }
-    );
+    .addPackages({
+      "wrap://plugin/http": httpPlugin({}),
+      "wrap://plugin/filesystem": fileSystemPlugin({}),
+    });
   // $end
 
   // $start: quickstart-addDefaults
@@ -49,9 +50,7 @@ export function configure(): ClientConfigBuilder {
   return builder;
 }
 
-export function build():
-  | ClientConfigBuilder
-  | CoreClientConfig {
+export function build(): ClientConfigBuilder | CoreClientConfig {
   const builder = new ClientConfigBuilder();
 
   // $start: quickstart-build
@@ -60,7 +59,7 @@ export function build():
 
   // build with a custom cache
   coreClientConfig = builder.build({
-    wrapperCache: new WrapperCache(),
+    resolutionResultCache: new ResolutionResultCache(),
   });
 
   // or build with a custom resolver
@@ -92,25 +91,28 @@ export async function example(): Promise<CoreClientConfig> {
 
   // add and remove wrappers
   builder
-    .addWrapper("wrap://ens/wrapper.eth", await WasmWrapper.from(
-      new Uint8Array([1, 2, 3]),
-      new Uint8Array([1, 2, 3])
-    ))
+    .addWrapper(
+      "wrap://ens/wrapper.eth",
+      await WasmWrapper.from(
+        new Uint8Array([1, 2, 3]),
+        new Uint8Array([1, 2, 3])
+      )
+    )
     .removeWrapper("wrap://ens/wrapper.eth")
     .addWrappers({
       "wrap://ens/wrapper.eth": await WasmWrapper.from(
-          new Uint8Array([1, 2, 3]),
-          new Uint8Array([1, 2, 3])
-      )}
-    );
+        new Uint8Array([1, 2, 3]),
+        new Uint8Array([1, 2, 3])
+      ),
+    });
 
   // add and remove wrap packages
   builder
     .addPackage("wrap://plugin/package", httpPlugin({}))
     .removePackage("wrap://plugin/package")
     .addPackages({
-      "wrap://plugin/package": httpPlugin({})
-    })
+      "wrap://plugin/package": httpPlugin({}),
+    });
 
   // add and remove Envs
   builder
@@ -142,7 +144,7 @@ export async function example(): Promise<CoreClientConfig> {
     .addRedirect("wrap://ens/from.eth", "wrap://ens/to.eth")
     .removeRedirect("wrap://ens/from.eth")
     .addRedirects({
-       "wrap://ens/from.eth": "wrap://ens/to.eth",
+      "wrap://ens/from.eth": "wrap://ens/to.eth",
     });
 
   // add resolvers
