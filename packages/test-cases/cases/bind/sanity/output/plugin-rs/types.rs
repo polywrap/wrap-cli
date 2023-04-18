@@ -7,7 +7,7 @@ use serde::{Serialize, Deserialize};
 use num_bigint::BigInt;
 use bigdecimal::BigDecimal as BigNumber;
 use serde_json as JSON;
-use std::collections::BTreeMap as Map;
+use polywrap_msgpack::extensions::generic_map::GenericMap as Map;
 use std::sync::Arc;
 use polywrap_msgpack::{decode, serialize};
 use polywrap_core::{invoke::{Invoker}, uri::Uri};
@@ -187,7 +187,7 @@ impl<'a> TestImportModule<'a> {
         TestImportModule { uri: uri }
     }
 
-    pub async fn imported_method(&self, args: &TestImportModuleArgsImportedMethod) -> Result<Option<TestImportObject>, PluginError> {
+    pub fn imported_method(&self, args: &TestImportModuleArgsImportedMethod) -> Result<Option<TestImportObject>, PluginError> {
         let uri = self.uri;
         let serialized_args = serialize(args.clone()).unwrap();
         let result = invoker.invoke_raw(
@@ -196,7 +196,7 @@ impl<'a> TestImportModule<'a> {
             serialized_args,
             None,
             None
-        .await
+        )
         .map_err(|e| PluginError::SubinvocationError {
             uri: uri.to_string(),
             method: "importedMethod".to_string(),
@@ -207,7 +207,7 @@ impl<'a> TestImportModule<'a> {
         Ok(Some(decode(result.as_slice())?))
     }
 
-    pub async fn another_method(&self, args: &TestImportModuleArgsAnotherMethod) -> Result<i32, PluginError> {
+    pub fn another_method(&self, args: &TestImportModuleArgsAnotherMethod) -> Result<i32, PluginError> {
         let uri = self.uri;
         let serialized_args = serialize(args.clone()).unwrap();
         let result = invoker.invoke_raw(
@@ -216,7 +216,7 @@ impl<'a> TestImportModule<'a> {
             serialized_args,
             None,
             None
-        .await
+        )
         .map_err(|e| PluginError::SubinvocationError {
             uri: uri.to_string(),
             method: "anotherMethod".to_string(),
@@ -227,7 +227,7 @@ impl<'a> TestImportModule<'a> {
         Ok(decode(result.as_slice())?)
     }
 
-    pub async fn returns_array_of_enums(&self, args: &TestImportModuleArgsReturnsArrayOfEnums) -> Result<Vec<Option<TestImportEnumReturn>>, PluginError> {
+    pub fn returns_array_of_enums(&self, args: &TestImportModuleArgsReturnsArrayOfEnums) -> Result<Vec<Option<TestImportEnumReturn>>, PluginError> {
         let uri = self.uri;
         let serialized_args = serialize(args.clone()).unwrap();
         let result = invoker.invoke_raw(
@@ -236,7 +236,7 @@ impl<'a> TestImportModule<'a> {
             serialized_args,
             None,
             None
-        .await
+        )
         .map_err(|e| PluginError::SubinvocationError {
             uri: uri.to_string(),
             method: "returnsArrayOfEnums".to_string(),

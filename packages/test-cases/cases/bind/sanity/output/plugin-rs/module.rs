@@ -2,12 +2,11 @@
 ///       All modifications will be overwritten.
 
 use std::sync::Arc;
-use polywrap_core::invoke::Invoker;
+use polywrap_core::{invoke::Invoker};
 use polywrap_plugin::error::PluginError;
 use polywrap_plugin::module::PluginModule;
 use serde::{Serialize, Deserialize};
 use super::types::*;
-use async_trait::async_trait;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ArgsModuleMethod {
@@ -46,13 +45,12 @@ pub struct ArgsIf {
     pub _if: Else,
 }
 
-#[async_trait]
 pub trait Module: PluginModule {
-  async fn module_method(&mut self, args: &ArgsModuleMethod, invoker: Arc<dyn Invoker>) -> Result<i32, PluginError>;
+  fn module_method(&mut self, args: &ArgsModuleMethod, invoker: Arc<dyn Invoker>) -> Result<i32, PluginError>;
 
-  async fn object_method(&mut self, args: &ArgsObjectMethod, invoker: Arc<dyn Invoker>) -> Result<Option<AnotherType>, PluginError>;
+  fn object_method(&mut self, args: &ArgsObjectMethod, invoker: Arc<dyn Invoker>, env: Env) -> Result<Option<AnotherType>, PluginError>;
 
-  async fn optional_env_method(&mut self, args: &ArgsOptionalEnvMethod, invoker: Arc<dyn Invoker>) -> Result<Option<AnotherType>, PluginError>;
+  fn optional_env_method(&mut self, args: &ArgsOptionalEnvMethod, invoker: Arc<dyn Invoker>, env: Option<Env>) -> Result<Option<AnotherType>, PluginError>;
 
-  async fn _if(&mut self, args: &ArgsIf, invoker: Arc<dyn Invoker>) -> Result<Else, PluginError>;
+  fn _if(&mut self, args: &ArgsIf, invoker: Arc<dyn Invoker>) -> Result<Else, PluginError>;
 }
