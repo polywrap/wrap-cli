@@ -36,9 +36,9 @@ export class CustomType {
   optBytes: ArrayBuffer | null;
   _boolean: bool;
   optBoolean: Box<bool> | null;
-  uArray: Array<u32>;
-  uOptArray: Array<u32> | null;
-  optUOptArray: Array<Box<u32> | null> | null;
+  u_array: Array<u32>;
+  uOpt_array: Array<u32> | null;
+  _opt_uOptArray: Array<Box<u32> | null> | null;
   optStrOptArray: Array<string | null> | null;
   uArrayArray: Array<Array<u32>>;
   uOptArrayOptArray: Array<Array<Box<u32> | null> | null>;

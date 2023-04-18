@@ -314,27 +314,18 @@ export const serdeKeyword: MustacheFn = () => {
   };
 };
 
-export const serdeRenameIfSnakeCase: MustacheFn = () => {
+export const serdeRenameIfCaseMismatch: MustacheFn = () => {
   return (value: string, render: (template: string) => string): string => {
     const type = render(value);
 
-    if (isSnakeCase(type)) {
-      return `#[serde(rename = "${snakeCaseToCamelCase(type)}")]\n    `;
-    }
-
-    if (isKeyword(type)) {
+    if (hasUppercase(type) || isKeyword(type)) {
       return `#[serde(rename = "${type}")]\n    `;
     }
     return "";
   };
 };
 
-const isSnakeCase = (value: string): boolean =>
-  /[a-z0-9]+(?:_[a-z0-9]+)*/.test(value) && value.includes("_");
-const snakeCaseToCamelCase = (value: string): string =>
-  value
-    .toLowerCase()
-    .replace(/[-_][a-z]/g, (group) => group.slice(-1).toUpperCase());
+const hasUppercase = (value: string): boolean => value !== value.toLowerCase();
 
 const toWasmArray = (type: string, optional: boolean): string => {
   const result = type.match(/(\[)([[\]A-Za-z1-9_.!]+)(\])/);

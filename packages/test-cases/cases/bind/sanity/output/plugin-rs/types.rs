@@ -57,12 +57,11 @@ pub struct CustomType {
     pub boolean: bool,
     #[serde(rename = "optBoolean")]
     pub opt_boolean: Option<bool>,
-    #[serde(rename = "uArray")]
     pub u_array: Vec<u32>,
-    #[serde(rename = "uOptArray")]
+    #[serde(rename = "uOpt_array")]
     pub u_opt_array: Option<Vec<u32>>,
-    #[serde(rename = "optUOptArray")]
-    pub opt_u_opt_array: Option<Vec<Option<u32>>>,
+    #[serde(rename = "_opt_uOptArray")]
+    pub _opt_u_opt_array: Option<Vec<Option<u32>>>,
     #[serde(rename = "optStrOptArray")]
     pub opt_str_opt_array: Option<Vec<Option<String>>>,
     #[serde(rename = "uArrayArray")]

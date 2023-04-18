@@ -1460,23 +1460,23 @@ pub fn get_manifest() -> WrapManifest {
           "array": {
             "item": {
               "kind": 4,
-              "name": "uArray",
+              "name": "u_array",
               "required": true,
               "type": "UInt"
             },
             "kind": 18,
-            "name": "uArray",
+            "name": "u_array",
             "required": true,
             "scalar": {
               "kind": 4,
-              "name": "uArray",
+              "name": "u_array",
               "required": true,
               "type": "UInt"
             },
             "type": "[UInt]"
           },
           "kind": 34,
-          "name": "uArray",
+          "name": "u_array",
           "required": true,
           "type": "[UInt]"
         },
@@ -1484,42 +1484,42 @@ pub fn get_manifest() -> WrapManifest {
           "array": {
             "item": {
               "kind": 4,
-              "name": "uOptArray",
+              "name": "uOpt_array",
               "required": true,
               "type": "UInt"
             },
             "kind": 18,
-            "name": "uOptArray",
+            "name": "uOpt_array",
             "scalar": {
               "kind": 4,
-              "name": "uOptArray",
+              "name": "uOpt_array",
               "required": true,
               "type": "UInt"
             },
             "type": "[UInt]"
           },
           "kind": 34,
-          "name": "uOptArray",
+          "name": "uOpt_array",
           "type": "[UInt]"
         },
         {
           "array": {
             "item": {
               "kind": 4,
-              "name": "optUOptArray",
+              "name": "_opt_uOptArray",
               "type": "UInt"
             },
             "kind": 18,
-            "name": "optUOptArray",
+            "name": "_opt_uOptArray",
             "scalar": {
               "kind": 4,
-              "name": "optUOptArray",
+              "name": "_opt_uOptArray",
               "type": "UInt"
             },
             "type": "[UInt]"
           },
           "kind": 34,
-          "name": "optUOptArray",
+          "name": "_opt_uOptArray",
           "type": "[UInt]"
         },
         {
