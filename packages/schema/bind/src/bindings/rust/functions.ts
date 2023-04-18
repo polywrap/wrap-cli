@@ -316,7 +316,7 @@ export const serdeKeyword: MustacheFn = () => {
 
 export const serdeRenameIfSnakeCase: MustacheFn = () => {
   return (value: string, render: (template: string) => string): string => {
-    let type = render(value);
+    const type = render(value);
 
     if (isSnakeCase(type)) {
       return `#[serde(rename = "${snakeCaseToCamelCase(type)}")]\n    `;
@@ -326,13 +326,15 @@ export const serdeRenameIfSnakeCase: MustacheFn = () => {
       return `#[serde(rename = "${type}")]\n    `;
     }
     return "";
-  }; 
-}
+  };
+};
 
-const isSnakeCase = (value: string): boolean => /[a-z0-9]+(?:_[a-z0-9]+)*/.test(value) && value.includes("_")
-const snakeCaseToCamelCase = (value: string): string => value.toLowerCase().replace(
-  /[-_][a-z]/g, (group) => group.slice(-1).toUpperCase()
-)
+const isSnakeCase = (value: string): boolean =>
+  /[a-z0-9]+(?:_[a-z0-9]+)*/.test(value) && value.includes("_");
+const snakeCaseToCamelCase = (value: string): string =>
+  value
+    .toLowerCase()
+    .replace(/[-_][a-z]/g, (group) => group.slice(-1).toUpperCase());
 
 const toWasmArray = (type: string, optional: boolean): string => {
   const result = type.match(/(\[)([[\]A-Za-z1-9_.!]+)(\])/);
