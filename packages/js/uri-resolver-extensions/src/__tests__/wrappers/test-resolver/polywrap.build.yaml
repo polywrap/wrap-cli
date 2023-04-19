@@ -1,4 +1,0 @@
-format: 0.2.0
-linked_packages:
-  - name: "polywrap-wasm-rs"
-    path: ../../../../../../wasm/rs/

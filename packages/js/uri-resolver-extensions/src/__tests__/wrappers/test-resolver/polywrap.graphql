@@ -1,5 +1,0 @@
-#import { Module } into UriResolver from "wrap://ens/wraps.eth:uri-resolver-ext@1.1.0"
-
-type Module implements UriResolver_Module {}
-
-type Env {}
