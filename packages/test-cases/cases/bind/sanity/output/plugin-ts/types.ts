@@ -58,9 +58,9 @@ export interface CustomType {
   optBytes?: Types.Bytes | null;
   boolean: Types.Boolean;
   optBoolean?: Types.Boolean | null;
-  uArray: Array<Types.UInt>;
-  uOptArray?: Array<Types.UInt> | null;
-  optUOptArray?: Array<Types.UInt | null> | null;
+  u_array: Array<Types.UInt>;
+  uOpt_array?: Array<Types.UInt> | null;
+  _opt_uOptArray?: Array<Types.UInt | null> | null;
   optStrOptArray?: Array<Types.String | null> | null;
   uArrayArray: Array<Array<Types.UInt>>;
   uOptArrayOptArray: Array<Array<Types.UInt32 | null> | null>;

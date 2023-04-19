@@ -1,3 +1,0 @@
-[
-  "wrap://test/should-redirect => RequestSynchronizerResolver (Cache) => uri (wrap://test/redirected)"
-]
