@@ -1,3 +1,22 @@
+# Polywrap Origin (0.10.1)
+## Features
+**`@polywrap/schema-bind`:**
+* [PR-1694](https://github.com/polywrap/toolchain/pull/1694) **`plugin/rust` Env Bindings Refactor**
+  * Rust plugin bindings now expose `env` as a function argument.
+
+## Bugs
+**`@polywrap/schema-bind`:**
+* [PR-1700](https://github.com/polywrap/toolchain/pull/1700) **`plugin/rust` Serde renaming for snake-cased properties in rust plugins types**
+  * Rust plugins now properly convert wrap schema property names into snake-cased names, so they are compatable with Rust naming conventions.
+
+**`@polywrap/templates`:**
+* [PR-1680](https://github.com/polywrap/toolchain/pull/1680) **Import newer logger in typescript template**
+  * Update the typescript app template to use the latest logging wrap at `ens/wraps.eth:logging@1.0.0`.
+
+**`@polywrap/polywrap-manifest-types-js`:**
+* [PR-1692](https://github.com/polywrap/toolchain/pull/1692) **top-level `docker` property is now removed from build manifest during migration**
+  * Fixes a bug where the top-level `docker` property of build manifest version 0.1.0 was not being dropped during migration, causing migrated build manifests to fail validation.
+
 # Polywrap Origin (0.10.0)
 ## Features
 ### Toolchain
