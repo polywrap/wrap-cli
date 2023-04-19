@@ -19,10 +19,11 @@
     ]
   },
   "scripts": {
+    "postinstall": "ts-node ./scripts/patch-peer-deps.ts",
     "reset": "yarn clean && yarn && yarn build",
     "clean": "npx rimraf ./**/node_modules ./**/yarn.lock ./**/build ./**/coverage ./**/.polywrap",
     "install:test-wrappers": "lerna run generate:wrappers --scope @polywrap/test-cases",
-    "build": "yarn build:core && yarn build:config && yarn build:cli && yarn install:test-wrappers",
+    "build": "yarn build:core && yarn build:cli && yarn install:test-wrappers",
     "build:core": "lerna run build --no-private --ignore polywrap --ignore @polywrap/cli-js",
     "build:cli": "lerna run build --scope polywrap && lerna run build --scope @polywrap/cli-js",
     "build:docs": "lerna run build:docs",
