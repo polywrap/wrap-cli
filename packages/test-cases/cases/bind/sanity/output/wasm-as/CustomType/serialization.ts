@@ -110,21 +110,21 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeString("optBoolean");
   writer.writeOptionalBool(type.optBoolean);
   writer.context().pop();
-  writer.context().push("uArray", "Array<u32>", "writing property");
-  writer.writeString("uArray");
-  writer.writeArray(type.uArray, (writer: Write, item: u32): void => {
+  writer.context().push("u_array", "Array<u32>", "writing property");
+  writer.writeString("u_array");
+  writer.writeArray(type.u_array, (writer: Write, item: u32): void => {
     writer.writeUInt32(item);
   });
   writer.context().pop();
-  writer.context().push("uOptArray", "Array<u32> | null", "writing property");
-  writer.writeString("uOptArray");
-  writer.writeOptionalArray(type.uOptArray, (writer: Write, item: u32): void => {
+  writer.context().push("uOpt_array", "Array<u32> | null", "writing property");
+  writer.writeString("uOpt_array");
+  writer.writeOptionalArray(type.uOpt_array, (writer: Write, item: u32): void => {
     writer.writeUInt32(item);
   });
   writer.context().pop();
-  writer.context().push("optUOptArray", "Array<Box<u32> | null> | null", "writing property");
-  writer.writeString("optUOptArray");
-  writer.writeOptionalArray(type.optUOptArray, (writer: Write, item: Box<u32> | null): void => {
+  writer.context().push("_opt_uOptArray", "Array<Box<u32> | null> | null", "writing property");
+  writer.writeString("_opt_uOptArray");
+  writer.writeOptionalArray(type._opt_uOptArray, (writer: Write, item: Box<u32> | null): void => {
     writer.writeOptionalUInt32(item);
   });
   writer.context().pop();
@@ -314,10 +314,10 @@ export function readCustomType(reader: Read): CustomType {
   let _boolean: bool = false;
   let _booleanSet: bool = false;
   let _optBoolean: Box<bool> | null = null;
-  let _uArray: Array<u32> = [];
-  let _uArraySet: bool = false;
-  let _uOptArray: Array<u32> | null = null;
-  let _optUOptArray: Array<Box<u32> | null> | null = null;
+  let _u_array: Array<u32> = [];
+  let _u_arraySet: bool = false;
+  let _uOpt_array: Array<u32> | null = null;
+  let __opt_uOptArray: Array<Box<u32> | null> | null = null;
   let _optStrOptArray: Array<string | null> | null = null;
   let _uArrayArray: Array<Array<u32>> = [];
   let _uArrayArraySet: bool = false;
@@ -473,24 +473,24 @@ export function readCustomType(reader: Read): CustomType {
       _optBoolean = reader.readOptionalBool();
       reader.context().pop();
     }
-    else if (field == "uArray") {
+    else if (field == "u_array") {
       reader.context().push(field, "Array<u32>", "type found, reading property");
-      _uArray = reader.readArray((reader: Read): u32 => {
+      _u_array = reader.readArray((reader: Read): u32 => {
         return reader.readUInt32();
       });
-      _uArraySet = true;
+      _u_arraySet = true;
       reader.context().pop();
     }
-    else if (field == "uOptArray") {
+    else if (field == "uOpt_array") {
       reader.context().push(field, "Array<u32> | null", "type found, reading property");
-      _uOptArray = reader.readOptionalArray((reader: Read): u32 => {
+      _uOpt_array = reader.readOptionalArray((reader: Read): u32 => {
         return reader.readUInt32();
       });
       reader.context().pop();
     }
-    else if (field == "optUOptArray") {
+    else if (field == "_opt_uOptArray") {
       reader.context().push(field, "Array<Box<u32> | null> | null", "type found, reading property");
-      _optUOptArray = reader.readOptionalArray((reader: Read): Box<u32> | null => {
+      __opt_uOptArray = reader.readOptionalArray((reader: Read): Box<u32> | null => {
         return reader.readOptionalUInt32();
       });
       reader.context().pop();
@@ -758,8 +758,8 @@ export function readCustomType(reader: Read): CustomType {
   if (!_booleanSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'boolean: Boolean'"));
   }
-  if (!_uArraySet) {
-    throw new Error(reader.context().printWithContext("Missing required property: 'uArray: [UInt]'"));
+  if (!_u_arraySet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'u_array: [UInt]'"));
   }
   if (!_uArrayArraySet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'uArrayArray: [[UInt]]'"));
@@ -820,9 +820,9 @@ export function readCustomType(reader: Read): CustomType {
     optBytes: _optBytes,
     _boolean: _boolean,
     optBoolean: _optBoolean,
-    uArray: _uArray,
-    uOptArray: _uOptArray,
-    optUOptArray: _optUOptArray,
+    u_array: _u_array,
+    uOpt_array: _uOpt_array,
+    _opt_uOptArray: __opt_uOptArray,
     optStrOptArray: _optStrOptArray,
     uArrayArray: _uArrayArray,
     uOptArrayOptArray: _uOptArrayOptArray,

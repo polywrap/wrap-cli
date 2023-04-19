@@ -314,6 +314,19 @@ export const serdeKeyword: MustacheFn = () => {
   };
 };
 
+export const serdeRenameIfCaseMismatch: MustacheFn = () => {
+  return (value: string, render: (template: string) => string): string => {
+    const type = render(value);
+
+    if (hasUppercase(type) || isKeyword(type)) {
+      return `#[serde(rename = "${type}")]\n    `;
+    }
+    return "";
+  };
+};
+
+const hasUppercase = (value: string): boolean => value !== value.toLowerCase();
+
 const toWasmArray = (type: string, optional: boolean): string => {
   const result = type.match(/(\[)([[\]A-Za-z1-9_.!]+)(\])/);
 

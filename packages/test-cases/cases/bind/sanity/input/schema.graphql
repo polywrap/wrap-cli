@@ -109,9 +109,9 @@ type CustomType {
   optBytes: Bytes
   boolean: Boolean!
   optBoolean: Boolean
-  uArray: [UInt!]!
-  uOptArray: [UInt!]
-  optUOptArray: [UInt]
+  u_array: [UInt!]!
+  uOpt_array: [UInt!]
+  _opt_uOptArray: [UInt]
   optStrOptArray: [String]
   uArrayArray: [[UInt!]!]!
   uOptArrayOptArray: [[UInt32]]!
