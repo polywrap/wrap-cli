@@ -116,21 +116,21 @@ pub fn write_custom_type<W: Write>(args: &CustomType, writer: &mut W) -> Result<
     writer.write_string("optBoolean")?;
     writer.write_optional_bool(&args.opt_boolean)?;
     writer.context().pop();
-    writer.context().push("uArray", "Vec<u32>", "writing property");
-    writer.write_string("uArray")?;
+    writer.context().push("u_array", "Vec<u32>", "writing property");
+    writer.write_string("u_array")?;
     writer.write_array(&args.u_array, |writer, item| {
         writer.write_u32(item)
     })?;
     writer.context().pop();
-    writer.context().push("uOptArray", "Option<Vec<u32>>", "writing property");
-    writer.write_string("uOptArray")?;
+    writer.context().push("uOpt_array", "Option<Vec<u32>>", "writing property");
+    writer.write_string("uOpt_array")?;
     writer.write_optional_array(&args.u_opt_array, |writer, item| {
         writer.write_u32(item)
     })?;
     writer.context().pop();
-    writer.context().push("optUOptArray", "Option<Vec<Option<u32>>>", "writing property");
-    writer.write_string("optUOptArray")?;
-    writer.write_optional_array(&args.opt_u_opt_array, |writer, item| {
+    writer.context().push("_opt_uOptArray", "Option<Vec<Option<u32>>>", "writing property");
+    writer.write_string("_opt_uOptArray")?;
+    writer.write_optional_array(&args._opt_u_opt_array, |writer, item| {
         writer.write_optional_u32(item)
     })?;
     writer.context().pop();
@@ -325,7 +325,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
     let mut _u_array: Vec<u32> = vec![];
     let mut _u_array_set = false;
     let mut _u_opt_array: Option<Vec<u32>> = None;
-    let mut _opt_u_opt_array: Option<Vec<Option<u32>>> = None;
+    let mut __opt_u_opt_array: Option<Vec<Option<u32>>> = None;
     let mut _opt_str_opt_array: Option<Vec<Option<String>>> = None;
     let mut _u_array_array: Vec<Vec<u32>> = vec![];
     let mut _u_array_array_set = false;
@@ -481,7 +481,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                 _opt_boolean = reader.read_optional_bool()?;
                 reader.context().pop();
             }
-            "uArray" => {
+            "u_array" => {
                 reader.context().push(&field, "Vec<u32>", "type found, reading property");
                 _u_array = reader.read_array(|reader| {
                     reader.read_u32()
@@ -489,16 +489,16 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                 _u_array_set = true;
                 reader.context().pop();
             }
-            "uOptArray" => {
+            "uOpt_array" => {
                 reader.context().push(&field, "Option<Vec<u32>>", "type found, reading property");
                 _u_opt_array = reader.read_optional_array(|reader| {
                     reader.read_u32()
                 })?;
                 reader.context().pop();
             }
-            "optUOptArray" => {
+            "_opt_uOptArray" => {
                 reader.context().push(&field, "Option<Vec<Option<u32>>>", "type found, reading property");
-                _opt_u_opt_array = reader.read_optional_array(|reader| {
+                __opt_u_opt_array = reader.read_optional_array(|reader| {
                     reader.read_optional_u32()
                 })?;
                 reader.context().pop();
@@ -765,7 +765,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
         return Err(DecodeError::MissingField("boolean: Boolean.".to_string()));
     }
     if !_u_array_set {
-        return Err(DecodeError::MissingField("uArray: [UInt].".to_string()));
+        return Err(DecodeError::MissingField("u_array: [UInt].".to_string()));
     }
     if !_u_array_array_set {
         return Err(DecodeError::MissingField("uArrayArray: [[UInt]].".to_string()));
@@ -828,7 +828,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
         opt_boolean: _opt_boolean,
         u_array: _u_array,
         u_opt_array: _u_opt_array,
-        opt_u_opt_array: _opt_u_opt_array,
+        _opt_u_opt_array: __opt_u_opt_array,
         opt_str_opt_array: _opt_str_opt_array,
         u_array_array: _u_array_array,
         u_opt_array_opt_array: _u_opt_array_opt_array,
