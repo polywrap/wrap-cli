@@ -2,7 +2,7 @@
 # type: ignore
 from __future__ import annotations
 
-from typing import TypedDict, Optional
+from typing import TypedDict, Optional, Any, List
 from enum import IntEnum, auto
 
 from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
@@ -42,10 +42,14 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEn
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
+
+    @staticmethod
+    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]):
+        return count
 
 {{/enumTypes}}
 ### Enums END ###
@@ -74,10 +78,14 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEn
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
+
+    @staticmethod
+    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]):
+        return count
 
 {{/importedEnumTypes}}
 

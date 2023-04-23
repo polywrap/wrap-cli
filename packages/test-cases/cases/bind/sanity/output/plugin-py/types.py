@@ -2,7 +2,7 @@
 # type: ignore
 from __future__ import annotations
 
-from typing import TypedDict, Optional
+from typing import TypedDict, Optional, Any, List
 from enum import IntEnum, auto
 
 from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
@@ -89,10 +89,14 @@ class CustomEnum(IntEnum):
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
+
+    @staticmethod
+    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]):
+        return count
 
 class While(IntEnum):
     r_for = auto(), "for"
@@ -100,10 +104,14 @@ class While(IntEnum):
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
+
+    @staticmethod
+    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]):
+        return count
 
 ### Enums END ###
 
@@ -137,10 +145,14 @@ class TestImportEnum(IntEnum):
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
+
+    @staticmethod
+    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]):
+        return count
 
 # URI: "testimport.uri.eth" #
 class TestImportEnumReturn(IntEnum):
@@ -149,10 +161,14 @@ class TestImportEnumReturn(IntEnum):
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
+
+    @staticmethod
+    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]):
+        return count
 
 
 ### Imported Enums END ###
