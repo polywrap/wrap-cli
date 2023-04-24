@@ -1,0 +1,20 @@
+[package]
+name = "template_plugin_rust"
+version = "0.1.0"
+license = "MIT"
+description = "Polywrap plugin rust template"
+edition = "2021"
+
+[dependencies]
+polywrap_core = { version = "0.1.2" }
+polywrap_msgpack = { version = "0.1.2" }
+polywrap_plugin = { version = "0.1.2", features = ["creator"] }
+wrap_manifest_schemas = { version = "0.1.2" }
+serde = {version = "1.0.145", features = ["derive"]}
+num-bigint = "0.4.3"
+bigdecimal = "0.3.0"
+serde_json = "1.0.87"
+
+[dev-dependencies]
+polywrap_client = { version = "0.1.2" }
+polywrap_client_builder = { version = "0.1.2" }

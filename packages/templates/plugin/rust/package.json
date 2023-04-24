@@ -1,0 +1,7 @@
+{
+  "name": "templates-plugin-rust",
+  "private": true,
+  "dependencies": {
+    "polywrap": "0.10.1"
+  }
+}
