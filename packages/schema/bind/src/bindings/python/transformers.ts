@@ -3,6 +3,7 @@ import { EnumDefinition } from "@polywrap/wrap-manifest-types-js";
 
 export const addEnumMembers: AbiTransforms = {
   enter: {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     EnumDefinition: (def: EnumDefinition): EnumDefinition => {
       if (!def.constants) {
         return { ...def };
