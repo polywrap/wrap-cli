@@ -4,7 +4,7 @@ WORKDIR /project
 
 COPY . .
 
-RUN tinygo build -o main.wasm -target wasm-memory wrap/main.go
+RUN tinygo build -o main.wasm -target wasm-memory src/wrap/main.go
 
 # Make the build directory
 RUN rm -rf ./build

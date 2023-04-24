@@ -43,6 +43,11 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
     baseImage: "polywrap/vm-base-as",
     version: "0.2.0",
   },
+  "wasm/golang": {
+    defaultIncludes: ["go.mod", "go.sum"],
+    baseImage: "consideritdone/polywrap-base-go",
+    version: "0.1.0"
+  }
 };
 
 export class DockerVMBuildStrategy extends BuildStrategy<void> {
