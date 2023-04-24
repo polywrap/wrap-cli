@@ -2,6 +2,7 @@
 import * as Functions from "../functions";
 import { GenerateBindingFn, renderTemplates } from "../..";
 import { BindOptions, BindOutput } from "../../..";
+import { addEnumMembers } from "../transformers";
 
 import {
   transformAbi,
@@ -71,6 +72,7 @@ function applyTransforms(abi: WrapAbi): WrapAbi {
     toPrefixedGraphQLType,
     methodParentPointers(),
     interfaceUris(),
+    addEnumMembers,
   ];
 
   for (const transform of transforms) {

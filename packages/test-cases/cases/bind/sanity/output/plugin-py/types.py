@@ -2,8 +2,8 @@
 # type: ignore
 from __future__ import annotations
 
-from typing import TypedDict, Optional, Any, List
-from enum import IntEnum, auto
+from typing import TypedDict, Optional
+from enum import IntEnum
 
 from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
 from polywrap_msgpack import GenericMap
@@ -84,8 +84,8 @@ Else = TypedDict("Else", {
 
 ### Enums START ###
 class CustomEnum(IntEnum):
-    STRING = auto(), "STRING"
-    BYTES = auto(), "BYTES"
+    STRING = 0, "0", "STRING"
+    BYTES = 1, "1", "BYTES"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
@@ -93,14 +93,10 @@ class CustomEnum(IntEnum):
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
-
-    @staticmethod
-    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]):
-        return count
 
 class While(IntEnum):
-    r_for = auto(), "for"
-    r_in = auto(), "in"
+    r_for = 0, "0", "for"
+    r_in = 1, "1", "in"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
@@ -108,10 +104,6 @@ class While(IntEnum):
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
-
-    @staticmethod
-    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]):
-        return count
 
 ### Enums END ###
 
@@ -140,8 +132,8 @@ TestImportAnotherObject = TypedDict("TestImportAnotherObject", {
 
 # URI: "testimport.uri.eth" #
 class TestImportEnum(IntEnum):
-    STRING = auto()
-    BYTES = auto()
+    STRING = 0, "0", "STRING"
+    BYTES = 1, "1", "BYTES"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
@@ -149,15 +141,11 @@ class TestImportEnum(IntEnum):
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
-
-    @staticmethod
-    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]):
-        return count
 
 # URI: "testimport.uri.eth" #
 class TestImportEnumReturn(IntEnum):
-    STRING = auto()
-    BYTES = auto()
+    STRING = 0, "0", "STRING"
+    BYTES = 1, "1", "BYTES"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
@@ -165,10 +153,6 @@ class TestImportEnumReturn(IntEnum):
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
-
-    @staticmethod
-    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]):
-        return count
 
 
 ### Imported Enums END ###

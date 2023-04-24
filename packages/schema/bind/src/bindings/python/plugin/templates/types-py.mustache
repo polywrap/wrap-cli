@@ -2,8 +2,8 @@
 # type: ignore
 from __future__ import annotations
 
-from typing import TypedDict, Optional, Any, List
-from enum import IntEnum, auto
+from typing import TypedDict, Optional
+from enum import IntEnum
 
 from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
 from polywrap_msgpack import GenericMap
@@ -36,9 +36,9 @@ from polywrap_msgpack import GenericMap
 ### Enums START ###
 {{#enumTypes}}
 class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEnum):
-    {{#constants}}
-    {{#detectKeyword}}{{.}}{{/detectKeyword}} = auto(), "{{.}}"
-    {{/constants}}
+    {{#members}}
+    {{#detectKeyword}}{{name}}{{/detectKeyword}} = {{value}}, "{{value}}", "{{name}}"
+    {{/members}}
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
@@ -46,10 +46,6 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEn
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
-
-    @staticmethod
-    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]):
-        return count
 
 {{/enumTypes}}
 ### Enums END ###
@@ -72,9 +68,9 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEn
 {{#importedEnumTypes}}
 # URI: "{{uri}}" #
 class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEnum):
-    {{#constants}}
-    {{#detectKeyword}}{{.}}{{/detectKeyword}} = auto()
-    {{/constants}}
+    {{#members}}
+    {{#detectKeyword}}{{name}}{{/detectKeyword}} = {{value}}, "{{value}}", "{{name}}"
+    {{/members}}
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
@@ -82,10 +78,6 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEn
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
-
-    @staticmethod
-    def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]):
-        return count
 
 {{/importedEnumTypes}}
 
