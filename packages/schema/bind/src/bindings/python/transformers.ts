@@ -5,7 +5,7 @@ export const addEnumMembers: AbiTransforms = {
   enter: {
     EnumDefinition: (def: EnumDefinition): EnumDefinition => {
       if (!def.constants) {
-        return def;
+        return { ...def };
       }
 
       const members: Array<Record<string, unknown>> = [];

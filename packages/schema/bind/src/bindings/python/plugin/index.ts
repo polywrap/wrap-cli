@@ -22,7 +22,7 @@ const templatePath = (subpath: string) =>
   path.join(__dirname, "./templates", subpath);
 
 const sort = (obj: Record<string, unknown>) =>
-  Object.keys(obj)
+  Object.keys(obj || {})
     .sort()
     .reduce((map: Record<string, unknown>, key: string) => {
       if (typeof obj[key] === "object") {
