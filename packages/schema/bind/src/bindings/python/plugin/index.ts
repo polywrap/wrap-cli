@@ -2,6 +2,7 @@
 import * as Functions from "../functions";
 import { GenerateBindingFn, renderTemplates } from "../..";
 import { BindOptions, BindOutput } from "../../..";
+import { addEnumMembers } from "../transformers";
 
 import {
   transformAbi,
@@ -21,7 +22,7 @@ const templatePath = (subpath: string) =>
   path.join(__dirname, "./templates", subpath);
 
 const sort = (obj: Record<string, unknown>) =>
-  Object.keys(obj)
+  Object.keys(obj || {})
     .sort()
     .reduce((map: Record<string, unknown>, key: string) => {
       if (typeof obj[key] === "object") {
@@ -71,6 +72,7 @@ function applyTransforms(abi: WrapAbi): WrapAbi {
     toPrefixedGraphQLType,
     methodParentPointers(),
     interfaceUris(),
+    addEnumMembers,
   ];
 
   for (const transform of transforms) {

@@ -1,3 +1,9 @@
+# Polywrap Origin (0.10.2)
+## Bugs
+**`@polywrap/schema-bind`:**
+* [PR-1718](https://github.com/polywrap/toolchain/pull/1718) **`plugin/python` Enum Bindings Fix**
+  * Enums are now properly displayed in Python plugins.
+
 # Polywrap Origin (0.10.1)
 ## Features
 **`@polywrap/schema-bind`:**
