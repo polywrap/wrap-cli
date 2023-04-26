@@ -3,11 +3,8 @@
 
 // NOTE: This is an auto-generated file.
 //       All modifications will be overwritten.
+use polywrap_plugin::{BigInt, BigNumber, Map, JSON};
 use serde::{Serialize, Deserialize};
-use num_bigint::BigInt;
-use bigdecimal::BigDecimal as BigNumber;
-use serde_json as JSON;
-use polywrap_msgpack::extensions::generic_map::GenericMap as Map;
 use std::sync::Arc;
 use polywrap_msgpack::{decode, serialize};
 use polywrap_core::{invoke::{Invoker}, uri::Uri};
@@ -241,7 +238,7 @@ impl<'a> TestImportModule<'a> {
         .map_err(|e| PluginError::SubinvocationError {
             uri: uri.to_string(),
             method: "importedMethod".to_string(),
-            args: serde_json::to_string(&args).unwrap(),
+            args: JSON::to_string(&args).unwrap(),
             exception: e.to_string(),
         })?;
 
@@ -261,7 +258,7 @@ impl<'a> TestImportModule<'a> {
         .map_err(|e| PluginError::SubinvocationError {
             uri: uri.to_string(),
             method: "anotherMethod".to_string(),
-            args: serde_json::to_string(&args).unwrap(),
+            args: JSON::to_string(&args).unwrap(),
             exception: e.to_string(),
         })?;
 
@@ -281,7 +278,7 @@ impl<'a> TestImportModule<'a> {
         .map_err(|e| PluginError::SubinvocationError {
             uri: uri.to_string(),
             method: "returnsArrayOfEnums".to_string(),
-            args: serde_json::to_string(&args).unwrap(),
+            args: JSON::to_string(&args).unwrap(),
             exception: e.to_string(),
         })?;
 
