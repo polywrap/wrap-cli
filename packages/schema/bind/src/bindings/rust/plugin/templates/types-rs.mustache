@@ -3,11 +3,9 @@
 
 // NOTE: This is an auto-generated file.
 //       All modifications will be overwritten.
+use polywrap_plugin::{BigInt, BigNumber, Map, JSON};
 use serde::{Serialize, Deserialize};
-use num_bigint::BigInt;
-use bigdecimal::BigDecimal as BigNumber;
-use serde_json as JSON;
-use polywrap_msgpack::extensions::generic_map::GenericMap as Map;
+
 {{#importedModuleTypes}}
 use std::sync::Arc;
 use polywrap_msgpack::{decode, serialize};
@@ -129,7 +127,7 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
         .map_err(|e| PluginError::SubinvocationError {
             uri: uri.to_string(),
             method: "{{name}}".to_string(),
-            args: serde_json::to_string(&args).unwrap(),
+            args: JSON::to_string(&args).unwrap(),
             exception: e.to_string(),
         })?;
 
@@ -168,7 +166,7 @@ impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a
         .map_err(|e| PluginError::SubinvocationError {
             uri: uri.to_string(),
             method: "{{name}}".to_string(),
-            args: serde_json::to_string(&args).unwrap(),
+            args: JSON::to_string(&args).unwrap(),
             exception: e.to_string(),
         })?;
 
