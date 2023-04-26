@@ -1,7 +1,9 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
-use wrap_manifest_schemas::versions::{WrapManifest, WrapManifestAbi};
-use polywrap_plugin::JSON::{json, from_value};
+use polywrap_client::{
+    plugin::JSON::{from_value, json},
+    wrap_manifest::versions::{WrapManifest, WrapManifestAbi},
+};
 
 pub fn get_manifest() -> WrapManifest {
   WrapManifest {

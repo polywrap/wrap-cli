@@ -3,12 +3,13 @@
 
 // NOTE: This is an auto-generated file.
 //       All modifications will be overwritten.
-use polywrap_plugin::{BigInt, BigNumber, Map, JSON};
+use polywrap_client::{
+    core::{invoke::Invoker, uri::Uri},
+    msgpack::{decode, serialize},
+    plugin::{error::PluginError, BigInt, BigNumber, Map, JSON},
+};
 use serde::{Serialize, Deserialize};
 use std::sync::Arc;
-use polywrap_msgpack::{decode, serialize};
-use polywrap_core::{invoke::{Invoker}, uri::Uri};
-use polywrap_plugin::error::PluginError;
 
 // Env START //
 
