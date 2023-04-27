@@ -18,6 +18,8 @@ import {
   deserializeInfraManifest,
   PolywrapWorkflow,
   deserializePolywrapWorkflow,
+  DocsManifest,
+  deserializeDocsManifest
 } from "@polywrap/polywrap-manifest-types-js";
 import { Schema as JsonSchema } from "jsonschema";
 import path from "path";
@@ -266,6 +268,45 @@ export async function loadWorkflowManifest(
 
   manifestPath = displayPath(manifestPath);
   return await logActivity<PolywrapWorkflow>(
+    logger,
+    intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
+    intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
+    intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
+    async () => {
+      return await run();
+    }
+  );
+}
+
+export const defaultDocsManifest = [
+  "polywrap.docs.yaml",
+  "polywrap.docs.yml",
+];
+
+export async function loadDocsManifest(
+  manifestPath: string,
+  logger: Logger
+): Promise<DocsManifest> {
+  const run = (): Promise<DocsManifest> => {
+    const manifest = fs.readFileSync(manifestPath, "utf-8");
+
+    if (!manifest) {
+      const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
+        path: `${manifestPath}`,
+      });
+      throw Error(noLoadMessage);
+    }
+
+    try {
+      const result = deserializeDocsManifest(manifest, { logger: logger });
+      return Promise.resolve(result);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  };
+
+  manifestPath = displayPath(manifestPath);
+  return await logActivity<DocsManifest>(
     logger,
     intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
     intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),

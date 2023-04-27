@@ -1,0 +1,46 @@
+{
+  "id": "DocsManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "title"
+  ],
+  "properties": {
+    "format": {
+      "description": "Polywrap Docs manifest format version.",
+      "type": "string",
+      "enum": ["0.1.0"]
+    },
+    "title": {
+      "description": "The title of the docs.",
+      "type": "string"
+    },
+    "logo": {
+      "description": "Path to the wrapper logo.",
+      "type": "string"
+    },
+    "pages": {
+      "description": "Sidebar pages. The first page is also the landing page.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required" : [
+          "title",
+          "path"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The title of the page."
+          },
+          "path": {
+            "type": "string",
+            "description": "Path to the page"
+          }
+        }
+      }
+    }
+  }
+}

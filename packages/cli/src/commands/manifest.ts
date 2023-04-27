@@ -16,6 +16,7 @@ import {
   defaultPolywrapManifest,
   Logger,
   parseLogFileOption,
+  defaultDocsManifest,
 } from "../lib";
 import {
   getYamlishSchemaForManifestJsonSchemaObject,
@@ -26,6 +27,7 @@ import {
   migratePluginProjectManifest,
   migratePolywrapProjectManifest,
   migrateWorkflow,
+  migrateDocsExtensionManifest
 } from "../lib/manifest";
 import { defaultProjectManifestFiles } from "../lib/option-defaults";
 
@@ -52,6 +54,9 @@ import {
   latestPluginManifestFormat,
   latestPolywrapManifestFormat,
   latestPolywrapWorkflowFormat,
+  DocsManifestSchemaFiles,
+  DocsManifestFormats,
+  latestDocsManifestFormat,
 } from "@polywrap/polywrap-manifest-types-js";
 import { dereference } from "@apidevtools/json-schema-ref-parser";
 // Workaround: https://github.com/APIDevTools/json-schema-ref-parser/issues/139#issuecomment-940500698
@@ -71,6 +76,7 @@ const manifestTypes = [
   "deploy",
   "infra",
   "workflow",
+  "docs",
 ] as const;
 export type ManifestType = typeof manifestTypes[number];
 
@@ -211,6 +217,12 @@ export const runSchemaCommand = async (
         defaultWorkflowManifest
       );
       break;
+    case "docs":
+      manifestfile = parseManifestFileOption(
+        options.manifestFile,
+        defaultDocsManifest
+      );
+      break;
   }
 
   const manifestString = fs.readFileSync(manifestfile, {
@@ -333,6 +345,21 @@ export const runSchemaCommand = async (
         schemasPackageDir,
         PolywrapWorkflowSchemaFiles[
           manifestVersion ?? latestPolywrapWorkflowFormat
+        ]
+      );
+      break;
+    case "docs":
+      maybeFailOnUnsupportedManifestFormat(
+        manifestVersion,
+        Object.values(DocsManifestFormats),
+        manifestfile,
+        logger
+      );
+
+      manifestSchemaFile = path.join(
+        schemasPackageDir,
+        DocsManifestSchemaFiles[
+          manifestVersion ?? latestDocsManifestFormat
         ]
       );
       break;
@@ -477,6 +504,19 @@ const runMigrateCommand = async (
         parseManifestFileOption(options.manifestFile, defaultWorkflowManifest),
         migrateWorkflow,
         options.format || latestPolywrapWorkflowFormat,
+        logger
+      );
+      break;
+    case "docs":
+      maybeFailOnUnsupportedTargetFormat(
+        options.format,
+        Object.values(DocsManifestFormats),
+        logger
+      );
+      migrateManifestFile(
+        parseManifestFileOption(options.manifestFile, defaultDocsManifest),
+        migrateDocsExtensionManifest,
+        options.format || latestDocsManifestFormat,
         logger
       );
       break;

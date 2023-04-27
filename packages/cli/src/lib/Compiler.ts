@@ -10,6 +10,7 @@ import {
   resetDir,
   SchemaComposer,
   logActivity,
+  loadDocsManifest,
 } from "./";
 import { BuildStrategy } from "./build-strategies/BuildStrategy";
 
@@ -19,6 +20,7 @@ import { normalizePath } from "@polywrap/os-js";
 import fs from "fs";
 import fse from "fs-extra";
 import path from "path";
+import { DocsManifest } from "@polywrap/polywrap-manifest-types-js";
 
 export interface CompilerConfig {
   outputDir: string;
@@ -46,6 +48,10 @@ export class Compiler {
 
         // Copy: Resources folder
         await this._copyResourcesFolder();
+
+        // Output docs if any
+
+        await this._maybeAssembleDocsFolder();
       }
     };
 
@@ -156,6 +162,80 @@ export class Compiler {
         await fse.copy(folderPath, outputDir, { recursive: true });
       }
     );
+  }
+
+  private async _maybeAssembleDocsFolder(): Promise<void> {
+    const { project, outputDir } = this._config;
+
+    const projectManifest = await (project as PolywrapProject).getManifest();
+
+    if (projectManifest.extensions?.docs) {
+      const docsManifest = await loadDocsManifest(
+        projectManifest.extensions.docs,
+        project.logger
+      );
+      const docsDir = path.join(outputDir, "docs");
+
+      if (fse.existsSync(docsDir)) {
+        await fse.rmdir(docsDir);
+      }
+
+      await fse.mkdir(docsDir);
+
+      let outputLogoPath: string | undefined;
+
+      // Copy logo
+      if (docsManifest.logo) {
+        const logoFileParsed = path.parse(docsManifest.logo);
+        const logoOutputPath = path.join(docsDir, `logo.${logoFileParsed.ext}`);
+
+        await fse.copyFile(docsManifest.logo, logoOutputPath);
+
+        outputLogoPath = path.relative(docsDir, logoOutputPath);
+      }
+
+      // Copy markdown pages
+
+      let outputPages: { title: string; path: string }[] | undefined;
+
+      if (docsManifest.pages) {
+        outputPages = [];
+
+        const pagesOutputDir = path.join(docsDir, "pages");
+
+        await fse.mkdir(pagesOutputDir);
+
+        for (const page of docsManifest.pages) {
+          const pageFileParsed = path.parse(page.path);
+          const pageOutputPath = path.join(pagesOutputDir, pageFileParsed.base);
+
+          await fse.copyFile(page.path, pageOutputPath);
+
+          outputPages.push({
+            title: page.title,
+            path: path.relative(docsDir, pageOutputPath),
+          });
+        }
+      }
+
+      const outputDocsManifest: DocsManifest = {
+        format: docsManifest.format,
+        title: docsManifest.title,
+        logo: outputLogoPath,
+        pages: outputPages,
+        __type: "DocsManifest",
+      };
+
+      const cleanedDocsManifest = JSON.parse(
+        JSON.stringify(outputDocsManifest)
+      );
+      delete cleanedDocsManifest.__type;
+
+      await fse.writeFile(
+        path.join(docsDir, "polywrap.docs.json"),
+        JSON.stringify(cleanedDocsManifest)
+      );
+    }
   }
 
   private async _validateWasmModule(buildDir: string): Promise<void> {
