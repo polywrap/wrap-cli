@@ -15,6 +15,8 @@ import {
 import fs from "fs";
 import path from "path";
 
+import { deepCopy } from "./utils";
+
 describe("Polywrap Binding Test Suite", () => {
   const cases = fetchTestCases();
 
@@ -38,7 +40,7 @@ describe("Polywrap Binding Test Suite", () => {
         };
 
         const output = bindSchema({
-          ...testCase.input,
+          ...deepCopy(testCase.input),
           bindLanguage: language as BindLanguage,
         });
 

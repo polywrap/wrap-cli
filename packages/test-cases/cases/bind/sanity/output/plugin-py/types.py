@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from typing import TypedDict, Optional
-from enum import IntEnum, auto
+from enum import IntEnum
 
 from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
 from polywrap_msgpack import GenericMap
@@ -84,23 +84,23 @@ Else = TypedDict("Else", {
 
 ### Enums START ###
 class CustomEnum(IntEnum):
-    STRING = auto(), "STRING"
-    BYTES = auto(), "BYTES"
+    STRING = 0, "0", "STRING"
+    BYTES = 1, "1", "BYTES"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
 
 class While(IntEnum):
-    r_for = auto(), "for"
-    r_in = auto(), "in"
+    r_for = 0, "0", "for"
+    r_in = 1, "1", "in"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
@@ -132,24 +132,24 @@ TestImportAnotherObject = TypedDict("TestImportAnotherObject", {
 
 # URI: "testimport.uri.eth" #
 class TestImportEnum(IntEnum):
-    STRING = auto()
-    BYTES = auto()
+    STRING = 0, "0", "STRING"
+    BYTES = 1, "1", "BYTES"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
 
 # URI: "testimport.uri.eth" #
 class TestImportEnumReturn(IntEnum):
-    STRING = auto()
-    BYTES = auto()
+    STRING = 0, "0", "STRING"
+    BYTES = 1, "1", "BYTES"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
