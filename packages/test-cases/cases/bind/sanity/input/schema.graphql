@@ -242,7 +242,14 @@ type TestImport_Env @imported(
   namespace: "TestImport",
   nativeType: "Env"
 ) {
-  enviroProp: String!
+  object: TestImport_AnotherObject!
+  optObject: TestImport_AnotherObject
+  objectArray: [TestImport_AnotherObject!]!
+  optObjectArray: [TestImport_AnotherObject]
+  en: TestImport_Enum!
+  optEnum: TestImport_Enum
+  enumArray: [TestImport_Enum!]!
+  optEnumArray: [TestImport_Enum]
 }
 
 ### Imported Envs END ###

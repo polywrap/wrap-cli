@@ -18,7 +18,14 @@ export class TestImport_Env {
 
   public static uri: string = "testimport.uri.eth";
 
-  enviroProp: string;
+  object: Types.TestImport_AnotherObject;
+  optObject: Types.TestImport_AnotherObject | null;
+  objectArray: Array<Types.TestImport_AnotherObject>;
+  optObjectArray: Array<Types.TestImport_AnotherObject | null> | null;
+  en: Types.TestImport_Enum;
+  optEnum: Box<Types.TestImport_Enum> | null;
+  enumArray: Array<Types.TestImport_Enum>;
+  optEnumArray: Array<Box<Types.TestImport_Enum> | null> | null;
 
   static toBuffer(type: TestImport_Env): ArrayBuffer {
     return serializeTestImport_Env(type);
