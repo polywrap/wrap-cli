@@ -45,3 +45,4 @@ export {
 } from "./imported/TestImport_Enum_Return";
 export { TestImport } from "./TestImport";
 export { Env } from "./Env";
+export * from "./msgpack";
