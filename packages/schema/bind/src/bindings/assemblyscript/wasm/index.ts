@@ -30,6 +30,13 @@ export const generateBinding: GenerateBindingFn = (
   const output = result.output;
   const abi = applyTransforms(options.abi);
 
+  // Generate msgpack base type folder
+  output.entries.push({
+    type: "Directory",
+    name: "msgpack",
+    data: renderTemplates(templatePath("msgpack"), {}, subTemplates),
+  });
+
   // Generate object type folders
   if (abi.objectTypes) {
     for (const objectType of abi.objectTypes) {
