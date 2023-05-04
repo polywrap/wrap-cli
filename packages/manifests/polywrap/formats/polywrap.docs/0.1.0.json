@@ -2,10 +2,7 @@
   "id": "DocsManifest",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "format",
-    "title"
-  ],
+  "required": ["format", "title"],
   "properties": {
     "format": {
       "description": "Polywrap Docs manifest format version.",
@@ -22,25 +19,30 @@
     },
     "pages": {
       "description": "Sidebar pages. The first page is also the landing page.",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required" : [
-          "title",
-          "path"
-        ],
-        "additionalProperties": false,
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "The title of the page."
-          },
-          "path": {
-            "type": "string",
-            "description": "Path to the page"
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^([a-z\\-])+$": {
+          "type": "object",
+          "required": ["title", "path"],
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "The title of the page."
+            },
+            "path": {
+              "type": "string",
+              "description": "Path to the page"
+            }
           }
         }
       }
+    },
+    "homePage": {
+      "type": "string",
+      "description": "The slug of the home page.",
+      "pattern": "^([a-z\\-])+$"
     }
   }
 }

@@ -196,31 +196,33 @@ export class Compiler {
 
       // Copy markdown pages
 
-      let outputPages: { title: string; path: string }[] | undefined;
+      let outputPages: DocsManifest["pages"] = undefined;
 
       if (docsManifest.pages) {
-        outputPages = [];
+        outputPages = {};
 
         const pagesOutputDir = path.join(docsDir, "pages");
 
         await fse.mkdir(pagesOutputDir);
 
-        for (const page of docsManifest.pages) {
+        for (const pageSlug in docsManifest.pages) {
+          const page = docsManifest.pages[pageSlug];
           const pageFileParsed = path.parse(page.path);
           const pageOutputPath = path.join(pagesOutputDir, pageFileParsed.base);
 
           await fse.copyFile(page.path, pageOutputPath);
 
-          outputPages.push({
+          outputPages[pageSlug] = {
             title: page.title,
             path: path.relative(docsDir, pageOutputPath),
-          });
+          };
         }
       }
 
       const outputDocsManifest: DocsManifest = {
         format: docsManifest.format,
         title: docsManifest.title,
+        homePage: docsManifest.homePage,
         logo: outputLogoPath,
         pages: outputPages,
         __type: "DocsManifest",

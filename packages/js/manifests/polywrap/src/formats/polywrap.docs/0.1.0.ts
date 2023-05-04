@@ -24,13 +24,23 @@ export interface DocsManifest {
    */
   pages?: {
     /**
-     * The title of the page.
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^([a-z\-])+$".
      */
-    title: string;
-    /**
-     * Path to the page
-     */
-    path: string;
-  }[];
+    [k: string]: {
+      /**
+       * The title of the page.
+       */
+      title: string;
+      /**
+       * Path to the page
+       */
+      path: string;
+    };
+  };
+  /**
+   * The slug of the home page.
+   */
+  homePage?: string;
   __type: "DocsManifest";
 }
