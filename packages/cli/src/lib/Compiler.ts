@@ -225,6 +225,7 @@ export class Compiler {
         homePage: docsManifest.homePage,
         logo: outputLogoPath,
         pages: outputPages,
+        examples: docsManifest.examples,
         __type: "DocsManifest",
       };
 

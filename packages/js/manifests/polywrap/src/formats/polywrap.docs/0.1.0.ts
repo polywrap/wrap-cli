@@ -20,7 +20,7 @@ export interface DocsManifest {
    */
   logo?: string;
   /**
-   * Sidebar pages. The first page is also the landing page.
+   * Object containing sidebar pages where the object's keys are page slugs.
    */
   pages?: {
     /**
@@ -42,5 +42,43 @@ export interface DocsManifest {
    * The slug of the home page.
    */
   homePage?: string;
+  /**
+   * Object containing examples where the the object's keys are example slugs.
+   */
+  examples?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^([a-z\-])+$".
+     */
+    [k: string]: {
+      /**
+       * The title of the example.
+       */
+      title: string;
+      /**
+       * Wrap invocations as an array of example steps.
+       */
+      steps?: {
+        /**
+         * A description of the step rendered above the invocation code.
+         */
+        description?: string;
+        /**
+         * URI of the wrap being invoked.
+         */
+        uri: any;
+        /**
+         * Invoked method name.
+         */
+        method: string;
+        /**
+         * Invoked method arguments.
+         */
+        args?: {
+          [k: string]: unknown;
+        };
+      }[];
+    };
+  };
   __type: "DocsManifest";
 }

@@ -5,21 +5,21 @@
   "required": ["format", "title"],
   "properties": {
     "format": {
-      "description": "Polywrap Docs manifest format version.",
       "type": "string",
+      "description": "Polywrap Docs manifest format version.",
       "enum": ["0.1.0"]
     },
     "title": {
-      "description": "The title of the docs.",
-      "type": "string"
+      "type": "string",
+      "description": "The title of the docs."
     },
     "logo": {
-      "description": "Path to the wrapper logo.",
-      "type": "string"
+      "type": "string",
+      "description": "Path to the wrapper logo."
     },
     "pages": {
-      "description": "Sidebar pages. The first page is also the landing page.",
       "type": "object",
+      "description": "Object containing sidebar pages where the object's keys are page slugs.",
       "additionalProperties": false,
       "patternProperties": {
         "^([a-z\\-])+$": {
@@ -43,6 +43,54 @@
       "type": "string",
       "description": "The slug of the home page.",
       "pattern": "^([a-z\\-])+$"
+    },
+    "examples": {
+      "type": "object",
+      "description": "Object containing examples where the the object's keys are example slugs.",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^([a-z\\-])+$": {
+          "type": "object",
+          "required": ["title"],
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "The title of the example."
+            },
+            "steps": {
+              "type": "array",
+              "description": "Wrap invocations as an array of example steps.",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["uri", "method"],
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "A description of the step rendered above the invocation code."
+                  },
+                  "uri": {
+                    "description": "URI of the wrap being invoked.",
+                    "type": "string",
+                    "tsType": "any"
+                  },
+                  "method": {
+                    "description": "Invoked method name.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+                  },
+                  "args": {
+                    "description": "Invoked method arguments.",
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
