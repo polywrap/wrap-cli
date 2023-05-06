@@ -187,7 +187,7 @@ export class Compiler {
       // Copy logo
       if (docsManifest.logo) {
         const logoFileParsed = path.parse(docsManifest.logo);
-        const logoOutputPath = path.join(docsDir, `logo.${logoFileParsed.ext}`);
+        const logoOutputPath = path.join(docsDir, `logo${logoFileParsed.ext}`);
 
         await fse.copyFile(docsManifest.logo, logoOutputPath);
 
