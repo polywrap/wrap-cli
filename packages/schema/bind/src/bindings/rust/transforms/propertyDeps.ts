@@ -9,6 +9,7 @@ import {
   ModuleDefinition,
   EnvDefinition,
   Abi,
+  ImportedEnvDefinition,
 } from "@polywrap/wrap-manifest-types-js";
 import { AbiTransforms } from "@polywrap/schema-parse";
 
@@ -21,6 +22,7 @@ interface PropertyDep {
 interface PropertyDepsState {
   abiEnvDefinition?: EnvDefinition;
   envDefinition?: EnvDefinition;
+  importedEnvDefinition?: ImportedEnvDefinition;
   objectDefinition?: ObjectDefinition;
   moduleDefinition?: ModuleDefinition;
   importedModuleDefinition?: ImportedModuleDefinition;
@@ -39,6 +41,11 @@ export function propertyDeps(): AbiTransforms {
         return abi;
       },
       EnvDefinition: (def: EnvDefinition) => {
+        state.envDefinition = def;
+        state.propertyDeps = [];
+        return def;
+      },
+      ImportedEnvDefinition: (def: ImportedEnvDefinition) => {
         state.envDefinition = def;
         state.propertyDeps = [];
         return def;
@@ -124,6 +131,11 @@ export function propertyDeps(): AbiTransforms {
             state.envDefinition.type,
             state.propertyDeps
           );
+        } else if (state.importedEnvDefinition && state.propertyDeps) {
+          state.propertyDeps = appendPropertyDep(
+            state.importedEnvDefinition.type,
+            state.propertyDeps
+          );
         } else if (state.objectDefinition && state.propertyDeps) {
           state.propertyDeps = appendPropertyDep(
             state.objectDefinition.type,
@@ -149,6 +161,15 @@ export function propertyDeps(): AbiTransforms {
         const propertyDeps = state.propertyDeps;
         state.propertyDeps = undefined;
         state.envDefinition = undefined;
+        return {
+          ...def,
+          propertyDeps,
+        };
+      },
+      ImportedEnvDefinition: (def: ImportedEnvDefinition) => {
+        const propertyDeps = state.propertyDeps;
+        state.propertyDeps = undefined;
+        state.importedEnvDefinition = undefined;
         return {
           ...def,
           propertyDeps,
