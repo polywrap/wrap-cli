@@ -27,7 +27,7 @@ import {
   migratePluginProjectManifest,
   migratePolywrapProjectManifest,
   migrateWorkflow,
-  migrateDocsExtensionManifest
+  migrateDocsExtensionManifest,
 } from "../lib/manifest";
 import { defaultProjectManifestFiles } from "../lib/option-defaults";
 
@@ -358,9 +358,7 @@ export const runSchemaCommand = async (
 
       manifestSchemaFile = path.join(
         schemasPackageDir,
-        DocsManifestSchemaFiles[
-          manifestVersion ?? latestDocsManifestFormat
-        ]
+        DocsManifestSchemaFiles[manifestVersion ?? latestDocsManifestFormat]
       );
       break;
   }

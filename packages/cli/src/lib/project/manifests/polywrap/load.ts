@@ -19,7 +19,7 @@ import {
   PolywrapWorkflow,
   deserializePolywrapWorkflow,
   DocsManifest,
-  deserializeDocsManifest
+  deserializeDocsManifest,
 } from "@polywrap/polywrap-manifest-types-js";
 import { Schema as JsonSchema } from "jsonschema";
 import path from "path";
@@ -278,10 +278,7 @@ export async function loadWorkflowManifest(
   );
 }
 
-export const defaultDocsManifest = [
-  "polywrap.docs.yaml",
-  "polywrap.docs.yml",
-];
+export const defaultDocsManifest = ["polywrap.docs.yaml", "polywrap.docs.yml"];
 
 export async function loadDocsManifest(
   manifestPath: string,
