@@ -1,7 +1,7 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
+use polywrap_plugin::JSON::{from_value, json};
 use wrap_manifest_schemas::versions::{WrapManifest, WrapManifestAbi};
-use serde_json::{json, from_value};
 
 pub fn get_manifest() -> WrapManifest {
   WrapManifest {
