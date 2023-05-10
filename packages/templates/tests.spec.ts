@@ -35,7 +35,7 @@ describe("Templates", () => {
       /*build: "cargo build",
       test: "cargo test",*/
     },
-    interface: { build: "yarn build" },
+    interface: { build: "npx polywrap build" },
   };
 
   // Filter unnecessary directories

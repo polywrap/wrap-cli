@@ -10,7 +10,7 @@
     "test": "yarn test:e2e && yarn test:workflow",
     "test:e2e": "yarn test:e2e:codegen && jest --passWithNoTests --runInBand --verbose",
     "test:e2e:codegen": "npx polywrap codegen -m ./src/__tests__/types/polywrap.app.yaml -g ./src/__tests__/types/wrap",
-    "test:workflow": "npx polywrap test -o ./workflows/output.json"
+    "test:workflow": "npx polywrap test"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
