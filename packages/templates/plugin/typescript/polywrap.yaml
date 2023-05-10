@@ -3,5 +3,5 @@ project:
   name: Sample
   type: plugin/typescript
 source:
-  schema: ./src/schema.graphql
+  schema: ./polywrap.graphql
   module: ./src/index.ts

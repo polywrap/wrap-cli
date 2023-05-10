@@ -1,6 +1,7 @@
 format: 0.3.0
 project:
-  name: TODO
-  type: interface
+  name: Sample
+  type: plugin/rust
 source:
   schema: ./polywrap.graphql
+  module: ./Cargo.toml

@@ -23,7 +23,7 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(args: &[u8], env_size: u32) -> V
     {{#env}}
     {{#required}}
     if env_size == 0 {
-        panic!("Environment is not set, and it is required by method 'objectMethod'");
+        panic!("Environment is not set, and it is required by method '{{name}}'");
     }
 
     let env_buf = wrap_load_env(env_size);
