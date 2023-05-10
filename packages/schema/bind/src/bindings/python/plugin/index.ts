@@ -40,6 +40,11 @@ const sort = (obj: Record<string, unknown>) =>
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
+  const escapedAbi = JSON.stringify(
+    sort((options.abi as unknown) as Record<string, unknown>)
+  ).replace(/\n/g, "\\n");
+  const formattedAbi = JSON.stringify(JSON.parse(escapedAbi), null, 2);
+
   // Apply Abi transforms
   const abi = applyTransforms(options.abi);
 
@@ -55,9 +60,7 @@ export const generateBinding: GenerateBindingFn = (
     name: options.projectName,
     type: "plugin",
     version: latestWrapManifestVersion,
-    abi: Buffer.from(
-      JSON.stringify(sort((options.abi as unknown) as Record<string, unknown>))
-    ).toString("base64"),
+    abi: formattedAbi,
   };
 
   output.entries = renderTemplates(templatePath(""), { ...abi, manifest }, {});

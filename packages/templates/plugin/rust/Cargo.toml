@@ -1,0 +1,21 @@
+[package]
+name = "template_plugin_rs"
+version = "0.1.0"
+license = "MIT"
+description = "Polywrap Rust Plugin Template"
+edition = "2021"
+
+include = [
+    "src/wrap/*",
+    "src/lib.rs"
+]
+
+[dependencies]
+polywrap_core = { version = "0.1.6-beta.1" }
+polywrap_plugin = { version = "0.1.6-beta.1" }
+polywrap_msgpack = { version = "0.1.6-beta.1" }
+wrap_manifest_schemas = { version = "0.1.6-beta.1" }
+serde = {version = "1.0.145", features = ["derive"]}
+
+[dev-dependencies]
+polywrap_client = { version = "~0.1.6-beta.1" }

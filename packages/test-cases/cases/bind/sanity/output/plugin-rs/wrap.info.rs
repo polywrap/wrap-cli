@@ -1,7 +1,7 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
+use polywrap_plugin::JSON::{from_value, json};
 use wrap_manifest_schemas::versions::{WrapManifest, WrapManifestAbi};
-use serde_json::{json, from_value};
 
 pub fn get_manifest() -> WrapManifest {
   WrapManifest {
@@ -113,15 +113,135 @@ pub fn get_manifest() -> WrapManifest {
       "properties": [
         {
           "kind": 34,
-          "name": "enviroProp",
-          "required": true,
-          "scalar": {
-            "kind": 4,
-            "name": "enviroProp",
+          "name": "object",
+          "object": {
+            "kind": 8192,
+            "name": "object",
             "required": true,
-            "type": "String"
+            "type": "TestImport_AnotherObject"
           },
-          "type": "String"
+          "required": true,
+          "type": "TestImport_AnotherObject"
+        },
+        {
+          "kind": 34,
+          "name": "optObject",
+          "object": {
+            "kind": 8192,
+            "name": "optObject",
+            "type": "TestImport_AnotherObject"
+          },
+          "type": "TestImport_AnotherObject"
+        },
+        {
+          "array": {
+            "item": {
+              "kind": 8192,
+              "name": "objectArray",
+              "required": true,
+              "type": "TestImport_AnotherObject"
+            },
+            "kind": 18,
+            "name": "objectArray",
+            "object": {
+              "kind": 8192,
+              "name": "objectArray",
+              "required": true,
+              "type": "TestImport_AnotherObject"
+            },
+            "required": true,
+            "type": "[TestImport_AnotherObject]"
+          },
+          "kind": 34,
+          "name": "objectArray",
+          "required": true,
+          "type": "[TestImport_AnotherObject]"
+        },
+        {
+          "array": {
+            "item": {
+              "kind": 8192,
+              "name": "optObjectArray",
+              "type": "TestImport_AnotherObject"
+            },
+            "kind": 18,
+            "name": "optObjectArray",
+            "object": {
+              "kind": 8192,
+              "name": "optObjectArray",
+              "type": "TestImport_AnotherObject"
+            },
+            "type": "[TestImport_AnotherObject]"
+          },
+          "kind": 34,
+          "name": "optObjectArray",
+          "type": "[TestImport_AnotherObject]"
+        },
+        {
+          "enum": {
+            "kind": 16384,
+            "name": "en",
+            "required": true,
+            "type": "TestImport_Enum"
+          },
+          "kind": 34,
+          "name": "en",
+          "required": true,
+          "type": "TestImport_Enum"
+        },
+        {
+          "enum": {
+            "kind": 16384,
+            "name": "optEnum",
+            "type": "TestImport_Enum"
+          },
+          "kind": 34,
+          "name": "optEnum",
+          "type": "TestImport_Enum"
+        },
+        {
+          "array": {
+            "enum": {
+              "kind": 16384,
+              "name": "enumArray",
+              "required": true,
+              "type": "TestImport_Enum"
+            },
+            "item": {
+              "kind": 16384,
+              "name": "enumArray",
+              "required": true,
+              "type": "TestImport_Enum"
+            },
+            "kind": 18,
+            "name": "enumArray",
+            "required": true,
+            "type": "[TestImport_Enum]"
+          },
+          "kind": 34,
+          "name": "enumArray",
+          "required": true,
+          "type": "[TestImport_Enum]"
+        },
+        {
+          "array": {
+            "enum": {
+              "kind": 16384,
+              "name": "optEnumArray",
+              "type": "TestImport_Enum"
+            },
+            "item": {
+              "kind": 16384,
+              "name": "optEnumArray",
+              "type": "TestImport_Enum"
+            },
+            "kind": 18,
+            "name": "optEnumArray",
+            "type": "[TestImport_Enum]"
+          },
+          "kind": 34,
+          "name": "optEnumArray",
+          "type": "[TestImport_Enum]"
         }
       ],
       "type": "TestImport_Env",

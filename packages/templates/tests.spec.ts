@@ -24,12 +24,18 @@ describe("Templates", () => {
       build: "npx polywrap build -m ./polywrap.wasm-assemblyscript-linked.yaml",
       test: "yarn test",
     },
-    rust: {
+    "wasm/rust": {
       codegen: "yarn codegen",
       build: "yarn build -m ./polywrap.wasm-rust-linked.yaml",
       test: "yarn test",
     },
-    interface: { build: "yarn build" },
+    "plugin/rust": {
+      codegen: "npx polywrap codegen",
+      // Uncomment after release of 0.10.3
+      /*build: "cargo build",
+      test: "cargo test",*/
+    },
+    interface: { build: "npx polywrap build" },
   };
 
   // Filter unnecessary directories
@@ -54,8 +60,10 @@ describe("Templates", () => {
     describe(`${projectType}`, () => {
       for (const language of projectLanguages[projectType]) {
         describe(`${language}`, () => {
-          // run the test commands at commands[language]
-          let commands = languageTestCommands[language];
+          // run the test commands at commands["project/language"] || commands["language"]
+          let commands =
+            languageTestCommands[`${projectType}/${language}`] ||
+            languageTestCommands[language];
 
           // if nothing exists, try to match language as a substring
           if (!commands) {

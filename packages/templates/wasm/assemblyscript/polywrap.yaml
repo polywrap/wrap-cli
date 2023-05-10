@@ -4,6 +4,6 @@ project:
   type: wasm/assemblyscript
 source:
   module: ./src/index.ts
-  schema: ./src/schema.graphql
+  schema: ./polywrap.graphql
 extensions:
   build: ./polywrap.build.yaml

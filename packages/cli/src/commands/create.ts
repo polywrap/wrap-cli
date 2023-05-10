@@ -29,7 +29,7 @@ const urlStr = intlMsg.commands_create_options_t_url();
 export const supportedLangs = {
   wasm: ["assemblyscript", "rust", "interface"] as const,
   app: ["typescript"] as const,
-  plugin: ["typescript"] as const,
+  plugin: ["typescript", "rust", "python"] as const,
 };
 
 export type ProjectType = keyof typeof supportedLangs;
