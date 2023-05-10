@@ -1,3 +1,15 @@
+# Polywrap Origin (0.10.3)
+## Bugs
+**`@polywrap/schema-bind`:**
+* [PR-1734](https://github.com/polywrap/toolchain/pull/1734) **Update `plugin/python` Bindings**
+  * Update `wrap.info` python module embedding.
+* [PR-1728](https://github.com/polywrap/toolchain/pull/1728) **Update `plugin/rust` Bindings**
+  * Modify JSON serialization within rust plugin's bindings.
+* [PR-1736](https://github.com/polywrap/toolchain/pull/1736) **Properly emit function name when `Env` is missing**
+  * Fixed the error message that's emitted when an environment is not supplied to a function that requires it.
+* [PR-1733](https://github.com/polywrap/toolchain/pull/1733) **Add imported `Env` to `propertyDeps` transform**
+  * Adds imported `Env` to `propertyDeps` transform, so that now codegen properly generates imports for dependencies of imported env.
+
 # Polywrap Origin (0.10.2)
 ## Bugs
 **`@polywrap/schema-bind`:**

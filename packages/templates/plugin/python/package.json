@@ -2,6 +2,6 @@
   "name": "templates-plugin-python",
   "private": true,
   "dependencies": {
-    "polywrap": "0.10.2"
+    "polywrap": "~0.10.2"
   }
 }
