@@ -1,4 +1,9 @@
 # Polywrap Origin (0.10.3)
+## Features
+**`polywrap` CLI:**
+* [PR-1747](https://github.com/polywrap/toolchain/pull/1747) **Add Rust & Python plugin template projects to CLI's `create` command**
+  * The `create` command now supports `plugin/rust` and `plugin/python` project types.
+
 ## Bugs
 **`@polywrap/schema-bind`:**
 * [PR-1734](https://github.com/polywrap/toolchain/pull/1734) **Update `plugin/python` Bindings**
