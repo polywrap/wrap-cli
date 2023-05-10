@@ -1,6 +1,6 @@
 name: template-wasm-rs
 format: 0.1.0
-validation: "./workflows/validator.cue"
+validation: "./polywrap.test.cue"
 jobs:
   sampleMethod:
     steps:
