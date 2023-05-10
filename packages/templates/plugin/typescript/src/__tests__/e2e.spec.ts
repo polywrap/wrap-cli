@@ -1,4 +1,4 @@
-import { ClientConfigBuilder, PolywrapClient } from "@polywrap/client-js";
+import { ClientConfigBuilder, IWrapPackage, PolywrapClient } from "@polywrap/client-js";
 import { samplePlugin } from "../";
 
 describe("e2e", () => {
@@ -13,7 +13,7 @@ describe("e2e", () => {
         uri,
         samplePlugin({
           defaultValue: "foo bar",
-        })
+        }) as IWrapPackage
       )
       .build();
 

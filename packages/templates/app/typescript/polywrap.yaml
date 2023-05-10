@@ -3,4 +3,4 @@ project:
   name: Sample
   type: app/typescript
 source:
-  schema: ./schema.graphql
+  schema: ./polywrap.graphql

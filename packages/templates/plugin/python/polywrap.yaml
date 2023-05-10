@@ -3,5 +3,5 @@ project:
   name: Sample
   type: plugin/python
 source:
-  schema: ./schema.graphql
+  schema: ./polywrap.graphql
   module: ./sample/__init__.py

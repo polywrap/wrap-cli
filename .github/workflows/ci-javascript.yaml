@@ -214,10 +214,13 @@ jobs:
           mv wrappers packages/test-cases/cases
 
       - name: Test cli:unit
-        run: yarn test:cli:unit
+        run: yarn test:unit
+        working-directory: ./packages/cli
 
       - name: Test cli:e2e:p1
-        run: yarn test:cli:e2e:p1
+        run: yarn test:e2e:p1
+        working-directory: ./packages/cli
 
       - name: Test cli:e2e:p2
-        run: yarn test:cli:e2e:p2
+        run: yarn test:e2e:p2
+        working-directory: ./packages/cli
