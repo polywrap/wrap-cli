@@ -42,7 +42,8 @@ export const generateBinding: GenerateBindingFn = (
 ): BindOutput => {
   const escapedAbi = JSON.stringify(
     sort((options.abi as unknown) as Record<string, unknown>)
-  ).replace(/\n/g, "\\n");
+  ).replace(/\\n/g, "\\\\n");
+
   const formattedAbi = JSON.stringify(JSON.parse(escapedAbi), null, 2);
 
   // Apply Abi transforms
