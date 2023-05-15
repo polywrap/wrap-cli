@@ -1,4 +1,5 @@
 import {
+  defaultDocsDir,
   defaultDocsManifest,
   intlMsg,
   parseDirOption,
@@ -42,7 +43,7 @@ export const docs: Command = {
       .option(
         `-d, --dir <${docsManifestDirStr}>`,
         `${intlMsg.commands_docs_options_d({
-          default: "./docs",
+          default: defaultDocsDir,
         })}`
       )
       .option(`-f, --force`, intlMsg.commands_docs_options_f())
