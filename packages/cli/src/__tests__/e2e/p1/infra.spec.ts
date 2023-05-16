@@ -88,6 +88,8 @@ const waitForPorts = (ports: { port: number; expected: boolean }[]) => {
   });
 };
 
+jest.setTimeout(150000);
+
 describe("e2e tests for infra command", () => {
   beforeAll(() => {
     process.env = {
