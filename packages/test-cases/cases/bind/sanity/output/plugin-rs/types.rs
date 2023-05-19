@@ -3,7 +3,7 @@
 
 // NOTE: This is an auto-generated file.
 //       All modifications will be overwritten.
-use polywrap_core::{invoke::Invoker, uri::Uri};
+use polywrap_core::{invoker::Invoker, uri::Uri};
 use polywrap_msgpack::{decode, serialize};
 use polywrap_plugin::{error::PluginError, BigInt, BigNumber, Map, JSON};
 use serde::{Serialize, Deserialize};
@@ -226,7 +226,7 @@ impl<'a> TestImportModule<'a> {
 
     pub fn imported_method(&self, args: &TestImportModuleArgsImportedMethod) -> Result<Option<TestImportObject>, PluginError> {
         let uri = self.uri;
-        let serialized_args = serialize(args.clone()).unwrap();
+        let serialized_args = serialize(&args.clone()).unwrap();
         let result = invoker.invoke_raw(
             uri,
             "importedMethod",
@@ -246,7 +246,7 @@ impl<'a> TestImportModule<'a> {
 
     pub fn another_method(&self, args: &TestImportModuleArgsAnotherMethod) -> Result<i32, PluginError> {
         let uri = self.uri;
-        let serialized_args = serialize(args.clone()).unwrap();
+        let serialized_args = serialize(&args.clone()).unwrap();
         let result = invoker.invoke_raw(
             uri,
             "anotherMethod",
@@ -266,7 +266,7 @@ impl<'a> TestImportModule<'a> {
 
     pub fn returns_array_of_enums(&self, args: &TestImportModuleArgsReturnsArrayOfEnums) -> Result<Vec<Option<TestImportEnumReturn>>, PluginError> {
         let uri = self.uri;
-        let serialized_args = serialize(args.clone()).unwrap();
+        let serialized_args = serialize(&args.clone()).unwrap();
         let result = invoker.invoke_raw(
             uri,
             "returnsArrayOfEnums",

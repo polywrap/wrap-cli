@@ -3,7 +3,7 @@
 
 // NOTE: This is an auto-generated file.
 //       All modifications will be overwritten.
-use polywrap_core::{invoke::Invoker, uri::Uri};
+use polywrap_core::{invoker::Invoker, uri::Uri};
 use polywrap_msgpack::{decode, serialize};
 use polywrap_plugin::{error::PluginError, BigInt, BigNumber, Map, JSON};
 use serde::{Serialize, Deserialize};
@@ -112,7 +112,7 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     {{#methods}}
     pub fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(args: &{{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, PluginError> {
         let uri = {{#parent}}{{#toUpper}}{{type}}{{/toUpper}}{{/parent}}::URI;
-        let serialized_args = serialize(args.clone()).unwrap();
+        let serialized_args = serialize(&args.clone()).unwrap();
         let opt_args = Some(serialized_args.as_slice());
         let uri = Uri::try_from(uri).unwrap();
         let result = invoker.invoke_raw(
@@ -153,7 +153,7 @@ impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a
     {{#methods}}
     pub fn {{#toLower}}{{name}}{{/toLower}}(&self, args: &{{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, PluginError> {
         let uri = self.uri;
-        let serialized_args = serialize(args.clone()).unwrap();
+        let serialized_args = serialize(&args.clone()).unwrap();
         let result = invoker.invoke_raw(
             uri,
             "{{name}}",
