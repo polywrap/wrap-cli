@@ -11,7 +11,7 @@ import {
   parseClientConfigOption,
   getProjectFromManifest,
   defaultProjectManifestFiles,
-  defaultPolywrapManifest,
+  defaultPolywrapManifestFiles,
   parseLogFileOption,
   parseWrapperEnvsOption,
 } from "../lib";
@@ -22,7 +22,7 @@ import { watchProject } from "../lib/watchProject";
 import { PolywrapClient } from "@polywrap/client-js";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
-const defaultManifestStr = defaultPolywrapManifest.join(" | ");
+const defaultManifestStr = defaultPolywrapManifestFiles.join(" | ");
 
 export interface CodegenCommandOptions extends BaseCommandOptions {
   manifestFile: string;

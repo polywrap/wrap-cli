@@ -23,7 +23,7 @@ import { Schema as JsonSchema } from "jsonschema";
 import path from "path";
 import fs from "fs";
 
-export const defaultPolywrapManifest = ["polywrap.yaml", "polywrap.yml"];
+export const defaultPolywrapManifestFiles = ["polywrap.yaml", "polywrap.yml"];
 
 export async function loadPolywrapManifest(
   manifestPath: string,
@@ -59,7 +59,7 @@ export async function loadPolywrapManifest(
   );
 }
 
-export const defaultBuildManifest = [
+export const defaultBuildManifestFiles = [
   "polywrap.build.yaml",
   "polywrap.build.yml",
 ];
@@ -116,10 +116,27 @@ export async function loadBuildManifest(
   );
 }
 
-export const defaultDeployManifest = [
+export const defaultDeployManifestFiles = [
   "polywrap.deploy.yaml",
   "polywrap.deploy.yml",
 ];
+
+export const defaultDeployManifest: DeployManifest = {
+  format: "0.3.0",
+  jobs: {
+    ipfs_deploy: {
+      steps: [{
+        name: "deploy to ipfs.wrappers.io",
+        package: "ipfs",
+        uri: "file/./build",
+        config: {
+          gatewayUri: "https://ipfs.wrappers.io"
+        }
+      }]
+    }
+  },
+  __type: "DeployManifest"
+};
 
 export async function loadDeployManifest(
   manifestPath: string,
@@ -129,6 +146,12 @@ export async function loadDeployManifest(
     const manifest = fs.readFileSync(manifestPath, "utf-8");
 
     if (!manifest) {
+      // If the manifest wasn't found, and it was a default path,
+      // assume we should fallback to a default manifest.
+      if (defaultDeployManifestFiles.includes(manifestPath)) {
+        return Promise.resolve(defaultDeployManifest);
+      }
+
       const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
         path: `${manifestPath}`,
       });
@@ -195,7 +218,7 @@ export async function loadDeployManifestExt(
   );
 }
 
-export const defaultInfraManifest = [
+export const defaultInfraManifestFiles = [
   "polywrap.infra.yaml",
   "polywrap.infra.yml",
 ];
@@ -237,7 +260,7 @@ export async function loadInfraManifest(
   );
 }
 
-export const defaultWorkflowManifest = [
+export const defaultWorkflowManifestFiles = [
   "polywrap.test.yaml",
   "polywrap.test.yml",
 ];

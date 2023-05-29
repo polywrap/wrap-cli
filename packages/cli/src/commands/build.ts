@@ -5,7 +5,7 @@ import {
   PolywrapProject,
   SchemaComposer,
   intlMsg,
-  defaultPolywrapManifest,
+  defaultPolywrapManifestFiles,
   parseDirOption,
   parseClientConfigOption,
   parseManifestFileOption,
@@ -34,7 +34,7 @@ import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
 const strategyStr = Object.values(SupportedStrategies).join(" | ");
-const defaultManifestStr = defaultPolywrapManifest.join(" | ");
+const defaultManifestStr = defaultPolywrapManifestFiles.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
 
 const supportedProjectTypes = [
@@ -106,7 +106,7 @@ export const build: Command = {
           await run({
             manifestFile: parseManifestFileOption(
               options.manifestFile,
-              defaultPolywrapManifest
+              defaultPolywrapManifestFiles
             ),
             clientConfig: options.clientConfig || false,
             wrapperEnvs: options.wrapperEnvs || false,

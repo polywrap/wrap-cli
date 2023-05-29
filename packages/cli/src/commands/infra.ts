@@ -2,7 +2,7 @@ import {
   intlMsg,
   Infra,
   loadInfraManifest,
-  defaultInfraManifest,
+  defaultInfraManifestFiles,
   resolvePathIfExists,
   parseLogFileOption,
 } from "../lib";
@@ -36,7 +36,7 @@ const DEFAULT_MODULES_PATH = path.join(
   "infra-modules"
 );
 
-const defaultManifestStr = defaultInfraManifest.join(" | ");
+const defaultManifestStr = defaultInfraManifestFiles.join(" | ");
 const pathStr = intlMsg.commands_infra_options_m_path();
 const moduleNameStr = intlMsg.commands_infra_options_o_module();
 
@@ -119,7 +119,7 @@ async function run(
 
   const manifest: string[] = manifestFile
     ? [manifestFile]
-    : defaultInfraManifest;
+    : defaultInfraManifestFiles;
   const manifestPath = resolvePathIfExists(manifest);
 
   let infraManifest: InfraManifest | undefined;

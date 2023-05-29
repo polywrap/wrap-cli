@@ -1,10 +1,10 @@
 import { Argument, Command, Program, BaseCommandOptions } from "./types";
 import { createLogger } from "./utils/createLogger";
 import {
-  defaultBuildManifest,
-  defaultDeployManifest,
-  defaultInfraManifest,
-  defaultWorkflowManifest,
+  defaultBuildManifestFiles,
+  defaultDeployManifestFiles,
+  defaultInfraManifestFiles,
+  defaultWorkflowManifestFiles,
   getProjectManifestLanguage,
   intlMsg,
   isAppManifestLanguage,
@@ -13,7 +13,7 @@ import {
   maybeGetManifestFormatVersion,
   parseManifestFileOption,
   CacheDirectory,
-  defaultPolywrapManifest,
+  defaultPolywrapManifestFiles,
   Logger,
   parseLogFileOption,
 } from "../lib";
@@ -63,7 +63,7 @@ import path from "path";
 const pathStr = intlMsg.commands_manifest_options_m_path();
 const formatStr = intlMsg.commands_manifest_options_m_format();
 
-const defaultProjectManifestStr = defaultPolywrapManifest.join(" | ");
+const defaultProjectManifestStr = defaultPolywrapManifestFiles.join(" | ");
 
 const manifestTypes = [
   "project",
@@ -187,28 +187,28 @@ export const runSchemaCommand = async (
     case "build":
       manifestfile = parseManifestFileOption(
         options.manifestFile,
-        defaultBuildManifest
+        defaultBuildManifestFiles
       );
       break;
 
     case "deploy":
       manifestfile = parseManifestFileOption(
         options.manifestFile,
-        defaultDeployManifest
+        defaultDeployManifestFiles
       );
       break;
 
     case "infra":
       manifestfile = parseManifestFileOption(
         options.manifestFile,
-        defaultInfraManifest
+        defaultInfraManifestFiles
       );
       break;
 
     case "workflow":
       manifestfile = parseManifestFileOption(
         options.manifestFile,
-        defaultWorkflowManifest
+        defaultWorkflowManifestFiles
       );
       break;
   }
@@ -432,7 +432,7 @@ const runMigrateCommand = async (
         logger
       );
       migrateManifestFile(
-        parseManifestFileOption(options.manifestFile, defaultBuildManifest),
+        parseManifestFileOption(options.manifestFile, defaultBuildManifestFiles),
         migrateBuildExtensionManifest,
         options.format || latestBuildManifestFormat,
         logger
@@ -446,7 +446,7 @@ const runMigrateCommand = async (
         logger
       );
       migrateManifestFile(
-        parseManifestFileOption(options.manifestFile, defaultDeployManifest),
+        parseManifestFileOption(options.manifestFile, defaultDeployManifestFiles),
         migrateDeployExtensionManifest,
         options.format || latestDeployManifestFormat,
         logger
@@ -460,7 +460,7 @@ const runMigrateCommand = async (
         logger
       );
       migrateManifestFile(
-        parseManifestFileOption(options.manifestFile, defaultInfraManifest),
+        parseManifestFileOption(options.manifestFile, defaultInfraManifestFiles),
         migrateInfraExtensionManifest,
         options.format || latestInfraManifestFormat,
         logger
@@ -474,7 +474,7 @@ const runMigrateCommand = async (
         logger
       );
       migrateManifestFile(
-        parseManifestFileOption(options.manifestFile, defaultWorkflowManifest),
+        parseManifestFileOption(options.manifestFile, defaultWorkflowManifestFiles),
         migrateWorkflow,
         options.format || latestPolywrapWorkflowFormat,
         logger

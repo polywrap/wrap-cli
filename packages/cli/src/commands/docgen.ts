@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import {
-  defaultPolywrapManifest,
+  defaultPolywrapManifestFiles,
   SchemaComposer,
   intlMsg,
   parseClientConfigOption,
@@ -78,7 +78,7 @@ export const docgen: Command = {
       .option(
         `-m, --manifest-file <${pathStr}>`,
         intlMsg.commands_docgen_options_m({
-          default: defaultPolywrapManifest.join(" | "),
+          default: defaultPolywrapManifestFiles.join(" | "),
         })
       )
       .option(
