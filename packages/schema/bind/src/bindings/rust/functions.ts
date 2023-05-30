@@ -1,6 +1,5 @@
 import { isKeyword } from "./types";
 import { MustacheFn } from "../types";
-import { ScalarDefinition } from "@polywrap/wrap-manifest-types-js";
 
 function replaceAt(str: string, index: number, replacement: string): string {
   return (
@@ -315,9 +314,11 @@ export const serdeKeyword: MustacheFn = () => {
   };
 };
 
-export const serdeAnnotateIfBytes = () => {
-  return (value: ScalarDefinition | undefined): string => {
-    if (value?.type === "Bytes") {
+export const serdeAnnotateIfBytes: MustacheFn = () => {
+  return (value: string, render: (template: string) => string): string => {
+    const scalarType: string | undefined = render(value);
+
+    if (scalarType === "Bytes") {
       return `#[serde(with = "serde_bytes")]\n    `;
     }
     return "";
