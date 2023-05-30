@@ -5,8 +5,6 @@ import FormData from "form-data";
 import axios from "axios";
 import { readdirSync, readFileSync } from "fs-extra";
 
-const isValidUri = (uri: Uri) => uri.authority === "fs";
-
 const dirToFormData = (baseDirPath: string) => {
   const formData = new FormData();
 
@@ -34,28 +32,43 @@ const dirToFormData = (baseDirPath: string) => {
 };
 
 class HTTPDeployer implements DeployModule {
-  async execute(uri: Uri, config?: { postUrl: string }): Promise<Uri> {
-    if (!isValidUri(uri)) {
-      throw new Error(
-        `HTTP Deployer error: Invalid URI: ${uri.toString()}. Supplied URI needs to be a Filesystem URI, example: fs/./build`
-      );
-    }
-
+  async execute(
+    uri: Uri,
+    config?: { postUrl: string; headers: { name: string; value: string }[] }
+  ): Promise<Uri> {
     if (!config?.postUrl) {
       throw new Error(
         `HTTP Deployer error: No postUrl provided. Please provide a postUrl in the deploy manifest's config object`
       );
     }
 
-    const formData = dirToFormData(uri.path);
+    let response;
+    if (uri.authority === "fs") {
+      // URI is a FileSystem URI, so we read the directory and publish it
+      const formData = dirToFormData(uri.path);
 
-    const response = await axios.post<{ uri: string; error: string }>(
-      config.postUrl,
-      formData,
-      {
-        headers: formData.getHeaders(),
-      }
-    );
+      response = await axios.post<{ uri: string; error: string }>(
+        config.postUrl,
+        formData,
+        {
+          headers: {
+            ...formData.getHeaders(),
+            ...parseConfigHeaders(config.headers),
+          },
+        }
+      );
+    } else {
+      // URI is of another kind, so we just publish it as a redirect
+      response = await axios.post<{ uri: string; error: string }>(
+        config.postUrl,
+        {
+          uri: uri.toString(),
+        },
+        {
+          headers: parseConfigHeaders(config.headers),
+        }
+      );
+    }
 
     if (response.data.error) {
       throw new Error(response.data.error);
@@ -63,6 +76,16 @@ class HTTPDeployer implements DeployModule {
 
     return new Uri(`http/${config.postUrl}`);
   }
+}
+
+function parseConfigHeaders(configHeaders: { name: string; value: string }[]) {
+  const headers: { [key: string]: string } = {};
+
+  configHeaders.forEach((header) => {
+    headers[header.name] = header.value;
+  });
+
+  return headers;
 }
 
 export default new HTTPDeployer();
