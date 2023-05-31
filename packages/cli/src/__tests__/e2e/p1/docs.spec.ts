@@ -26,7 +26,7 @@ Initialize wrap docs
 Options:
   -m, --manifest-file <path>  Path to docs manifest file to be created.
                               Default: polywrap.docs.yaml | polywrap.docs.yml
-  -d, --dir <path>            Path to docs dir to be created. Default: ./docs
+  -d, --dir <path>            Path to docs dir to be created. Default: docs
   -f, --force                 Force overwrite docs manifest and/or docs
                               directory.
   -v, --verbose               Verbose output (default: false)
