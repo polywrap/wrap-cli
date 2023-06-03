@@ -1,0 +1,14 @@
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
+import io.polywrap.core.wrap.WrapManifest
+import io.polywrap.core.wrap.formats.wrap01.abi.Abi01
+
+{{#manifest}}
+val manifest = WrapManifest(
+    name = "{{name}}",
+    type = "{{type}}",
+    version = "{{version}}",
+    abi = {{abi}}
+)
+{{/manifest}}

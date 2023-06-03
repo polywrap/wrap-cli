@@ -1,0 +1,154 @@
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
+import io.polywrap.core.Invoker
+import io.polywrap.core.InvokeResult
+import io.polywrap.core.resolution.Uri
+import io.polywrap.msgpack.msgPackDecode
+import io.polywrap.msgpack.msgPackEncode
+import io.polywrap.plugin.PluginMethod
+import io.polywrap.plugin.PluginModule
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
+
+/// Env START ///
+{{#envType}}
+@Serializable
+data class Env {
+    {{#properties}}
+    val {{name}}: {{#nullableDefault}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/nullableDefault}},
+    {{/properties}}
+}
+{{/envType}}
+/// Env END ///
+
+/// Objects START ///
+{{#objectTypes}}
+@Serializable
+data class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+    {{#properties}}
+    val {{name}}: {{#nullableDefault}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/nullableDefault}},
+    {{/properties}}
+}
+
+{{/objectTypes}}
+/// Objects END ///
+
+/// Enums START ///
+{{#enumTypes}}
+@Serializable
+enum class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+    {{#constants}}
+    {{.}},
+    {{/constants}}
+}
+
+{{/enumTypes}}
+/// Enums END ///
+
+/// Imported Objects START ///
+{{#importedObjectTypes}}
+/* URI: "{{uri}}" */
+@Serializable
+data class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+    {{#properties}}
+    val {{name}}: {{#nullableDefault}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/nullableDefault}},
+    {{/properties}}
+}
+
+{{/importedObjectTypes}}
+{{#importedEnumTypes}}
+/* URI: "{{uri}}" */
+@Serializable
+enum class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+    {{#constants}}
+    {{.}},
+    {{/constants}}
+}
+
+{{/importedEnumTypes}}
+/// Imported Objects END ///
+
+/// Imported Modules START ///
+{{#importedModuleTypes}}
+{{#methods}}
+/* URI: "{{parent.uri}}" */
+@Serializable
+data class {{#firstUpper}}{{parent.type}}{{/firstUpper}}Args{{#firstUpper}}{{name}}{{/firstUpper}} {
+    {{#arguments}}
+    val {{name}}: {{#nullableDefault}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/nullableDefault}},
+    {{/arguments}}
+}
+
+{{/methods}}
+/* URI: "{{uri}}" */
+{{^isInterface}}
+object {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+    {{#methods}}
+    suspend fun {{name}}(
+        args: {{#firstUpper}}{{parent.type}}{{/firstUpper}}Args{{#firstUpper}}{{name}}{{/firstUpper}},
+        invoker: Invoker
+    ): InvokeResult<{{#return}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/return}}> {
+        return invoker.invoke(
+            uri = Uri.fromString("{{parent.uri}}"),
+            method = "{{name}}",
+            args = args
+        );
+    }{{^last}},{{/last}}
+    {{^last}}
+
+    {{/last}}
+    {{/methods}}
+}
+
+{{/isInterface}}
+{{#isInterface}}
+class {{#detectKeyword}}{{type}}{{/detectKeyword}}(uri: String) {
+    companion object {
+        val interfaceUri: String = "{{uri}}"
+    }
+
+    val uri: Uri = Uri.fromString(uri)
+
+    {{#methods}}
+    suspend fun {{name}}(
+        args: {{#firstUpper}}{{parent.type}}{{/firstUpper}}Args{{#firstUpper}}{{name}}{{/firstUpper}},
+        invoker: Invoker
+    ): InvokeResult<{{#return}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/return}}> {
+        return invoker.invoke(
+            uri = this.uri,
+            method = "{{name}}",
+            args = args
+        );
+    }
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+}
+
+{{/isInterface}}
+{{/importedModuleTypes}}
+/// Imported Modules END ///
+{{#interfaceTypes.length}}
+{{#interfaceTypes}}
+
+object {{#detectKeyword}}{{namespace}}{{/detectKeyword}} {
+    val uri: Uri = Uri.fromString("{{uri}}");
+
+    {{#capabilities}}
+    {{#getImplementations}}
+    {{#enabled}}
+    suspend fun getImplementations(invoker: Invoker): Result<Array<String>> {
+        return invoker.getImplementations(this.uri).map {
+            val implementations = it.map { impl -> impl.uri }
+            it.forEach { it.close() }
+            implementations
+        }
+    }
+    {{/enabled}}
+    {{/getImplementations}}
+    {{/capabilities}}
+}
+{{/interfaceTypes}}
+{{/interfaceTypes.length}}

@@ -1,0 +1,63 @@
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
+import io.polywrap.core.Invoker
+import io.polywrap.msgpack.msgPackDecode
+import io.polywrap.msgpack.msgPackEncode
+import io.polywrap.plugin.PluginMethod
+import io.polywrap.plugin.PluginModule
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
+{{#moduleType}}
+{{#methods}}
+
+@Serializable
+data class Args{{#firstUpper}}{{name}}{{/firstUpper}} {
+    {{#arguments}}
+    val {{name}}: {{#nullableDefault}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/nullableDefault}},
+    {{/arguments}}
+}
+{{/methods}}
+{{/moduleType}}
+
+@Suppress("UNUSED_PARAMETER", "FunctionName")
+abstract class Module<TConfig>(config: TConfig) : PluginModule<TConfig>(config) {
+
+  final override val methods: Map<String, PluginMethod> = mapOf(
+  {{#moduleType}}
+  {{#methods}}
+      "{{name}}" to ::__{{name}},
+  {{/methods}}
+  {{/moduleType}}
+  )
+
+  {{#moduleType}}
+  {{#methods}}
+  abstract suspend fun {{name}}(
+      args: Args{{#firstUpper}}{{name}}{{/firstUpper}},
+      {{#env}}env: Env{{^required}}? = null{{/required}},{{/env}}
+      invoker: Invoker
+  ): {{#return}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/return}}
+  {{/methods}}
+  {{/moduleType}}
+
+  {{#moduleType}}
+  {{#methods}}
+  private suspend fun __{{name}}(
+      encodedArgs: ByteArray?,
+      encodedEnv: ByteArray?,
+      invoker: Invoker
+    ): ByteArray {
+        val args: Args{{#firstUpper}}{{name}}{{/firstUpper}} = encodedArgs?.let {
+            msgPackDecode(Args{{#firstUpper}}{{name}}{{/firstUpper}}.serializer(), it).getOrNull()
+                ?: throw Exception("Failed to decode args in invocation to plugin method '{{name}}'")
+        } ?: throw Exception("Missing args in invocation to plugin method '{{name}}'")
+        val response = {{name}}(args, invoker)
+        return msgPackEncode(serializer(), response)
+  }
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+  {{/moduleType}}
+}
