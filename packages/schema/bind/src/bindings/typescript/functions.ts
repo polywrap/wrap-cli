@@ -29,11 +29,11 @@ export const toLowerCase: MustacheFn = () => {
 export const toClassName: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     const rendered = render(value);
-    rendered.replace(/([^A-Za-z0-9])+/g, ",");
     return rendered
+      .replace(/([^A-Za-z0-9])+/g, ",")
       .split(",")
       .map((x) => (x ? firstUpper(x.replace(",", "")) : ""))
-      .join();
+      .join("");
   };
 };
 
@@ -47,7 +47,7 @@ export const toFuncName: MustacheFn = () => {
         x = x.replace(",", "");
         return index === 0 ? firstLower(x) : firstUpper(x);
       })
-      .join();
+      .join("");
   };
 };
 

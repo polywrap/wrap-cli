@@ -12,9 +12,9 @@ import kotlinx.serialization.serializer
 {{#methods}}
 
 @Serializable
-data class Args{{#firstUpper}}{{name}}{{/firstUpper}}(
+data class Args{{#toClassName}}{{name}}{{/toClassName}}(
     {{#arguments}}
-    val {{name}}: {{#nullableDefault}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/nullableDefault}},
+    val {{#detectKeyword}}{{name}}{{/detectKeyword}}: {{#nullableDefault}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/nullableDefault}},
     {{/arguments}}
 )
 {{/methods}}
@@ -33,8 +33,8 @@ abstract class Module<TConfig>(config: TConfig) : PluginModule<TConfig>(config) 
 
   {{#moduleType}}
   {{#methods}}
-  abstract suspend fun {{name}}(
-      args: Args{{#firstUpper}}{{name}}{{/firstUpper}},{{#env}}
+  abstract suspend fun {{#detectKeyword}}{{name}}{{/detectKeyword}}(
+      args: Args{{#toClassName}}{{name}}{{/toClassName}},{{#env}}
       env: Env{{^required}}? = null{{/required}},{{/env}}
       invoker: Invoker
   ): {{#return}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/return}}
@@ -48,11 +48,17 @@ abstract class Module<TConfig>(config: TConfig) : PluginModule<TConfig>(config) 
       encodedEnv: ByteArray?,
       invoker: Invoker
     ): ByteArray {
-        val args: Args{{#firstUpper}}{{name}}{{/firstUpper}} = encodedArgs?.let {
-            msgPackDecode(Args{{#firstUpper}}{{name}}{{/firstUpper}}.serializer(), it).getOrNull()
+        val args: Args{{#toClassName}}{{name}}{{/toClassName}} = encodedArgs?.let {
+            msgPackDecode(Args{{#toClassName}}{{name}}{{/toClassName}}.serializer(), it).getOrNull()
                 ?: throw Exception("Failed to decode args in invocation to plugin method '{{name}}'")
         } ?: throw Exception("Missing args in invocation to plugin method '{{name}}'")
-        val response = {{name}}(args, invoker)
+        {{#env}}
+        val env: Env = encodedEnv?.let {
+            msgPackDecode(Env.serializer(), it).getOrNull()
+                ?: throw Exception("Failed to decode env in invocation to plugin method '{{name}}'")
+        } ?: throw Exception("Missing env in invocation to plugin method '{{name}}'")
+        {{/env}}
+        val response = {{#detectKeyword}}{{name}}{{/detectKeyword}}(args, {{#env}}env, {{/env}}invoker)
         return msgPackEncode(serializer(), response)
   }
   {{^last}}

@@ -14,17 +14,17 @@ export const detectKeyword: MustacheFn = () => {
   };
 };
 
-export const firstUpper: MustacheFn = () => {
-  return (value: string, render: (template: string) => string) => {
-    const rendered = render(value);
-    return rendered ? rendered[0].toUpperCase() + rendered.slice(1) : "";
-  };
-};
+const firstUpper = (str: string) =>
+  str ? str[0].toUpperCase() + str.slice(1) : "";
 
-export const toLowerCase: MustacheFn = () => {
+export const toClassName: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     const rendered = render(value);
-    return rendered.toLowerCase();
+    return rendered
+      .replace(/([^A-Za-z0-9])+/g, ",")
+      .split(",")
+      .map((x) => (x ? firstUpper(x.replace(",", "")) : ""))
+      .join("");
   };
 };
 
