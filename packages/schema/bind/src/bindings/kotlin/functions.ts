@@ -87,10 +87,10 @@ const _toKotlin = (value: string, render: (template: string) => string) => {
       type = "ByteArray";
       break;
     case "BigInt":
-      type = "BigInteger";
+      type = "BigInt";
       break;
     case "BigNumber":
-      type = "BigDecimal";
+      type = "BigNumber";
       break;
     case "JSON":
       type = "Json";

@@ -4,6 +4,7 @@ import * as AssemblyScript from "./assemblyscript";
 import * as Rust from "./rust";
 import * as Python from "./python";
 import * as TypeScript from "./typescript";
+import * as Kotlin from "./kotlin";
 
 export { AssemblyScript, Rust, TypeScript };
 export * from "./types";
@@ -23,6 +24,8 @@ export function getGenerateBindingFn(
       return Rust.Plugin.generateBinding;
     case "plugin-py":
       return Python.Plugin.generateBinding;
+    case "plugin-kt":
+      return Kotlin.Plugin.generateBinding;
     case "app-ts":
       return TypeScript.App.generateBinding;
     default:

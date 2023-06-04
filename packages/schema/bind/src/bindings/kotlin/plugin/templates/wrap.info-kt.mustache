@@ -3,12 +3,15 @@
 
 import io.polywrap.core.wrap.WrapManifest
 import io.polywrap.core.wrap.formats.wrap01.abi.Abi01
+import io.polywrap.msgpack.msgPackDecode
 
 {{#manifest}}
 val manifest = WrapManifest(
     name = "{{name}}",
     type = "{{type}}",
     version = "{{version}}",
-    abi = {{abi}}
+    abi = msgPackDecode(Abi01.serializer(), byteArrayOf(
+        {{abi}}
+    )).getOrThrow()
 )
 {{/manifest}}

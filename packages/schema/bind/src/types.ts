@@ -7,6 +7,7 @@ export type BindLanguage =
   | "plugin-ts"
   | "plugin-rs"
   | "plugin-py"
+  | "plugin-kt"
   | "app-ts";
 
 export interface BindOutput {

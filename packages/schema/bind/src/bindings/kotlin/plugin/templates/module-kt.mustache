@@ -12,11 +12,11 @@ import kotlinx.serialization.serializer
 {{#methods}}
 
 @Serializable
-data class Args{{#firstUpper}}{{name}}{{/firstUpper}} {
+data class Args{{#firstUpper}}{{name}}{{/firstUpper}}(
     {{#arguments}}
     val {{name}}: {{#nullableDefault}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/nullableDefault}},
     {{/arguments}}
-}
+)
 {{/methods}}
 {{/moduleType}}
 
@@ -34,13 +34,13 @@ abstract class Module<TConfig>(config: TConfig) : PluginModule<TConfig>(config) 
   {{#moduleType}}
   {{#methods}}
   abstract suspend fun {{name}}(
-      args: Args{{#firstUpper}}{{name}}{{/firstUpper}},
-      {{#env}}env: Env{{^required}}? = null{{/required}},{{/env}}
+      args: Args{{#firstUpper}}{{name}}{{/firstUpper}},{{#env}}
+      env: Env{{^required}}? = null{{/required}},{{/env}}
       invoker: Invoker
   ): {{#return}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/return}}
+
   {{/methods}}
   {{/moduleType}}
-
   {{#moduleType}}
   {{#methods}}
   private suspend fun __{{name}}(

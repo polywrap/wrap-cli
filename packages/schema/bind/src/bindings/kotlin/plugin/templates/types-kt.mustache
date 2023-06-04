@@ -11,25 +11,29 @@ import io.polywrap.plugin.PluginModule
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.serializer
 
+typealias BigInt = String
+typealias BigNumber = String
+typealias Json = String
+
 /// Env START ///
 {{#envType}}
 @Serializable
-data class Env {
+data class Env(
     {{#properties}}
     val {{name}}: {{#nullableDefault}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/nullableDefault}},
     {{/properties}}
-}
+)
 {{/envType}}
 /// Env END ///
 
 /// Objects START ///
 {{#objectTypes}}
 @Serializable
-data class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+data class {{#detectKeyword}}{{type}}{{/detectKeyword}}(
     {{#properties}}
     val {{name}}: {{#nullableDefault}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/nullableDefault}},
     {{/properties}}
-}
+)
 
 {{/objectTypes}}
 /// Objects END ///
@@ -50,11 +54,11 @@ enum class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
 {{#importedObjectTypes}}
 /* URI: "{{uri}}" */
 @Serializable
-data class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+data class {{#detectKeyword}}{{type}}{{/detectKeyword}})
     {{#properties}}
     val {{name}}: {{#nullableDefault}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/nullableDefault}},
     {{/properties}}
-}
+)
 
 {{/importedObjectTypes}}
 {{#importedEnumTypes}}
@@ -74,11 +78,11 @@ enum class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
 {{#methods}}
 /* URI: "{{parent.uri}}" */
 @Serializable
-data class {{#firstUpper}}{{parent.type}}{{/firstUpper}}Args{{#firstUpper}}{{name}}{{/firstUpper}} {
+data class {{#firstUpper}}{{parent.type}}{{/firstUpper}}Args{{#firstUpper}}{{name}}{{/firstUpper}}(
     {{#arguments}}
     val {{name}}: {{#nullableDefault}}{{#toKotlin}}{{toGraphQLType}}{{/toKotlin}}{{/nullableDefault}},
     {{/arguments}}
-}
+)
 
 {{/methods}}
 /* URI: "{{uri}}" */
