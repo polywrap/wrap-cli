@@ -47,7 +47,15 @@ export const generateBinding: GenerateBindingFn = (
       .join(","),
   };
 
-  output.entries = renderTemplates(templatePath(""), { ...abi, manifest }, {});
+  // conservative guess of package identifier
+  const outDir = options.outputDirAbs.split("/");
+  const pkg = `${outDir[outDir.length - 2]}.${outDir[outDir.length - 1]}`;
+
+  output.entries = renderTemplates(
+    templatePath(""),
+    { ...abi, manifest, pkg },
+    {}
+  );
 
   return result;
 };

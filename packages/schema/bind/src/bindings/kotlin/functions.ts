@@ -114,7 +114,7 @@ const toKotlinArray = (type: string, optional: boolean): string => {
   }
 
   const ktType = _toKotlin(result[2], (str) => str);
-  return applyOptional("Array<" + ktType + ">", optional);
+  return applyOptional("List<" + ktType + ">", optional);
 };
 
 const toKotlinMap = (type: string, optional: boolean): string => {
@@ -133,7 +133,7 @@ const toKotlinMap = (type: string, optional: boolean): string => {
   const ktKeyType = _toKotlin(keyType, (str) => str);
   const ktValType = _toKotlin(valType, (str) => str);
 
-  return applyOptional(`Map<${ktKeyType}, ${ktValType}>`, optional);
+  return applyOptional(`MsgPackMap<${ktKeyType}, ${ktValType}>`, optional);
 };
 
 const applyOptional = (type: string, optional: boolean): string => {
