@@ -1,12 +1,14 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
+package pluginTest.wrap
+
 import io.polywrap.core.wrap.WrapManifest
 import io.polywrap.core.wrap.formats.wrap01.abi.Abi01
-import io.polywrap.msgpack.msgPackDecode
+import io.polywrap.core.msgpack.msgPackDecode
 
 val manifest = WrapManifest(
-    name = "FileSystem",
+    name = "TestPlugin",
     type = "plugin",
     version = "0.1",
     abi = msgPackDecode(Abi01.serializer(), byteArrayOf(

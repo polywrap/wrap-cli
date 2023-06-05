@@ -1,9 +1,12 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
+package pluginTest.wrap
+
 import io.polywrap.core.Invoker
-import io.polywrap.msgpack.msgPackDecode
-import io.polywrap.msgpack.msgPackEncode
+import io.polywrap.core.msgpack.msgPackDecode
+import io.polywrap.core.msgpack.msgPackEncode
+import io.polywrap.core.msgpack.MsgPackMap
 import io.polywrap.plugin.PluginMethod
 import io.polywrap.plugin.PluginModule
 import kotlinx.serialization.Serializable
@@ -15,29 +18,29 @@ data class ArgsModuleMethod(
     val optStr: String? = null,
     val en: CustomEnum,
     val optEnum: CustomEnum? = null,
-    val enumArray: Array<CustomEnum>,
-    val optEnumArray: Array<CustomEnum?>? = null,
-    val map: Map<String, Int>,
-    val mapOfArr: Map<String, Array<Int>>,
-    val mapOfMap: Map<String, Map<String, Int>>,
-    val mapOfObj: Map<String, AnotherType>,
-    val mapOfArrOfObj: Map<String, Array<AnotherType>>,
+    val enumArray: List<CustomEnum>,
+    val optEnumArray: List<CustomEnum?>? = null,
+    val map: MsgPackMap<String, Int>,
+    val mapOfArr: MsgPackMap<String, List<Int>>,
+    val mapOfMap: MsgPackMap<String, MsgPackMap<String, Int>>,
+    val mapOfObj: MsgPackMap<String, AnotherType>,
+    val mapOfArrOfObj: MsgPackMap<String, List<AnotherType>>,
 )
 
 @Serializable
 data class ArgsObjectMethod(
     val _object: AnotherType,
     val optObject: AnotherType? = null,
-    val objectArray: Array<AnotherType>,
-    val optObjectArray: Array<AnotherType?>? = null,
+    val objectArray: List<AnotherType>,
+    val optObjectArray: List<AnotherType?>? = null,
 )
 
 @Serializable
 data class ArgsOptionalEnvMethod(
     val _object: AnotherType,
     val optObject: AnotherType? = null,
-    val objectArray: Array<AnotherType>,
-    val optObjectArray: Array<AnotherType?>? = null,
+    val objectArray: List<AnotherType>,
+    val optObjectArray: List<AnotherType?>? = null,
 )
 
 @Serializable

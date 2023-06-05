@@ -1,15 +1,13 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
+package pluginTest.wrap
+
 import io.polywrap.core.Invoker
 import io.polywrap.core.InvokeResult
 import io.polywrap.core.resolution.Uri
-import io.polywrap.msgpack.msgPackDecode
-import io.polywrap.msgpack.msgPackEncode
-import io.polywrap.plugin.PluginMethod
-import io.polywrap.plugin.PluginModule
+import io.polywrap.core.msgpack.MsgPackMap
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.serializer
 
 typealias BigInt = String
 typealias BigNumber = String
@@ -20,7 +18,7 @@ typealias Json = String
 data class Env(
     val prop: String,
     val optProp: String? = null,
-    val optMap: Map<String, Int?>? = null,
+    val optMap: MsgPackMap<String, Int?>? = null,
 )
 /// Env END ///
 
@@ -48,34 +46,34 @@ data class CustomType(
     val optBytes: ByteArray? = null,
     val boolean: Boolean,
     val optBoolean: Boolean? = null,
-    val u_array: Array<UInt>,
-    val uOpt_array: Array<UInt>? = null,
-    val _opt_uOptArray: Array<UInt?>? = null,
-    val optStrOptArray: Array<String?>? = null,
-    val uArrayArray: Array<Array<UInt>>,
-    val uOptArrayOptArray: Array<Array<UInt?>?>,
-    val uArrayOptArrayArray: Array<Array<Array<UInt>>?>,
-    val crazyArray: Array<Array<Array<Array<UInt>?>>?>? = null,
+    val u_array: List<UInt>,
+    val uOpt_array: List<UInt>? = null,
+    val _opt_uOptArray: List<UInt?>? = null,
+    val optStrOptArray: List<String?>? = null,
+    val uArrayArray: List<List<UInt>>,
+    val uOptArrayOptArray: List<List<UInt?>?>,
+    val uArrayOptArrayArray: List<List<List<UInt>>?>,
+    val crazyArray: List<List<List<List<UInt>?>>?>? = null,
     val _object: AnotherType,
     val optObject: AnotherType? = null,
-    val objectArray: Array<AnotherType>,
-    val optObjectArray: Array<AnotherType?>? = null,
+    val objectArray: List<AnotherType>,
+    val optObjectArray: List<AnotherType?>? = null,
     val en: CustomEnum,
     val optEnum: CustomEnum? = null,
-    val enumArray: Array<CustomEnum>,
-    val optEnumArray: Array<CustomEnum?>? = null,
-    val map: Map<String, Int>,
-    val mapOfArr: Map<String, Array<Int>>,
-    val mapOfObj: Map<String, AnotherType>,
-    val mapOfArrOfObj: Map<String, Array<AnotherType>>,
-    val mapCustomValue: Map<String, CustomMapValue?>,
+    val enumArray: List<CustomEnum>,
+    val optEnumArray: List<CustomEnum?>? = null,
+    val map: MsgPackMap<String, Int>,
+    val mapOfArr: MsgPackMap<String, List<Int>>,
+    val mapOfObj: MsgPackMap<String, AnotherType>,
+    val mapOfArrOfObj: MsgPackMap<String, List<AnotherType>>,
+    val mapCustomValue: MsgPackMap<String, CustomMapValue?>,
 )
 
 @Serializable
 data class AnotherType(
     val prop: String? = null,
     val circular: CustomType? = null,
-    val _const: String? = null,
+    val const: String? = null,
 )
 
 @Serializable
@@ -111,12 +109,12 @@ enum class While {
 data class TestImportObject(
     val _object: TestImportAnotherObject,
     val optObject: TestImportAnotherObject? = null,
-    val objectArray: Array<TestImportAnotherObject>,
-    val optObjectArray: Array<TestImportAnotherObject?>? = null,
+    val objectArray: List<TestImportAnotherObject>,
+    val optObjectArray: List<TestImportAnotherObject?>? = null,
     val en: TestImportEnum,
     val optEnum: TestImportEnum? = null,
-    val enumArray: Array<TestImportEnum>,
-    val optEnumArray: Array<TestImportEnum?>? = null,
+    val enumArray: List<TestImportEnum>,
+    val optEnumArray: List<TestImportEnum?>? = null,
 )
 
 /* URI: "testimport.uri.eth" */
@@ -149,21 +147,21 @@ data class TestImportModuleArgsImportedMethod(
     val optStr: String? = null,
     val u: UInt,
     val optU: UInt? = null,
-    val uArrayArray: Array<Array<UInt?>?>,
+    val uArrayArray: List<List<UInt?>?>,
     val _object: TestImportObject,
     val optObject: TestImportObject? = null,
-    val objectArray: Array<TestImportObject>,
-    val optObjectArray: Array<TestImportObject?>? = null,
+    val objectArray: List<TestImportObject>,
+    val optObjectArray: List<TestImportObject?>? = null,
     val en: TestImportEnum,
     val optEnum: TestImportEnum? = null,
-    val enumArray: Array<TestImportEnum>,
-    val optEnumArray: Array<TestImportEnum?>? = null,
+    val enumArray: List<TestImportEnum>,
+    val optEnumArray: List<TestImportEnum?>? = null,
 )
 
 /* URI: "testimport.uri.eth" */
 @Serializable
 data class TestImportModuleArgsAnotherMethod(
-    val arg: Array<String>,
+    val arg: List<String>,
 )
 
 /* URI: "testimport.uri.eth" */
@@ -205,7 +203,7 @@ class TestImportModule(uri: String) {
     suspend fun returnsArrayOfEnums(
         args: TestImportModuleArgsReturnsArrayOfEnums,
         invoker: Invoker
-    ): InvokeResult<Array<TestImportEnumReturn?>> {
+    ): InvokeResult<List<TestImportEnumReturn?>> {
         return invoker.invoke(
             uri = this.uri,
             method = "returnsArrayOfEnums",
