@@ -1,5 +1,5 @@
 import { MustacheFn } from "../types";
-import { isKeyword } from "./types";
+import { isKeyword, isSoftKeyword } from "./types";
 import { toUpper } from "../rust/functions";
 
 // check if any of the keywords match the property name;
@@ -8,6 +8,16 @@ export const detectKeyword: MustacheFn = () => {
   return (value: string, render: (template: string) => string): string => {
     const type = render(value);
     if (isKeyword(type)) {
+      return "_" + type;
+    }
+    return type;
+  };
+};
+
+export const detectKeywordStrict: MustacheFn = () => {
+  return (value: string, render: (template: string) => string): string => {
+    const type = render(value);
+    if (isKeyword(type) || isSoftKeyword(type)) {
       return "_" + type;
     }
     return type;

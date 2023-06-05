@@ -55,6 +55,9 @@ const keywords = {
   var: "var",
   when: "when",
   while: "while",
+};
+
+const softKeywords = {
   by: "by",
   catch: "catch",
   constructor: "constructor",
@@ -73,41 +76,18 @@ const keywords = {
   setparam: "setparam",
   value: "value",
   where: "where",
-  abstract: "abstract",
-  actual: "actual",
-  annotation: "annotation",
-  companion: "companion",
-  const: "const",
-  crossinline: "crossinline",
-  data: "data",
-  enum: "enum",
-  expect: "expect",
-  external: "external",
-  final: "final",
-  infix: "infix",
-  inline: "inline",
-  inner: "inner",
-  internal: "internal",
-  lateinit: "lateinit",
-  noinline: "noinline",
-  open: "open",
-  operator: "operator",
-  out: "out",
-  override: "override",
-  private: "private",
-  protected: "protected",
-  public: "public",
-  reified: "reified",
-  sealed: "sealed",
-  suspend: "suspend",
-  tailrec: "tailrec",
-  vararg: "vararg",
 };
 
 export type Keywords = typeof keywords;
-
 export type Keyword = keyof Keywords;
 
 export function isKeyword(keyword: string): keyword is Keyword {
   return keyword in keywords;
+}
+
+export type SoftKeywords = typeof softKeywords;
+export type SoftKeyword = keyof SoftKeywords;
+
+export function isSoftKeyword(keyword: string): keyword is SoftKeyword {
+  return keyword in softKeywords;
 }

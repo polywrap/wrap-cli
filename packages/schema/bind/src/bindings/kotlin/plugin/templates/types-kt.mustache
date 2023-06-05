@@ -41,7 +41,7 @@ data class {{#toClassName}}{{type}}{{/toClassName}}(
 @Serializable
 enum class {{#toClassName}}{{type}}{{/toClassName}} {
     {{#constants}}
-    {{#detectKeyword}}{{.}}{{/detectKeyword}}{{^last}},{{/last}}
+    {{#detectKeywordStrict}}{{.}}{{/detectKeywordStrict}}{{^last}},{{/last}}
     {{/constants}}
 }
 
@@ -64,7 +64,7 @@ data class {{#toClassName}}{{type}}{{/toClassName}}(
 @Serializable
 enum class {{#toClassName}}{{type}}{{/toClassName}} {
     {{#constants}}
-    {{#detectKeyword}}{{.}}{{/detectKeyword}}{{^last}},{{/last}}
+    {{#detectKeywordStrict}}{{.}}{{/detectKeywordStrict}}{{^last}},{{/last}}
     {{/constants}}
 }
 
