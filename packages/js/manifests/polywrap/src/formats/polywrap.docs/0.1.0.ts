@@ -16,9 +16,17 @@ export interface DocsManifest {
    */
   title: string;
   /**
-   * Path to the wrapper logo.
+   * Path to the wrap's logo.
    */
   logo?: string;
+  /**
+   * Website related to the wrap.
+   */
+  website?: string;
+  /**
+   * Github repository link.
+   */
+  github?: string;
   /**
    * Object containing sidebar pages where the object's keys are page slugs.
    */

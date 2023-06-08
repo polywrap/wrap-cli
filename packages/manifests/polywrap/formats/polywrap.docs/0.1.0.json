@@ -15,7 +15,15 @@
     },
     "logo": {
       "type": "string",
-      "description": "Path to the wrapper logo."
+      "description": "Path to the wrap's logo."
+    },
+    "website": {
+      "type": "string",
+      "description": "Website related to the wrap."
+    },
+    "github": {
+      "type": "string",
+      "description": "Github repository link."
     },
     "pages": {
       "type": "object",
