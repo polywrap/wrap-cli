@@ -12,10 +12,7 @@ RUN apk add curl pkgconfig openssl-dev bash
 RUN apk add clang llvm build-base
 
 # Install wasm-opt
-RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_101/binaryen-version_101-x86_64-linux.tar.gz | tar -xz \
-    && chmod +x binaryen-version_101/bin/wasm-opt \
-    && cp binaryen-version_101/bin/wasm-opt /usr/local/bin/ \
-    && rm -rf binary-version_101
+RUN cargo install wasm-opt
 
 # Install the toml-cli
 RUN cargo install toml-cli
