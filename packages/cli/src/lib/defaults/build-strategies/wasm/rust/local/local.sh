@@ -15,6 +15,9 @@ cargo install wasm-bindgen-cli
 # Install wasm-tools
 cargo install wasm-tools
 
+# Install wasm-opt
+cargo install wasm-opt
+
 # Ensure the module at {{dir}} has the crate-type = ["cdylib"]
 toml set "$1"/Cargo.toml lib.crate-type ["cdylib"] > "$1"/Cargo-local.toml && \
   mv "$1"/Cargo.toml "$1"/Cargo-bak.toml && \
@@ -56,5 +59,5 @@ rm -rf "$2"/strip_module.wasm
 
 # Use wasm-opt to perform the "asyncify" post-processing step over all modules
 export ASYNCIFY_STACK_SIZE=24576
-npx wasm-opt --asyncify -Os "$2"/snipped_module.wasm -o "$2"/wrap.wasm
+wasm-opt --asyncify -Os "$2"/snipped_module.wasm -o "$2"/wrap.wasm
 rm -rf "$2"/snipped_module.wasm
