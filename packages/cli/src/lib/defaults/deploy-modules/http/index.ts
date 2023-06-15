@@ -43,7 +43,7 @@ class HTTPDeployer implements DeployModule {
     }
 
     let response;
-    if (uri.authority === "fs") {
+    if (uri.authority === "fs" || uri.authority === "file") {
       // URI is a FileSystem URI, so we read the directory and publish it
       const formData = dirToFormData(uri.path);
 
