@@ -11,8 +11,8 @@ RUN apk add curl pkgconfig openssl-dev bash
 # Install clang
 RUN apk add clang llvm build-base
 
-# Install wasm-opt
-RUN cargo install wasm-opt
+# Install cargo-build-deps
+RUN cargo install cargo-build-deps
 
 # Install the toml-cli
 RUN cargo install toml-cli
@@ -20,14 +20,14 @@ RUN cargo install toml-cli
 # Install wasm-snip
 RUN cargo install wasm-snip
 
-# Install wasm-bindgen
-RUN cargo install wasm-bindgen-cli
-
 # Install wasm-tools
 RUN cargo install wasm-tools
 
-# Install cargo-build-deps
-RUN cargo install cargo-build-deps
+# Install wasm-bindgen
+RUN cargo install wasm-bindgen-cli
+
+# Install wasm-opt
+RUN cargo install wasm-opt
 
 # Ensure the Wasm module is configured to use imported memory
 ENV RUSTFLAGS="-C link-arg=-z -C link-arg=stack-size=65536 -C link-arg=--import-memory"
