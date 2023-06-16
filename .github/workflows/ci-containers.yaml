@@ -26,19 +26,19 @@ jobs:
       # - name: Build RS VM Image (linux/amd64)
       #   working-directory: ${{env.IMAGE_RS_VM_DIR}}
       #   run: |
-      #     docker buildx build . --platform=linux/amd64
+      #     docker buildx build . --platform=linux/amd64 --no-cache
 
       - name: Build RS VM Image (linux/arm64)
         working-directory: ${{env.IMAGE_RS_VM_DIR}}
         run: |
-          docker buildx build . --platform=linux/arm64
+          docker buildx build . --platform=linux/arm64 --no-cache
 
       - name: Build AS VM Image (linux/amd64)
         working-directory: ${{env.IMAGE_AS_VM_DIR}}
         run: |
-          docker buildx build . --platform=linux/amd64
+          docker buildx build . --platform=linux/amd64 --no-cache
 
       - name: Build AS VM Image (linux/arm64)
         working-directory: ${{env.IMAGE_AS_VM_DIR}}
         run: |
-          docker buildx build . --platform=linux/arm64
+          docker buildx build . --platform=linux/arm64 --no-cache
