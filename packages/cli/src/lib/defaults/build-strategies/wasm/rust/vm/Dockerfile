@@ -11,9 +11,6 @@ RUN apk add curl pkgconfig openssl-dev bash
 # Install clang
 RUN apk add clang llvm build-base
 
-# Install cargo-build-deps
-RUN cargo install cargo-build-deps
-
 # Install the toml-cli
 RUN cargo install toml-cli
 
