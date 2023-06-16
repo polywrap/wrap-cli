@@ -24,7 +24,7 @@ RUN cargo install wasm-tools
 RUN cargo install wasm-bindgen-cli
 
 # Install wasm-opt
-# RUN cargo install wasm-opt
+RUN cargo install wasm-opt
 
 # Ensure the Wasm module is configured to use imported memory
 ENV RUSTFLAGS="-C link-arg=-z -C link-arg=stack-size=65536 -C link-arg=--import-memory"
