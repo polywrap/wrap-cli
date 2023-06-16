@@ -1,4 +1,4 @@
-FROM rust:1.66-alpine as base
+FROM rust:1.70-alpine as base
 
 # Install the wasm32 rust build target
 RUN rustup target add wasm32-unknown-unknown
