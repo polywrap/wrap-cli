@@ -23,10 +23,10 @@ jobs:
           echo IMAGE_RS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/rust/vm >> $GITHUB_ENV
           echo IMAGE_AS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/assemblyscript/vm >> $GITHUB_ENV
 
-      - name: Build RS VM Image (linux/amd64)
-        working-directory: ${{env.IMAGE_RS_VM_DIR}}
-        run: |
-          docker buildx build . --platform=linux/amd64
+      # - name: Build RS VM Image (linux/amd64)
+      #   working-directory: ${{env.IMAGE_RS_VM_DIR}}
+      #   run: |
+      #     docker buildx build . --platform=linux/amd64
 
       - name: Build RS VM Image (linux/arm64)
         working-directory: ${{env.IMAGE_RS_VM_DIR}}
