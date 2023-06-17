@@ -55,7 +55,7 @@ export interface DocsManifest {
         /**
          * URI of the wrap being invoked.
          */
-        uri: any;
+        uri?: any;
         /**
          * Invoked method name.
          */

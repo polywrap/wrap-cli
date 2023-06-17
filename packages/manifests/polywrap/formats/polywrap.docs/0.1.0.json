@@ -49,7 +49,7 @@
               "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": ["uri", "method"],
+                "required": ["method"],
                 "properties": {
                   "description": {
                     "type": "string",
