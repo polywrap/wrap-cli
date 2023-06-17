@@ -6,7 +6,8 @@ import { Uri } from "@polywrap/core-js";
 const IPFSClient = require("ipfs-http-client");
 const { globSource } = IPFSClient;
 
-const isValidUri = (uri: Uri) => uri.authority === "fs";
+const isValidUri = (uri: Uri) =>
+  uri.authority === "fs" || uri.authority === "file";
 
 class IPFSDeployer implements DeployModule {
   async execute(uri: Uri, config?: { gatewayUri: string }): Promise<Uri> {

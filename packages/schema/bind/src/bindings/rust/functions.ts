@@ -314,6 +314,17 @@ export const serdeKeyword: MustacheFn = () => {
   };
 };
 
+export const serdeAnnotateIfBytes: MustacheFn = () => {
+  return (value: string, render: (template: string) => string): string => {
+    const scalarType: string | undefined = render(value);
+
+    if (scalarType === "Bytes") {
+      return `#[serde(with = "serde_bytes")]\n    `;
+    }
+    return "";
+  };
+};
+
 export const serdeRenameIfCaseMismatch: MustacheFn = () => {
   return (value: string, render: (template: string) => string): string => {
     const type = render(value);

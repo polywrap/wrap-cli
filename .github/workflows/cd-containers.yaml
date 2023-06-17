@@ -11,7 +11,7 @@ jobs:
       github.event.pull_request.merged &&
       endsWith(github.event.pull_request.title, '/workflows/cd-containers') &&
       github.event.pull_request.user.login != 'polywrap-build-bot'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
