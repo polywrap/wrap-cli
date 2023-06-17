@@ -14,6 +14,7 @@ RUN apk add clang llvm build-base
 # Install wasm-opt
 RUN touch ~/.bashrc
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.3/install.sh | bash
+RUN source ~/.bashrc
 RUN nvm install 18 && nvm use 18
 RUN npm i wasm-opt -g
 
