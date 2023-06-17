@@ -11,8 +11,10 @@ RUN apk add curl pkgconfig openssl-dev bash
 # Install clang
 RUN apk add clang llvm build-base
 
-# Install the toml-cli
-RUN cargo install toml-cli
+# Install wasm-opt
+RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.3/install.sh | bash
+RUN nvm install 18 && nvm use 18
+RUN npm i wasm-opt -g
 
 # Install wasm-snip
 RUN cargo install wasm-snip
@@ -23,8 +25,8 @@ RUN cargo install wasm-tools
 # Install wasm-bindgen
 RUN cargo install wasm-bindgen-cli
 
-# Install wasm-opt
-RUN cargo install wasm-opt
+# Install the toml-cli
+RUN cargo install toml-cli
 
 # Ensure the Wasm module is configured to use imported memory
 ENV RUSTFLAGS="-C link-arg=-z -C link-arg=stack-size=65536 -C link-arg=--import-memory"

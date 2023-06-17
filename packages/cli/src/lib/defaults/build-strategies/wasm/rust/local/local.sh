@@ -16,7 +16,7 @@ cargo install wasm-bindgen-cli
 cargo install wasm-tools
 
 # Install wasm-opt
-cargo install wasm-opt
+RUN npm i wasm-opt -g
 
 # Ensure the module at {{dir}} has the crate-type = ["cdylib"]
 toml set "$1"/Cargo.toml lib.crate-type ["cdylib"] > "$1"/Cargo-local.toml && \
