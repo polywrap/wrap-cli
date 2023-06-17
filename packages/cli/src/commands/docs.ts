@@ -110,14 +110,10 @@ export const runDocsInitCommand = async (
 
   const manifest: DocsManifest = {
     format: "0.1.0",
-    title: "My wrap",
-    pages: {
-      home: {
-        path: sampleReadmeOutputPath,
-        title: "Home",
-      },
-    },
-    homePage: "home",
+    description: "Description of my Wrap",
+    readme: sampleReadmeOutputPath,
+    websiteUrl: "https://example.com",
+    repositoryUrl: "https://github.com/polywrap",
     // eslint-disable-next-line
     __type: "DocsManifest",
   };
