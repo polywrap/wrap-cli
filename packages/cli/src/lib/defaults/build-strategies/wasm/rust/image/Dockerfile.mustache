@@ -11,11 +11,11 @@ RUN apk add curl pkgconfig openssl-dev bash
 # Install clang
 RUN apk add clang llvm build-base
 
-# Install Node.js
-RUN apk add --no-cache nodejs npm
-
 # Install wasm-opt
-RUN npm i wasm-opt -g
+RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_101/binaryen-version_101-x86_64-linux.tar.gz | tar -xz \
+    && chmod +x binaryen-version_101/bin/wasm-opt \
+    && cp binaryen-version_101/bin/wasm-opt /usr/local/bin/ \
+    && rm -rf binary-version_101
 
 # Install wasm-snip
 RUN cargo install wasm-snip
