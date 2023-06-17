@@ -11,9 +11,10 @@ RUN apk add curl pkgconfig openssl-dev bash
 # Install clang
 RUN apk add clang llvm build-base
 
+# Install Node.js
+RUN apk add --no-cache nodejs npm
+
 # Install wasm-opt
-RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.3/install.sh | bash
-RUN nvm install 18 && nvm use 18
 RUN npm i wasm-opt -g
 
 # Install wasm-snip
