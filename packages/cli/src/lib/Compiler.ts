@@ -51,7 +51,7 @@ export class Compiler {
 
         // Output docs if any
 
-        await this._maybeAssembleDocsFolder();
+        await this._maybeAssembleDocsDir();
       }
     };
 
@@ -164,7 +164,7 @@ export class Compiler {
     );
   }
 
-  private async _maybeAssembleDocsFolder(): Promise<void> {
+  private async _maybeAssembleDocsDir(): Promise<void> {
     const { project, outputDir } = this._config;
 
     const projectManifest = await (project as PolywrapProject).getManifest();
@@ -196,36 +196,24 @@ export class Compiler {
 
       // Copy markdown pages
 
-      let outputPages: DocsManifest["pages"] = undefined;
+      let outputReadmePath: string | undefined;
 
-      if (docsManifest.pages) {
-        outputPages = {};
+      if (docsManifest.readme) {
+        const readmesDir = path.join(docsDir, "pages");
 
-        const pagesOutputDir = path.join(docsDir, "pages");
+        await fse.mkdir(readmesDir);
 
-        await fse.mkdir(pagesOutputDir);
+        const pageFileParsed = path.parse(docsManifest.readme);
+        const pageOutputPath = path.join(readmesDir, pageFileParsed.base);
 
-        for (const pageSlug in docsManifest.pages) {
-          const page = docsManifest.pages[pageSlug];
-          const pageFileParsed = path.parse(page.path);
-          const pageOutputPath = path.join(pagesOutputDir, pageFileParsed.base);
-
-          await fse.copyFile(page.path, pageOutputPath);
-
-          outputPages[pageSlug] = {
-            title: page.title,
-            path: path.relative(docsDir, pageOutputPath),
-          };
-        }
+        await fse.copyFile(docsManifest.readme, pageOutputPath);
+        outputReadmePath = path.relative(docsDir, pageOutputPath);
       }
 
       const outputDocsManifest: DocsManifest = {
-        format: docsManifest.format,
-        title: docsManifest.title,
-        homePage: docsManifest.homePage,
+        ...docsManifest,
         logo: outputLogoPath,
-        pages: outputPages,
-        examples: docsManifest.examples,
+        readme: outputReadmePath,
         __type: "DocsManifest",
       };
 

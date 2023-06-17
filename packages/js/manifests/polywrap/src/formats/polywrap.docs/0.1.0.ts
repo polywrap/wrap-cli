@@ -12,9 +12,9 @@ export interface DocsManifest {
    */
   format: "0.1.0";
   /**
-   * The title of the docs.
+   * A description of the wrap.
    */
-  title: string;
+  description?: string;
   /**
    * Path to the wrap's logo.
    */
@@ -22,34 +22,15 @@ export interface DocsManifest {
   /**
    * Website related to the wrap.
    */
-  website?: string;
+  websiteUrl?: string;
   /**
-   * Github repository link.
+   * Url of the wrap's repository.
    */
-  github?: string;
+  repositoryUrl?: string;
   /**
-   * Object containing sidebar pages where the object's keys are page slugs.
+   * Path to the readme page.
    */
-  pages?: {
-    /**
-     * This interface was referenced by `undefined`'s JSON-Schema definition
-     * via the `patternProperty` "^([a-z\-])+$".
-     */
-    [k: string]: {
-      /**
-       * The title of the page.
-       */
-      title: string;
-      /**
-       * Path to the page
-       */
-      path: string;
-    };
-  };
-  /**
-   * The slug of the home page.
-   */
-  homePage?: string;
+  readme?: string;
   /**
    * Object containing examples where the the object's keys are example slugs.
    */

@@ -2,55 +2,32 @@
   "id": "DocsManifest",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "title"],
+  "required": ["format"],
   "properties": {
     "format": {
       "type": "string",
       "description": "Polywrap Docs manifest format version.",
       "enum": ["0.1.0"]
     },
-    "title": {
+    "description": {
       "type": "string",
-      "description": "The title of the docs."
+      "description": "A description of the wrap."
     },
     "logo": {
       "type": "string",
       "description": "Path to the wrap's logo."
     },
-    "website": {
+    "websiteUrl": {
       "type": "string",
       "description": "Website related to the wrap."
     },
-    "github": {
+    "repositoryUrl": {
       "type": "string",
-      "description": "Github repository link."
+      "description": "Url of the wrap's repository."
     },
-    "pages": {
-      "type": "object",
-      "description": "Object containing sidebar pages where the object's keys are page slugs.",
-      "additionalProperties": false,
-      "patternProperties": {
-        "^([a-z\\-])+$": {
-          "type": "object",
-          "required": ["title", "path"],
-          "additionalProperties": false,
-          "properties": {
-            "title": {
-              "type": "string",
-              "description": "The title of the page."
-            },
-            "path": {
-              "type": "string",
-              "description": "Path to the page"
-            }
-          }
-        }
-      }
-    },
-    "homePage": {
+    "readme": {
       "type": "string",
-      "description": "The slug of the home page.",
-      "pattern": "^([a-z\\-])+$"
+      "description": "Path to the readme page."
     },
     "examples": {
       "type": "object",
