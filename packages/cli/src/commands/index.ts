@@ -7,6 +7,7 @@ export * from "./infra";
 export * from "./manifest";
 export * from "./test";
 export * from "./types";
+export * from "./docs";
 
 import { BuildCommandOptions } from "./build";
 import { CodegenCommandOptions } from "./codegen";
@@ -25,6 +26,7 @@ import {
   ManifestType,
 } from "./manifest";
 import { TestCommandOptions } from "./test";
+import { DocsInitCommandOptions } from "./docs";
 
 export interface CommandTypings {
   build: BuildCommandOptions;
@@ -67,4 +69,7 @@ export interface CommandTypings {
     };
   };
   test: TestCommandOptions;
+  docs: {
+    init: DocsInitCommandOptions;
+  };
 }

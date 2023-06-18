@@ -141,7 +141,7 @@ const testData: CommandTestCaseData<CommandTypings> = {
         expect(fs.existsSync(packagePath)).toBeTruthy();
         clearDir(test.cwd);
       }
-    }]
+    }],
   },
   deploy: [{
     cwd: path.join(GetPathToCliTestFiles(), "deploy/001-sanity"),
@@ -222,7 +222,20 @@ const testData: CommandTestCaseData<CommandTypings> = {
       expect(stdout).toContain("Data: ");
       expect(exitCode).toBe(0);
     }
-  }]
+  }],
+  docs: {
+    init: [{
+      cwd: fs.mkdtempSync(path.join(os.tmpdir(), "docs-init")),
+      before: async (test) => {
+        if(!test.cwd)
+          throw Error("This shouldn't happen");
+      },
+      after: (_, stdout, __, exitCode) => {
+        expect(stdout).toContain("Written docs manifest to");
+        expect(exitCode).toBe(0);
+      }
+    }]
+  }
 };
 
 describe("Commands", () => {
