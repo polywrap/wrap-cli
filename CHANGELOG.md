@@ -1,3 +1,19 @@
+# Polywrap Origin (0.10.4)
+## Features
+**`polywrap` CLI:**
+* [PR-1776](https://github.com/polywrap/cli/pull/1776) **Add HTTP Headers To HTTP Deploy Module**
+  * The `http` deploy module now supports the `headers` configuration property.
+
+## Bugs
+**`polywrap` CLI:**
+* [PR-1773](https://github.com/polywrap/cli/pull/1773) **Don't Install `wasm-opt` Every `local` Rust Build**
+  * The `local` strategy for rust wasm projects was unexpectedly installing `wasm-opt` every time it was run, leading to very long build times.
+
+**`@polywrap/schema-bind`:**
+* [PR-1775](https://github.com/polywrap/cli/pull/1775) **Fix Python Plugin Bindings**
+  * The wrap abi type `Bytes` can now be properly used within rust plugins.
+* [PR-1753](https://github.com/polywrap/cli/pull/1753) **Fix Python Plugin Bindings**
+
 # Polywrap Origin (0.10.3)
 ## Features
 **`polywrap` CLI:**
