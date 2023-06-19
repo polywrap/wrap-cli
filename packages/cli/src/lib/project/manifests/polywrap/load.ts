@@ -279,7 +279,6 @@ export async function loadWorkflowManifest(
 }
 
 export const defaultDocsManifest = ["polywrap.docs.yaml", "polywrap.docs.yml"];
-export const defaultDocsDir = "docs";
 
 export async function loadDocsManifest(
   manifestPath: string,

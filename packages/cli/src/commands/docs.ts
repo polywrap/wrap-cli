@@ -1,27 +1,21 @@
 import {
-  defaultDocsDir,
   defaultDocsManifest,
+  defaultPolywrapManifest,
   intlMsg,
-  parseDirOption,
   parseLogFileOption,
+  parseManifestFileOption,
 } from "../lib";
+import { getSchemaString } from "./manifest";
 import { BaseCommandOptions, Command, Program } from "./types";
 import { createLogger } from "./utils/createLogger";
 
 import fse from "fs-extra";
-import { DocsManifest } from "@polywrap/polywrap-manifest-types-js";
-import path from "path";
-import YAML from "yaml";
 
-const docsManifestPathStr = intlMsg.commands_docs_init_m_path();
-const docsManifestDirStr = intlMsg.commands_docs_init_m_path();
-
-const defaultDocsManifestStr = defaultDocsManifest.join(" | ");
+const pathStr = intlMsg.commands_docs_init_m_path();
+const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
 export interface DocsInitCommandOptions extends BaseCommandOptions {
-  manifestFile: string | false;
-  dir: string | false;
-  force: boolean;
+  manifestFile: string;
 }
 
 export const docs: Command = {
@@ -35,27 +29,23 @@ export const docs: Command = {
       .alias("i")
       .description(intlMsg.commands_docs_init_description())
       .option(
-        `-m, --manifest-file <${docsManifestPathStr}>`,
+        `-m, --manifest-file <${pathStr}>`,
         `${intlMsg.commands_docs_options_m({
-          default: defaultDocsManifestStr,
+          default: defaultManifestStr,
         })}`
       )
-      .option(
-        `-d, --dir <${docsManifestDirStr}>`,
-        `${intlMsg.commands_docs_options_d({
-          default: defaultDocsDir,
-        })}`
-      )
-      .option(`-f, --force`, intlMsg.commands_docs_options_f())
       .option("-v, --verbose", intlMsg.commands_common_options_verbose())
       .option("-q, --quiet", intlMsg.commands_common_options_quiet())
       .option(
-        `-l, --log-file [${docsManifestPathStr}]`,
+        `-l, --log-file [${pathStr}]`,
         `${intlMsg.commands_build_options_l()}`
       )
       .action(async (options: Partial<DocsInitCommandOptions>) => {
         await runDocsInitCommand({
-          manifestFile: options.manifestFile || false,
+          manifestFile: parseManifestFileOption(
+            options.manifestFile,
+            defaultPolywrapManifest
+          ),
           dir: options.dir || false,
           force: options.force || false,
           logFile: parseLogFileOption(options.logFile),
@@ -69,88 +59,46 @@ export const docs: Command = {
 export const runDocsInitCommand = async (
   options: Required<DocsInitCommandOptions>
 ): Promise<void> => {
-  const { verbose, quiet, logFile, force } = options;
-
-  const manifestFile = options.manifestFile || defaultDocsManifest[0];
-  const dir = parseDirOption(options.dir, "./docs");
+  const {
+    verbose,
+    quiet,
+    logFile,
+    manifestFile
+  } = options;
 
   const logger = createLogger({ verbose, quiet, logFile });
 
-  const manifestFileExists = fse.existsSync(manifestFile);
-  const dirExists = fse.existsSync(dir);
+  const docsManifestExists = fse.existsSync(defaultDocsManifest[0]);
 
-  if (!force) {
-    if (manifestFileExists) {
-      logger.error(
-        intlMsg.commands_docs_init_error_manifest_exists({ manifestFile })
-      );
-    }
-
-    if (dirExists) {
-      logger.error(intlMsg.commands_docs_init_error_dir_exists({ dir }));
-    }
-
-    if (manifestFileExists || dirExists) {
-      process.exit(1);
-    }
+  if (docsManifestExists) {
+    logger.error(
+      intlMsg.commands_docs_init_error_manifest_exists({
+        manifestFile: defaultDocsManifest[0]
+      })
+    );
+    process.exit(1);
   }
 
-  if (manifestFileExists) {
-    fse.rmSync(manifestFile);
-  }
+  let docsManifest = await getSchemaString(logger, "docs", {
+    verbose: false,
+    quiet: true,
+    logFile: false,
+    raw: false,
+    manifestFile: false
+  });
 
-  if (dirExists) {
-    fse.rmdirSync(dir);
-  }
-
-  const sampleReadmeOutputPath = path.relative(
-    process.cwd(),
-    path.join(dir, "home.md")
-  );
-
-  const manifest: DocsManifest = {
-    format: "0.1.0",
-    description: "Description of my Wrap",
-    readme: sampleReadmeOutputPath,
-    websiteUrl: "https://example.com",
-    repositoryUrl: "https://github.com/polywrap",
-    // eslint-disable-next-line
-    __type: "DocsManifest",
-  };
-
-  const cleanedManifest = JSON.parse(JSON.stringify(manifest));
-  delete cleanedManifest.__type;
-
-  const manifestContents = YAML.stringify(cleanedManifest, null, 2);
-
-  const manifestFileDir = path.dirname(manifestFile);
-
-  if (!fse.existsSync(manifestFileDir)) {
-    await fse.mkdir(manifestFileDir, { recursive: true });
-  }
-
-  await fse.writeFile(manifestFile, manifestContents);
+  fse.writeFileSync(defaultDocsManifest[0], docsManifest);
 
   logger.info(
-    intlMsg.commands_docs_init_msg_manifest_created({ manifestFile })
+    intlMsg.commands_docs_init_msg_manifest_created({
+      manifestFile: defaultDocsManifest[0]
+    })
   );
 
-  if (!fse.existsSync(dir)) {
-    await fse.mkdir(dir, { recursive: true });
-  }
-
-  const sampleReadmeFile = path.join(
-    __dirname,
-    "../lib/docs/templates/readme.md"
+  logger.warn(
+    intlMsg.commands_docs_init_warn_update_manifest({
+      manifestFile,
+      docsManifestFile: defaultDocsManifest[0]
+    })
   );
-
-  logger.info(
-    intlMsg.commands_docs_init_msg_markdown_created({ sampleReadmeFile })
-  );
-
-  await fse.copyFile(sampleReadmeFile, sampleReadmeOutputPath);
-
-  logger.info(intlMsg.commands_docs_init_success_end());
-
-  return;
 };

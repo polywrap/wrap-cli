@@ -180,56 +180,69 @@ export const runSchemaCommand = async (
 ): Promise<void> => {
   const { verbose, quiet, logFile } = options;
   const logger = createLogger({ verbose, quiet, logFile });
-  let manifestfile = "";
+
+  let manifestFile = "";
 
   switch (type) {
     case "project":
-      manifestfile = parseManifestFileOption(
+      manifestFile = parseManifestFileOption(
         options.manifestFile,
         defaultProjectManifestFiles
       );
       break;
 
     case "build":
-      manifestfile = parseManifestFileOption(
+      manifestFile = parseManifestFileOption(
         options.manifestFile,
         defaultBuildManifest
       );
       break;
 
     case "deploy":
-      manifestfile = parseManifestFileOption(
+      manifestFile = parseManifestFileOption(
         options.manifestFile,
         defaultDeployManifest
       );
       break;
 
     case "infra":
-      manifestfile = parseManifestFileOption(
+      manifestFile = parseManifestFileOption(
         options.manifestFile,
         defaultInfraManifest
       );
       break;
 
     case "workflow":
-      manifestfile = parseManifestFileOption(
+      manifestFile = parseManifestFileOption(
         options.manifestFile,
         defaultWorkflowManifest
       );
       break;
     case "docs":
-      manifestfile = parseManifestFileOption(
+      manifestFile = parseManifestFileOption(
         options.manifestFile,
         defaultDocsManifest
       );
       break;
   }
 
-  const manifestString = fs.readFileSync(manifestfile, {
-    encoding: "utf-8",
+  const schemaStr = await getSchemaString(logger, type, {
+    ...options,
+    manifestFile
   });
+  logger.info(schemaStr);
+};
 
-  const manifestVersion = maybeGetManifestFormatVersion(manifestString);
+export const getSchemaString = async (
+  logger: Logger,
+  type: ManifestType,
+  options: Required<ManifestSchemaCommandOptions>
+): Promise<string> => {
+  const manifestFile = options.manifestFile || "";
+  const manifestString = fs.existsSync(manifestFile) ?
+    fs.readFileSync(manifestFile, "utf-8") : undefined;
+
+  const manifestVersion = manifestString && maybeGetManifestFormatVersion(manifestString);
 
   const schemasPackageDir = path.dirname(
     require.resolve("@polywrap/polywrap-manifest-schemas")
@@ -240,17 +253,17 @@ export const runSchemaCommand = async (
 
   switch (type) {
     case "project":
-      language = getProjectManifestLanguage(manifestString);
+      language = manifestString && getProjectManifestLanguage(manifestString);
 
       if (!language) {
-        throw new Error("Unsupported project type!");
+        language = "wasm/rust"
       }
 
       if (isPolywrapManifestLanguage(language)) {
         maybeFailOnUnsupportedManifestFormat(
           manifestVersion,
           Object.values(PolywrapManifestFormats),
-          manifestfile,
+          manifestFile,
           logger
         );
 
@@ -264,7 +277,7 @@ export const runSchemaCommand = async (
         maybeFailOnUnsupportedManifestFormat(
           manifestVersion,
           Object.values(AppManifestFormats),
-          manifestfile,
+          manifestFile,
           logger
         );
 
@@ -276,7 +289,7 @@ export const runSchemaCommand = async (
         maybeFailOnUnsupportedManifestFormat(
           manifestVersion,
           Object.values(PluginManifestFormats),
-          manifestfile,
+          manifestFile,
           logger
         );
 
@@ -295,7 +308,7 @@ export const runSchemaCommand = async (
       maybeFailOnUnsupportedManifestFormat(
         manifestVersion,
         Object.values(BuildManifestFormats),
-        manifestfile,
+        manifestFile,
         logger
       );
 
@@ -309,7 +322,7 @@ export const runSchemaCommand = async (
       maybeFailOnUnsupportedManifestFormat(
         manifestVersion,
         Object.values(DeployManifestFormats),
-        manifestfile,
+        manifestFile,
         logger
       );
 
@@ -323,7 +336,7 @@ export const runSchemaCommand = async (
       maybeFailOnUnsupportedManifestFormat(
         manifestVersion,
         Object.values(InfraManifestFormats),
-        manifestfile,
+        manifestFile,
         logger
       );
 
@@ -337,7 +350,7 @@ export const runSchemaCommand = async (
       maybeFailOnUnsupportedManifestFormat(
         manifestVersion,
         Object.values(PolywrapWorkflowFormats),
-        manifestfile,
+        manifestFile,
         logger
       );
 
@@ -352,7 +365,7 @@ export const runSchemaCommand = async (
       maybeFailOnUnsupportedManifestFormat(
         manifestVersion,
         Object.values(DocsManifestFormats),
-        manifestfile,
+        manifestFile,
         logger
       );
 
@@ -367,18 +380,20 @@ export const runSchemaCommand = async (
     encoding: "utf-8",
   });
 
+  let result: string;
+
   if (options.raw) {
-    logger.info(schemaString);
+    result = schemaString;
   } else {
     const schema = await dereference(JSON.parse(schemaString));
 
-    logger.info(
-      getYamlishSchemaForManifestJsonSchemaObject(
-        schema.properties as JSONSchema4
-      )
+    result = getYamlishSchemaForManifestJsonSchemaObject(
+      schema.properties as JSONSchema4
     );
   }
-};
+
+  return result;
+}
 
 const runMigrateCommand = async (
   type: ManifestType,
