@@ -1,6 +1,8 @@
 # Polywrap Origin (0.10.4)
 ## Features
 **`polywrap` CLI:**
+* [PR-1735](https://github.com/polywrap/cli/pull/1735) **Add Docs Manifest & `polywrap docs init` Command**
+  * The `polywrap.docs.yaml` manifest is used to add additional metadata to your wraps.
 * [PR-1776](https://github.com/polywrap/cli/pull/1776) **Add HTTP Headers To HTTP Deploy Module**
   * The `http` deploy module now supports the `headers` configuration property.
 
