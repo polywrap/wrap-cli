@@ -47,7 +47,9 @@ pub struct CustomType {
     pub json: JSON::Value,
     #[serde(rename = "optJson")]
     pub opt_json: Option<JSON::Value>,
+    #[serde(with = "serde_bytes")]
     pub bytes: Vec<u8>,
+    #[serde(with = "serde_bytes")]
     #[serde(rename = "optBytes")]
     pub opt_bytes: Option<Vec<u8>>,
     pub boolean: bool,

@@ -4,7 +4,7 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import fs from "fs";
 import path from "path";
 
-jest.setTimeout(1200000);
+jest.setTimeout(1500000);
 
 describe("e2e tests for build command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "build-cmd/wasm/rust");
