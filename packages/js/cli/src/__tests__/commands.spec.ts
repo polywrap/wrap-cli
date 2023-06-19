@@ -227,6 +227,7 @@ const testData: CommandTestCaseData<CommandTypings> = {
     init: [{
       cwd: fs.mkdtempSync(path.join(os.tmpdir(), "docs-init")),
       before: async (test) => {
+        fs.writeFileSync(`${test.cwd}/polywrap.yaml`,"");
         if(!test.cwd)
           throw Error("This shouldn't happen");
       },
