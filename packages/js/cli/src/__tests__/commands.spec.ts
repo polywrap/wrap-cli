@@ -225,15 +225,13 @@ const testData: CommandTestCaseData<CommandTypings> = {
   }],
   docs: {
     init: [{
-      cwd: fs.mkdtempSync(path.join(os.tmpdir(), "docs-init")),
-      before: async (test) => {
-        fs.writeFileSync(`${test.cwd}/polywrap.yaml`,"");
-        if(!test.cwd)
-          throw Error("This shouldn't happen");
-      },
-      after: (_, stdout, __, exitCode) => {
+      cwd: path.join(GetPathToCliTestFiles(), "build-cmd/wasm/assemblyscript/001-sanity"),
+      after: (test, stdout, __, exitCode) => {
         expect(stdout).toContain("Written docs manifest to");
         expect(exitCode).toBe(0);
+        if (test.cwd) {
+          fs.rmSync(path.join(test.cwd, "polywrap.docs.yaml"));
+        }
       }
     }]
   }

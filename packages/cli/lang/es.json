@@ -14,7 +14,7 @@
   "commands_build_keypressListener_exit": "Exit: [CTRL + C], [ESC], or [Q]",
   "commands_build_keypressListener_watching": "Watching",
   "commands_build_options_h": "Show usage information",
-  "commands_build_options_m": "Path to the Polywrap Build manifest file (default: {default})",
+  "commands_build_options_m": "Path to the Polywrap manifest file (default: {default})",
   "commands_build_options_o": "Output directory for build results (default: {default})",
   "commands_build_options_o_path": "path",
   "commands_build_options_options": "options",
