@@ -17,11 +17,11 @@
       "type": "string",
       "description": "Path to the wrap's logo."
     },
-    "websiteUrl": {
+    "website": {
       "type": "string",
       "description": "Website related to the wrap."
     },
-    "repositoryUrl": {
+    "repository": {
       "type": "string",
       "description": "Url of the wrap's repository."
     },

@@ -22,11 +22,11 @@ export interface DocsManifest {
   /**
    * Website related to the wrap.
    */
-  websiteUrl?: string;
+  website?: string;
   /**
    * Url of the wrap's repository.
    */
-  repositoryUrl?: string;
+  repository?: string;
   /**
    * Path to the readme page.
    */

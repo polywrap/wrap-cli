@@ -50,7 +50,6 @@ export class Compiler {
         await this._copyResourcesFolder();
 
         // Output docs if any
-
         await this._maybeAssembleDocsDir();
       }
     };
