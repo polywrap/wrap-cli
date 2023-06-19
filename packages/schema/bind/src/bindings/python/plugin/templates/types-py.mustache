@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TypedDict, Optional
 from enum import IntEnum
 
-from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
+from polywrap_core import InvokerClient, Uri
 from polywrap_msgpack import GenericMap
 
 
@@ -100,16 +100,14 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}(IntEn
 class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}:
     {{#methods}}
     @staticmethod
-    async def {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(
+    def {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(
         args: {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}},
-        client: InvokerClient[UriPackageOrWrapper]
+        client: InvokerClient
     ) -> {{#return}}{{#toPython}}{{toGraphQLType}}{{/toPython}}{{/return}}:
         return client.invoke(
-            InvokeOptions(
-                uri=Uri.from_str("{{parent.uri}}"),
-                method="{{name}}",
-                args=args,
-            )
+            uri=Uri.from_str("{{parent.uri}}"),
+            method="{{name}}",
+            args=args,
         )
     {{^last}}
 
@@ -127,17 +125,15 @@ class {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}:
         self.uri = uri
 
     {{#methods}}
-    async def {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(
+    def {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(
         self,
         args: {{#toUpper}}{{parent.type}}{{/toUpper}}Args{{#toUpper}}{{name}}{{/toUpper}},
-        client: InvokerClient[UriPackageOrWrapper]
+        client: InvokerClient
     ) -> {{#return}}{{#toPython}}{{toGraphQLType}}{{/toPython}}{{/return}}:
         return client.invoke(
-            InvokeOptions(
-                uri=self.uri,
-                method="{{name}}",
-                args=args,
-            )
+            uri=self.uri,
+            method="{{name}}",
+            args=args,
         )
     {{^last}}
 
@@ -160,7 +156,7 @@ class {{#detectKeyword}}{{#toUpper}}{{namespace}}{{/toUpper}}{{/detectKeyword}}:
     {{#getImplementations}}
     {{#enabled}}
     def get_implementations(
-        client: InvokerClient[UriPackageOrWrapper]
+        client: InvokerClient
     ) -> list[str]:
         impls = client.getImplementations(self.uri)
         return [impl.uri for impl in impls]
