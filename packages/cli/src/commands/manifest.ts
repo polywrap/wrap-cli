@@ -228,7 +228,7 @@ export const runSchemaCommand = async (
 
   const schemaStr = await getSchemaString(logger, type, {
     ...options,
-    manifestFile
+    manifestFile,
   });
   logger.info(schemaStr);
 };
@@ -239,10 +239,12 @@ export const getSchemaString = async (
   options: Required<ManifestSchemaCommandOptions>
 ): Promise<string> => {
   const manifestFile = options.manifestFile || "";
-  const manifestString = fs.existsSync(manifestFile) ?
-    fs.readFileSync(manifestFile, "utf-8") : undefined;
+  const manifestString = fs.existsSync(manifestFile)
+    ? fs.readFileSync(manifestFile, "utf-8")
+    : undefined;
 
-  const manifestVersion = manifestString && maybeGetManifestFormatVersion(manifestString);
+  const manifestVersion =
+    manifestString && maybeGetManifestFormatVersion(manifestString);
 
   const schemasPackageDir = path.dirname(
     require.resolve("@polywrap/polywrap-manifest-schemas")
@@ -256,7 +258,7 @@ export const getSchemaString = async (
       language = manifestString && getProjectManifestLanguage(manifestString);
 
       if (!language) {
-        language = "wasm/rust"
+        language = "wasm/rust";
       }
 
       if (isPolywrapManifestLanguage(language)) {
@@ -393,7 +395,7 @@ export const getSchemaString = async (
   }
 
   return result;
-}
+};
 
 const runMigrateCommand = async (
   type: ManifestType,

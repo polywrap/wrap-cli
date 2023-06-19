@@ -59,12 +59,7 @@ export const docs: Command = {
 export const runDocsInitCommand = async (
   options: Required<DocsInitCommandOptions>
 ): Promise<void> => {
-  const {
-    verbose,
-    quiet,
-    logFile,
-    manifestFile
-  } = options;
+  const { verbose, quiet, logFile, manifestFile } = options;
 
   const logger = createLogger({ verbose, quiet, logFile });
 
@@ -73,32 +68,32 @@ export const runDocsInitCommand = async (
   if (docsManifestExists) {
     logger.error(
       intlMsg.commands_docs_init_error_manifest_exists({
-        manifestFile: defaultDocsManifest[0]
+        manifestFile: defaultDocsManifest[0],
       })
     );
     process.exit(1);
   }
 
-  let docsManifest = await getSchemaString(logger, "docs", {
+  const docsManifest = await getSchemaString(logger, "docs", {
     verbose: false,
     quiet: true,
     logFile: false,
     raw: false,
-    manifestFile: false
+    manifestFile: false,
   });
 
   fse.writeFileSync(defaultDocsManifest[0], docsManifest);
 
   logger.info(
     intlMsg.commands_docs_init_msg_manifest_created({
-      manifestFile: defaultDocsManifest[0]
+      manifestFile: defaultDocsManifest[0],
     })
   );
 
   logger.warn(
     intlMsg.commands_docs_init_warn_update_manifest({
       manifestFile,
-      docsManifestFile: defaultDocsManifest[0]
+      docsManifestFile: defaultDocsManifest[0],
     })
   );
 };
