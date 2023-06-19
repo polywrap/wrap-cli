@@ -12,7 +12,7 @@ use super::types::*;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Args{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
-    {{#serdeRenameIfCaseMismatch}}{{name}}{{/serdeRenameIfCaseMismatch}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{#serdeAnnotateIfBytes}}{{#scalar}}{{type}}{{/scalar}}{{/serdeAnnotateIfBytes}}{{#serdeRenameIfCaseMismatch}}{{name}}{{/serdeRenameIfCaseMismatch}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/arguments}}
 }
 

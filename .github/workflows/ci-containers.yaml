@@ -1,0 +1,32 @@
+name: CI-Containers
+
+on:
+  pull_request:
+    paths:
+      - "packages/cli/src/lib/defaults/build-strategies/wasm/rust/vm/Dockerfile"
+      - "packages/cli/src/lib/defaults/build-strategies/wasm/assemblyscript/vm/Dockerfile"
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Image Directories
+        run: |
+          echo IMAGE_RS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/rust/vm >> $GITHUB_ENV
+          echo IMAGE_AS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/assemblyscript/vm >> $GITHUB_ENV
+
+      - name: Build RS VM Image
+        working-directory: ${{env.IMAGE_RS_VM_DIR}}
+        run: |
+          docker buildx build . --platform=linux/amd64,linux/arm64
+
+      - name: Build AS VM Image
+        working-directory: ${{env.IMAGE_AS_VM_DIR}}
+        run: |
+          docker buildx build . --platform=linux/amd64,linux/arm64

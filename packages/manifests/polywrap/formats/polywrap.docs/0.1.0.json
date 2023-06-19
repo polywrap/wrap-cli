@@ -1,0 +1,81 @@
+{
+  "id": "DocsManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format"],
+  "properties": {
+    "format": {
+      "type": "string",
+      "description": "Polywrap Docs manifest format version.",
+      "enum": ["0.1.0"]
+    },
+    "description": {
+      "type": "string",
+      "description": "A description of the wrap."
+    },
+    "logo": {
+      "type": "string",
+      "description": "Path to the wrap's logo."
+    },
+    "website": {
+      "type": "string",
+      "description": "Website related to the wrap."
+    },
+    "repository": {
+      "type": "string",
+      "description": "Url of the wrap's repository."
+    },
+    "readme": {
+      "type": "string",
+      "description": "Path to the readme page."
+    },
+    "examples": {
+      "type": "object",
+      "description": "Object containing examples where the the object's keys are example slugs.",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^([a-z\\-])+$": {
+          "type": "object",
+          "required": ["title"],
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "The title of the example."
+            },
+            "steps": {
+              "type": "array",
+              "description": "Wrap invocations as an array of example steps.",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["method"],
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "A description of the step rendered above the invocation code."
+                  },
+                  "uri": {
+                    "description": "URI of the wrap being invoked.",
+                    "type": "string",
+                    "tsType": "any"
+                  },
+                  "method": {
+                    "description": "Invoked method name.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+                  },
+                  "args": {
+                    "description": "Invoked method arguments.",
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

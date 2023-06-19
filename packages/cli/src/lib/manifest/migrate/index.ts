@@ -5,3 +5,4 @@ export * from "./migrateInfraExtensionManifest";
 export * from "./migratePluginProjectManifest";
 export * from "./migratePolywrapProjectManifest";
 export * from "./migrateTestExtensionManifest";
+export * from "./migrateDocsExtensionManifest";
