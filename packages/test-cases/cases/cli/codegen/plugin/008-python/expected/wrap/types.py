@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TypedDict, Optional
 from enum import IntEnum
 
-from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
+from polywrap_core import InvokerClient, Uri
 from polywrap_msgpack import GenericMap
 
 
