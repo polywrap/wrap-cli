@@ -13,7 +13,7 @@ const HELP = `Usage: polywrap build|b [options]
 Build Polywrap Projects (type: interface, wasm)
 
 Options:
-  -m, --manifest-file <path>           Path to the Polywrap Build manifest file
+  -m, --manifest-file <path>           Path to the Polywrap manifest file
                                        (default: polywrap.yaml | polywrap.yml)
   -o, --output-dir <path>              Output directory for build results
                                        (default: ./build)
