@@ -30,7 +30,7 @@ Migrates the polywrap project manifest to the latest version.
 Arguments:
   type                        Type of manifest file to migrate (default:
                               project) (choices: "project", "build", "deploy",
-                              "infra", "workflow", default: "project")
+                              "infra", "workflow", "docs", default: "project")
 
 Options:
   -m, --manifest-file <path>  Path to the manifest file (default: polywrap.yaml
@@ -48,8 +48,8 @@ Prints out the schema for the current manifest format.
 
 Arguments:
   type                        Type of manifest file to migrate (default:
-                              project) (choices: \"project\", \"build\", \"deploy\",
-                              \"infra\", \"workflow\", default: \"project\")
+                              project) (choices: "project", "build", "deploy",
+                              "infra", "workflow", "docs", default: "project")
 
 Options:
   -r, --raw                   Output raw JSON Schema
@@ -138,7 +138,7 @@ describe("e2e tests for manifest command", () => {
         });
 
         expect(error).toBe(
-          `error: command-argument value 'invalid-arg' is invalid for argument 'type'. Allowed choices are project, build, deploy, infra, workflow.\n`
+          `error: command-argument value 'invalid-arg' is invalid for argument 'type'. Allowed choices are project, build, deploy, infra, workflow, docs.\n`
         );
         expect(output).toEqual(``);
         expect(code).toEqual(1);
@@ -343,7 +343,7 @@ describe("e2e tests for manifest command", () => {
         });
 
         expect(error).toBe(
-          `error: command-argument value 'invalid-arg' is invalid for argument 'type'. Allowed choices are project, build, deploy, infra, workflow.\n`
+          `error: command-argument value 'invalid-arg' is invalid for argument 'type'. Allowed choices are project, build, deploy, infra, workflow, docs.\n`
         );
         expect(output).toEqual(``);
         expect(code).toEqual(1);

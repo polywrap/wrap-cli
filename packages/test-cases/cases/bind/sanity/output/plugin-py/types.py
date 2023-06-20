@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TypedDict, Optional
 from enum import IntEnum
 
-from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
+from polywrap_core import InvokerClient, Uri
 from polywrap_msgpack import GenericMap
 
 
@@ -194,43 +194,37 @@ class TestImportModule:
     def __init__(self, uri: Uri):
         self.uri = uri
 
-    async def imported_method(
+    def imported_method(
         self,
         args: TestImportModuleArgsImportedMethod,
-        client: InvokerClient[UriPackageOrWrapper]
+        client: InvokerClient
     ) -> Optional["TestImportObject"]:
         return client.invoke(
-            InvokeOptions(
-                uri=self.uri,
-                method="importedMethod",
-                args=args,
-            )
+            uri=self.uri,
+            method="importedMethod",
+            args=args,
         )
 
-    async def another_method(
+    def another_method(
         self,
         args: TestImportModuleArgsAnotherMethod,
-        client: InvokerClient[UriPackageOrWrapper]
+        client: InvokerClient
     ) -> int:
         return client.invoke(
-            InvokeOptions(
-                uri=self.uri,
-                method="anotherMethod",
-                args=args,
-            )
+            uri=self.uri,
+            method="anotherMethod",
+            args=args,
         )
 
-    async def returns_array_of_enums(
+    def returns_array_of_enums(
         self,
         args: TestImportModuleArgsReturnsArrayOfEnums,
-        client: InvokerClient[UriPackageOrWrapper]
+        client: InvokerClient
     ) -> list[Optional["TestImportEnumReturn"]]:
         return client.invoke(
-            InvokeOptions(
-                uri=self.uri,
-                method="returnsArrayOfEnums",
-                args=args,
-            )
+            uri=self.uri,
+            method="returnsArrayOfEnums",
+            args=args,
         )
 
 ### Imported Modules END ###
@@ -242,7 +236,7 @@ class TestImport:
     URI: Uri = Uri.from_str("testimport.uri.eth")
 
     def get_implementations(
-        client: InvokerClient[UriPackageOrWrapper]
+        client: InvokerClient
     ) -> list[str]:
         impls = client.getImplementations(self.uri)
         return [impl.uri for impl in impls]

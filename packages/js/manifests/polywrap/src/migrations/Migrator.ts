@@ -7,6 +7,7 @@ import {
   AnyPluginManifest,
   AnyPolywrapManifest,
   AnyPolywrapWorkflow,
+  AnyDocsManifest
 } from "../formats";
 
 type AnyManifest =
@@ -16,7 +17,8 @@ type AnyManifest =
   | AnyInfraManifest
   | AnyDeployManifest
   | AnyBuildManifest
-  | AnyPolywrapWorkflow;
+  | AnyPolywrapWorkflow
+  | AnyDocsManifest;
 
 export type Migrator = {
   from: string;
