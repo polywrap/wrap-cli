@@ -1,3 +1,8 @@
+# Polywrap Origin (0.10.5)
+## Bugs
+**`@polywrap/schema-bind`:**
+* [PR-1786](https://github.com/polywrap/cli/pull/1786) **Update `plugin/python` plugin bindings to latest client**
+
 # Polywrap Origin (0.10.4)
 ## Features
 **`polywrap` CLI:**
