@@ -1,9 +1,9 @@
 import { OutputDirectory } from "@polywrap/os-js";
-import { WrapAbi } from "@polywrap/schema-parse";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 export type BindLanguage =
-  | "wasm-as"
-  | "wasm-rs"
+  | "wrap-as"
+  | "wrap-rs"
   | "plugin-ts"
   | "plugin-rs"
   | "plugin-py"
@@ -15,9 +15,8 @@ export interface BindOutput {
 }
 
 export interface BindOptions {
-  projectName: string;
   bindLanguage: BindLanguage;
-  abi: WrapAbi;
+  wrapInfo: WrapManifest;
   config?: Record<string, unknown>;
   outputDirAbs: string;
 }

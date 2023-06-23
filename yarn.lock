@@ -2204,7 +2204,7 @@
     "@polywrap/uri-resolvers-js" "0.10.0"
     "@polywrap/wrap-manifest-types-js" "0.10.0"
 
-"@polywrap/client-js@~0.10.0":
+"@polywrap/client-js@~0.10.0", "@polywrap/client-js@~0.10.1":
   version "0.10.1"
   resolved "https://registry.yarnpkg.com/@polywrap/client-js/-/client-js-0.10.1.tgz#d324420b1558d7fb47c6928042c083eef7b3b6f6"
   integrity sha512-xIZoGOPPS+J2RjiyEF8A8huMIr0IyN+VEwHWcCUdp7NxTQ1xmve1lxQfbbdE0BC37o5Ni7lJwiIXmAUfhuMyGg==

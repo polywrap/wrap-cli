@@ -1,6 +1,6 @@
 import { BindOptions, BindOutput } from "../";
 
-export type GenerateBindingFn = (options: BindOptions) => BindOutput;
+export type GenerateBindingFn = (options: BindOptions) => Promise<BindOutput> | BindOutput;
 
 export type MustacheFn = () => (
   value: string,

@@ -1,0 +1,3 @@
+- when codegen for wrap/assemblyscript, use wrap URI
+  - can add in schema-bind package
+- add configuration option to override bindings with your own URI

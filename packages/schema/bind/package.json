@@ -19,6 +19,7 @@
     "copy:templates": "copyfiles -u 1 src/**/*.mustache build/"
   },
   "dependencies": {
+    "@polywrap/client-js": "~0.10.1",
     "@polywrap/os-js": "0.10.5",
     "@polywrap/schema-parse": "0.10.5",
     "@polywrap/wrap-manifest-types-js": "0.10.0",

@@ -44,14 +44,14 @@ export const generateBinding: GenerateBindingFn = (
     outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-  const abi = applyTransforms(options.abi);
+  const abi = applyTransforms(options.wrapInfo.abi);
 
   const manifest = {
-    name: options.projectName,
+    name: options.wrapInfo.name,
     type: "plugin",
     version: latestWrapManifestVersion,
     abi: JSON.stringify(
-      sort((options.abi as unknown) as Record<string, unknown>),
+      sort((options.wrapInfo.abi as unknown) as Record<string, unknown>),
       null,
       2
     ),
