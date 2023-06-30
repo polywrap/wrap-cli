@@ -27,23 +27,32 @@ mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml
 cargo build --manifest-path ./{{dir}}/Cargo.toml \
     --target wasm32-unknown-unknown --release
 
-# Make the build directory
+# Make the build & build-staging directory
 rm -rf ./build
 mkdir ./build
+rm -rf ./build-staging
+mkdir ./build-staging
 
-# Run wasm-bindgen over the module, replacing all placeholder __wbindgen_... imports
-wasm-bindgen ./{{dir}}/target/wasm32-unknown-unknown/release/module.wasm --out-dir ./build --out-name bg_module.wasm
+# Move the rust module into the staging directory
+mv ./{{dir}}/target/wasm32-unknown-unknown/release/module.wasm ./build-staging/module.wasm
 
-# Run wasm-tools strip to remove the wasm-interface-types custom section
-wasm-tools strip ./build/bg_module.wasm -d wasm-interface-types -o ./build/strip_module.wasm
-rm -rf ./build/bg_module.wasm
+# Wasm Post-processing
 
-# Run wasm-snip to trip down the size of the binary, removing any dead code
-wasm-snip ./build/strip_module.wasm -o ./build/snipped_module.wasm
-rm -rf ./build/strip_module.wasm
+# 1. Run `wasm-bindgen` over the module, replacing all placeholder __wbindgen_... imports
+wasm-bindgen ./build-staging/module.wasm --out-dir ./build-staging --out-name module_bg.wasm
 
-# Use wasm-opt to perform the "asyncify" post-processing step over all modules
+# 2. If wasm-bindgen isn't being used, the only import that will be remaining will be __wbindgen_throw.
+# So, let's remove this, and if more extraneous imports exist an error will be raised post-compilation
+wasm-snip ./build-staging/module_bg.wasm -o ./build-staging/module_bg_snip.wasm -p .*__wbindgen_throw
+
+# 3. Run `wasm-tools strip` to remove the wasm-interface-types custom section (sometimes get injected)
+wasm-tools strip ./build-staging/module_bg_snip.wasm -d wasm-interface-types -o ./build-staging/module_bg_snip_strip.wasm
+
+# 4. Use wasm-opt to perform the "asyncify" post-processing step over all modules
 export ASYNCIFY_STACK_SIZE=24576
-wasm-opt --asyncify -Os ./build/snipped_module.wasm -o ./build/wrap.wasm
-rm -rf ./build/snipped_module.wasm
+wasm-opt --asyncify -Os ./build-staging/module_bg_snip_strip.wasm -o ./build-staging/module_bg_snip_strip_opt.wasm
+
+# Finish - Move the result
+mv ./build-staging/module_bg_snip_strip_opt.wasm ./build/wrap.wasm
+
 {{/polywrap_module}}
