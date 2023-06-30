@@ -1,3 +1,9 @@
+# Polywrap Origin (0.10.6)
+## Bugs
+**`polywrap` CLI:**
+* [PR-1796](https://github.com/polywrap/cli/pull/1796) **`wrap/rust` Builds Now Properly Remove wasm-bindgen Imports**
+  * The `wasm-bindgen` CLI was emitting an unneeded `__wbindgen_throw` import, so we use `wasm-snip` to remove it.
+
 # Polywrap Origin (0.10.5)
 ## Bugs
 **`@polywrap/schema-bind`:**

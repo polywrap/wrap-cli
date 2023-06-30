@@ -2,7 +2,7 @@
   "name": "templates-app-typescript",
   "description": "Polywrap App TypeScript Template",
   "private": true,
-  "version": "0.10.5",
+  "version": "0.10.6",
   "scripts": {
     "build": "npx polywrap codegen",
     "test": "ts-node ./src/index.ts"
@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.14.6",
-    "polywrap": "0.10.5",
+    "polywrap": "0.10.6",
     "ts-node": "10.9.1",
     "typescript": "4.9.5"
   }
