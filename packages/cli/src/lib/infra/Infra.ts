@@ -13,6 +13,7 @@ import path from "path";
 import fs, { lstatSync, readdirSync } from "fs";
 import YAML from "yaml";
 import { copySync } from "fs-extra";
+import { IDockerComposeOptions } from "docker-compose";
 
 export interface InfraConfig {
   rootDir: string;
@@ -105,11 +106,11 @@ export class Infra {
     ReturnType<DockerCompose["commands"]["config"]>
   > {
     const modulesWithPaths = await this._fetchModules();
-
-    return await this._dockerCompose.commands.config({
+    const configOptions: Partial<IDockerComposeOptions> = {
       ...this._defaultDockerOptions,
-      config: modulesWithPaths.map((m) => m.path),
-    });
+      config: modulesWithPaths.map((m) => m.path)
+    };
+    return await this._dockerCompose.commands.config(configOptions);
   }
 
   public async getVars(): Promise<string[]> {
