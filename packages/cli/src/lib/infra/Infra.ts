@@ -108,7 +108,7 @@ export class Infra {
     const modulesWithPaths = await this._fetchModules();
     const configOptions: Partial<IDockerComposeOptions> = {
       ...this._defaultDockerOptions,
-      config: modulesWithPaths.map((m) => m.path)
+      config: modulesWithPaths.map((m) => m.path),
     };
     return await this._dockerCompose.commands.config(configOptions);
   }
