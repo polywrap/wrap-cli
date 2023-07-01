@@ -5,9 +5,12 @@ import { invokeWithTimeout } from "./invokeWithTimeout";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { Uri } from "@polywrap/core-js";
-import { ClientConfigBuilder, PolywrapClient } from "@polywrap/client-js";
-import { DefaultBundle } from "@polywrap/client-config-builder-js";
+import { IWrapPackage, Uri } from "@polywrap/core-js";
+import {
+  PolywrapClient,
+  PolywrapClientConfigBuilder,
+} from "@polywrap/client-js";
+import { Web3 } from "@polywrap/client-config-builder-js";
 import {
   Connection,
   Connections,
@@ -57,13 +60,13 @@ class ENSPublisher implements DeployModule {
       defaultNetwork: network,
     });
 
-    const clientConfig = new ClientConfigBuilder()
+    const clientConfig = new PolywrapClientConfigBuilder()
       .addDefaults()
-      .addPackage(
-        DefaultBundle.plugins.ethereumProviderV1.uri.uri,
+      .setPackage(
+        Web3.bundle.ethereumProviderV1.uri,
         ethereumProviderPlugin({
           connections: connections,
-        })
+        }) as IWrapPackage
       )
       .build();
 

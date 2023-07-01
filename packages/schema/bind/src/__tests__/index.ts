@@ -75,9 +75,13 @@ export function fetchTestCases(): TestCases {
     const abi = parseSchema(schema);
 
     const input: BindOptions = {
-      projectName: "Test",
+      wrapInfo: {
+        name: "Test",
+        version: "0.1",
+        abi,
+        type: "TBD" as "wasm" | "plugin" | "interface",
+      },
       bindLanguage: "TBD" as BindLanguage,
-      abi,
       outputDirAbs: path.join(root, "combined")
     };
 

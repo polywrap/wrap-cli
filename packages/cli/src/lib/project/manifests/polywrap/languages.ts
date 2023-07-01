@@ -23,9 +23,9 @@ export function polywrapManifestLanguageToBindLanguage(
 ): BindLanguage {
   switch (manifestLanguage) {
     case "wasm/assemblyscript":
-      return "wasm-as";
+      return "wrap-as";
     case "wasm/rust":
-      return "wasm-rs";
+      return "wrap-rs";
     case "interface":
       throw Error(intlMsg.lib_language_noInterfaceCodegen());
     default:

@@ -2,7 +2,6 @@ import { GenerateBindingFn } from "./types";
 import { BindLanguage } from "../";
 import * as AssemblyScript from "./assemblyscript";
 import * as Rust from "./rust";
-import * as Python from "./python";
 import * as TypeScript from "./typescript";
 import * as WrapBindgen from "./wrap-bindgen";
 
@@ -16,18 +15,30 @@ export function getGenerateBindingFn(
   switch (bindLanguage) {
     case "wrap-as":
       return WrapBindgen.getGenerateBindingFn(
-        `file/${__dirname}/../../../../../../wrap-abi-bindgen/implementations/wrap-assemblyscript/build`
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/wrap-assemblyscript"
       );
     case "wrap-rs":
       return Rust.Wasm.generateBinding;
     case "plugin-ts":
-      return TypeScript.Plugin.generateBinding;
+      return WrapBindgen.getGenerateBindingFn(
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/plugin-typescript"
+      );
     case "plugin-rs":
-      return Rust.Plugin.generateBinding;
+      return WrapBindgen.getGenerateBindingFn(
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/plugin-rust"
+      );
     case "plugin-py":
-      return Python.Plugin.generateBinding;
+      return WrapBindgen.getGenerateBindingFn(
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/plugin-python"
+      );
+    case "plugin-kt":
+      return WrapBindgen.getGenerateBindingFn(
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/plugin-kotlin"
+      );
     case "app-ts":
-      return TypeScript.App.generateBinding;
+      return WrapBindgen.getGenerateBindingFn(
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/app-typescript"
+      );
     default:
       throw Error(`Error: Language binding unsupported - ${bindLanguage}`);
   }

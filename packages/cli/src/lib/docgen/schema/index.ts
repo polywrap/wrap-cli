@@ -38,7 +38,7 @@ export const generateBinding: GenerateBindingFn = (
 
   // generate schema
   const schemaContext = {
-    schema: renderSchema(options.abi, true),
+    schema: renderSchema(options.wrapInfo.abi, true),
   };
   renderTemplate(
     "./templates/schema.mustache",

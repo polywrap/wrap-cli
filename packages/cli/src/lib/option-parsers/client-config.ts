@@ -2,14 +2,16 @@ import { intlMsg } from "../intl";
 import { importTypescriptModule } from "../system";
 import { getTestEnvClientConfig } from "../test-env";
 
-import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import {
+  PolywrapClientConfigBuilder,
+  ClientConfigBuilder,
+} from "@polywrap/client-config-builder-js";
 import path from "path";
-import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 export async function parseClientConfigOption(
   clientConfig: string | undefined | false
-): Promise<IClientConfigBuilder> {
-  const builder = new ClientConfigBuilder().addDefaults();
+): Promise<ClientConfigBuilder> {
+  const builder = new PolywrapClientConfigBuilder().addDefaults();
 
   try {
     builder.add(getTestEnvClientConfig());

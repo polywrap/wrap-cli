@@ -2,7 +2,7 @@ import { fetchTestCases } from "./index";
 import {
   bindSchema,
   BindLanguage,
-  BindOutput
+  BindOutput, bindLanguageToWrapInfoType,
 } from "../";
 
 import {
@@ -16,6 +16,8 @@ import fs from "fs";
 import path from "path";
 
 import { deepCopy } from "./utils";
+
+jest.setTimeout(60000);
 
 describe("Polywrap Binding Test Suite", () => {
   const cases = fetchTestCases();
@@ -39,8 +41,12 @@ describe("Polywrap Binding Test Suite", () => {
           outputDirAbs: testCase.input.outputDirAbs,
         };
 
-        const output = bindSchema({
+        const output = await bindSchema({
           ...deepCopy(testCase.input),
+          wrapInfo: {
+            ...deepCopy(testCase.input.wrapInfo),
+            type: bindLanguageToWrapInfoType(language as BindLanguage)
+          },
           bindLanguage: language as BindLanguage,
         });
 
