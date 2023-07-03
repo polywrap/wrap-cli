@@ -25,6 +25,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   const ensAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress;
 
   const builder = new PolywrapClientConfigBuilder()
+    .addDefaults()
     .addEnvs({
       [Web3.bundle.ipfsResolver.uri]: {
         provider: ipfsProvider,

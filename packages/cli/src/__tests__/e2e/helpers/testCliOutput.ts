@@ -19,6 +19,12 @@ export const testCliOutput = (
     )
   );
 
+  if (expected.exitCode && exitCode !== expected.exitCode) {
+    console.error(error)
+  } else if (exitCode !== 0) {
+    console.error(error)
+  }
+
   if (expected.stdout) {
     if (Array.isArray(expected.stdout)) {
       for (const line of expected.stdout) {
