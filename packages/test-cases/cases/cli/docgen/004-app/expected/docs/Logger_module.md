@@ -8,7 +8,7 @@ sidebar_position: 1
 
 ```graphql
 log(
-  level: Logger_Logger_LogLevel! 
+  level: Logger_LogLevel! 
   message: String! 
 ): Boolean!
 ```

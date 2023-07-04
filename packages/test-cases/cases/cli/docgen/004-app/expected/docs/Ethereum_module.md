@@ -9,8 +9,6 @@ sidebar_position: 1
 ```graphql
 awaitTransaction(
   txHash: String! 
-  confirmations: UInt32! 
-  timeout: UInt32 
   connection: Ethereum_Connection 
 ): Ethereum_TxReceipt!
 ```
@@ -236,17 +234,6 @@ signMessage(
 ```graphql
 signMessageBytes(
   bytes: Bytes! 
-  connection: Ethereum_Connection 
-): String!
-```
-
-### signTransaction 
-
-_Sign a transaction and return the signature. Requires wallet signer (i.e. signer with private key)_
-
-```graphql
-signTransaction(
-  tx: Ethereum_TxRequest! 
   connection: Ethereum_Connection 
 ): String!
 ```

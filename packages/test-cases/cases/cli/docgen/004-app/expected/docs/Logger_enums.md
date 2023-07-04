@@ -5,10 +5,10 @@ sidebar_position: 3
 ---
 
 
-### Logger_Logger_LogLevel
+### Logger_LogLevel
 
 ```graphql
-enum Logger_Logger_LogLevel {
+enum Logger_LogLevel {
   DEBUG
   INFO
   WARN
