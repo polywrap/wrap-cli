@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from typing import TypedDict, Optional
-from enum import IntEnum, auto
+from enum import IntEnum
 
-from polywrap_core import InvokerClient, Uri, UriPackageOrWrapper
+from polywrap_core import InvokerClient, Uri
 from polywrap_msgpack import GenericMap
 
 
@@ -43,9 +43,9 @@ CustomType = TypedDict("CustomType", {
     "optBytes": Optional[bytes],
     "boolean": bool,
     "optBoolean": Optional[bool],
-    "uArray": list[int],
-    "uOptArray": Optional[list[int]],
-    "optUOptArray": Optional[list[Optional[int]]],
+    "u_array": list[int],
+    "uOpt_array": Optional[list[int]],
+    "_opt_uOptArray": Optional[list[Optional[int]]],
     "optStrOptArray": Optional[list[Optional[str]]],
     "uArrayArray": list[list[int]],
     "uOptArrayOptArray": list[Optional[list[Optional[int]]]],
@@ -84,23 +84,23 @@ Else = TypedDict("Else", {
 
 ### Enums START ###
 class CustomEnum(IntEnum):
-    STRING = auto(), "STRING"
-    BYTES = auto(), "BYTES"
+    STRING = 0, "0", "STRING"
+    BYTES = 1, "1", "BYTES"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
 
 class While(IntEnum):
-    r_for = auto(), "for"
-    r_in = auto(), "in"
+    r_for = 0, "0", "for"
+    r_in = 1, "1", "in"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
@@ -132,24 +132,24 @@ TestImportAnotherObject = TypedDict("TestImportAnotherObject", {
 
 # URI: "testimport.uri.eth" #
 class TestImportEnum(IntEnum):
-    STRING = auto()
-    BYTES = auto()
+    STRING = 0, "0", "STRING"
+    BYTES = 1, "1", "BYTES"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
 
 # URI: "testimport.uri.eth" #
 class TestImportEnumReturn(IntEnum):
-    STRING = auto()
-    BYTES = auto()
+    STRING = 0, "0", "STRING"
+    BYTES = 1, "1", "BYTES"
 
     def __new__(cls, value: int, *aliases: str):
         obj = int.__new__(cls)
-        obj._value_ = value - 1
+        obj._value_ = value
         for alias in aliases:
             cls._value2member_map_[alias] = obj
         return obj
@@ -194,43 +194,37 @@ class TestImportModule:
     def __init__(self, uri: Uri):
         self.uri = uri
 
-    async def imported_method(
+    def imported_method(
         self,
         args: TestImportModuleArgsImportedMethod,
-        client: InvokerClient[UriPackageOrWrapper]
+        client: InvokerClient
     ) -> Optional["TestImportObject"]:
         return client.invoke(
-            InvokeOptions(
-                uri=self.uri,
-                method="importedMethod",
-                args=args,
-            )
+            uri=self.uri,
+            method="importedMethod",
+            args=args,
         )
 
-    async def another_method(
+    def another_method(
         self,
         args: TestImportModuleArgsAnotherMethod,
-        client: InvokerClient[UriPackageOrWrapper]
+        client: InvokerClient
     ) -> int:
         return client.invoke(
-            InvokeOptions(
-                uri=self.uri,
-                method="anotherMethod",
-                args=args,
-            )
+            uri=self.uri,
+            method="anotherMethod",
+            args=args,
         )
 
-    async def returns_array_of_enums(
+    def returns_array_of_enums(
         self,
         args: TestImportModuleArgsReturnsArrayOfEnums,
-        client: InvokerClient[UriPackageOrWrapper]
+        client: InvokerClient
     ) -> list[Optional["TestImportEnumReturn"]]:
         return client.invoke(
-            InvokeOptions(
-                uri=self.uri,
-                method="returnsArrayOfEnums",
-                args=args,
-            )
+            uri=self.uri,
+            method="returnsArrayOfEnums",
+            args=args,
         )
 
 ### Imported Modules END ###
@@ -242,7 +236,7 @@ class TestImport:
     URI: Uri = Uri.from_str("testimport.uri.eth")
 
     def get_implementations(
-        client: InvokerClient[UriPackageOrWrapper]
+        client: InvokerClient
     ) -> list[str]:
         impls = client.getImplementations(self.uri)
         return [impl.uri for impl in impls]

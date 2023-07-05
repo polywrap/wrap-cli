@@ -1,0 +1,7 @@
+format: 0.3.0
+project:
+  name: Sample
+  type: plugin/rust
+source:
+  schema: ./polywrap.graphql
+  module: ./Cargo.toml

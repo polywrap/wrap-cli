@@ -1,12 +1,24 @@
 {
   "id": "DeployManifest_Deployer_WasmAsExt",
   "type": "object",
-  "required": [
-    "postUrl"
-  ],
+  "required": ["postUrl"],
   "properties": {
     "postUrl": {
       "type": "string"
+    },
+    "headers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }

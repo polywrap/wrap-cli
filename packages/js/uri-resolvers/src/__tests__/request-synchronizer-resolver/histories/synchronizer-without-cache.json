@@ -1,6 +1,0 @@
-[
-  "wrap://test/should-redirect => RequestSynchronizerResolver => uri (wrap://test/redirected)",
-  [
-    "wrap://test/should-redirect => SimpleAsyncRedirectResolver => uri (wrap://test/redirected)"
-  ]
-]

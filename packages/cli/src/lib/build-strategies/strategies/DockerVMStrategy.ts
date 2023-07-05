@@ -36,7 +36,7 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
   "wasm/rust": {
     defaultIncludes: ["Cargo.toml", "Cargo.lock"],
     baseImage: "polywrap/vm-base-rs",
-    version: "0.2.0",
+    version: "0.2.1",
   },
   "wasm/assemblyscript": {
     defaultIncludes: ["package.json", "package-lock.json", "yarn.lock"],

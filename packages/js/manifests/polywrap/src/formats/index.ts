@@ -8,3 +8,4 @@ export * from "./polywrap.build";
 export * from "./polywrap.infra";
 export * from "./polywrap.deploy";
 export * from "./polywrap.test";
+export * from "./polywrap.docs";

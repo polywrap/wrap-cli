@@ -1,3 +1,74 @@
+# Polywrap Origin (0.10.6)
+## Bugs
+**`polywrap` CLI:**
+* [PR-1796](https://github.com/polywrap/cli/pull/1796) **`wrap/rust` Builds Now Properly Remove wasm-bindgen Imports**
+  * The `wasm-bindgen` CLI was emitting an unneeded `__wbindgen_throw` import, so we use `wasm-snip` to remove it.
+
+# Polywrap Origin (0.10.5)
+## Bugs
+**`@polywrap/schema-bind`:**
+* [PR-1786](https://github.com/polywrap/cli/pull/1786) **Update `plugin/python` plugin bindings to latest client**
+
+# Polywrap Origin (0.10.4)
+## Features
+**`polywrap` CLI:**
+* [PR-1735](https://github.com/polywrap/cli/pull/1735) **Add Docs Manifest & `polywrap docs init` Command**
+  * The `polywrap.docs.yaml` manifest is used to add additional metadata to your wraps.
+* [PR-1776](https://github.com/polywrap/cli/pull/1776) **Add HTTP Headers To HTTP Deploy Module**
+  * The `http` deploy module now supports the `headers` configuration property.
+
+## Bugs
+**`polywrap` CLI:**
+* [PR-1773](https://github.com/polywrap/cli/pull/1773) **Don't Install `wasm-opt` Every `local` Rust Build**
+  * The `local` strategy for rust wasm projects was unexpectedly installing `wasm-opt` every time it was run, leading to very long build times.
+
+**`@polywrap/schema-bind`:**
+* [PR-1775](https://github.com/polywrap/cli/pull/1775) **Fix Python Plugin Bindings**
+  * The wrap abi type `Bytes` can now be properly used within rust plugins.
+* [PR-1753](https://github.com/polywrap/cli/pull/1753) **Fix Python Plugin Bindings**
+
+# Polywrap Origin (0.10.3)
+## Features
+**`polywrap` CLI:**
+* [PR-1747](https://github.com/polywrap/toolchain/pull/1747) **Add Rust & Python plugin template projects to CLI's `create` command**
+  * The `create` command now supports `plugin/rust` and `plugin/python` project types.
+
+## Bugs
+**`@polywrap/schema-bind`:**
+* [PR-1734](https://github.com/polywrap/toolchain/pull/1734) **Update `plugin/python` Bindings**
+  * Update `wrap.info` python module embedding.
+* [PR-1728](https://github.com/polywrap/toolchain/pull/1728) **Update `plugin/rust` Bindings**
+  * Modify JSON serialization within rust plugin's bindings.
+* [PR-1736](https://github.com/polywrap/toolchain/pull/1736) **Properly emit function name when `Env` is missing**
+  * Fixed the error message that's emitted when an environment is not supplied to a function that requires it.
+* [PR-1733](https://github.com/polywrap/toolchain/pull/1733) **Add imported `Env` to `propertyDeps` transform**
+  * Adds imported `Env` to `propertyDeps` transform, so that now codegen properly generates imports for dependencies of imported env.
+
+# Polywrap Origin (0.10.2)
+## Bugs
+**`@polywrap/schema-bind`:**
+* [PR-1718](https://github.com/polywrap/toolchain/pull/1718) **`plugin/python` Enum Bindings Fix**
+  * Enums are now properly displayed in Python plugins.
+
+# Polywrap Origin (0.10.1)
+## Features
+**`@polywrap/schema-bind`:**
+* [PR-1694](https://github.com/polywrap/toolchain/pull/1694) **`plugin/rust` Env Bindings Refactor**
+  * Rust plugin bindings now expose `env` as a function argument.
+
+## Bugs
+**`@polywrap/schema-bind`:**
+* [PR-1700](https://github.com/polywrap/toolchain/pull/1700) **`plugin/rust` Serde renaming for snake-cased properties in rust plugins types**
+  * Rust plugins now properly convert wrap schema property names into snake-cased names, so they are compatable with Rust naming conventions.
+
+**`@polywrap/templates`:**
+* [PR-1680](https://github.com/polywrap/toolchain/pull/1680) **Import newer logger in typescript template**
+  * Update the typescript app template to use the latest logging wrap at `ens/wraps.eth:logging@1.0.0`.
+
+**`@polywrap/polywrap-manifest-types-js`:**
+* [PR-1692](https://github.com/polywrap/toolchain/pull/1692) **top-level `docker` property is now removed from build manifest during migration**
+  * Fixes a bug where the top-level `docker` property of build manifest version 0.1.0 was not being dropped during migration, causing migrated build manifests to fail validation.
+
 # Polywrap Origin (0.10.0)
 ## Features
 ### Toolchain

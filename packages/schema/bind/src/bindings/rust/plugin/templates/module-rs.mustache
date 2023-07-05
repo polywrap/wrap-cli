@@ -3,28 +3,25 @@
 
 use std::sync::Arc;
 use polywrap_core::invoke::Invoker;
-use polywrap_plugin::error::PluginError;
-use polywrap_plugin::module::PluginModule;
+use polywrap_plugin::{error::PluginError, module::PluginModule};
 use serde::{Serialize, Deserialize};
 use super::types::*;
-use async_trait::async_trait;
 
 {{#moduleType}}
 {{#methods}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Args{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
-    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{#serdeAnnotateIfBytes}}{{#scalar}}{{type}}{{/scalar}}{{/serdeAnnotateIfBytes}}{{#serdeRenameIfCaseMismatch}}{{name}}{{/serdeRenameIfCaseMismatch}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/arguments}}
 }
 
 {{/methods}}
 {{/moduleType}}
-#[async_trait]
 pub trait Module: PluginModule {
   {{#moduleType}}
   {{#methods}}
-  async fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(&mut self, args: &Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, PluginError>;
+  fn {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}(&mut self, args: &Args{{#toUpper}}{{name}}{{/toUpper}}, invoker: Arc<dyn Invoker>{{#env}}, env: {{^required}}Option<{{/required}}Env{{^required}}>{{/required}}{{/env}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, PluginError>;
   {{^last}}
 
   {{/last}}

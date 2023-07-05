@@ -141,7 +141,7 @@ const testData: CommandTestCaseData<CommandTypings> = {
         expect(fs.existsSync(packagePath)).toBeTruthy();
         clearDir(test.cwd);
       }
-    }]
+    }],
   },
   deploy: [{
     cwd: path.join(GetPathToCliTestFiles(), "deploy/001-sanity"),
@@ -222,7 +222,19 @@ const testData: CommandTestCaseData<CommandTypings> = {
       expect(stdout).toContain("Data: ");
       expect(exitCode).toBe(0);
     }
-  }]
+  }],
+  docs: {
+    init: [{
+      cwd: path.join(GetPathToCliTestFiles(), "build-cmd/wasm/assemblyscript/001-sanity"),
+      after: (test, stdout, __, exitCode) => {
+        expect(stdout).toContain("Written docs manifest to");
+        expect(exitCode).toBe(0);
+        if (test.cwd) {
+          fs.rmSync(path.join(test.cwd, "polywrap.docs.yaml"));
+        }
+      }
+    }]
+  }
 };
 
 describe("Commands", () => {

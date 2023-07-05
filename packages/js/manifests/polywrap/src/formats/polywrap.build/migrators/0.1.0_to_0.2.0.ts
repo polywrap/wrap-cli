@@ -5,7 +5,8 @@ import { BuildManifest as NewManifest } from "../0.2.0";
 
 export function migrate(old: OldManifest): NewManifest {
   return {
-    ...old,
+    config: old.config,
+    linked_packages: old.linked_packages,
     __type: "BuildManifest",
     format: "0.2.0",
     strategies: {

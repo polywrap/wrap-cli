@@ -7,7 +7,9 @@ const packagesToPatch = [
   "@polywrap/ethereum-provider-js",
   "@polywrap/file-system-plugin-js",
   "@polywrap/http-plugin-js",
-  "@polywrap/logger-plugin-js"
+  "@polywrap/logger-plugin-js",
+  "@polywrap/plugin-js",
+  "@polywrap/client-js"
 ];
 
 function main () {
@@ -17,7 +19,7 @@ function main () {
         __dirname,
         "../node_modules",
         packageToPatch,
-        "node_modules/@polywrap/core-js"
+        "node_modules/@polywrap"
       )
     );
   }

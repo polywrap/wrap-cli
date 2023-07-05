@@ -2,6 +2,7 @@
 import * as Functions from "../functions";
 import { GenerateBindingFn, renderTemplates } from "../..";
 import { BindOptions, BindOutput } from "../../..";
+import { addEnumMembers } from "../transformers";
 
 import {
   transformAbi,
@@ -21,7 +22,7 @@ const templatePath = (subpath: string) =>
   path.join(__dirname, "./templates", subpath);
 
 const sort = (obj: Record<string, unknown>) =>
-  Object.keys(obj)
+  Object.keys(obj || {})
     .sort()
     .reduce((map: Record<string, unknown>, key: string) => {
       if (typeof obj[key] === "object") {
@@ -39,6 +40,12 @@ const sort = (obj: Record<string, unknown>) =>
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
+  const escapedAbi = JSON.stringify(
+    sort((options.abi as unknown) as Record<string, unknown>)
+  ).replace(/\\n/g, "\\\\n");
+
+  const formattedAbi = JSON.stringify(JSON.parse(escapedAbi), null, 2);
+
   // Apply Abi transforms
   const abi = applyTransforms(options.abi);
 
@@ -54,9 +61,7 @@ export const generateBinding: GenerateBindingFn = (
     name: options.projectName,
     type: "plugin",
     version: latestWrapManifestVersion,
-    abi: Buffer.from(
-      JSON.stringify(sort((options.abi as unknown) as Record<string, unknown>))
-    ).toString("base64"),
+    abi: formattedAbi,
   };
 
   output.entries = renderTemplates(templatePath(""), { ...abi, manifest }, {});
@@ -71,6 +76,7 @@ function applyTransforms(abi: WrapAbi): WrapAbi {
     toPrefixedGraphQLType,
     methodParentPointers(),
     interfaceUris(),
+    addEnumMembers,
   ];
 
   for (const transform of transforms) {

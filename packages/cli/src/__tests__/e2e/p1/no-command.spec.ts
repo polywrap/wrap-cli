@@ -17,6 +17,7 @@ Commands:
   infra|i [options] <action>   Modular Infrastructure-As-Code Orchestrator
   manifest|m                   Inspect & Migrade Polywrap Manifests
   test|t [options]             Execute Tests
+  docs                         Documentation commands
   help [command]               display help for command
 `;
 

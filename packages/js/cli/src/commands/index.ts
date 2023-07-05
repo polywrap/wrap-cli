@@ -54,4 +54,7 @@ export const commands: CommandFns<CommandTypings> = {
     ),
   },
   test: execCommandFn<CommandTypings["test"]>("test"),
+  docs: {
+    init: execCommandFn<CommandTypings["docs"]["init"]>("docs init"),
+  },
 };

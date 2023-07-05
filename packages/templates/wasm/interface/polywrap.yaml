@@ -3,4 +3,4 @@ project:
   name: TODO
   type: interface
 source:
-  schema: ./schema.graphql
+  schema: ./polywrap.graphql

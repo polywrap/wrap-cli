@@ -1,9 +1,0 @@
-format: 0.2.0
-project:
-  name: test-uri-resolver-ext
-  type: wasm/rust
-source:
-  module: ./Cargo.toml
-  schema: ./polywrap.graphql
-extensions:
-  build: ./polywrap.build.yaml
