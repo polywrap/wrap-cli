@@ -1,6 +1,6 @@
 package types
 
-{{#makeImports}}github.com/consideritdone/polywrap-go/polywrap/msgpack,{{#properties}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/properties}}{{/makeImports}}
+{{#makeImports}}github.com/polywrap/go-wrap/polywrap/msgpack,{{#properties}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/properties}}{{/makeImports}}
 
 func serialize{{#toUpper}}{{type}}{{/toUpper}}(value *{{#toUpper}}{{type}}{{/toUpper}}) []byte {
 	ctx := msgpack.NewContext("Serializing (encoding) env-type: {{#toUpper}}{{type}}{{/toUpper}}")

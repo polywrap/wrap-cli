@@ -1,6 +1,6 @@
 package module
 {{#makeImports}}
-	github.com/consideritdone/polywrap-go/polywrap/msgpack,
+	github.com/polywrap/go-wrap/polywrap/msgpack,
 	. {{goImport}}/src/wrap/types,
 	{{#importedTypes}}
   . {{goImport}}/src/wrap/imported/{{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}},

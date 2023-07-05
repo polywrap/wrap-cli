@@ -1,8 +1,8 @@
 package types
 
 import (
-	"github.com/consideritdone/polywrap-go/polywrap/msgpack"
-	"github.com/consideritdone/polywrap-go/polywrap/msgpack/big"
+	"github.com/polywrap/go-wrap/polywrap/msgpack"
+	"github.com/polywrap/go-wrap/polywrap/msgpack/big"
 	"github.com/valyala/fastjson"
 )
 

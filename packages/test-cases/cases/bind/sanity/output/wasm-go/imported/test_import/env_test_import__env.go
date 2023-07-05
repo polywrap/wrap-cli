@@ -1,7 +1,7 @@
 package test_import
 
 import (
-	"github.com/consideritdone/polywrap-go/polywrap/msgpack"
+	"github.com/polywrap/go-wrap/polywrap/msgpack"
 )
 
 type TestImport_Env struct {

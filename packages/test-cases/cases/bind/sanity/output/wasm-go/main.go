@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/testorg/testrepo/wrap/module"
-	"github.com/consideritdone/polywrap-go/polywrap"
+	"github.com/polywrap/go-wrap/polywrap"
 )
 
 //export _wrap_invoke

@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/consideritdone/polywrap-go/polywrap/msgpack"
+	"github.com/polywrap/go-wrap/polywrap/msgpack"
 )
 
 func serializeCustomMapValue(value *CustomMapValue) []byte {
