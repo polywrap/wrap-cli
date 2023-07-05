@@ -5,7 +5,14 @@ import (
 )
 
 type TestImport_Env struct {
-	EnviroProp string
+	Object         TestImport_AnotherObject
+	OptObject      *TestImport_AnotherObject
+	ObjectArray    []TestImport_AnotherObject
+	OptObjectArray []*TestImport_AnotherObject
+	En             TestImport_Enum
+	OptEnum        *TestImport_Enum
+	EnumArray      []TestImport_Enum
+	OptEnumArray   []*TestImport_Enum
 }
 
 func TestImport_EnvToBuffer(value *TestImport_Env) []byte {

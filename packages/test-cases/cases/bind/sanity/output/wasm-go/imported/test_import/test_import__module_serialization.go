@@ -243,3 +243,48 @@ func DeserializeAnotherMethodResult(argsBuf []byte) int32 {
 	reader.Context().Pop()
 	return value
 }
+
+type ArgsReturnsArrayOfEnums struct {
+	Arg string
+}
+
+func SerializeReturnsArrayOfEnumsArgs(value *ArgsReturnsArrayOfEnums) []byte {
+	ctx := msgpack.NewContext("Serializing module-type: ReturnsArrayOfEnums")
+	encoder := msgpack.NewWriteEncoder(ctx)
+	WriteReturnsArrayOfEnumsArgs(encoder, value)
+	return encoder.Buffer()
+}
+
+func WriteReturnsArrayOfEnumsArgs(writer msgpack.Write, value *ArgsReturnsArrayOfEnums) {
+	writer.WriteMapLength(1)
+	writer.Context().Push("arg", "string", "writing property")
+	writer.WriteString("arg")
+	{
+		v := value.Arg
+		writer.WriteString(v)
+	}
+	writer.Context().Pop()
+}
+
+func DeserializeReturnsArrayOfEnumsResult(argsBuf []byte) []*TestImport_Enum_Return {
+	ctx := msgpack.NewContext("Deserializing module-type: ReturnsArrayOfEnums")
+	reader := msgpack.NewReadDecoder(ctx, argsBuf)
+
+	reader.Context().Push("returnsArrayOfEnums", "[]*TestImport_Enum_Return", "reading function output")
+	var value []*TestImport_Enum_Return
+	if reader.IsNil() {
+		value = nil
+	} else {
+		ln0 := reader.ReadArrayLength()
+		value = make([]*TestImport_Enum_Return, ln0)
+		for i0 := uint32(0); i0 < ln0; i0++ {
+			if !reader.IsNil() {
+				v := TestImport_Enum_Return(reader.ReadI32())
+				SanitizeTestImport_Enum_ReturnValue(int32(v))
+				_returnsArrayOfEnums[i0] = &v
+			}
+		}
+	}
+	reader.Context().Pop()
+	return value
+}

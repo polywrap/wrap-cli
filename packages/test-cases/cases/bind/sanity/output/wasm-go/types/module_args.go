@@ -9,6 +9,7 @@ type MethodArgsModuleMethod struct {
 	OptEnumArray  []*CustomEnum
 	M_map         map[string]int32
 	MapOfArr      map[string][]int32
+	MapOfMap      map[string]map[string]int32
 	MapOfObj      map[string]AnotherType
 	MapOfArrOfObj map[string][]AnotherType
 }

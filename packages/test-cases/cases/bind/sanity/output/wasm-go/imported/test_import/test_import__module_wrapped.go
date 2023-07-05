@@ -31,3 +31,17 @@ func MethodAnotherMethod(uri string, args *ArgsAnotherMethod) (int32, error) {
 	}
 	return data, err
 }
+
+func MethodReturnsArrayOfEnums(uri string, args *ArgsReturnsArrayOfEnums) ([]*TestImport_Enum_Return, error) {
+	argsBuf := SerializeReturnsArrayOfEnumsArgs(args)
+	var (
+		err error
+		raw []byte
+		data []*TestImport_Enum_Return
+	)
+	raw, err = polywrap.WrapSubinvokeImplementation("testimport.uri.eth", uri, "returnsArrayOfEnums", argsBuf)
+	if err == nil {
+		data = DeserializeReturnsArrayOfEnumsResult(raw)
+	}
+	return data, err
+}

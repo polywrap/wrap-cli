@@ -1,7 +1,7 @@
 package module
 
 import (
-	. "github.com/testorg/testrepo/wrap/types"
+	. "github.com/testorg/testrepo/src/wrap/types"
 	"github.com/polywrap/go-wrap/polywrap/msgpack"
 )
 
@@ -23,6 +23,8 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *MethodArgsModuleMethod {
 		_mapSet           bool
 		_mapOfArr         map[string][]int32
 		_mapOfArrSet      bool
+		_mapOfMap         map[string]map[string]int32
+		_mapOfMapSet      bool
 		_mapOfObj         map[string]AnotherType
 		_mapOfObjSet      bool
 		_mapOfArrOfObj    map[string][]AnotherType
@@ -125,6 +127,29 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *MethodArgsModuleMethod {
 			}
 			_mapOfArrSet = true
 			reader.Context().Pop()
+		case "mapOfMap":
+			reader.Context().Push(field, "map[string]map[string]int32", "type found, reading property")
+			if reader.IsNil() {
+				_mapOfMap = nil
+			} else {
+				ln0 := reader.ReadMapLength()
+				_mapOfMap = make(map[string]map[string]int32)
+				for j0 := uint32(0); j0 < ln0; j0++ {
+					i0 := reader.ReadString()
+					if reader.IsNil() {
+						_mapOfMap[i0] = nil
+					} else {
+						ln1 := reader.ReadMapLength()
+						_mapOfMap[i0] = make(map[string]int32)
+						for j1 := uint32(0); j1 < ln1; j1++ {
+							i1 := reader.ReadString()
+							_mapOfMap[i0][i1] = reader.ReadI32()
+						}
+					}
+				}
+			}
+			_mapOfMapSet = true
+			reader.Context().Pop()
 		case "mapOfObj":
 			reader.Context().Push(field, "map[string]AnotherType", "type found, reading property")
 			if reader.IsNil() {
@@ -184,6 +209,9 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *MethodArgsModuleMethod {
 	if !_mapOfArrSet {
 		panic(reader.Context().PrintWithContext("Missing required property: 'mapOfArr: Map<String, [Int]>'"))
 	}
+	if !_mapOfMapSet {
+		panic(reader.Context().PrintWithContext("Missing required property: 'mapOfMap: Map<String, Map<String, Int>>'"))
+	}
 	if !_mapOfObjSet {
 		panic(reader.Context().PrintWithContext("Missing required property: 'mapOfObj: Map<String, AnotherType>'"))
 	}
@@ -200,6 +228,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *MethodArgsModuleMethod {
 		OptEnumArray:  _optEnumArray,
 		M_map:         _map,
 		MapOfArr:      _mapOfArr,
+		MapOfMap:      _mapOfMap,
 		MapOfObj:      _mapOfObj,
 		MapOfArrOfObj: _mapOfArrOfObj,
 	}

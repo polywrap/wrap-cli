@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/testorg/testrepo/wrap/module"
+	"github.com/testorg/testrepo/src/wrap/module"
 	"github.com/polywrap/go-wrap/polywrap"
 )
 

@@ -190,46 +190,46 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("UArray", "[]uint32", "writing property")
-	writer.WriteString("UArray")
-	if value.UArray == nil {
+	writer.Context().Push("U_array", "[]uint32", "writing property")
+	writer.WriteString("U_array")
+	if value.U_array == nil {
 		writer.WriteNil()
-	} else if len(value.UArray) == 0 {
+	} else if len(value.U_array) == 0 {
 		writer.WriteNil()
 	} else {
-		for i0 := range value.UArray {
+		for i0 := range value.U_array {
 			{
-				v := value.UArray[i0]
+				v := value.U_array[i0]
 				writer.WriteU32(v)
 			}
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("UOptArray", "[]uint32", "writing property")
-	writer.WriteString("UOptArray")
-	if value.UOptArray == nil {
+	writer.Context().Push("UOpt_array", "[]uint32", "writing property")
+	writer.WriteString("UOpt_array")
+	if value.UOpt_array == nil {
 		writer.WriteNil()
-	} else if len(value.UOptArray) == 0 {
+	} else if len(value.UOpt_array) == 0 {
 		writer.WriteNil()
 	} else {
-		for i0 := range value.UOptArray {
+		for i0 := range value.UOpt_array {
 			{
-				v := value.UOptArray[i0]
+				v := value.UOpt_array[i0]
 				writer.WriteU32(v)
 			}
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptUOptArray", "[]*uint32", "writing property")
-	writer.WriteString("OptUOptArray")
-	if value.OptUOptArray == nil {
+	writer.Context().Push("_opt_uOptArray", "[]*uint32", "writing property")
+	writer.WriteString("_opt_uOptArray")
+	if value._opt_uOptArray == nil {
 		writer.WriteNil()
-	} else if len(value.OptUOptArray) == 0 {
+	} else if len(value._opt_uOptArray) == 0 {
 		writer.WriteNil()
 	} else {
-		for i0 := range value.OptUOptArray {
+		for i0 := range value._opt_uOptArray {
 			{
-				v := value.OptUOptArray[i0]
+				v := value._opt_uOptArray[i0]
 				if v == nil {
 					writer.WriteNil()
 				} else {
@@ -615,10 +615,10 @@ func readCustomType(reader msgpack.Read) *CustomType {
 		_boolean                bool
 		_booleanSet             bool
 		_optBoolean             *bool
-		_uArray                 []uint32
-		_uArraySet              bool
-		_uOptArray              []uint32
-		_optUOptArray           []*uint32
+		_u_array                []uint32
+		_u_arraySet             bool
+		_uOpt_array             []uint32
+		__opt_uOptArray         []*uint32
 		_optStrOptArray         []*string
 		_uArrayArray            [][]uint32
 		_uArrayArraySet         bool
@@ -774,42 +774,42 @@ func readCustomType(reader msgpack.Read) *CustomType {
 				_optBoolean = &v
 			}
 			reader.Context().Pop()
-		case "UArray":
+		case "U_array":
 			reader.Context().Push(field, "[]uint32", "type found, reading property")
 			if reader.IsNil() {
-				_uArray = nil
+				_u_array = nil
 			} else {
 				ln0 := reader.ReadArrayLength()
-				_uArray = make([]uint32, ln0)
+				_u_array = make([]uint32, ln0)
 				for i0 := uint32(0); i0 < ln0; i0++ {
-					_uArray[i0] = reader.ReadU32()
+					_u_array[i0] = reader.ReadU32()
 				}
 			}
-			_uArraySet = true
+			_u_arraySet = true
 			reader.Context().Pop()
-		case "UOptArray":
+		case "UOpt_array":
 			reader.Context().Push(field, "[]uint32", "type found, reading property")
 			if reader.IsNil() {
-				_uOptArray = nil
+				_uOpt_array = nil
 			} else {
 				ln0 := reader.ReadArrayLength()
-				_uOptArray = make([]uint32, ln0)
+				_uOpt_array = make([]uint32, ln0)
 				for i0 := uint32(0); i0 < ln0; i0++ {
-					_uOptArray[i0] = reader.ReadU32()
+					_uOpt_array[i0] = reader.ReadU32()
 				}
 			}
 			reader.Context().Pop()
-		case "OptUOptArray":
+		case "_opt_uOptArray":
 			reader.Context().Push(field, "[]*uint32", "type found, reading property")
 			if reader.IsNil() {
-				_optUOptArray = nil
+				__opt_uOptArray = nil
 			} else {
 				ln0 := reader.ReadArrayLength()
-				_optUOptArray = make([]*uint32, ln0)
+				__opt_uOptArray = make([]*uint32, ln0)
 				for i0 := uint32(0); i0 < ln0; i0++ {
 					if !reader.IsNil() {
 						v := reader.ReadU32()
-						_optUOptArray[i0] = &v
+						__opt_uOptArray[i0] = &v
 					}
 				}
 			}
@@ -1163,8 +1163,8 @@ func readCustomType(reader msgpack.Read) *CustomType {
 	if !_booleanSet {
 		panic(reader.Context().PrintWithContext("Missing required property: 'boolean: Boolean'"))
 	}
-	if !_uArraySet {
-		panic(reader.Context().PrintWithContext("Missing required property: 'uArray: [UInt]'"))
+	if !_u_arraySet {
+		panic(reader.Context().PrintWithContext("Missing required property: 'u_array: [UInt]'"))
 	}
 	if !_uArrayArraySet {
 		panic(reader.Context().PrintWithContext("Missing required property: 'uArrayArray: [[UInt]]'"))
@@ -1224,9 +1224,9 @@ func readCustomType(reader msgpack.Read) *CustomType {
 		OptBytes:            _optBytes,
 		M_boolean:           _boolean,
 		OptBoolean:          _optBoolean,
-		UArray:              _uArray,
-		UOptArray:           _uOptArray,
-		OptUOptArray:        _optUOptArray,
+		U_array:             _u_array,
+		UOpt_array:          _uOpt_array,
+		_opt_uOptArray:      __opt_uOptArray,
 		OptStrOptArray:      _optStrOptArray,
 		UArrayArray:         _uArrayArray,
 		UOptArrayOptArray:   _uOptArrayOptArray,

@@ -1,7 +1,7 @@
 package module
 
 import (
-	. "github.com/testorg/testrepo/wrap/types"
+	. "github.com/testorg/testrepo/src/wrap/types"
 	"github.com/polywrap/go-wrap/polywrap"
 	methods "github.com/testorg/testrepo/module"
 )

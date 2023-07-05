@@ -28,9 +28,9 @@ type CustomType struct {
 	OptBytes            []byte
 	M_boolean           bool
 	OptBoolean          *bool
-	UArray              []uint32
-	UOptArray           []uint32
-	OptUOptArray        []*uint32
+	U_array             []uint32
+	UOpt_array          []uint32
+	_opt_uOptArray      []*uint32
 	OptStrOptArray      []*string
 	UArrayArray         [][]uint32
 	UOptArrayOptArray   [][]*uint32
