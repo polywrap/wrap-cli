@@ -46,8 +46,8 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
   "wasm/golang": {
     defaultIncludes: ["go.mod", "go.sum"],
     baseImage: "consideritdone/polywrap-base-go",
-    version: "0.1.0"
-  }
+    version: "0.1.0",
+  },
 };
 
 export class DockerVMBuildStrategy extends BuildStrategy<void> {
@@ -77,10 +77,13 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
   }
 
   public async buildSources(): Promise<void> {
+    console.log("Docker checking...")
     await ensureDockerDaemonRunning(this.project.logger);
 
+    console.log("Building sources...")
     await this._buildSources();
 
+    console.log("Copying build output...")
     await this._copyBuildOutput();
   }
 
@@ -90,13 +93,17 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
       const buildManifest = await this.project.getBuildManifest();
       const buildManifestConfig = buildManifest.config as BuildManifestConfig;
 
+      console.log("Copy manifests...")
       // Copy manifests
       buildManifestConfig.polywrap_manifests.forEach((manifestPath) => {
+        console.log(path.join(manifestDir, manifestPath));
+        console.log(path.join(this._volumePaths.project, manifestPath));
         fse.copySync(
           path.join(manifestDir, manifestPath),
           path.join(this._volumePaths.project, manifestPath)
         );
       });
+      console.log("Copying manifests done...")
 
       const language = (await this.project.getManifestLanguage()) as BuildableLanguage;
 
