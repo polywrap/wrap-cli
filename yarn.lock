@@ -2315,7 +2315,7 @@
     "@polywrap/plugin-js" "0.10.0-pre.10"
     ethers "5.7.0"
 
-"@polywrap/ethereum-provider-js@npm:@polywrap/ethereum-provider-js@~0.3.1":
+"@polywrap/ethereum-provider-js@0.3.1", "@polywrap/ethereum-provider-js@npm:@polywrap/ethereum-provider-js@~0.3.1":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@polywrap/ethereum-provider-js/-/ethereum-provider-js-0.3.1.tgz#ffdb9425c819ee76d3e3d5ade7d1b044077037e0"
   integrity sha512-El2d3gE2CFdGNzKQhO+IPP79lhyQmkAGlpQadaW/EDyFDjERLckYDLPrwUCXG0agUcQZcNY1nHn2hknumw/yWg==

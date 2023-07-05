@@ -50,7 +50,7 @@
     "@polywrap/client-config-builder-js": "0.11.0",
     "@polywrap/client-js": "0.11.0",
     "@polywrap/core-js": "0.11.0",
-    "@polywrap/ethereum-provider-js-v1": "npm:@polywrap/ethereum-provider-js@~0.2.4",
+    "@polywrap/ethereum-provider-js": "0.3.1",
     "@polywrap/logging-js": "0.10.6",
     "@polywrap/os-js": "0.10.6",
     "@polywrap/polywrap-manifest-types-js": "0.10.6",

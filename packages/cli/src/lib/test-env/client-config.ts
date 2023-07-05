@@ -7,7 +7,7 @@ import {
   ethereumProviderPlugin,
   Connections,
   Connection,
-} from "@polywrap/ethereum-provider-js-v1";
+} from "@polywrap/ethereum-provider-js";
 import { PolywrapClientConfigBuilder } from "@polywrap/client-js";
 import { IWrapPackage } from "@polywrap/core-js";
 
@@ -41,7 +41,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
         "ens/wraps.eth:ens-uri-resolver-ext@1.0.1",
     })
     .setPackages({
-      [Web3.bundle.ethereumProviderV1.uri]: ethereumProviderPlugin({
+      [Web3.bundle.ethereumProviderV2.uri]: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({
