@@ -2,7 +2,8 @@ import { fetchTestCases } from "./index";
 import {
   bindSchema,
   BindLanguage,
-  BindOutput, BindOptions
+  BindOutput,
+  BindOptions
 } from "../";
 
 import {
@@ -39,11 +40,11 @@ describe("Polywrap Binding Test Suite", () => {
           outputDirAbs: testCase.input.outputDirAbs,
         };
 
-        const output = bindSchema({
+        const bindOptions: BindOptions = {
           ...deepCopy(testCase.input),
-          bindLanguage: language as BindLanguage,
+          bindLanguage: language as BindLanguage
         };
-        
+
         if (language == "wasm-go") {
           if (!bindOptions.config) {
             bindOptions.config = {};
