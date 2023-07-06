@@ -1,9 +1,9 @@
-package module
+package module_wrapped
 {{#makeImports}}
 	github.com/polywrap/go-wrap/polywrap/msgpack,
-	. {{goImport}}/main/types,
+	. {{goImport}}/module/wrap/types,
 	{{#importedTypes}}
-  . {{goImport}}/main/imported/{{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}},
+  . {{goImport}}/module/wrap/imported/{{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}},
   {{/importedTypes}}
 	{{#methods}}
 		{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}},

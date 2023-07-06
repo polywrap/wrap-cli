@@ -216,9 +216,16 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate root entry file
-  output.entries.push(
-    ...renderTemplates(templatePath(""), { goImport, ...abi }, subTemplates)
-  );
+  output.entries.push({
+    type: "Directory",
+    name: "main",
+    data: renderTemplates(
+      templatePath("main"),
+      { goImport, ...abi },
+      subTemplates
+    ),
+  });
+
   output.entries = mergePaths(output.entries);
 
   return result;

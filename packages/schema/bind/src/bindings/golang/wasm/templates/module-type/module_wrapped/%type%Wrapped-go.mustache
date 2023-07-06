@@ -1,7 +1,7 @@
-package module
+package module_wrapped
 {{#makeImports}}
-	{{#methods}}{{#env}}github.com/polywrap/go-wrap/polywrap,. {{goImport}}/main/types,{{/env}}{{/methods}}
-	{{goImport}} as methods,
+	{{#methods}}{{#env}}github.com/polywrap/go-wrap/polywrap,. {{goImport}}/module/wrap/types,{{/env}}{{/methods}}
+	{{goImport}}/module as methods,
 {{/makeImports}}
 {{#methods}}
 func {{#toUpper}}{{name}}{{/toUpper}}Wrapped(argsBuf []byte, envSize uint32) []byte {
