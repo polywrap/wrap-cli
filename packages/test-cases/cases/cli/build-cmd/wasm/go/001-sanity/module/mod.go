@@ -1,7 +1,7 @@
 package module
 
-import "github.com/polywrap/cli/packages/test-cases/cases/cli/build-cmd/wasm/go/001-sanity/wrap/types"
+import "example.com/go-wrap-test/main/types"
 
-func Method(args *types.ArgsMethod) string {
+func Method(args *types.MethodArgsMethod) string {
 	return args.Arg
 }

@@ -45,7 +45,7 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
   },
   "wasm/golang": {
     defaultIncludes: ["go.mod", "go.sum"],
-    baseImage: "consideritdone/polywrap-base-go",
+    baseImage: "polywrap/vm-base-go",
     version: "0.1.0",
   },
 };

@@ -51,6 +51,8 @@ export function polywrapManifestOverrideCodegenDir(
     // the codegen directory to be `./src/wrap`
     case "wasm/rust":
       return "./src/wrap";
+    case "wasm/golang":
+      return "./main";
     default:
       return undefined;
   }
