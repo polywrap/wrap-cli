@@ -13,6 +13,7 @@ export function getBuildOverrides(): BuildOverrides {
       getGoModulePath(manifest);
       return Promise.resolve();
     },
+    sourcesSubDirectory: "module"
   };
 }
 

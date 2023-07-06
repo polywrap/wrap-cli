@@ -226,6 +226,11 @@ export const generateBinding: GenerateBindingFn = (
     ),
   });
 
+  // Render the root directory
+  output.entries.push(
+    ...renderTemplates(templatePath(""), { goImport, ...abi }, subTemplates)
+  );
+
   output.entries = mergePaths(output.entries);
 
   return result;

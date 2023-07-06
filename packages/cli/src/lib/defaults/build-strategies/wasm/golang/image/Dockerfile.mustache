@@ -1,13 +1,15 @@
-FROM consideritdone/polywrap-base-go:0.1.0
+FROM polywrap/vm-base-go:0.1.0
 
 WORKDIR /project
 
 COPY . .
 
-RUN tinygo build -o main.wasm -target wasm-memory src/wrap/main.go
+RUN go mod tidy
+
+RUN tinygo build -o main.wasm -target wasm-memory ./module/wrap/main/main.go
 
 # Make the build directory
 RUN rm -rf ./build
 RUN mkdir ./build
 
-RUN wasm-snip -o ./build/wrap.wasm main.wasm -p syscall runtime.ticks fd_write
+RUN wasm-snip -o ./build/wrap.wasm main.wasm -p syscall runtime.ticks fd_write tinygo

@@ -52,7 +52,7 @@ export function polywrapManifestOverrideCodegenDir(
     case "wasm/rust":
       return "./src/wrap";
     case "wasm/golang":
-      return "./module/main";
+      return "./module/wrap";
     default:
       return undefined;
   }

@@ -13,6 +13,7 @@ export function getBuildOverrides(): BuildOverrides {
       }
 
       return Promise.resolve();
-    }
+    },
+    sourcesSubDirectory: "src"
   }
 }

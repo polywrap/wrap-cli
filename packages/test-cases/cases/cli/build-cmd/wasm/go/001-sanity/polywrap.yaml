@@ -4,4 +4,4 @@ project:
   type: wasm/golang
 source:
   schema: ./schema.graphql
-  module: ./module/go.mod
+  module: ./go.mod

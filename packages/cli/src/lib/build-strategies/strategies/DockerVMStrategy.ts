@@ -138,21 +138,17 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
       // Copy sources and build
       if (buildManifestConfig.polywrap_module) {
-        // HACK: moduleDir is path to Cargo.toml in Rust
-        if (language === "wasm/rust") {
-          fse.copySync(
-            path.join(manifestDir, "src"),
-            path.join(this._volumePaths.project, "src")
-          );
-        } else {
-          fse.copySync(
-            path.join(manifestDir, buildManifestConfig.polywrap_module.dir),
-            path.join(
-              this._volumePaths.project,
-              buildManifestConfig.polywrap_module.dir
-            )
-          );
-        }
+        const sourcesSubDirectory =
+          this.overrides?.sourcesSubDirectory ||
+          buildManifestConfig.polywrap_module.dir;
+
+        fse.copySync(
+          path.join(manifestDir, sourcesSubDirectory),
+          path.join(
+            this._volumePaths.project,
+            sourcesSubDirectory
+          )
+        );
 
         const scriptTemplate = fse.readFileSync(
           path.join(

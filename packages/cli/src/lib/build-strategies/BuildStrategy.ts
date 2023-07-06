@@ -1,4 +1,4 @@
-import { tryGetBuildOverrides } from "./BuildOverrides";
+import { BuildOverrides, tryGetBuildOverrides } from "./BuildOverrides";
 import { PolywrapProject } from "../project";
 
 import fse from "fs-extra";
@@ -12,6 +12,7 @@ export interface BuildStrategyConfig {
 export abstract class BuildStrategy<TBuildReturn = unknown> {
   protected project: PolywrapProject;
   protected outputDir: string;
+  protected overrides?: BuildOverrides;
 
   constructor({ project, outputDir }: BuildStrategyConfig) {
     this.project = project;
@@ -44,11 +45,11 @@ export abstract class BuildStrategy<TBuildReturn = unknown> {
     fse.copySync(buildStrategyDir, strategyUsedCacheDir);
 
     // Check if build overrides exist
-    const overrides = await tryGetBuildOverrides(language);
+    this.overrides = await tryGetBuildOverrides(language);
 
     // If they do, ensure the manifest if valid before build starts
-    if (overrides) {
-      await overrides.validateManifest(
+    if (this.overrides && this.overrides.validateManifest) {
+      await this.overrides.validateManifest(
         await this.project.getManifest()
       );
     }
