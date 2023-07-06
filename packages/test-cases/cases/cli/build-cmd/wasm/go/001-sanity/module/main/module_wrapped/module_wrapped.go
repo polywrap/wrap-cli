@@ -1,4 +1,4 @@
-package module_wrapped
+package module
 
 import (
 	methods "example.com/go-wrap-test"

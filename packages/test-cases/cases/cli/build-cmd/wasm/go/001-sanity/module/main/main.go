@@ -17,5 +17,4 @@ func _wrap_invoke(methodSize, argsSize, envSize uint32) bool {
 }
 
 func main() {
-	
 }
