@@ -150,7 +150,6 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     bindConfig?: Record<string, unknown>
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    console.log("GENERATION SUB PATH", generationSubPath)
     const codegenDirectory = await this.getGenerationDirectory(
       generationSubPath
     );
@@ -363,16 +362,6 @@ export class PolywrapProject extends Project<PolywrapManifest> {
         path.join(path.dirname(manifest.source.module), "wrap")) ||
       // 4. Use the default
       defaultDir;
-
-    console.log("#######################");
-    console.log(useDefinedPath);
-    console.log(
-      polywrapManifestOverrideCodegenDir(
-        manifest.project.type as PolywrapManifestLanguage
-      )
-    );
-    console.log(genPath);
-    console.log("##############################");
 
     if (path.isAbsolute(genPath)) {
       return genPath;

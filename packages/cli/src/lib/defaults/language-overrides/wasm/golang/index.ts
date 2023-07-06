@@ -12,8 +12,8 @@ export function getBuildOverrides(): BuildOverrides {
     validateManifest: (manifest: PolywrapManifest) => {
       getGoModulePath(manifest);
       return Promise.resolve();
-    }
-  }
+    },
+  };
 }
 
 export function getCodegenOverrides(): CodegenOverrides {
@@ -21,14 +21,12 @@ export function getCodegenOverrides(): CodegenOverrides {
     getSchemaBindConfig: async (project: PolywrapProject) => {
       const manifest = await project.getManifest();
       const goModpath = getGoModulePath(manifest);
-      console.log(goModpath);
       const goModuleName = readGoModuleName(goModpath);
-      console.log(goModuleName);
       return {
-        goModuleName
+        goModuleName,
       };
-    }
-  }
+    },
+  };
 }
 
 function getGoModulePath(manifest: PolywrapManifest): string {
