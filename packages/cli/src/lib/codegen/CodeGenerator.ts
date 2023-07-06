@@ -20,6 +20,7 @@ import { SchemaComposer } from "../SchemaComposer";
 import path from "path";
 import { BindLanguage } from "@polywrap/schema-bind";
 import { writeDirectorySync } from "@polywrap/os-js";
+import { CodegenOverrides, tryGetCodegenOverrides } from "./CodegenOverrides";
 
 export interface CodeGeneratorConfig {
   project: Project<AnyProjectManifest>;
@@ -48,13 +49,16 @@ export class CodeGenerator {
         );
       }
 
+      // Get overrides if they exist
+      const overrides = await tryGetCodegenOverrides(language);
+
       await logActivity(
         this._config.project.logger,
         intlMsg.lib_codeGenerator_genCodeText(),
         intlMsg.lib_codeGenerator_genCodeError(),
         intlMsg.lib_codeGenerator_genCodeWarning(),
         async () => {
-          return this.runCodegen(bindLanguage);
+          return this.runCodegen(bindLanguage, overrides);
         }
       );
 
@@ -65,7 +69,8 @@ export class CodeGenerator {
     }
   }
 
-  protected async runCodegen(_: BindLanguage): Promise<string[]> {
+  protected async runCodegen(_: BindLanguage, overrides?: CodegenOverrides): Promise<string[]> {
+    // TODO: move codegen dir overrides into the new "language-overrides"
     const codegenDir = this._config.codegenDirAbs
       ? path.relative(
           this._config.project.getManifestDir(),
@@ -73,10 +78,15 @@ export class CodeGenerator {
         )
       : undefined;
 
+    const bindConfig = overrides ? await overrides.getSchemaBindConfig(
+      this._config.project
+    ) : {};
+
     const abi = await this._config.schemaComposer.getComposedAbis();
     const binding = await this._config.project.generateSchemaBindings(
       abi,
-      codegenDir
+      codegenDir,
+      bindConfig
     );
 
     resetDir(binding.outputDirAbs);

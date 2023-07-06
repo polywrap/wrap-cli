@@ -1,9 +1,10 @@
+import { tryGetBuildOverrides } from "./BuildOverrides";
 import { PolywrapProject } from "../project";
 
 import fse from "fs-extra";
 import path from "path";
 
-export interface BuildStrategyArgs {
+export interface BuildStrategyConfig {
   project: PolywrapProject;
   outputDir: string;
 }
@@ -12,7 +13,7 @@ export abstract class BuildStrategy<TBuildReturn = unknown> {
   protected project: PolywrapProject;
   protected outputDir: string;
 
-  constructor({ project, outputDir }: BuildStrategyArgs) {
+  constructor({ project, outputDir }: BuildStrategyConfig) {
     this.project = project;
     this.outputDir = outputDir;
   }
@@ -23,7 +24,7 @@ export abstract class BuildStrategy<TBuildReturn = unknown> {
 
   async build(): Promise<TBuildReturn> {
     const language = await this.project.getManifestLanguage();
-    const defaultsOfStrategyUsed = path.join(
+    const buildStrategyDir = path.join(
       __dirname,
       "..",
       "defaults",
@@ -31,17 +32,27 @@ export abstract class BuildStrategy<TBuildReturn = unknown> {
       language,
       this.getStrategyName()
     );
+
+    // Cache all build strategy files
     const strategyUsedCacheDir = this.project.getCachePath(
       PolywrapProject.cacheLayout.buildStrategyUsed
     );
-
     if (fse.existsSync(strategyUsedCacheDir)) {
       fse.removeSync(strategyUsedCacheDir);
     }
-
     fse.mkdirSync(strategyUsedCacheDir, { recursive: true });
+    fse.copySync(buildStrategyDir, strategyUsedCacheDir);
 
-    fse.copySync(defaultsOfStrategyUsed, strategyUsedCacheDir);
+    // Check if build overrides exist
+    const overrides = await tryGetBuildOverrides(language);
+
+    // If they do, ensure the manifest if valid before build starts
+    if (overrides) {
+      await overrides.validateManifest(
+        await this.project.getManifest()
+      );
+    }
+
     return this.buildSources();
   }
 }
