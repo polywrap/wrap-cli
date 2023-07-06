@@ -41,7 +41,11 @@ export const generateBinding: GenerateBindingFn = (
   };
   const output = result.output;
   const abi = applyTransforms(options.abi);
-  const goImport = options.config?.golangModuleName;
+  const goImport = options.config?.goModuleName;
+
+  if (!goImport) {
+    throw Error("wasm/golang bindings requires the config property 'goModuleName' to be set");
+  }
 
   // Generate object type folders
   if (abi.objectTypes) {

@@ -49,7 +49,7 @@ describe("Polywrap Binding Test Suite", () => {
           if (!bindOptions.config) {
             bindOptions.config = {};
           }
-          bindOptions.config.golangModuleName = "github.com/testorg/testrepo";
+          bindOptions.config.goModuleName = "github.com/testorg/testrepo";
         }
 
         const output = bindSchema(bindOptions);
