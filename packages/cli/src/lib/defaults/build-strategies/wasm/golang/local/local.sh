@@ -1,6 +1,3 @@
-rm -Rf build/
-mkdir build/
-
 cd module
 
 tinygo build -o ../build/wrap.wasm -target ../.polywrap/wasm/build/strategy-used/wasm-memory.json ./main/main.go

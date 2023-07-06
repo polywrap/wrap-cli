@@ -1,7 +1,0 @@
-format: 0.4.0
-project:
-  name: ObjectTypes
-  type: wasm/golang
-source:
-  schema: ./schema.graphql
-  module: ./module/go.mod
