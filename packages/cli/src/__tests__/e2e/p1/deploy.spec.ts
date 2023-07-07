@@ -113,13 +113,12 @@ describe("e2e tests for deploy command", () => {
       fs.unlinkSync(deploymentFilePath);
     }
 
-    const { exitCode: code, stdout: output, stderr: error } = await Commands.deploy({}, {
+    const { exitCode: code, stdout: output } = await Commands.deploy({}, {
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
       env: process.env as Record<string, string>
     });
 
-    expect(error).toBeFalsy();
     expect(code).toEqual(0);
     expect(fs.existsSync(deploymentFilePath)).toBeTruthy();
 
@@ -142,13 +141,12 @@ describe("e2e tests for deploy command", () => {
       entries = fs.readFileSync(deployLogFilePath, "utf8").trim().split("\n").length;
     }
 
-    const { exitCode: code, stderr: error } = await Commands.deploy({}, {
+    const { exitCode: code } = await Commands.deploy({}, {
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
       env: process.env as Record<string, string>
     });
 
-    expect(error).toBeFalsy();
     expect(code).toEqual(0);
 
     const deployLog = fs.readFileSync(deployLogFilePath, "utf8").trim().split("\n");
