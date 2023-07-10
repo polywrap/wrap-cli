@@ -18,9 +18,7 @@ export function getGenerateBindingFn(
         "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/wrap-assemblyscript"
       );
     case "wrap-rs":
-      return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/kris/wrap-rust/implementations/wrap-rust"
-      );
+      return Rust.Wasm.generateBinding;
     case "plugin-ts":
       return WrapBindgen.getGenerateBindingFn(
         "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/plugin-typescript"
