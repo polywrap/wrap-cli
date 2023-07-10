@@ -1,10 +1,9 @@
 import { GenerateBindingFn } from "./types";
 import { BindLanguage } from "../";
 import * as Rust from "./rust";
-import * as TypeScript from "./typescript";
 import * as WrapBindgen from "./wrap-bindgen";
 
-export { Rust, TypeScript };
+export { Rust };
 export * from "./types";
 export * from "./utils";
 
