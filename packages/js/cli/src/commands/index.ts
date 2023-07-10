@@ -43,7 +43,6 @@ export const commands: CommandFns<CommandTypings> = {
     ),
   },
   deploy: execCommandFn<CommandTypings["deploy"]>("deploy"),
-  docgen: execCommandWithArgsFn<CommandTypings["docgen"]>("docgen"),
   infra: execCommandWithArgsFn<CommandTypings["infra"]>("infra"),
   manifest: {
     migrate: execCommandWithArgsFn<CommandTypings["manifest"]["migrate"]>(

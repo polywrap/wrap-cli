@@ -2,7 +2,6 @@ export * from "./build";
 export * from "./codegen";
 export * from "./create";
 export * from "./deploy";
-export * from "./docgen";
 export * from "./infra";
 export * from "./manifest";
 export * from "./test";
@@ -18,7 +17,6 @@ import {
   SupportedWasmLangs,
 } from "./create";
 import { DeployCommandOptions } from "./deploy";
-import { DocgenCommandOptions, DocgenActions } from "./docgen";
 import { InfraCommandOptions, InfraActions } from "./infra";
 import {
   ManifestSchemaCommandOptions,
@@ -50,10 +48,6 @@ export interface CommandTypings {
     };
   };
   deploy: DeployCommandOptions;
-  docgen: {
-    options: DocgenCommandOptions;
-    arguments: [action: `${DocgenActions}`];
-  };
   infra: {
     options: InfraCommandOptions;
     arguments: [action: `${InfraActions}`];
