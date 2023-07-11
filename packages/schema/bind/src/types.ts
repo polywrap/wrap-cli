@@ -22,7 +22,6 @@ export interface BindOptions {
   outputDirAbs: string;
 }
 
-// TODO: Can I use types instead of hardcoded values here?
 export function bindLanguageToWrapInfoType(
   bindLanguage: BindLanguage
 ): "wasm" | "plugin" | "interface" {

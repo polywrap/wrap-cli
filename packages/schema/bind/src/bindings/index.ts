@@ -1,11 +1,8 @@
 import { GenerateBindingFn } from "./types";
 import { BindLanguage } from "../";
-import * as Rust from "./rust";
 import * as WrapBindgen from "./wrap-bindgen";
 
-export { Rust };
 export * from "./types";
-export * from "./utils";
 
 export function getGenerateBindingFn(
   bindLanguage: BindLanguage
