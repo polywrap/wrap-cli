@@ -6,10 +6,10 @@ COPY . .
 
 RUN go mod tidy
 
-RUN tinygo build -o main.wasm -target wasm-memory ./module/wrap/main/main.go
+RUN tinygo build -o main.wasm -target wasm-target ./module/wrap/main/main.go
 
 # Make the build directory
 RUN rm -rf ./build
 RUN mkdir ./build
 
-RUN wasm-snip -o ./build/wrap.wasm main.wasm -p syscall runtime.ticks fd_write tinygo
+RUN wasm-snip ./main.wasm -o ./build/wrap.wasm -p fd_write clock_time_get args_sizes_get args_get
