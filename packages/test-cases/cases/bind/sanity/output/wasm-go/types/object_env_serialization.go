@@ -71,19 +71,19 @@ func readEnv(reader msgpack.Read) *Env {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
 		switch field {
-		case "Prop":
+		case "prop":
 			reader.Context().Push(field, "string", "type found, reading property")
 			_prop = reader.ReadString()
 			_propSet = true
 			reader.Context().Pop()
-		case "OptProp":
+		case "optProp":
 			reader.Context().Push(field, "*string", "type found, reading property")
 			if !reader.IsNil() {
 				v := reader.ReadString()
 				_optProp = &v
 			}
 			reader.Context().Pop()
-		case "OptMap":
+		case "optMap":
 			reader.Context().Push(field, "map[string]*int32", "type found, reading property")
 			if reader.IsNil() {
 				_optMap = nil

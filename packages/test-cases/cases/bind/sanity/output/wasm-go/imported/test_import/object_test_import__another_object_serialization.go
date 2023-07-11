@@ -38,7 +38,7 @@ func readTestImport_AnotherObject(reader msgpack.Read) *TestImport_AnotherObject
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
 		switch field {
-		case "Prop":
+		case "prop":
 			reader.Context().Push(field, "string", "type found, reading property")
 			_prop = reader.ReadString()
 			_propSet = true

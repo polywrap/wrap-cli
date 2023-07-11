@@ -31,7 +31,7 @@ func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *MethodArgs
 		reader.Context().Push(field, "unknown", "searching for property type")
 		switch field {
 		{{#arguments}}
-		case "{{#handleKeywords}}{{name}}{{/handleKeywords}}":
+		case "{{name}}":
 			reader.Context().Push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property")
 			{{#scalar}}
 			{{> deserialize_scalar}}

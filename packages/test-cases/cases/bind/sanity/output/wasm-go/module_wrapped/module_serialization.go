@@ -91,7 +91,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *MethodArgsModuleMethod {
 				}
 			}
 			reader.Context().Pop()
-		case "m_map":
+		case "map":
 			reader.Context().Push(field, "map[string]int32", "type found, reading property")
 			if reader.IsNil() {
 				_map = nil
@@ -451,7 +451,7 @@ func DeserializeIfArgs(argsBuf []byte) *MethodArgsIf {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
 		switch field {
-		case "m_if":
+		case "if":
 			reader.Context().Push(field, "Else", "type found, reading property")
 			if v := ElseRead(reader); v != nil {
 				_if = *v

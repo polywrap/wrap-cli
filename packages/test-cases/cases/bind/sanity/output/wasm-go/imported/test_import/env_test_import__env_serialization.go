@@ -137,20 +137,20 @@ func readTestImport_Env(reader msgpack.Read) *TestImport_Env {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
 		switch field {
-		case "Object":
+		case "object":
 			reader.Context().Push(field, "TestImport_AnotherObject", "type found, reading property")
 			if v := TestImport_AnotherObjectRead(reader); v != nil {
 				_object = *v
 			}
 			_objectSet = true
 			reader.Context().Pop()
-		case "OptObject":
+		case "optObject":
 			reader.Context().Push(field, "*TestImport_AnotherObject", "type found, reading property")
 			if v := TestImport_AnotherObjectRead(reader); v != nil {
 				_optObject = v
 			}
 			reader.Context().Pop()
-		case "ObjectArray":
+		case "objectArray":
 			reader.Context().Push(field, "[]TestImport_AnotherObject", "type found, reading property")
 			if reader.IsNil() {
 				_objectArray = nil
@@ -165,7 +165,7 @@ func readTestImport_Env(reader msgpack.Read) *TestImport_Env {
 			}
 			_objectArraySet = true
 			reader.Context().Pop()
-		case "OptObjectArray":
+		case "optObjectArray":
 			reader.Context().Push(field, "[]*TestImport_AnotherObject", "type found, reading property")
 			if reader.IsNil() {
 				_optObjectArray = nil
@@ -179,13 +179,13 @@ func readTestImport_Env(reader msgpack.Read) *TestImport_Env {
 				}
 			}
 			reader.Context().Pop()
-		case "En":
+		case "en":
 			reader.Context().Push(field, "TestImport_Enum", "type found, reading property")
 			_en = TestImport_Enum(reader.ReadI32())
 			SanitizeTestImport_EnumValue(int32(_en))
 			_enSet = true
 			reader.Context().Pop()
-		case "OptEnum":
+		case "optEnum":
 			reader.Context().Push(field, "*TestImport_Enum", "type found, reading property")
 			if !reader.IsNil() {
 				v := TestImport_Enum(reader.ReadI32())
@@ -193,7 +193,7 @@ func readTestImport_Env(reader msgpack.Read) *TestImport_Env {
 				_optEnum = &v
 			}
 			reader.Context().Pop()
-		case "EnumArray":
+		case "enumArray":
 			reader.Context().Push(field, "[]TestImport_Enum", "type found, reading property")
 			if reader.IsNil() {
 				_enumArray = nil
@@ -207,7 +207,7 @@ func readTestImport_Env(reader msgpack.Read) *TestImport_Env {
 			}
 			_enumArraySet = true
 			reader.Context().Pop()
-		case "OptEnumArray":
+		case "optEnumArray":
 			reader.Context().Push(field, "[]*TestImport_Enum", "type found, reading property")
 			if reader.IsNil() {
 				_optEnumArray = nil

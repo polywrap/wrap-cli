@@ -63,7 +63,7 @@ func read{{#toUpper}}{{type}}{{/toUpper}}(reader msgpack.Read) *{{#toUpper}}{{ty
 		reader.Context().Push(field, "unknown", "searching for property type")
 		switch field {
 		{{#properties}}
-		case "{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}":
+		case "{{name}}":
 			reader.Context().Push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property")
 			{{#scalar}}
 			{{> deserialize_scalar}}

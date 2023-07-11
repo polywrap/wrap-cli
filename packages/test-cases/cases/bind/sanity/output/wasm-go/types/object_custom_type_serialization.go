@@ -655,126 +655,126 @@ func readCustomType(reader msgpack.Read) *CustomType {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
 		switch field {
-		case "Str":
+		case "str":
 			reader.Context().Push(field, "string", "type found, reading property")
 			_str = reader.ReadString()
 			_strSet = true
 			reader.Context().Pop()
-		case "OptStr":
+		case "optStr":
 			reader.Context().Push(field, "*string", "type found, reading property")
 			if !reader.IsNil() {
 				v := reader.ReadString()
 				_optStr = &v
 			}
 			reader.Context().Pop()
-		case "U":
+		case "u":
 			reader.Context().Push(field, "uint32", "type found, reading property")
 			_u = reader.ReadU32()
 			_uSet = true
 			reader.Context().Pop()
-		case "OptU":
+		case "optU":
 			reader.Context().Push(field, "*uint32", "type found, reading property")
 			if !reader.IsNil() {
 				v := reader.ReadU32()
 				_optU = &v
 			}
 			reader.Context().Pop()
-		case "M_u8":
+		case "u8":
 			reader.Context().Push(field, "uint8", "type found, reading property")
 			_u8 = reader.ReadU8()
 			_u8Set = true
 			reader.Context().Pop()
-		case "M_u16":
+		case "u16":
 			reader.Context().Push(field, "uint16", "type found, reading property")
 			_u16 = reader.ReadU16()
 			_u16Set = true
 			reader.Context().Pop()
-		case "M_u32":
+		case "u32":
 			reader.Context().Push(field, "uint32", "type found, reading property")
 			_u32 = reader.ReadU32()
 			_u32Set = true
 			reader.Context().Pop()
-		case "I":
+		case "i":
 			reader.Context().Push(field, "int32", "type found, reading property")
 			_i = reader.ReadI32()
 			_iSet = true
 			reader.Context().Pop()
-		case "M_i8":
+		case "i8":
 			reader.Context().Push(field, "int8", "type found, reading property")
 			_i8 = reader.ReadI8()
 			_i8Set = true
 			reader.Context().Pop()
-		case "M_i16":
+		case "i16":
 			reader.Context().Push(field, "int16", "type found, reading property")
 			_i16 = reader.ReadI16()
 			_i16Set = true
 			reader.Context().Pop()
-		case "M_i32":
+		case "i32":
 			reader.Context().Push(field, "int32", "type found, reading property")
 			_i32 = reader.ReadI32()
 			_i32Set = true
 			reader.Context().Pop()
-		case "Bigint":
+		case "bigint":
 			reader.Context().Push(field, "*big.Int", "type found, reading property")
 			_bigint = reader.ReadBigInt()
 			_bigintSet = true
 			reader.Context().Pop()
-		case "OptBigint":
+		case "optBigint":
 			reader.Context().Push(field, "*big.Int", "type found, reading property")
 			if !reader.IsNil() {
 				v := reader.ReadBigInt()
 				_optBigint = v
 			}
 			reader.Context().Pop()
-		case "Bignumber":
+		case "bignumber":
 			reader.Context().Push(field, "*big.Int", "type found, reading property")
 			_bignumber = reader.ReadBigInt()
 			_bignumberSet = true
 			reader.Context().Pop()
-		case "OptBignumber":
+		case "optBignumber":
 			reader.Context().Push(field, "*big.Int", "type found, reading property")
 			if !reader.IsNil() {
 				v := reader.ReadBigInt()
 				_optBignumber = v
 			}
 			reader.Context().Pop()
-		case "Json":
+		case "json":
 			reader.Context().Push(field, "*fastjson.Value", "type found, reading property")
 			_json = reader.ReadJson()
 			_jsonSet = true
 			reader.Context().Pop()
-		case "OptJson":
+		case "optJson":
 			reader.Context().Push(field, "*fastjson.Value", "type found, reading property")
 			if !reader.IsNil() {
 				v := reader.ReadJson()
 				_optJson = v
 			}
 			reader.Context().Pop()
-		case "Bytes":
+		case "bytes":
 			reader.Context().Push(field, "[]byte", "type found, reading property")
 			_bytes = reader.ReadBytes()
 			_bytesSet = true
 			reader.Context().Pop()
-		case "OptBytes":
+		case "optBytes":
 			reader.Context().Push(field, "[]byte", "type found, reading property")
 			if !reader.IsNil() {
 				v := reader.ReadBytes()
 				_optBytes = v
 			}
 			reader.Context().Pop()
-		case "M_boolean":
+		case "boolean":
 			reader.Context().Push(field, "bool", "type found, reading property")
 			_boolean = reader.ReadBool()
 			_booleanSet = true
 			reader.Context().Pop()
-		case "OptBoolean":
+		case "optBoolean":
 			reader.Context().Push(field, "*bool", "type found, reading property")
 			if !reader.IsNil() {
 				v := reader.ReadBool()
 				_optBoolean = &v
 			}
 			reader.Context().Pop()
-		case "U_array":
+		case "u_array":
 			reader.Context().Push(field, "[]uint32", "type found, reading property")
 			if reader.IsNil() {
 				_u_array = nil
@@ -787,7 +787,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 			}
 			_u_arraySet = true
 			reader.Context().Pop()
-		case "UOpt_array":
+		case "uOpt_array":
 			reader.Context().Push(field, "[]uint32", "type found, reading property")
 			if reader.IsNil() {
 				_uOpt_array = nil
@@ -814,7 +814,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 				}
 			}
 			reader.Context().Pop()
-		case "OptStrOptArray":
+		case "optStrOptArray":
 			reader.Context().Push(field, "[]*string", "type found, reading property")
 			if reader.IsNil() {
 				_optStrOptArray = nil
@@ -829,7 +829,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 				}
 			}
 			reader.Context().Pop()
-		case "UArrayArray":
+		case "uArrayArray":
 			reader.Context().Push(field, "[][]uint32", "type found, reading property")
 			if reader.IsNil() {
 				_uArrayArray = nil
@@ -850,7 +850,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 			}
 			_uArrayArraySet = true
 			reader.Context().Pop()
-		case "UOptArrayOptArray":
+		case "uOptArrayOptArray":
 			reader.Context().Push(field, "[][]*uint32", "type found, reading property")
 			if reader.IsNil() {
 				_uOptArrayOptArray = nil
@@ -874,7 +874,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 			}
 			_uOptArrayOptArraySet = true
 			reader.Context().Pop()
-		case "UArrayOptArrayArray":
+		case "uArrayOptArrayArray":
 			reader.Context().Push(field, "[][][]uint32", "type found, reading property")
 			if reader.IsNil() {
 				_uArrayOptArrayArray = nil
@@ -903,7 +903,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 			}
 			_uArrayOptArrayArraySet = true
 			reader.Context().Pop()
-		case "CrazyArray":
+		case "crazyArray":
 			reader.Context().Push(field, "[][][][]uint32", "type found, reading property")
 			if reader.IsNil() {
 				_crazyArray = nil
@@ -939,20 +939,20 @@ func readCustomType(reader msgpack.Read) *CustomType {
 				}
 			}
 			reader.Context().Pop()
-		case "Object":
+		case "object":
 			reader.Context().Push(field, "AnotherType", "type found, reading property")
 			if v := AnotherTypeRead(reader); v != nil {
 				_object = *v
 			}
 			_objectSet = true
 			reader.Context().Pop()
-		case "OptObject":
+		case "optObject":
 			reader.Context().Push(field, "*AnotherType", "type found, reading property")
 			if v := AnotherTypeRead(reader); v != nil {
 				_optObject = v
 			}
 			reader.Context().Pop()
-		case "ObjectArray":
+		case "objectArray":
 			reader.Context().Push(field, "[]AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_objectArray = nil
@@ -967,7 +967,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 			}
 			_objectArraySet = true
 			reader.Context().Pop()
-		case "OptObjectArray":
+		case "optObjectArray":
 			reader.Context().Push(field, "[]*AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_optObjectArray = nil
@@ -981,13 +981,13 @@ func readCustomType(reader msgpack.Read) *CustomType {
 				}
 			}
 			reader.Context().Pop()
-		case "En":
+		case "en":
 			reader.Context().Push(field, "CustomEnum", "type found, reading property")
 			_en = CustomEnum(reader.ReadI32())
 			SanitizeCustomEnumValue(int32(_en))
 			_enSet = true
 			reader.Context().Pop()
-		case "OptEnum":
+		case "optEnum":
 			reader.Context().Push(field, "*CustomEnum", "type found, reading property")
 			if !reader.IsNil() {
 				v := CustomEnum(reader.ReadI32())
@@ -995,7 +995,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 				_optEnum = &v
 			}
 			reader.Context().Pop()
-		case "EnumArray":
+		case "enumArray":
 			reader.Context().Push(field, "[]CustomEnum", "type found, reading property")
 			if reader.IsNil() {
 				_enumArray = nil
@@ -1009,7 +1009,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 			}
 			_enumArraySet = true
 			reader.Context().Pop()
-		case "OptEnumArray":
+		case "optEnumArray":
 			reader.Context().Push(field, "[]*CustomEnum", "type found, reading property")
 			if reader.IsNil() {
 				_optEnumArray = nil
@@ -1025,7 +1025,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 				}
 			}
 			reader.Context().Pop()
-		case "M_map":
+		case "map":
 			reader.Context().Push(field, "map[string]int32", "type found, reading property")
 			if reader.IsNil() {
 				_map = nil
@@ -1039,7 +1039,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 			}
 			_mapSet = true
 			reader.Context().Pop()
-		case "MapOfArr":
+		case "mapOfArr":
 			reader.Context().Push(field, "map[string][]int32", "type found, reading property")
 			if reader.IsNil() {
 				_mapOfArr = nil
@@ -1061,7 +1061,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 			}
 			_mapOfArrSet = true
 			reader.Context().Pop()
-		case "MapOfObj":
+		case "mapOfObj":
 			reader.Context().Push(field, "map[string]AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_mapOfObj = nil
@@ -1077,7 +1077,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 			}
 			_mapOfObjSet = true
 			reader.Context().Pop()
-		case "MapOfArrOfObj":
+		case "mapOfArrOfObj":
 			reader.Context().Push(field, "map[string][]AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_mapOfArrOfObj = nil
@@ -1101,7 +1101,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 			}
 			_mapOfArrOfObjSet = true
 			reader.Context().Pop()
-		case "MapCustomValue":
+		case "mapCustomValue":
 			reader.Context().Push(field, "map[string]*CustomMapValue", "type found, reading property")
 			if reader.IsNil() {
 				_mapCustomValue = nil
