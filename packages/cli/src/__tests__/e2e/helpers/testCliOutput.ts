@@ -19,9 +19,7 @@ export const testCliOutput = (
     )
   );
 
-  if (expected.exitCode && exitCode !== expected.exitCode) {
-    console.error(error)
-  } else if (exitCode !== 0) {
+  if (expected.exitCode !== expected.exitCode) {
     console.error(error)
   }
 

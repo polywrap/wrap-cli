@@ -1,9 +1,9 @@
 import { GenerateBindingFn } from "./types";
 import { BindLanguage } from "../";
-import * as TypeScript from "./typescript";
+import * as Rust from "./rust";
 import * as WrapBindgen from "./wrap-bindgen";
 
-export { TypeScript };
+export { Rust };
 export * from "./types";
 export * from "./utils";
 
@@ -13,7 +13,7 @@ export function getGenerateBindingFn(
   switch (bindLanguage) {
     case "wrap-as":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/wrap-assemblyscript"
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/wrap-assemblyscript"
       );
     case "wrap-rs":
       return WrapBindgen.getGenerateBindingFn(
@@ -21,23 +21,23 @@ export function getGenerateBindingFn(
       );
     case "plugin-ts":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/plugin-typescript"
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/plugin-typescript"
       );
     case "plugin-rs":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/plugin-rust"
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/plugin-rust"
       );
     case "plugin-py":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/plugin-python"
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/plugin-python"
       );
     case "plugin-kt":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/plugin-kotlin"
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/plugin-kotlin"
       );
     case "app-ts":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/dev/implementations/app-typescript"
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/app-typescript"
       );
     default:
       throw Error(`Error: Language binding unsupported - ${bindLanguage}`);
