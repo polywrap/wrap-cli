@@ -3,6 +3,7 @@ if value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}{
 } else if len(value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}{{#lastFullIter}}i{{/lastFullIter}}) == 0 {
 	writer.WriteNil()
 } else {
+	writer.WriteArrayLength(uint32(len(value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}{{#lastFullIter}}i{{/lastFullIter}})))
 	for {{#nextIter}}i{{/nextIter}} := range value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}{{#prevFullIter}}i{{/prevFullIter}} {
 		{{#scalar}}
 		{{> serialize_scalar}}
