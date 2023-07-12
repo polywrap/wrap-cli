@@ -4,6 +4,7 @@ import { renderTemplates } from "../..";
 import { loadSubTemplates } from "../../utils";
 import { BindOptions, BindOutput } from "../../..";
 import { reservedWordsAS } from "../reservedWords";
+import * as Transforms from "../transforms";
 
 import {
   Abi,
@@ -268,6 +269,7 @@ function applyTransforms(abi: Abi): Abi {
     extendType(Functions),
     addFirstLast,
     toPrefixedGraphQLType,
+    Transforms.propertyDeps(),
   ];
 
   for (const transform of transforms) {
