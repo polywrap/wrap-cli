@@ -45,7 +45,9 @@ export const generateBinding: GenerateBindingFn = (
   const goImport = options.config?.goModuleName;
 
   if (!goImport) {
-    throw Error("wasm/golang bindings requires the config property 'goModuleName' to be set");
+    throw Error(
+      "wasm/golang bindings requires the config property 'goModuleName' to be set"
+    );
   }
 
   // Generate object type folders

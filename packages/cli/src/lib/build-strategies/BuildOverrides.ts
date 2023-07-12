@@ -5,9 +5,7 @@ import path from "path";
 import fs from "fs";
 
 export interface BuildOverrides {
-  validateManifest?: (
-    manifest: PolywrapManifest
-  ) => Promise<void>;
+  validateManifest?: (manifest: PolywrapManifest) => Promise<void>;
 
   sourcesSubDirectory?: string;
 }

@@ -144,10 +144,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
         fse.copySync(
           path.join(manifestDir, sourcesSubDirectory),
-          path.join(
-            this._volumePaths.project,
-            sourcesSubDirectory
-          )
+          path.join(this._volumePaths.project, sourcesSubDirectory)
         );
 
         const scriptTemplate = fse.readFileSync(

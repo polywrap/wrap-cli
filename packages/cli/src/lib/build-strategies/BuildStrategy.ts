@@ -49,9 +49,7 @@ export abstract class BuildStrategy<TBuildReturn = unknown> {
 
     // If they do, ensure the manifest if valid before build starts
     if (this.overrides && this.overrides.validateManifest) {
-      await this.overrides.validateManifest(
-        await this.project.getManifest()
-      );
+      await this.overrides.validateManifest(await this.project.getManifest());
     }
 
     return this.buildSources();

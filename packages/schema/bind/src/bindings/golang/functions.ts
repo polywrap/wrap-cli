@@ -102,9 +102,7 @@ export const makeImports: MustacheFn = () => {
     for (let t of types) {
       t = t.trim();
       if (t.endsWith("big.Int")) {
-        exist[
-          "github.com/polywrap/go-wrap/msgpack/big"
-        ] = true;
+        exist["github.com/polywrap/go-wrap/msgpack/big"] = true;
       } else if (t.endsWith("fastjson.Value")) {
         exist["github.com/valyala/fastjson"] = true;
       } else if (/([^/\s]+\/)(.*)/.test(t)) {

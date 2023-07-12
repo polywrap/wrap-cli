@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 const types = {
   u8: "u8",
   u16: "u16",
