@@ -16,3 +16,17 @@ export type BaseType = keyof BaseTypes;
 export function isBaseType(type: string): type is BaseType {
   return type in types;
 }
+
+const builtInTypes = {
+  BigInt: "BigInt",
+  BigNumber: "BigNumber",
+  JSON: "JSON",
+};
+
+export type BuiltInTypes = typeof builtInTypes;
+
+export type BuiltInType = keyof BuiltInTypes;
+
+export function isBuiltInType(type: string): type is BuiltInType {
+  return type in builtInTypes;
+}
