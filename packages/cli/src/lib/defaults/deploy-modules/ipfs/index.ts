@@ -2,7 +2,10 @@ import { DeployModule } from "../../../deploy";
 
 import { Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
-import { PolywrapClientConfigBuilder, Web3 } from "@polywrap/client-config-builder-js";
+import {
+  PolywrapClientConfigBuilder,
+  Web3,
+} from "@polywrap/client-config-builder-js";
 import fs from "fs";
 
 const isValidUri = (uri: Uri) =>
