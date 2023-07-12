@@ -63,6 +63,8 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
       defaultNetwork: network,
     });
 
+    const ensUri = "wrap://redirect/ens";
+
     const clientConfig = new PolywrapClientConfigBuilder()
       .addDefaults()
       .setPackage(
@@ -71,13 +73,17 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
           connections: connections,
         }) as IWrapPackage
       )
+      .setRedirect(
+        ensUri,
+        "wrap://ipfs/QmQS8cr21euKYW7hWAhiSYXgvdcAtbPbynKqRW2CzAJPYe"
+      )
       .build();
 
     const client = new PolywrapClient(clientConfig);
 
     const signerAddress = await client.invoke<string>({
       method: "getSignerAddress",
-      uri: "ens/wraps.eth:ethereum@2.0.0",
+      uri: "ens/ethers.wraps.eth:0.1.0",
       args: {
         connection: {
           networkNameOrChainId: network,
@@ -93,7 +99,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
       { tx: { hash: string }; didRegister: boolean }[]
     >({
       method: "registerDomainAndSubdomainsRecursively",
-      uri: "ens/wraps.eth:ens@1.1.0",
+      uri: ensUri,
       args: {
         domain: ensDomain,
         owner: signerAddress.value,
@@ -120,7 +126,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
         client,
         {
           method: "awaitTransaction",
-          uri: Uri.from("ens/wraps.eth:ethereum@2.0.0"),
+          uri: Uri.from("ens/ethers.wraps.eth:0.1.0"),
           args: {
             txHash: registerData.value[0].tx.hash,
             connection: {
