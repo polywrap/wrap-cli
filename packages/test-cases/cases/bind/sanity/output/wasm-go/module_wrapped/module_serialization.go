@@ -2,7 +2,7 @@ package module_wrapped
 
 import (
 	. "github.com/testorg/testrepo/module/wrap/types"
-	"github.com/polywrap/go-wrap/polywrap/msgpack"
+	"github.com/polywrap/go-wrap/msgpack"
 )
 
 func DeserializeModuleMethodArgs(argsBuf []byte) *MethodArgsModuleMethod {

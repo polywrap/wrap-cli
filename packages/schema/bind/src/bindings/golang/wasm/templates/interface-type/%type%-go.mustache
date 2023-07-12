@@ -3,7 +3,7 @@ package interfaces
 {{#capabilities}}
 {{#getImplementations}}
 {{#enabled}}
-import "github.com/polywrap/go-wrap/polywrap"
+import "github.com/polywrap/go-wrap/wrap"
 {{/enabled}}
 {{/getImplementations}}
 {{/capabilities}}
@@ -12,7 +12,7 @@ import "github.com/polywrap/go-wrap/polywrap"
 {{#getImplementations}}
 {{#enabled}}
 func {{#toUpper}}{{namespace}}{{/toUpper}}Implementations() []string {
-	return polywrap.WrapGetImplementations("{{uri}}")
+	return wrap.WrapGetImplementations("{{uri}}")
 }
 {{/enabled}}
 {{/getImplementations}}

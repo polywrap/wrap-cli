@@ -2,7 +2,7 @@ package {{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}}
 
 {{#methods.length}}
 import (
-	"github.com/polywrap/go-wrap/polywrap"
+	"github.com/polywrap/go-wrap/wrap"
 )
 {{/methods.length}}
 
@@ -15,7 +15,7 @@ func {{#toUpper}}{{type}}{{/toUpper}}{{#toUpper}}{{name}}{{/toUpper}}(args *Args
 		raw []byte
 		data {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}
 	)
-	raw, err = polywrap.WrapSubinvoke("{{uri}}", "{{name}}", argsBuf)
+	raw, err = wrap.WrapSubinvoke("{{uri}}", "{{name}}", argsBuf)
 	if err == nil {
 		data = Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(raw)
 	}
@@ -35,7 +35,7 @@ func {{#toUpper}}{{type}}{{/toUpper}}{{#toUpper}}{{name}}{{/toUpper}}(uri string
 		raw []byte
 		data {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}
 	)
-	raw, err = polywrap.WrapSubinvokeImplementation("{{uri}}", uri, "{{name}}", argsBuf)
+	raw, err = wrap.WrapSubinvokeImplementation("{{uri}}", uri, "{{name}}", argsBuf)
 	if err == nil {
 		data = Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(raw)
 	}

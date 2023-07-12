@@ -2,23 +2,23 @@ package main
 
 import (
 	"github.com/testorg/testrepo/module/wrap/module_wrapped"
-	"github.com/polywrap/go-wrap/polywrap"
+	"github.com/polywrap/go-wrap/wrap"
 )
 
 //export _wrap_invoke
 func _wrap_invoke(methodSize, argsSize, envSize uint32) bool {
-	args := polywrap.WrapInvokeArgs(methodSize, argsSize)
+	args := wrap.WrapInvokeArgs(methodSize, argsSize)
 	switch args.Method {
 	case "moduleMethod":
-		return polywrap.WrapInvoke(args, envSize, module_wrapped.ModuleMethodWrapped)
+		return wrap.WrapInvoke(args, envSize, module_wrapped.ModuleMethodWrapped)
 	case "objectMethod":
-		return polywrap.WrapInvoke(args, envSize, module_wrapped.ObjectMethodWrapped)
+		return wrap.WrapInvoke(args, envSize, module_wrapped.ObjectMethodWrapped)
 	case "optionalEnvMethod":
-		return polywrap.WrapInvoke(args, envSize, module_wrapped.OptionalEnvMethodWrapped)
+		return wrap.WrapInvoke(args, envSize, module_wrapped.OptionalEnvMethodWrapped)
 	case "if":
-		return polywrap.WrapInvoke(args, envSize, module_wrapped.IfWrapped)
+		return wrap.WrapInvoke(args, envSize, module_wrapped.IfWrapped)
 	default:
-		return polywrap.WrapInvoke(args, envSize, nil)
+		return wrap.WrapInvoke(args, envSize, nil)
 	}
 }
 

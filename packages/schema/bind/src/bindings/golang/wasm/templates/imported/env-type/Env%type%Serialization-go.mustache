@@ -1,6 +1,6 @@
 package {{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}}
 {{#makeImports}}
-	github.com/polywrap/go-wrap/polywrap/msgpack,
+	github.com/polywrap/go-wrap/msgpack,
 	{{#properties}}
 		{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}
 	{{/properties}}

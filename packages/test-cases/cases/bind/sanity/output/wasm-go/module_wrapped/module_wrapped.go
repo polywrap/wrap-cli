@@ -2,7 +2,7 @@ package module_wrapped
 
 import (
 	. "github.com/testorg/testrepo/module/wrap/types"
-	"github.com/polywrap/go-wrap/polywrap"
+	"github.com/polywrap/go-wrap/wrap"
 	methods "github.com/testorg/testrepo/module"
 )
 
@@ -20,7 +20,7 @@ func ObjectMethodWrapped(argsBuf []byte, envSize uint32) []byte {
 		panic("Environment is not set, and it is required by method 'objectMethod'")
 	}
 	if envSize > 0 {
-		envBuf := polywrap.WrapLoadEnv(envSize)
+		envBuf := wrap.WrapLoadEnv(envSize)
 		env = EnvFromBuffer(envBuf)
 	}
 
@@ -33,7 +33,7 @@ func ObjectMethodWrapped(argsBuf []byte, envSize uint32) []byte {
 func OptionalEnvMethodWrapped(argsBuf []byte, envSize uint32) []byte {
 	var env *Env
 	if envSize > 0 {
-		envBuf := polywrap.WrapLoadEnv(envSize)
+		envBuf := wrap.WrapLoadEnv(envSize)
 		env = EnvFromBuffer(envBuf)
 	}
 

@@ -1,6 +1,6 @@
 package module_wrapped
 {{#makeImports}}
-	{{#methods}}{{#env}}github.com/polywrap/go-wrap/polywrap,. {{goImport}}/module/wrap/types,{{/env}}{{/methods}}
+	{{#methods}}{{#env}}github.com/polywrap/go-wrap/wrap,. {{goImport}}/module/wrap/types,{{/env}}{{/methods}}
 	{{goImport}}/module as methods,
 {{/makeImports}}
 {{#methods}}
@@ -13,7 +13,7 @@ func {{#toUpper}}{{name}}{{/toUpper}}Wrapped(argsBuf []byte, envSize uint32) []b
 	}
 	{{/required}}
 	if envSize > 0 {
-		envBuf := polywrap.WrapLoadEnv(envSize)
+		envBuf := wrap.WrapLoadEnv(envSize)
 		env = EnvFromBuffer(envBuf)
 	}
 	{{/env}}
