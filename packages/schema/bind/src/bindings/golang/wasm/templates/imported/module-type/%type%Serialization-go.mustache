@@ -24,6 +24,10 @@ func Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(value *Args{{#toUpper}}{{name
 func Write{{#toUpper}}{{name}}{{/toUpper}}Args(writer msgpack.Write, value *Args{{#toUpper}}{{name}}{{/toUpper}}) {
 	{{#arguments.length}}
 	writer.WriteMapLength({{arguments.length}})
+	{{/arguments.length}}
+	{{^arguments}}
+	writer.WriteMapLength(0)
+	{{/arguments}}
 	{{#arguments}}
 	writer.Context().Push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property")
 	writer.WriteString("{{name}}")
@@ -48,7 +52,6 @@ func Write{{#toUpper}}{{name}}{{/toUpper}}Args(writer msgpack.Write, value *Args
 	{{/enum}}
 	writer.Context().Pop()
 	{{/arguments}}
-	{{/arguments.length}}
 }
 
 func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(argsBuf []byte) {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
