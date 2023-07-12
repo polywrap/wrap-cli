@@ -13,7 +13,6 @@ Commands:
   codegen|g [options]          Generate Code For Polywrap Projects
   create|c                     Create New Projects
   deploy|d [options]           Deploys Polywrap Projects
-  docgen|o [options] <action>  Generate wrapper documentation
   infra|i [options] <action>   Modular Infrastructure-As-Code Orchestrator
   manifest|m                   Inspect & Migrade Polywrap Manifests
   test|t [options]             Execute Tests
