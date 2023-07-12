@@ -10,4 +10,6 @@ COPY --from=rust /usr/local/cargo/bin/wasm-snip /usr/local/bin/
 # Copy wasm-target.json
 COPY wasm-target.json /usr/local/tinygo/targets/
 
+USER root
+
 WORKDIR /project
