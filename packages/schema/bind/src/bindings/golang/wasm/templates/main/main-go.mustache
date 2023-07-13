@@ -1,0 +1,24 @@
+package main
+
+import (
+	"{{goImport}}/module/wrap/module_wrapped"
+	"github.com/polywrap/go-wrap/wrap"
+)
+
+//export _wrap_invoke
+func _wrap_invoke(methodSize, argsSize, envSize uint32) bool {
+	args := wrap.WrapInvokeArgs(methodSize, argsSize)
+	switch args.Method {
+	{{#moduleType}}
+	{{#methods}}
+	case "{{name}}":
+		return wrap.WrapInvoke(args, envSize, module_wrapped.{{#toUpper}}{{name}}{{/toUpper}}Wrapped)
+	{{/methods}}
+	{{/moduleType}}
+	default:
+		return wrap.WrapInvoke(args, envSize, nil)
+	}
+}
+
+func main() {
+}

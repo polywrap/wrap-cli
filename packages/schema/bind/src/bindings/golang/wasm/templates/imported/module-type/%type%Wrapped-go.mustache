@@ -1,0 +1,48 @@
+package {{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}}
+
+{{#methods.length}}
+import (
+	"github.com/polywrap/go-wrap/wrap"
+)
+{{/methods.length}}
+
+{{^isInterface}}
+{{#methods}}
+func {{#toUpper}}{{name}}{{/toUpper}}(args *Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
+	argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
+	var (
+		err error
+		raw []byte
+		data {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}
+	)
+	raw, err = wrap.WrapSubinvoke("{{uri}}", "{{name}}", argsBuf)
+	if err == nil {
+		data = Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(raw)
+	}
+	return data, err
+}
+{{^last}}
+
+{{/last}}
+{{/methods}}
+{{/isInterface}}
+{{#isInterface}}
+{{#methods}}
+func {{#toUpper}}{{name}}{{/toUpper}}(uri string, args *Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
+	argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
+	var (
+		err error
+		raw []byte
+		data {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}
+	)
+	raw, err = wrap.WrapSubinvokeImplementation("{{uri}}", uri, "{{name}}", argsBuf)
+	if err == nil {
+		data = Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(raw)
+	}
+	return data, err
+}
+{{^last}}
+
+{{/last}}
+{{/methods}}
+{{/isInterface}}

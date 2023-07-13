@@ -1,0 +1,110 @@
+package types
+{{#makeImports}}
+	github.com/polywrap/go-wrap/msgpack,
+	{{#properties}}
+		{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}
+	{{/properties}}
+{{/makeImports}}
+func serialize{{#toUpper}}{{type}}{{/toUpper}}(value *{{#toUpper}}{{type}}{{/toUpper}}) []byte {
+	ctx := msgpack.NewContext("Serializing (encoding) env-type: {{#toUpper}}{{type}}{{/toUpper}}")
+	encoder := msgpack.NewWriteEncoder(ctx)
+	write{{#toUpper}}{{type}}{{/toUpper}}(encoder, value)
+	return encoder.Buffer()
+}
+
+func write{{#toUpper}}{{type}}{{/toUpper}}(writer msgpack.Write, value *{{#toUpper}}{{type}}{{/toUpper}}) {
+	writer.WriteMapLength({{properties.length}})
+	{{#properties}}
+	writer.Context().Push("{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property")
+	writer.WriteString("{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}")
+	{{#scalar}}
+	{{> serialize_scalar}}
+	{{/scalar}}
+	{{#array}}
+	{{#startIter}}{{/startIter}}
+	{{> serialize_array}}
+	{{#stopIter}}{{/stopIter}}
+	{{/array}}
+	{{#map}}
+	{{#startIter}}{{/startIter}}
+	{{> serialize_map}}
+	{{#stopIter}}{{/stopIter}}
+	{{/map}}
+	{{#object}}
+	{{> serialize_object}}
+	{{/object}}
+	{{#enum}}
+	{{> serialize_enum}}
+	{{/enum}}
+	writer.Context().Pop()
+	{{/properties}}
+}
+
+func deserialize{{#toUpper}}{{type}}{{/toUpper}}(data []byte) *{{#toUpper}}{{type}}{{/toUpper}} {
+	ctx := msgpack.NewContext("Deserializing (decoding) env-type: {{#toUpper}}{{type}}{{/toUpper}}")
+	reader := msgpack.NewReadDecoder(ctx, data)
+	return read{{#toUpper}}{{type}}{{/toUpper}}(reader)
+}
+
+func read{{#toUpper}}{{type}}{{/toUpper}}(reader msgpack.Read) *{{#toUpper}}{{type}}{{/toUpper}} {
+	var (
+	{{#stuctProps}}
+	{{#properties}}
+	_{{name}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+	{{#required}}
+	_{{name}}Set bool
+	{{/required}}
+	{{/properties}}
+	{{/stuctProps}}
+	)
+
+	for i := int32(reader.ReadMapLength()); i > 0; i-- {
+		field := reader.ReadString()
+		reader.Context().Push(field, "unknown", "searching for property type")
+		switch field {
+		{{#properties}}
+		case "{{name}}":
+			reader.Context().Push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property")
+			{{#scalar}}
+			{{> deserialize_scalar}}
+			{{/scalar}}
+			{{#enum}}
+			{{> deserialize_enum}}
+			{{/enum}}
+			{{#array}}
+			{{#startIter}}{{/startIter}}
+			{{> deserialize_array}}
+			{{#stopIter}}{{/stopIter}}
+			{{/array}}
+			{{#map}}
+			{{#startIter}}{{/startIter}}
+			{{> deserialize_map}}
+			{{#stopIter}}{{/stopIter}}
+			{{/map}}
+			{{#object}}
+			{{> deserialize_object}}
+			{{/object}}
+			{{#required}}
+			_{{name}}Set = true
+			{{/required}}
+			reader.Context().Pop()
+		{{/properties}}
+		}
+		reader.Context().Pop()
+	}
+
+	{{#properties}}
+	{{#required}}
+	if !_{{name}}Set {
+		panic(reader.Context().PrintWithContext("Missing required property: '{{name}}: {{type}}'"))
+	}
+	{{/required}}
+	{{/properties}}
+	return &{{#toUpper}}{{type}}{{/toUpper}}{
+	{{#stuctProps}}
+	{{#properties}}
+	{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}: _{{name}},
+	{{/properties}}
+	{{/stuctProps}}
+	}
+}

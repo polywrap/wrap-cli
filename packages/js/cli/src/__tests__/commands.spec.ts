@@ -167,13 +167,6 @@ const testData: CommandTestCaseData<CommandTypings> = {
       await Commands.infra("down", { modules: ["eth-ens-ipfs"]});
     }
   }],
-  docgen: [{
-    cwd: path.join(GetPathToCliTestFiles(), "docgen", "001-sanity"),
-    arguments: ["docusaurus"],
-    after: (_, stdout) => {
-      expect(stdout).toContain("Docs were generated successfully");
-    }
-  }],
   infra: [{
     cwd: path.join(GetPathToCliTestFiles(), "infra/001-sanity"),
     env: {

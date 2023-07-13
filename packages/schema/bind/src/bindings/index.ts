@@ -4,8 +4,9 @@ import * as AssemblyScript from "./assemblyscript";
 import * as Rust from "./rust";
 import * as Python from "./python";
 import * as TypeScript from "./typescript";
+import * as Golang from "./golang";
 
-export { AssemblyScript, Rust, TypeScript };
+export { AssemblyScript, Rust, TypeScript, Golang };
 export * from "./types";
 export * from "./utils";
 
@@ -17,6 +18,8 @@ export function getGenerateBindingFn(
       return AssemblyScript.Wasm.generateBinding;
     case "wasm-rs":
       return Rust.Wasm.generateBinding;
+    case "wasm-go":
+      return Golang.Wasm.generateBinding;
     case "plugin-ts":
       return TypeScript.Plugin.generateBinding;
     case "plugin-rs":

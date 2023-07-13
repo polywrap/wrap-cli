@@ -29,6 +29,11 @@ describe("Templates", () => {
       build: "yarn build -m ./polywrap.wasm-rust-linked.yaml",
       test: "yarn test",
     },
+    "wasm/golang": {
+      codegen: "yarn codegen",
+      build: "yarn build",
+      test: "yarn test",
+    },
     "plugin/rust": {
       codegen: "npx polywrap codegen",
       // Uncomment after release of 0.10.3
