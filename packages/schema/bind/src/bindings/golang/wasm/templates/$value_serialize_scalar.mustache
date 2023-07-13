@@ -1,0 +1,13 @@
+{
+	v := value{{#lastFullIter}}i{{/lastFullIter}}
+	{{#required}}
+	writer.Write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(v)
+	{{/required}}
+	{{^required}}
+	if v == nil {
+		writer.WriteNil()
+	} else {
+		{{#writePointer}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}} - v{{/writePointer}}
+	}
+	{{/required}}
+}

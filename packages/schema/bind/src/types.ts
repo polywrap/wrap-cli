@@ -4,6 +4,7 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 export type BindLanguage =
   | "wrap-as"
   | "wrap-rs"
+  | "wrap-go"
   | "plugin-ts"
   | "plugin-rs"
   | "plugin-py"

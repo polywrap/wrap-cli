@@ -7,7 +7,7 @@ import {
   runCommand,
   runCommandSync,
 } from "../../system";
-import { BuildStrategyArgs, BuildStrategy } from "../BuildStrategy";
+import { BuildStrategyConfig, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
 import { logActivity } from "../../logging";
 
@@ -21,8 +21,8 @@ type BuildImageId = string;
 export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
   private _dockerLock: FileLock;
 
-  constructor(args: BuildStrategyArgs) {
-    super(args);
+  constructor(config: BuildStrategyConfig) {
+    super(config);
 
     if (!isDockerInstalled(this.project.logger)) {
       throw new Error(intlMsg.lib_docker_noInstall());

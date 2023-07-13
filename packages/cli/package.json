@@ -1,7 +1,7 @@
 {
   "name": "polywrap",
   "description": "Polywrap CLI",
-  "version": "0.10.6",
+  "version": "0.11.0-pre.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
     "test:e2e:p1": "yarn test:cmd -- ./src/__tests__/e2e/p1/*.spec.ts",
     "test:e2e:p2": "yarn test:cmd -- ./src/__tests__/e2e/p2/*.spec.ts",
     "test:rust": "yarn test:cmd -- --config ./jest.rs.config.js",
+    "test:golang": "yarn test:cmd -- --config ./jest.go.config.js",
     "test:watch": "yarn test -- --watch"
   },
   "resolutions": {
@@ -47,13 +48,13 @@
     "@polywrap/client-js": "0.11.0",
     "@polywrap/core-js": "0.11.0",
     "@polywrap/ethereum-provider-js": "0.3.1",
-    "@polywrap/logging-js": "0.10.6",
-    "@polywrap/os-js": "0.10.6",
-    "@polywrap/polywrap-manifest-types-js": "0.10.6",
+    "@polywrap/logging-js": "0.11.0-pre.0",
+    "@polywrap/os-js": "0.11.0-pre.0",
+    "@polywrap/polywrap-manifest-types-js": "0.11.0-pre.0",
     "@polywrap/result": "0.11.0",
-    "@polywrap/schema-bind": "0.10.6",
-    "@polywrap/schema-compose": "0.10.6",
-    "@polywrap/schema-parse": "0.10.6",
+    "@polywrap/schema-bind": "0.11.0-pre.0",
+    "@polywrap/schema-compose": "0.11.0-pre.0",
+    "@polywrap/schema-parse": "0.11.0-pre.0",
     "@polywrap/uri-resolver-extensions-js": "0.11.0",
     "@polywrap/uri-resolvers-js": "0.11.0",
     "@polywrap/wasm-js": "0.11.0",
@@ -80,7 +81,7 @@
     "yesno": "0.4.0"
   },
   "devDependencies": {
-    "@polywrap/cli-js": "0.10.6",
+    "@polywrap/cli-js": "0.11.0-pre.0",
     "@types/copyfiles": "2.4.0",
     "@types/fs-extra": "9.0.12",
     "@types/jest": "26.0.8",

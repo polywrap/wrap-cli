@@ -152,7 +152,8 @@ export class PolywrapProject extends Project<PolywrapManifest> {
 
   public async generateSchemaBindings(
     abi: WrapAbi,
-    generationSubPath?: string
+    generationSubPath?: string,
+    bindConfig?: Record<string, unknown>
   ): Promise<BindOutput> {
     const codegenDirectory = await this.getGenerationDirectory(
       generationSubPath
@@ -174,6 +175,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
         abi,
       },
       outputDirAbs: codegenDirectory,
+      config: bindConfig,
     };
 
     return bindSchema(options);
