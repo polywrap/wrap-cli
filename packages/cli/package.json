@@ -59,6 +59,8 @@
     "@polywrap/uri-resolvers-js": "0.12.0-pre.1",
     "@polywrap/wasm-js": "0.12.0-pre.1",
     "@polywrap/wrap-manifest-types-js": "0.12.0-pre.1",
+    "@polywrap/web3-config-bundle-js": "0.12.0-pre.1",
+    "@polywrap/sys-config-bundle-js": "0.12.0-pre.1",
     "axios": "0.21.2",
     "chalk": "4.1.0",
     "chokidar": "3.5.1",

@@ -6,7 +6,10 @@ import { invokeWithTimeout } from "./invokeWithTimeout";
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWrapPackage, Uri } from "@polywrap/core-js";
-import { PolywrapClientConfigBuilder, PolywrapClient } from "@polywrap/client-js";
+import {
+  PolywrapClientConfigBuilder,
+  PolywrapClient,
+} from "@polywrap/client-js";
 import * as Web3 from "@polywrap/web3-config-bundle-js";
 import {
   Connection,
