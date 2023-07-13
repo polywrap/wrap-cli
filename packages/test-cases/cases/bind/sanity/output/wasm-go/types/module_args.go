@@ -1,6 +1,6 @@
 package types
 
-type MethodArgsModuleMethod struct {
+type ArgsModuleMethod struct {
 	Str           string `json:"str"`
 	OptStr        *string `json:"optStr"`
 	En            CustomEnum `json:"en"`
@@ -14,20 +14,20 @@ type MethodArgsModuleMethod struct {
 	MapOfArrOfObj map[string][]AnotherType `json:"mapOfArrOfObj"`
 }
 
-type MethodArgsObjectMethod struct {
+type ArgsObjectMethod struct {
 	Object         AnotherType `json:"object"`
 	OptObject      *AnotherType `json:"optObject"`
 	ObjectArray    []AnotherType `json:"objectArray"`
 	OptObjectArray []*AnotherType `json:"optObjectArray"`
 }
 
-type MethodArgsOptionalEnvMethod struct {
+type ArgsOptionalEnvMethod struct {
 	Object         AnotherType `json:"object"`
 	OptObject      *AnotherType `json:"optObject"`
 	ObjectArray    []AnotherType `json:"objectArray"`
 	OptObjectArray []*AnotherType `json:"optObjectArray"`
 }
 
-type MethodArgsIf struct {
+type ArgsIf struct {
 	M_if Else `json:"if"`
 }

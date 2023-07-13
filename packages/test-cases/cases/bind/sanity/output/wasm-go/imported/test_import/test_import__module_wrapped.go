@@ -4,7 +4,7 @@ import (
 	"github.com/polywrap/go-wrap/wrap"
 )
 
-func MethodImportedMethod(uri string, args *ArgsImportedMethod) (*TestImport_Object, error) {
+func ImportedMethod(uri string, args *ArgsImportedMethod) (*TestImport_Object, error) {
 	argsBuf := SerializeImportedMethodArgs(args)
 	var (
 		err error
@@ -18,7 +18,7 @@ func MethodImportedMethod(uri string, args *ArgsImportedMethod) (*TestImport_Obj
 	return data, err
 }
 
-func MethodAnotherMethod(uri string, args *ArgsAnotherMethod) (int32, error) {
+func AnotherMethod(uri string, args *ArgsAnotherMethod) (int32, error) {
 	argsBuf := SerializeAnotherMethodArgs(args)
 	var (
 		err error
@@ -32,7 +32,7 @@ func MethodAnotherMethod(uri string, args *ArgsAnotherMethod) (int32, error) {
 	return data, err
 }
 
-func MethodReturnsArrayOfEnums(uri string, args *ArgsReturnsArrayOfEnums) ([]*TestImport_Enum_Return, error) {
+func ReturnsArrayOfEnums(uri string, args *ArgsReturnsArrayOfEnums) ([]*TestImport_Enum_Return, error) {
 	argsBuf := SerializeReturnsArrayOfEnumsArgs(args)
 	var (
 		err error

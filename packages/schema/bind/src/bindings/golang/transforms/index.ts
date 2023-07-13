@@ -1,1 +1,1 @@
-export * from "./propertyDeps";
+export * from "./moduleNeedsTypes";
