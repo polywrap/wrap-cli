@@ -52,7 +52,7 @@ describe("Polywrap Binding Test Suite", () => {
           bindLanguage: language as BindLanguage,
         };
 
-        if (language == "wasm-go") {
+        if (language == "wrap-go") {
           if (!bindOptions.config) {
             bindOptions.config = {};
           }
