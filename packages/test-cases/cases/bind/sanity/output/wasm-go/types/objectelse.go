@@ -5,7 +5,7 @@ import (
 )
 
 type Else struct {
-	M_else string
+	M_else string `json:"else"`
 }
 
 func ElseToBuffer(value *Else) []byte {

@@ -5,9 +5,9 @@ import (
 )
 
 type AnotherType struct {
-	Prop     *string
-	Circular *CustomType
-	M_const  *string
+	Prop     *string `json:"prop"`
+	Circular *CustomType `json:"circular"`
+	M_const  *string `json:"const"`
 }
 
 func AnotherTypeToBuffer(value *AnotherType) []byte {

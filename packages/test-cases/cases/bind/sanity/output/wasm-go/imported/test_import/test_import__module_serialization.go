@@ -5,19 +5,19 @@ import (
 )
 
 type ArgsImportedMethod struct {
-	Str            string
-	OptStr         *string
-	U              uint32
-	OptU           *uint32
-	UArrayArray    [][]*uint32
-	Object         TestImport_Object
-	OptObject      *TestImport_Object
-	ObjectArray    []TestImport_Object
-	OptObjectArray []*TestImport_Object
-	En             TestImport_Enum
-	OptEnum        *TestImport_Enum
-	EnumArray      []TestImport_Enum
-	OptEnumArray   []*TestImport_Enum
+	Str            string `json:"str"`
+	OptStr         *string `json:"optStr"`
+	U              uint32 `json:"u"`
+	OptU           *uint32 `json:"optU"`
+	UArrayArray    [][]*uint32 `json:"uArrayArray"`
+	Object         TestImport_Object `json:"object"`
+	OptObject      *TestImport_Object `json:"optObject"`
+	ObjectArray    []TestImport_Object `json:"objectArray"`
+	OptObjectArray []*TestImport_Object `json:"optObjectArray"`
+	En             TestImport_Enum `json:"en"`
+	OptEnum        *TestImport_Enum `json:"optEnum"`
+	EnumArray      []TestImport_Enum `json:"enumArray"`
+	OptEnumArray   []*TestImport_Enum `json:"optEnumArray"`
 }
 
 func SerializeImportedMethodArgs(value *ArgsImportedMethod) []byte {
@@ -210,7 +210,7 @@ func DeserializeImportedMethodResult(argsBuf []byte) *TestImport_Object {
 }
 
 type ArgsAnotherMethod struct {
-	Arg []string
+	Arg []string `json:"arg"`
 }
 
 func SerializeAnotherMethodArgs(value *ArgsAnotherMethod) []byte {
@@ -252,7 +252,7 @@ func DeserializeAnotherMethodResult(argsBuf []byte) int32 {
 }
 
 type ArgsReturnsArrayOfEnums struct {
-	Arg string
+	Arg string `json:"arg"`
 }
 
 func SerializeReturnsArrayOfEnumsArgs(value *ArgsReturnsArrayOfEnums) []byte {

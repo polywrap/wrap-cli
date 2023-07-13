@@ -5,7 +5,7 @@ import (
 )
 
 type TestImport_AnotherObject struct {
-	Prop string
+	Prop string `json:"prop"`
 }
 
 func TestImport_AnotherObjectToBuffer(value *TestImport_AnotherObject) []byte {

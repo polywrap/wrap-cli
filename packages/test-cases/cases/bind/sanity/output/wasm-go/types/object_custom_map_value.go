@@ -5,7 +5,7 @@ import (
 )
 
 type CustomMapValue struct {
-	Foo string
+	Foo string `json:"foo"`
 }
 
 func CustomMapValueToBuffer(value *CustomMapValue) []byte {

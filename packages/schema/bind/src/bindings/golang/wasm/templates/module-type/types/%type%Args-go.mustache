@@ -14,7 +14,7 @@ package types
 type MethodArgs{{#toUpper}}{{name}}{{/toUpper}} struct {
 {{#stuctProps}}
 {{#arguments}}
-{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}} `json:"{{name}}"`
 {{/arguments}}
 {{/stuctProps}}
 }

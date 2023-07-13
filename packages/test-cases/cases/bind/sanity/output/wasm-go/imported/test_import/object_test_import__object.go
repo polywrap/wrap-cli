@@ -5,14 +5,14 @@ import (
 )
 
 type TestImport_Object struct {
-	Object         TestImport_AnotherObject
-	OptObject      *TestImport_AnotherObject
-	ObjectArray    []TestImport_AnotherObject
-	OptObjectArray []*TestImport_AnotherObject
-	En             TestImport_Enum
-	OptEnum        *TestImport_Enum
-	EnumArray      []TestImport_Enum
-	OptEnumArray   []*TestImport_Enum
+	Object         TestImport_AnotherObject `json:"object"`
+	OptObject      *TestImport_AnotherObject `json:"optObject"`
+	ObjectArray    []TestImport_AnotherObject `json:"objectArray"`
+	OptObjectArray []*TestImport_AnotherObject `json:"optObjectArray"`
+	En             TestImport_Enum `json:"en"`
+	OptEnum        *TestImport_Enum `json:"optEnum"`
+	EnumArray      []TestImport_Enum `json:"enumArray"`
+	OptEnumArray   []*TestImport_Enum `json:"optEnumArray"`
 }
 
 func TestImport_ObjectToBuffer(value *TestImport_Object) []byte {

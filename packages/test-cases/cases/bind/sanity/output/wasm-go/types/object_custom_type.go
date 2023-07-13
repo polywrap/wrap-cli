@@ -7,48 +7,48 @@ import (
 )
 
 type CustomType struct {
-	Str                 string
-	OptStr              *string
-	U                   uint32
-	OptU                *uint32
-	M_u8                uint8
-	M_u16               uint16
-	M_u32               uint32
-	I                   int32
-	M_i8                int8
-	M_i16               int16
-	M_i32               int32
-	Bigint              *big.Int
-	OptBigint           *big.Int
-	Bignumber           *big.Int
-	OptBignumber        *big.Int
-	Json                *fastjson.Value
-	OptJson             *fastjson.Value
-	Bytes               []byte
-	OptBytes            []byte
-	M_boolean           bool
-	OptBoolean          *bool
-	U_array             []uint32
-	UOpt_array          []uint32
-	_opt_uOptArray      []*uint32
-	OptStrOptArray      []*string
-	UArrayArray         [][]uint32
-	UOptArrayOptArray   [][]*uint32
-	UArrayOptArrayArray [][][]uint32
-	CrazyArray          [][][][]uint32
-	Object              AnotherType
-	OptObject           *AnotherType
-	ObjectArray         []AnotherType
-	OptObjectArray      []*AnotherType
-	En                  CustomEnum
-	OptEnum             *CustomEnum
-	EnumArray           []CustomEnum
-	OptEnumArray        []*CustomEnum
-	M_map               map[string]int32
-	MapOfArr            map[string][]int32
-	MapOfObj            map[string]AnotherType
-	MapOfArrOfObj       map[string][]AnotherType
-	MapCustomValue      map[string]*CustomMapValue
+	Str                 string `json:"str"`
+	OptStr              *string `json:"optStr"`
+	U                   uint32 `json:"u"`
+	OptU                *uint32 `json:"optU"`
+	M_u8                uint8 `json:"u8"`
+	M_u16               uint16 `json:"u16"`
+	M_u32               uint32 `json:"u32"`
+	I                   int32 `json:"i"`
+	M_i8                int8 `json:"i8"`
+	M_i16               int16 `json:"i16"`
+	M_i32               int32 `json:"i32"`
+	Bigint              *big.Int `json:"bigint"`
+	OptBigint           *big.Int `json:"optBigint"`
+	Bignumber           *big.Int `json:"bignumber"`
+	OptBignumber        *big.Int `json:"optBignumber"`
+	Json                *fastjson.Value `json:"json"`
+	OptJson             *fastjson.Value `json:"optJson"`
+	Bytes               []byte `json:"bytes"`
+	OptBytes            []byte `json:"optBytes"`
+	M_boolean           bool `json:"boolean"`
+	OptBoolean          *bool `json:"optBoolean"`
+	U_array             []uint32 `json:"u_array"`
+	UOpt_array          []uint32 `json:"uOpt_array"`
+	_opt_uOptArray      []*uint32 `json:"_opt_uOptArray"`
+	OptStrOptArray      []*string `json:"optStrOptArray"`
+	UArrayArray         [][]uint32 `json:"uArrayArray"`
+	UOptArrayOptArray   [][]*uint32 `json:"uOptArrayOptArray"`
+	UArrayOptArrayArray [][][]uint32 `json:"uArrayOptArrayArray"`
+	CrazyArray          [][][][]uint32 `json:"crazyArray"`
+	Object              AnotherType `json:"object"`
+	OptObject           *AnotherType `json:"optObject"`
+	ObjectArray         []AnotherType `json:"objectArray"`
+	OptObjectArray      []*AnotherType `json:"optObjectArray"`
+	En                  CustomEnum `json:"en"`
+	OptEnum             *CustomEnum `json:"optEnum"`
+	EnumArray           []CustomEnum `json:"enumArray"`
+	OptEnumArray        []*CustomEnum `json:"optEnumArray"`
+	M_map               map[string]int32 `json:"map"`
+	MapOfArr            map[string][]int32 `json:"mapOfArr"`
+	MapOfObj            map[string]AnotherType `json:"mapOfObj"`
+	MapOfArrOfObj       map[string][]AnotherType `json:"mapOfArrOfObj"`
+	MapCustomValue      map[string]*CustomMapValue `json:"mapCustomValue"`
 }
 
 func CustomTypeToBuffer(value *CustomType) []byte {

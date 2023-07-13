@@ -8,7 +8,7 @@ package types
 type {{#toUpper}}{{type}}{{/toUpper}} struct {
 {{#stuctProps}}
 {{#properties}}
-{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}} `json:"{{name}}"`
 {{/properties}}
 {{/stuctProps}}
 }

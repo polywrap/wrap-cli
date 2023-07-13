@@ -5,9 +5,9 @@ import (
 )
 
 type Env struct {
-	Prop    string
-	OptProp *string
-	OptMap  map[string]*int32
+	Prop    string `json:"prop"`
+	OptProp *string `json:"optProp"`
+	OptMap  map[string]*int32 `json:"optMap"`
 }
 
 func EnvToBuffer(value *Env) []byte {
