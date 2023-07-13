@@ -1,4 +1,4 @@
-import { ClientConfigBuilder, IWrapPackage, PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClientConfigBuilder, IWrapPackage, PolywrapClient } from "@polywrap/client-js";
 import { samplePlugin } from "../";
 
 describe("e2e", () => {
@@ -7,9 +7,9 @@ describe("e2e", () => {
 
   beforeAll(() => {
     // Add the samplePlugin to the PolywrapClient
-    const config = new ClientConfigBuilder()
+    const config = new PolywrapClientConfigBuilder()
       .addDefaults()
-      .addPackage(
+      .setPackage(
         uri,
         samplePlugin({
           defaultValue: "foo bar",
