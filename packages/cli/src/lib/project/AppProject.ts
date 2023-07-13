@@ -8,9 +8,17 @@ import {
 } from "./manifests";
 
 import { AppManifest } from "@polywrap/polywrap-manifest-types-js";
-import { bindSchema, BindOutput } from "@polywrap/schema-bind";
+import {
+  bindSchema,
+  BindOutput,
+  BindOptions,
+  bindLanguageToWrapInfoType,
+} from "@polywrap/schema-bind";
 import path from "path";
-import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
+import {
+  latestWrapManifestVersion,
+  WrapAbi,
+} from "@polywrap/wrap-manifest-types-js";
 
 export interface AppProjectConfig extends ProjectConfig {
   appManifestPath: string;
@@ -107,14 +115,20 @@ export class AppProject extends Project<AppManifest> {
     abi: WrapAbi,
     generationSubPath?: string
   ): Promise<BindOutput> {
-    return bindSchema({
-      projectName: await this.getName(),
-      abi,
+    const bindLanguage = appManifestLanguageToBindLanguage(
+      await this.getManifestLanguage()
+    );
+    const options: BindOptions = {
+      bindLanguage,
+      wrapInfo: {
+        version: latestWrapManifestVersion,
+        name: await this.getName(),
+        type: bindLanguageToWrapInfoType(bindLanguage),
+        abi,
+      },
       outputDirAbs: await this.getGenerationDirectory(generationSubPath),
-      bindLanguage: appManifestLanguageToBindLanguage(
-        await this.getManifestLanguage()
-      ),
-    });
+    };
+    return bindSchema(options);
   }
 
   private _getGenerationDirectory(

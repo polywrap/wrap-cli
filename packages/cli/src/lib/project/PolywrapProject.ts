@@ -19,12 +19,18 @@ import {
   PolywrapManifest,
 } from "@polywrap/polywrap-manifest-types-js";
 import { normalizePath } from "@polywrap/os-js";
-import { BindOptions, BindOutput, bindSchema } from "@polywrap/schema-bind";
+import {
+  bindLanguageToWrapInfoType,
+  BindOptions,
+  BindOutput,
+  bindSchema,
+} from "@polywrap/schema-bind";
 import { WrapAbi } from "@polywrap/schema-parse";
 import regexParser from "regex-parser";
 import path from "path";
 import fs from "fs";
 import fsExtra from "fs-extra";
+import { latestWrapManifestVersion } from "@polywrap/wrap-manifest-types-js";
 
 export interface PolywrapProjectConfig extends ProjectConfig {
   polywrapManifestPath: string;
@@ -149,7 +155,6 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     generationSubPath?: string,
     bindConfig?: Record<string, unknown>
   ): Promise<BindOutput> {
-    const manifest = await this.getManifest();
     const codegenDirectory = await this.getGenerationDirectory(
       generationSubPath
     );
@@ -162,10 +167,14 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     );
 
     const options: BindOptions = {
-      projectName: manifest.project.name,
-      abi,
-      outputDirAbs: codegenDirectory,
       bindLanguage,
+      wrapInfo: {
+        version: latestWrapManifestVersion,
+        name: await this.getName(),
+        type: bindLanguageToWrapInfoType(bindLanguage),
+        abi,
+      },
+      outputDirAbs: codegenDirectory,
       config: bindConfig,
     };
 

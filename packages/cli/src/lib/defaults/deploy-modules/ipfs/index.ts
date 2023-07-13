@@ -2,7 +2,10 @@ import { DeployModule } from "../../../deploy";
 
 import { Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
-import { DefaultBundle } from "@polywrap/client-config-builder-js";
+import {
+  PolywrapClientConfigBuilder,
+  Web3,
+} from "@polywrap/client-config-builder-js";
 import fs from "fs";
 
 const isValidUri = (uri: Uri) =>
@@ -91,10 +94,13 @@ class IPFSDeployer implements DeployModule {
       timeout: 10000,
     };
 
-    const client = new PolywrapClient();
+    const clientConfig = new PolywrapClientConfigBuilder()
+      .addDefaults()
+      .build();
+    const client: PolywrapClient = new PolywrapClient(clientConfig);
 
     const result = await client.invoke<AddResult[]>({
-      uri: DefaultBundle.embeds.ipfsHttpClient.uri.uri,
+      uri: Web3.bundle.ipfsHttpClient.uri,
       method: "addDir",
       args: (args as unknown) as Record<string, unknown>,
     });

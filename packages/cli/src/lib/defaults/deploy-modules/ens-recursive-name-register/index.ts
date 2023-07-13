@@ -5,14 +5,17 @@ import { invokeWithTimeout } from "./invokeWithTimeout";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { Uri } from "@polywrap/core-js";
-import { ClientConfigBuilder, PolywrapClient } from "@polywrap/client-js";
-import { DefaultBundle } from "@polywrap/client-config-builder-js";
+import { IWrapPackage, Uri } from "@polywrap/core-js";
+import {
+  PolywrapClientConfigBuilder,
+  PolywrapClient,
+} from "@polywrap/client-js";
+import { Web3 } from "@polywrap/client-config-builder-js";
 import {
   Connection,
   Connections,
   ethereumProviderPlugin,
-} from "@polywrap/ethereum-provider-js-v1";
+} from "@polywrap/ethereum-provider-js";
 
 class ENSRecursiveNameRegisterPublisher implements DeployModule {
   async execute(
@@ -60,13 +63,19 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
       defaultNetwork: network,
     });
 
-    const clientConfig = new ClientConfigBuilder()
+    const ensUri = "wrap://redirect/ens";
+
+    const clientConfig = new PolywrapClientConfigBuilder()
       .addDefaults()
-      .addPackage(
-        DefaultBundle.plugins.ethereumProviderV1.uri.uri,
+      .setPackage(
+        Web3.bundle.ethereumProviderV2.uri,
         ethereumProviderPlugin({
           connections: connections,
-        })
+        }) as IWrapPackage
+      )
+      .setRedirect(
+        ensUri,
+        "wrap://ipfs/QmQS8cr21euKYW7hWAhiSYXgvdcAtbPbynKqRW2CzAJPYe"
       )
       .build();
 
@@ -74,7 +83,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
 
     const signerAddress = await client.invoke<string>({
       method: "getSignerAddress",
-      uri: "ens/wraps.eth:ethereum@1.0.0",
+      uri: "ens/ethers.wraps.eth:0.1.0",
       args: {
         connection: {
           networkNameOrChainId: network,
@@ -90,7 +99,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
       { tx: { hash: string }; didRegister: boolean }[]
     >({
       method: "registerDomainAndSubdomainsRecursively",
-      uri: "ens/wraps.eth:ens@1.0.0",
+      uri: ensUri,
       args: {
         domain: ensDomain,
         owner: signerAddress.value,
@@ -117,7 +126,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
         client,
         {
           method: "awaitTransaction",
-          uri: Uri.from("ens/wraps.eth:ethereum@1.0.0"),
+          uri: Uri.from("ens/ethers.wraps.eth:0.1.0"),
           args: {
             txHash: registerData.value[0].tx.hash,
             connection: {

@@ -1,13 +1,14 @@
 import { OutputDirectory } from "@polywrap/os-js";
-import { WrapAbi } from "@polywrap/schema-parse";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 export type BindLanguage =
-  | "wasm-as"
-  | "wasm-rs"
-  | "wasm-go"
+  | "wrap-as"
+  | "wrap-rs"
+  | "wrap-go"
   | "plugin-ts"
   | "plugin-rs"
   | "plugin-py"
+  | "plugin-kt"
   | "app-ts";
 
 export interface BindOutput {
@@ -16,9 +17,15 @@ export interface BindOutput {
 }
 
 export interface BindOptions {
-  projectName: string;
   bindLanguage: BindLanguage;
-  abi: WrapAbi;
+  wrapInfo: WrapManifest;
   config?: Record<string, unknown>;
   outputDirAbs: string;
+}
+
+// TODO: Can I use types instead of hardcoded values here?
+export function bindLanguageToWrapInfoType(
+  bindLanguage: BindLanguage
+): "wasm" | "plugin" | "interface" {
+  return bindLanguage.startsWith("plugin") ? "plugin" : "wasm";
 }

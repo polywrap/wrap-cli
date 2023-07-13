@@ -1,11 +1,11 @@
-import { IClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import path from "path";
 
-export function configure(builder: IClientConfigBuilder): IClientConfigBuilder {
+export function configure(builder: ClientConfigBuilder): ClientConfigBuilder {
   const wrapperPath = path.join(__dirname, "..", "run-test-wrapper");
   const wrapperUri = `fs/${path.resolve(wrapperPath)}/build`;
   return builder
-    .addRedirect("wrap://ens/test.eth", wrapperUri)
+    .setRedirect("wrap://ens/test.eth", wrapperUri)
     .addEnv(
       wrapperUri, 
       {
