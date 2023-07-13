@@ -58,6 +58,7 @@
   },
   "resolutions": {
     "@types/react": "16.9.0",
-    "@types/react-dom": "16.9.0"
+    "@types/react-dom": "16.9.0",
+    "@types/node": "18.15.0"
   }
 }

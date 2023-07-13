@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@polywrap/schema-parse": "0.10.6",
-    "@polywrap/wrap-manifest-types-js": "0.10.0",
+    "@polywrap/wrap-manifest-types-js": "0.12.0-pre.1",
     "graphql": "15.5.0",
     "mustache": "4.0.1"
   },
