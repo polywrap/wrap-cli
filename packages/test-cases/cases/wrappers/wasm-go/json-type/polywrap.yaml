@@ -1,9 +1,0 @@
-format: 0.2.0
-project:
-  name: JsonType
-  type: wasm/golang
-source:
-  schema: ./schema.graphql
-  module: ./go.mod
-extensions:
-  build: ./polywrap.build.yaml
