@@ -72,12 +72,14 @@ func WriteImportedMethodArgs(writer msgpack.Write, value *ArgsImportedMethod) {
 	} else if len(value.UArrayArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.UArrayArray)))
 		for i0 := range value.UArrayArray {
 			if value.UArrayArray[i0] == nil {
 				writer.WriteNil()
 			} else if len(value.UArrayArray[i0]) == 0 {
 				writer.WriteNil()
 			} else {
+				writer.WriteArrayLength(uint32(len(value.UArrayArray[i0])))
 				for i1 := range value.UArrayArray[i0] {
 					{
 						v := value.UArrayArray[i0][i1]
@@ -113,6 +115,7 @@ func WriteImportedMethodArgs(writer msgpack.Write, value *ArgsImportedMethod) {
 	} else if len(value.ObjectArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.ObjectArray)))
 		for i0 := range value.ObjectArray {
 			{
 				v := value.ObjectArray[i0]
@@ -128,6 +131,7 @@ func WriteImportedMethodArgs(writer msgpack.Write, value *ArgsImportedMethod) {
 	} else if len(value.OptObjectArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.OptObjectArray)))
 		for i0 := range value.OptObjectArray {
 			{
 				v := value.OptObjectArray[i0]
@@ -161,6 +165,7 @@ func WriteImportedMethodArgs(writer msgpack.Write, value *ArgsImportedMethod) {
 	} else if len(value.EnumArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.EnumArray)))
 		for i0 := range value.EnumArray {
 			{
 				v := value.EnumArray[i0]
@@ -176,6 +181,7 @@ func WriteImportedMethodArgs(writer msgpack.Write, value *ArgsImportedMethod) {
 	} else if len(value.OptEnumArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.OptEnumArray)))
 		for i0 := range value.OptEnumArray {
 			{
 				v := value.OptEnumArray[i0]
@@ -223,6 +229,7 @@ func WriteAnotherMethodArgs(writer msgpack.Write, value *ArgsAnotherMethod) {
 	} else if len(value.Arg) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.Arg)))
 		for i0 := range value.Arg {
 			{
 				v := value.Arg[i0]

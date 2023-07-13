@@ -197,6 +197,7 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 	} else if len(value.U_array) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.U_array)))
 		for i0 := range value.U_array {
 			{
 				v := value.U_array[i0]
@@ -212,6 +213,7 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 	} else if len(value.UOpt_array) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.UOpt_array)))
 		for i0 := range value.UOpt_array {
 			{
 				v := value.UOpt_array[i0]
@@ -227,6 +229,7 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 	} else if len(value._opt_uOptArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value._opt_uOptArray)))
 		for i0 := range value._opt_uOptArray {
 			{
 				v := value._opt_uOptArray[i0]
@@ -246,6 +249,7 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 	} else if len(value.OptStrOptArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.OptStrOptArray)))
 		for i0 := range value.OptStrOptArray {
 			{
 				v := value.OptStrOptArray[i0]
@@ -265,12 +269,14 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 	} else if len(value.UArrayArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.UArrayArray)))
 		for i0 := range value.UArrayArray {
 			if value.UArrayArray[i0] == nil {
 				writer.WriteNil()
 			} else if len(value.UArrayArray[i0]) == 0 {
 				writer.WriteNil()
 			} else {
+				writer.WriteArrayLength(uint32(len(value.UArrayArray[i0])))
 				for i1 := range value.UArrayArray[i0] {
 					{
 						v := value.UArrayArray[i0][i1]
@@ -288,12 +294,14 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 	} else if len(value.UOptArrayOptArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.UOptArrayOptArray)))
 		for i0 := range value.UOptArrayOptArray {
 			if value.UOptArrayOptArray[i0] == nil {
 				writer.WriteNil()
 			} else if len(value.UOptArrayOptArray[i0]) == 0 {
 				writer.WriteNil()
 			} else {
+				writer.WriteArrayLength(uint32(len(value.UOptArrayOptArray[i0])))
 				for i1 := range value.UOptArrayOptArray[i0] {
 					{
 						v := value.UOptArrayOptArray[i0][i1]
@@ -315,18 +323,21 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 	} else if len(value.UArrayOptArrayArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.UArrayOptArrayArray)))
 		for i0 := range value.UArrayOptArrayArray {
 			if value.UArrayOptArrayArray[i0] == nil {
 				writer.WriteNil()
 			} else if len(value.UArrayOptArrayArray[i0]) == 0 {
 				writer.WriteNil()
 			} else {
+				writer.WriteArrayLength(uint32(len(value.UArrayOptArrayArray[i0])))
 				for i1 := range value.UArrayOptArrayArray[i0] {
 					if value.UArrayOptArrayArray[i0][i1] == nil {
 						writer.WriteNil()
 					} else if len(value.UArrayOptArrayArray[i0][i1]) == 0 {
 						writer.WriteNil()
 					} else {
+						writer.WriteArrayLength(uint32(len(value.UArrayOptArrayArray[i0][i1])))
 						for i2 := range value.UArrayOptArrayArray[i0][i1] {
 							{
 								v := value.UArrayOptArrayArray[i0][i1][i2]
@@ -346,24 +357,28 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 	} else if len(value.CrazyArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.CrazyArray)))
 		for i0 := range value.CrazyArray {
 			if value.CrazyArray[i0] == nil {
 				writer.WriteNil()
 			} else if len(value.CrazyArray[i0]) == 0 {
 				writer.WriteNil()
 			} else {
+				writer.WriteArrayLength(uint32(len(value.CrazyArray[i0])))
 				for i1 := range value.CrazyArray[i0] {
 					if value.CrazyArray[i0][i1] == nil {
 						writer.WriteNil()
 					} else if len(value.CrazyArray[i0][i1]) == 0 {
 						writer.WriteNil()
 					} else {
+						writer.WriteArrayLength(uint32(len(value.CrazyArray[i0][i1])))
 						for i2 := range value.CrazyArray[i0][i1] {
 							if value.CrazyArray[i0][i1][i2] == nil {
 								writer.WriteNil()
 							} else if len(value.CrazyArray[i0][i1][i2]) == 0 {
 								writer.WriteNil()
 							} else {
+								writer.WriteArrayLength(uint32(len(value.CrazyArray[i0][i1][i2])))
 								for i3 := range value.CrazyArray[i0][i1][i2] {
 									{
 										v := value.CrazyArray[i0][i1][i2][i3]
@@ -399,6 +414,7 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 	} else if len(value.ObjectArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.ObjectArray)))
 		for i0 := range value.ObjectArray {
 			{
 				v := value.ObjectArray[i0]
@@ -414,6 +430,7 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 	} else if len(value.OptObjectArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.OptObjectArray)))
 		for i0 := range value.OptObjectArray {
 			{
 				v := value.OptObjectArray[i0]
@@ -447,6 +464,7 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 	} else if len(value.EnumArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.EnumArray)))
 		for i0 := range value.EnumArray {
 			{
 				v := value.EnumArray[i0]
@@ -462,6 +480,7 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 	} else if len(value.OptEnumArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.OptEnumArray)))
 		for i0 := range value.OptEnumArray {
 			{
 				v := value.OptEnumArray[i0]
@@ -504,6 +523,7 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 			} else if len(value.MapOfArr[i0]) == 0 {
 				writer.WriteNil()
 			} else {
+				writer.WriteArrayLength(uint32(len(value.MapOfArr[i0])))
 				for i1 := range value.MapOfArr[i0] {
 					{
 						v := value.MapOfArr[i0][i1]
@@ -544,6 +564,7 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 			} else if len(value.MapOfArrOfObj[i0]) == 0 {
 				writer.WriteNil()
 			} else {
+				writer.WriteArrayLength(uint32(len(value.MapOfArrOfObj[i0])))
 				for i1 := range value.MapOfArrOfObj[i0] {
 					{
 						v := value.MapOfArrOfObj[i0][i1]

@@ -14,7 +14,6 @@ import {
 import { AbiTransforms } from "@polywrap/schema-parse";
 
 interface PropertyDep {
-  crate: string;
   type: string;
   isEnum: boolean;
 }
@@ -60,7 +59,6 @@ export function propertyDeps(): AbiTransforms {
         state.propertyDeps = [];
         if (state.abiEnvDefinition) {
           state.propertyDeps.push({
-            crate: "crate",
             type: "Env",
             isEnum: false,
           });
@@ -86,7 +84,7 @@ export function propertyDeps(): AbiTransforms {
           const appendUnique = (item: PropertyDep) => {
             if (
               array.findIndex(
-                (i) => i.crate === item.crate && i.type === item.type
+                (i) => i.type === item.type
               ) === -1
             ) {
               array.push(item);
@@ -102,7 +100,6 @@ export function propertyDeps(): AbiTransforms {
             const valueName = def.map?.object?.type ?? def.map?.enum?.type;
             if (valueName && !isKnownType(valueName)) {
               appendUnique({
-                crate: "crate",
                 type: valueName,
                 isEnum: valueName === def.map?.enum?.type,
               });
@@ -118,7 +115,6 @@ export function propertyDeps(): AbiTransforms {
           }
 
           appendUnique({
-            crate: "crate",
             type: typeName,
             isEnum: !!def.enum || !!def.array?.enum,
           });

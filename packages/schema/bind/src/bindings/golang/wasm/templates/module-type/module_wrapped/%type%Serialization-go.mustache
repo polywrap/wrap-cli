@@ -1,7 +1,9 @@
 package module_wrapped
 {{#makeImports}}
 	github.com/polywrap/go-wrap/msgpack,
+	{{#propertyDeps.length}}
 	. {{goImport}}/module/wrap/types,
+	{{/propertyDeps.length}}
 	{{#importedTypes}}
   . {{goImport}}/module/wrap/imported/{{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}},
   {{/importedTypes}}

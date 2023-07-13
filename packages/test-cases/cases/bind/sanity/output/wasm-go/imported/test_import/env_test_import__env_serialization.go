@@ -34,6 +34,7 @@ func writeTestImport_Env(writer msgpack.Write, value *TestImport_Env) {
 	} else if len(value.ObjectArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.ObjectArray)))
 		for i0 := range value.ObjectArray {
 			{
 				v := value.ObjectArray[i0]
@@ -49,6 +50,7 @@ func writeTestImport_Env(writer msgpack.Write, value *TestImport_Env) {
 	} else if len(value.OptObjectArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.OptObjectArray)))
 		for i0 := range value.OptObjectArray {
 			{
 				v := value.OptObjectArray[i0]
@@ -82,6 +84,7 @@ func writeTestImport_Env(writer msgpack.Write, value *TestImport_Env) {
 	} else if len(value.EnumArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.EnumArray)))
 		for i0 := range value.EnumArray {
 			{
 				v := value.EnumArray[i0]
@@ -97,6 +100,7 @@ func writeTestImport_Env(writer msgpack.Write, value *TestImport_Env) {
 	} else if len(value.OptEnumArray) == 0 {
 		writer.WriteNil()
 	} else {
+		writer.WriteArrayLength(uint32(len(value.OptEnumArray)))
 		for i0 := range value.OptEnumArray {
 			{
 				v := value.OptEnumArray[i0]
