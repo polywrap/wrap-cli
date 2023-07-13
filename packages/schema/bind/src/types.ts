@@ -4,6 +4,7 @@ import { WrapAbi } from "@polywrap/schema-parse";
 export type BindLanguage =
   | "wasm-as"
   | "wasm-rs"
+  | "wasm-go"
   | "plugin-ts"
   | "plugin-rs"
   | "plugin-py"

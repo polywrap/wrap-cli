@@ -1,0 +1,11 @@
+set -e
+
+go mod tidy
+
+tinygo build -o main.wasm -target wasm-target ./module/wrap/main/main.go
+
+# Make the build directory
+rm -rf ./build
+mkdir ./build
+
+wasm-snip ./main.wasm -o ./build/wrap.wasm -p fd_write clock_time_get args_sizes_get args_get
