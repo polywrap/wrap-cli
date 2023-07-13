@@ -18,7 +18,7 @@ export function getGenerateBindingFn(
       );
     case "wrap-rs":
       return Rust.Wasm.generateBinding;
-    case "wasm-go":
+    case "wrap-go":
       return Golang.Wasm.generateBinding;
     case "plugin-ts":
       return WrapBindgen.getGenerateBindingFn(

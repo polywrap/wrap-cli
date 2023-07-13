@@ -41,7 +41,7 @@ export const generateBinding: GenerateBindingFn = (
     outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-  const abi = applyTransforms(options.abi);
+  const abi = applyTransforms(options.wrapInfo.abi);
   const goImport = options.config?.goModuleName;
 
   if (!goImport) {
