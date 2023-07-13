@@ -1,0 +1,24 @@
+if value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}{{#lastFullIter}}i{{/lastFullIter}} == nil {
+	writer.WriteNil()
+} else if len(value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}{{#lastFullIter}}i{{/lastFullIter}}) == 0 {
+	writer.WriteNil()
+} else {
+	writer.WriteArrayLength(uint32(len(value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}{{#lastFullIter}}i{{/lastFullIter}})))
+	for {{#nextIter}}i{{/nextIter}} := range value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}{{#prevFullIter}}i{{/prevFullIter}} {
+		{{#scalar}}
+		{{> serialize_scalar}}
+		{{/scalar}}
+		{{#enum}}
+		{{> serialize_enum}}
+		{{/enum}}
+		{{#array}}
+		{{> serialize_array}}
+		{{/array}}
+		{{#map}}
+		{{> serialize_map_value}}
+		{{/map}}
+		{{#object}}
+		{{> serialize_object}}
+		{{/object}}
+	}
+}

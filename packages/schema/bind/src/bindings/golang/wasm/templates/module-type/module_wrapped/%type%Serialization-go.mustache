@@ -1,0 +1,119 @@
+package module_wrapped
+{{#makeImports}}
+	github.com/polywrap/go-wrap/msgpack,
+	{{#needsTypes}}
+	. {{goImport}}/module/wrap/types,
+	{{/needsTypes}}
+	{{#importedTypes}}
+  . {{goImport}}/module/wrap/imported/{{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}},
+  {{/importedTypes}}
+	{{#methods}}
+		{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}},
+	{{/methods}}
+{{/makeImports}}
+{{#methods}}
+{{#arguments.length}}
+func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *Args{{#toUpper}}{{name}}{{/toUpper}} {
+	ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
+	reader := msgpack.NewReadDecoder(ctx, argsBuf)
+
+	var (
+	{{#stuctProps}}
+	{{#arguments}}
+	_{{name}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+	{{#required}}
+	_{{name}}Set bool
+	{{/required}}
+	{{/arguments}}
+	{{/stuctProps}}
+	)
+
+	for i := int32(reader.ReadMapLength()); i > 0; i-- {
+		field := reader.ReadString()
+		reader.Context().Push(field, "unknown", "searching for property type")
+		switch field {
+		{{#arguments}}
+		case "{{name}}":
+			reader.Context().Push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property")
+			{{#scalar}}
+			{{> deserialize_scalar}}
+			{{/scalar}}
+			{{#enum}}
+			{{> deserialize_enum}}
+			{{/enum}}
+			{{#array}}
+			{{#startIter}}{{/startIter}}
+			{{> deserialize_array}}
+			{{#stopIter}}{{/stopIter}}
+			{{/array}}
+			{{#map}}
+			{{#startIter}}{{/startIter}}
+			{{> deserialize_map}}
+			{{#stopIter}}{{/stopIter}}
+			{{/map}}
+			{{#object}}
+			{{> deserialize_object}}
+			{{/object}}
+			{{#required}}
+			_{{name}}Set = true
+			{{/required}}
+			reader.Context().Pop()
+		{{/arguments}}
+		}
+		reader.Context().Pop()
+	}
+
+	{{#arguments}}
+	{{#required}}
+	if !_{{name}}Set {
+		panic(reader.Context().PrintWithContext("Missing required property: '{{name}}: {{type}}'"))
+	}
+	{{/required}}
+	{{/arguments}}
+
+	return &Args{{#toUpper}}{{name}}{{/toUpper}}{
+	{{#stuctProps}}
+	{{#arguments}}
+	{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}: _{{name}},
+	{{/arguments}}
+	{{/stuctProps}}
+	}
+}
+{{/arguments.length}}
+
+func Serialize{{#toUpper}}{{name}}{{/toUpper}}Result(value {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) []byte {
+	ctx := msgpack.NewContext("Serializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
+	encoder := msgpack.NewWriteEncoder(ctx)
+	Write{{#toUpper}}{{name}}{{/toUpper}}Result(encoder, value);
+	return encoder.Buffer()
+}
+
+func Write{{#toUpper}}{{name}}{{/toUpper}}Result(writer msgpack.Write, value {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) {
+	{{#return}}
+	writer.Context().Push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property")
+	{{#scalar}}
+	{{> value_serialize_scalar}}
+	{{/scalar}}
+	{{#array}}
+	{{#startIter}}{{/startIter}}
+	{{> value_serialize_array}}
+	{{#stopIter}}{{/stopIter}}
+	{{/array}}
+	{{#map}}
+	{{#startIter}}{{/startIter}}
+	{{> value_serialize_map}}
+	{{#stopIter}}{{/stopIter}}
+	{{/map}}
+	{{#object}}
+	{{> value_serialize_object}}
+	{{/object}}
+	{{#enum}}
+	{{> value_serialize_enum}}
+	{{/enum}}
+	writer.Context().Pop()
+	{{/return}}
+}
+{{^last}}
+
+{{/last}}
+{{/methods}}

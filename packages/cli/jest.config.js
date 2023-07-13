@@ -11,7 +11,8 @@ module.exports = {
   modulePathIgnorePatterns: [
     "<rootDir>/build",
     "<rootDir>/src/__tests__/project/.polywrap",
-    "<rootDir>/src/__tests__/e2e/build-rs.spec.ts"
+    "<rootDir>/src/__tests__/e2e/build-rs.spec.ts",
+    "<rootDir>/src/__tests__/e2e/build-go.spec.ts"
   ],
   testPathIgnorePatterns: [
     "<rootDir>/src/__tests__/project/.polywrap"

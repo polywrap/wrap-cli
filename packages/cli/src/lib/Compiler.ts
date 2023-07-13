@@ -43,7 +43,7 @@ export class Compiler {
       await this._outputWrapManifest();
 
       if (await this._isWasm()) {
-        // Build & Output: wasm.wrap
+        // Build & Output: wrap.wasm
         await this._buildModules();
 
         // Copy: Resources folder

@@ -15,6 +15,7 @@ import {
   polywrapManifestLanguages,
   pluginManifestLanguages,
   parseWrapperEnvsOption,
+  parseDirOptionNoDefault,
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen";
 import {
@@ -48,7 +49,7 @@ export interface BuildCommandOptions extends BaseCommandOptions {
   clientConfig: string | false;
   wrapperEnvs: string | false;
   noCodegen: boolean;
-  codegenDir: string;
+  codegenDir: string | false;
   watch: boolean;
   strategy: `${SupportedStrategies}`;
 }
@@ -112,7 +113,7 @@ export const build: Command = {
             wrapperEnvs: options.wrapperEnvs || false,
             outputDir: parseDirOption(options.outputDir, defaultOutputDir),
             noCodegen: !options.codegen || false,
-            codegenDir: parseDirOption(options.codegenDir, DEFAULT_CODEGEN_DIR),
+            codegenDir: parseDirOptionNoDefault(options.codegenDir),
             strategy: options.strategy || defaultStrategy,
             watch: options.watch || false,
             verbose: options.verbose || false,
@@ -241,7 +242,7 @@ async function run(options: Required<BuildCommandOptions>) {
         const codeGenerator = new CodeGenerator({
           project,
           schemaComposer,
-          codegenDirAbs: codegenDir,
+          codegenDirAbs: codegenDir || undefined,
         });
         const codegenSuccess = await codeGenerator.generate();
 
