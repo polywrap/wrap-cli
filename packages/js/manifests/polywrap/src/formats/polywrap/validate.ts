@@ -13,6 +13,7 @@ import PolywrapManifestSchema_0_1_0 from "@polywrap/polywrap-manifest-schemas/fo
 import PolywrapManifestSchema_0_2_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.2.0.json";
 import PolywrapManifestSchema_0_3_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.3.0.json";
 import PolywrapManifestSchema_0_4_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.4.0.json";
+import PolywrapManifestSchema_0_5_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.5.0.json";
 
 import {
   Schema,
@@ -32,6 +33,7 @@ const schemas: PolywrapManifestSchemas = {
   "0.2.0": PolywrapManifestSchema_0_2_0,
   "0.3.0": PolywrapManifestSchema_0_3_0,
   "0.4.0": PolywrapManifestSchema_0_4_0,
+  "0.5.0": PolywrapManifestSchema_0_5_0,
 };
 
 const validator = new Validator();
