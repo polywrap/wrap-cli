@@ -42,5 +42,9 @@ wasm-snip ./build-staging/module_exports.wasm -o ./build-staging/module_exports_
 # Optimize the module now that exports & imports are removed
 wasm-opt ./build-staging/module_exports_imports.wasm -Oz --converge -o ./build-staging/module_exports_imports_opt.wasm
 
+# Reset build directory
+rm -rf ./build
+mkdir ./build
+
 # Copy the result to the build folder
 cp ./build-staging/module_exports_imports_opt.wasm ./build/wrap.wasm
