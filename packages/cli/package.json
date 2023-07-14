@@ -1,7 +1,7 @@
 {
   "name": "polywrap",
   "description": "Polywrap CLI",
-  "version": "0.11.0-pre.0",
+  "version": "0.11.0-pre.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -48,13 +48,13 @@
     "@polywrap/client-js": "0.11.0",
     "@polywrap/core-js": "0.11.0",
     "@polywrap/ethereum-provider-js": "0.3.1",
-    "@polywrap/logging-js": "0.11.0-pre.0",
-    "@polywrap/os-js": "0.11.0-pre.0",
-    "@polywrap/polywrap-manifest-types-js": "0.11.0-pre.0",
+    "@polywrap/logging-js": "0.11.0-pre.1",
+    "@polywrap/os-js": "0.11.0-pre.1",
+    "@polywrap/polywrap-manifest-types-js": "0.11.0-pre.1",
     "@polywrap/result": "0.11.0",
-    "@polywrap/schema-bind": "0.11.0-pre.0",
-    "@polywrap/schema-compose": "0.11.0-pre.0",
-    "@polywrap/schema-parse": "0.11.0-pre.0",
+    "@polywrap/schema-bind": "0.11.0-pre.1",
+    "@polywrap/schema-compose": "0.11.0-pre.1",
+    "@polywrap/schema-parse": "0.11.0-pre.1",
     "@polywrap/uri-resolver-extensions-js": "0.11.0",
     "@polywrap/uri-resolvers-js": "0.11.0",
     "@polywrap/wasm-js": "0.11.0",
@@ -81,7 +81,7 @@
     "yesno": "0.4.0"
   },
   "devDependencies": {
-    "@polywrap/cli-js": "0.11.0-pre.0",
+    "@polywrap/cli-js": "0.11.0-pre.1",
     "@types/copyfiles": "2.4.0",
     "@types/fs-extra": "9.0.12",
     "@types/jest": "26.0.8",
