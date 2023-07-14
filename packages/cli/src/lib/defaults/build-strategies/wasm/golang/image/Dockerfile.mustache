@@ -24,8 +24,14 @@ RUN EXTRA_EXPORTS=$( \
   grep -vE '_wrap_invoke|asyncify_start_unwind|asyncify_stop_unwind|asyncify_start_rewind|asyncify_stop_rewind|asyncify_get_state' | \
   # 4. convert remaining string into single-line seperated by spaces
   tr '\n' ' ') && \
-# Remove these extra exports from the wasm module via wasm-snip
-wasm-snip ./build-staging/module.wasm -o ./build-staging/module_exports.wasm $EXTRA_EXPORTS
+  if [ -z "$EXTRA_EXPORTS" ]\
+  then\
+    echo "No extra exports to remove"\
+  else\
+    echo "Removing extra exports: $EXTRA_EXPORTS"\
+    # Remove these extra exports from the wasm module via wasm-snip
+    wasm-snip ./build-staging/module.wasm -o ./build-staging/module_exports.wasm $EXTRA_EXPORTS\
+  fi
 
 # Extract the unsupported wasi imports, and forcefully remove them.
 # This ideally would not be necessary, but it is for go-based wraps.
@@ -36,8 +42,14 @@ RUN EXTRA_IMPORTS=$( \
   grep -oP '(?<=wasi_snapshot_preview1" ")[^"]+' | \
   # 3. convert string into single-line seperated by spaces
   tr '\n' ' ') && \
-# Remove these extra imports from the wasm module via wasm-snip
-wasm-snip ./build-staging/module_exports.wasm -o ./build-staging/module_exports_imports.wasm -p $EXTRA_IMPORTS
+  if [ -z "$EXTRA_IMPORTS" ] \
+  then\
+    echo "No extra imports to remove"\
+  else\
+    echo "Removing extra imports: $EXTRA_IMPORTS"\
+    # Remove these extra imports from the wasm module via wasm-snip
+    wasm-snip ./build-staging/module_exports.wasm -o ./build-staging/module_exports_imports.wasm -p $EXTRA_IMPORTS\
+  fi
 
 # Optimize the module now that exports & imports are removed
 RUN wasm-opt ./build-staging/module_exports_imports.wasm -Oz --converge -o ./build-staging/module_exports_imports_opt.wasm
