@@ -127,17 +127,19 @@ export const defaultDeployManifest: DeployManifest = {
   format: "0.4.0",
   jobs: {
     ipfs_deploy: {
-      steps: [{
-        name: "deploy to ipfs.wrappers.io",
-        package: "ipfs",
-        uri: "file/./build",
-        config: {
-          gatewayUri: "https://ipfs.wrappers.io"
-        }
-      }]
-    }
+      steps: [
+        {
+          name: "deploy to ipfs.wrappers.io",
+          package: "ipfs",
+          uri: "file/./build",
+          config: {
+            gatewayUri: "https://ipfs.wrappers.io",
+          },
+        },
+      ],
+    },
   },
-  __type: "DeployManifest"
+  __type: "DeployManifest",
 };
 
 export async function loadDeployManifest(
@@ -145,12 +147,17 @@ export async function loadDeployManifest(
   logger: Logger
 ): Promise<DeployManifest> {
   const run = (): Promise<DeployManifest> => {
-    const manifest = fs.readFileSync(manifestPath, "utf-8");
-
-    if (!manifest) {
+    let manifest: string;
+    try {
+      manifest = fs.readFileSync(manifestPath, "utf-8");
+    } catch {
       // If the manifest wasn't found, and it was a default path,
       // assume we should fallback to a default manifest.
-      if (defaultDeployManifestFiles.includes(manifestPath)) {
+      if (
+        defaultDeployManifestFiles
+          .map((x) => displayPath(x))
+          .includes(manifestPath)
+      ) {
         return Promise.resolve(defaultDeployManifest);
       }
 
