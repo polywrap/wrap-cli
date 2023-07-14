@@ -474,7 +474,10 @@ const runMigrateCommand = async (
         logger
       );
       migrateManifestFile(
-        parseManifestFileOption(options.manifestFile, defaultBuildManifestFiles),
+        parseManifestFileOption(
+          options.manifestFile,
+          defaultBuildManifestFiles
+        ),
         migrateBuildExtensionManifest,
         options.format || latestBuildManifestFormat,
         logger
@@ -488,7 +491,10 @@ const runMigrateCommand = async (
         logger
       );
       migrateManifestFile(
-        parseManifestFileOption(options.manifestFile, defaultDeployManifestFiles),
+        parseManifestFileOption(
+          options.manifestFile,
+          defaultDeployManifestFiles
+        ),
         migrateDeployExtensionManifest,
         options.format || latestDeployManifestFormat,
         logger
@@ -502,7 +508,10 @@ const runMigrateCommand = async (
         logger
       );
       migrateManifestFile(
-        parseManifestFileOption(options.manifestFile, defaultInfraManifestFiles),
+        parseManifestFileOption(
+          options.manifestFile,
+          defaultInfraManifestFiles
+        ),
         migrateInfraExtensionManifest,
         options.format || latestInfraManifestFormat,
         logger
@@ -516,7 +525,10 @@ const runMigrateCommand = async (
         logger
       );
       migrateManifestFile(
-        parseManifestFileOption(options.manifestFile, defaultWorkflowManifestFiles),
+        parseManifestFileOption(
+          options.manifestFile,
+          defaultWorkflowManifestFiles
+        ),
         migrateWorkflow,
         options.format || latestPolywrapWorkflowFormat,
         logger

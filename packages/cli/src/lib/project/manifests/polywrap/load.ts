@@ -126,6 +126,7 @@ export const defaultDeployManifestFiles = [
 export const defaultDeployManifest: DeployManifest = {
   format: "0.4.0",
   jobs: {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     ipfs_deploy: {
       steps: [
         {
@@ -139,6 +140,7 @@ export const defaultDeployManifest: DeployManifest = {
       ],
     },
   },
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   __type: "DeployManifest",
 };
 
