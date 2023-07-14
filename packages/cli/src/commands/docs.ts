@@ -1,6 +1,6 @@
 import {
   defaultDocsManifest,
-  defaultPolywrapManifest,
+  defaultPolywrapManifestFiles,
   intlMsg,
   parseLogFileOption,
   parseManifestFileOption,
@@ -12,7 +12,7 @@ import { createLogger } from "./utils/createLogger";
 import fse from "fs-extra";
 
 const pathStr = intlMsg.commands_docs_init_m_path();
-const defaultManifestStr = defaultPolywrapManifest.join(" | ");
+const defaultManifestStr = defaultPolywrapManifestFiles.join(" | ");
 
 export interface DocsInitCommandOptions extends BaseCommandOptions {
   manifestFile: string;
@@ -44,7 +44,7 @@ export const docs: Command = {
         await runDocsInitCommand({
           manifestFile: parseManifestFileOption(
             options.manifestFile,
-            defaultPolywrapManifest
+            defaultPolywrapManifestFiles
           ),
           dir: options.dir || false,
           force: options.force || false,

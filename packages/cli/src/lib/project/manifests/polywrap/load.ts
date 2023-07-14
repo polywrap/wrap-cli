@@ -124,7 +124,7 @@ export const defaultDeployManifestFiles = [
 ];
 
 export const defaultDeployManifest: DeployManifest = {
-  format: "0.3.0",
+  format: "0.4.0",
   jobs: {
     ipfs_deploy: {
       steps: [{
