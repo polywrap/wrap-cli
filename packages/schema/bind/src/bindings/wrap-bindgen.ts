@@ -3,8 +3,8 @@ import { Args_generateBindings, GenerateBindingFn, Output } from "./types";
 
 import {
   PolywrapClient,
-  PolywrapClientConfigBuilder,
   ExtendableUriResolver,
+  PolywrapClientConfigBuilder
 } from "@polywrap/client-js";
 import { OutputEntry } from "@polywrap/os-js";
 
