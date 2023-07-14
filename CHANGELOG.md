@@ -1,4 +1,4 @@
-# Polywrap Origin (0.11.0-pre.0)
+# Polywrap Origin (0.11.0-pre.2)
 ...
 
 # Polywrap Origin (0.10.6)

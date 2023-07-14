@@ -3,6 +3,7 @@ import {
   bindSchema,
   BindLanguage,
   BindOutput,
+  bindLanguageToWrapInfoType,
   BindOptions
 } from "../";
 
@@ -17,6 +18,8 @@ import fs, {existsSync, mkdirSync} from "fs";
 import path from "path";
 
 import { deepCopy } from "./utils";
+
+jest.setTimeout(60000);
 
 describe("Polywrap Binding Test Suite", () => {
   const cases = fetchTestCases();
@@ -42,17 +45,21 @@ describe("Polywrap Binding Test Suite", () => {
 
         const bindOptions: BindOptions = {
           ...deepCopy(testCase.input),
-          bindLanguage: language as BindLanguage
+          wrapInfo: {
+            ...deepCopy(testCase.input.wrapInfo),
+            type: bindLanguageToWrapInfoType(language as BindLanguage)
+          },
+          bindLanguage: language as BindLanguage,
         };
 
-        if (language == "wasm-go") {
+        if (language == "wrap-go") {
           if (!bindOptions.config) {
             bindOptions.config = {};
           }
           bindOptions.config.goModuleName = "github.com/testorg/testrepo";
         }
 
-        const output = bindSchema(bindOptions);
+        const output = await bindSchema(bindOptions);
 
         const sort = (array: OutputEntry[]): OutputEntry[] => {
           array.forEach((entry) => {
@@ -88,7 +95,7 @@ describe("Polywrap Binding Test Suite", () => {
 
         const paths: string[] = [];
 
-        
+
         const outputDirectoryEntry = (root: string, entry: OutputEntry) => {
           const entryPath = path.join(root, entry.name);
           paths.push(entryPath);
@@ -120,7 +127,7 @@ describe("Polywrap Binding Test Suite", () => {
         for (const entry of output.output.entries) {
           outputDirectoryEntry(testResultDir, entry);
         }
-        
+
 
         expect(output).toMatchObject(expectedOutput);
       }

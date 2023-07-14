@@ -27,9 +27,10 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   }
 
   const ensAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress;
-  const defaultConfig = new PolywrapClientConfigBuilder().addDefaults().config;
-  return {
-    envs: {
+
+  const builder = new PolywrapClientConfigBuilder()
+    .addDefaults()
+    .addEnvs({
       [Sys.bundle.ipfsResolver.uri]: {
         provider: ipfsProvider,
         retries: { tryResolveUri: 1, getFile: 1 },
@@ -37,13 +38,13 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
       "proxy/testnet-ens-uri-resolver-ext": {
         registryAddress: ensAddress,
       },
-    },
-    redirects: {
+    })
+    .setRedirects({
       "proxy/testnet-ens-uri-resolver-ext":
         "ens/wraps.eth:ens-uri-resolver-ext@1.0.1",
-    },
-    packages: {
-      [Web3.bundle.ethereumProviderV1.uri]: ethereumProviderPlugin({
+    })
+    .setPackages({
+      [Web3.bundle.ethereumProviderV2.uri]: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({
@@ -60,14 +61,17 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
           },
         }),
       }) as IWrapPackage,
-    },
-    interfaces: {
-      [ExtendableUriResolver.defaultExtInterfaceUris[0].uri]: new Set([
-        "proxy/testnet-ens-uri-resolver-ext",
-        ...defaultConfig.interfaces[
-          ExtendableUriResolver.defaultExtInterfaceUris[0].uri
-        ],
-      ]),
-    },
-  };
+    });
+
+  const resolverExtensions =
+    builder.config.interfaces[
+      ExtendableUriResolver.defaultExtInterfaceUris[0].uri
+    ];
+
+  builder.addInterfaceImplementations(
+    ExtendableUriResolver.defaultExtInterfaceUris[0].uri,
+    ["proxy/testnet-ens-uri-resolver-ext", ...resolverExtensions]
+  );
+
+  return builder.config;
 }
