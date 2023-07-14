@@ -55,7 +55,7 @@ export interface Step {
     [k: string]: unknown;
   };
   /**
-   * URI to pass into the deploy step.
+   * URI or name of other step prefixed with '$$' to pass into the deploy step.
    */
-  uri: string | string;
+  uri: string;
 }

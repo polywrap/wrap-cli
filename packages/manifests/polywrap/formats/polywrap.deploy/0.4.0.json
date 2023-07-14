@@ -60,18 +60,8 @@
           "type": "object"
         },
         "uri": {
-          "description": "URI to pass into the deploy step.",
-          "oneOf": [
-            {
-              "type": "string",
-              "description": "Valid WRAP URI"
-            },
-            {
-              "type": "string",
-              "description": "Name of another step, prefixed with '$'",
-              "pattern": "^\\$.*"
-            }
-          ]
+          "description": "URI or name of other step prefixed with '$$' to pass into the deploy step.",
+          "type": "string"
         }
       }
     }
