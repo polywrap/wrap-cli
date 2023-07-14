@@ -6,7 +6,7 @@ import {
   parseManifestFileOption,
   parseLogFileOption,
   Deployer,
-  defaultDeployManifest,
+  defaultDeployManifestFiles,
   DeployJobResult,
 } from "../lib";
 
@@ -14,7 +14,7 @@ import fs from "fs";
 import path from "path";
 import yaml from "yaml";
 
-const defaultManifestStr = defaultDeployManifest.join(" | ");
+const defaultManifestStr = defaultDeployManifestFiles.join(" | ");
 const pathStr = intlMsg.commands_deploy_options_o_path();
 
 export interface DeployCommandOptions extends BaseCommandOptions {
@@ -48,7 +48,7 @@ export const deploy: Command = {
         await run({
           manifestFile: parseManifestFileOption(
             options.manifestFile,
-            defaultDeployManifest
+            defaultDeployManifestFiles
           ),
           outputFile: options.outputFile || false,
           verbose: options.verbose || false,

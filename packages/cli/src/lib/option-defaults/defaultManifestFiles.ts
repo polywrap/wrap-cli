@@ -1,14 +1,14 @@
 import {
   defaultAppManifest,
   defaultPluginManifest,
-  defaultPolywrapManifest,
+  defaultPolywrapManifestFiles,
 } from "../project";
 
 const filterUniqueFn = (value: string, index: number, self: Array<string>) =>
   self.indexOf(value) === index;
 
 export const defaultProjectManifestFiles = [
-  ...defaultPolywrapManifest,
+  ...defaultPolywrapManifestFiles,
   ...defaultAppManifest,
   ...defaultPluginManifest,
 ].filter(filterUniqueFn);
