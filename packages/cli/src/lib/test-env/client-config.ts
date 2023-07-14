@@ -12,7 +12,7 @@ import {
   ethereumProviderPlugin,
   Connections,
   Connection,
-} from "@polywrap/ethereum-provider-js-v1";
+} from "@polywrap/ethereum-provider-js";
 import { IWrapPackage } from "@polywrap/core-js";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
