@@ -1,14 +1,18 @@
 import { getTestEnvProviders } from "./providers";
 import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "../../lib";
 
-import { BuilderConfig, Web3 } from "@polywrap/client-config-builder-js";
+import {
+  BuilderConfig,
+  PolywrapClientConfigBuilder,
+} from "@polywrap/client-config-builder-js";
+import * as Web3 from "@polywrap/web3-config-bundle-js";
+import * as Sys from "@polywrap/sys-config-bundle-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import {
   ethereumProviderPlugin,
   Connections,
   Connection,
 } from "@polywrap/ethereum-provider-js";
-import { PolywrapClientConfigBuilder } from "@polywrap/client-js";
 import { IWrapPackage } from "@polywrap/core-js";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
@@ -27,9 +31,8 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   const builder = new PolywrapClientConfigBuilder()
     .addDefaults()
     .addEnvs({
-      [Web3.bundle.ipfsResolver.uri]: {
+      [Sys.bundle.ipfsResolver.uri]: {
         provider: ipfsProvider,
-        fallbackProviders: Web3.ipfsProviders,
         retries: { tryResolveUri: 1, getFile: 1 },
       },
       "proxy/testnet-ens-uri-resolver-ext": {

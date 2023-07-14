@@ -10,7 +10,7 @@ import {
   PolywrapClientConfigBuilder,
   PolywrapClient,
 } from "@polywrap/client-js";
-import { Web3 } from "@polywrap/client-config-builder-js";
+import * as Web3 from "@polywrap/web3-config-bundle-js";
 import {
   Connection,
   Connections,
