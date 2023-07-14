@@ -11,7 +11,7 @@ jobs:
       github.event.pull_request.merged &&
       endsWith(github.event.pull_request.title, '/workflows/cd-containers') &&
       github.event.pull_request.user.login != 'polywrap-build-bot'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -42,6 +42,7 @@ jobs:
         run: |
           echo IMAGE_RS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/rust/vm >> $GITHUB_ENV
           echo IMAGE_AS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/assemblyscript/vm >> $GITHUB_ENV
+          echo IMAGE_GO_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/golang/vm >> $GITHUB_ENV
 
       - name: Read Image VERSION & NAME into env.IMAGE_..._VERSION/NAME
         run: |
@@ -49,11 +50,14 @@ jobs:
           echo IMAGE_RS_VM_VERSION=$(cat $IMAGE_RS_VM_DIR/VERSION) >> $GITHUB_ENV
           echo IMAGE_AS_VM_NAME=$(cat $IMAGE_AS_VM_DIR/NAME) >> $GITHUB_ENV
           echo IMAGE_AS_VM_VERSION=$(cat $IMAGE_AS_VM_DIR/VERSION) >> $GITHUB_ENV
+          echo IMAGE_GO_VM_NAME=$(cat $IMAGE_GO_VM_DIR/NAME) >> $GITHUB_ENV
+          echo IMAGE_GO_VM_VERSION=$(cat $IMAGE_GO_VM_DIR/VERSION) >> $GITHUB_ENV
 
       - name: Check if image tags already exist
         run: |
           echo IMAGE_RS_VM_UNPUBLISHED=$(! curl -s "https://hub.docker.com/v2/repositories/$IMAGE_RS_VM_NAME/tags/$IMAGE_RS_VM_VERSION" | grep -q "error 404" > /dev/null ; echo $?) >> $GITHUB_ENV
           echo IMAGE_AS_VM_UNPUBLISHED=$(! curl -s "https://hub.docker.com/v2/repositories/$IMAGE_AS_VM_NAME/tags/$IMAGE_AS_VM_VERSION" | grep -q "error 404" > /dev/null ; echo $?) >> $GITHUB_ENV
+          echo IMAGE_GO_VM_UNPUBLISHED=$(! curl -s "https://hub.docker.com/v2/repositories/$IMAGE_GO_VM_NAME/tags/$IMAGE_GO_VM_VERSION" | grep -q "error 404" > /dev/null ; echo $?) >> $GITHUB_ENV
 
       - name: Build & Publish RS VM Image
         if: env.IMAGE_RS_VM_UNPUBLISHED == '1'
@@ -70,3 +74,11 @@ jobs:
           docker buildx create --use --name as-vm-builder
           docker buildx build . --platform=linux/amd64,linux/arm64 -t $IMAGE_AS_VM_NAME:latest -t $IMAGE_AS_VM_NAME:$IMAGE_AS_VM_VERSION --output type=registry
           docker buildx rm as-vm-builder
+
+      - name: Build & Publish GO VM Image
+        if: env.IMAGE_GO_VM_UNPUBLISHED == '1'
+        working-directory: ${{env.IMAGE_GO_VM_DIR}}
+        run: |
+          docker buildx create --use --name go-vm-builder
+          docker buildx build . --platform=linux/amd64,linux/arm64 -t $IMAGE_GO_VM_NAME:latest -t $IMAGE_GO_VM_NAME:$IMAGE_GO_VM_VERSION --output type=registry
+          docker buildx rm go-vm-builder

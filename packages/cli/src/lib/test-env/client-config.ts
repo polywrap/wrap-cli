@@ -3,14 +3,17 @@ import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "../../lib";
 
 import {
   BuilderConfig,
-  DefaultBundle,
+  PolywrapClientConfigBuilder,
 } from "@polywrap/client-config-builder-js";
+import * as Web3 from "@polywrap/web3-config-bundle-js";
+import * as Sys from "@polywrap/sys-config-bundle-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import {
   ethereumProviderPlugin,
   Connections,
   Connection,
-} from "@polywrap/ethereum-provider-js-v1";
+} from "@polywrap/ethereum-provider-js";
+import { IWrapPackage } from "@polywrap/core-js";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   // TODO: move this into its own package, since it's being used everywhere?
@@ -25,24 +28,23 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
 
   const ensAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress;
 
-  return {
-    envs: {
-      [DefaultBundle.embeds.ipfsResolver.uri.uri]: {
+  const builder = new PolywrapClientConfigBuilder()
+    .addDefaults()
+    .addEnvs({
+      [Sys.bundle.ipfsResolver.uri]: {
         provider: ipfsProvider,
-        fallbackProviders: DefaultBundle.ipfsProviders,
         retries: { tryResolveUri: 1, getFile: 1 },
       },
       "proxy/testnet-ens-uri-resolver-ext": {
         registryAddress: ensAddress,
       },
-    },
-    redirects: {
+    })
+    .setRedirects({
       "proxy/testnet-ens-uri-resolver-ext":
         "ens/wraps.eth:ens-uri-resolver-ext@1.0.1",
-    },
-    packages: {
-      [DefaultBundle.plugins.ethereumProviderV1.uri
-        .uri]: ethereumProviderPlugin({
+    })
+    .setPackages({
+      [Web3.bundle.ethereumProviderV2.uri]: ethereumProviderPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({
@@ -58,15 +60,18 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
             }),
           },
         }),
-      }),
-    },
-    interfaces: {
-      [ExtendableUriResolver.defaultExtInterfaceUris[0].uri]: new Set([
-        "proxy/testnet-ens-uri-resolver-ext",
-        ...DefaultBundle.getConfig().interfaces[
-          ExtendableUriResolver.defaultExtInterfaceUris[0].uri
-        ],
-      ]),
-    },
-  };
+      }) as IWrapPackage,
+    });
+
+  const resolverExtensions =
+    builder.config.interfaces[
+      ExtendableUriResolver.defaultExtInterfaceUris[0].uri
+    ];
+
+  builder.addInterfaceImplementations(
+    ExtendableUriResolver.defaultExtInterfaceUris[0].uri,
+    ["proxy/testnet-ens-uri-resolver-ext", ...resolverExtensions]
+  );
+
+  return builder.config;
 }

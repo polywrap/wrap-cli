@@ -14,11 +14,19 @@ import {
 import {
   PolywrapManifest as PolywrapManifest_0_3_0,
 } from "./0.3.0";
+import {
+  PolywrapManifest as PolywrapManifest_0_4_0,
+} from "./0.4.0";
+import {
+  PolywrapManifest as PolywrapManifest_0_5_0,
+} from "./0.5.0";
 
 export {
   PolywrapManifest_0_1_0,
   PolywrapManifest_0_2_0,
   PolywrapManifest_0_3_0,
+  PolywrapManifest_0_4_0,
+  PolywrapManifest_0_5_0,
 };
 
 export enum PolywrapManifestFormats {
@@ -27,6 +35,8 @@ export enum PolywrapManifestFormats {
   "v0.1.0" = "0.1.0",
   "v0.2.0" = "0.2.0",
   "v0.3.0" = "0.3.0",
+  "v0.4.0" = "0.4.0",
+  "v0.5.0" = "0.5.0",
 }
 
 export const PolywrapManifestSchemaFiles: Record<string, string> = {
@@ -35,17 +45,21 @@ export const PolywrapManifestSchemaFiles: Record<string, string> = {
   "0.1.0": "formats/polywrap/0.1.0.json",
   "0.2.0": "formats/polywrap/0.2.0.json",
   "0.3.0": "formats/polywrap/0.3.0.json",
+  "0.4.0": "formats/polywrap/0.4.0.json",
+  "0.5.0": "formats/polywrap/0.5.0.json",
 }
 
 export type AnyPolywrapManifest =
   | PolywrapManifest_0_1_0
   | PolywrapManifest_0_2_0
   | PolywrapManifest_0_3_0
+  | PolywrapManifest_0_4_0
+  | PolywrapManifest_0_5_0
 
 
-export type PolywrapManifest = PolywrapManifest_0_3_0;
+export type PolywrapManifest = PolywrapManifest_0_5_0;
 
-export const latestPolywrapManifestFormat = PolywrapManifestFormats["v0.3.0"]
+export const latestPolywrapManifestFormat = PolywrapManifestFormats["v0.5.0"]
 
 export { migratePolywrapManifest } from "./migrate";
 

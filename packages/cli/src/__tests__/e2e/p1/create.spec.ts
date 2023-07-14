@@ -16,11 +16,11 @@ Options:
 
 Commands:
   wasm [options] <language> <name>    Create a Polywrap wasm wrapper. langs:
-                                      assemblyscript, rust, interface
+                                      assemblyscript, rust, golang, interface
   app [options] <language> <name>     Create a Polywrap application. langs:
                                       typescript
   plugin [options] <language> <name>  Create a Polywrap plugin. langs:
-                                      typescript
+                                      typescript, rust, python
   template [options] <url> <name>     Download template from a URL. formats:
                                       .git
   help [command]                      display help for command

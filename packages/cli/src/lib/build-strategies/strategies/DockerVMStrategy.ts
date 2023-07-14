@@ -4,7 +4,7 @@ import {
   isDockerInstalled,
   runCommand,
 } from "../../system";
-import { BuildStrategyArgs, BuildStrategy } from "../BuildStrategy";
+import { BuildStrategyConfig, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
 import {
   BuildManifestConfig,
@@ -36,12 +36,17 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
   "wasm/rust": {
     defaultIncludes: ["Cargo.toml", "Cargo.lock"],
     baseImage: "polywrap/vm-base-rs",
-    version: "0.2.0",
+    version: "0.2.1",
   },
   "wasm/assemblyscript": {
     defaultIncludes: ["package.json", "package-lock.json", "yarn.lock"],
     baseImage: "polywrap/vm-base-as",
     version: "0.2.0",
+  },
+  "wasm/golang": {
+    defaultIncludes: ["go.mod", "go.sum"],
+    baseImage: "polywrap/vm-base-go",
+    version: "0.1.6",
   },
 };
 
@@ -50,8 +55,8 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
     project: string;
     linkedPackages: string;
   };
-  constructor(args: BuildStrategyArgs) {
-    super(args);
+  constructor(config: BuildStrategyConfig) {
+    super(config);
 
     if (!isDockerInstalled(this.project.logger)) {
       throw new Error(intlMsg.lib_docker_noInstall());
@@ -133,21 +138,14 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
       // Copy sources and build
       if (buildManifestConfig.polywrap_module) {
-        // HACK: moduleDir is path to Cargo.toml in Rust
-        if (language === "wasm/rust") {
-          fse.copySync(
-            path.join(manifestDir, "src"),
-            path.join(this._volumePaths.project, "src")
-          );
-        } else {
-          fse.copySync(
-            path.join(manifestDir, buildManifestConfig.polywrap_module.dir),
-            path.join(
-              this._volumePaths.project,
-              buildManifestConfig.polywrap_module.dir
-            )
-          );
-        }
+        const sourcesSubDirectory =
+          this.overrides?.sourcesSubDirectory ||
+          buildManifestConfig.polywrap_module.dir;
+
+        fse.copySync(
+          path.join(manifestDir, sourcesSubDirectory),
+          path.join(this._volumePaths.project, sourcesSubDirectory)
+        );
 
         const scriptTemplate = fse.readFileSync(
           path.join(

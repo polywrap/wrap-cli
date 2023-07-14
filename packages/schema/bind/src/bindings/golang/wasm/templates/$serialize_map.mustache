@@ -1,0 +1,24 @@
+if value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} == nil {
+	writer.WriteNil()
+} else if len(value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}) == 0 {
+	writer.WriteNil()
+} else {
+	for {{#nextIter}}i{{/nextIter}} := range value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}{{#getPrevIter}}i{{/getPrevIter}} {
+		writer.Write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}({{#currIter}}i{{/currIter}})
+		{{#scalar}}
+		{{> serialize_scalar}}
+		{{/scalar}}
+		{{#enum}}
+		{{> serialize_enum}}
+		{{/enum}}
+		{{#array}}
+		{{> serialize_array}}
+		{{/array}}
+		{{#map}}
+		{{> serialize_map}}
+		{{/map}}
+		{{#object}}
+		{{> serialize_object}}
+		{{/object}}
+	}
+}

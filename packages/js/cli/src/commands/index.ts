@@ -43,7 +43,6 @@ export const commands: CommandFns<CommandTypings> = {
     ),
   },
   deploy: execCommandFn<CommandTypings["deploy"]>("deploy"),
-  docgen: execCommandWithArgsFn<CommandTypings["docgen"]>("docgen"),
   infra: execCommandWithArgsFn<CommandTypings["infra"]>("infra"),
   manifest: {
     migrate: execCommandWithArgsFn<CommandTypings["manifest"]["migrate"]>(
@@ -54,4 +53,7 @@ export const commands: CommandFns<CommandTypings> = {
     ),
   },
   test: execCommandFn<CommandTypings["test"]>("test"),
+  docs: {
+    init: execCommandFn<CommandTypings["docs"]["init"]>("docs init"),
+  },
 };

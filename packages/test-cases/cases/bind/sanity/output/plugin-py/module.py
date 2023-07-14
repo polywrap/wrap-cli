@@ -7,7 +7,7 @@ from typing import TypeVar, Generic, TypedDict, Optional
 
 from .types import *
 
-from polywrap_core import InvokerClient, UriPackageOrWrapper
+from polywrap_core import InvokerClient
 from polywrap_plugin import PluginModule
 from polywrap_msgpack import GenericMap
 
@@ -58,38 +58,37 @@ class Module(Generic[TConfig], PluginModule[TConfig]):
         return instance
 
     @abstractmethod
-    async def module_method(
+    def module_method(
         self,
         args: ArgsModuleMethod,
-        client: InvokerClient[UriPackageOrWrapper],
+        client: InvokerClient,
         env: None
     ) -> int:
         pass
 
     @abstractmethod
-    async def object_method(
+    def object_method(
         self,
         args: ArgsObjectMethod,
-        client: InvokerClient[UriPackageOrWrapper],
+        client: InvokerClient,
         env: Env
     ) -> Optional["AnotherType"]:
         pass
 
     @abstractmethod
-    async def optional_env_method(
+    def optional_env_method(
         self,
         args: ArgsOptionalEnvMethod,
-        client: InvokerClient[UriPackageOrWrapper],
+        client: InvokerClient,
         env: Optional[Env] = None
     ) -> Optional["AnotherType"]:
         pass
 
     @abstractmethod
-    async def r_if(
+    def r_if(
         self,
         args: ArgsIf,
-        client: InvokerClient[UriPackageOrWrapper],
+        client: InvokerClient,
         env: None
     ) -> "Else":
         pass
-

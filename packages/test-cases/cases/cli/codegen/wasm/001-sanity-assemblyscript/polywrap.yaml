@@ -1,4 +1,4 @@
-format: 0.3.0
+format: 0.5.0
 project:
   name: test-project
   type: wasm/assemblyscript

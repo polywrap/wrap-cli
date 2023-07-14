@@ -7,7 +7,7 @@ from typing import TypeVar, Generic, TypedDict, Optional
 
 from .types import *
 
-from polywrap_core import InvokerClient, UriPackageOrWrapper
+from polywrap_core import InvokerClient
 from polywrap_plugin import PluginModule
 from polywrap_msgpack import GenericMap
 
@@ -27,11 +27,10 @@ class Module(Generic[TConfig], PluginModule[TConfig]):
         return instance
 
     @abstractmethod
-    async def sample_method(
+    def sample_method(
         self,
         args: ArgsSampleMethod,
-        client: InvokerClient[UriPackageOrWrapper],
+        client: InvokerClient,
         env: None
     ) -> str:
         pass
-

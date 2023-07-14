@@ -13,7 +13,6 @@ import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
 import path from "path";
 import { Argument } from "commander";
 import chalk from "chalk";
-import yaml from "yaml";
 import { readdirSync } from "fs";
 
 export enum InfraActions {
@@ -179,7 +178,8 @@ async function run(
       logger.info(JSON.stringify(await infra.getVars(), null, 2));
       break;
     case InfraActions.CONFIG:
-      logger.info(yaml.stringify((await infra.config()).data.config, null, 2));
+      // Calling "docker-compose config" will log to console, so we don't have to
+      await infra.config();
       break;
     default:
       throw Error(intlMsg.commands_infra_error_never());

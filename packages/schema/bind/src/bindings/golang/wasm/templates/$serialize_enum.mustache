@@ -1,0 +1,13 @@
+{
+	v := value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}{{#lastFullIter}}i{{/lastFullIter}}
+	{{#required}}
+	writer.WriteI32(int32(v))
+	{{/required}}
+	{{^required}}
+	if v == nil {
+		writer.WriteNil()
+	} else {
+		writer.WriteI32(int32(*v))
+	}
+	{{/required}}
+}

@@ -2,11 +2,11 @@ export * from "./build";
 export * from "./codegen";
 export * from "./create";
 export * from "./deploy";
-export * from "./docgen";
 export * from "./infra";
 export * from "./manifest";
 export * from "./test";
 export * from "./types";
+export * from "./docs";
 
 import { BuildCommandOptions } from "./build";
 import { CodegenCommandOptions } from "./codegen";
@@ -17,7 +17,6 @@ import {
   SupportedWasmLangs,
 } from "./create";
 import { DeployCommandOptions } from "./deploy";
-import { DocgenCommandOptions, DocgenActions } from "./docgen";
 import { InfraCommandOptions, InfraActions } from "./infra";
 import {
   ManifestSchemaCommandOptions,
@@ -25,6 +24,7 @@ import {
   ManifestType,
 } from "./manifest";
 import { TestCommandOptions } from "./test";
+import { DocsInitCommandOptions } from "./docs";
 
 export interface CommandTypings {
   build: BuildCommandOptions;
@@ -48,10 +48,6 @@ export interface CommandTypings {
     };
   };
   deploy: DeployCommandOptions;
-  docgen: {
-    options: DocgenCommandOptions;
-    arguments: [action: `${DocgenActions}`];
-  };
   infra: {
     options: InfraCommandOptions;
     arguments: [action: `${InfraActions}`];
@@ -67,4 +63,7 @@ export interface CommandTypings {
     };
   };
   test: TestCommandOptions;
+  docs: {
+    init: DocsInitCommandOptions;
+  };
 }

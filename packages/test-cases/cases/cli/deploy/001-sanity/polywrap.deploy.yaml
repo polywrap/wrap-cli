@@ -1,8 +1,8 @@
-format: "0.3.0"
+format: 0.4.0
 jobs:
   fs_to_ens:
     config:
-      provider: 'http://localhost:8545'
+      provider: http://localhost:8545
       ensRegistryAddress: $ENS_REG_ADDR
       ensRegistrarAddress: $ENS_REGISTRAR_ADDR
       ensResolverAddress: $ENS_RESOLVER_ADDR
@@ -29,7 +29,7 @@ jobs:
           domainName: test2.eth
   ipfs_to_ens:
     config:
-      provider: 'http://localhost:8545'
+      provider: http://localhost:8545
       ensRegistryAddress: $ENS_REG_ADDR
       ensRegistrarAddress: $ENS_REGISTRAR_ADDR
       ensResolverAddress: $ENS_RESOLVER_ADDR
