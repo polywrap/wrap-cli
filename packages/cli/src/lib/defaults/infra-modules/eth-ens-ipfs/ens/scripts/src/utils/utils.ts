@@ -5,15 +5,8 @@ interface ContractJson {
   bytecode: string;
 }
 
-export function loadContract(
-  modName: string,
-  contractName: string
-): ContractJson {
-  if (modName === "ens") {
-    const ens = require(`@ensdomains/ens`);
-    return ens[contractName];
-  }
-  return require(`@ensdomains/${modName}/build/contracts/${contractName}`);
+export function loadContract(contractName: string): ContractJson {
+  return require(`@ensdomains/ens-contracts/build/contracts/${contractName}`);
 }
 
 export async function deploy(

@@ -2,10 +2,10 @@ import { loadContract, deploy, utf8ToKeccak256 } from "./utils";
 
 import { ethers } from "ethers";
 
-const ensJSON = loadContract("ens", "ENSRegistry");
-const fifsRegistrarJSON = loadContract("ens", "FIFSRegistrar");
-const reverseRegistrarJSON = loadContract("ens", "ReverseRegistrar");
-const publicResolverJSON = loadContract("resolver", "PublicResolver");
+const ensJSON = loadContract( "ENSRegistry");
+const fifsRegistrarJSON = loadContract("FIFSRegistrar");
+const reverseRegistrarJSON = loadContract("ReverseRegistrar");
+const publicResolverJSON = loadContract( "PublicResolver");
 
 const tld = "eth";
 
