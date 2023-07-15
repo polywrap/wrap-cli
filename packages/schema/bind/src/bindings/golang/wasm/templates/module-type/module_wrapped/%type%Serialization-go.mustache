@@ -4,9 +4,9 @@ package module_wrapped
 	{{#needsTypes}}
 	. {{goImport}}/module/wrap/types,
 	{{/needsTypes}}
-	{{#importedTypes}}
-  . {{goImport}}/module/wrap/imported/{{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}},
-  {{/importedTypes}}
+	{{#needsImportedTypes}}
+  . {{goImport}}/module/wrap/imported/{{#pkgName}}{{#toSnakeCase}}{{.}}{{/toSnakeCase}}{{/pkgName}},
+  {{/needsImportedTypes}}
 	{{#methods}}
 		{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}},
 	{{/methods}}
