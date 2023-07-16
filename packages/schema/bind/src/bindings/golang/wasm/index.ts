@@ -272,7 +272,9 @@ function applyTransforms(abi: Abi): Abi {
     addFirstLast,
     toPrefixedGraphQLType,
     Transforms.moduleNeedsTypes(),
-    Transforms.moduleNeedsImportedTypes(),
+    Transforms.extractImportedTypes(),
+    Transforms.extractNeededImportedNamespaces(),
+    Transforms.needsImportedNamespaces(),
   ];
 
   for (const transform of transforms) {
