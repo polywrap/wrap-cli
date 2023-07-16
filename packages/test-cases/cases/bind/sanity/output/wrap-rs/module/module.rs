@@ -1,22 +1,23 @@
+use polywrap_msgpack_serde::{
+    wrappers::polywrap_json::JSONString,
+    wrappers::polywrap_bigint::BigIntWrapper
+};
+use polywrap_wasm_rs::{
+    BigInt,
+    BigNumber,
+    Map,
+    JSON
+};
 use crate::{
     ArgsModuleMethod,
     ArgsObjectMethod,
     ArgsOptionalEnvMethod,
     ArgsIf,
 };
-use polywrap_wasm_rs::{
-    BigInt,
-    BigNumber,
-    Map,
-    JSON,
-};
-
-use crate::Env;
-use crate::{
-    CustomEnum,
-};
+use crate::CustomEnum;
 use crate::AnotherType;
 use crate::Else;
+use crate::env::Env;
 
 pub struct Module;
 

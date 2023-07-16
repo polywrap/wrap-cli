@@ -9,7 +9,6 @@ use polywrap_wasm_rs::{
     invoke,
     InvokeArgs,
 };
-use crate::module::Module;
 
 #[no_mangle]
 pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32, env_size: u32) -> bool {

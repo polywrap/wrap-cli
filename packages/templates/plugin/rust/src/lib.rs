@@ -1,5 +1,5 @@
 use crate::wrap::wrap_info::get_manifest;
-use polywrap_core::invoke::Invoker;
+use polywrap_core::invoker::Invoker;
 use polywrap_plugin::{error::PluginError, implementor::plugin_impl, JSON};
 use wrap::{
     module::{ArgsSampleMethod, Module},

@@ -72,10 +72,10 @@ describe("Polywrap Binding Test Suite", () => {
         output.output.entries = sort(output.output.entries);
         expectedOutput.output.entries = sort(expectedOutput.output.entries);
 
-        const testResultDir = path.join(__dirname, "/test-results/");
+        const testResultDir = path.join(__dirname, "/test-results/", language);
 
         if (!fs.existsSync(testResultDir)) {
-          fs.mkdirSync(testResultDir);
+          fs.mkdirSync(testResultDir, { recursive: true });
         }
 
         writeFileSync(

@@ -4,7 +4,9 @@ use std::convert::TryFrom;
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum While {
+    #[serde(rename = "for")]
     _for,
+    #[serde(rename = "in")]
     _in,
     _MAX_
 }

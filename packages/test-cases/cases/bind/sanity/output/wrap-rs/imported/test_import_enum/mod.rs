@@ -4,7 +4,9 @@ use std::convert::TryFrom;
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum TestImportEnum {
+    #[serde(rename = "STRING")]
     STRING,
+    #[serde(rename = "BYTES")]
     BYTES,
     _MAX_
 }

@@ -1,34 +1,32 @@
 use serde::{Serialize, Deserialize};
-pub mod serialization;
+use polywrap_msgpack_serde::{
+    wrappers::polywrap_json::JSONString,
+    wrappers::polywrap_bigint::BigIntWrapper
+};
 use polywrap_wasm_rs::{
     BigInt,
     BigNumber,
     Map,
-    DecodeError,
-    EncodeError,
-    Read,
-    Write,
-    JSON,
+    JSON
 };
-pub use serialization::{
-    deserialize_test_import_object,
-    read_test_import_object,
-    serialize_test_import_object,
-    write_test_import_object
-};
-
 use crate::TestImportAnotherObject;
 use crate::TestImportEnum;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportObject {
     pub object: TestImportAnotherObject,
+    #[serde(rename = "optObject")]
     pub opt_object: Option<TestImportAnotherObject>,
+    #[serde(rename = "objectArray")]
     pub object_array: Vec<TestImportAnotherObject>,
+    #[serde(rename = "optObjectArray")]
     pub opt_object_array: Option<Vec<Option<TestImportAnotherObject>>>,
     pub en: TestImportEnum,
+    #[serde(rename = "optEnum")]
     pub opt_enum: Option<TestImportEnum>,
+    #[serde(rename = "enumArray")]
     pub enum_array: Vec<TestImportEnum>,
+    #[serde(rename = "optEnumArray")]
     pub opt_enum_array: Option<Vec<Option<TestImportEnum>>>,
 }
 
@@ -37,30 +35,14 @@ impl TestImportObject {
 
     pub fn new() -> TestImportObject {
         TestImportObject {
-            object: TestImportAnotherObject::new(),
+            object: Option<TestImportAnotherObject>::new(),
             opt_object: None,
             object_array: vec![],
             opt_object_array: None,
-            en: TestImportEnum::_MAX_,
+            en: Option<TestImportEnum>::_MAX_,
             opt_enum: None,
             enum_array: vec![],
             opt_enum_array: None,
         }
-    }
-
-    pub fn to_buffer(args: &TestImportObject) -> Result<Vec<u8>, EncodeError> {
-        serialize_test_import_object(args).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
-    }
-
-    pub fn from_buffer(args: &[u8]) -> Result<TestImportObject, DecodeError> {
-        deserialize_test_import_object(args).map_err(|e| DecodeError::TypeReadError(e.to_string()))
-    }
-
-    pub fn write<W: Write>(args: &TestImportObject, writer: &mut W) -> Result<(), EncodeError> {
-        write_test_import_object(args, writer).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
-    }
-
-    pub fn read<R: Read>(reader: &mut R) -> Result<TestImportObject, DecodeError> {
-        read_test_import_object(reader).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 }
