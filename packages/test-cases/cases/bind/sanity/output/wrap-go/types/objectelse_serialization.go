@@ -13,8 +13,8 @@ func serializeElse(value *Else) []byte {
 
 func writeElse(writer msgpack.Write, value *Else) {
 	writer.WriteMapLength(1)
-	writer.Context().Push("M_else", "string", "writing property")
-	writer.WriteString("M_else")
+	writer.Context().Push("else", "string", "writing property")
+	writer.WriteString("else")
 	{
 		v := value.M_else
 		writer.WriteString(v)

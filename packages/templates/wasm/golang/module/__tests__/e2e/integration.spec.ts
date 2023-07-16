@@ -24,6 +24,8 @@ describe("Template Wrapper End to End Tests", () => {
       args: { arg: expected }
     });
 
+    console.log(result);
+
     expect(result.ok).toBeTruthy();
     if (!result.ok) return;
     expect(result.value.result).toEqual(expected);
