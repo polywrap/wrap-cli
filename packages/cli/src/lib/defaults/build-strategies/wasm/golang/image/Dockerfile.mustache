@@ -29,6 +29,7 @@ RUN wasm2wat ./build-staging/module.wasm | \
 # Remove the extra exports from the wasm module via wasm-snip (if they exist)
 RUN if [ ! -s ./build-staging/EXTRA_EXPORTS ]; then \
     echo "No extra exports to remove"; \
+    cp ./build-staging/module.wasm ./build-staging/module_exports.wasm; \
   else \
     EXTRA_EXPORTS=$(cat ./build-staging/EXTRA_EXPORTS); \
     echo "Removing extra exports: $EXTRA_EXPORTS"; \
@@ -49,6 +50,7 @@ RUN wasm2wat ./build-staging/module_exports.wasm | \
 # Remove the extra impors from the wasm module via wasm-snip (if they exist)
 RUN if [ ! -s ./build-staging/EXTRA_IMPORTS ]; then \
     echo "No extra imports to remove"; \
+    cp ./build-staging/module_exports.wasm ./build-staging/module_exports_imports.wasm; \
   else \
     EXTRA_IMPORTS=$(cat ./build-staging/EXTRA_IMPORTS); \
     echo "Removing extra imports: $EXTRA_IMPORTS"; \
