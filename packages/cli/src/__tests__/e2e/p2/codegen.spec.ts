@@ -16,6 +16,9 @@ Options:
                                      (default: polywrap.yaml | polywrap.yml)
   -g, --codegen-dir <path>           Output directory for the generated code
                                      (default: ./src/wrap)
+  -b, --bindgen <URI>                Uri for custom bindgen wrap (must
+                                     implement wrap-abi-bindgen interface; see
+                                     https://github.com/polywrap/wrap-abi-bindgen)
   -s, --script <path>                Path to a custom generation script
                                      (JavaScript | TypeScript)
   -c, --client-config <config-path>  Add custom configuration to the
