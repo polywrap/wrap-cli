@@ -11,7 +11,7 @@ import "github.com/polywrap/go-wrap/wrap"
 {{#capabilities}}
 {{#getImplementations}}
 {{#enabled}}
-func {{#toUpper}}{{namespace}}{{/toUpper}}Implementations() []string {
+func {{#toUpper}}{{namespace}}{{/toUpper}}_GetImplementations() []string {
 	return wrap.WrapGetImplementations("{{uri}}")
 }
 {{/enabled}}
