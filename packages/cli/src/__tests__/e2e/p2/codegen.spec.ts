@@ -188,4 +188,23 @@ describe("e2e tests for codegen command", () => {
 
     rimraf.sync(`${getTestCaseDir(1)}/types`);
   });
+
+  it("Should successfully generate types with custom bindgen wrap", async () => {
+    rimraf.sync(`${getTestCaseDir(0)}/types`);
+
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.codegen({
+      bindgen: "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/wrap-rust"
+    }, {
+      cwd: getTestCaseDir(0),
+      cli: polywrapCli,
+    });
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(clearStyle(output)).toContain(
+      `🔥 Types were generated successfully 🔥`
+    );
+
+    rimraf.sync(`${getTestCaseDir(0)}/types`);
+  });
 });
