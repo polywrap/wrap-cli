@@ -8,7 +8,7 @@ import (
 
 {{^isInterface}}
 {{#methods}}
-func {{#toUpper}}{{name}}{{/toUpper}}(args *Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
+func {{#toUpper}}{{name}}{{/toUpper}}(args *{{#toUpper}}{{namespace}}{{/toUpper}}_Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
 	argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
 	var (
 		err error
@@ -28,7 +28,7 @@ func {{#toUpper}}{{name}}{{/toUpper}}(args *Args{{#toUpper}}{{name}}{{/toUpper}}
 {{/isInterface}}
 {{#isInterface}}
 {{#methods}}
-func {{#toUpper}}{{name}}{{/toUpper}}(uri string, args *Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
+func {{#toUpper}}{{name}}{{/toUpper}}(uri string, args *{{#toUpper}}{{namespace}}{{/toUpper}}_Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
 	argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
 	var (
 		err error
