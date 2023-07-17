@@ -18,6 +18,7 @@ import {
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { DEFAULT_CODEGEN_DIR } from "../lib/defaults";
 import { watchProject } from "../lib/watchProject";
+import { parseUriOption } from "../lib/option-parsers/uri";
 
 import { PolywrapClient } from "@polywrap/client-js";
 
@@ -27,6 +28,7 @@ const defaultManifestStr = defaultPolywrapManifestFiles.join(" | ");
 export interface CodegenCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   codegenDir: string | false;
+  bindgen: string | false;
   script: string | false;
   clientConfig: string | false;
   wrapperEnvs: string | false;
@@ -51,6 +53,7 @@ export const codegen: Command = {
           default: DEFAULT_CODEGEN_DIR,
         })}`
       )
+      .option(`-b, --bindgen <URI>`, `${intlMsg.commands_codegen_options_b()}`)
       .option(
         `-s, --script <${pathStr}>`,
         `${intlMsg.commands_codegen_options_s()}`
@@ -77,6 +80,7 @@ export const codegen: Command = {
             defaultProjectManifestFiles
           ),
           codegenDir: parseDirOptionNoDefault(options.codegenDir),
+          bindgen: options.bindgen || false,
           script: parseCodegenScriptOption(options.script),
           clientConfig: options.clientConfig || false,
           wrapperEnvs: options.wrapperEnvs || false,
@@ -95,6 +99,7 @@ async function run(options: Required<CodegenCommandOptions>) {
     clientConfig,
     wrapperEnvs,
     codegenDir,
+    bindgen,
     script,
     verbose,
     quiet,
@@ -102,7 +107,7 @@ async function run(options: Required<CodegenCommandOptions>) {
     watch,
   } = options;
   const logger = createLogger({ verbose, quiet, logFile });
-
+  const bindgenUri = parseUriOption(bindgen);
   const envs = await parseWrapperEnvsOption(wrapperEnvs);
   const configBuilder = await parseClientConfigOption(clientConfig);
 
@@ -142,6 +147,7 @@ async function run(options: Required<CodegenCommandOptions>) {
         codegenDirAbs: codegenDir || undefined,
         schemaComposer,
         project,
+        bindgenUri,
       });
 
   const execute = async (): Promise<boolean> => {

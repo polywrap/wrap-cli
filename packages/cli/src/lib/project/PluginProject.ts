@@ -117,7 +117,8 @@ export class PluginProject extends Project<PluginManifest> {
 
   public async generateSchemaBindings(
     abi: WrapAbi,
-    generationSubPath?: string
+    generationSubPath?: string,
+    bindgenUri?: string
   ): Promise<BindOutput> {
     const moduleDirectory = await this.getGenerationDirectory(
       generationSubPath
@@ -141,7 +142,7 @@ export class PluginProject extends Project<PluginManifest> {
       outputDirAbs: moduleDirectory,
     };
 
-    return bindSchema(options);
+    return bindSchema(options, bindgenUri);
   }
 
   private _getGenerationDirectory(

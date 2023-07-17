@@ -113,7 +113,8 @@ export class AppProject extends Project<AppManifest> {
 
   public async generateSchemaBindings(
     abi: WrapAbi,
-    generationSubPath?: string
+    generationSubPath?: string,
+    bindgenUri?: string
   ): Promise<BindOutput> {
     const bindLanguage = appManifestLanguageToBindLanguage(
       await this.getManifestLanguage()
@@ -128,7 +129,7 @@ export class AppProject extends Project<AppManifest> {
       },
       outputDirAbs: await this.getGenerationDirectory(generationSubPath),
     };
-    return bindSchema(options);
+    return bindSchema(options, bindgenUri);
   }
 
   private _getGenerationDirectory(
