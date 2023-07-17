@@ -4,7 +4,7 @@ import (
 	"github.com/polywrap/go-wrap/msgpack"
 )
 
-type ArgsImportedMethod struct {
+type TestImport_ArgsImportedMethod struct {
 	Str            string `json:"str"`
 	OptStr         *string `json:"optStr"`
 	U              uint32 `json:"u"`
@@ -20,14 +20,14 @@ type ArgsImportedMethod struct {
 	OptEnumArray   []*TestImport_Enum `json:"optEnumArray"`
 }
 
-func SerializeImportedMethodArgs(value *ArgsImportedMethod) []byte {
+func SerializeImportedMethodArgs(value *TestImport_ArgsImportedMethod) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: ImportedMethod")
 	encoder := msgpack.NewWriteEncoder(ctx)
 	WriteImportedMethodArgs(encoder, value)
 	return encoder.Buffer()
 }
 
-func WriteImportedMethodArgs(writer msgpack.Write, value *ArgsImportedMethod) {
+func WriteImportedMethodArgs(writer msgpack.Write, value *TestImport_ArgsImportedMethod) {
 	writer.WriteMapLength(13)
 	writer.Context().Push("str", "string", "writing property")
 	writer.WriteString("str")
@@ -209,18 +209,18 @@ func DeserializeImportedMethodResult(argsBuf []byte) *TestImport_Object {
 	return value
 }
 
-type ArgsAnotherMethod struct {
+type TestImport_ArgsAnotherMethod struct {
 	Arg []string `json:"arg"`
 }
 
-func SerializeAnotherMethodArgs(value *ArgsAnotherMethod) []byte {
+func SerializeAnotherMethodArgs(value *TestImport_ArgsAnotherMethod) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: AnotherMethod")
 	encoder := msgpack.NewWriteEncoder(ctx)
 	WriteAnotherMethodArgs(encoder, value)
 	return encoder.Buffer()
 }
 
-func WriteAnotherMethodArgs(writer msgpack.Write, value *ArgsAnotherMethod) {
+func WriteAnotherMethodArgs(writer msgpack.Write, value *TestImport_ArgsAnotherMethod) {
 	writer.WriteMapLength(1)
 	writer.Context().Push("arg", "[]string", "writing property")
 	writer.WriteString("arg")
