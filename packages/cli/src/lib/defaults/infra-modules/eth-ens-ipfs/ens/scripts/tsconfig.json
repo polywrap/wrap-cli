@@ -6,6 +6,8 @@
       "es5",
       "dom"
     ],
+    "strict": true,
+    "skipLibCheck": true,
     "outDir": "build",
     "downlevelIteration": true,
     "experimentalDecorators": true,

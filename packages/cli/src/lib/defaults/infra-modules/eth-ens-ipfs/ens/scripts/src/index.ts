@@ -1,13 +1,13 @@
 import { deployENS } from "./utils/deployENS";
 
-import { ethers } from "ethers";
+const hre = require("hardhat");
 
 async function run() {
   if (!!process.env.ETH_PROVIDER === false) {
     throw Error("ETH_PROVIDER undefined");
   }
 
-  const provider = new ethers.providers.JsonRpcProvider(
+  const provider = new hre.ethers.providers.JsonRpcProvider(
       `http://${process.env.ETH_PROVIDER}`
   );
 
@@ -15,8 +15,8 @@ async function run() {
   await provider.ready;
 
   console.log("Deploying ENS...")
-  const addresses = await deployENS(provider);
-  console.log(addresses);
+  const addresses = await deployENS(hre.ethers);
+  console.log("ENS Addresses: " + addresses);
 }
 
 run()

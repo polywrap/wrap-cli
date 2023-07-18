@@ -2,16 +2,21 @@
   "private": true,
   "main": "build/index.js",
   "scripts": {
-    "deployEns": "node ./build/index.js",
-    "build": "rimraf ./build && tsc --project tsconfig.build.json"
+    "deployEns": "npx hardhat run ./build/index.js --network testnet",
+    "build:contracts": "cp -r node_modules/@ensdomains/ens-contracts/contracts ./ && npx hardhat compile && npx hardhat export-abi",
+    "build": "rimraf ./build && yarn build:contracts && tsc --project tsconfig.build.json"
   },
   "files": [
     "build"
   ],
   "dependencies": {
+    "hardhat": "2.17.0",
+    "@nomiclabs/hardhat-ethers": "2.2.3",
     "@ensdomains/ens-contracts": "0.0.22",
+    "eth-ens-namehash": "2.0.8",
     "content-hash": "2.5.2",
-    "ethers": "5.6.6"
+    "ethers": "5.6.6",
+    "hardhat-abi-exporter": "2.10.1"
   },
   "devDependencies": {
     "rimraf": "3.0.2",

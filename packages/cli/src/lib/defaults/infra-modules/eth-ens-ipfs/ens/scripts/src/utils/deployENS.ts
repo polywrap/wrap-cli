@@ -1,41 +1,63 @@
-import { loadContract, deploy, utf8ToKeccak256 } from "./utils";
+import { utf8ToKeccak256 } from "./utils";
 
-import { ethers } from "ethers";
-
-const ensJSON = loadContract( "ENSRegistry");
-const fifsRegistrarJSON = loadContract("FIFSRegistrar");
-const reverseRegistrarJSON = loadContract("ReverseRegistrar");
-const publicResolverJSON = loadContract( "PublicResolver");
-
+const namehash = require('eth-ens-namehash');
 const tld = "eth";
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const ZERO_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
-export async function deployENS(provider: ethers.providers.JsonRpcProvider) {
-  const signer = provider.getSigner();
-  const signerAddress = await signer.getAddress();
-  // Registry
-  const ens = await deploy(provider, ensJSON);
+interface ENSRegistry {
+  deploy: Function;
+  deployed: Function;
+  setSubnodeOwner: Function;
+  setResolver: Function;
+  address: string;
+}
 
-  // Resolver
-  const resolver = await deploy(provider, publicResolverJSON, ens.address);
-  await setupResolver(ens, resolver, signerAddress);
+interface FIFSRegistrar {
+  deploy: Function;
+  deployed: Function;
+  address: string;
+}
 
-  // Registrar
-  const registrar = await deploy(
-    provider,
-    fifsRegistrarJSON,
-    ens.address,
-    ethers.utils.namehash(tld)
-  );
-  await setupRegistrar(ens, registrar, signerAddress);
+interface ReverseRegistrar {
+  deploy: Function;
+  deployed: Function;
+  address: string;
+}
 
-  // Reverse Registrar
-  const reverse = await deploy(
-    provider,
-    reverseRegistrarJSON,
-    ens.address,
-    resolver.address
-  );
-  await setupReverseRegistrar(ens, reverse, signerAddress);
+interface PublicResolver {
+  deploy: Function;
+  deployed: Function;
+  setAddr: Function;
+  address: string;
+}
+
+export async function deployENS(ethers: { getContractFactory: (arg0: string) => any; getSigners: () => any; }) {
+  const ENSRegistry: ENSRegistry = await ethers.getContractFactory("ENSRegistry")
+  const FIFSRegistrar: FIFSRegistrar = await ethers.getContractFactory("FIFSRegistrar")
+  const ReverseRegistrar : ReverseRegistrar= await ethers.getContractFactory("ReverseRegistrar")
+  const PublicResolver: PublicResolver = await ethers.getContractFactory("PublicResolver")
+  const signers: { address: string; }[] = await ethers.getSigners();
+  const accounts: string[] = signers.map((s) => s.address)
+
+  console.log("deploying ENS Registry");
+  const ens = await ENSRegistry.deploy();
+  await ens.deployed();
+
+  console.log("deploying Public Resolver");
+  const resolver = await PublicResolver.deploy(ens.address, ZERO_ADDRESS);
+  await resolver.deployed();
+  await setupResolver(ens, resolver, accounts);
+
+  console.log("deploying FIFS Registrar");
+  const registrar = await  FIFSRegistrar.deploy(ens.address, namehash.hash(tld));
+  await registrar.deployed();
+  await setupRegistrar(ens, registrar);
+
+  console.log("deploying Reverse Registrar");
+  const reverse = await ReverseRegistrar.deploy(ens.address, resolver.address);
+  await reverse.deployed();
+  await setupReverseRegistrar(ens, registrar, reverse, accounts);
 
   return {
     ensAddress: ens.address,
@@ -45,48 +67,19 @@ export async function deployENS(provider: ethers.providers.JsonRpcProvider) {
   };
 }
 
-async function setupResolver(
-  ens: ethers.Contract,
-  resolver: ethers.Contract,
-  accountAddress: string
-) {
-  const resolverNode = ethers.utils.namehash("resolver");
+async function setupResolver(ens: ENSRegistry, resolver: PublicResolver, accounts: string[]): Promise<void> {
+  const resolverNode = namehash.hash("resolver");
   const resolverLabel = utf8ToKeccak256("resolver");
-
-  await ens.setSubnodeOwner(
-    ethers.utils.hexZeroPad(ethers.constants.AddressZero, 32),
-    resolverLabel,
-    accountAddress
-  );
+  await ens.setSubnodeOwner(ZERO_HASH, resolverLabel, accounts[0]);
   await ens.setResolver(resolverNode, resolver.address);
-  await resolver["setAddr(bytes32,address)"](resolverNode, resolver.address);
+  await resolver.setAddr(resolverNode, resolver.address);
 }
 
-async function setupRegistrar(
-  ens: ethers.Contract,
-  registrar: ethers.Contract,
-  accountAddress: string
-) {
-  await ens.setSubnodeOwner(
-    ethers.utils.hexZeroPad(ethers.constants.AddressZero, 32),
-    utf8ToKeccak256(tld),
-    registrar.address
-  );
+async function setupRegistrar(ens: ENSRegistry, registrar: FIFSRegistrar): Promise<void> {
+  await ens.setSubnodeOwner(ZERO_HASH, utf8ToKeccak256(tld), registrar.address);
 }
 
-async function setupReverseRegistrar(
-  ens: ethers.Contract,
-  reverseRegistrar: ethers.Contract,
-  accountAddress: string
-) {
-  await ens.setSubnodeOwner(
-    ethers.utils.hexZeroPad(ethers.constants.AddressZero, 32),
-    utf8ToKeccak256("reverse"),
-    accountAddress
-  );
-  await ens.setSubnodeOwner(
-    ethers.utils.namehash("reverse"),
-    utf8ToKeccak256("addr"),
-    reverseRegistrar.address
-  );
+async function setupReverseRegistrar(ens: ENSRegistry, registrar: FIFSRegistrar, reverseRegistrar: ReverseRegistrar, accounts: string[]): Promise<void> {
+  await ens.setSubnodeOwner(ZERO_HASH, utf8ToKeccak256("reverse"), accounts[0]);
+  await ens.setSubnodeOwner(namehash.hash("reverse"), utf8ToKeccak256("addr"), reverseRegistrar.address);
 }
