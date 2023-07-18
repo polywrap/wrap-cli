@@ -36,8 +36,8 @@ describe("Templates", () => {
     },
     "plugin/rust": {
       codegen: "npx polywrap codegen",
-      /*build: "cargo build",
-      test: "cargo test",*/
+      build: "cargo build",
+      test: "cargo test",
     },
     interface: { build: "npx polywrap build" },
   };

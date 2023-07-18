@@ -14,7 +14,7 @@ include = [
 polywrap_core = { version = "~0.1.6-beta.1" }
 polywrap_plugin = { version = "~0.1.6-beta.1" }
 polywrap_msgpack = { version = "~0.1.6-beta.1" }
-polywrap_msgpack_serde = { version = "~0.0.2-beta.1" }
+polywrap_msgpack_serde = { version = "~0.0.2-beta.5" }
 wrap_manifest_schemas = { version = "~0.1.6-beta.1" }
 serde = {version = "1.0.145", features = ["derive"]}
 
