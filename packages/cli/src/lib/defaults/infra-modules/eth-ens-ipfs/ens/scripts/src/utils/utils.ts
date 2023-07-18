@@ -5,8 +5,11 @@ interface ContractJson {
   bytecode: string;
 }
 
-export function loadContract(contractName: string): ContractJson {
-  return require(`@ensdomains/ens-contracts/build/contracts/${contractName}`);
+export function loadContract(modName: string, contractName: string): ContractJson {
+  if (modName === "deployments") {
+    return require(`@ensdomains/ens-contracts/deployments/mainnet/${contractName}`);
+  }
+  return require(`@ensdomains/ens-contracts/artifacts/contracts/${modName}/${contractName}.sol/${contractName}`);
 }
 
 export async function deploy(

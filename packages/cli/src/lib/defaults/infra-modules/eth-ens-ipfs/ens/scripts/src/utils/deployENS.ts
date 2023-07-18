@@ -2,10 +2,12 @@ import { loadContract, deploy, utf8ToKeccak256 } from "./utils";
 
 import { ethers } from "ethers";
 
-const ensJSON = loadContract( "ENSRegistry");
-const fifsRegistrarJSON = loadContract("FIFSRegistrar");
-const reverseRegistrarJSON = loadContract("ReverseRegistrar");
-const publicResolverJSON = loadContract( "PublicResolver");
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+const ensJSON = loadContract( "registry", "ENSRegistry");
+const fifsRegistrarJSON = loadContract( "registry", "FIFSRegistrar");
+const reverseRegistrarJSON = loadContract("deployments", "ReverseRegistrar");
+const publicResolverJSON = loadContract( "deployments", "PublicResolver");
 
 const tld = "eth";
 
@@ -14,10 +16,6 @@ export async function deployENS(provider: ethers.providers.JsonRpcProvider) {
   const signerAddress = await signer.getAddress();
   // Registry
   const ens = await deploy(provider, ensJSON);
-
-  // Resolver
-  const resolver = await deploy(provider, publicResolverJSON, ens.address);
-  await setupResolver(ens, resolver, signerAddress);
 
   // Registrar
   const registrar = await deploy(
@@ -32,10 +30,20 @@ export async function deployENS(provider: ethers.providers.JsonRpcProvider) {
   const reverse = await deploy(
     provider,
     reverseRegistrarJSON,
-    ens.address,
-    resolver.address
+    ens.address
   );
   await setupReverseRegistrar(ens, reverse, signerAddress);
+
+  // Resolver
+  const resolver = await deploy(
+    provider,
+    publicResolverJSON,
+    ens.address,
+    ZERO_ADDRESS,
+    registrar.address,
+    reverse.address,
+  );
+  await setupResolver(ens, resolver, signerAddress);
 
   return {
     ensAddress: ens.address,

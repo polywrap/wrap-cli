@@ -9,6 +9,7 @@
     "build"
   ],
   "dependencies": {
+    "@ensdomains/ens": "0.4.5",
     "@ensdomains/ens-contracts": "0.0.22",
     "content-hash": "2.5.2",
     "ethers": "5.6.6"
