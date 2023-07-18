@@ -1,8 +1,8 @@
 {
   "name": "templates-plugin-python",
   "private": true,
-  "version": "0.11.0-pre.2",
+  "version": "0.11.0-pre.3",
   "dependencies": {
-    "polywrap": "0.11.0-pre.2"
+    "polywrap": "0.11.0-pre.3"
   }
 }
