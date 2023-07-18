@@ -1,6 +1,9 @@
 import path from "path";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { ClientConfigBuilder, PolywrapClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import {
+  PolywrapClientConfigBuilder,
+  ClientConfigBuilder,
+} from "@polywrap/client-config-builder-js";
 import { testCases } from "./jobrunner-test-cases";
 import { JobRunner } from "../../lib";
 
@@ -17,7 +20,7 @@ describe("workflow JobRunner", () => {
       "00-subinvoke",
       "implementations",
       "rs"
-    )}`
+    )}`;
 
     const invokeUri = `fs/${path.join(
       GetPathToTestWrappers(),
@@ -25,9 +28,11 @@ describe("workflow JobRunner", () => {
       "01-invoke",
       "implementations",
       "rs"
-    )}`
+    )}`;
 
-    configBuilder.setRedirect("ens/imported-invoke.eth", invokeUri).setRedirect("ens/imported-subinvoke.eth", subinvokeUri);
+    configBuilder
+      .setRedirect("ens/imported-invoke.eth", invokeUri)
+      .setRedirect("ens/imported-subinvoke.eth", subinvokeUri);
     configBuilder.addDefaults();
   });
 

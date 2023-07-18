@@ -7,10 +7,10 @@ import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWrapPackage, Uri } from "@polywrap/core-js";
 import {
-  PolywrapClient,
   PolywrapClientConfigBuilder,
+  PolywrapClient,
 } from "@polywrap/client-js";
-import { Web3 } from "@polywrap/client-config-builder-js";
+import * as Web3 from "@polywrap/web3-config-bundle-js";
 import {
   Connection,
   Connections,

@@ -12,7 +12,7 @@ import {
   validateJobNames,
   validateOutput,
   WorkflowOutput,
-  defaultWorkflowManifest,
+  defaultWorkflowManifestFiles,
   parseManifestFileOption,
   parseLogFileOption,
   parseWrapperEnvsOption,
@@ -33,7 +33,7 @@ export interface TestCommandOptions extends BaseCommandOptions {
   outputFile: string | false;
 }
 
-const defaultManifestStr = defaultWorkflowManifest.join(" | ");
+const defaultManifestStr = defaultWorkflowManifestFiles.join(" | ");
 const pathStr = intlMsg.commands_test_options_m_path();
 
 export const test: Command = {
@@ -74,7 +74,7 @@ export const test: Command = {
         await _run({
           manifestFile: parseManifestFileOption(
             options.manifestFile,
-            defaultWorkflowManifest
+            defaultWorkflowManifestFiles
           ),
           clientConfig: options.clientConfig || false,
           wrapperEnvs: options.wrapperEnvs || false,
