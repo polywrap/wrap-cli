@@ -4,7 +4,7 @@
 use std::sync::Arc;
 use polywrap_core::invoker::Invoker;
 use polywrap_plugin::{error::PluginError, module::PluginModule};
-use polywrap_msgpack::{
+use polywrap_msgpack_serde::{
   to_vec,
   from_slice,
   BigInt,
@@ -16,6 +16,7 @@ use polywrap_msgpack::{
     polywrap_json as json
   }
 };
+use std::collections::BTreeMap;
 use serde::{Serialize, Deserialize};
 use super::types::*;
 
@@ -31,15 +32,15 @@ pub struct ArgsModuleMethod {
     pub enum_array: Vec<CustomEnum>,
     #[serde(rename = "optEnumArray")]
     pub opt_enum_array: Option<Vec<Option<CustomEnum>>>,
-    pub BTreeMap: BTreeMap<String, i32>,
-    #[serde(rename = "BTreeMapOfArr")]
-    pub BTreeMap_of_arr: BTreeMap<String, Vec<i32>>,
-    #[serde(rename = "BTreeMapOfBTreeMap")]
-    pub BTreeMap_of_BTreeMap: BTreeMap<String, BTreeMap<String, i32>>,
-    #[serde(rename = "BTreeMapOfObj")]
-    pub BTreeMap_of_obj: BTreeMap<String, AnotherType>,
-    #[serde(rename = "BTreeMapOfArrOfObj")]
-    pub BTreeMap_of_arr_of_obj: BTreeMap<String, Vec<AnotherType>>,
+    pub map: BTreeMap<String, i32>,
+    #[serde(rename = "mapOfArr")]
+    pub map_of_arr: BTreeMap<String, Vec<i32>>,
+    #[serde(rename = "mapOfMap")]
+    pub map_of_map: BTreeMap<String, BTreeMap<String, i32>>,
+    #[serde(rename = "mapOfObj")]
+    pub map_of_obj: BTreeMap<String, AnotherType>,
+    #[serde(rename = "mapOfArrOfObj")]
+    pub map_of_arr_of_obj: BTreeMap<String, Vec<AnotherType>>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

@@ -28,7 +28,7 @@ func {{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}(args
 {{/isInterface}}
 {{#isInterface}}
 {{#methods}}
-func {{#toUpper}}{{name}}{{/toUpper}}(uri string, args *{{#toUpper}}{{namespace}}{{/toUpper}}_Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
+func {{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}(uri string, args *{{#toUpper}}{{namespace}}{{/toUpper}}_Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
 	argsBuf := Serialize{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Args(args)
 	var (
 		err error

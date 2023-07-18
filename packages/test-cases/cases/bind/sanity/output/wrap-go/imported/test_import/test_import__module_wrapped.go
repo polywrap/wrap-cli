@@ -4,8 +4,8 @@ import (
 	"github.com/polywrap/go-wrap/wrap"
 )
 
-func ImportedMethod(uri string, args *ArgsImportedMethod) (*TestImport_Object, error) {
-	argsBuf := SerializeImportedMethodArgs(args)
+func TestImport_ImportedMethod(uri string, args *TestImport_ArgsImportedMethod) (*TestImport_Object, error) {
+	argsBuf := SerializeTestImport_ImportedMethodArgs(args)
 	var (
 		err error
 		raw []byte
@@ -13,13 +13,13 @@ func ImportedMethod(uri string, args *ArgsImportedMethod) (*TestImport_Object, e
 	)
 	raw, err = wrap.WrapSubinvokeImplementation("testimport.uri.eth", uri, "importedMethod", argsBuf)
 	if err == nil {
-		data = DeserializeImportedMethodResult(raw)
+		data = DeserializeTestImport_ImportedMethodResult(raw)
 	}
 	return data, err
 }
 
-func AnotherMethod(uri string, args *ArgsAnotherMethod) (int32, error) {
-	argsBuf := SerializeAnotherMethodArgs(args)
+func TestImport_AnotherMethod(uri string, args *TestImport_ArgsAnotherMethod) (int32, error) {
+	argsBuf := SerializeTestImport_AnotherMethodArgs(args)
 	var (
 		err error
 		raw []byte
@@ -27,13 +27,13 @@ func AnotherMethod(uri string, args *ArgsAnotherMethod) (int32, error) {
 	)
 	raw, err = wrap.WrapSubinvokeImplementation("testimport.uri.eth", uri, "anotherMethod", argsBuf)
 	if err == nil {
-		data = DeserializeAnotherMethodResult(raw)
+		data = DeserializeTestImport_AnotherMethodResult(raw)
 	}
 	return data, err
 }
 
-func ReturnsArrayOfEnums(uri string, args *ArgsReturnsArrayOfEnums) ([]*TestImport_Enum_Return, error) {
-	argsBuf := SerializeReturnsArrayOfEnumsArgs(args)
+func TestImport_ReturnsArrayOfEnums(uri string, args *TestImport_ArgsReturnsArrayOfEnums) ([]*TestImport_Enum_Return, error) {
+	argsBuf := SerializeTestImport_ReturnsArrayOfEnumsArgs(args)
 	var (
 		err error
 		raw []byte
@@ -41,7 +41,7 @@ func ReturnsArrayOfEnums(uri string, args *ArgsReturnsArrayOfEnums) ([]*TestImpo
 	)
 	raw, err = wrap.WrapSubinvokeImplementation("testimport.uri.eth", uri, "returnsArrayOfEnums", argsBuf)
 	if err == nil {
-		data = DeserializeReturnsArrayOfEnumsResult(raw)
+		data = DeserializeTestImport_ReturnsArrayOfEnumsResult(raw)
 	}
 	return data, err
 }

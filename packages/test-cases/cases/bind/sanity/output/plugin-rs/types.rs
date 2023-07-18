@@ -5,7 +5,7 @@
 //       All modifications will be overwritten.
 use polywrap_core::{invoker::Invoker, uri::Uri};
 use polywrap_plugin::error::PluginError;
-use polywrap_msgpack::{
+use polywrap_msgpack_serde::{
   to_vec,
   from_slice,
   BigInt,
@@ -244,7 +244,7 @@ impl<'a> TestImportModule<'a> {
 
     pub fn imported_method(&self, args: &TestImportModuleArgsImportedMethod) -> Result<Option<TestImportObject>, PluginError> {
         let uri = self.uri;
-        let serialized_args = serialize(args.clone()).unwrap();
+        let serialized_args = to_vec(args.clone()).unwrap();
         let result = invoker.invoke_raw(
             uri,
             "importedMethod",
@@ -259,12 +259,12 @@ impl<'a> TestImportModule<'a> {
             exception: e.to_string(),
         })?;
 
-        Ok(Some(decode(result.as_slice())?))
+        Ok(Some(from_slice(result.as_slice())?))
     }
 
     pub fn another_method(&self, args: &TestImportModuleArgsAnotherMethod) -> Result<i32, PluginError> {
         let uri = self.uri;
-        let serialized_args = serialize(args.clone()).unwrap();
+        let serialized_args = to_vec(args.clone()).unwrap();
         let result = invoker.invoke_raw(
             uri,
             "anotherMethod",
@@ -279,12 +279,12 @@ impl<'a> TestImportModule<'a> {
             exception: e.to_string(),
         })?;
 
-        Ok(decode(result.as_slice())?)
+        Ok(from_slice(result.as_slice())?)
     }
 
     pub fn returns_array_of_enums(&self, args: &TestImportModuleArgsReturnsArrayOfEnums) -> Result<Vec<Option<TestImportEnumReturn>>, PluginError> {
         let uri = self.uri;
-        let serialized_args = serialize(args.clone()).unwrap();
+        let serialized_args = to_vec(args.clone()).unwrap();
         let result = invoker.invoke_raw(
             uri,
             "returnsArrayOfEnums",
@@ -299,7 +299,7 @@ impl<'a> TestImportModule<'a> {
             exception: e.to_string(),
         })?;
 
-        Ok(decode(result.as_slice())?)
+        Ok(from_slice(result.as_slice())?)
     }
 }
 // Imported Modules END //
