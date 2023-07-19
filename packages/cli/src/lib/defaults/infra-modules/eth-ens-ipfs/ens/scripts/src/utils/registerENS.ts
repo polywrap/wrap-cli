@@ -3,9 +3,10 @@ import { loadContract, utf8ToKeccak256 } from "./utils";
 import { ethers } from "ethers";
 
 const contentHash = require("content-hash");
-const ensJSON = loadContract("ens", "ENSRegistry");
-const fifsRegistrarJSON = loadContract("ens", "FIFSRegistrar");
-const publicResolverJSON = loadContract("resolver", "PublicResolver");
+
+const ensJSON = loadContract( "registry", "ENSRegistry");
+const fifsRegistrarJSON = loadContract( "registry", "FIFSRegistrar");
+const publicResolverJSON = loadContract( "deployments", "PublicResolver");
 
 interface RegisterArgs {
   provider: ethers.providers.JsonRpcProvider;

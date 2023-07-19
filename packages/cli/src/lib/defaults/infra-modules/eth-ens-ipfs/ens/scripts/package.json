@@ -9,13 +9,12 @@
     "build"
   ],
   "dependencies": {
-    "@ensdomains/ens": "0.4.4",
-    "@ensdomains/resolver": "0.2.4",
+    "@ensdomains/ens-contracts": "0.0.22",
     "content-hash": "2.5.2",
-    "eth-ens-namehash": "2.0.8",
     "ethers": "5.6.6"
   },
   "devDependencies": {
+    "@types/node": "18.15.3",
     "rimraf": "3.0.2",
     "ts-node": "10.9.1",
     "typescript": "4.9.5"
