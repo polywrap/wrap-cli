@@ -1,6 +1,6 @@
 package module_wrapped
 {{#makeImports}}
-	{{#methods}}{{#env}}github.com/polywrap/go-wrap/wrap,. {{goImport}}/module/wrap/types,{{/env}}{{^env}}{{#needsTypes}}. {{goImport}}/module/wrap/types,{{/needsTypes}}{{/env}}{{/methods}}
+	{{#methods}}{{#env}}github.com/polywrap/go-wrap/wrap,. {{goImport}}/module/wrap/types,{{/env}}{{/methods}}
 	{{goImport}}/module as methods,
 {{/makeImports}}
 {{#methods}}
