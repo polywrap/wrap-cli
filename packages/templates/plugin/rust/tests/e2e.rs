@@ -1,16 +1,13 @@
 use template_plugin_rs::SamplePlugin;
 use polywrap_core::{
     client::ClientConfig,
-    resolvers::{
-        static_resolver::{StaticResolver, StaticResolverLike},
-        uri_resolution_context::UriPackage,
-    },
     uri::Uri,
 };
 use polywrap_msgpack::{msgpack};
 use polywrap_plugin::{package::PluginPackage};
 use polywrap_client::{
     client::PolywrapClient,
+    builder::{PolywrapClientConfig, PolywrapClientConfigBuilder},
 };
 use std::{
     sync::{Arc, Mutex},
@@ -18,19 +15,15 @@ use std::{
 
 fn get_client() -> PolywrapClient {
     let sample_plugin = SamplePlugin {};
-    let plugin_pkg: PluginPackage = sample_plugin.into();
-    let package = Arc::new(Mutex::new(plugin_pkg));
+    let plugin_pkg = PluginPackage::<SamplePlugin>::from(sample_plugin);
 
-    let resolver = StaticResolver::from(vec![StaticResolverLike::Package(UriPackage {
-        uri: Uri::try_from("plugin/sample").unwrap(),
-        package,
-    })]);
+    let mut config = PolywrapClientConfig::new();
+    config.add_package(
+        Uri::try_from("plugin/sample").unwrap(),
+        Arc::new(plugin_pkg)
+    );
 
-    PolywrapClient::new(ClientConfig {
-        resolver: Arc::new(resolver),
-        interfaces: None,
-        envs: None,
-    })
+    PolywrapClient::new(config.into())
 }
 
 #[test]
