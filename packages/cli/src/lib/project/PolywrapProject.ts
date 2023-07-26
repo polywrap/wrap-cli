@@ -153,6 +153,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   public async generateSchemaBindings(
     abi: WrapAbi,
     generationSubPath?: string,
+    bindgenUri?: string,
     bindConfig?: Record<string, unknown>
   ): Promise<BindOutput> {
     const codegenDirectory = await this.getGenerationDirectory(
@@ -178,7 +179,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       config: bindConfig,
     };
 
-    return bindSchema(options);
+    return bindSchema(options, bindgenUri);
   }
 
   /// Polywrap Build Manifest (polywrap.build.yaml)
