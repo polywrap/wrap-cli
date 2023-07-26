@@ -9,10 +9,10 @@ import * as Web3 from "@polywrap/web3-config-bundle-js";
 import * as Sys from "@polywrap/sys-config-bundle-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import {
-  ethereumProviderPlugin,
+  ethereumWalletPlugin,
   Connections,
   Connection,
-} from "@polywrap/ethereum-provider-js";
+} from "@polywrap/ethereum-wallet-js";
 import { IWrapPackage } from "@polywrap/core-js";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
@@ -44,7 +44,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
         "ens/wraps.eth:ens-uri-resolver-ext@1.0.1",
     })
     .setPackages({
-      [Web3.bundle.ethereumProviderV2.uri]: ethereumProviderPlugin({
+      [Web3.bundle.ethereumWallet.uri]: ethereumWalletPlugin({
         connections: new Connections({
           networks: {
             testnet: new Connection({

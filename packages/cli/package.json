@@ -47,7 +47,7 @@
     "@polywrap/client-config-builder-js": "0.12.0",
     "@polywrap/client-js": "0.12.0",
     "@polywrap/core-js": "0.12.0",
-    "@polywrap/ethereum-provider-js": "0.3.1",
+    "@polywrap/ethereum-wallet-js": "~0.1.0",
     "@polywrap/logging-js": "0.11.0-pre.4",
     "@polywrap/os-js": "0.11.0-pre.4",
     "@polywrap/polywrap-manifest-types-js": "0.11.0-pre.4",
