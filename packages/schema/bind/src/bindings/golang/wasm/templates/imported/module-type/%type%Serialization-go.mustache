@@ -6,7 +6,7 @@ package {{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}}
 	{{/arguments}}
 {{/makeImports}}
 {{#methods}}
-type Args{{#toUpper}}{{name}}{{/toUpper}} struct {
+type {{#toUpper}}{{namespace}}{{/toUpper}}_Args{{#toUpper}}{{name}}{{/toUpper}} struct {
 {{#stuctProps}}
 {{#arguments}}
 {{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}} `json:"{{name}}"`
@@ -14,14 +14,14 @@ type Args{{#toUpper}}{{name}}{{/toUpper}} struct {
 {{/stuctProps}}
 }
 
-func Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(value *Args{{#toUpper}}{{name}}{{/toUpper}}) []byte {
+func Serialize{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Args(value *{{#toUpper}}{{namespace}}{{/toUpper}}_Args{{#toUpper}}{{name}}{{/toUpper}}) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
 	encoder := msgpack.NewWriteEncoder(ctx)
-	Write{{#toUpper}}{{name}}{{/toUpper}}Args(encoder, value)
+	Write{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Args(encoder, value)
 	return encoder.Buffer()
 }
 
-func Write{{#toUpper}}{{name}}{{/toUpper}}Args(writer msgpack.Write, value *Args{{#toUpper}}{{name}}{{/toUpper}}) {
+func Write{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Args(writer msgpack.Write, value *{{#toUpper}}{{namespace}}{{/toUpper}}_Args{{#toUpper}}{{name}}{{/toUpper}}) {
 	{{#arguments.length}}
 	writer.WriteMapLength({{arguments.length}})
 	{{/arguments.length}}
@@ -54,7 +54,7 @@ func Write{{#toUpper}}{{name}}{{/toUpper}}Args(writer msgpack.Write, value *Args
 	{{/arguments}}
 }
 
-func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(argsBuf []byte) {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+func Deserialize{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Result(argsBuf []byte) {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
 	ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 

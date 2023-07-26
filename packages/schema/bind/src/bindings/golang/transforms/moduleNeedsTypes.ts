@@ -10,6 +10,7 @@ import { AbiTransforms } from "@polywrap/schema-parse";
 interface ModuleNeedsTypesState {
   moduleDefinition?: ModuleDefinition;
   needsTypes?: boolean;
+  importedTypes?: Map<string, string>;
 }
 
 export function moduleNeedsTypes(): AbiTransforms {
@@ -17,6 +18,12 @@ export function moduleNeedsTypes(): AbiTransforms {
 
   return {
     enter: {
+      Abi: (abi) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        state.importedTypes = abi._importedTypes;
+        return abi;
+      },
       ModuleDefinition: (def: ModuleDefinition) => {
         state.moduleDefinition = def;
         state.needsTypes = false;
@@ -29,7 +36,11 @@ export function moduleNeedsTypes(): AbiTransforms {
 
         if (def.return) {
           const returnType = def.return.type;
-          if (!isBaseType(returnType) && !isBuiltInType(returnType)) {
+          if (
+            !isBaseType(returnType) &&
+            !isBuiltInType(returnType) &&
+            !state.importedTypes?.has(returnType)
+          ) {
             state.needsTypes = true;
           }
         }

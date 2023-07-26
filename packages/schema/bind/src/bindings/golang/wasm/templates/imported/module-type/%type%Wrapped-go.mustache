@@ -8,8 +8,8 @@ import (
 
 {{^isInterface}}
 {{#methods}}
-func {{#toUpper}}{{name}}{{/toUpper}}(args *Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
-	argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
+func {{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}(args *{{#toUpper}}{{namespace}}{{/toUpper}}_Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
+	argsBuf := Serialize{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Args(args)
 	var (
 		err error
 		raw []byte
@@ -17,7 +17,7 @@ func {{#toUpper}}{{name}}{{/toUpper}}(args *Args{{#toUpper}}{{name}}{{/toUpper}}
 	)
 	raw, err = wrap.WrapSubinvoke("{{uri}}", "{{name}}", argsBuf)
 	if err == nil {
-		data = Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(raw)
+		data = Deserialize{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Result(raw)
 	}
 	return data, err
 }
@@ -28,8 +28,8 @@ func {{#toUpper}}{{name}}{{/toUpper}}(args *Args{{#toUpper}}{{name}}{{/toUpper}}
 {{/isInterface}}
 {{#isInterface}}
 {{#methods}}
-func {{#toUpper}}{{name}}{{/toUpper}}(uri string, args *Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
-	argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
+func {{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}(uri string, args *{{#toUpper}}{{namespace}}{{/toUpper}}_Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
+	argsBuf := Serialize{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Args(args)
 	var (
 		err error
 		raw []byte
@@ -37,7 +37,7 @@ func {{#toUpper}}{{name}}{{/toUpper}}(uri string, args *Args{{#toUpper}}{{name}}
 	)
 	raw, err = wrap.WrapSubinvokeImplementation("{{uri}}", uri, "{{name}}", argsBuf)
 	if err == nil {
-		data = Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(raw)
+		data = Deserialize{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Result(raw)
 	}
 	return data, err
 }

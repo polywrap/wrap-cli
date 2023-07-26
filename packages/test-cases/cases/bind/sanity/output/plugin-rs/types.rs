@@ -3,9 +3,21 @@
 
 // NOTE: This is an auto-generated file.
 //       All modifications will be overwritten.
-use polywrap_core::{invoke::Invoker, uri::Uri};
-use polywrap_msgpack::{decode, serialize};
-use polywrap_plugin::{error::PluginError, BigInt, BigNumber, Map, JSON};
+use polywrap_core::{invoker::Invoker, uri::Uri};
+use polywrap_plugin::error::PluginError;
+use polywrap_msgpack_serde::{
+  to_vec,
+  from_slice,
+  BigInt,
+  BigNumber,
+  JSON,
+  bytes,
+  wrappers::{
+    polywrap_bigint as bigint,
+    polywrap_json as json
+  }
+};
+use std::collections::BTreeMap;
 use serde::{Serialize, Deserialize};
 use std::sync::Arc;
 
@@ -17,7 +29,7 @@ pub struct Env {
     #[serde(rename = "optProp")]
     pub opt_prop: Option<String>,
     #[serde(rename = "optMap")]
-    pub opt_map: Option<Map<String, Option<i32>>>,
+    pub opt_map: Option<BTreeMap<String, Option<i32>>>,
 }
 // Env END //
 
@@ -38,18 +50,22 @@ pub struct CustomType {
     pub i8: i8,
     pub i16: i16,
     pub i32: i32,
+    #[serde(with = "bigint")]
     pub bigint: BigInt,
+    #[serde(with = "bigint")]
     #[serde(rename = "optBigint")]
     pub opt_bigint: Option<BigInt>,
     pub bignumber: BigNumber,
     #[serde(rename = "optBignumber")]
     pub opt_bignumber: Option<BigNumber>,
+    #[serde(with = "json")]
     pub json: JSON::Value,
+    #[serde(with = "json")]
     #[serde(rename = "optJson")]
     pub opt_json: Option<JSON::Value>,
-    #[serde(with = "serde_bytes")]
+    #[serde(with = "bytes")]
     pub bytes: Vec<u8>,
-    #[serde(with = "serde_bytes")]
+    #[serde(with = "bytes")]
     #[serde(rename = "optBytes")]
     pub opt_bytes: Option<Vec<u8>>,
     pub boolean: bool,
@@ -84,15 +100,15 @@ pub struct CustomType {
     pub enum_array: Vec<CustomEnum>,
     #[serde(rename = "optEnumArray")]
     pub opt_enum_array: Option<Vec<Option<CustomEnum>>>,
-    pub map: Map<String, i32>,
+    pub map: BTreeMap<String, i32>,
     #[serde(rename = "mapOfArr")]
-    pub map_of_arr: Map<String, Vec<i32>>,
+    pub map_of_arr: BTreeMap<String, Vec<i32>>,
     #[serde(rename = "mapOfObj")]
-    pub map_of_obj: Map<String, AnotherType>,
+    pub map_of_obj: BTreeMap<String, AnotherType>,
     #[serde(rename = "mapOfArrOfObj")]
-    pub map_of_arr_of_obj: Map<String, Vec<AnotherType>>,
+    pub map_of_arr_of_obj: BTreeMap<String, Vec<AnotherType>>,
     #[serde(rename = "mapCustomValue")]
-    pub map_custom_value: Map<String, Option<CustomMapValue>>,
+    pub map_custom_value: BTreeMap<String, Option<CustomMapValue>>,
 }
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct AnotherType {
@@ -228,7 +244,7 @@ impl<'a> TestImportModule<'a> {
 
     pub fn imported_method(&self, args: &TestImportModuleArgsImportedMethod) -> Result<Option<TestImportObject>, PluginError> {
         let uri = self.uri;
-        let serialized_args = serialize(args.clone()).unwrap();
+        let serialized_args = to_vec(args.clone()).unwrap();
         let result = invoker.invoke_raw(
             uri,
             "importedMethod",
@@ -243,12 +259,12 @@ impl<'a> TestImportModule<'a> {
             exception: e.to_string(),
         })?;
 
-        Ok(Some(decode(result.as_slice())?))
+        Ok(Some(from_slice(result.as_slice())?))
     }
 
     pub fn another_method(&self, args: &TestImportModuleArgsAnotherMethod) -> Result<i32, PluginError> {
         let uri = self.uri;
-        let serialized_args = serialize(args.clone()).unwrap();
+        let serialized_args = to_vec(args.clone()).unwrap();
         let result = invoker.invoke_raw(
             uri,
             "anotherMethod",
@@ -263,12 +279,12 @@ impl<'a> TestImportModule<'a> {
             exception: e.to_string(),
         })?;
 
-        Ok(decode(result.as_slice())?)
+        Ok(from_slice(result.as_slice())?)
     }
 
     pub fn returns_array_of_enums(&self, args: &TestImportModuleArgsReturnsArrayOfEnums) -> Result<Vec<Option<TestImportEnumReturn>>, PluginError> {
         let uri = self.uri;
-        let serialized_args = serialize(args.clone()).unwrap();
+        let serialized_args = to_vec(args.clone()).unwrap();
         let result = invoker.invoke_raw(
             uri,
             "returnsArrayOfEnums",
@@ -283,7 +299,7 @@ impl<'a> TestImportModule<'a> {
             exception: e.to_string(),
         })?;
 
-        Ok(decode(result.as_slice())?)
+        Ok(from_slice(result.as_slice())?)
     }
 }
 // Imported Modules END //

@@ -23,6 +23,7 @@ EXTRA_EXPORTS=$(
 if [ -z "$EXTRA_EXPORTS" ]
 then
   echo "No extra exports to remove"
+  cp ./build-staging/module.wasm ./build-staging/module_exports.wasm
 else
   echo "Removing extra exports: $EXTRA_EXPORTS"
   # Remove these extra exports from the wasm module via wasm-snip
@@ -43,6 +44,7 @@ EXTRA_IMPORTS=$(
 if [ -z "$EXTRA_IMPORTS" ]
 then
   echo "No extra imports to remove"
+  cp ./build-staging/module_exports.wasm ./build-staging/module_exports_imports.wasm
 else
   echo "Removing extra imports: $EXTRA_IMPORTS"
   # Remove these extra imports from the wasm module via wasm-snip
