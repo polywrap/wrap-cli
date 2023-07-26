@@ -125,7 +125,7 @@ class ENSPublisher implements DeployModule {
       client,
       {
         method: "awaitTransaction",
-        uri: Uri.from("ens/ethers.wraps.eth:0.1.0"),
+        uri: Uri.from("wrapscan.io/polywrap/ethers@1.0"),
         args: {
           txHash: setContenthashData.value.hash,
           connection: {

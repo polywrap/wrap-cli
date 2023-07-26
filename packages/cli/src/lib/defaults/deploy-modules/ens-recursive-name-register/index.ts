@@ -83,7 +83,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
 
     const signerAddress = await client.invoke<string>({
       method: "getSignerAddress",
-      uri: "ens/ethers.wraps.eth:0.1.0",
+      uri: "wrapscan.io/polywrap/ethers@1.0",
       args: {
         connection: {
           networkNameOrChainId: network,
@@ -126,7 +126,7 @@ class ENSRecursiveNameRegisterPublisher implements DeployModule {
         client,
         {
           method: "awaitTransaction",
-          uri: Uri.from("ens/ethers.wraps.eth:0.1.0"),
+          uri: Uri.from("wrapscan.io/polywrap/ethers@1.0"),
           args: {
             txHash: registerData.value[0].tx.hash,
             connection: {
