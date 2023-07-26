@@ -14,8 +14,8 @@ import * as Web3 from "@polywrap/web3-config-bundle-js";
 import {
   Connection,
   Connections,
-  ethereumProviderPlugin,
-} from "@polywrap/ethereum-provider-js";
+  ethereumWalletPlugin,
+} from "@polywrap/ethereum-wallet-js";
 
 const contentHash = require("content-hash");
 
@@ -65,8 +65,8 @@ class ENSPublisher implements DeployModule {
     const clientConfig = new PolywrapClientConfigBuilder()
       .addDefaults()
       .setPackage(
-        Web3.bundle.ethereumProviderV2.uri,
-        ethereumProviderPlugin({
+        Web3.bundle.ethereumWallet.uri,
+        ethereumWalletPlugin({
           connections: connections,
         }) as IWrapPackage
       )

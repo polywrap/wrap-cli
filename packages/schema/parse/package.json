@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@dorgjelli/graphql-schema-cycles": "1.1.4",
-    "@polywrap/wrap-manifest-types-js": "0.12.0-pre.1",
+    "@polywrap/wrap-manifest-types-js": "0.12.0",
     "graphql": "15.5.0"
   },
   "devDependencies": {

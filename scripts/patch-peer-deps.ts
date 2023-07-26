@@ -3,8 +3,7 @@ import path from "path";
 
 const packagesToPatch = [
   "@polywrap/concurrent-plugin-js",
-  "@polywrap/ethereum-provider-js-v1",
-  "@polywrap/ethereum-provider-js",
+  "@polywrap/ethereum-wallet-js",
   "@polywrap/file-system-plugin-js",
   "@polywrap/http-plugin-js",
   "@polywrap/logger-plugin-js",
