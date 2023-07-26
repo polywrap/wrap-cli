@@ -28,6 +28,7 @@ import {
 } from "../lib/build-strategies";
 import { DEFAULT_CODEGEN_DIR } from "../lib/defaults";
 import { watchProject } from "../lib/watchProject";
+import { parseUriOption } from "../lib/option-parsers/uri";
 
 import { PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -46,6 +47,7 @@ const supportedProjectTypes = [
 export interface BuildCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputDir: string;
+  bindgen: string | false;
   clientConfig: string | false;
   wrapperEnvs: string | false;
   noCodegen: boolean;
@@ -72,6 +74,7 @@ export const build: Command = {
           default: defaultOutputDir,
         })}`
       )
+      .option(`-b, --bindgen <URI>`, `${intlMsg.commands_codegen_options_b()}`)
       .option(
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
@@ -112,6 +115,7 @@ export const build: Command = {
             clientConfig: options.clientConfig || false,
             wrapperEnvs: options.wrapperEnvs || false,
             outputDir: parseDirOption(options.outputDir, defaultOutputDir),
+            bindgen: options.bindgen || false,
             noCodegen: !options.codegen || false,
             codegenDir: parseDirOptionNoDefault(options.codegenDir),
             strategy: options.strategy || defaultStrategy,
@@ -167,6 +171,7 @@ async function run(options: Required<BuildCommandOptions>) {
     clientConfig,
     wrapperEnvs,
     outputDir,
+    bindgen,
     strategy,
     noCodegen,
     codegenDir,
@@ -176,7 +181,7 @@ async function run(options: Required<BuildCommandOptions>) {
   } = options;
 
   const logger = createLogger({ verbose, quiet, logFile });
-
+  const bindgenUri = parseUriOption(bindgen);
   const envs = await parseWrapperEnvsOption(wrapperEnvs);
   const configBuilder = await parseClientConfigOption(clientConfig);
 
@@ -243,6 +248,7 @@ async function run(options: Required<BuildCommandOptions>) {
           project,
           schemaComposer,
           codegenDirAbs: codegenDir || undefined,
+          bindgenUri,
         });
         const codegenSuccess = await codeGenerator.generate();
 

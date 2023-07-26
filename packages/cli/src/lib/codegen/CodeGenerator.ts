@@ -21,11 +21,13 @@ import { CodegenOverrides, tryGetCodegenOverrides } from "./CodegenOverrides";
 import path from "path";
 import { BindLanguage } from "@polywrap/schema-bind";
 import { writeDirectorySync } from "@polywrap/os-js";
+import { Uri } from "@polywrap/core-js";
 
 export interface CodeGeneratorConfig {
   project: Project<AnyProjectManifest>;
   schemaComposer: SchemaComposer;
   codegenDirAbs?: string;
+  bindgenUri?: Uri;
 }
 
 export class CodeGenerator {
@@ -89,6 +91,7 @@ export class CodeGenerator {
     const binding = await this._config.project.generateSchemaBindings(
       abi,
       codegenDir,
+      this._config.bindgenUri?.toString(),
       bindConfig
     );
 
