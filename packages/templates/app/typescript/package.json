@@ -8,7 +8,7 @@
     "test": "ts-node ./src/index.ts"
   },
   "dependencies": {
-    "@polywrap/client-js": "~0.12.0-pre.1"
+    "@polywrap/client-js": "~0.12.0"
   },
   "devDependencies": {
     "@types/node": "18.15.0",
