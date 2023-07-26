@@ -12,8 +12,8 @@ func serialize{{#toUpper}}{{type}}{{/toUpper}}(value *{{#toUpper}}{{type}}{{/toU
 func write{{#toUpper}}{{type}}{{/toUpper}}(writer msgpack.Write, value *{{#toUpper}}{{type}}{{/toUpper}}) {
 	writer.WriteMapLength({{properties.length}})
 	{{#properties}}
-	writer.Context().Push("{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property")
-	writer.WriteString("{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}")
+	writer.Context().Push("{{#handleKeywords}}{{name}}{{/handleKeywords}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property")
+	writer.WriteString("{{#handleKeywords}}{{name}}{{/handleKeywords}}")
 	{{#scalar}}
 	{{> serialize_scalar}}
 	{{/scalar}}

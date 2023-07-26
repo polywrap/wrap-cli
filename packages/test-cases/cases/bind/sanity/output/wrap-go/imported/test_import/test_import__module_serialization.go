@@ -4,7 +4,7 @@ import (
 	"github.com/polywrap/go-wrap/msgpack"
 )
 
-type ArgsImportedMethod struct {
+type TestImport_ArgsImportedMethod struct {
 	Str            string `json:"str"`
 	OptStr         *string `json:"optStr"`
 	U              uint32 `json:"u"`
@@ -20,14 +20,14 @@ type ArgsImportedMethod struct {
 	OptEnumArray   []*TestImport_Enum `json:"optEnumArray"`
 }
 
-func SerializeImportedMethodArgs(value *ArgsImportedMethod) []byte {
+func SerializeTestImport_ImportedMethodArgs(value *TestImport_ArgsImportedMethod) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: ImportedMethod")
 	encoder := msgpack.NewWriteEncoder(ctx)
-	WriteImportedMethodArgs(encoder, value)
+	WriteTestImport_ImportedMethodArgs(encoder, value)
 	return encoder.Buffer()
 }
 
-func WriteImportedMethodArgs(writer msgpack.Write, value *ArgsImportedMethod) {
+func WriteTestImport_ImportedMethodArgs(writer msgpack.Write, value *TestImport_ArgsImportedMethod) {
 	writer.WriteMapLength(13)
 	writer.Context().Push("str", "string", "writing property")
 	writer.WriteString("str")
@@ -196,7 +196,7 @@ func WriteImportedMethodArgs(writer msgpack.Write, value *ArgsImportedMethod) {
 	writer.Context().Pop()
 }
 
-func DeserializeImportedMethodResult(argsBuf []byte) *TestImport_Object {
+func DeserializeTestImport_ImportedMethodResult(argsBuf []byte) *TestImport_Object {
 	ctx := msgpack.NewContext("Deserializing module-type: ImportedMethod")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
@@ -209,18 +209,18 @@ func DeserializeImportedMethodResult(argsBuf []byte) *TestImport_Object {
 	return value
 }
 
-type ArgsAnotherMethod struct {
+type TestImport_ArgsAnotherMethod struct {
 	Arg []string `json:"arg"`
 }
 
-func SerializeAnotherMethodArgs(value *ArgsAnotherMethod) []byte {
+func SerializeTestImport_AnotherMethodArgs(value *TestImport_ArgsAnotherMethod) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: AnotherMethod")
 	encoder := msgpack.NewWriteEncoder(ctx)
-	WriteAnotherMethodArgs(encoder, value)
+	WriteTestImport_AnotherMethodArgs(encoder, value)
 	return encoder.Buffer()
 }
 
-func WriteAnotherMethodArgs(writer msgpack.Write, value *ArgsAnotherMethod) {
+func WriteTestImport_AnotherMethodArgs(writer msgpack.Write, value *TestImport_ArgsAnotherMethod) {
 	writer.WriteMapLength(1)
 	writer.Context().Push("arg", "[]string", "writing property")
 	writer.WriteString("arg")
@@ -240,7 +240,7 @@ func WriteAnotherMethodArgs(writer msgpack.Write, value *ArgsAnotherMethod) {
 	writer.Context().Pop()
 }
 
-func DeserializeAnotherMethodResult(argsBuf []byte) int32 {
+func DeserializeTestImport_AnotherMethodResult(argsBuf []byte) int32 {
 	ctx := msgpack.NewContext("Deserializing module-type: AnotherMethod")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
@@ -251,18 +251,18 @@ func DeserializeAnotherMethodResult(argsBuf []byte) int32 {
 	return value
 }
 
-type ArgsReturnsArrayOfEnums struct {
+type TestImport_ArgsReturnsArrayOfEnums struct {
 	Arg string `json:"arg"`
 }
 
-func SerializeReturnsArrayOfEnumsArgs(value *ArgsReturnsArrayOfEnums) []byte {
+func SerializeTestImport_ReturnsArrayOfEnumsArgs(value *TestImport_ArgsReturnsArrayOfEnums) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: ReturnsArrayOfEnums")
 	encoder := msgpack.NewWriteEncoder(ctx)
-	WriteReturnsArrayOfEnumsArgs(encoder, value)
+	WriteTestImport_ReturnsArrayOfEnumsArgs(encoder, value)
 	return encoder.Buffer()
 }
 
-func WriteReturnsArrayOfEnumsArgs(writer msgpack.Write, value *ArgsReturnsArrayOfEnums) {
+func WriteTestImport_ReturnsArrayOfEnumsArgs(writer msgpack.Write, value *TestImport_ArgsReturnsArrayOfEnums) {
 	writer.WriteMapLength(1)
 	writer.Context().Push("arg", "string", "writing property")
 	writer.WriteString("arg")
@@ -273,7 +273,7 @@ func WriteReturnsArrayOfEnumsArgs(writer msgpack.Write, value *ArgsReturnsArrayO
 	writer.Context().Pop()
 }
 
-func DeserializeReturnsArrayOfEnumsResult(argsBuf []byte) []*TestImport_Enum_Return {
+func DeserializeTestImport_ReturnsArrayOfEnumsResult(argsBuf []byte) []*TestImport_Enum_Return {
 	ctx := msgpack.NewContext("Deserializing module-type: ReturnsArrayOfEnums")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 

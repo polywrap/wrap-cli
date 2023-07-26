@@ -4,8 +4,7 @@ import { UrlFormat } from "../../../lib";
 
 import { runCli } from "@polywrap/cli-js";
 import rimraf from "rimraf";
-import path from "path";
-import fs from "fs";
+import pjson from "../../../../package.json";
 
 const HELP = `Usage: polywrap create|c [options] [command]
 
@@ -26,13 +25,7 @@ Commands:
   help [command]                      display help for command
 `;
 
-const VERSION =
-  fs.readFileSync(
-    path.join(__dirname, "../../../../../../VERSION"),
-    "utf-8"
-  )
-  .replace(/\n/g, "")
-  .replace(/\r/g, "");
+const VERSION = pjson.version;
 
 const urlExamples = (format: UrlFormat): string => {
   if (format === UrlFormat.git) {

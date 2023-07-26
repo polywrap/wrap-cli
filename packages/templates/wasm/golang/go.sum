@@ -1,0 +1,4 @@
+github.com/polywrap/go-wrap v0.0.0-20230712212127-6895977d63c2 h1:+O3G/996rX4SMlJNFA9AIjPSyrInzOEVb7PFOT96G9A=
+github.com/polywrap/go-wrap v0.0.0-20230712212127-6895977d63c2/go.mod h1:rxqhIFKUzn/M46+zjnA1RHlCzLGQn2BiLWalezhLj/k=
+github.com/valyala/fastjson v1.6.3 h1:tAKFnnwmeMGPbwJ7IwxcTPCNr3uIzoIj3/Fh90ra4xc=
+github.com/valyala/fastjson v1.6.3/go.mod h1:CLCAqky6SMuOcxStkYQvblddUtoRxhYMGLrsQns1aXY=

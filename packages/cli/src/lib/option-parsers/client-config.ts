@@ -11,12 +11,7 @@ export async function parseClientConfigOption(
 ): Promise<ClientConfigBuilder> {
   const builder = new PolywrapClientConfigBuilder().addDefaults();
 
-  try {
-    builder.add(getTestEnvClientConfig());
-  } catch (e) {
-    console.error(intlMsg.commands_test_error_noTestEnvFound());
-    process.exit(1);
-  }
+  builder.add(getTestEnvClientConfig());
 
   if (clientConfig) {
     let configModule;

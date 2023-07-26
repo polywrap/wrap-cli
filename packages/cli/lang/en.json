@@ -169,7 +169,6 @@
   "commands_test_error_unsupportedOutputFileExt": "Unsupported outputFile extention: {outputFileExt}",
   "commands_test_error_cueDoesNotExist": "Require cue to run validator, checkout https://cuelang.org/ for more information",
   "commands_test_error_noWorkflowScriptFound": "Workflow script not found at path: {path}",
-  "commands_test_error_noTestEnvFound": "polywrap test-env not found, please run 'polywrap infra up --modules=eth-ens-ipfs'",
   "commands_polywrap_error_notACommand": "is not a command",
   "commands_polywrap_helpPrompt": "Type {command} to view common commands",
   "commands_manifest_description": "Inspect & Migrade Polywrap Manifests",
