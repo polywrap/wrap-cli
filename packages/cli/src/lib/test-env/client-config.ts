@@ -41,8 +41,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
       },
     })
     .setRedirects({
-      [testnetEnsResolverUri]:
-        Web3.bundle.ensContenthashResolver.uri
+      [testnetEnsResolverUri]: Web3.bundle.ensContenthashResolver.uri,
     })
     .setPackages({
       [Web3.bundle.ethereumWallet.uri]: ethereumWalletPlugin({
