@@ -27,6 +27,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   }
 
   const ensAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress;
+  const testnetEnsResolverUri = "proxy/testnet-ens-contenthash-uri-resolver";
 
   const builder = new PolywrapClientConfigBuilder()
     .addDefaults()
@@ -35,13 +36,13 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
         provider: ipfsProvider,
         retries: { tryResolveUri: 1, getFile: 1 },
       },
-      "proxy/testnet-ens-uri-resolver-ext": {
+      [testnetEnsResolverUri]: {
         registryAddress: ensAddress,
       },
     })
     .setRedirects({
-      "proxy/testnet-ens-uri-resolver-ext":
-        "ens/wraps.eth:ens-uri-resolver-ext@1.0.1",
+      [testnetEnsResolverUri]:
+        Web3.bundle.ensContenthashResolver.uri
     })
     .setPackages({
       [Web3.bundle.ethereumWallet.uri]: ethereumWalletPlugin({
@@ -70,7 +71,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
 
   builder.addInterfaceImplementations(
     ExtendableUriResolver.defaultExtInterfaceUris[0].uri,
-    ["proxy/testnet-ens-uri-resolver-ext", ...resolverExtensions]
+    [testnetEnsResolverUri, ...resolverExtensions]
   );
 
   return builder.config;
