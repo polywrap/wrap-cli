@@ -17,6 +17,10 @@ Options:
                                        (default: polywrap.yaml | polywrap.yml)
   -o, --output-dir <path>              Output directory for build results
                                        (default: ./build)
+  -b, --bindgen <URI>                  Uri for custom bindgen wrap (must
+                                       implement wrap-abi-bindgen interface;
+                                       see
+                                       https://github.com/polywrap/wrap-abi-bindgen)
   -c, --client-config <config-path>    Add custom configuration to the
                                        PolywrapClient
   -n, --no-codegen                     Skip code generation before build
