@@ -9,6 +9,7 @@ export const bindLanguage = {
   "plugin-rs": "plugin-rs",
   "plugin-py": "plugin-py",
   "plugin-kt": "plugin-kt",
+  "plugin-swift": "plugin-swift",
   "app-ts": "app-ts",
 };
 
