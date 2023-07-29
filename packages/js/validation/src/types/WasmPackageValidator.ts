@@ -135,10 +135,10 @@ export class WasmPackageValidator {
         manifest: await deserializeWrapManifest(info),
       };
     } catch (e) {
-      if (e.message.includes('instance requires property "abi"')) {
+      if (e.message.includes('"missingProperty": "abi"')) {
         return this._fail(ValidationFailReason.AbiNotFound);
       } else if (
-        e.message.includes("instance.abi") &&
+        e.message.includes("abi") &&
         e.message.includes("Validation errors encountered")
       ) {
         return this._fail(ValidationFailReason.InvalidAbi);
