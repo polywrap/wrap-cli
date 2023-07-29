@@ -13,8 +13,8 @@ func serializeCustomMapValue(value *CustomMapValue) []byte {
 
 func writeCustomMapValue(writer msgpack.Write, value *CustomMapValue) {
 	writer.WriteMapLength(1)
-	writer.Context().Push("Foo", "string", "writing property")
-	writer.WriteString("Foo")
+	writer.Context().Push("foo", "string", "writing property")
+	writer.WriteString("foo")
 	{
 		v := value.Foo
 		writer.WriteString(v)

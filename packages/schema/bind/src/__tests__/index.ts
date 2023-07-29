@@ -1,4 +1,4 @@
-import { BindOptions, BindLanguage } from "../";
+import { BindOptions, BindLanguage, bindLanguage } from "../";
 
 import fs from "fs";
 import path from "path";
@@ -14,7 +14,7 @@ export type TestCase = {
   input: BindOptions;
   outputLanguages: {
     language: string;
-    directory: string;
+    directory?: string;
   }[];
 };
 
@@ -25,6 +25,7 @@ export type TestCases = {
 
 export function fetchTestCases(): TestCases {
   const cases: TestCases = [];
+  const bindLanguages = Object.keys(bindLanguage);
 
   const fetchIfExists = (file: string): string | undefined => {
     if (fs.existsSync(file)) {
@@ -61,15 +62,22 @@ export function fetchTestCases(): TestCases {
 
     // Fetch each language's expected output
     const outputDir = path.join(root, dirent.name, "output");
-    const outputLanguages = fs
-      .readdirSync(outputDir, { withFileTypes: true })
-      .filter((item: fs.Dirent) => item.isDirectory())
-      .map((item: fs.Dirent) => {
-        return {
-          language: item.name,
-          directory: path.join(outputDir, item.name)
-        };
-      });
+    const outputLanguages: {
+      language: string;
+      directory?: string;
+    }[] = [];
+
+    for (const language of bindLanguages) {
+      const outputLanguageDir = path.join(outputDir, language);
+      if (fs.existsSync(outputLanguageDir)) {
+        outputLanguages.push({
+          language,
+          directory: outputLanguageDir
+        });
+      } else {
+        outputLanguages.push({ language });
+      }
+    }
 
     // Parse the input schema into the Abi structure
     const abi = parseSchema(schema);

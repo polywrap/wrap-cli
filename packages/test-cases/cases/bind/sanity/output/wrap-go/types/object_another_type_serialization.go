@@ -13,8 +13,8 @@ func serializeAnotherType(value *AnotherType) []byte {
 
 func writeAnotherType(writer msgpack.Write, value *AnotherType) {
 	writer.WriteMapLength(3)
-	writer.Context().Push("Prop", "*string", "writing property")
-	writer.WriteString("Prop")
+	writer.Context().Push("prop", "*string", "writing property")
+	writer.WriteString("prop")
 	{
 		v := value.Prop
 		if v == nil {
@@ -24,15 +24,15 @@ func writeAnotherType(writer msgpack.Write, value *AnotherType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("Circular", "*CustomType", "writing property")
-	writer.WriteString("Circular")
+	writer.Context().Push("circular", "*CustomType", "writing property")
+	writer.WriteString("circular")
 	{
 		v := value.Circular
 		CustomTypeWrite(writer, v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("M_const", "*string", "writing property")
-	writer.WriteString("M_const")
+	writer.Context().Push("const", "*string", "writing property")
+	writer.WriteString("const")
 	{
 		v := value.M_const
 		if v == nil {

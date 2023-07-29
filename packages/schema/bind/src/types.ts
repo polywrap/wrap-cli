@@ -1,16 +1,21 @@
 import { OutputDirectory } from "@polywrap/os-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
-export type BindLanguage =
-  | "wrap-as"
-  | "wrap-rs"
-  | "wrap-go"
-  | "plugin-ts"
-  | "plugin-rs"
-  | "plugin-py"
-  | "plugin-kt"
-  | "plugin-swift"
-  | "app-ts";
+export const bindLanguage = {
+  "wrap-as": "wrap-as",
+  "wrap-rs": "wrap-rs",
+  "wrap-go": "wrap-go",
+  "plugin-ts": "plugin-ts",
+  "plugin-rs": "plugin-rs",
+  "plugin-py": "plugin-py",
+  "plugin-kt": "plugin-kt",
+  "plugin-swift": "plugin-swift",
+  "app-ts": "app-ts",
+};
+
+export type BindLanguages = typeof bindLanguage;
+
+export type BindLanguage = keyof BindLanguages;
 
 export interface BindOutput {
   output: OutputDirectory;

@@ -13,22 +13,22 @@ func serializeTestImport_Object(value *TestImport_Object) []byte {
 
 func writeTestImport_Object(writer msgpack.Write, value *TestImport_Object) {
 	writer.WriteMapLength(8)
-	writer.Context().Push("Object", "TestImport_AnotherObject", "writing property")
-	writer.WriteString("Object")
+	writer.Context().Push("object", "TestImport_AnotherObject", "writing property")
+	writer.WriteString("object")
 	{
 		v := value.Object
 		TestImport_AnotherObjectWrite(writer, &v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptObject", "*TestImport_AnotherObject", "writing property")
-	writer.WriteString("OptObject")
+	writer.Context().Push("optObject", "*TestImport_AnotherObject", "writing property")
+	writer.WriteString("optObject")
 	{
 		v := value.OptObject
 		TestImport_AnotherObjectWrite(writer, v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("ObjectArray", "[]TestImport_AnotherObject", "writing property")
-	writer.WriteString("ObjectArray")
+	writer.Context().Push("objectArray", "[]TestImport_AnotherObject", "writing property")
+	writer.WriteString("objectArray")
 	if value.ObjectArray == nil {
 		writer.WriteNil()
 	} else if len(value.ObjectArray) == 0 {
@@ -43,8 +43,8 @@ func writeTestImport_Object(writer msgpack.Write, value *TestImport_Object) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptObjectArray", "[]*TestImport_AnotherObject", "writing property")
-	writer.WriteString("OptObjectArray")
+	writer.Context().Push("optObjectArray", "[]*TestImport_AnotherObject", "writing property")
+	writer.WriteString("optObjectArray")
 	if value.OptObjectArray == nil {
 		writer.WriteNil()
 	} else if len(value.OptObjectArray) == 0 {
@@ -59,15 +59,15 @@ func writeTestImport_Object(writer msgpack.Write, value *TestImport_Object) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("En", "TestImport_Enum", "writing property")
-	writer.WriteString("En")
+	writer.Context().Push("en", "TestImport_Enum", "writing property")
+	writer.WriteString("en")
 	{
 		v := value.En
 		writer.WriteI32(int32(v))
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptEnum", "*TestImport_Enum", "writing property")
-	writer.WriteString("OptEnum")
+	writer.Context().Push("optEnum", "*TestImport_Enum", "writing property")
+	writer.WriteString("optEnum")
 	{
 		v := value.OptEnum
 		if v == nil {
@@ -77,8 +77,8 @@ func writeTestImport_Object(writer msgpack.Write, value *TestImport_Object) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("EnumArray", "[]TestImport_Enum", "writing property")
-	writer.WriteString("EnumArray")
+	writer.Context().Push("enumArray", "[]TestImport_Enum", "writing property")
+	writer.WriteString("enumArray")
 	if value.EnumArray == nil {
 		writer.WriteNil()
 	} else if len(value.EnumArray) == 0 {
@@ -93,8 +93,8 @@ func writeTestImport_Object(writer msgpack.Write, value *TestImport_Object) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptEnumArray", "[]*TestImport_Enum", "writing property")
-	writer.WriteString("OptEnumArray")
+	writer.Context().Push("optEnumArray", "[]*TestImport_Enum", "writing property")
+	writer.WriteString("optEnumArray")
 	if value.OptEnumArray == nil {
 		writer.WriteNil()
 	} else if len(value.OptEnumArray) == 0 {

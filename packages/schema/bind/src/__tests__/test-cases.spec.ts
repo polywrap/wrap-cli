@@ -37,12 +37,6 @@ describe("Polywrap Binding Test Suite", () => {
         // Verify it binds correctly
         const { language, directory } = outputLanguage;
 
-        // Read the expected output directories
-        let expectedOutput: BindOutput = {
-          output: readDirectorySync(directory),
-          outputDirAbs: testCase.input.outputDirAbs,
-        };
-
         const bindOptions: BindOptions = {
           ...deepCopy(testCase.input),
           wrapInfo: {
@@ -61,6 +55,12 @@ describe("Polywrap Binding Test Suite", () => {
 
         const output = await bindSchema(bindOptions);
 
+        // Read the expected output directories
+        let expectedOutput: BindOutput | undefined = !directory ? undefined : {
+          output: readDirectorySync(directory),
+          outputDirAbs: testCase.input.outputDirAbs,
+        };
+
         const sort = (array: OutputEntry[]): OutputEntry[] => {
           array.forEach((entry) => {
             if (typeof entry.data !== "string") entry.data = sort(entry.data);
@@ -70,31 +70,18 @@ describe("Polywrap Binding Test Suite", () => {
         };
 
         output.output.entries = sort(output.output.entries);
-        expectedOutput.output.entries = sort(expectedOutput.output.entries);
 
-        const testResultDir = path.join(__dirname, "/test-results/");
-
-        if (!fs.existsSync(testResultDir)) {
-          fs.mkdirSync(testResultDir);
+        if (expectedOutput) {
+          expectedOutput.output.entries = sort(expectedOutput.output.entries);
         }
 
-        writeFileSync(
-          path.join(
-            testResultDir,
-            `${language}-output.json`
-          ),
-          JSON.stringify(output, null, 2),
-        );
-        writeFileSync(
-          path.join(
-            testResultDir,
-            `${language}-expected.json`
-          ),
-          JSON.stringify(expectedOutput, null, 2),
-        );
+        const testResultDir = path.join(__dirname, "/test-results/", language);
+
+        if (!fs.existsSync(testResultDir)) {
+          fs.mkdirSync(testResultDir, { recursive: true });
+        }
 
         const paths: string[] = [];
-
 
         const outputDirectoryEntry = (root: string, entry: OutputEntry) => {
           const entryPath = path.join(root, entry.name);
@@ -128,8 +115,11 @@ describe("Polywrap Binding Test Suite", () => {
           outputDirectoryEntry(testResultDir, entry);
         }
 
-
-        expect(output).toMatchObject(expectedOutput);
+        if (expectedOutput) {
+          expect(output).toMatchObject(expectedOutput);
+        } else {
+          expect(output.output.entries.length).toBeGreaterThan(0);
+        }
       }
     });
   }

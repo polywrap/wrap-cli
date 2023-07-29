@@ -13,8 +13,8 @@ func serializeTestImport_AnotherObject(value *TestImport_AnotherObject) []byte {
 
 func writeTestImport_AnotherObject(writer msgpack.Write, value *TestImport_AnotherObject) {
 	writer.WriteMapLength(1)
-	writer.Context().Push("Prop", "string", "writing property")
-	writer.WriteString("Prop")
+	writer.Context().Push("prop", "string", "writing property")
+	writer.WriteString("prop")
 	{
 		v := value.Prop
 		writer.WriteString(v)

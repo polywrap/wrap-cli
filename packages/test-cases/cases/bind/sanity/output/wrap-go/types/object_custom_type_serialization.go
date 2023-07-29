@@ -15,15 +15,15 @@ func serializeCustomType(value *CustomType) []byte {
 
 func writeCustomType(writer msgpack.Write, value *CustomType) {
 	writer.WriteMapLength(42)
-	writer.Context().Push("Str", "string", "writing property")
-	writer.WriteString("Str")
+	writer.Context().Push("str", "string", "writing property")
+	writer.WriteString("str")
 	{
 		v := value.Str
 		writer.WriteString(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptStr", "*string", "writing property")
-	writer.WriteString("OptStr")
+	writer.Context().Push("optStr", "*string", "writing property")
+	writer.WriteString("optStr")
 	{
 		v := value.OptStr
 		if v == nil {
@@ -33,15 +33,15 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("U", "uint32", "writing property")
-	writer.WriteString("U")
+	writer.Context().Push("u", "uint32", "writing property")
+	writer.WriteString("u")
 	{
 		v := value.U
 		writer.WriteU32(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptU", "*uint32", "writing property")
-	writer.WriteString("OptU")
+	writer.Context().Push("optU", "*uint32", "writing property")
+	writer.WriteString("optU")
 	{
 		v := value.OptU
 		if v == nil {
@@ -51,64 +51,64 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("M_u8", "uint8", "writing property")
-	writer.WriteString("M_u8")
+	writer.Context().Push("u8", "uint8", "writing property")
+	writer.WriteString("u8")
 	{
 		v := value.M_u8
 		writer.WriteU8(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("M_u16", "uint16", "writing property")
-	writer.WriteString("M_u16")
+	writer.Context().Push("u16", "uint16", "writing property")
+	writer.WriteString("u16")
 	{
 		v := value.M_u16
 		writer.WriteU16(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("M_u32", "uint32", "writing property")
-	writer.WriteString("M_u32")
+	writer.Context().Push("u32", "uint32", "writing property")
+	writer.WriteString("u32")
 	{
 		v := value.M_u32
 		writer.WriteU32(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("I", "int32", "writing property")
-	writer.WriteString("I")
+	writer.Context().Push("i", "int32", "writing property")
+	writer.WriteString("i")
 	{
 		v := value.I
 		writer.WriteI32(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("M_i8", "int8", "writing property")
-	writer.WriteString("M_i8")
+	writer.Context().Push("i8", "int8", "writing property")
+	writer.WriteString("i8")
 	{
 		v := value.M_i8
 		writer.WriteI8(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("M_i16", "int16", "writing property")
-	writer.WriteString("M_i16")
+	writer.Context().Push("i16", "int16", "writing property")
+	writer.WriteString("i16")
 	{
 		v := value.M_i16
 		writer.WriteI16(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("M_i32", "int32", "writing property")
-	writer.WriteString("M_i32")
+	writer.Context().Push("i32", "int32", "writing property")
+	writer.WriteString("i32")
 	{
 		v := value.M_i32
 		writer.WriteI32(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("Bigint", "*big.Int", "writing property")
-	writer.WriteString("Bigint")
+	writer.Context().Push("bigint", "*big.Int", "writing property")
+	writer.WriteString("bigint")
 	{
 		v := value.Bigint
 		writer.WriteBigInt(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptBigint", "*big.Int", "writing property")
-	writer.WriteString("OptBigint")
+	writer.Context().Push("optBigint", "*big.Int", "writing property")
+	writer.WriteString("optBigint")
 	{
 		v := value.OptBigint
 		if v == nil {
@@ -118,15 +118,15 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("Bignumber", "*big.Int", "writing property")
-	writer.WriteString("Bignumber")
+	writer.Context().Push("bignumber", "*big.Int", "writing property")
+	writer.WriteString("bignumber")
 	{
 		v := value.Bignumber
 		writer.WriteBigInt(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptBignumber", "*big.Int", "writing property")
-	writer.WriteString("OptBignumber")
+	writer.Context().Push("optBignumber", "*big.Int", "writing property")
+	writer.WriteString("optBignumber")
 	{
 		v := value.OptBignumber
 		if v == nil {
@@ -136,15 +136,15 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("Json", "*fastjson.Value", "writing property")
-	writer.WriteString("Json")
+	writer.Context().Push("json", "*fastjson.Value", "writing property")
+	writer.WriteString("json")
 	{
 		v := value.Json
 		writer.WriteJson(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptJson", "*fastjson.Value", "writing property")
-	writer.WriteString("OptJson")
+	writer.Context().Push("optJson", "*fastjson.Value", "writing property")
+	writer.WriteString("optJson")
 	{
 		v := value.OptJson
 		if v == nil {
@@ -154,15 +154,15 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("Bytes", "[]byte", "writing property")
-	writer.WriteString("Bytes")
+	writer.Context().Push("bytes", "[]byte", "writing property")
+	writer.WriteString("bytes")
 	{
 		v := value.Bytes
 		writer.WriteBytes(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptBytes", "[]byte", "writing property")
-	writer.WriteString("OptBytes")
+	writer.Context().Push("optBytes", "[]byte", "writing property")
+	writer.WriteString("optBytes")
 	{
 		v := value.OptBytes
 		if v == nil {
@@ -172,15 +172,15 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("M_boolean", "bool", "writing property")
-	writer.WriteString("M_boolean")
+	writer.Context().Push("boolean", "bool", "writing property")
+	writer.WriteString("boolean")
 	{
 		v := value.M_boolean
 		writer.WriteBool(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptBoolean", "*bool", "writing property")
-	writer.WriteString("OptBoolean")
+	writer.Context().Push("optBoolean", "*bool", "writing property")
+	writer.WriteString("optBoolean")
 	{
 		v := value.OptBoolean
 		if v == nil {
@@ -190,8 +190,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("U_array", "[]uint32", "writing property")
-	writer.WriteString("U_array")
+	writer.Context().Push("u_array", "[]uint32", "writing property")
+	writer.WriteString("u_array")
 	if value.U_array == nil {
 		writer.WriteNil()
 	} else if len(value.U_array) == 0 {
@@ -206,8 +206,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("UOpt_array", "[]uint32", "writing property")
-	writer.WriteString("UOpt_array")
+	writer.Context().Push("uOpt_array", "[]uint32", "writing property")
+	writer.WriteString("uOpt_array")
 	if value.UOpt_array == nil {
 		writer.WriteNil()
 	} else if len(value.UOpt_array) == 0 {
@@ -242,8 +242,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptStrOptArray", "[]*string", "writing property")
-	writer.WriteString("OptStrOptArray")
+	writer.Context().Push("optStrOptArray", "[]*string", "writing property")
+	writer.WriteString("optStrOptArray")
 	if value.OptStrOptArray == nil {
 		writer.WriteNil()
 	} else if len(value.OptStrOptArray) == 0 {
@@ -262,8 +262,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("UArrayArray", "[][]uint32", "writing property")
-	writer.WriteString("UArrayArray")
+	writer.Context().Push("uArrayArray", "[][]uint32", "writing property")
+	writer.WriteString("uArrayArray")
 	if value.UArrayArray == nil {
 		writer.WriteNil()
 	} else if len(value.UArrayArray) == 0 {
@@ -287,8 +287,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("UOptArrayOptArray", "[][]*uint32", "writing property")
-	writer.WriteString("UOptArrayOptArray")
+	writer.Context().Push("uOptArrayOptArray", "[][]*uint32", "writing property")
+	writer.WriteString("uOptArrayOptArray")
 	if value.UOptArrayOptArray == nil {
 		writer.WriteNil()
 	} else if len(value.UOptArrayOptArray) == 0 {
@@ -316,8 +316,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("UArrayOptArrayArray", "[][][]uint32", "writing property")
-	writer.WriteString("UArrayOptArrayArray")
+	writer.Context().Push("uArrayOptArrayArray", "[][][]uint32", "writing property")
+	writer.WriteString("uArrayOptArrayArray")
 	if value.UArrayOptArrayArray == nil {
 		writer.WriteNil()
 	} else if len(value.UArrayOptArrayArray) == 0 {
@@ -350,8 +350,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("CrazyArray", "[][][][]uint32", "writing property")
-	writer.WriteString("CrazyArray")
+	writer.Context().Push("crazyArray", "[][][][]uint32", "writing property")
+	writer.WriteString("crazyArray")
 	if value.CrazyArray == nil {
 		writer.WriteNil()
 	} else if len(value.CrazyArray) == 0 {
@@ -393,22 +393,22 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("Object", "AnotherType", "writing property")
-	writer.WriteString("Object")
+	writer.Context().Push("object", "AnotherType", "writing property")
+	writer.WriteString("object")
 	{
 		v := value.Object
 		AnotherTypeWrite(writer, &v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptObject", "*AnotherType", "writing property")
-	writer.WriteString("OptObject")
+	writer.Context().Push("optObject", "*AnotherType", "writing property")
+	writer.WriteString("optObject")
 	{
 		v := value.OptObject
 		AnotherTypeWrite(writer, v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("ObjectArray", "[]AnotherType", "writing property")
-	writer.WriteString("ObjectArray")
+	writer.Context().Push("objectArray", "[]AnotherType", "writing property")
+	writer.WriteString("objectArray")
 	if value.ObjectArray == nil {
 		writer.WriteNil()
 	} else if len(value.ObjectArray) == 0 {
@@ -423,8 +423,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptObjectArray", "[]*AnotherType", "writing property")
-	writer.WriteString("OptObjectArray")
+	writer.Context().Push("optObjectArray", "[]*AnotherType", "writing property")
+	writer.WriteString("optObjectArray")
 	if value.OptObjectArray == nil {
 		writer.WriteNil()
 	} else if len(value.OptObjectArray) == 0 {
@@ -439,15 +439,15 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("En", "CustomEnum", "writing property")
-	writer.WriteString("En")
+	writer.Context().Push("en", "CustomEnum", "writing property")
+	writer.WriteString("en")
 	{
 		v := value.En
 		writer.WriteI32(int32(v))
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptEnum", "*CustomEnum", "writing property")
-	writer.WriteString("OptEnum")
+	writer.Context().Push("optEnum", "*CustomEnum", "writing property")
+	writer.WriteString("optEnum")
 	{
 		v := value.OptEnum
 		if v == nil {
@@ -457,8 +457,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("EnumArray", "[]CustomEnum", "writing property")
-	writer.WriteString("EnumArray")
+	writer.Context().Push("enumArray", "[]CustomEnum", "writing property")
+	writer.WriteString("enumArray")
 	if value.EnumArray == nil {
 		writer.WriteNil()
 	} else if len(value.EnumArray) == 0 {
@@ -473,8 +473,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptEnumArray", "[]*CustomEnum", "writing property")
-	writer.WriteString("OptEnumArray")
+	writer.Context().Push("optEnumArray", "[]*CustomEnum", "writing property")
+	writer.WriteString("optEnumArray")
 	if value.OptEnumArray == nil {
 		writer.WriteNil()
 	} else if len(value.OptEnumArray) == 0 {
@@ -493,8 +493,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("M_map", "map[string]int32", "writing property")
-	writer.WriteString("M_map")
+	writer.Context().Push("map", "map[string]int32", "writing property")
+	writer.WriteString("map")
 	if value.M_map == nil {
 		writer.WriteNil()
 	} else if len(value.M_map) == 0 {
@@ -509,8 +509,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("MapOfArr", "map[string][]int32", "writing property")
-	writer.WriteString("MapOfArr")
+	writer.Context().Push("mapOfArr", "map[string][]int32", "writing property")
+	writer.WriteString("mapOfArr")
 	if value.MapOfArr == nil {
 		writer.WriteNil()
 	} else if len(value.MapOfArr) == 0 {
@@ -534,8 +534,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("MapOfObj", "map[string]AnotherType", "writing property")
-	writer.WriteString("MapOfObj")
+	writer.Context().Push("mapOfObj", "map[string]AnotherType", "writing property")
+	writer.WriteString("mapOfObj")
 	if value.MapOfObj == nil {
 		writer.WriteNil()
 	} else if len(value.MapOfObj) == 0 {
@@ -550,8 +550,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("MapOfArrOfObj", "map[string][]AnotherType", "writing property")
-	writer.WriteString("MapOfArrOfObj")
+	writer.Context().Push("mapOfArrOfObj", "map[string][]AnotherType", "writing property")
+	writer.WriteString("mapOfArrOfObj")
 	if value.MapOfArrOfObj == nil {
 		writer.WriteNil()
 	} else if len(value.MapOfArrOfObj) == 0 {
@@ -575,8 +575,8 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("MapCustomValue", "map[string]*CustomMapValue", "writing property")
-	writer.WriteString("MapCustomValue")
+	writer.Context().Push("mapCustomValue", "map[string]*CustomMapValue", "writing property")
+	writer.WriteString("mapCustomValue")
 	if value.MapCustomValue == nil {
 		writer.WriteNil()
 	} else if len(value.MapCustomValue) == 0 {

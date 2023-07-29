@@ -1,10 +1,9 @@
 import { GenerateBindingFn } from "./types";
 import { BindLanguage } from "../";
-import * as Rust from "./rust";
 import * as WrapBindgen from "./wrap-bindgen";
 import * as Golang from "./golang";
 
-export { Rust, Golang };
+export { Golang };
 export * from "./types";
 export * from "./utils";
 
@@ -17,7 +16,9 @@ export function getGenerateBindingFn(
         "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/wrap-assemblyscript"
       );
     case "wrap-rs":
-      return Rust.Wasm.generateBinding;
+      return WrapBindgen.getGenerateBindingFn(
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/wrap-rust"
+      );
     case "wrap-go":
       return Golang.Wasm.generateBinding;
     case "plugin-ts":

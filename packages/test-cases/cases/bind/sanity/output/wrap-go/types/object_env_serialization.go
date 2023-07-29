@@ -13,15 +13,15 @@ func serializeEnv(value *Env) []byte {
 
 func writeEnv(writer msgpack.Write, value *Env) {
 	writer.WriteMapLength(3)
-	writer.Context().Push("Prop", "string", "writing property")
-	writer.WriteString("Prop")
+	writer.Context().Push("prop", "string", "writing property")
+	writer.WriteString("prop")
 	{
 		v := value.Prop
 		writer.WriteString(v)
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptProp", "*string", "writing property")
-	writer.WriteString("OptProp")
+	writer.Context().Push("optProp", "*string", "writing property")
+	writer.WriteString("optProp")
 	{
 		v := value.OptProp
 		if v == nil {
@@ -31,8 +31,8 @@ func writeEnv(writer msgpack.Write, value *Env) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("OptMap", "map[string]*int32", "writing property")
-	writer.WriteString("OptMap")
+	writer.Context().Push("optMap", "map[string]*int32", "writing property")
+	writer.WriteString("optMap")
 	if value.OptMap == nil {
 		writer.WriteNil()
 	} else if len(value.OptMap) == 0 {

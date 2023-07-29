@@ -148,17 +148,13 @@ const testData: CommandTestCaseData<CommandTypings> = {
     env: {
       PATH: process.env.PATH || "",
       IPFS_GATEWAY_URI: ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider,
-      DOMAIN_NAME: "test1.eth",
-      ENS_REG_ADDR: ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress,
-      ENS_REGISTRAR_ADDR: ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.registrarAddress,
-      ENS_RESOLVER_ADDR: ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.resolverAddress,
     },
     before: async () => {
       await Commands.infra("down", { modules: ["eth-ens-ipfs"]});
       await Commands.infra("up", { modules: ["eth-ens-ipfs"]});
 
       // Wait a little longer just in case
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 15000));
     },
     after: async (_, stdout) => {
       expect(stdout).toContain(
