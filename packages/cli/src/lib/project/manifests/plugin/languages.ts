@@ -7,6 +7,7 @@ export const pluginManifestLanguages = {
   "plugin/rust": "plugin/rust",
   "plugin/python": "plugin/python",
   "plugin/kotlin": "plugin/kotlin",
+  "plugin/swift": "plugin/swift",
 };
 
 export type PluginManifestLanguages = typeof pluginManifestLanguages;
@@ -31,6 +32,8 @@ export function pluginManifestLanguageToBindLanguage(
       return "plugin-py";
     case "plugin/kotlin":
       return "plugin-kt";
+    case "plugin/swift":
+      return "plugin-swift";
     default:
       throw Error(
         intlMsg.lib_language_unsupportedManifestLanguage({
