@@ -1,0 +1,7 @@
+type Module {
+    sampleMethod(arg: String!): SampleResult!
+}
+
+type SampleResult {
+    result: String!
+}

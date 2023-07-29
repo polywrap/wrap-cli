@@ -29,11 +29,15 @@ describe("Templates", () => {
       build: "yarn build -m ./polywrap.wasm-rust-linked.yaml",
       test: "yarn test",
     },
+    "wasm/golang": {
+      codegen: "yarn codegen",
+      build: "yarn build",
+      test: "yarn test",
+    },
     "plugin/rust": {
       codegen: "npx polywrap codegen",
-      // Uncomment after release of 0.10.3
-      /*build: "cargo build",
-      test: "cargo test",*/
+      build: "cargo build",
+      test: "cargo test",
     },
     interface: { build: "npx polywrap build" },
   };
@@ -87,7 +91,7 @@ describe("Templates", () => {
 
           beforeAll(() => {
             // Copy test configs
-            if (projectType === "wasm" && language !== "interface") {
+            if (projectType === "wasm" && language !== "interface" && language !== "golang") {
               execSync(
                 `cp ${rootDir}/polywrap.${projectType}-${language}-linked* ${rootDir}/${projectType}/${language}/`
               );

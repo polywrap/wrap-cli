@@ -42,10 +42,15 @@ export class Compiler {
       // Output: wrap.info
       await this._outputWrapManifest();
 
-      if (await this._isWasm()) {
+      const buildModules = await this._isWasm();
+      const emitResourcesAndDocs = buildModules || (await this._isInterface());
+
+      if (buildModules) {
         // Build & Output: wasm.wrap
         await this._buildModules();
+      }
 
+      if (emitResourcesAndDocs) {
         // Copy: Resources folder
         await this._copyResourcesFolder();
 
@@ -74,6 +79,12 @@ export class Compiler {
     const { project } = this._config;
     const manifest = await project.getManifest();
     return manifest.project.type.startsWith("wasm/");
+  }
+
+  private async _isInterface(): Promise<boolean> {
+    const { project } = this._config;
+    const manifest = await project.getManifest();
+    return manifest.project.type === "interface";
   }
 
   private async _buildModules(): Promise<void> {

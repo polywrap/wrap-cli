@@ -5,6 +5,7 @@ import { BindLanguage } from "@polywrap/schema-bind";
 export const polywrapManifestLanguages = {
   "wasm/assemblyscript": "wasm/assemblyscript",
   "wasm/rust": "wasm/rust",
+  "wasm/golang": "wasm/golang",
   interface: "interface",
 };
 
@@ -23,9 +24,11 @@ export function polywrapManifestLanguageToBindLanguage(
 ): BindLanguage {
   switch (manifestLanguage) {
     case "wasm/assemblyscript":
-      return "wasm-as";
+      return "wrap-as";
     case "wasm/rust":
-      return "wasm-rs";
+      return "wrap-rs";
+    case "wasm/golang":
+      return "wrap-go";
     case "interface":
       throw Error(intlMsg.lib_language_noInterfaceCodegen());
     default:
@@ -48,6 +51,8 @@ export function polywrapManifestOverrideCodegenDir(
     // the codegen directory to be `./src/wrap`
     case "wasm/rust":
       return "./src/wrap";
+    case "wasm/golang":
+      return "./module/wrap";
     default:
       return undefined;
   }

@@ -5,10 +5,15 @@ import { SchemaComposer } from "../SchemaComposer";
 import { CodeGenerator } from "./CodeGenerator";
 
 import { writeDirectorySync } from "@polywrap/os-js";
-import { BindLanguage, GenerateBindingFn } from "@polywrap/schema-bind";
+import {
+  BindLanguage,
+  bindLanguageToWrapInfoType,
+  GenerateBindingFn,
+} from "@polywrap/schema-bind";
 import { readFileSync } from "fs-extra";
 import Mustache from "mustache";
 import path from "path";
+import { latestWrapManifestVersion } from "@polywrap/wrap-manifest-types-js";
 
 export class ScriptCodegenerator extends CodeGenerator {
   private readonly _script: string;
@@ -62,11 +67,15 @@ export class ScriptCodegenerator extends CodeGenerator {
     );
 
     const binding = await generateBinding({
-      projectName: await this._config.project.getName(),
-      abi: await this._config.schemaComposer.getComposedAbis(),
-      outputDirAbs,
       bindLanguage,
+      wrapInfo: {
+        version: latestWrapManifestVersion,
+        name: await this._config.project.getName(),
+        type: bindLanguageToWrapInfoType(bindLanguage),
+        abi: await this._config.schemaComposer.getComposedAbis(),
+      },
       config: this._mustacheView,
+      outputDirAbs,
     });
 
     resetDir(outputDirAbs);

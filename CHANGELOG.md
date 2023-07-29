@@ -1,3 +1,37 @@
+# Polywrap Origin (0.11.0)
+## Features
+**`polywrap` CLI:**
+* [PR-1074](https://github.com/polywrap/cli/pull/1074) **Golang-based Wraps Now Supported!**
+  * Polywrap projects of `type: wasm/golang` are now supported.
+  * To get started, simply run `polywrap create wasm golang my-wrap`
+* [PR-1829](https://github.com/polywrap/cli/pull/1829) **Support User-Defined Bindgen URIs**
+  * The `build` and `codegen` commands now have the option `--bindgen <URI>`, which allows for the use of a custom bindgen wrap.
+* [PR-1774](https://github.com/polywrap/cli/pull/1774) **`polywrap deploy` Defaults To IPFS on wrapscan.io**
+  * When you run the `polywrap deploy` command, you no longer need a `polywrap.deploy.yaml` manifest file. By default it will deploy your wrap to IPFS on https://wrapscan.io.
+
+**`@polywrap/schema-bind`:**
+* [PR-1795](https://github.com/polywrap/cli/pull/1795) **Add `wrap-abi-bindgen` Support**
+  * All wrap bindings are now emitted using the wraps defined within the [wrap-abi-bindgen](https://github.com/polywrap/wrap-abi-bindgen) project.
+  * This enables binding updates to be released, without us needing to create a new release of the CLI.
+* [PR-1840](https://github.com/polywrap/cli/pull/1840) **Support Swift Plugin Bindings**
+  * Add support for `plugin/swift` bindings, used when building plugins in Swift.
+
+## Breaking Changes
+**`polywrap` CLI:**
+* [PR-1809](https://github.com/polywrap/cli/pull/1809) **`docgen` Command Removed**
+  * The `docgen` command has been largely unused so it has been removed.
+* [PR-1839](https://github.com/polywrap/cli/pull/1839) **Remove ENS Deploy Modules**
+  * All ENS deploy modules have been removed. If you'd like to publish your wrap's IPFS hash to ENS, simply use the [ENS web app](https://ens.domains/).
+
+## Bugs
+**`polywrap` CLI:**
+* [PR-1823](https://github.com/polywrap/cli/pull/1823) **Support Fuzzy URI Strings in Manifests**
+  * URIs within manifest files are no longer as strict, and can be any string.
+* [PR-1808](https://github.com/polywrap/cli/pull/1808) **IPFS Deploy W/ Node v18**
+  * The IPFS deployer module has been updated so that it runs on all node versions, including version 18.
+* [PR-1804](https://github.com/polywrap/cli/pull/1804) **Emit Resources & Docs For Interface Wraps**
+  * When building an wrap of type `interface`, resources and doc artifacts were not being properly emitted to the build folder.
+
 # Polywrap Origin (0.10.6)
 ## Bugs
 **`polywrap` CLI:**

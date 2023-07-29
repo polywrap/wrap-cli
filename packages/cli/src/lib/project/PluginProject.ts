@@ -10,9 +10,15 @@ import {
 import { resetDir } from "../system";
 
 import { PluginManifest } from "@polywrap/polywrap-manifest-types-js";
-import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
+import {
+  bindSchema,
+  BindOutput,
+  BindOptions,
+  bindLanguageToWrapInfoType,
+} from "@polywrap/schema-bind";
 import { WrapAbi } from "@polywrap/schema-parse";
 import path from "path";
+import { latestWrapManifestVersion } from "@polywrap/wrap-manifest-types-js";
 
 export interface PluginProjectConfig extends ProjectConfig {
   pluginManifestPath: string;
@@ -111,27 +117,32 @@ export class PluginProject extends Project<PluginManifest> {
 
   public async generateSchemaBindings(
     abi: WrapAbi,
-    generationSubPath?: string
+    generationSubPath?: string,
+    bindgenUri?: string
   ): Promise<BindOutput> {
-    const manifest = await this.getManifest();
     const moduleDirectory = await this.getGenerationDirectory(
       generationSubPath
     );
 
     // Clean the code generation
     resetDir(moduleDirectory);
+
     const bindLanguage = pluginManifestLanguageToBindLanguage(
       await this.getManifestLanguage()
     );
 
     const options: BindOptions = {
-      projectName: manifest.project.name,
-      abi,
-      outputDirAbs: moduleDirectory,
       bindLanguage,
+      wrapInfo: {
+        version: latestWrapManifestVersion,
+        name: await this.getName(),
+        type: bindLanguageToWrapInfoType(bindLanguage),
+        abi,
+      },
+      outputDirAbs: moduleDirectory,
     };
 
-    return bindSchema(options);
+    return bindSchema(options, bindgenUri);
   }
 
   private _getGenerationDirectory(

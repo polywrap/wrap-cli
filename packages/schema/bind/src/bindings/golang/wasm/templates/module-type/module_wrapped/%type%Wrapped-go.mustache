@@ -1,0 +1,31 @@
+package module_wrapped
+{{#makeImports}}
+	{{#methods}}{{#env}}github.com/polywrap/go-wrap/wrap,. {{goImport}}/module/wrap/types,{{/env}}{{/methods}}
+	{{goImport}}/module as methods,
+{{/makeImports}}
+{{#methods}}
+func {{#toUpper}}{{name}}{{/toUpper}}Wrapped(argsBuf []byte, envSize uint32) []byte {
+	{{#env}}
+	var env *Env
+	{{#required}}
+	if envSize == 0 {
+		panic("Environment is not set, and it is required by method 'objectMethod'")
+	}
+	{{/required}}
+	if envSize > 0 {
+		envBuf := wrap.WrapLoadEnv(envSize)
+		env = EnvFromBuffer(envBuf)
+	}
+	{{/env}}
+
+	{{#arguments.length}}
+	args := Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf)
+	{{/arguments.length}}
+
+	result := methods.{{#toUpper}}{{name}}{{/toUpper}}({{#arguments.length}}args{{#env}},{{/env}}{{/arguments.length}}{{#env}}env{{/env}})
+	return Serialize{{#toUpper}}{{name}}{{/toUpper}}Result(result)
+}
+{{^last}}
+
+{{/last}}
+{{/methods}}

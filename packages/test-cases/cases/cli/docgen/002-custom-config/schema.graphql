@@ -1,9 +1,0 @@
-#import * into Mock from "wrap://ens/mock.eth"
-
-type Module {
-  method(
-    arg: String!
-  ): String!
-
-  deployContract: String!
-}

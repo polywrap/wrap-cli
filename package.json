@@ -31,11 +31,14 @@
     "lint:fix": "lerna run lint -- --fix",
     "lint:ci": "yarn lint",
     "test": "lerna run test --no-private --concurrency 1",
-    "test:core": "lerna run test --no-private --ignore polywrap* --concurrency 1",
-    "test:cli": "yarn test:cli:unit && yarn test:cli:e2e",
-    "test:cli:unit": "lerna run test:unit --no-private --scope polywrap --concurrency 1",
-    "test:cli:e2e:p1": "lerna run test:e2e:p1 --no-private --scope polywrap --concurrency 1",
-    "test:cli:e2e:p2": "lerna run test:e2e:p2 --no-private --scope polywrap --concurrency 1",
+    "test:core": "lerna run test --no-private --ignore polywrap* --ignore @polywrap/cli-js --ignore @polywrap/templates --concurrency 1",
+    "test:cli": "yarn test:cli:unit && yarn test:cli:e2e && yarn test:cli:js",
+    "test:cli:unit": "lerna run test:unit --scope polywrap --concurrency 1",
+    "test:cli:e2e": "yarn test:cli:e2e:p1 && yarn test:cli:e2e:p2",
+    "test:cli:e2e:p1": "lerna run test:e2e:p1 --scope polywrap --concurrency 1",
+    "test:cli:e2e:p2": "lerna run test:e2e:p2 --scope polywrap --concurrency 1",
+    "test:cli:js": "lerna run test --scope @polywrap/cli-js --concurrency 1",
+    "test:templates": "lerna run test --no-private --scope @polywrap/templates --concurrency 1",
     "version:apply": "lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
     "postversion:apply": "git add . && git commit -m \"build(release): migrate to `cat ./VERSION`\"",
     "publish:npm": "lerna exec --no-private --concurrency 1 -- yarn publish --access public --non-interactive --verbose",
@@ -58,6 +61,7 @@
   },
   "resolutions": {
     "@types/react": "16.9.0",
-    "@types/react-dom": "16.9.0"
+    "@types/react-dom": "16.9.0",
+    "@types/node": "18.15.0"
   }
 }

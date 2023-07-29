@@ -1,0 +1,25 @@
+package types
+{{#makeImports}}
+  {{#importedTypes}}
+  . {{goImport}}/module/wrap/imported/{{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}},
+  {{/importedTypes}}
+  {{#methods}}
+    {{#arguments}}
+      {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{/arguments}}
+  {{/methods}}
+{{/makeImports}}
+{{#methods}}
+{{#arguments.length}}
+type Args{{#toUpper}}{{name}}{{/toUpper}} struct {
+{{#stuctProps}}
+{{#arguments}}
+{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}} `json:"{{name}}"`
+{{/arguments}}
+{{/stuctProps}}
+}
+{{/arguments.length}}
+{{^last}}
+
+{{/last}}
+{{/methods}}

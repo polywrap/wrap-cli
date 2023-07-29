@@ -1,6 +1,0 @@
-format: 0.2.0
-project:
-  name: test-app
-  type: app/typescript
-source:
-  schema: ./schema.graphql

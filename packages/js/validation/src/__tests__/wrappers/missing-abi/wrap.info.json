@@ -1,4 +1,5 @@
 {
   "name": "test",
+  "type": "wasm",
   "version": "0.1.0"
 }

@@ -1,44 +1,10 @@
-format: "0.3.0"
+format: 0.4.0
 jobs:
-  fs_to_ens:
+  fs_to_ipfs:
     config:
-      provider: 'http://localhost:8545'
-      ensRegistryAddress: $ENS_REG_ADDR
-      ensRegistrarAddress: $ENS_REGISTRAR_ADDR
-      ensResolverAddress: $ENS_RESOLVER_ADDR
+      provider: http://localhost:8545
       gatewayUri: $IPFS_GATEWAY_URI
     steps:
-      - name: ens_register
-        package: ens-recursive-name-register
-        uri: wrap://ens/test1.eth
-      - name: ens_register2
-        package: ens-recursive-name-register
-        uri: wrap://ens/test2.eth
       - name: ipfs_deploy
         package: ipfs
         uri: wrap://fs/../wrapper
-      - name: from_deploy
-        package: ens
-        uri: $$ipfs_deploy
-        config:
-          domainName: test1.eth
-      - name: from_deploy2
-        package: ens
-        uri: $$ipfs_deploy
-        config:
-          domainName: test2.eth
-  ipfs_to_ens:
-    config:
-      provider: 'http://localhost:8545'
-      ensRegistryAddress: $ENS_REG_ADDR
-      ensRegistrarAddress: $ENS_REGISTRAR_ADDR
-      ensResolverAddress: $ENS_RESOLVER_ADDR
-    steps:
-      - name: ens_register
-        package: ens-recursive-name-register
-        uri: wrap://ens/test3.eth
-      - name: from_uri
-        package: ens
-        uri: wrap://ipfs/QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF
-        config:
-          domainName: test3.eth

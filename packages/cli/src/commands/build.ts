@@ -5,7 +5,7 @@ import {
   PolywrapProject,
   SchemaComposer,
   intlMsg,
-  defaultPolywrapManifest,
+  defaultPolywrapManifestFiles,
   parseDirOption,
   parseClientConfigOption,
   parseManifestFileOption,
@@ -15,6 +15,7 @@ import {
   polywrapManifestLanguages,
   pluginManifestLanguages,
   parseWrapperEnvsOption,
+  parseDirOptionNoDefault,
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen";
 import {
@@ -27,6 +28,7 @@ import {
 } from "../lib/build-strategies";
 import { DEFAULT_CODEGEN_DIR } from "../lib/defaults";
 import { watchProject } from "../lib/watchProject";
+import { parseUriOption } from "../lib/option-parsers/uri";
 
 import { PolywrapClient } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -34,7 +36,7 @@ import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 const defaultOutputDir = "./build";
 const defaultStrategy = SupportedStrategies.VM;
 const strategyStr = Object.values(SupportedStrategies).join(" | ");
-const defaultManifestStr = defaultPolywrapManifest.join(" | ");
+const defaultManifestStr = defaultPolywrapManifestFiles.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
 
 const supportedProjectTypes = [
@@ -45,10 +47,11 @@ const supportedProjectTypes = [
 export interface BuildCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   outputDir: string;
+  bindgen: string | false;
   clientConfig: string | false;
   wrapperEnvs: string | false;
   noCodegen: boolean;
-  codegenDir: string;
+  codegenDir: string | false;
   watch: boolean;
   strategy: `${SupportedStrategies}`;
 }
@@ -71,6 +74,7 @@ export const build: Command = {
           default: defaultOutputDir,
         })}`
       )
+      .option(`-b, --bindgen <URI>`, `${intlMsg.commands_codegen_options_b()}`)
       .option(
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
@@ -106,13 +110,14 @@ export const build: Command = {
           await run({
             manifestFile: parseManifestFileOption(
               options.manifestFile,
-              defaultPolywrapManifest
+              defaultPolywrapManifestFiles
             ),
             clientConfig: options.clientConfig || false,
             wrapperEnvs: options.wrapperEnvs || false,
             outputDir: parseDirOption(options.outputDir, defaultOutputDir),
+            bindgen: options.bindgen || false,
             noCodegen: !options.codegen || false,
-            codegenDir: parseDirOption(options.codegenDir, DEFAULT_CODEGEN_DIR),
+            codegenDir: parseDirOptionNoDefault(options.codegenDir),
             strategy: options.strategy || defaultStrategy,
             watch: options.watch || false,
             verbose: options.verbose || false,
@@ -166,6 +171,7 @@ async function run(options: Required<BuildCommandOptions>) {
     clientConfig,
     wrapperEnvs,
     outputDir,
+    bindgen,
     strategy,
     noCodegen,
     codegenDir,
@@ -175,7 +181,7 @@ async function run(options: Required<BuildCommandOptions>) {
   } = options;
 
   const logger = createLogger({ verbose, quiet, logFile });
-
+  const bindgenUri = parseUriOption(bindgen);
   const envs = await parseWrapperEnvsOption(wrapperEnvs);
   const configBuilder = await parseClientConfigOption(clientConfig);
 
@@ -241,7 +247,8 @@ async function run(options: Required<BuildCommandOptions>) {
         const codeGenerator = new CodeGenerator({
           project,
           schemaComposer,
-          codegenDirAbs: codegenDir,
+          codegenDirAbs: codegenDir || undefined,
+          bindgenUri,
         });
         const codegenSuccess = await codeGenerator.generate();
 

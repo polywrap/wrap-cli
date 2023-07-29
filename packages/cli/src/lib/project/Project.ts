@@ -72,7 +72,9 @@ export abstract class Project<TManifest extends AnyProjectManifest> {
 
   public abstract generateSchemaBindings(
     abi: Abi,
-    generationSubPath?: string
+    generationSubPath?: string,
+    bindgenUri?: string,
+    bindConfig?: Record<string, unknown>
   ): Promise<BindOutput>;
 
   public get logger(): Logger {

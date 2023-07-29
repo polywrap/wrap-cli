@@ -1,0 +1,90 @@
+package {{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}}
+{{#makeImports}}
+	github.com/polywrap/go-wrap/msgpack,
+	{{#arguments}}
+		{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}
+	{{/arguments}}
+{{/makeImports}}
+{{#methods}}
+type {{#toUpper}}{{namespace}}{{/toUpper}}_Args{{#toUpper}}{{name}}{{/toUpper}} struct {
+{{#stuctProps}}
+{{#arguments}}
+{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}} `json:"{{name}}"`
+{{/arguments}}
+{{/stuctProps}}
+}
+
+func Serialize{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Args(value *{{#toUpper}}{{namespace}}{{/toUpper}}_Args{{#toUpper}}{{name}}{{/toUpper}}) []byte {
+	ctx := msgpack.NewContext("Serializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
+	encoder := msgpack.NewWriteEncoder(ctx)
+	Write{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Args(encoder, value)
+	return encoder.Buffer()
+}
+
+func Write{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Args(writer msgpack.Write, value *{{#toUpper}}{{namespace}}{{/toUpper}}_Args{{#toUpper}}{{name}}{{/toUpper}}) {
+	{{#arguments.length}}
+	writer.WriteMapLength({{arguments.length}})
+	{{/arguments.length}}
+	{{^arguments}}
+	writer.WriteMapLength(0)
+	{{/arguments}}
+	{{#arguments}}
+	writer.Context().Push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property")
+	writer.WriteString("{{name}}")
+	{{#scalar}}
+	{{> serialize_scalar}}
+	{{/scalar}}
+	{{#array}}
+	{{#startIter}}{{/startIter}}
+	{{> serialize_array}}
+	{{#stopIter}}{{/stopIter}}
+	{{/array}}
+	{{#map}}
+	{{#startIter}}{{/startIter}}
+	{{> serialize_map}}
+	{{#stopIter}}{{/stopIter}}
+	{{/map}}
+	{{#object}}
+	{{> serialize_object}}
+	{{/object}}
+	{{#enum}}
+	{{> serialize_enum}}
+	{{/enum}}
+	writer.Context().Pop()
+	{{/arguments}}
+}
+
+func Deserialize{{#toUpper}}{{namespace}}{{/toUpper}}_{{#toUpper}}{{name}}{{/toUpper}}Result(argsBuf []byte) {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+	ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
+	reader := msgpack.NewReadDecoder(ctx, argsBuf)
+
+	{{#return}}
+	reader.Context().Push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output")
+	var value {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+	{{#scalar}}
+	{{> value_deserialize_scalar}}
+	{{/scalar}}
+	{{#array}}
+	{{#startIter}}{{/startIter}}
+	{{> value_deserialize_array}}
+	{{#stopIter}}{{/stopIter}}
+	{{/array}}
+	{{#map}}
+	{{#startIter}}{{/startIter}}
+	{{> value_deserialize_map}}
+	{{#stopIter}}{{/stopIter}}
+	{{/map}}
+	{{#object}}
+	{{> value_deserialize_object}}
+	{{/object}}
+	{{#enum}}
+	{{> value_deserialize_enum}}
+	{{/enum}}
+	reader.Context().Pop()
+	return value
+	{{/return}}
+}
+{{^last}}
+
+{{/last}}
+{{/methods}}
