@@ -1,4 +1,4 @@
-format: "0.3.0"
+format: 0.4.0
 jobs:
   test:
     config:
@@ -7,10 +7,5 @@ jobs:
       - name: ipfs_deploy
         package: ipfs
         uri: wrap://fs/../wrapper
-      - name: from_deploy
-        package: ens
-        uri: $$ipfs_deploy
         config:
-          domainName: true
-          ports:
-            ethereum: 8545
+          gatewayUri: false
