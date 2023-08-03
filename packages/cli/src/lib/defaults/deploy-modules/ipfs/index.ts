@@ -1,11 +1,11 @@
 import { DeployModule } from "../../../deploy";
+import { AddResult, ArgsAddDir, DirectoryEntry } from "./types";
+import { readDirContents } from "./utils";
 
 import { Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import * as Sys from "@polywrap/sys-config-bundle-js";
 import { PolywrapClientConfigBuilder } from "@polywrap/client-config-builder-js";
-import { AddResult, ArgsAddDir, DirectoryEntry } from "./types";
-import { readDirContents } from "./utils";
 
 const isValidUri = (uri: Uri) =>
   uri.authority === "fs" || uri.authority === "file";

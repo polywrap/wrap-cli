@@ -1,4 +1,5 @@
 import { DirectoryEntry } from "./types";
+
 import fs from "fs";
 
 export const readDirContents = async (
