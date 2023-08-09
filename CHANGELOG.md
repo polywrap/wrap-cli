@@ -1,3 +1,9 @@
+# Polywrap Origin (0.11.1)
+## Bugs
+**`polywrap` CLI:**
+* [PR-1847](https://github.com/polywrap/cli/pull/1847) **Fix IPFS deployer subdirectory duplication issue**
+  * Fixed the IPFS deployer subdirectory issue described in IPFS Deployer possibly duplicates subdirectory paths when deploying (https://github.com/polywrap/cli/issues/1846)
+
 # Polywrap Origin (0.11.0)
 ## Features
 **`polywrap` CLI:**
