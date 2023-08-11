@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/cli-js",
   "description": "Programmatically execute the Polywrap CLI",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
     "test": "jest --passWithNoTests --runInBand --detectOpenHandles --verbose"
   },
   "dependencies": {
-    "polywrap": "0.11.0",
+    "polywrap": "0.11.1",
     "spawn-command": "0.0.2-1"
   },
   "devDependencies": {
