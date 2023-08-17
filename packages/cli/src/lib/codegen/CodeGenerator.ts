@@ -18,6 +18,7 @@ import { resetDir } from "../system";
 import { SchemaComposer } from "../SchemaComposer";
 import { CodegenOverrides, tryGetCodegenOverrides } from "./CodegenOverrides";
 
+import fs from "fs";
 import path from "path";
 import { BindLanguage } from "@polywrap/schema-bind";
 import { writeDirectorySync } from "@polywrap/os-js";
@@ -72,11 +73,11 @@ export class CodeGenerator {
   }
 
   protected async runCodegen(
-    _: BindLanguage,
+    language: BindLanguage,
     overrides?: CodegenOverrides
   ): Promise<string[]> {
     // TODO: move codegen dir overrides into the new "language-overrides"
-    const codegenDir = this._config.codegenDirAbs
+    let codegenDir = this._config.codegenDirAbs
       ? path.relative(
           this._config.project.getManifestDir(),
           this._config.codegenDirAbs
@@ -86,6 +87,23 @@ export class CodeGenerator {
     const bindConfig = overrides
       ? await overrides.getSchemaBindConfig(this._config.project)
       : {};
+
+    if (language === "app-py") {
+      const manifestPath = this._config.project.getManifestPath();
+      const manifestDir = path.dirname(manifestPath);
+      const pyprojectPath = path.join(manifestDir, "pyproject.toml");
+
+      const pyproject = fs.readFileSync(pyprojectPath, "utf8");
+      const match = pyproject.match(/name = "([A-Za-z0-9]+)"/);
+      if (!match || !match[1]) {
+        throw Error(
+          intlMsg.lib_codeGenerator_pyprojectNameError({
+            path: pyprojectPath,
+          })
+        );
+      }
+      codegenDir = path.join(manifestDir, match[1], "wrap");
+    }
 
     const abi = await this._config.schemaComposer.getComposedAbis();
     const binding = await this._config.project.generateSchemaBindings(
