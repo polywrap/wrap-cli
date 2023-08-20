@@ -1,10 +1,9 @@
-import { Ethereum } from "./ethereum";
-import { Logger } from "./logger";
+import { Ethereum, Logging } from "./wrap";
 
 async function main() {
   console.log("Invoking: Logging.info(...)");
 
-  const logger = new Logger();
+  const logger = new Logging();
 
   await logger.info({
     message: "Hello there",
