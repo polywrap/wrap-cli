@@ -1,4 +1,4 @@
-from .ethereum import Ethereum
+from .wrap import Ethereum
 
 
 if __name__ == "__main__":

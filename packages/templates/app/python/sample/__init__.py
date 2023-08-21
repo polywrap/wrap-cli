@@ -1,4 +1,4 @@
-from .ethereum import Ethereum
+from .wrap import Ethereum
 
 __all__ = [
     "Ethereum",
