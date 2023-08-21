@@ -1,3 +1,9 @@
+# Polywrap Origin (0.11.2)
+## Bugs
+**`@polywrap/templates`:**
+* [PR-1855](https://github.com/polywrap/cli/pull/1855) **Update TypeScript App Codegen**
+* [PR-1858](https://github.com/polywrap/cli/pull/1858) **Update Client Version**
+
 # Polywrap Origin (0.11.1)
 ## Bugs
 **`polywrap` CLI:**

@@ -43,7 +43,7 @@ export function getGenerateBindingFn(
       );
     case "app-ts":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/app-typescript"
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/nk/ts-app-codegen/implementations/app-typescript"
       );
     default:
       throw Error(`Error: Language binding unsupported - ${bindLanguage}`);
