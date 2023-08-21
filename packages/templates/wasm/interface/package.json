@@ -2,6 +2,6 @@
   "name": "templates-interface",
   "private": true,
   "dependencies": {
-    "polywrap": "0.11.0-pre.2"
+    "polywrap": "~0.11.0"
   }
 }
