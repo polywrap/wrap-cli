@@ -1,0 +1,6 @@
+set -e
+
+{{#polywrap_module}}
+COPY {{dir}}/build/wrap.js ./wrap.js
+{{/polywrap_module}}
+RUN /bin/bash -i -c "pwr js build -f ./wrap.js -o build"
