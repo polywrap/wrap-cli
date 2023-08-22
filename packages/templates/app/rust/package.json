@@ -5,7 +5,9 @@
   "version": "0.11.1",
   "scripts": {
     "build": "npx polywrap codegen",
-    "test": "ts-node ./src/index.ts"
+    "test": "ts-node ./src/index.ts",
+    "ipfs:up": "npx polywrap infra up --modules=eth-ens-ipfs",
+    "ipfs:down": "npx polywrap infra down --modules=eth-ens-ipfs"
   },
   "dependencies": {
     "@polywrap/client-js": "~0.12.0"
