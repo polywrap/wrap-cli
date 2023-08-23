@@ -94,7 +94,7 @@ export class CodeGenerator {
       const pyprojectPath = path.join(manifestDir, "pyproject.toml");
 
       const pyproject = fs.readFileSync(pyprojectPath, "utf8");
-      const match = pyproject.match(/name = "([A-Za-z0-9]+)"/);
+      const match = pyproject.match(/name = "([A-Za-z0-9-]+)"/);
       if (!match || !match[1]) {
         throw Error(
           intlMsg.lib_codeGenerator_pyprojectNameError({
