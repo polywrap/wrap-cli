@@ -53,35 +53,12 @@ android {
     }
 }
 
-node {
-    val nullString: String? = null
-    distBaseUrl.set(nullString)
-    // Whether to download and install a specific Node.js version or not
-    // If false, it will use the globally installed Node.js
-    // If true, it will download node using above parameters
-    // Note that npm is bundled with Node.js
-    download.set(true)
-}
-
-tasks.register<com.github.gradle.node.npm.task.NpxTask>("codegen") {
-    group = "polywrap"
-    dependsOn(tasks.npmInstall)
-    command.set("polywrap")
-    args.set(listOf("codegen",
-        "-m", "$rootDir/polywrap.yaml",
-        "-g", "$projectDir/src/main/java/wrap",
-        "-b", "ipfs/Qmb8uZSendgFRj8FLQhCU3Smw5UqRmwWoKysrJ267zbW8X"
-    ))
-}
-
-tasks.assemble.dependsOn("polywrapCodegen")
-
 dependencies {
     // polywrap client
-    implementation("io.polywrap:polywrap-client:0.10.2-SNAPSHOT")
+    implementation("io.polywrap:polywrap-client:0.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.1")
     // polywrap logger plugin
-    implementation("io.polywrap.plugins:logger-plugin:0.10.0-SNAPSHOT")
+    implementation("io.polywrap.plugins:logger:0.10.2")
     implementation("com.github.tony19:logback-android:3.0.0")
 
     // ui
@@ -104,3 +81,28 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
+
+// set up NodeJS to run the Polywrap CLI
+// NodeJS installation will be stored in gradle cache
+node {
+    val nullString: String? = null
+    distBaseUrl.set(nullString)
+    // Whether to download and install a specific Node.js version or not
+    // If false, it will use the globally installed Node.js
+    // If true, it will download node using above parameters
+    // Note that npm is bundled with Node.js
+    download.set(true)
+}
+
+tasks.register<com.github.gradle.node.npm.task.NpxTask>("codegen") {
+    group = "polywrap"
+    dependsOn(tasks.npmInstall)
+    command.set("polywrap")
+    args.set(listOf("codegen",
+        "-m", "$rootDir/polywrap.yaml",
+        "-g", "$projectDir/src/main/java/wrap",
+        "-b", "ipfs/Qmb8uZSendgFRj8FLQhCU3Smw5UqRmwWoKysrJ267zbW8X"
+    ))
+}
+
+tasks.assemble.dependsOn("codegen")
