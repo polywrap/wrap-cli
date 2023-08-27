@@ -2,6 +2,7 @@ version: '3'
 services:
   ganache:
     image: trufflesuite/ganache:latest
+    command: -d
     ports:
       - ${ETHEREUM_PORT:-8545}:8545
   ipfs:
