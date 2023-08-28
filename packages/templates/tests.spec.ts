@@ -34,6 +34,11 @@ describe("Templates", () => {
       build: "yarn build",
       test: "yarn test",
     },
+    "wasm/js": {
+      codegen: "yarn codegen",
+      build: "yarn build",
+      test: "yarn test",
+    },
     "plugin/rust": {
       codegen: "npx polywrap codegen",
       build: "cargo build",
@@ -91,7 +96,11 @@ describe("Templates", () => {
 
           beforeAll(() => {
             // Copy test configs
-            if (projectType === "wasm" && language !== "interface" && language !== "golang") {
+            if (
+              projectType === "wasm" &&
+              language !== "interface" &&
+              language !== "golang"
+            ) {
               execSync(
                 `cp ${rootDir}/polywrap.${projectType}-${language}-linked* ${rootDir}/${projectType}/${language}/`
               );

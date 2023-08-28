@@ -48,6 +48,11 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
     baseImage: "polywrap/vm-base-go",
     version: "0.1.6",
   },
+  "wasm/js": {
+    defaultIncludes: [],
+    baseImage: "polywrap/vm-base-js",
+    version: "0.1.0",
+  },
 };
 
 export class DockerVMBuildStrategy extends BuildStrategy<void> {

@@ -6,6 +6,7 @@ export const polywrapManifestLanguages = {
   "wasm/assemblyscript": "wasm/assemblyscript",
   "wasm/rust": "wasm/rust",
   "wasm/golang": "wasm/golang",
+  "wasm/js": "wasm/js",
   interface: "interface",
 };
 
@@ -29,6 +30,8 @@ export function polywrapManifestLanguageToBindLanguage(
       return "wrap-rs";
     case "wasm/golang":
       return "wrap-go";
+    case "wasm/js":
+      return "wrap-js";
     case "interface":
       throw Error(intlMsg.lib_language_noInterfaceCodegen());
     default:
