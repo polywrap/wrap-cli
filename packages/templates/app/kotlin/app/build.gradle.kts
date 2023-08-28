@@ -100,8 +100,7 @@ tasks.register<com.github.gradle.node.npm.task.NpxTask>("codegen") {
     command.set("polywrap")
     args.set(listOf("codegen",
         "-m", "$rootDir/polywrap.yaml",
-        "-g", "$projectDir/src/main/java/wrap",
-        "-b", "ipfs/QmWM6KBdmz8VztBGwXHEx9PJQVZqkwJpBrrVAiRhCgaHjv"
+        "-g", "$projectDir/src/main/java/wrap"
     ))
 }
 
