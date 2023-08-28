@@ -18,7 +18,6 @@ import { resetDir } from "../system";
 import { SchemaComposer } from "../SchemaComposer";
 import { CodegenOverrides, tryGetCodegenOverrides } from "./CodegenOverrides";
 
-import fs from "fs";
 import path from "path";
 import { BindLanguage } from "@polywrap/schema-bind";
 import { writeDirectorySync } from "@polywrap/os-js";
