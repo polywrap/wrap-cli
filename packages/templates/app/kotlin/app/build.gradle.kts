@@ -101,8 +101,8 @@ tasks.register<com.github.gradle.node.npm.task.NpxTask>("codegen") {
     args.set(listOf("codegen",
         "-m", "$rootDir/polywrap.yaml",
         "-g", "$projectDir/src/main/java/wrap",
-        "-b", "ipfs/Qmb8uZSendgFRj8FLQhCU3Smw5UqRmwWoKysrJ267zbW8X"
+        "-b", "ipfs/QmWM6KBdmz8VztBGwXHEx9PJQVZqkwJpBrrVAiRhCgaHjv"
     ))
 }
 
-tasks.assemble.dependsOn("codegen")
+tasks.build.dependsOn("codegen")

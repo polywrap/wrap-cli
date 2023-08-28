@@ -10,19 +10,18 @@ import kotlinx.coroutines.launch
 import wrap.Ethereum
 import wrap.EthereumArgsEncodeParams
 import wrap.Logging
-import wrap.LoggingArgsInfo
+import wrap.LoggingArgsLog
+import wrap.LoggingLogLevel
 
 class PolywrapDemoViewModel: ViewModel() {
 
     // we can create a custom client
+    val loggerInterfaceUri = "wrapscan.io/polywrap/logger@1.0"
     private val client = polywrapClient {
         addDefaults()
         setPackage("plugin/logger" to loggerPlugin(null))
-        addInterfaceImplementation(
-            "wrapscan.io/polywrap/logger@1.0",
-            "plugin/logger"
-        )
-        setRedirect("wrapscan.io/polywrap/logger@1.0" to "plugin/logger")
+        addInterfaceImplementation(loggerInterfaceUri, "plugin/logger")
+        setRedirect(loggerInterfaceUri to "plugin/logger")
     }
 
     // and use the custom client to create an SDK class instance
@@ -40,9 +39,9 @@ class PolywrapDemoViewModel: ViewModel() {
     fun polywrapDemo() = viewModelScope.launch {
         Log.i("polywrapDemo","Invoking: Logging.info(...)")
 
-        logger.info(LoggingArgsInfo("Hello there")).getOrThrow()
-        logger.info(LoggingArgsInfo("Hello again")).getOrThrow()
-        logger.info(LoggingArgsInfo("One last time...")).getOrThrow()
+        logger.log(LoggingArgsLog(LoggingLogLevel.INFO, "Hello there")).getOrThrow()
+        logger.log(LoggingArgsLog(LoggingLogLevel.INFO, "Hello again")).getOrThrow()
+        logger.log(LoggingArgsLog(LoggingLogLevel.INFO, "One last time...")).getOrThrow()
 
         Log.i("polywrapDemo","Invoking: Ethereum.encodeParams(...)")
 
