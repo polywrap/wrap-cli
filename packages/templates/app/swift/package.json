@@ -4,7 +4,7 @@
   "private": true,
   "version": "0.11.2",
   "scripts": {
-    "build": "npx polywrap codegen -b wrap://ipfs/QmPYEBSV4WWUQipmLKXbRxfaGzjixecD57FdSkDFGRb5Sh -g Template/wrap"
+    "build": "npx polywrap codegen -b https://github.com/polywrap/wrap-abi-bindgen/tree/nk/ts-app-codegen/implementations/app-swift -g Template/wrap"
   },
   "devDependencies": {
     "polywrap": "0.11.2"
