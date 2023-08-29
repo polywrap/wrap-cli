@@ -27,7 +27,7 @@ export function getGenerateBindingFn(
       );
     case "plugin-rs":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/plugin-rust"
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/nk/fix-rs-plugin/implementations/plugin-rust"
       );
     case "plugin-py":
       return WrapBindgen.getGenerateBindingFn(
