@@ -11,6 +11,7 @@ export const bindLanguage = {
   "plugin-kt": "plugin-kt",
   "plugin-swift": "plugin-swift",
   "app-ts": "app-ts",
+  "app-swift": "app-swift",
 };
 
 export type BindLanguages = typeof bindLanguage;
