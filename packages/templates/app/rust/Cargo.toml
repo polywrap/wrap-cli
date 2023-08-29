@@ -11,8 +11,7 @@ include = [
 ]
 
 [dependencies]
-polywrap = { version = "~0.1.8-beta.2" }
-polywrap_logger_plugin = { version = "~0.1.8-beta.2" }
+polywrap = { version = "~0.1.8" }
 serde = {version = "1.0.145", features = ["derive"]}
 
 [dev-dependencies]
