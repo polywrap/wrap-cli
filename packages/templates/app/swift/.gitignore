@@ -23,7 +23,7 @@ xcuserdata/
 *.out
 
 # Project Files
-#*.xcodeproj
+*.xcodeproj
 *.xcworkspace
 
 # CocoaPods
