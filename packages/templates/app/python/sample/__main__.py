@@ -1,14 +1,14 @@
-from .wrap import Ethereum
+from .wrap import EthersUtils
 
 
 if __name__ == "__main__":
-    eth = Ethereum()
+    eth = EthersUtils()
 
-    print("Invoking: Ethereum.encodeParams(...)")
+    print("Invoking: EthersUtils.encodeParams(...)")
 
     result = eth.encode_params({
         "types": ["address", "uint256"],
         "values": ["0xB1B7586656116D546033e3bAFF69BFcD6592225E", "500"]
     })
 
-    print(f"Ethereum.encodeParams:\n{result}")
+    print(f"EthersUtils.encodeParams:\n{result}")

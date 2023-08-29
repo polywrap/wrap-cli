@@ -1,5 +1,5 @@
-from .wrap import Ethereum
+from .wrap import EthersUtils
 
 __all__ = [
-    "Ethereum",
+    "EthersUtils",
 ]
