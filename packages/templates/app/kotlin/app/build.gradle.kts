@@ -1,4 +1,4 @@
-import com.android.build.gradle.internal.tasks.factory.dependsOn
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.android.application")
@@ -55,7 +55,7 @@ android {
 
 dependencies {
     // polywrap client
-    implementation("io.polywrap:polywrap-client:0.10.2")
+    implementation("io.polywrap:polywrap-client:0.11.0-SNAPSHOT")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.1")
     // polywrap logger plugin
     implementation("io.polywrap.plugins:logger:0.10.2")
@@ -104,4 +104,4 @@ tasks.register<com.github.gradle.node.npm.task.NpxTask>("codegen") {
     ))
 }
 
-tasks.build.dependsOn("codegen")
+tasks.withType<KotlinCompile> { dependsOn("codegen") }
