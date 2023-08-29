@@ -11,13 +11,10 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
             Button(action: {
                 polywrapDemo()
             }) {
-                Text("Click Me!")
+                Text("Click me and read the logs!")
             }
         }
         .padding()

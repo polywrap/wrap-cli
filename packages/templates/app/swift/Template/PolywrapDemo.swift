@@ -5,8 +5,8 @@ func polywrapDemo() {
     print("Invoking: Logging.info(...)")
 
     let logger = Logging()
-    let logArgs = LoggingArgsLog(level: .info, message: "Hello there")
-    logger.log(args: logArgs)
+    let logArgs = LoggingArgsLog(level: .INFO, message: "Hello there")
+    try? logger.log(args: logArgs)
 
     // Ethereum.encodeParams
     print("Invoking: Ethereum.encodeParams(...)")
@@ -16,11 +16,12 @@ func polywrapDemo() {
             types: ["address", "uint256"],
             values: ["0xB1B7586656116D546033e3bAFF69BFcD6592225E", "500"]
     )
-    let result = eth.encodeParams(args: encodeArgs)
-
-    if (result.ok) {
-        print("Ethereum.encodeParams:\n\(value)")
-    } else {
-        print("Error - Ethereum.encodeParams:\n\(error)")
+    do {
+        let encoded = try eth.encodeParams(args: encodeArgs)
+        print("Ethereum.encodeParams:\n\(encoded)")
+    } catch {
+        let logArgs = LoggingArgsLog(level: .ERROR, message: "Error - Ethereum.encodeParams: \(error)")
+        try? logger.log(args: logArgs)
+        return
     }
 }
