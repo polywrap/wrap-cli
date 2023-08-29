@@ -1,0 +1,45 @@
+# AppCode
+.idea/
+.idea_modules/
+
+# User-specific
+*.iml
+
+# Xcode
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.moved-aside
+
+# Compiled Source
+*.pyc
+*.o
+*.out
+
+# Project Files
+#*.xcodeproj
+*.xcworkspace
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build
+
+# Swift Package Manager
+.build/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Unix
+*.swp
+*~
