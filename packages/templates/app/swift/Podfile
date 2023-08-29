@@ -1,0 +1,22 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+workspace 'Template.xcodeproj/project.xcworkspace'
+
+target 'Template' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for Template
+  pod 'PolywrapClient', '0.0.8'
+
+  target 'TemplateTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'TemplateUITests' do
+    # Pods for testing
+  end
+
+end
