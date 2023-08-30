@@ -1,0 +1,10 @@
+format: 0.4.0
+jobs:
+  fs_to_ipfs:
+    config:
+      provider: http://localhost:8545
+      gatewayUri: https://ipfs.wrappers.io
+    steps:
+      - name: ipfs_deploy
+        package: ipfs
+        uri: wrap://fs/../interface
