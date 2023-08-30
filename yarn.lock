@@ -252,9 +252,9 @@
     js-tokens "^4.0.0"
 
 "@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.20.7", "@babel/parser@^7.22.11", "@babel/parser@^7.22.5":
-  version "7.22.13"
-  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.22.13.tgz#23fb17892b2be7afef94f573031c2f4b42839a2b"
-  integrity sha512-3l6+4YOvc9wx7VlCSw4yQfcBo01ECA8TicQfbnCPuCEpRQrf+gTUyGdxNw+pyTUyywp6JRD1w0YQs9TpBXYlkw==
+  version "7.22.14"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.22.14.tgz#c7de58e8de106e88efca42ce17f0033209dfd245"
+  integrity sha512-1KucTHgOvaw/LzCVrEOAyXkr9rQlp0A1HiHRYnSUE9dmb8PvPW7o5sscg+5169r54n3vGlbx6GevTE/Iw/P3AQ==
 
 "@babel/plugin-syntax-async-generators@^7.8.4":
   version "7.8.4"
@@ -3039,13 +3039,13 @@ array.prototype.flat@^1.2.3:
     es-shim-unscopables "^1.0.0"
 
 array.prototype.reduce@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/array.prototype.reduce/-/array.prototype.reduce-1.0.5.tgz#6b20b0daa9d9734dd6bc7ea66b5bbce395471eac"
-  integrity sha512-kDdugMl7id9COE8R7MHF5jWk7Dqt/fs4Pv+JXoICnYwqpjjjbUurz6w5fT5IG6brLdJhv6/VoHB0H7oyIBXd+Q==
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/array.prototype.reduce/-/array.prototype.reduce-1.0.6.tgz#63149931808c5fc1e1354814923d92d45f7d96d5"
+  integrity sha512-UW+Mz8LG/sPSU8jRDCjVr6J/ZKAGpHfwrZ6kWTG5qCxIEiXdVshqGnu5vEZA8S1y6X4aCSbQZ0/EEsfvEvBiSg==
   dependencies:
     call-bind "^1.0.2"
-    define-properties "^1.1.4"
-    es-abstract "^1.20.4"
+    define-properties "^1.2.0"
+    es-abstract "^1.22.1"
     es-array-method-boxes-properly "^1.0.0"
     is-string "^1.0.7"
 
@@ -4262,9 +4262,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.4.477:
-  version "1.4.504"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.504.tgz#975522945676cf2d55910988a169f07b83081488"
-  integrity sha512-cSMwIAd8yUh54VwitVRVvHK66QqHWE39C3DRj8SWiXitEpVSY3wNPD9y1pxQtLIi4w3UdzF9klLsmuPshz09DQ==
+  version "1.4.506"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.506.tgz#59f64a211102db4c3ebae2f39cc0e8e1b12b3a07"
+  integrity sha512-xxGct4GPAKSRlrLBtJxJFYy74W11zX6PO9GyHgl/U+2s3Dp0ZEwAklDfNHXOWcvH7zWMpsmgbR0ggEuaYAVvHA==
 
 elliptic@6.5.4:
   version "6.5.4"

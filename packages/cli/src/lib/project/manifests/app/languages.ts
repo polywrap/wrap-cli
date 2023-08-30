@@ -4,6 +4,7 @@ import { BindLanguage } from "@polywrap/schema-bind";
 
 export const appManifestLanguages = {
   "app/typescript": "app/typescript",
+  "app/python": "app/python",
   "app/rust": "app/rust",
 };
 
@@ -23,6 +24,8 @@ export function appManifestLanguageToBindLanguage(
   switch (manifestLanguage) {
     case "app/typescript":
       return "app-ts";
+    case "app/python":
+      return "app-py";
     case "app/rust":
       return "app-rs";
     default:

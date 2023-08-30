@@ -1,6 +1,7 @@
 //! Errors returned from I/O `Write` and `Read` operations
 
 use super::Format;
+use polywrap_msgpack_serde::{JSON, ParseBigIntError};
 use thiserror::Error;
 
 /// Errors from encoding data
@@ -64,8 +65,8 @@ impl From<std::io::Error> for EncodeError {
     }
 }
 
-impl From<serde_json::Error> for EncodeError {
-    fn from(e: serde_json::Error) -> EncodeError {
+impl From<JSON::Error> for EncodeError {
+    fn from(e: JSON::Error) -> EncodeError {
         EncodeError::JSONWriteError(e.to_string())
     }
 }
@@ -146,14 +147,14 @@ impl From<std::io::Error> for DecodeError {
     }
 }
 
-impl From<serde_json::Error> for DecodeError {
-    fn from(e: serde_json::Error) -> DecodeError {
+impl From<JSON::Error> for DecodeError {
+    fn from(e: JSON::Error) -> DecodeError {
         DecodeError::JSONReadError(e.to_string())
     }
 }
 
-impl From<num_bigint::ParseBigIntError> for DecodeError {
-    fn from(e: num_bigint::ParseBigIntError) -> Self {
+impl From<ParseBigIntError> for DecodeError {
+    fn from(e: ParseBigIntError) -> Self {
         DecodeError::BigIntReadError(e.to_string())
     }
 }

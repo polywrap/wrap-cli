@@ -1,14 +1,15 @@
 use template_plugin_rs::SamplePlugin;
+use template_plugin_rs::wrap::module::ArgsSampleMethod;
 use polywrap_core::{
     client::ClientConfig,
     uri::Uri,
 };
-use polywrap_msgpack::{msgpack};
 use polywrap_plugin::{package::PluginPackage};
 use polywrap_client::{
     client::PolywrapClient,
     builder::{PolywrapClientConfig, PolywrapClientConfigBuilder},
 };
+use polywrap_msgpack_serde::to_vec;
 use std::{
     sync::{Arc, Mutex},
 };
@@ -32,9 +33,9 @@ fn sample_method() {
         .invoke::<String>(
             &Uri::try_from("plugin/sample").unwrap(),
             "sampleMethod",
-            Some(&msgpack!({
-                "data": "input data",
-            })),
+            Some(&to_vec(&ArgsSampleMethod {
+                data: "input data".to_string(),
+            }).unwrap()),
             None,
             None,
         )
