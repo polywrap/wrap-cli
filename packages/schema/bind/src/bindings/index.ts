@@ -27,7 +27,7 @@ export function getGenerateBindingFn(
       );
     case "plugin-rs":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/nk/fix-rs-plugin/implementations/plugin-rust"
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/plugin-rust"
       );
     case "plugin-py":
       return WrapBindgen.getGenerateBindingFn(
@@ -43,11 +43,11 @@ export function getGenerateBindingFn(
       );
     case "app-ts":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/nk/ts-app-codegen/implementations/app-typescript"
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/app-typescript"
       );
     case "app-py":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/nk/py-app-codegen/implementations/app-python"
+        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/app-python"
       );
     default:
       throw Error(`Error: Language binding unsupported - ${bindLanguage}`);
