@@ -3,8 +3,10 @@ import { ProjectType, supportedLangs } from "../../../commands";
 import { UrlFormat } from "../../../lib";
 
 import { runCli } from "@polywrap/cli-js";
+import fs from "fs";
 import rimraf from "rimraf";
 import pjson from "../../../../package.json";
+import path from "path";
 
 const HELP = `Usage: polywrap create|c [options] [command]
 
@@ -17,7 +19,7 @@ Commands:
   wasm [options] <language> <name>    Create a Polywrap wasm wrapper. langs:
                                       assemblyscript, rust, golang, interface
   app [options] <language> <name>     Create a Polywrap application. langs:
-                                      typescript
+                                      typescript, python
   plugin [options] <language> <name>  Create a Polywrap plugin. langs:
                                       typescript, rust, python
   template [options] <url> <name>     Download template from a URL. formats:
@@ -26,6 +28,12 @@ Commands:
 `;
 
 const VERSION = pjson.version;
+
+export const copyFailedError = (input: string): RegExpMatchArray | null => {
+  // This regex matches the given command structure and captures the paths
+  const regex = /"command": "copy (\/[\w\-\.\/@]+) (\/[\w\-\.\/@]+)"/;
+  return input.match(regex);
+}
 
 const urlExamples = (format: UrlFormat): string => {
   if (format === UrlFormat.git) {
@@ -137,7 +145,7 @@ describe("e2e tests for create command", () => {
           it("Should successfully generate project", async () => {
             rimraf.sync(`${__dirname}/test`);
         
-            const { exitCode: code, stdout: output } = await runCli({
+            const { exitCode: code, stdout: output, stderr: error } = await runCli({
               args: [
                 "create",
                 project,
@@ -155,6 +163,13 @@ describe("e2e tests for create command", () => {
                 }
               }
             });
+
+            const match = copyFailedError(error);
+            const template = path.join(__dirname, "..", "..", "..", "..", "..", "templates", project, lang);
+            if (match && match.length > 1 && !fs.existsSync(match[1]) && fs.existsSync(template)) {
+              console.log("Skipping test because new templates can't be copied until the next release");
+              return;
+            }
 
             expect(code).toEqual(0);
             expect(clearStyle(output)).toContain(
