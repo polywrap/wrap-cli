@@ -17,7 +17,7 @@ describe("Templates", () => {
       install: "poetry install",
       codegen: "npx polywrap codegen",
       build: "poetry build",
-      test: "poetry run pytest",
+      test: "yarn test",
     },
     assemblyscript: {
       codegen: "yarn codegen",
