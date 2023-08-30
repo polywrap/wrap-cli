@@ -49,6 +49,10 @@ export function getGenerateBindingFn(
       return WrapBindgen.getGenerateBindingFn(
         "wrapscan.io/polywrap/app-python-abi-bindgen@1"
       );
+    case "app-swift":
+      return WrapBindgen.getGenerateBindingFn(
+        "wrapscan.io/polywrap/app-swift-abi-bindgen@1"
+      );
     default:
       throw Error(`Error: Language binding unsupported - ${bindLanguage}`);
   }
