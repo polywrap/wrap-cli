@@ -39,6 +39,9 @@ describe("Templates", () => {
       build: "cargo build",
       test: "cargo test",
     },
+    "app/android": {
+      build: "./gradlew assemble",
+    },
     interface: { build: "npx polywrap build" },
   };
 
