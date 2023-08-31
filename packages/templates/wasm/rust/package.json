@@ -7,9 +7,7 @@
     "codegen": "npx polywrap codegen",
     "build": "npx polywrap build",
     "deploy": "npx polywrap deploy",
-    "test": "yarn test:e2e && yarn test:workflow",
-    "test:e2e": "yarn test:e2e:codegen && jest --passWithNoTests --runInBand --verbose",
-    "test:e2e:codegen": "npx polywrap codegen -m ./src/__tests__/types/polywrap.app.yaml -g ./src/__tests__/types/wrap",
+    "test": "cargo test",
     "test:workflow": "npx polywrap test"
   },
   "devDependencies": {

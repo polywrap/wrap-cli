@@ -1,5 +1,5 @@
 [package]
-name = "template-wasm-rs"
+name = "template_wasm_rs"
 version = "0.1.0"
 description = "A Polywrap Wasm wrapper template written in Rust"
 authors = ["Polywrap"]
@@ -7,10 +7,15 @@ repository = "https://github.com/polywrap/monorepo"
 license = "MIT"
 edition = "2021"
 
+include = ["src"]
+
 [dependencies]
-polywrap-wasm-rs = { version = "~0.11.0-pre.4" }
+polywrap-wasm-rs = { version = "~0.11.2" }
 polywrap_msgpack_serde = "~0.0.2-beta.5"
 serde = { version = "1.0", features = ["derive"] }
+
+[dev-dependencies]
+polywrap = { version = "~0.1.8" }
 
 [lib]
 crate-type = ["cdylib"]
