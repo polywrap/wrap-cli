@@ -55,10 +55,10 @@ android {
 
 dependencies {
     // polywrap client
-    implementation("io.polywrap:polywrap-client:0.11.0-SNAPSHOT")
+    implementation("io.polywrap:polywrap-client:0.10.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.1")
     // polywrap logger plugin
-    implementation("io.polywrap.plugins:logger:0.10.2")
+    implementation("io.polywrap.plugins:logger:0.10.4")
     implementation("com.github.tony19:logback-android:3.0.0")
 
     // ui
@@ -94,6 +94,7 @@ node {
     download.set(true)
 }
 
+// run polwyrap codegen
 tasks.register<com.github.gradle.node.npm.task.NpxTask>("codegen") {
     group = "polywrap"
     dependsOn(tasks.npmInstall)
@@ -104,4 +105,5 @@ tasks.register<com.github.gradle.node.npm.task.NpxTask>("codegen") {
     ))
 }
 
+// set polywrap codegen to run before each build
 tasks.withType<KotlinCompile> { dependsOn("codegen") }

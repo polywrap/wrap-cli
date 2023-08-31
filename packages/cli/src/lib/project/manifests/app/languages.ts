@@ -5,6 +5,7 @@ import { BindLanguage } from "@polywrap/schema-bind";
 export const appManifestLanguages = {
   "app/typescript": "app/typescript",
   "app/python": "app/python",
+  "app/kotlin": "app/kotlin",
 };
 
 export type AppManifestLanguages = typeof appManifestLanguages;
@@ -25,6 +26,8 @@ export function appManifestLanguageToBindLanguage(
       return "app-ts";
     case "app/python":
       return "app-py";
+    case "app/kotlin":
+        return "app-kt";
     default:
       throw Error(
         intlMsg.lib_language_unsupportedManifestLanguage({

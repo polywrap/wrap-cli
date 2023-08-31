@@ -1,0 +1,2 @@
+#import * into Logging from "wrapscan.io/polywrap/logger@1.0"
+#import * into Ethereum from "ens/wraps.eth:ethereum@1.0.0"
