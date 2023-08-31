@@ -40,7 +40,11 @@ export const runCli = async (options: {
       }
     }
 
-    const command = `node ${config.cli} ${args.join(" ")}`;
+    let executor = "node";
+    if (config.cli && config.cli.split("/").pop()?.startsWith("polywrap-")) {
+      executor = "";
+    }
+    const command = `${executor} ${config.cli} ${args.join(" ")}`.trimStart();
     const child = spawn(command, { cwd: config.cwd, env: config.env });
 
     let stdout = "";

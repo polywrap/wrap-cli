@@ -1,4 +1,5 @@
 import {Status, ValidationResult, WorkflowOutput} from "../../lib";
+import os from "os";
 
 export const clearStyle = (styled: string) => {
   return styled.replace(
@@ -66,4 +67,37 @@ export const parseOutput = (
   });
 };
 
-export const polywrapCli = `${__dirname}/../../../bin/polywrap`;
+const getPlatformAndArch = (): string => {
+  const supportedPlatforms: Record<string, string> = {
+    'darwin': 'macos',
+    'win32': 'win',
+    'linux': 'linux'
+  };
+  const supportedArchitectures: Record<string, string> = {
+    'x64': 'x64',
+    'arm64': 'arm64'
+  };
+
+  const platform = supportedPlatforms[os.platform()];
+  const arch = supportedArchitectures[os.arch()];
+
+  if (!platform || !arch) {
+    throw new Error(`Unsupported platform or architecture.
+Supported platforms: ${Object.keys(supportedPlatforms).toString()}.
+Supported architectures: ${Object.keys(supportedArchitectures).toString()}`);
+  }
+
+  if (platform === 'win') {
+    return `${platform}-${arch}.exe`;
+  }
+  return `${platform}-${arch}`;
+};
+
+const getCli = (): string => {
+  if (process.env.EXECUTABLE_CLI === "true") {
+    return `${__dirname}/../../../executables/polywrap-${getPlatformAndArch()}`;
+  }
+  return `${__dirname}/../../../bin/polywrap`;
+}
+
+export const polywrapCli = getCli();
