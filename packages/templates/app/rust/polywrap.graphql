@@ -1,2 +1,1 @@
-#import * into Logging from "ens/wraps.eth:logging@1.0.0"
 #import * into Ipfs from "wrapscan.io/polywrap/ipfs-http-client@1.0"
