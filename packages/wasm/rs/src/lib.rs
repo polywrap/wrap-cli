@@ -24,7 +24,4 @@ pub use msgpack::{
     DecodeError, EncodeError, EnumTypeError, Read, ReadDecoder, Write, WriteEncoder,
 };
 
-pub use num_bigint::BigInt;
-pub use bigdecimal::BigDecimal as BigNumber;
-pub use serde_json as JSON;
-pub use std::collections::BTreeMap as Map;
+pub use polywrap_msgpack_serde::*;

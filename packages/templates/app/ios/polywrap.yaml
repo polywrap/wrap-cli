@@ -1,0 +1,6 @@
+format: 0.4.0
+project:
+  name: Sample
+  type: app/swift
+source:
+  schema: ./polywrap.graphql

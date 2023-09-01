@@ -13,37 +13,53 @@ export function getGenerateBindingFn(
   switch (bindLanguage) {
     case "wrap-as":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/wrap-assemblyscript"
+        "wrapscan.io/polywrap/wrap-assemblyscript-abi-bindgen@1"
       );
     case "wrap-rs":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/wrap-rust"
+        "wrapscan.io/polywrap/wrap-rust-abi-bindgen@1"
       );
     case "wrap-go":
       return Golang.Wasm.generateBinding;
     case "plugin-ts":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/plugin-typescript"
+        "wrapscan.io/polywrap/plugin-typescript-abi-bindgen@1"
       );
     case "plugin-rs":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/plugin-rust"
+        "wrapscan.io/polywrap/plugin-rust-abi-bindgen@1"
       );
     case "plugin-py":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/plugin-python"
+        "wrapscan.io/polywrap/plugin-python-abi-bindgen@1"
       );
     case "plugin-kt":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/plugin-kotlin"
+        "wrapscan.io/polywrap/plugin-kotlin-abi-bindgen@1"
       );
     case "plugin-swift":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/wrap-0.1/implementations/plugin-swift"
+        "wrapscan.io/polywrap/plugin-swift-abi-bindgen@1"
       );
     case "app-ts":
       return WrapBindgen.getGenerateBindingFn(
-        "https://github.com/polywrap/wrap-abi-bindgen/tree/nk/ts-app-codegen/implementations/app-typescript"
+        "wrapscan.io/polywrap/app-typescript-abi-bindgen@1"
+      );
+    case "app-py":
+      return WrapBindgen.getGenerateBindingFn(
+        "wrapscan.io/polywrap/app-python-abi-bindgen@1"
+      );
+    case "app-rs":
+      return WrapBindgen.getGenerateBindingFn(
+        "wrapscan.io/polywrap/app-rust-abi-bindgen@1"
+      );
+    case "app-swift":
+      return WrapBindgen.getGenerateBindingFn(
+        "wrapscan.io/polywrap/app-swift-abi-bindgen@1"
+      );
+    case "app-kt":
+      return WrapBindgen.getGenerateBindingFn(
+        "wrapscan.io/polywrap/app-kotlin-abi-bindgen@1"
       );
     default:
       throw Error(`Error: Language binding unsupported - ${bindLanguage}`);
