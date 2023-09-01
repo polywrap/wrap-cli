@@ -96,7 +96,7 @@ Supported architectures: ${Object.keys(supportedArchitectures).toString()}`);
 };
 
 const getCli = (): string => {
-  if (process.env.EXECUTABLE_CLI === "true") {
+  if (process.env.PKG_CLI === "true") {
     const packageJsonStr = fs.readFileSync(__dirname + '/../../../package.json', 'utf8')
     const packageJson: { pkg: { outputPath: string } } = JSON.parse(packageJsonStr)
     const binPath = path.join(__dirname, "../../..", packageJson.pkg.outputPath)

@@ -34,9 +34,9 @@
     "test:rust": "yarn test:cmd -- --config ./jest.rs.config.js",
     "test:golang": "yarn test:cmd -- --config ./jest.go.config.js",
     "test:watch": "yarn test -- --watch",
-    "test:executable": "EXECUTABLE_CLI=true yarn test:e2e:p1 && yarn test:e2e:p2",
-    "executable:prod": "yarn pkg . --compress Brotli",
-    "executable:dev": "yarn pkg . --compress GZip"
+    "test:pkg": "PKG_CLI=true yarn test:e2e:p1 && yarn test:e2e:p2",
+    "pkg:prod": "yarn pkg . --compress Brotli",
+    "pkg:dev": "yarn pkg . --compress GZip"
   },
   "resolutions": {
     "colors": "1.4.0"
@@ -107,7 +107,12 @@
     "access": "public"
   },
   "pkg": {
-    "assets": "lang/**/*",
+    "assets": [
+      "lang/**/*",
+      "build/lib/defaults/build-strategies/**/*",
+      "build/lib/defaults/deploy-modules/**/*",
+      "build/lib/defaults/infra-modules/**/*"
+    ],
     "targets": [
       "node18-linux-arm64",
       "node18-linux-x64",
