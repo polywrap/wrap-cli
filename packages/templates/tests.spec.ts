@@ -40,7 +40,11 @@ describe("Templates", () => {
       test: "cargo test",
     },
     "app/android": {
+      codegen: "npx polywrap codegen",
       build: "./gradlew assemble",
+    },
+    "app/ios": {
+      codegen: "npx polywrap codegen",
     },
     "app/rust": {
       codegen: "npx polywrap codegen",
