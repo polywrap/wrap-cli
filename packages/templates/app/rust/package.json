@@ -1,4 +1,5 @@
 {
+  "name": "template-app-rust",
   "private": true,
   "scripts": {
     "build": "npx polywrap codegen"
