@@ -19,7 +19,7 @@ Commands:
   wasm [options] <language> <name>    Create a Polywrap wasm wrapper. langs:
                                       assemblyscript, rust, golang, interface
   app [options] <language> <name>     Create a Polywrap application. langs:
-                                      typescript, python, rust
+                                      typescript, python, rust, android
   plugin [options] <language> <name>  Create a Polywrap plugin. langs:
                                       typescript, rust, python
   template [options] <url> <name>     Download template from a URL. formats:
