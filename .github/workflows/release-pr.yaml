@@ -140,6 +140,7 @@ jobs:
           yarn run version:apply
           yarn run build
           yarn run build:docs
+          yarn run pkg
 
       - name: Create Pull Request
         id: cpr
