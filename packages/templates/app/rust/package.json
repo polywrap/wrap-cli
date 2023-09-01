@@ -1,21 +1,9 @@
 {
-  "name": "templates-app-rust",
-  "description": "Polywrap App Rust Template",
   "private": true,
-  "version": "0.11.2",
   "scripts": {
-    "build": "npx polywrap codegen",
-    "test": "ts-node ./src/index.ts",
-    "ipfs:up": "npx polywrap infra up --modules=eth-ens-ipfs",
-    "ipfs:down": "npx polywrap infra down --modules=eth-ens-ipfs"
+    "build": "npx polywrap codegen"
   },
   "dependencies": {
-    "@polywrap/client-js": "~0.12.0"
-  },
-  "devDependencies": {
-    "@types/node": "18.15.0",
-    "polywrap": "0.11.2",
-    "ts-node": "10.9.1",
-    "typescript": "4.9.5"
+    "polywrap": "0.11.2"
   }
 }

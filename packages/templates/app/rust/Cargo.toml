@@ -1,8 +1,8 @@
 [package]
-name = "template_plugin_rs"
+name = "template_app_rs"
 version = "0.1.0"
 license = "MIT"
-description = "Polywrap Rust Plugin Template"
+description = "Polywrap Rust App Template"
 edition = "2021"
 
 include = [
