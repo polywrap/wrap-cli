@@ -1,7 +1,11 @@
 {
   "properties": {
-    "strategies": {},
-    "local": {},
-    "vm": {}
+    "config": {
+      "bundledScriptPath": {
+        "description": "Path to the bundled JS file to build the wrap from",
+        "type": "string",
+        "required": true
+      }
+    }
   }
 }

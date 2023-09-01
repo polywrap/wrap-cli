@@ -5,7 +5,5 @@ RUN curl -L https://raw.githubusercontent.com/polywrap/pwr/main/pwrup/install | 
 RUN /bin/bash -i -c "source ~/.bashrc; pwrup"
 
 WORKDIR /project
-{{#polywrap_module}}
-COPY {{dir}}/build/wrap.js ./wrap.js
-{{/polywrap_module}}
+COPY {{bundledScriptPath}} ./wrap.js
 RUN /bin/bash -i -c "pwr js build -f ./wrap.js -o build"
