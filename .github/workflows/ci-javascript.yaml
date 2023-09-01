@@ -331,6 +331,10 @@ jobs:
           rm -rf packages/test-cases/cases/wrappers
           mv wrappers packages/test-cases/cases
 
+      - name: Build CLI standalone package for testing
+        run: yarn pkg:dev
+        working-directory: ./packages/cli
+
       - name: Test CLI standalone package
         run: yarn test:pkg
         working-directory: ./packages/cli

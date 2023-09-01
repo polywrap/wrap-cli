@@ -5,11 +5,83 @@ on:
     types: [closed]
 
 jobs:
+  Build-Binaries:
+    name: Publish source to github.com
+    if: |
+      github.event.pull_request.user.login == 'polywrap-build-bot' &&
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Read VERSION into env.RELEASE_VERSION
+        run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
+
+      - name: Is Pre-Release
+        run: |
+          STR="${RELEASE_VERSION}"
+          SUB='pre.'
+          if [[ "$STR" == *"$SUB"* ]]; then
+            echo PRE_RELEASE=true >> $GITHUB_ENV
+          else
+            echo PRE_RELEASE=false >> $GITHUB_ENV
+          fi
+
+      - name: Check If Tag Exists
+        id: tag_check
+        shell: bash -ex {0}
+        run: |
+          GET_API_URL="https://api.github.com/repos/${{github.repository}}/git/ref/tags/${{env.RELEASE_VERSION}}"
+          http_status_code=$(curl -LI $GET_API_URL -o /dev/null -w '%{http_code}\n' -s \
+            -H "Authorization: token ${GITHUB_TOKEN}")
+          if [ "$http_status_code" -ne "404" ] ; then
+            echo TAG_EXISTS=true >> $GITHUB_ENV
+          else
+            echo TAG_EXISTS=false >> $GITHUB_ENV
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read .nvmrc into env.NVMRC
+        if: env.TAG_EXISTS == 'false'
+        run: echo NVMRC=$(cat .nvmrc) >> $GITHUB_ENV
+
+      - name: Setup Node.js
+        if: env.TAG_EXISTS == 'false'
+        uses: actions/setup-node@v1
+        with:
+          node-version: '${{env.NVMRC}}'
+
+      - name: Install Rust
+        if: env.TAG_EXISTS == 'false'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+
+      - name: Build Standalone CLI Binaries
+        if: env.TAG_EXISTS == 'false'
+        run: |
+          yarn
+          yarn run build
+          yarn run pkg
+
+      - name: Upload Artifacts
+        if: env.TAG_EXISTS == 'false'
+        uses: actions/upload-artifact@v3
+        with:
+          name: cli-binaries
+          path: ./bin
+
   Publish-GitHub:
     name: Publish source to github.com
     if: |
       github.event.pull_request.user.login == 'polywrap-build-bot' &&
       github.event.pull_request.merged == true
+    needs: Build-Binaries
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -62,20 +134,33 @@ jobs:
           github_repo: ${{ github.repository }}
           git_commit_sha: ${{ github.event.pull_request.merge_commit_sha }}
 
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: cli-binaries
+          path: ./bin
+
       - name: Create Release
         id: create_release
         if: env.PRE_RELEASE == 'false' && env.TAG_EXISTS == 'false' && github.event.pull_request.merged == true
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.RELEASE_VERSION }}
           # Copy Pull Request's tile and body to Release Note
-          release_name: ${{ github.event.pull_request.title }}
+          name: ${{ github.event.pull_request.title }}
           body: |
             ${{ github.event.pull_request.body }}
           draft: false
           prerelease: false
+          files: |
+            ./bin/polywrap-linux-arm64
+            ./bin/polywrap-linux-x64
+            ./bin/polywrap-macos-arm64
+            ./bin/polywrap-macos-x64
+            ./bin/polywrap-win-arm64.exe
+            ./bin/polywrap-win-x64.exe
 
       - uses: actions/github-script@0.8.0
         if: env.TAG_EXISTS == 'false'
