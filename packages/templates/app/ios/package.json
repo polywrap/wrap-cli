@@ -1,10 +1,8 @@
 {
-  "name": "templates-app-swift",
-  "description": "Polywrap App Swift Template",
+  "name": "template-app-swift",
   "private": true,
-  "version": "0.11.2",
   "scripts": {
-    "build": "npx polywrap codegen -g Template/wrap"
+    "codegen": "npx polywrap codegen -g Template/wrap"
   },
   "devDependencies": {
     "polywrap": "0.11.2"
