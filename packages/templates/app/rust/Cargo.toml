@@ -1,0 +1,17 @@
+[package]
+name = "template_app_rs"
+version = "0.1.0"
+license = "MIT"
+description = "Polywrap Rust App Template"
+edition = "2021"
+
+include = [
+    "src/wrap/*",
+    "src/lib.rs"
+]
+
+[dependencies]
+polywrap = { version = "~0.1.8" }
+serde = {version = "1.0.145", features = ["derive"]}
+
+[dev-dependencies]

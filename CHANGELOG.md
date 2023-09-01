@@ -1,3 +1,27 @@
+# Polywrap Origin (0.11.3)
+## Features
+**`polywrap` CLI:**
+* [PR-1870](https://github.com/polywrap/cli/pull/1870) **Add `polywrap create app ios ...`**
+* [PR-1867](https://github.com/polywrap/cli/pull/1867) **Add `polywrap create app android ...`**
+* [PR-1864](https://github.com/polywrap/cli/pull/1864) **Add `polywrap create app rust ...`**
+* [PR-1856](https://github.com/polywrap/cli/pull/1856) **Add `polywrap create app python ...`**
+
+**`@polywrap/schema-bind`:**
+* [PR-1868](https://github.com/polywrap/cli/pull/1868) **Add `app/kotlin` Bindings**
+* [PR-1871](https://github.com/polywrap/cli/pull/1871) **Add `app/swift` Bindings**
+* [PR-1873](https://github.com/polywrap/cli/pull/1873) **Update URIs To `wrapscan.io/polywrap/...-abi-bindgen@1`**
+  * Update URIs to wrapscan.io URI so that we can now use fuzzy versioning.
+
+**`polywrap-wasm-rs`:**
+* [PR-1865](https://github.com/polywrap/cli/pull/1865) **Re-Export Nested Dependencies**
+  * Re-export nested dependencies so that consumers no longer need to import from other packages.
+
+## Bugs
+**`polywrap` CLI:**
+* [PR-1874](https://github.com/polywrap/cli/pull/1874) **Use Rust Client For Testing Rust-Based Wraps**
+* [PR-1866](https://github.com/polywrap/cli/pull/1866) **Use Latest Ganache**
+  * Update the ganache image with the latest from docker.
+
 # Polywrap Origin (0.11.2)
 ## Bugs
 **`@polywrap/templates`:**
