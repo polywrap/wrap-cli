@@ -1,4 +1,3 @@
-mod types;
 use crate::types::wrap::types::{
     TemplateModule,
     TemplateModuleArgsSampleMethod
