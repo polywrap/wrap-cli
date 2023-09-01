@@ -1,5 +1,7 @@
 import {Status, ValidationResult, WorkflowOutput} from "../../lib";
 import os from "os";
+import fs from "fs";
+import path from "path";
 
 export const clearStyle = (styled: string) => {
   return styled.replace(
@@ -95,7 +97,10 @@ Supported architectures: ${Object.keys(supportedArchitectures).toString()}`);
 
 const getCli = (): string => {
   if (process.env.EXECUTABLE_CLI === "true") {
-    return `${__dirname}/../../../executables/polywrap-${getPlatformAndArch()}`;
+    const packageJsonStr = fs.readFileSync(__dirname + '/../../../package.json', 'utf8')
+    const packageJson: { pkg: { outputPath: string } } = JSON.parse(packageJsonStr)
+    const binPath = path.join(__dirname, "../../..", packageJson.pkg.outputPath)
+    return `${path.resolve(binPath)}/polywrap-${getPlatformAndArch()}`;
   }
   return `${__dirname}/../../../bin/polywrap`;
 }

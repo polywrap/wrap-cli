@@ -116,6 +116,6 @@
       "node18-win-arm64",
       "node18-win-x64"
     ],
-    "outputPath": "./executables"
+    "outputPath": "./../../bin"
   }
 }
