@@ -13,7 +13,6 @@ target
 **/*.rs.bk
 Cargo.lock
 bin
-!/bin
 !packages/cli/bin
 pkg
 wasm-pack.log
