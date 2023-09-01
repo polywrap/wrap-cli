@@ -114,11 +114,14 @@ export class AppProject extends Project<AppManifest> {
   public async generateSchemaBindings(
     abi: WrapAbi,
     generationSubPath?: string,
-    bindgenUri?: string
+    bindgenUri?: string,
+    bindConfig?: Record<string, unknown>
   ): Promise<BindOutput> {
     const bindLanguage = appManifestLanguageToBindLanguage(
       await this.getManifestLanguage()
     );
+    const codegenDir =
+      generationSubPath || (bindConfig?.codegenDir as string | undefined);
     const options: BindOptions = {
       bindLanguage,
       wrapInfo: {
@@ -127,7 +130,7 @@ export class AppProject extends Project<AppManifest> {
         type: bindLanguageToWrapInfoType(bindLanguage),
         abi,
       },
-      outputDirAbs: await this.getGenerationDirectory(generationSubPath),
+      outputDirAbs: await this.getGenerationDirectory(codegenDir),
     };
     return bindSchema(options, bindgenUri);
   }

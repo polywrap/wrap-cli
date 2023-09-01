@@ -260,4 +260,21 @@ describe("e2e tests for deploy command", () => {
     expect(sanitizedErr).toContain("Environment variable not found: `NON_LOADED_VAR`");
     expect(code).toEqual(1);
   });
+
+  it("Should deploy an interface successfully", async () => {
+    const { exitCode: code, stdout: output, stderr: error } = await Commands.deploy({}, {
+      cwd: getTestCaseDir(5),
+      cli: polywrapCli,
+      env: process.env as Record<string, string>
+    });
+
+    const sanitizedOutput = clearStyle(output);
+    const sanitizedError = clearStyle(error);
+
+    expect(code).toEqual(0);
+    expect(sanitizedError).toBeFalsy();
+    expect(sanitizedOutput).toContain(
+      "Successfully executed step 'ipfs_deploy'"
+    );
+  });
 });

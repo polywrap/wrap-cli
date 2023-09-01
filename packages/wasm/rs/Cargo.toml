@@ -21,10 +21,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 byteorder = "1.4.3"
 thiserror = "1.0.30"
-num-bigint = { version = "0.4", default-features = false, features = ["serde"] }
-num-traits = { version = "0.2.14", default-features = false }
-bigdecimal = { version = "0.3.0", default-features = false, features = ["serde"] }
-serde_json = { version = "1.0.74", default-features = false, features = ["alloc"] }
+polywrap_msgpack_serde = "0.0.2-beta.6"
 
 [dev-dependencies]
 serde = { version = "1.0.136", default-features = false, features = ["derive"] }
