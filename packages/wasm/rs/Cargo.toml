@@ -1,6 +1,6 @@
 [package]
 name = "polywrap-wasm-rs"
-version = "0.11.2"
+version = "0.11.3"
 license = "MIT"
 description = "Polywrap's Rust-Wasm Runtime"
 homepage = "https://polywrap.io"
