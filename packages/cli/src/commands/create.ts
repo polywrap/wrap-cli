@@ -28,7 +28,7 @@ const urlStr = intlMsg.commands_create_options_t_url();
 
 export const supportedLangs = {
   wasm: ["assemblyscript", "rust", "golang", "interface"] as const,
-  app: ["typescript", "python", "android"] as const,
+  app: ["typescript", "python", "rust", "android"] as const,
   plugin: ["typescript", "rust", "python"] as const,
 };
 
