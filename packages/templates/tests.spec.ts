@@ -12,7 +12,7 @@ describe("Templates", () => {
 
   // Define the commands to run for each language
   const languageTestCommands: Record<string, Record<string, string>> = {
-    typescript: { build: "yarn build", test: "yarn test" },
+    typescript: { build: "yarn codegen", test: "yarn test" },
     python: {
       install: "poetry install",
       codegen: "npx polywrap codegen",
