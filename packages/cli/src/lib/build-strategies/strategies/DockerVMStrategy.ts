@@ -48,7 +48,7 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
     baseImage: "polywrap/vm-base-go",
     version: "0.1.6",
   },
-  "wasm/js": {
+  "wasm/typescript": {
     defaultIncludes: [],
     baseImage: "polywrap/vm-base-js",
     version: "0.1.0",

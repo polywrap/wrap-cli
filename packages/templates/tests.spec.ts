@@ -34,7 +34,7 @@ describe("Templates", () => {
       build: "yarn build",
       test: "yarn test",
     },
-    "wasm/js": {
+    "wasm/typescript": {
       codegen: "yarn codegen",
       build: "yarn build",
       test: "yarn test",
