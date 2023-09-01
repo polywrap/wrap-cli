@@ -39,6 +39,11 @@ describe("Templates", () => {
       build: "cargo build",
       test: "cargo test",
     },
+    "app/rust": {
+      codegen: "npx polywrap codegen",
+      build: "cargo build",
+      test: "cargo test",
+    },
     interface: { build: "npx polywrap build" },
   };
 
