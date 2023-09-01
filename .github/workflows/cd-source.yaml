@@ -74,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: cli-binaries
-          path: ./bin
+          path: ./packages/cli/standalone-binaries
 
   Publish-GitHub:
     name: Publish source to github.com

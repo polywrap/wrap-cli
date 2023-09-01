@@ -35,8 +35,8 @@
     "test:golang": "yarn test:cmd -- --config ./jest.go.config.js",
     "test:watch": "yarn test -- --watch",
     "test:pkg": "PKG_CLI=true yarn test:e2e:p1 && yarn test:e2e:p2",
-    "pkg:prod": "yarn pkg . --compress Brotli",
-    "pkg:dev": "yarn pkg . --compress GZip"
+    "pkg:prod": "ts-node ./scripts/buildStandaloneBinaries.ts --prod",
+    "pkg:dev": "ts-node ./scripts/buildStandaloneBinaries.ts"
   },
   "resolutions": {
     "colors": "1.4.0"
@@ -112,15 +112,6 @@
       "build/lib/defaults/build-strategies/**/*",
       "build/lib/defaults/deploy-modules/**/*",
       "build/lib/defaults/infra-modules/**/*"
-    ],
-    "targets": [
-      "node18-linux-arm64",
-      "node18-linux-x64",
-      "node18-macos-arm64",
-      "node18-macos-x64",
-      "node18-win-arm64",
-      "node18-win-x64"
-    ],
-    "outputPath": "./../../bin"
+    ]
   }
 }

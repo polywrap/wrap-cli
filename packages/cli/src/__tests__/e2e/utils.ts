@@ -1,6 +1,5 @@
 import {Status, ValidationResult, WorkflowOutput} from "../../lib";
 import os from "os";
-import fs from "fs";
 import path from "path";
 
 export const clearStyle = (styled: string) => {
@@ -97,10 +96,9 @@ Supported architectures: ${Object.keys(supportedArchitectures).toString()}`);
 
 const getCli = (): string => {
   if (process.env.PKG_CLI === "true") {
-    const packageJsonStr = fs.readFileSync(__dirname + '/../../../package.json', 'utf8')
-    const packageJson: { pkg: { outputPath: string } } = JSON.parse(packageJsonStr)
-    const binPath = path.join(__dirname, "../../..", packageJson.pkg.outputPath)
-    return `${path.resolve(binPath)}/polywrap-${getPlatformAndArch()}`;
+    const binPath = path.resolve(`${__dirname}/../../../standalone-binaries`);
+    const platformArch = getPlatformAndArch();
+    return `${binPath}/${platformArch}/polywrap`;
   }
   return `${__dirname}/../../../bin/polywrap`;
 }
