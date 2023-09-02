@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "sample"
 version = "0.1.0"
-description = ""
+description = "Sample Polywrap plugin"
 authors = ["Niraj <niraj@polywrap.io>"]
 readme = "README.md"
 
