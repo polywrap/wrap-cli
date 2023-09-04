@@ -33,7 +33,7 @@ describe("e2e tests for build command", () => {
     });
   })
 
-  // NOTE: Skipped because CI needs system prequisites: golang
+  // NOTE: Skipped because CI needs system prequisites: pwr CLI
   describe.skip("Local strategy", () => {
     it("Builds for typescript", async () => {
       const { exitCode: code, stdout: output } = await Commands.build({
