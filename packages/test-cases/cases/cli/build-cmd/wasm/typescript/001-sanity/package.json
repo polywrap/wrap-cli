@@ -1,0 +1,23 @@
+{
+  "name": "@polywrap/test-project",
+  "version": "1.0.0",
+  "scripts": {
+    "bundle": "rollup -c",
+    "codegen": "polywrap codegen --verbose",
+    "build": "yarn bundle && polywrap build --no-codegen"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tslib": "^2.6.2"
+  },
+  "devDependencies": {
+    "polywrap": "0.11.2",
+    "typescript": "^5.1.6",
+    "@rollup/plugin-commonjs": "^25.0.4",
+    "@rollup/plugin-node-resolve": "^15.2.0",
+    "@rollup/plugin-terser": "^0.4.3",
+    "@rollup/plugin-typescript": "^11.1.2",
+    "rollup": "^3.28.0"
+  }
+}

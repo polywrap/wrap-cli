@@ -1,0 +1,9 @@
+format: 0.5.0
+project:
+  name: ObjectTypes
+  type: wasm/typescript
+source:
+  schema: ./polywrap.graphql
+  module: ./src/index.ts
+extensions:
+  build: ./polywrap.build.yaml
