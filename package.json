@@ -27,6 +27,7 @@
     "build:core": "lerna run build --no-private --ignore polywrap --ignore @polywrap/cli-js",
     "build:cli": "lerna run build --scope polywrap && lerna run build --scope @polywrap/cli-js",
     "build:docs": "lerna run build:docs",
+    "pkg": "lerna run pkg:prod --scope polywrap",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint -- --fix",
     "lint:ci": "yarn lint",
