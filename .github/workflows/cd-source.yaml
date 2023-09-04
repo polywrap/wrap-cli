@@ -6,11 +6,22 @@ on:
 
 jobs:
   Build-Binaries:
-    name: Publish source to github.com
+    name: Build binaries
     if: |
       github.event.pull_request.user.login == 'polywrap-build-bot' &&
       github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch:
+          - x64
+          - arm64
+        node-version:
+          - node18
+        os:
+          - linux
+          - macos
+          - win
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -62,19 +73,31 @@ jobs:
           toolchain: nightly
           override: true
 
-      - name: Build Standalone CLI Binaries
+      - name: Build CLI
         if: env.TAG_EXISTS == 'false'
         run: |
-          yarn
-          yarn run build
-          yarn run pkg
+          yarn install
+          yarn build
+
+      - name: Package into node binary
+        if: env.TAG_EXISTS == 'false'
+        uses: lando/pkg-action@v2
+        with:
+          entrypoint: ./packages/cli/bin/polywrap
+          config: ./packages/cli/package.json
+          options: --output ./packages/cli/standalone-binaries/${{ matrix.os }}-${{ matrix.arch }}/polywrap --compress Brotli
+          pkg: 5.8.1
+          upload: false
+          arch: ${{ matrix.arch }}
+          node-version: ${{ matrix.node-version }}
+          os: ${{ matrix.os }}
 
       - name: Upload Artifacts
         if: env.TAG_EXISTS == 'false'
         uses: actions/upload-artifact@v3
         with:
-          name: cli-binaries
-          path: ./packages/cli/standalone-binaries
+          name: cli-binary-${{ matrix.os }}-${{ matrix.arch }}
+          path: ${{ steps.pkg-action.outputs.file }}
 
   Publish-GitHub:
     name: Publish source to github.com
@@ -134,11 +157,41 @@ jobs:
           github_repo: ${{ github.repository }}
           git_commit_sha: ${{ github.event.pull_request.merge_commit_sha }}
 
-      - name: Download Artifacts
+      - name: Download Artifacts linux-x64
         uses: actions/download-artifact@v3
         with:
-          name: cli-binaries
-          path: ./bin
+          name: cli-binary-linux-x64
+          path: ./bin/linux-x64/
+
+      - name: Download Artifacts linux-arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: cli-binary-linux-arm64
+          path: ./bin/linux-arm64/
+
+      - name: Download Artifacts macos-x64
+        uses: actions/download-artifact@v3
+        with:
+          name: cli-binary-macos-x64
+          path: ./bin/macos-x64/
+
+      - name: Download Artifacts macos-arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: cli-binary-macos-arm64
+          path: ./bin/macos-arm64/
+
+      - name: Download Artifacts win-x64
+        uses: actions/download-artifact@v3
+        with:
+          name: cli-binary-win-x64
+          path: ./bin/win-x64/
+
+      - name: Download Artifacts win-arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: cli-binary-win-arm64
+          path: ./bin/win-arm64/
 
       - name: Create Release
         id: create_release
@@ -154,13 +207,7 @@ jobs:
             ${{ github.event.pull_request.body }}
           draft: false
           prerelease: false
-          files: |
-            ./bin/polywrap-linux-arm64
-            ./bin/polywrap-linux-x64
-            ./bin/polywrap-macos-arm64
-            ./bin/polywrap-macos-x64
-            ./bin/polywrap-win-arm64.exe
-            ./bin/polywrap-win-x64.exe
+          files: ./bin
 
       - uses: actions/github-script@0.8.0
         if: env.TAG_EXISTS == 'false'

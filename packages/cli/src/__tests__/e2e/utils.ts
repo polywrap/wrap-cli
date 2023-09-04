@@ -70,13 +70,13 @@ export const parseOutput = (
 
 const getPlatformAndArch = (): string => {
   const supportedPlatforms: Record<string, string> = {
-    'darwin': 'macos',
-    'win32': 'win',
-    'linux': 'linux'
+    darwin: "macos",
+    win32: "win",
+    linux: "linux",
   };
   const supportedArchitectures: Record<string, string> = {
-    'x64': 'x64',
-    'arm64': 'arm64'
+    x64: "x64",
+    arm64: "arm64",
   };
 
   const platform = supportedPlatforms[os.platform()];
@@ -88,7 +88,7 @@ Supported platforms: ${Object.keys(supportedPlatforms).toString()}.
 Supported architectures: ${Object.keys(supportedArchitectures).toString()}`);
   }
 
-  if (platform === 'win') {
+  if (platform === "win") {
     return `${platform}-${arch}.exe`;
   }
   return `${platform}-${arch}`;
