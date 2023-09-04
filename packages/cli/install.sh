@@ -44,10 +44,6 @@ prepare() {
 	# ensure ⌃C works
 	trap "echo; exit" INT
 
-	if ! command -v tar >/dev/null; then
-		echo "polywrap: error: sorry. pls install tar :(" >&2
-	fi
-
 	if test -n "$VERBOSE" -o -n "$GITHUB_ACTIONS" -a -n "$RUNNER_DEBUG"; then
 		set -x
 	fi
@@ -60,14 +56,10 @@ prepare() {
 
 	HW_TARGET=$(uname)/$(uname -m)
 
-	ZZ=gz
-
 	case $HW_TARGET in
 	Darwin/arm64)
-		ZZ=xz
 		POLYWRAP_OSARCH=macos-arm64;;
 	Darwin/x86_64)
-		ZZ=xz
 		POLYWRAP_OSARCH=macos-x64;;
 	Linux/arm64|Linux/aarch64)
 		POLYWRAP_OSARCH=linux-arm64;;
@@ -81,36 +73,6 @@ prepare() {
 		echo "polywrap: error: (currently) unsupported OS or architecture ($HW_TARGET)" >&2
 		echo "let’s talk about it: https://discord.com/invite/Z5m88a5qWu" >&2
 		exit 1;;
-	esac
-
-	if test $ZZ = 'gz'; then
-		if command -v base64 >/dev/null; then
-			BASE64_TARXZ="/Td6WFoAAATm1rRGAgAhARYAAAB0L+Wj4AX/AFNdADMb7AG6cMNAaNMVK8FvZMaza8QKKTQY6wZ3kG/F814lHE9ruhkFO5DAG7XNamN7JMHavgmbbLacr72NaAzgGUXOstqUaGb6kbp7jrkF+3aQT12CAAB8Uikc1gG8RwABb4AMAAAAeGbHwbHEZ/sCAAAAAARZWg=="
-			if echo "$BASE64_TARXZ" | base64 -d | tar Jtf - >/dev/null 2>&1; then
-				ZZ=xz
-			fi
-		elif command -v uudecode >/dev/null; then
-			TMPFILE=$(mktemp)
-			cat >"$TMPFILE" <<-EOF
-				begin 644 foo.tar.xz
-				M_3=Z6%H\`\`\`3FUK1&\`@\`A\`18\`\`\`!T+^6CX\`7_\`%-=\`#,;[\`&Z<,-\`:-,5*\%O
-				M9,:S:\0**308ZP9WD&_%\UXE'$]KNAD%.Y#\`&[7-:F-[),':O@F;;+:<K[V-
-				M:\`S@&47.LMJ4:&;ZD;I[CKD%^W:03UV"\`\`!\4BD<U@&\1P\`!;X\`,\`\`\`\`>&;'
-				-P;'\$9_L"\`\`\`\`\`\`196@\`\`
-				\`
-				end
-				EOF
-			if uudecode -p "$TMPFILE" | tar Jtf - >/dev/null 2>&1; then
-				ZZ=xz
-			fi
-		fi
-	fi
-
-	case "$ZZ" in
-	gz)
-		TAR_FLAGS=xz;; # confusingly
-	xz)
-		TAR_FLAGS=xJ;;
 	esac
 
 	if test -z "$POLYWRAP_DESTDIR"; then
@@ -221,7 +183,9 @@ EoMD
 		exit 1
 	fi
 
-	echo "Latest polywrap version: $POLYWRAP_VERSION"
+	POLYWRAP_VERSION_MINOR="$(echo "$POLYWRAP_VERSION" | cut -d. -f1-2)"
+
+	echo "Latest polywrap version: v$POLYWRAP_VERSION"
 }
 
 fix_links() {
@@ -253,26 +217,25 @@ install() {
 	mkdir -p "$POLYWRAP_DESTDIR"
 	POLYWRAP_DESTDIR="$(cd $POLYWRAP_DESTDIR && pwd)"  # we need this PATH to be an absolute path for later stuff
 	POLYWRAP_TMP_SCRIPT="$(mktemp)"
-	URL="https://github.com/polywrap/cli/releases/download/v$POLYWRAP_VERSION/$POLYWRAP_OSARCH"
-	echo "set -e; $CURL '$URL' | tar '$TAR_FLAGS' -C '$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/'" > "$POLYWRAP_TMP_SCRIPT"
+	URL="https://github.com/polywrap/cli/releases/download/$POLYWRAP_VERSION/polywrap-$POLYWRAP_OSARCH"
+	echo "set -e; $CURL -L '$URL' -o '$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/'" > "$POLYWRAP_TMP_SCRIPT"
 	echo "$TITLE"
 	sh "$POLYWRAP_TMP_SCRIPT"
 
 	fix_links
 
 	if ! test "$MODE" = exec; then
-		gum_func format -- "Successfully installed \`$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/polywrap\`"
+		echo -- "Successfully installed \`$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/polywrap-$POLYWRAP_OSARCH\`"
 	fi
 
-	POLYWRAP_VERSION_MAJOR="$(echo "$POLYWRAP_VERSION" | cut -d. -f1)"
-	POLYWRAP_EXENAME="$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MAJOR/bin/polywrap"
+	POLYWRAP_EXENAME="$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MINOR/bin/polywrap-$POLYWRAP_OSARCH"
 
 	echo  #spacer
 }
 
 check_path() {
     cat <<-EoMD
-Should we add $POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MAJOR/bin to your PATH?
+Should we add $POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MINOR/bin to your PATH?
 EoMD
 
     if test -z "$POLYWRAP_YES"; then
@@ -327,13 +290,12 @@ if test $MODE = install -a -z "$ALREADY_INSTALLED"; then
 	welcome
 fi
 get_polywrap_version
-if ! test -f "$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/polywrap"; then
+if ! test -f "$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/polywrap-$POLYWRAP_OSARCH"; then
 	install
 else
 	fix_links  # be proactive in repairing the user installation just in case that's what they ran this for
 	POLYWRAP_IS_CURRENT=1
-	POLYWRAP_VERSION_MAJOR="$(echo "$POLYWRAP_VERSION" | cut -d. -f1)"
-	POLYWRAP_EXENAME="$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MAJOR/bin/polywrap"
+	POLYWRAP_EXENAME="$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MINOR/bin/polywrap-$POLYWRAP_OSARCH"
 fi
 
 case $MODE in
@@ -342,7 +304,7 @@ install)
 			check_path
 			if test -n "$GITHUB_ACTIONS"; then
 				# if the user did call us directly from GHA may as well help them out
-				echo "$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MAJOR/bin" >> "$GITHUB_PATH"
+				echo "$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MINOR/bin" >> "$GITHUB_PATH"
 			fi
 			cat -- <<-EoMD
 # You’re all set!
@@ -350,7 +312,7 @@ EoMD
 	elif test -n "$POLYWRAP_IS_CURRENT"; then
 		cat <<-EoMD
 # The latest version of polywrap is already installed
-> $POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/polywrap
+> $POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/polywrap-$POLYWRAP_OSARCH
 EoMD
 	fi
 	echo  #spacer
