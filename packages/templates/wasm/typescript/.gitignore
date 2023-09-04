@@ -1,0 +1,12 @@
+node_modules
+build
+yarn-error.log
+coverage
+.vscode
+*.log
+.polywrap
+.DS_Store
+src/wrap
+report.*
+.env
+bundled

@@ -17,7 +17,7 @@ Options:
 
 Commands:
   wasm [options] <language> <name>    Create a Polywrap wasm wrapper. langs:
-                                      assemblyscript, rust, golang, interface
+                                      assemblyscript, rust, golang, typescript, interface
   app [options] <language> <name>     Create a Polywrap application. langs:
                                       typescript, python
   plugin [options] <language> <name>  Create a Polywrap plugin. langs:
