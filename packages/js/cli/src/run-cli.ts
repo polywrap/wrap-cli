@@ -40,11 +40,8 @@ export const runCli = async (options: {
       }
     }
 
-    let executor = "node";
-    if (config.cli && config.cli.split("/").pop()?.startsWith("polywrap-")) {
-      executor = "";
-    }
-    const command = `${executor} ${config.cli} ${args.join(" ")}`.trimStart();
+    const exec = isNodeScript(config.cli) ? "node" : "";
+    const command = `${exec} ${config.cli} ${args.join(" ")}`.trimStart();
     const child = spawn(command, { cwd: config.cwd, env: config.env });
 
     let stdout = "";
@@ -67,3 +64,24 @@ export const runCli = async (options: {
     });
   });
 };
+
+function isNodeScript(filePath: string): boolean {
+  let fd: number | undefined;
+  try {
+    fd = fs.openSync(filePath, "r");
+    const buffer = Buffer.alloc(20);
+    fs.readSync(fd, buffer, 0, 20, 0);
+    const header = buffer.toString("utf-8", 0, 20);
+    return (
+      header.startsWith("#!/usr/bin/env node") ||
+      header.startsWith("#!/usr/bin/node")
+    );
+  } catch (err) {
+    console.error(`Error reading file ${filePath}: ${err}`);
+    return false;
+  } finally {
+    if (fd !== undefined) {
+      fs.closeSync(fd);
+    }
+  }
+}
