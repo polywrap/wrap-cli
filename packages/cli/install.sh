@@ -145,7 +145,7 @@ EoMD
       choice="1"
     else
       echo  #spacer
-      echo "How about it?"
+      echo "Let's gooooo! 🚀"
       echo "1) install polywrap"
       echo "2) cancel"
       read -p "Choice: " choice
@@ -234,15 +234,11 @@ install() {
 }
 
 check_path() {
-    cat <<-EoMD
-Should we add $POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MINOR/bin to your PATH?
-EoMD
-
     if test -z "$POLYWRAP_YES"; then
       choice="1"
     else
       echo  #spacer
-      echo "How about it?"
+      echo Should we add $POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MINOR/bin to your PATH?
       echo "1) Yes"
       echo "2) Skip"
       read -p "Choice: " choice
