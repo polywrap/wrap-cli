@@ -13,7 +13,6 @@ unset stop
 while test "$#" -gt 0 -a -z "$stop"; do
 	case $1 in
 	--prefix)
-		# we don’t use POLYWRAP_PREFIX so any already installed polywrap that we use in this script doesn't break
 		POLYWRAP_DESTDIR="$2"
 		if test -z "$POLYWRAP_DESTDIR"; then
 			echo "polywrap: error: --prefix requires an argument" >&2
@@ -119,8 +118,18 @@ prepare() {
 		if command -v polywrap >/dev/null; then
 			set +e
 			POLYWRAP_DESTDIR="$(which polywrap)"
+			echo Found polywrap in $POLYWRAP_DESTDIR
 			if test $? -eq 0 -a -n "$POLYWRAP_DESTDIR"; then
-				ALREADY_INSTALLED=1
+			  case "$POLYWRAP_DESTDIR" in
+          */.yarn/*|*/.npm/*)
+            echo #spacer
+            echo Warning: The existing installation is managed by a package manager. If you continue, this script will create a separate installation.
+            unset POLYWRAP_DESTDIR
+            ;;
+          *)
+            ALREADY_INSTALLED=1
+            ;;
+        esac
 			else
 				unset POLYWRAP_DESTDIR
 			fi
@@ -150,8 +159,6 @@ prepare() {
 	if test -z "$CURL"; then
 		if command -v curl >/dev/null; then
 			CURL="curl -Ssf"
-#		elif test -f "$POLYWRAP_DESTDIR/curl.se/v*/bin/curl"; then
-#			CURL="$POLYWRAP_DESTDIR/curl.se/v*/bin/curl -Ssf"
 		else
 			# how they got here without curl: we dunno
 			echo "polywrap: error: you need curl (or set \`\$CURL\`)" >&2
@@ -162,16 +169,17 @@ prepare() {
 
 welcome() {
     cat <<-EoMD
-      # Hi 👋 Welcome to Polywrap!
-      * Let's get you set up.
-      * We'll install polywrap at: $POLYWRAP_DESTDIR
-      * Everything Polywrap installs goes there.
-      * (we won't touch anything else)
 
-      > docs https://github.com/polywrap/cli/blob/origin-dev/packages/cli/README.md#installation
-			EoMD
+# Hi 👋 Welcome to Polywrap!
+* Let's get you set up.
+* We'll install polywrap at: $POLYWRAP_DESTDIR
+* Everything Polywrap installs goes there.
+* (we won't touch anything else)
 
-    if test -z "$POLYWRAP_YES"; then
+> docs https://github.com/polywrap/cli/blob/origin-dev/packages/cli/README.md#installation
+EoMD
+
+    if test -n "$POLYWRAP_YES"; then
       choice="1"
     else
       echo  #spacer
@@ -183,10 +191,10 @@ welcome() {
 
     if [ "$choice" != "1" ]; then
         cat <<-EoMD
-            # aborting
-            Aborting! No changes were made.
-            Check out https://github.com/polywrap/cli/blob/origin-dev/packages/cli/README for more info
-				EoMD
+
+# Aborting! No changes were made.
+> Check out https://github.com/polywrap/cli/blob/origin-dev/packages/cli/README for more info
+EoMD
         echo  #spacer
         exit 1
     fi
@@ -200,10 +208,10 @@ get_polywrap_version() {
 
 	v_sh="$(mktemp)"
 	cat <<-EoMD >"$v_sh"
-		$CURL "https://raw.githubusercontent.com/polywrap/cli/origin-dev/VERSION" | head -n1 > "$v_sh"
-		EoMD
+$CURL "https://raw.githubusercontent.com/polywrap/cli/origin-dev/VERSION" | head -n1 > "$v_sh"
+EoMD
 
-	echo "determining polywrap version"
+	echo "Determining polywrap version"
 	sh "$v_sh"
 
 	POLYWRAP_VERSION="$(cat "$v_sh")"
@@ -212,6 +220,8 @@ get_polywrap_version() {
 		echo "failed to get the latest version" >&2
 		exit 1
 	fi
+
+	echo "Latest polywrap version: $POLYWRAP_VERSION"
 }
 
 fix_links() {
@@ -262,8 +272,8 @@ install() {
 
 check_path() {
     cat <<-EoMD
-      Should we add $POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MAJOR/bin to your PATH?
-			EoMD
+Should we add $POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MAJOR/bin to your PATH?
+EoMD
 
     if test -z "$POLYWRAP_YES"; then
       choice="1"
@@ -293,18 +303,18 @@ check_path() {
 		else
 			echo  #spacer
 			cat <<-EoMD
-				> sudo command not found.
-				> try installing sudo
-				EoMD
+> sudo command not found.
+> try installing sudo
+EoMD
 		fi
 
 		if ! command -v polywrap >/dev/null
 		then
 			echo  #spacer
-			gum_func format -- <<-EoMD
-				> It seems \`/usr/local/bin\` isn’t in your PATH, or we couldn't write to it.
-				\`PATH=$PATH\`
-				EoMD
+			cat -- <<-EoMD
+> It seems \`/usr/local/bin\` isn’t in your PATH, or we couldn't write to it.
+\`PATH=$PATH\`
+EoMD
 		fi
 	fi
 
@@ -335,13 +345,13 @@ install)
 				echo "$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MAJOR/bin" >> "$GITHUB_PATH"
 			fi
 			cat -- <<-EoMD
-				# You’re all set!
-				EoMD
+# You’re all set!
+EoMD
 	elif test -n "$POLYWRAP_IS_CURRENT"; then
 		cat <<-EoMD
-			# The latest version of polywrap is already installed
-			> $POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/polywrap
-			EoMD
+# The latest version of polywrap is already installed
+> $POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/polywrap
+EoMD
 	fi
 	echo  #spacer
 	;;
