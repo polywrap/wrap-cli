@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# adapted from https://github.com/teaxyz/setup/blob/main/install.sh
+# Adapted from https://github.com/teaxyz/setup/blob/main/install.sh
 
 set -e
 set -o noglob
@@ -61,17 +61,13 @@ prepare() {
 		POLYWRAP_OSARCH=macos-arm64;;
 	Darwin/x86_64)
 		POLYWRAP_OSARCH=macos-x64;;
-	Linux/arm64|Linux/aarch64)
+	Linux/arm64|Linux/aarch64|CYGWIN_NT-10.0/arm64|MSYS_NT-10.0/arm64)
 		POLYWRAP_OSARCH=linux-arm64;;
-	Linux/x86_64)
+	Linux/x86_64|CYGWIN_NT-10.0/x86_64|MSYS_NT-10.0/x86_64)
 		POLYWRAP_OSARCH=linux-x64;;
-  CYGWIN_NT-10.0/arm64|MSYS_NT-10.0/arm64)
-    POLYWRAP_OSARCH=win-arm64;;
-  CYGWIN_NT-10.0/x86_64|MSYS_NT-10.0/x86_64)
-    POLYWRAP_OSARCH=win-x64;;
 	*)
 		echo "polywrap: error: (currently) unsupported OS or architecture ($HW_TARGET)" >&2
-		echo "let’s talk about it: https://discord.com/invite/Z5m88a5qWu" >&2
+		echo "Let’s talk about it: https://discord.com/invite/Z5m88a5qWu" >&2
 		exit 1;;
 	esac
 
@@ -79,13 +75,22 @@ prepare() {
 		# update existing installation if found
 		if command -v polywrap >/dev/null; then
 			set +e
-			POLYWRAP_DESTDIR="$(which polywrap)"
-			echo Found polywrap in $POLYWRAP_DESTDIR
+      if [ "$(uname)" = "Darwin" ]; then
+          POLYWRAP_DESTDIR=$(stat -f%Y "$(which polywrap)")
+      else
+          POLYWRAP_DESTDIR=$(readlink -f "$(which polywrap)")
+      fi
+      POLYWRAP_DESTDIR=$(dirname "$POLYWRAP_DESTDIR")
+      # reverse path, split on "/polywrap/" to get the last occurrence, take the second part, reverse again
+      # this makes sure we get the correct path even if a user or destination folder is named polywrap
+      POLYWRAP_DESTDIR=$(echo "$POLYWRAP_DESTDIR" | rev | awk -F'/parwylop/' '{print $2}' | rev)
+
+      echo Found polywrap in $POLYWRAP_DESTDIR
+
 			if test $? -eq 0 -a -n "$POLYWRAP_DESTDIR"; then
 			  case "$POLYWRAP_DESTDIR" in
-          */.yarn/*|*/.npm/*)
-            echo #spacer
-            echo Warning: The existing installation is managed by a package manager. If you continue, this script will create a separate installation.
+          */.yarn/*|*/.npm/*|*/node_modules/*)
+            echo The existing installation is managed by a JavaScript package manager. If you continue, this script will create a separate installation that may conflict with it.
             unset POLYWRAP_DESTDIR
             ;;
           *)
@@ -108,21 +113,10 @@ prepare() {
 		fi
 	fi
 
-	# be portable
-	case "$POLYWRAP_DESTDIR" in
-		"$HOME"/*)
-			POLYWRAP_DESTDIR_WRITABLE="\$HOME${POLYWRAP_DESTDIR#$HOME}"
-			;;
-		*)
-			POLYWRAP_DESTDIR_WRITABLE="$POLYWRAP_DESTDIR"
-			;;
-	esac
-
 	if test -z "$CURL"; then
 		if command -v curl >/dev/null; then
 			CURL="curl -Ssf"
 		else
-			# how they got here without curl: we dunno
 			echo "polywrap: error: you need curl (or set \`\$CURL\`)" >&2
 			exit 1
 		fi
@@ -144,23 +138,28 @@ EoMD
     if test -n "$POLYWRAP_YES"; then
       choice="1"
     else
-      echo  #spacer
-      echo "Let's gooooo! 🚀"
-      echo "1) install polywrap"
-      echo "2) cancel"
-      read -p "Choice: " choice
+      cat <<-EoMD
+
+Let's gooooo! 🚀
+1) Install polywrap
+2) Cancel
+EoMD
+      printf "Choice: "
+      read -r choice
     fi
 
     if [ "$choice" != "1" ]; then
         cat <<-EoMD
 
 # Aborting! No changes were made.
-> Check out https://github.com/polywrap/cli/blob/origin-dev/packages/cli/README for more info
+> Learn more about Polywrap at https://docs.polywrap.io/
 EoMD
         echo  #spacer
         exit 1
     fi
     unset choice
+
+    echo #spacer
 }
 
 get_polywrap_version() {
@@ -183,7 +182,7 @@ EoMD
 		exit 1
 	fi
 
-	POLYWRAP_VERSION_MINOR="$(echo "$POLYWRAP_VERSION" | cut -d. -f1-2)"
+	POLYWRAP_VERSION_MAJOR="$(echo "$POLYWRAP_VERSION" | cut -d. -f1)"
 
 	echo "Latest polywrap version: v$POLYWRAP_VERSION"
 }
@@ -209,18 +208,22 @@ fix_links() {
 
 install() {
 	if test -n "$ALREADY_INSTALLED"; then
-		TITLE="updating to polywrap v$POLYWRAP_VERSION"
+		TITLE="Updating to polywrap v$POLYWRAP_VERSION"
 	else
-		TITLE="fetching polywrap v$POLYWRAP_VERSION"
+		TITLE="Fetching polywrap v$POLYWRAP_VERSION"
 	fi
 
-	mkdir -p "$POLYWRAP_DESTDIR"
-	POLYWRAP_DESTDIR="$(cd $POLYWRAP_DESTDIR && pwd)"  # we need this PATH to be an absolute path for later stuff
+	mkdir -p "$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/"
+	POLYWRAP_DESTDIR="$(cd "$POLYWRAP_DESTDIR" && pwd)"  # we need this PATH to be an absolute path for later stuff
 	POLYWRAP_TMP_SCRIPT="$(mktemp)"
 	URL="https://github.com/polywrap/cli/releases/download/$POLYWRAP_VERSION/polywrap-$POLYWRAP_OSARCH"
-	echo "set -e; $CURL -L '$URL' -o '$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/'" > "$POLYWRAP_TMP_SCRIPT"
+	echo "set -e; $CURL -L '$URL' -o '$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/polywrap-$POLYWRAP_OSARCH'" > "$POLYWRAP_TMP_SCRIPT"
 	echo "$TITLE"
 	sh "$POLYWRAP_TMP_SCRIPT"
+
+  POLYWRAP_TMP_SCRIPT="$(mktemp)"
+  echo "chmod +x '$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/polywrap-$POLYWRAP_OSARCH';" > "$POLYWRAP_TMP_SCRIPT"
+  sh "$POLYWRAP_TMP_SCRIPT"
 
 	fix_links
 
@@ -228,20 +231,22 @@ install() {
 		echo -- "Successfully installed \`$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/polywrap-$POLYWRAP_OSARCH\`"
 	fi
 
-	POLYWRAP_EXENAME="$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MINOR/bin/polywrap-$POLYWRAP_OSARCH"
-
-	echo  #spacer
+	POLYWRAP_EXENAME="$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MAJOR/bin/polywrap-$POLYWRAP_OSARCH"
 }
 
 check_path() {
-    if test -z "$POLYWRAP_YES"; then
+    if test -n "$POLYWRAP_YES"; then
       choice="1"
     else
-      echo  #spacer
-      echo Should we add $POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MINOR/bin to your PATH?
-      echo "1) Yes"
-      echo "2) Skip"
-      read -p "Choice: " choice
+      cat <<-EoMD
+
+Should we add $POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MAJOR/bin to your PATH?
+This may require your root password.
+1) Yes
+2) Skip
+EoMD
+      printf "Choice: "
+      read -r choice
     fi
 
   if [ "$choice" = "1" ]; then
@@ -254,11 +259,13 @@ check_path() {
 		then
 			mkdir -p /usr/local/bin
 			ln -sf "$POLYWRAP_EXENAME" /usr/local/bin/polywrap
+			echo "Added PATH alias at \`/usr/local/bin/polywrap\`"
 		elif command -v sudo >/dev/null
 		then
 			sudo --reset-timestamp
 			sudo mkdir -p /usr/local/bin
 			sudo ln -sf "$POLYWRAP_EXENAME" /usr/local/bin/polywrap
+			echo "Added PATH alias at \`/usr/local/bin/polywrap\`"
 		else
 			echo  #spacer
 			cat <<-EoMD
@@ -291,7 +298,7 @@ if ! test -f "$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION/bin/polywrap-$POLYWR
 else
 	fix_links  # be proactive in repairing the user installation just in case that's what they ran this for
 	POLYWRAP_IS_CURRENT=1
-	POLYWRAP_EXENAME="$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MINOR/bin/polywrap-$POLYWRAP_OSARCH"
+	POLYWRAP_EXENAME="$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MAJOR/bin/polywrap-$POLYWRAP_OSARCH"
 fi
 
 case $MODE in
@@ -300,11 +307,9 @@ install)
 			check_path
 			if test -n "$GITHUB_ACTIONS"; then
 				# if the user did call us directly from GHA may as well help them out
-				echo "$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MINOR/bin" >> "$GITHUB_PATH"
+				echo "$POLYWRAP_DESTDIR/polywrap/v$POLYWRAP_VERSION_MAJOR/bin" >> "$GITHUB_PATH"
 			fi
-			cat -- <<-EoMD
-# You’re all set!
-EoMD
+			echo "You’re all set!"
 	elif test -n "$POLYWRAP_IS_CURRENT"; then
 		cat <<-EoMD
 # The latest version of polywrap is already installed
@@ -322,7 +327,7 @@ exec)
 		echo  #spacer
 	else
 		export PATH="$POLYWRAP_PREFIX/polywrap/v*/bin:$PATH"
-		exec $POLYWRAP_EXENAME "$@"
+		exec "$POLYWRAP_EXENAME" "$@"
 	fi
 	;;
 esac
