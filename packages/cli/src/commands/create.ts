@@ -34,7 +34,7 @@ export const supportedLangs = {
     "typescript",
     "interface",
   ] as const,
-  app: ["typescript", "python"] as const,
+  app: ["typescript", "python", "rust", "android", "ios"] as const,
   plugin: ["typescript", "rust", "python"] as const,
 };
 

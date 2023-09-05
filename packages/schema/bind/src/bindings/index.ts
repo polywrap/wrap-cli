@@ -53,6 +53,10 @@ export function getGenerateBindingFn(
       return WrapBindgen.getGenerateBindingFn(
         "wrapscan.io/polywrap/app-python-abi-bindgen@1"
       );
+    case "app-rs":
+      return WrapBindgen.getGenerateBindingFn(
+        "wrapscan.io/polywrap/app-rust-abi-bindgen@1"
+      );
     case "app-swift":
       return WrapBindgen.getGenerateBindingFn(
         "wrapscan.io/polywrap/app-swift-abi-bindgen@1"

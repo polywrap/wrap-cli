@@ -1,0 +1,10 @@
+{
+  "name": "template-app-rust",
+  "private": true,
+  "scripts": {
+    "codegen": "npx polywrap codegen"
+  },
+  "devDependencies": {
+    "polywrap": "0.11.2"
+  }
+}

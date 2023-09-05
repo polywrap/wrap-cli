@@ -20,7 +20,7 @@ Commands:
                                       assemblyscript, rust, golang, typescript,
                                       interface
   app [options] <language> <name>     Create a Polywrap application. langs:
-                                      typescript, python
+                                      typescript, python, rust, android, ios
   plugin [options] <language> <name>  Create a Polywrap plugin. langs:
                                       typescript, rust, python
   template [options] <url> <name>     Download template from a URL. formats:
