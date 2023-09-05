@@ -1,6 +1,7 @@
 {
-  "name": "ts-wrap-template",
-  "version": "1.0.0",
+  "name": "template-wasm-ts",
+  "version": "0.11.2",
+  "private": true,
   "description": "",
   "main": "build/index.js",
   "bin": {

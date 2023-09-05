@@ -2,9 +2,9 @@ import {
   displayPath,
   intlMsg,
   loadEnvironmentVariables,
-  PolywrapManifestLanguage,
   Logger,
   logActivity,
+  PolywrapBuildLanguage,
 } from "../../../";
 
 import {
@@ -67,7 +67,7 @@ export const defaultBuildManifestFiles = [
 ];
 
 export async function loadBuildManifest(
-  language: PolywrapManifestLanguage,
+  language: PolywrapBuildLanguage,
   manifestPath: string,
   logger: Logger
 ): Promise<BuildManifest> {

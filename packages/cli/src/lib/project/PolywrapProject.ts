@@ -6,6 +6,7 @@ import {
   isPolywrapManifestLanguage,
   loadBuildManifest,
   loadPolywrapManifest,
+  PolywrapBuildLanguage,
   PolywrapManifestLanguage,
   polywrapManifestLanguages,
   polywrapManifestLanguageToBindLanguage,
@@ -128,6 +129,18 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     return language as PolywrapManifestLanguage;
   }
 
+  public async getBuildLanguage(): Promise<PolywrapBuildLanguage> {
+    const manifestLanguage = await this.getManifestLanguage();
+
+    if (manifestLanguage === "interface") {
+      throw new Error(`Cannot build an interface project.`);
+    }
+
+    return manifestLanguage === "wasm/typescript"
+      ? "wasm/javascript"
+      : manifestLanguage;
+  }
+
   /// Schema
 
   public async getSchemaNamedPath(): Promise<string> {
@@ -206,7 +219,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   public async getBuildManifest(): Promise<BuildManifest> {
     if (!this._buildManifest) {
       const buildManifestPath = await this.getBuildManifestPath();
-      const language = await this.getManifestLanguage();
+      const language = await this.getBuildLanguage();
 
       this._buildManifest = await loadBuildManifest(
         language,

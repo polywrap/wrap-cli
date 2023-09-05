@@ -11,7 +11,8 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
 
   public async buildSources(): Promise<void> {
     const run = async () => {
-      const bindLanguage = await this.project.getManifestLanguage();
+      const bindLanguage = await this.project.getBuildLanguage();
+
       const buildManifest = await this.project.getBuildManifest();
       const buildManifestConfig = buildManifest.config as BuildManifestConfig;
 

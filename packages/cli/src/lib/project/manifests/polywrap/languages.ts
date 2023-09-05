@@ -10,9 +10,20 @@ export const polywrapManifestLanguages = {
   interface: "interface",
 };
 
+export const polywrapBuildLanguages = {
+  "wasm/assemblyscript": "wasm/assemblyscript",
+  "wasm/rust": "wasm/rust",
+  "wasm/golang": "wasm/golang",
+  "wasm/javascript": "wasm/javascript",
+};
+
 export type PolywrapManifestLanguages = typeof polywrapManifestLanguages;
 
 export type PolywrapManifestLanguage = keyof PolywrapManifestLanguages;
+
+export type PolywrapBuildLanguages = typeof polywrapBuildLanguages;
+
+export type PolywrapBuildLanguage = keyof PolywrapBuildLanguages;
 
 export function isPolywrapManifestLanguage(
   language: string

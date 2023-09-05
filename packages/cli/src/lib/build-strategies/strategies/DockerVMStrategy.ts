@@ -17,7 +17,9 @@ import fse from "fs-extra";
 import path from "path";
 import Mustache from "mustache";
 
-type BuildableLanguage = Exclude<PolywrapManifestLanguage, "interface">;
+type BuildableLanguage =
+  | Exclude<PolywrapManifestLanguage, "interface" | "wasm/typescript">
+  | "wasm/javascript";
 const DEFAULTS_DIR = path.join(
   __dirname,
   "..",
@@ -48,7 +50,7 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
     baseImage: "polywrap/vm-base-go",
     version: "0.1.6",
   },
-  "wasm/typescript": {
+  "wasm/javascript": {
     defaultIncludes: [],
     baseImage: "polywrap/vm-base-js",
     version: "0.1.6",
@@ -103,7 +105,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         );
       });
 
-      const language = (await this.project.getManifestLanguage()) as BuildableLanguage;
+      const language = (await this.project.getBuildLanguage()) as BuildableLanguage;
 
       if (buildManifestConfig.polywrap_linked_packages) {
         if (fse.existsSync(this._volumePaths.linkedPackages)) {
@@ -139,6 +141,19 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
             }
           );
         });
+      }
+
+      // TODO: come up with more general solution for this
+      // For JS we need to copy the script file; which may be at root lvl
+      if (language === "wasm/javascript") {
+        // validated by buildManifest manifest validation
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const scriptFile = buildManifest.config!.scriptFile as string;
+
+        fse.copyFileSync(
+          path.join(manifestDir, scriptFile),
+          path.join(this._volumePaths.project, scriptFile)
+        );
       }
 
       // Copy sources and build
