@@ -23,7 +23,7 @@ export function getGenerateBindingFn(
       return Golang.Wasm.generateBinding;
     case "wrap-ts":
       return WrapBindgen.getGenerateBindingFn(
-        "wrap://http/http.wrappers.dev/u/test/wrap-typescript-wrap-abi-bindgen"
+        "wrapscan.io/polywrap/wrap-typescript-abi-bindgen@1"
       );
     case "plugin-ts":
       return WrapBindgen.getGenerateBindingFn(
