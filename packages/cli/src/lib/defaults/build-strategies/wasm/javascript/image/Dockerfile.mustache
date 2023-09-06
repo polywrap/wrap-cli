@@ -1,9 +1,14 @@
 FROM ubuntu:latest
+# Install curl and git
 RUN apt-get update && apt-get install -y curl git
 
+# Download and install pwrup
 RUN curl -L https://raw.githubusercontent.com/polywrap/pwr/main/pwrup/install | bash
+# Source bash and use pwrup to install pwr
 RUN /bin/bash -i -c "source ~/.bashrc; pwrup"
 
 WORKDIR /project
+# Copy the script file to build
 COPY {{scriptFile}} ./wrap.js
+# Use pwr to build the script
 RUN /bin/bash -i -c "pwr js build -f ./wrap.js -o build"

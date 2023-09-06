@@ -8,7 +8,7 @@ import { BuildStrategyConfig, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
 import {
   BuildManifestConfig,
-  PolywrapManifestLanguage,
+  BuildableLanguage,
   PolywrapProject,
 } from "../../project";
 import { logActivity } from "../../logging";
@@ -17,9 +17,6 @@ import fse from "fs-extra";
 import path from "path";
 import Mustache from "mustache";
 
-type BuildableLanguage =
-  | Exclude<PolywrapManifestLanguage, "interface" | "wasm/typescript">
-  | "wasm/javascript";
 const DEFAULTS_DIR = path.join(
   __dirname,
   "..",
