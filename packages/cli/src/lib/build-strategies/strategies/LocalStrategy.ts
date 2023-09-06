@@ -18,7 +18,8 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
 
       if (buildManifestConfig.polywrap_module) {
         const polywrapModuleDir = buildManifestConfig.polywrap_module.dir;
-        const polywrapModuleFilePath = buildManifestConfig.polywrap_module.moduleFilePath;
+        const polywrapModuleFilePath =
+          buildManifestConfig.polywrap_module.moduleFilePath;
         let scriptPath = `${__dirname}/../../defaults/build-strategies/${bindLanguage}/${this.getStrategyName()}/local.sh`;
 
         if (bindLanguage.startsWith("wasm")) {
