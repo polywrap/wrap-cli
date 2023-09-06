@@ -9,6 +9,6 @@ RUN /bin/bash -i -c "source ~/.bashrc; pwrup"
 
 WORKDIR /project
 # Copy the script file to build
-COPY {{scriptFile}} ./wrap.js
+COPY {{#polywrap_module}}{{moduleFilePath}}{{/polywrap_module}} ./wrap.js
 # Use pwr to build the script
 RUN /bin/bash -i -c "pwr js build -f ./wrap.js -o build"

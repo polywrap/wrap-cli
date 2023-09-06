@@ -4,6 +4,4 @@ project:
   type: wasm/typescript
 source:
   schema: ./polywrap.graphql
-  module: ./src/index.ts
-extensions:
-  build: ./polywrap.build.yaml
+  module: ./bundled/wrap.js

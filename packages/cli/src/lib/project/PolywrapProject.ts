@@ -44,6 +44,7 @@ export interface BuildManifestConfig {
   polywrap_module?: {
     name: string;
     dir: string;
+    moduleFilePath: string;
   };
   // eslint-disable-next-line @typescript-eslint/naming-convention
   polywrap_linked_packages?: {
@@ -255,10 +256,12 @@ export class PolywrapProject extends Project<PolywrapManifest> {
           })
         ),
       };
+
       if (module) {
         defaultConfig["polywrap_module"] = {
           name: "module",
-          dir: normalizePath(module),
+          dir: normalizePath(module.dir),
+          moduleFilePath: module.moduleFilePath,
         };
       }
 
@@ -358,11 +361,16 @@ export class PolywrapProject extends Project<PolywrapManifest> {
 
   /// Private Helpers
 
-  private async _getModule(): Promise<string | undefined> {
+  private async _getModule(): Promise<
+    { moduleFilePath: string; dir: string } | undefined
+  > {
     const manifest = await this.getManifest();
 
     if (manifest.source.module) {
-      return path.dirname(manifest.source.module).replace("./", "");
+      return {
+        moduleFilePath: manifest.source.module,
+        dir: path.dirname(manifest.source.module).replace("./", ""),
+      };
     }
 
     return undefined;

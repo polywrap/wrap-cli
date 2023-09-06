@@ -18,6 +18,7 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
 
       if (buildManifestConfig.polywrap_module) {
         const polywrapModuleDir = buildManifestConfig.polywrap_module.dir;
+        const polywrapModuleFilePath = buildManifestConfig.polywrap_module.moduleFilePath;
         let scriptPath = `${__dirname}/../../defaults/build-strategies/${bindLanguage}/${this.getStrategyName()}/local.sh`;
 
         if (bindLanguage.startsWith("wasm")) {
@@ -40,7 +41,13 @@ export class LocalBuildStrategy extends BuildStrategy<void> {
             ).then(() =>
               runCommand(
                 scriptPath,
-                [polywrapModuleDir, this.outputDir],
+                [
+                  polywrapModuleDir,
+                  this.outputDir,
+                  // TODO: this is an arg for JS wraps only. This should be
+                  // removed in favor of a more general sources passing solution
+                  polywrapModuleFilePath,
+                ],
                 logger,
                 undefined,
                 process.cwd()

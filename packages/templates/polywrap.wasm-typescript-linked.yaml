@@ -5,5 +5,3 @@ project:
 source:
   schema: ./polywrap.graphql
   module: ./src/index.ts
-extensions:
-  build: /polywrap.wasm-typescript-linked.build.yaml

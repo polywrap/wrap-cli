@@ -140,29 +140,27 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         });
       }
 
-      // TODO: come up with more general solution for this
-      // For JS we need to copy the script file; which may be at root lvl
-      if (language === "wasm/javascript") {
-        // validated by buildManifest manifest validation
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const scriptFile = buildManifest.config!.scriptFile as string;
-
-        fse.copyFileSync(
-          path.join(manifestDir, scriptFile),
-          path.join(this._volumePaths.project, scriptFile)
-        );
-      }
-
       // Copy sources and build
       if (buildManifestConfig.polywrap_module) {
-        const sourcesSubDirectory =
-          this.overrides?.sourcesSubDirectory ||
-          buildManifestConfig.polywrap_module.dir;
+        // TODO: find more general solution: sources array or glob
+        // JS needs to copy a single file; others may need several or dirs
+        if (language === "wasm/javascript") {
+          const moduleFilePath =
+            buildManifestConfig.polywrap_module.moduleFilePath;
+          fse.copyFileSync(
+            moduleFilePath,
+            path.join(this._volumePaths.project, moduleFilePath)
+          );
+        } else {
+          const sourcesSubDirectory =
+            this.overrides?.sourcesSubDirectory ||
+            buildManifestConfig.polywrap_module.dir;
 
-        fse.copySync(
-          path.join(manifestDir, sourcesSubDirectory),
-          path.join(this._volumePaths.project, sourcesSubDirectory)
-        );
+          fse.copySync(
+            path.join(manifestDir, sourcesSubDirectory),
+            path.join(this._volumePaths.project, sourcesSubDirectory)
+          );
+        }
 
         const scriptTemplate = fse.readFileSync(
           path.join(
