@@ -8,7 +8,7 @@ jobs:
   Build-Binaries:
     name: Build binaries
     if: |
-      github.event.pull_request.user.login == 'dorgjelli' &&
+      github.event.pull_request.user.login == 'polywrap-build-bot' &&
       github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     strategy:
@@ -99,7 +99,7 @@ jobs:
   Publish-GitHub:
     name: Publish source to github.com
     if: |
-      github.event.pull_request.user.login == 'dorgjelli' &&
+      github.event.pull_request.user.login == 'polywrap-build-bot' &&
       github.event.pull_request.merged == true
     needs: Build-Binaries
     runs-on: ubuntu-latest
