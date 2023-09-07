@@ -3,12 +3,14 @@ package types
 type {{#toUpper}}{{type}}{{/toUpper}} int32
 
 const (
+{{#enumConstants}}
 {{#stuctProps}}
 {{#constants}}
-{{#toUpper}}{{type}}{{/toUpper}}{{.}} = iota
+{{#toUpper}}{{type}}{{/toUpper}}{{.}}
 {{/constants}}
-{{#toFirstLower}}{{type}}{{/toFirstLower}}Max = iota
+{{#toFirstLower}}{{type}}{{/toFirstLower}}Max
 {{/stuctProps}}
+{{/enumConstants}}
 )
 
 func Sanitize{{#toUpper}}{{type}}{{/toUpper}}Value(value int32) {

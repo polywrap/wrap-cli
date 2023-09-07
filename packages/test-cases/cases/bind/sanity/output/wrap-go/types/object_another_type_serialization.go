@@ -63,23 +63,32 @@ func readAnotherType(reader msgpack.Read) *AnotherType {
 		switch field {
 		case "prop":
 			reader.Context().Push(field, "*string", "type found, reading property")
+			var ( value *string )
+			value = nil
 			if !reader.IsNil() {
 				v := reader.ReadString()
-				_prop = &v
+				value = &v
 			}
+			_prop = value
 			reader.Context().Pop()
 		case "circular":
 			reader.Context().Push(field, "*CustomType", "type found, reading property")
+			var ( value *CustomType )
+			value = nil
 			if v := CustomTypeRead(reader); v != nil {
-				_circular = v
+				value = v
 			}
+			_circular = value
 			reader.Context().Pop()
 		case "const":
 			reader.Context().Push(field, "*string", "type found, reading property")
+			var ( value *string )
+			value = nil
 			if !reader.IsNil() {
 				v := reader.ReadString()
-				_const = &v
+				value = &v
 			}
+			_const = value
 			reader.Context().Pop()
 		}
 		reader.Context().Pop()
