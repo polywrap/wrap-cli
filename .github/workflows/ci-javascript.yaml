@@ -339,7 +339,7 @@ jobs:
           mv wrappers packages/test-cases/cases
 
       - name: Build CLI standalone package for testing
-        run: yarn pkg:dev
+        run: yarn pkg:ci
         working-directory: ./packages/cli
 
       - name: Test CLI standalone package
