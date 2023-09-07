@@ -82,6 +82,7 @@
   "commands_codegen_description": "Generate Code For Polywrap Projects",
   "commands_codegen_error_domain": "domain",
   "commands_codegen_error_optionMissingArgument": "{option} option missing {argument} argument",
+  "commands_codegen_error_embedAppOnly": "The --embed option is currently only available for app projects",
   "commands_codegen_options_codegen": "Output directory for the generated code (default: {default})",
   "commands_codegen_options_e": "Locally embed Wasm wraps",
   "commands_codegen_options_h": "Show usage information",

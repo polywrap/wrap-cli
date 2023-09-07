@@ -141,6 +141,12 @@ async function run(options: Required<CodegenCommandOptions>) {
   });
   const abi = await schemaComposer.getComposedAbis();
 
+  const projectLang = await project.getManifestLanguage();
+  if (embed && !projectLang.startsWith("app")) {
+    logger.error(intlMsg.commands_codegen_error_embedAppOnly());
+    process.exit(1);
+  }
+
   const embeds: WasmEmbed[] | undefined =
     embed && abi.importedModuleTypes
       ? await getWasmEmbeds(abi.importedModuleTypes, client, logger)
