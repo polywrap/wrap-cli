@@ -147,7 +147,10 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         if (language === "wasm/javascript") {
           const moduleFilePath =
             buildManifestConfig.polywrap_module.moduleFilePath;
-          const outputPath = path.join(this._volumePaths.project, moduleFilePath);
+          const outputPath = path.join(
+            this._volumePaths.project,
+            moduleFilePath
+          );
           const outputDir = path.dirname(outputPath);
           fse.mkdirSync(outputDir, { recursive: true });
           fse.copyFileSync(moduleFilePath, outputPath);
