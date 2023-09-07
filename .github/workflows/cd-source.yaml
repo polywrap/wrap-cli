@@ -83,14 +83,18 @@ jobs:
         if: env.TAG_EXISTS == 'false'
         working-directory: ./packages/cli
         run: |
-          npx pkg --config ./package.json --target=${{ matrix.node-version }} --output ./standalone-binaries/${{ matrix.os }}-${{ matrix.arch }}/polywrap --compress Brotli ./bin/polywrap
+          npx pkg --config ./package.json --target=${{ matrix.node-version }}-${{ matrix.os }}-${{ matrix.arch }} --output ./standalone-binaries/${{ matrix.os }}-${{ matrix.arch }}/polywrap --compress Brotli ./bin/polywrap
+
+      - name: Extract binary path
+        if: env.TAG_EXISTS == 'false'
+        run: echo STANDALONE_BINARY_PATH=$(stat ./packages/cli/standalone-binaries/${{ matrix.ox }}-${{ matrix.arch }}/polywrap* | awk '/File:/ {print $2}') >> $GITHUB_ENV
 
       - name: Upload Artifacts
         if: env.TAG_EXISTS == 'false'
         uses: actions/upload-artifact@v3
         with:
           name: cli-binary-${{ matrix.os }}-${{ matrix.arch }}
-          path: ${{ steps.pkg-action.outputs.file }}
+          path: ${{ env.STANDALONE_BINARY_PATH }}
 
   Publish-GitHub:
     name: Publish source to github.com
