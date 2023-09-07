@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "lib": ["es2020"],
+    "importHelpers": true,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "declaration": false,
+    "preserveSymlinks": true,
+    "preserveWatchOutput": true,
+    "pretty": false,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "sourceMap": true,
+    "outDir": "build",
+    "module": "ESNext",
+    "target": "ESNext",
+    "resolveJsonModule": true,
+    "strictNullChecks": true,
+  },
+  "include": ["./src/**/*.ts"],
+  "exclude": [
+    "./src/__tests__/**/*.ts"
+  ]
+}

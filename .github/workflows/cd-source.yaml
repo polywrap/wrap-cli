@@ -5,11 +5,106 @@ on:
     types: [closed]
 
 jobs:
+  Build-Binaries:
+    name: Build binaries
+    if: |
+      github.event.pull_request.user.login == 'polywrap-build-bot' &&
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch:
+          - x64
+          - arm64
+        node-version:
+          - node18
+        os:
+          - linux
+          - macos
+          - win
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Read VERSION into env.RELEASE_VERSION
+        run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
+
+      - name: Is Pre-Release
+        run: |
+          STR="${RELEASE_VERSION}"
+          SUB='pre.'
+          if [[ "$STR" == *"$SUB"* ]]; then
+            echo PRE_RELEASE=true >> $GITHUB_ENV
+          else
+            echo PRE_RELEASE=false >> $GITHUB_ENV
+          fi
+
+      - name: Check If Tag Exists
+        id: tag_check
+        shell: bash -ex {0}
+        run: |
+          GET_API_URL="https://api.github.com/repos/${{github.repository}}/git/ref/tags/${{env.RELEASE_VERSION}}"
+          http_status_code=$(curl -LI $GET_API_URL -o /dev/null -w '%{http_code}\n' -s \
+            -H "Authorization: token ${GITHUB_TOKEN}")
+          if [ "$http_status_code" -ne "404" ] ; then
+            echo TAG_EXISTS=true >> $GITHUB_ENV
+          else
+            echo TAG_EXISTS=false >> $GITHUB_ENV
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read .nvmrc into env.NVMRC
+        if: env.TAG_EXISTS == 'false'
+        run: echo NVMRC=$(cat .nvmrc) >> $GITHUB_ENV
+
+      - name: Setup Node.js
+        if: env.TAG_EXISTS == 'false'
+        uses: actions/setup-node@v1
+        with:
+          node-version: '${{env.NVMRC}}'
+
+      - name: Install Rust
+        if: env.TAG_EXISTS == 'false'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+
+      - name: Build CLI
+        if: env.TAG_EXISTS == 'false'
+        run: |
+          yarn install
+          yarn build
+
+      - name: Package into node binary
+        if: env.TAG_EXISTS == 'false'
+        uses: lando/pkg-action@v2
+        with:
+          entrypoint: ./packages/cli/bin/polywrap
+          config: ./packages/cli/package.json
+          options: --output ./packages/cli/standalone-binaries/${{ matrix.os }}-${{ matrix.arch }}/polywrap --compress Brotli
+          pkg: 5.8.1
+          upload: false
+          arch: ${{ matrix.arch }}
+          node-version: ${{ matrix.node-version }}
+          os: ${{ matrix.os }}
+
+      - name: Upload Artifacts
+        if: env.TAG_EXISTS == 'false'
+        uses: actions/upload-artifact@v3
+        with:
+          name: cli-binary-${{ matrix.os }}-${{ matrix.arch }}
+          path: ${{ steps.pkg-action.outputs.file }}
+
   Publish-GitHub:
     name: Publish source to github.com
     if: |
       github.event.pull_request.user.login == 'polywrap-build-bot' &&
       github.event.pull_request.merged == true
+    needs: Build-Binaries
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -62,20 +157,57 @@ jobs:
           github_repo: ${{ github.repository }}
           git_commit_sha: ${{ github.event.pull_request.merge_commit_sha }}
 
+      - name: Download Artifacts linux-x64
+        uses: actions/download-artifact@v3
+        with:
+          name: cli-binary-linux-x64
+          path: ./bin/linux-x64/
+
+      - name: Download Artifacts linux-arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: cli-binary-linux-arm64
+          path: ./bin/linux-arm64/
+
+      - name: Download Artifacts macos-x64
+        uses: actions/download-artifact@v3
+        with:
+          name: cli-binary-macos-x64
+          path: ./bin/macos-x64/
+
+      - name: Download Artifacts macos-arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: cli-binary-macos-arm64
+          path: ./bin/macos-arm64/
+
+      - name: Download Artifacts win-x64
+        uses: actions/download-artifact@v3
+        with:
+          name: cli-binary-win-x64
+          path: ./bin/win-x64/
+
+      - name: Download Artifacts win-arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: cli-binary-win-arm64
+          path: ./bin/win-arm64/
+
       - name: Create Release
         id: create_release
         if: env.PRE_RELEASE == 'false' && env.TAG_EXISTS == 'false' && github.event.pull_request.merged == true
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.RELEASE_VERSION }}
           # Copy Pull Request's tile and body to Release Note
-          release_name: ${{ github.event.pull_request.title }}
+          name: ${{ github.event.pull_request.title }}
           body: |
             ${{ github.event.pull_request.body }}
           draft: false
           prerelease: false
+          files: ./bin
 
       - uses: actions/github-script@0.8.0
         if: env.TAG_EXISTS == 'false'

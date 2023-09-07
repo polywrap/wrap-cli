@@ -53,7 +53,7 @@ export class DockerImageBuildStrategy extends BuildStrategy<BuildImageId> {
         buildManifest?.strategies?.image?.name ||
         generateDockerImageName(await this.project.getBuildUuid());
 
-      const language = await this.project.getManifestLanguage();
+      const language = await this.project.getBuildLanguage();
 
       const dockerfileTemplatePath = path.join(
         __dirname,

@@ -1,2 +1,3 @@
+export * from "./appendImportedTypes";
+export * from "./extractImportedTypes";
 export * from "./moduleNeedsTypes";
-export * from "./moduleNeedsImportedTypes";

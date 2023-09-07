@@ -12,7 +12,7 @@ export function runCommandSync(
 
   try {
     const stdout = execSync(`${command} ${args.join(" ")}`, {
-      cwd: __dirname,
+      cwd: process.cwd(),
       env: {
         ...process.env,
         ...env,
@@ -51,7 +51,7 @@ export async function runCommand(
     const childObj = exec(
       `${command} ${args.join(" ")}`,
       {
-        cwd: cwd ?? __dirname,
+        cwd: cwd ?? process.cwd(),
         env: {
           ...process.env,
           ...env,

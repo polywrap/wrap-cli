@@ -143,89 +143,109 @@ func readTestImport_Env(reader msgpack.Read) *TestImport_Env {
 		switch field {
 		case "object":
 			reader.Context().Push(field, "TestImport_AnotherObject", "type found, reading property")
+			var ( value TestImport_AnotherObject )
 			if v := TestImport_AnotherObjectRead(reader); v != nil {
-				_object = *v
+				value = *v
 			}
+			_object = value
 			_objectSet = true
 			reader.Context().Pop()
 		case "optObject":
 			reader.Context().Push(field, "*TestImport_AnotherObject", "type found, reading property")
+			var ( value *TestImport_AnotherObject )
+			value = nil
 			if v := TestImport_AnotherObjectRead(reader); v != nil {
-				_optObject = v
+				value = v
 			}
+			_optObject = value
 			reader.Context().Pop()
 		case "objectArray":
 			reader.Context().Push(field, "[]TestImport_AnotherObject", "type found, reading property")
+			var ( value []TestImport_AnotherObject )
 			if reader.IsNil() {
-				_objectArray = nil
+				value = nil
 			} else {
-				ln0 := reader.ReadArrayLength()
-				_objectArray = make([]TestImport_AnotherObject, ln0)
+				value = make([]TestImport_AnotherObject, reader.ReadArrayLength())
+				ln0 := uint32(len(value))
 				for i0 := uint32(0); i0 < ln0; i0++ {
 					if v := TestImport_AnotherObjectRead(reader); v != nil {
-						_objectArray[i0] = *v
+						value[i0] = *v
 					}
 				}
 			}
+			_objectArray = value
 			_objectArraySet = true
 			reader.Context().Pop()
 		case "optObjectArray":
 			reader.Context().Push(field, "[]*TestImport_AnotherObject", "type found, reading property")
+			var ( value []*TestImport_AnotherObject )
+			value = nil
 			if reader.IsNil() {
-				_optObjectArray = nil
+				value = nil
 			} else {
-				ln0 := reader.ReadArrayLength()
-				_optObjectArray = make([]*TestImport_AnotherObject, ln0)
+				value = make([]*TestImport_AnotherObject, reader.ReadArrayLength())
+				ln0 := uint32(len(value))
 				for i0 := uint32(0); i0 < ln0; i0++ {
 					if v := TestImport_AnotherObjectRead(reader); v != nil {
-						_optObjectArray[i0] = v
+						value[i0] = v
 					}
 				}
 			}
+			_optObjectArray = value
 			reader.Context().Pop()
 		case "en":
 			reader.Context().Push(field, "TestImport_Enum", "type found, reading property")
-			_en = TestImport_Enum(reader.ReadI32())
-			SanitizeTestImport_EnumValue(int32(_en))
+			var ( value TestImport_Enum )
+			value = TestImport_Enum(reader.ReadI32())
+			SanitizeTestImport_EnumValue(int32(value))
+			_en = value
 			_enSet = true
 			reader.Context().Pop()
 		case "optEnum":
 			reader.Context().Push(field, "*TestImport_Enum", "type found, reading property")
+			var ( value *TestImport_Enum )
+			value = nil
 			if !reader.IsNil() {
 				v := TestImport_Enum(reader.ReadI32())
 				SanitizeTestImport_EnumValue(int32(v))
-				_optEnum = &v
+				value = &v
 			}
+			_optEnum = value
 			reader.Context().Pop()
 		case "enumArray":
 			reader.Context().Push(field, "[]TestImport_Enum", "type found, reading property")
+			var ( value []TestImport_Enum )
 			if reader.IsNil() {
-				_enumArray = nil
+				value = nil
 			} else {
-				ln0 := reader.ReadArrayLength()
-				_enumArray = make([]TestImport_Enum, ln0)
+				value = make([]TestImport_Enum, reader.ReadArrayLength())
+				ln0 := uint32(len(value))
 				for i0 := uint32(0); i0 < ln0; i0++ {
-					_enumArray[i0] = TestImport_Enum(reader.ReadI32())
-					SanitizeTestImport_EnumValue(int32(_enumArray[i0]))
+					value[i0] = TestImport_Enum(reader.ReadI32())
+					SanitizeTestImport_EnumValue(int32(value[i0]))
 				}
 			}
+			_enumArray = value
 			_enumArraySet = true
 			reader.Context().Pop()
 		case "optEnumArray":
 			reader.Context().Push(field, "[]*TestImport_Enum", "type found, reading property")
+			var ( value []*TestImport_Enum )
+			value = nil
 			if reader.IsNil() {
-				_optEnumArray = nil
+				value = nil
 			} else {
-				ln0 := reader.ReadArrayLength()
-				_optEnumArray = make([]*TestImport_Enum, ln0)
+				value = make([]*TestImport_Enum, reader.ReadArrayLength())
+				ln0 := uint32(len(value))
 				for i0 := uint32(0); i0 < ln0; i0++ {
 					if !reader.IsNil() {
 						v := TestImport_Enum(reader.ReadI32())
 						SanitizeTestImport_EnumValue(int32(v))
-						_optEnumArray[i0] = &v
+						value[i0] = &v
 					}
 				}
 			}
+			_optEnumArray = value
 			reader.Context().Pop()
 		}
 		reader.Context().Pop()

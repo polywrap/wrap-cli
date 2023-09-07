@@ -1,3 +1,25 @@
+# Polywrap Origin (0.11.4)
+## Features
+**`polywrap` CLI:**
+* [PR-1888](https://github.com/polywrap/cli/pull/1888) **Build Wraps Using TypeScript**
+  * Create TypeScript wrap projects via `polywrap create wasm typescript my-wrap`
+* [PR-1879](https://github.com/polywrap/cli/pull/1879) + [PR-1889](https://github.com/polywrap/cli/pull/1889) **Standalone Binary Installer**
+  * The `polywrap` CLI can now be installed via a standalone binary.
+  * An `install.sh` script can now be found at the root of the repository. Usage:
+    ```bash
+    $ sh <(curl https://raw.githubusercontent.com/polywrap/cli/origin-dev/install.sh)
+
+    # Installs to `~/.polywrap`
+    # If polywrap is already installed, the script instead checks for updates
+    ```
+
+## Bugs
+**`polywrap-wasm-rs`**
+* [PR-1887](https://github.com/polywrap/cli/pull/1887) **Bump MsgPack Serde Version**
+
+**`@polywrap/schema-bind`**
+* [PR-1891](https://github.com/polywrap/cli/pull/1891) **Fix Various Golang -> Wrap Bindings**
+
 # Polywrap Origin (0.11.3)
 ## Features
 **`polywrap` CLI:**

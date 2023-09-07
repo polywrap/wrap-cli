@@ -1,7 +1,6 @@
 package module_wrapped
 
 import (
-	. "github.com/testorg/testrepo/module/wrap/imported/test_import"
 	. "github.com/testorg/testrepo/module/wrap/types"
 	"github.com/polywrap/go-wrap/msgpack"
 )
@@ -38,157 +37,182 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *ArgsModuleMethod {
 		switch field {
 		case "str":
 			reader.Context().Push(field, "string", "type found, reading property")
-			_str = reader.ReadString()
+			var ( value string )
+			value = reader.ReadString()
+			_str = value
 			_strSet = true
 			reader.Context().Pop()
 		case "optStr":
 			reader.Context().Push(field, "*string", "type found, reading property")
+			var ( value *string )
+			value = nil
 			if !reader.IsNil() {
 				v := reader.ReadString()
-				_optStr = &v
+				value = &v
 			}
+			_optStr = value
 			reader.Context().Pop()
 		case "en":
 			reader.Context().Push(field, "CustomEnum", "type found, reading property")
-			_en = CustomEnum(reader.ReadI32())
-			SanitizeCustomEnumValue(int32(_en))
+			var ( value CustomEnum )
+			value = CustomEnum(reader.ReadI32())
+			SanitizeCustomEnumValue(int32(value))
+			_en = value
 			_enSet = true
 			reader.Context().Pop()
 		case "optEnum":
 			reader.Context().Push(field, "*CustomEnum", "type found, reading property")
+			var ( value *CustomEnum )
+			value = nil
 			if !reader.IsNil() {
 				v := CustomEnum(reader.ReadI32())
 				SanitizeCustomEnumValue(int32(v))
-				_optEnum = &v
+				value = &v
 			}
+			_optEnum = value
 			reader.Context().Pop()
 		case "enumArray":
 			reader.Context().Push(field, "[]CustomEnum", "type found, reading property")
+			var ( value []CustomEnum )
 			if reader.IsNil() {
-				_enumArray = nil
+				value = nil
 			} else {
-				ln0 := reader.ReadArrayLength()
-				_enumArray = make([]CustomEnum, ln0)
+				value = make([]CustomEnum, reader.ReadArrayLength())
+				ln0 := uint32(len(value))
 				for i0 := uint32(0); i0 < ln0; i0++ {
-					_enumArray[i0] = CustomEnum(reader.ReadI32())
-					SanitizeCustomEnumValue(int32(_enumArray[i0]))
+					value[i0] = CustomEnum(reader.ReadI32())
+					SanitizeCustomEnumValue(int32(value[i0]))
 				}
 			}
+			_enumArray = value
 			_enumArraySet = true
 			reader.Context().Pop()
 		case "optEnumArray":
 			reader.Context().Push(field, "[]*CustomEnum", "type found, reading property")
+			var ( value []*CustomEnum )
+			value = nil
 			if reader.IsNil() {
-				_optEnumArray = nil
+				value = nil
 			} else {
-				ln0 := reader.ReadArrayLength()
-				_optEnumArray = make([]*CustomEnum, ln0)
+				value = make([]*CustomEnum, reader.ReadArrayLength())
+				ln0 := uint32(len(value))
 				for i0 := uint32(0); i0 < ln0; i0++ {
 					if !reader.IsNil() {
 						v := CustomEnum(reader.ReadI32())
 						SanitizeCustomEnumValue(int32(v))
-						_optEnumArray[i0] = &v
+						value[i0] = &v
 					}
 				}
 			}
+			_optEnumArray = value
 			reader.Context().Pop()
 		case "map":
 			reader.Context().Push(field, "map[string]int32", "type found, reading property")
+			var ( value map[string]int32 )
 			if reader.IsNil() {
-				_map = nil
+				value = nil
 			} else {
+				value = make(map[string]int32)
 				ln0 := reader.ReadMapLength()
-				_map = make(map[string]int32)
 				for j0 := uint32(0); j0 < ln0; j0++ {
 					i0 := reader.ReadString()
-					_map[i0] = reader.ReadI32()
+					value[i0] = reader.ReadI32()
 				}
 			}
+			_map = value
 			_mapSet = true
 			reader.Context().Pop()
 		case "mapOfArr":
 			reader.Context().Push(field, "map[string][]int32", "type found, reading property")
+			var ( value map[string][]int32 )
 			if reader.IsNil() {
-				_mapOfArr = nil
+				value = nil
 			} else {
+				value = make(map[string][]int32)
 				ln0 := reader.ReadMapLength()
-				_mapOfArr = make(map[string][]int32)
 				for j0 := uint32(0); j0 < ln0; j0++ {
 					i0 := reader.ReadString()
 					if reader.IsNil() {
-						_mapOfArr[i0] = nil
+						value[i0] = nil
 					} else {
-						ln1 := reader.ReadArrayLength()
-						_mapOfArr[i0] = make([]int32, ln1)
+						value[i0] = make([]int32, reader.ReadArrayLength())
+						ln1 := uint32(len(value[i0]))
 						for i1 := uint32(0); i1 < ln1; i1++ {
-							_mapOfArr[i0][i1] = reader.ReadI32()
+							value[i0][i1] = reader.ReadI32()
 						}
 					}
 				}
 			}
+			_mapOfArr = value
 			_mapOfArrSet = true
 			reader.Context().Pop()
 		case "mapOfMap":
 			reader.Context().Push(field, "map[string]map[string]int32", "type found, reading property")
+			var ( value map[string]map[string]int32 )
 			if reader.IsNil() {
-				_mapOfMap = nil
+				value = nil
 			} else {
+				value = make(map[string]map[string]int32)
 				ln0 := reader.ReadMapLength()
-				_mapOfMap = make(map[string]map[string]int32)
 				for j0 := uint32(0); j0 < ln0; j0++ {
 					i0 := reader.ReadString()
 					if reader.IsNil() {
-						_mapOfMap[i0] = nil
+						value[i0] = nil
 					} else {
+						value[i0] = make(map[string]int32)
 						ln1 := reader.ReadMapLength()
-						_mapOfMap[i0] = make(map[string]int32)
 						for j1 := uint32(0); j1 < ln1; j1++ {
 							i1 := reader.ReadString()
-							_mapOfMap[i0][i1] = reader.ReadI32()
+							value[i0][i1] = reader.ReadI32()
 						}
 					}
 				}
 			}
+			_mapOfMap = value
 			_mapOfMapSet = true
 			reader.Context().Pop()
 		case "mapOfObj":
 			reader.Context().Push(field, "map[string]AnotherType", "type found, reading property")
+			var ( value map[string]AnotherType )
 			if reader.IsNil() {
-				_mapOfObj = nil
+				value = nil
 			} else {
+				value = make(map[string]AnotherType)
 				ln0 := reader.ReadMapLength()
-				_mapOfObj = make(map[string]AnotherType)
 				for j0 := uint32(0); j0 < ln0; j0++ {
 					i0 := reader.ReadString()
 					if v := AnotherTypeRead(reader); v != nil {
-						_mapOfObj[i0] = *v
+						value[i0] = *v
 					}
 				}
 			}
+			_mapOfObj = value
 			_mapOfObjSet = true
 			reader.Context().Pop()
 		case "mapOfArrOfObj":
 			reader.Context().Push(field, "map[string][]AnotherType", "type found, reading property")
+			var ( value map[string][]AnotherType )
 			if reader.IsNil() {
-				_mapOfArrOfObj = nil
+				value = nil
 			} else {
+				value = make(map[string][]AnotherType)
 				ln0 := reader.ReadMapLength()
-				_mapOfArrOfObj = make(map[string][]AnotherType)
 				for j0 := uint32(0); j0 < ln0; j0++ {
 					i0 := reader.ReadString()
 					if reader.IsNil() {
-						_mapOfArrOfObj[i0] = nil
+						value[i0] = nil
 					} else {
-						ln1 := reader.ReadArrayLength()
-						_mapOfArrOfObj[i0] = make([]AnotherType, ln1)
+						value[i0] = make([]AnotherType, reader.ReadArrayLength())
+						ln1 := uint32(len(value[i0]))
 						for i1 := uint32(0); i1 < ln1; i1++ {
 							if v := AnotherTypeRead(reader); v != nil {
-								_mapOfArrOfObj[i0][i1] = *v
+								value[i0][i1] = *v
 							}
 						}
 					}
 				}
 			}
+			_mapOfArrOfObj = value
 			_mapOfArrOfObjSet = true
 			reader.Context().Pop()
 		}
@@ -270,45 +294,55 @@ func DeserializeObjectMethodArgs(argsBuf []byte) *ArgsObjectMethod {
 		switch field {
 		case "object":
 			reader.Context().Push(field, "AnotherType", "type found, reading property")
+			var ( value AnotherType )
 			if v := AnotherTypeRead(reader); v != nil {
-				_object = *v
+				value = *v
 			}
+			_object = value
 			_objectSet = true
 			reader.Context().Pop()
 		case "optObject":
 			reader.Context().Push(field, "*AnotherType", "type found, reading property")
+			var ( value *AnotherType )
+			value = nil
 			if v := AnotherTypeRead(reader); v != nil {
-				_optObject = v
+				value = v
 			}
+			_optObject = value
 			reader.Context().Pop()
 		case "objectArray":
 			reader.Context().Push(field, "[]AnotherType", "type found, reading property")
+			var ( value []AnotherType )
 			if reader.IsNil() {
-				_objectArray = nil
+				value = nil
 			} else {
-				ln0 := reader.ReadArrayLength()
-				_objectArray = make([]AnotherType, ln0)
+				value = make([]AnotherType, reader.ReadArrayLength())
+				ln0 := uint32(len(value))
 				for i0 := uint32(0); i0 < ln0; i0++ {
 					if v := AnotherTypeRead(reader); v != nil {
-						_objectArray[i0] = *v
+						value[i0] = *v
 					}
 				}
 			}
+			_objectArray = value
 			_objectArraySet = true
 			reader.Context().Pop()
 		case "optObjectArray":
 			reader.Context().Push(field, "[]*AnotherType", "type found, reading property")
+			var ( value []*AnotherType )
+			value = nil
 			if reader.IsNil() {
-				_optObjectArray = nil
+				value = nil
 			} else {
-				ln0 := reader.ReadArrayLength()
-				_optObjectArray = make([]*AnotherType, ln0)
+				value = make([]*AnotherType, reader.ReadArrayLength())
+				ln0 := uint32(len(value))
 				for i0 := uint32(0); i0 < ln0; i0++ {
 					if v := AnotherTypeRead(reader); v != nil {
-						_optObjectArray[i0] = v
+						value[i0] = v
 					}
 				}
 			}
+			_optObjectArray = value
 			reader.Context().Pop()
 		}
 		reader.Context().Pop()
@@ -364,45 +398,55 @@ func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *ArgsOptionalEnvMethod {
 		switch field {
 		case "object":
 			reader.Context().Push(field, "AnotherType", "type found, reading property")
+			var ( value AnotherType )
 			if v := AnotherTypeRead(reader); v != nil {
-				_object = *v
+				value = *v
 			}
+			_object = value
 			_objectSet = true
 			reader.Context().Pop()
 		case "optObject":
 			reader.Context().Push(field, "*AnotherType", "type found, reading property")
+			var ( value *AnotherType )
+			value = nil
 			if v := AnotherTypeRead(reader); v != nil {
-				_optObject = v
+				value = v
 			}
+			_optObject = value
 			reader.Context().Pop()
 		case "objectArray":
 			reader.Context().Push(field, "[]AnotherType", "type found, reading property")
+			var ( value []AnotherType )
 			if reader.IsNil() {
-				_objectArray = nil
+				value = nil
 			} else {
-				ln0 := reader.ReadArrayLength()
-				_objectArray = make([]AnotherType, ln0)
+				value = make([]AnotherType, reader.ReadArrayLength())
+				ln0 := uint32(len(value))
 				for i0 := uint32(0); i0 < ln0; i0++ {
 					if v := AnotherTypeRead(reader); v != nil {
-						_objectArray[i0] = *v
+						value[i0] = *v
 					}
 				}
 			}
+			_objectArray = value
 			_objectArraySet = true
 			reader.Context().Pop()
 		case "optObjectArray":
 			reader.Context().Push(field, "[]*AnotherType", "type found, reading property")
+			var ( value []*AnotherType )
+			value = nil
 			if reader.IsNil() {
-				_optObjectArray = nil
+				value = nil
 			} else {
-				ln0 := reader.ReadArrayLength()
-				_optObjectArray = make([]*AnotherType, ln0)
+				value = make([]*AnotherType, reader.ReadArrayLength())
+				ln0 := uint32(len(value))
 				for i0 := uint32(0); i0 < ln0; i0++ {
 					if v := AnotherTypeRead(reader); v != nil {
-						_optObjectArray[i0] = v
+						value[i0] = v
 					}
 				}
 			}
+			_optObjectArray = value
 			reader.Context().Pop()
 		}
 		reader.Context().Pop()
@@ -454,9 +498,11 @@ func DeserializeIfArgs(argsBuf []byte) *ArgsIf {
 		switch field {
 		case "if":
 			reader.Context().Push(field, "Else", "type found, reading property")
+			var ( value Else )
 			if v := ElseRead(reader); v != nil {
-				_if = *v
+				value = *v
 			}
+			_if = value
 			_ifSet = true
 			reader.Context().Pop()
 		}
