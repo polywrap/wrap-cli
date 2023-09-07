@@ -8,7 +8,6 @@ import {
   PolywrapProject,
   PluginProject,
   resetDir,
-  SchemaComposer,
   logActivity,
   loadDocsManifest,
 } from "./";
@@ -21,12 +20,13 @@ import fs from "fs";
 import fse from "fs-extra";
 import path from "path";
 import { DocsManifest } from "@polywrap/polywrap-manifest-types-js";
+import { Abi } from "@polywrap/schema-parse";
 
 export interface CompilerConfig {
   outputDir: string;
   project: PolywrapProject | PluginProject;
   buildStrategy?: BuildStrategy;
-  schemaComposer: SchemaComposer;
+  abi: Abi;
 }
 
 export class Compiler {
@@ -111,13 +111,12 @@ export class Compiler {
   }
 
   private async _outputWrapManifest(): Promise<unknown> {
-    const { outputDir, project, schemaComposer } = this._config;
+    const { outputDir, project, abi } = this._config;
     const manifestPath = `${outputDir}/wrap.info`;
     const run = async () => {
       const manifest = await project.getManifest();
 
       const type = manifest.project.type.split("/")[0];
-      const abi = await schemaComposer.getComposedAbis();
       await generateWrapFile(
         abi,
         manifest.project.name,

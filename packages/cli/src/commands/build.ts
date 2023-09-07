@@ -242,11 +242,12 @@ async function run(options: Required<BuildCommandOptions>) {
         project,
         client,
       });
+      const abi = await schemaComposer.getComposedAbis();
 
       if (canRunCodegen && !noCodegen) {
         const codeGenerator = new CodeGenerator({
           project,
-          schemaComposer,
+          abi,
           codegenDirAbs: codegenDir || undefined,
           bindgenUri,
         });
@@ -261,7 +262,7 @@ async function run(options: Required<BuildCommandOptions>) {
       const compiler = new Compiler({
         project: project as PolywrapProject,
         outputDir,
-        schemaComposer,
+        abi,
         buildStrategy,
       });
 
