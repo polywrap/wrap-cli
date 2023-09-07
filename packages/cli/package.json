@@ -1,7 +1,7 @@
 {
   "name": "polywrap",
   "description": "Polywrap CLI",
-  "version": "0.11.3",
+  "version": "0.11.4",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -51,13 +51,13 @@
     "@polywrap/client-js": "~0.12.0",
     "@polywrap/core-js": "~0.12.0",
     "@polywrap/ethereum-wallet-js": "~0.1.0",
-    "@polywrap/logging-js": "0.11.3",
-    "@polywrap/os-js": "0.11.3",
-    "@polywrap/polywrap-manifest-types-js": "0.11.3",
+    "@polywrap/logging-js": "0.11.4",
+    "@polywrap/os-js": "0.11.4",
+    "@polywrap/polywrap-manifest-types-js": "0.11.4",
     "@polywrap/result": "~0.12.0",
-    "@polywrap/schema-bind": "0.11.3",
-    "@polywrap/schema-compose": "0.11.3",
-    "@polywrap/schema-parse": "0.11.3",
+    "@polywrap/schema-bind": "0.11.4",
+    "@polywrap/schema-compose": "0.11.4",
+    "@polywrap/schema-parse": "0.11.4",
     "@polywrap/sys-config-bundle-js": "~0.12.0",
     "@polywrap/uri-resolver-extensions-js": "~0.12.0",
     "@polywrap/uri-resolvers-js": "~0.12.0",
@@ -86,7 +86,7 @@
     "yesno": "0.4.0"
   },
   "devDependencies": {
-    "@polywrap/cli-js": "0.11.3",
+    "@polywrap/cli-js": "0.11.4",
     "@types/copyfiles": "2.4.0",
     "@types/fs-extra": "9.0.12",
     "@types/jest": "26.0.8",
@@ -97,10 +97,10 @@
     "dir-compare": "3.3.0",
     "eslint-plugin-formatjs": "2.12.7",
     "jest": "26.6.3",
+    "pkg": "5.8.1",
     "ts-jest": "26.5.4",
     "ts-morph": "10.0.1",
-    "ts-node": "10.9.1",
-    "pkg": "5.8.1"
+    "ts-node": "10.9.1"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {
@@ -121,6 +121,6 @@
       "node18-win-arm64",
       "node18-win-x64"
     ],
-    "outputPath":"./standalone-binaries"
+    "outputPath": "./standalone-binaries"
   }
 }
