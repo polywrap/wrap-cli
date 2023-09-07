@@ -24,8 +24,8 @@ export const indexIter: MustacheFn = () => {
       return `${rendered}[${num}]`;
     }
     return rendered;
-  }
-}
+  };
+};
 
 export const currIter: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
@@ -151,7 +151,7 @@ export const enumConstants: MustacheFn = () => {
     lines[0] = lines[0] + " = iota";
     return lines.join("\n");
   };
-}
+};
 
 export const stuctProps: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {

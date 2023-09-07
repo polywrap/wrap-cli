@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Abi,
   EnumRef,
@@ -16,7 +17,7 @@ interface State {
 
 export function appendImportedTypes(): AbiTransforms {
   const state: State = {
-    importedTypes: new Map()
+    importedTypes: new Map(),
   };
 
   const addImportedTypeRef = (def: EnumRef | ObjectRef) => {
@@ -24,30 +25,32 @@ export function appendImportedTypes(): AbiTransforms {
 
     if (importType) {
       if (state.moduleDef) {
-        const importedTypes: string[] = (state.moduleDef as any).importedTypes || [];
+        const importedTypes: string[] =
+          (state.moduleDef as any).importedTypes || [];
         if (importedTypes.indexOf(importType) === -1) {
           importedTypes.push(importType);
         }
         state.moduleDef = {
           ...state.moduleDef,
-          importedTypes
+          importedTypes,
         } as ModuleDefinition;
       }
 
       if (state.objectDef) {
-        const importedTypes: string[] = (state.objectDef as any).importedTypes || [];
+        const importedTypes: string[] =
+          (state.objectDef as any).importedTypes || [];
         if (importedTypes.indexOf(importType) === -1) {
           importedTypes.push(importType);
         }
         state.objectDef = {
           ...state.objectDef,
-          importedTypes
+          importedTypes,
         } as ObjectDefinition;
       }
     }
 
     return def;
-  }
+  };
 
   return {
     enter: {
@@ -73,19 +76,19 @@ export function appendImportedTypes(): AbiTransforms {
       },
       ObjectRef: (def: ObjectRef) => {
         return addImportedTypeRef(def);
-      }
+      },
     },
     leave: {
       ModuleDefinition: (def: ModuleDefinition) => {
-        let newDef = state.moduleDef || def;
+        const newDef = state.moduleDef || def;
         state.moduleDef = undefined;
         return newDef;
       },
       ObjectDefinition: (def: ObjectDefinition) => {
-        let newDef = state.objectDef || def;
+        const newDef = state.objectDef || def;
         state.objectDef = undefined;
         return newDef;
-      }
-    }
+      },
+    },
   };
 }

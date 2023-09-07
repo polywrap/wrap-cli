@@ -62,7 +62,7 @@ export class CodeGenerator {
         async () => {
           try {
             return await this.runCodegen(bindLanguage, overrides);
-          } catch(err) {
+          } catch (err) {
             console.error(err);
             throw err;
           }
