@@ -24,4 +24,4 @@ pub use msgpack::{
     DecodeError, EncodeError, EnumTypeError, Read, ReadDecoder, Write, WriteEncoder,
 };
 
-pub use polywrap_msgpack_serde::*;
+pub use polywrap_msgpack_serde::{serde_bytes::*, *};
