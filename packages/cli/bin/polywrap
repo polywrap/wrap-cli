@@ -9,5 +9,4 @@ if (['v', 'version', '-v', '--v', '-version', '--version'].includes(process.argv
   process.exit(0)
 }
 
-var sourceDir = __dirname + '/../build'
-require(sourceDir + '/cli').run(process.argv)
+require("../build/cli").run(process.argv)

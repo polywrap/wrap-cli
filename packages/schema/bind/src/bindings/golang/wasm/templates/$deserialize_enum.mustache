@@ -1,11 +1,11 @@
 {{#required}}
-_{{name}}{{#lastFullIter}}i{{/lastFullIter}} = {{#toUpper}}{{type}}{{/toUpper}}(reader.ReadI32())
-Sanitize{{#toUpper}}{{type}}{{/toUpper}}Value(int32(_{{name}}{{#lastFullIter}}i{{/lastFullIter}}))
+value{{#lastFullIter}}i{{/lastFullIter}} = {{#toUpper}}{{type}}{{/toUpper}}(reader.ReadI32())
+Sanitize{{#toUpper}}{{type}}{{/toUpper}}Value(int32(value{{#lastFullIter}}i{{/lastFullIter}}))
 {{/required}}
 {{^required}}
 if !reader.IsNil() {
 	v := {{#toUpper}}{{type}}{{/toUpper}}(reader.ReadI32())
 	Sanitize{{#toUpper}}{{type}}{{/toUpper}}Value(int32(v))
-	_{{name}}{{#lastFullIter}}i{{/lastFullIter}} = &v
+	value{{#lastFullIter}}i{{/lastFullIter}} = &v
 }
 {{/required}}

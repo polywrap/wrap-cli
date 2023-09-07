@@ -43,6 +43,7 @@ jobs:
           echo IMAGE_RS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/rust/vm >> $GITHUB_ENV
           echo IMAGE_AS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/assemblyscript/vm >> $GITHUB_ENV
           echo IMAGE_GO_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/golang/vm >> $GITHUB_ENV
+          echo IMAGE_JS_VM_DIR=./packages/cli/src/lib/defaults/build-strategies/wasm/javascript/vm >> $GITHUB_ENV
 
       - name: Read Image VERSION & NAME into env.IMAGE_..._VERSION/NAME
         run: |
@@ -52,12 +53,15 @@ jobs:
           echo IMAGE_AS_VM_VERSION=$(cat $IMAGE_AS_VM_DIR/VERSION) >> $GITHUB_ENV
           echo IMAGE_GO_VM_NAME=$(cat $IMAGE_GO_VM_DIR/NAME) >> $GITHUB_ENV
           echo IMAGE_GO_VM_VERSION=$(cat $IMAGE_GO_VM_DIR/VERSION) >> $GITHUB_ENV
+          echo IMAGE_JS_VM_NAME=$(cat $IMAGE_JS_VM_DIR/NAME) >> $GITHUB_ENV
+          echo IMAGE_JS_VM_VERSION=$(cat $IMAGE_JS_VM_DIR/VERSION) >> $GITHUB_ENV
 
       - name: Check if image tags already exist
         run: |
           echo IMAGE_RS_VM_UNPUBLISHED=$(! curl -s "https://hub.docker.com/v2/repositories/$IMAGE_RS_VM_NAME/tags/$IMAGE_RS_VM_VERSION" | grep -q "error 404" > /dev/null ; echo $?) >> $GITHUB_ENV
           echo IMAGE_AS_VM_UNPUBLISHED=$(! curl -s "https://hub.docker.com/v2/repositories/$IMAGE_AS_VM_NAME/tags/$IMAGE_AS_VM_VERSION" | grep -q "error 404" > /dev/null ; echo $?) >> $GITHUB_ENV
           echo IMAGE_GO_VM_UNPUBLISHED=$(! curl -s "https://hub.docker.com/v2/repositories/$IMAGE_GO_VM_NAME/tags/$IMAGE_GO_VM_VERSION" | grep -q "error 404" > /dev/null ; echo $?) >> $GITHUB_ENV
+          echo IMAGE_JS_VM_UNPUBLISHED=$(! curl -s "https://hub.docker.com/v2/repositories/$IMAGE_JS_VM_NAME/tags/$IMAGE_JS_VM_VERSION" | grep -q "error 404" > /dev/null ; echo $?) >> $GITHUB_ENV
 
       - name: Build & Publish RS VM Image
         if: env.IMAGE_RS_VM_UNPUBLISHED == '1'
@@ -82,3 +86,11 @@ jobs:
           docker buildx create --use --name go-vm-builder
           docker buildx build . --platform=linux/amd64,linux/arm64 -t $IMAGE_GO_VM_NAME:latest -t $IMAGE_GO_VM_NAME:$IMAGE_GO_VM_VERSION --output type=registry
           docker buildx rm go-vm-builder
+
+      - name: Build & Publish JS VM Image
+        if: env.IMAGE_JS_VM_UNPUBLISHED == '1'
+        working-directory: ${{env.IMAGE_JS_VM_DIR}}
+        run: |
+          docker buildx create --use --name js-vm-builder
+          docker buildx build . --platform=linux/amd64,linux/arm64 -t $IMAGE_JS_VM_NAME:latest -t $IMAGE_JS_VM_NAME:$IMAGE_JS_VM_VERSION --output type=registry
+          docker buildx rm js-vm-builder

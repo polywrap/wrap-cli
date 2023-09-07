@@ -1,0 +1,14 @@
+{
+  "properties": {
+    "config": {
+      "type": "object",
+      "required": ["scriptFile"],
+      "properties": {
+        "scriptFile": {
+          "description": "Path to the JS file to build the wrap from",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

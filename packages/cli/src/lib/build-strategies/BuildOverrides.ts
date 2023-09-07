@@ -1,4 +1,4 @@
-import { PolywrapManifestLanguage } from "../";
+import { PolywrapBuildLanguage } from "../";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import path from "path";
@@ -11,7 +11,7 @@ export interface BuildOverrides {
 }
 
 export async function tryGetBuildOverrides(
-  language: PolywrapManifestLanguage
+  language: PolywrapBuildLanguage
 ): Promise<BuildOverrides | undefined> {
   const modulePath = path.join(
     __dirname,

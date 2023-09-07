@@ -33,7 +33,10 @@
     "test:e2e:p2": "yarn test:cmd -- ./src/__tests__/e2e/p2/*.spec.ts",
     "test:rust": "yarn test:cmd -- --config ./jest.rs.config.js",
     "test:golang": "yarn test:cmd -- --config ./jest.go.config.js",
-    "test:watch": "yarn test -- --watch"
+    "test:typescript": "yarn test:cmd -- --config ./jest.ts.config.js",
+    "test:watch": "yarn test -- --watch",
+    "test:pkg": "PKG_CLI=true yarn test:e2e:p1 && yarn test:e2e:p2",
+    "pkg:dev": "pkg . --compress GZip"
   },
   "resolutions": {
     "colors": "1.4.0"
@@ -96,10 +99,28 @@
     "jest": "26.6.3",
     "ts-jest": "26.5.4",
     "ts-morph": "10.0.1",
-    "ts-node": "10.9.1"
+    "ts-node": "10.9.1",
+    "pkg": "5.8.1"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {
     "access": "public"
+  },
+  "pkg": {
+    "assets": [
+      "lang/**/*",
+      "build/lib/defaults/build-strategies/**/*",
+      "build/lib/defaults/deploy-modules/**/*",
+      "build/lib/defaults/infra-modules/**/*"
+    ],
+    "targets": [
+      "node18-macos-arm64",
+      "node18-macos-x64",
+      "node18-linux-arm64",
+      "node18-linux-x64",
+      "node18-win-arm64",
+      "node18-win-x64"
+    ],
+    "outputPath":"./standalone-binaries"
   }
 }

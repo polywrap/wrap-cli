@@ -288,7 +288,7 @@ func DeserializeTestImport_ReturnsArrayOfEnumsResult(argsBuf []byte) []*TestImpo
 			if !reader.IsNil() {
 				v := TestImport_Enum_Return(reader.ReadI32())
 				SanitizeTestImport_Enum_ReturnValue(int32(v))
-				_returnsArrayOfEnums[i0] = &v
+				value[i0] = &v
 			}
 		}
 	}
