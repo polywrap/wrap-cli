@@ -1,0 +1,7 @@
+format: 0.5.0
+project:
+  name: ts-wrap-template
+  type: wasm/typescript
+source:
+  schema: ./polywrap.graphql
+  module: ./bundled/wrap.js

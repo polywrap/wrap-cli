@@ -5,6 +5,7 @@ export const bindLanguage = {
   "wrap-as": "wrap-as",
   "wrap-rs": "wrap-rs",
   "wrap-go": "wrap-go",
+  "wrap-ts": "wrap-ts",
   "plugin-ts": "plugin-ts",
   "plugin-rs": "plugin-rs",
   "plugin-py": "plugin-py",

@@ -33,6 +33,7 @@
     "test:e2e:p2": "yarn test:cmd -- ./src/__tests__/e2e/p2/*.spec.ts",
     "test:rust": "yarn test:cmd -- --config ./jest.rs.config.js",
     "test:golang": "yarn test:cmd -- --config ./jest.go.config.js",
+    "test:typescript": "yarn test:cmd -- --config ./jest.ts.config.js",
     "test:watch": "yarn test -- --watch",
     "test:pkg": "PKG_CLI=true yarn test:e2e:p1 && yarn test:e2e:p2",
     "pkg:prod": "pkg . --compress Brotli",

@@ -6,12 +6,24 @@ export const polywrapManifestLanguages = {
   "wasm/assemblyscript": "wasm/assemblyscript",
   "wasm/rust": "wasm/rust",
   "wasm/golang": "wasm/golang",
+  "wasm/typescript": "wasm/typescript",
   interface: "interface",
+};
+
+export const polywrapBuildLanguages = {
+  "wasm/assemblyscript": "wasm/assemblyscript",
+  "wasm/rust": "wasm/rust",
+  "wasm/golang": "wasm/golang",
+  "wasm/javascript": "wasm/javascript",
 };
 
 export type PolywrapManifestLanguages = typeof polywrapManifestLanguages;
 
 export type PolywrapManifestLanguage = keyof PolywrapManifestLanguages;
+
+export type PolywrapBuildLanguages = typeof polywrapBuildLanguages;
+
+export type PolywrapBuildLanguage = keyof PolywrapBuildLanguages;
 
 export function isPolywrapManifestLanguage(
   language: string
@@ -29,6 +41,8 @@ export function polywrapManifestLanguageToBindLanguage(
       return "wrap-rs";
     case "wasm/golang":
       return "wrap-go";
+    case "wasm/typescript":
+      return "wrap-ts";
     case "interface":
       throw Error(intlMsg.lib_language_noInterfaceCodegen());
     default:
@@ -50,6 +64,8 @@ export function polywrapManifestOverrideCodegenDir(
     // For rust, `module:` is set to `Cargo.toml`, so we override
     // the codegen directory to be `./src/wrap`
     case "wasm/rust":
+      return "./src/wrap";
+    case "wasm/typescript":
       return "./src/wrap";
     case "wasm/golang":
       return "./module/wrap";

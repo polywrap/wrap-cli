@@ -8,7 +8,7 @@ import { BuildStrategyConfig, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
 import {
   BuildManifestConfig,
-  PolywrapManifestLanguage,
+  BuildableLanguage,
   PolywrapProject,
 } from "../../project";
 import { logActivity } from "../../logging";
@@ -17,7 +17,6 @@ import fse from "fs-extra";
 import path from "path";
 import Mustache from "mustache";
 
-type BuildableLanguage = Exclude<PolywrapManifestLanguage, "interface">;
 const DEFAULTS_DIR = path.join(
   __dirname,
   "..",
@@ -46,6 +45,11 @@ const CONFIGS: Record<BuildableLanguage, VMConfig> = {
   "wasm/golang": {
     defaultIncludes: ["go.mod", "go.sum"],
     baseImage: "polywrap/vm-base-go",
+    version: "0.1.6",
+  },
+  "wasm/javascript": {
+    defaultIncludes: [],
+    baseImage: "polywrap/vm-base-js",
     version: "0.1.6",
   },
 };
@@ -98,7 +102,7 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
         );
       });
 
-      const language = (await this.project.getManifestLanguage()) as BuildableLanguage;
+      const language = (await this.project.getBuildLanguage()) as BuildableLanguage;
 
       if (buildManifestConfig.polywrap_linked_packages) {
         if (fse.existsSync(this._volumePaths.linkedPackages)) {
@@ -138,14 +142,28 @@ export class DockerVMBuildStrategy extends BuildStrategy<void> {
 
       // Copy sources and build
       if (buildManifestConfig.polywrap_module) {
-        const sourcesSubDirectory =
-          this.overrides?.sourcesSubDirectory ||
-          buildManifestConfig.polywrap_module.dir;
+        // TODO: find more general solution: sources array or glob
+        // JS needs to copy a single file; others may need several or dirs
+        if (language === "wasm/javascript") {
+          const moduleFilePath =
+            buildManifestConfig.polywrap_module.moduleFilePath;
+          const outputPath = path.join(
+            this._volumePaths.project,
+            moduleFilePath
+          );
+          const outputDir = path.dirname(outputPath);
+          fse.mkdirSync(outputDir, { recursive: true });
+          fse.copyFileSync(moduleFilePath, outputPath);
+        } else {
+          const sourcesSubDirectory =
+            this.overrides?.sourcesSubDirectory ||
+            buildManifestConfig.polywrap_module.dir;
 
-        fse.copySync(
-          path.join(manifestDir, sourcesSubDirectory),
-          path.join(this._volumePaths.project, sourcesSubDirectory)
-        );
+          fse.copySync(
+            path.join(manifestDir, sourcesSubDirectory),
+            path.join(this._volumePaths.project, sourcesSubDirectory)
+          );
+        }
 
         const scriptTemplate = fse.readFileSync(
           path.join(
