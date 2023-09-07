@@ -7,21 +7,21 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 import { AbiTransforms } from "@polywrap/schema-parse";
 
-interface ModuleNeedsTypesState {
+interface State {
   moduleDefinition?: ModuleDefinition;
   needsTypes?: boolean;
   importedTypes?: Map<string, string>;
 }
 
 export function moduleNeedsTypes(): AbiTransforms {
-  const state: ModuleNeedsTypesState = {};
+  const state: State = {};
 
   return {
     enter: {
       Abi: (abi) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        state.importedTypes = abi._importedTypes;
+        state.importedTypes = abi.importedTypes;
         return abi;
       },
       ModuleDefinition: (def: ModuleDefinition) => {

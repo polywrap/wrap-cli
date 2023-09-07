@@ -73,31 +73,39 @@ func readEnv(reader msgpack.Read) *Env {
 		switch field {
 		case "prop":
 			reader.Context().Push(field, "string", "type found, reading property")
-			_prop = reader.ReadString()
+			var ( value string )
+			value = reader.ReadString()
+			_prop = value
 			_propSet = true
 			reader.Context().Pop()
 		case "optProp":
 			reader.Context().Push(field, "*string", "type found, reading property")
+			var ( value *string )
+			value = nil
 			if !reader.IsNil() {
 				v := reader.ReadString()
-				_optProp = &v
+				value = &v
 			}
+			_optProp = value
 			reader.Context().Pop()
 		case "optMap":
 			reader.Context().Push(field, "map[string]*int32", "type found, reading property")
+			var ( value map[string]*int32 )
+			value = nil
 			if reader.IsNil() {
-				_optMap = nil
+				value = nil
 			} else {
+				value = make(map[string]*int32)
 				ln0 := reader.ReadMapLength()
-				_optMap = make(map[string]*int32)
 				for j0 := uint32(0); j0 < ln0; j0++ {
 					i0 := reader.ReadString()
 					if !reader.IsNil() {
 						v := reader.ReadI32()
-						_optMap[i0] = &v
+						value[i0] = &v
 					}
 				}
 			}
+			_optMap = value
 			reader.Context().Pop()
 		}
 		reader.Context().Pop()
