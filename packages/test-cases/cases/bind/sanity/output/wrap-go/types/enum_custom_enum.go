@@ -4,8 +4,8 @@ type CustomEnum int32
 
 const (
 	CustomEnumSTRING = iota
-	CustomEnumBYTES  = iota
-	customEnumMax    = iota
+	CustomEnumBYTES 
+	customEnumMax   
 )
 
 func SanitizeCustomEnumValue(value int32) {

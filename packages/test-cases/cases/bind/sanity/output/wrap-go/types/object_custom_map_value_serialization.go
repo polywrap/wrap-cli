@@ -40,7 +40,9 @@ func readCustomMapValue(reader msgpack.Read) *CustomMapValue {
 		switch field {
 		case "foo":
 			reader.Context().Push(field, "string", "type found, reading property")
-			_foo = reader.ReadString()
+			var ( value string )
+			value = reader.ReadString()
+			_foo = value
 			_fooSet = true
 			reader.Context().Pop()
 		}

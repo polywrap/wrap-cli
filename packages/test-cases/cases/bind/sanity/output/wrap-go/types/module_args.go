@@ -31,3 +31,10 @@ type ArgsOptionalEnvMethod struct {
 type ArgsIf struct {
 	M_if Else `json:"if"`
 }
+
+type Module interface {
+		ModuleMethod(args *ArgsModuleMethod) int32
+		ObjectMethod(args *ArgsObjectMethod) *AnotherType
+		OptionalEnvMethod(args *ArgsOptionalEnvMethod) *AnotherType
+		If(args *ArgsIf) Else
+}
