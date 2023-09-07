@@ -87,7 +87,7 @@ jobs:
 
       - name: Extract binary path
         if: env.TAG_EXISTS == 'false'
-        run: echo STANDALONE_BINARY_PATH=$(stat ./packages/cli/standalone-binaries/${{ matrix.ox }}-${{ matrix.arch }}/polywrap* | awk '/File:/ {print $2}') >> $GITHUB_ENV
+        run: echo STANDALONE_BINARY_PATH=$(stat ./packages/cli/standalone-binaries/${{ matrix.os }}-${{ matrix.arch }}/polywrap* | awk '/File:/ {print $2}') >> $GITHUB_ENV
 
       - name: Upload Artifacts
         if: env.TAG_EXISTS == 'false'
