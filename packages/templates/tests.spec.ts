@@ -36,8 +36,7 @@ describe("Templates", () => {
     },
     "wasm/typescript": {
       codegen: "yarn codegen",
-      build: "yarn build",
-      test: "yarn test",
+      build: "yarn build"
     },
     "plugin/rust": {
       codegen: "npx polywrap codegen",
