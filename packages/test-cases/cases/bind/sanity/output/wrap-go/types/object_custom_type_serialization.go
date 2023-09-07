@@ -1048,11 +1048,9 @@ func readCustomType(reader msgpack.Read) *CustomType {
 			reader.Context().Pop()
 		case "map":
 			reader.Context().Push(field, "map[string]int32", "type found, reading property")
-			if reader.IsNil() {
-				_map = nil
-			} else {
+			if !reader.IsNil() {
 				ln0 := reader.ReadMapLength()
-				_map = make(map[string]int32)
+				value = make(map[string]int32)
 				for j0 := uint32(0); j0 < ln0; j0++ {
 					i0 := reader.ReadString()
 					_map[i0] = reader.ReadI32()

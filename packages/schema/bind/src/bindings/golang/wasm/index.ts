@@ -156,26 +156,12 @@ export const generateBinding: GenerateBindingFn = (
 
   // Generate module type folders
   if (abi.moduleType) {
-    const imports: { [key: string]: boolean } = {};
-    abi.moduleType.methods?.forEach(function (method) {
-      method.arguments?.forEach(function (arg) {
-        const tp = abi.importedObjectTypes?.find(function (mt) {
-          return mt.type === arg.type;
-        });
-        if (tp) {
-          imports[tp.namespace] = true;
-        }
-      });
-    });
-    const importedTypes = Object.keys(imports).map((namespace) => ({
-      namespace,
-    }));
     output.entries.push({
       type: "Directory",
       name: "types",
       data: renderTemplates(
         templatePath("module-type/types"),
-        { importedTypes, goImport, ...abi.moduleType },
+        { goImport, ...abi.moduleType },
         subTemplates
       ),
     });
@@ -184,7 +170,7 @@ export const generateBinding: GenerateBindingFn = (
       name: "module_wrapped",
       data: renderTemplates(
         templatePath("module-type/module_wrapped"),
-        { importedTypes, goImport, ...abi.moduleType },
+        { goImport, ...abi.moduleType },
         subTemplates
       ),
     });
@@ -272,8 +258,7 @@ function applyTransforms(abi: Abi): Abi {
     addFirstLast,
     toPrefixedGraphQLType,
     Transforms.extractImportedTypes(),
-    Transforms.extractNeededImportedNamespaces(),
-    Transforms.needsImportedNamespaces(),
+    Transforms.appendImportedTypes(),
     Transforms.moduleNeedsTypes(),
   ];
 

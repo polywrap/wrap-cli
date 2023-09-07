@@ -17,6 +17,16 @@ export const stopIter: MustacheFn = () => {
   };
 };
 
+export const indexIter: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const rendered: string = render(text);
+    if (num !== -1) {
+      return `${rendered}[${num}]`;
+    }
+    return rendered;
+  }
+}
+
 export const currIter: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);
@@ -34,7 +44,7 @@ export const nextIter: MustacheFn = () => {
 export const prevFullIter: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);
-    if (rendered == "stop") {
+    if (rendered == "stop" || num === -1) {
       return "";
     }
     return Array(num)
@@ -131,6 +141,17 @@ export const makeImports: MustacheFn = () => {
     return txt !== "" ? `\nimport (\n${txt}\n)\n\n` : "\n";
   };
 };
+
+export const enumConstants: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    let lines = render(text).split("\n");
+    if (lines[0] === "") {
+      lines = lines.slice(1);
+    }
+    lines[0] = lines[0] + " = iota";
+    return lines.join("\n");
+  };
+}
 
 export const stuctProps: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {

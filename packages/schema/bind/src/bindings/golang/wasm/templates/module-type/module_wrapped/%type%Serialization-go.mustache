@@ -4,9 +4,9 @@ package module_wrapped
 	{{#needsTypes}}
 	. {{goImport}}/module/wrap/types,
 	{{/needsTypes}}
-	{{#needsImportedNamespaces}}
+	{{#importedTypes}}
   . {{goImport}}/module/wrap/imported/{{#pkgName}}{{#toSnakeCase}}{{.}}{{/toSnakeCase}}{{/pkgName}},
-  {{/needsImportedNamespaces}}
+  {{/importedTypes}}
 	{{#methods}}
 		{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}},
 	{{/methods}}
@@ -35,6 +35,10 @@ func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *Args{{#toU
 		{{#arguments}}
 		case "{{name}}":
 			reader.Context().Push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property")
+			var ( value {{#toWasm}}{{toGraphQLType}}{{/toWasm}} )
+			{{^required}}
+			value = nil
+			{{/required}}
 			{{#scalar}}
 			{{> deserialize_scalar}}
 			{{/scalar}}
@@ -54,6 +58,7 @@ func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *Args{{#toU
 			{{#object}}
 			{{> deserialize_object}}
 			{{/object}}
+			_{{name}} = value
 			{{#required}}
 			_{{name}}Set = true
 			{{/required}}

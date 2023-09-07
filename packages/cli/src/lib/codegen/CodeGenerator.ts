@@ -60,7 +60,12 @@ export class CodeGenerator {
         intlMsg.lib_codeGenerator_genCodeError(),
         intlMsg.lib_codeGenerator_genCodeWarning(),
         async () => {
-          return this.runCodegen(bindLanguage, overrides);
+          try {
+            return await this.runCodegen(bindLanguage, overrides);
+          } catch(err) {
+            console.error(err);
+            throw err;
+          }
         }
       );
 
