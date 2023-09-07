@@ -8,7 +8,7 @@ jobs:
   Build-Binaries:
     name: Build binaries
     if: |
-      github.event.pull_request.user.login == 'polywrap-build-bot' &&
+      github.event.pull_request.user.login == 'dorgjelli' &&
       github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     strategy:
@@ -79,18 +79,11 @@ jobs:
           yarn install
           yarn build
 
-      - name: Package into node binary
+      - name: Package into standalone binary
         if: env.TAG_EXISTS == 'false'
-        uses: lando/pkg-action@v2
-        with:
-          entrypoint: ./packages/cli/bin/polywrap
-          config: ./packages/cli/package.json
-          options: --output ./packages/cli/standalone-binaries/${{ matrix.os }}-${{ matrix.arch }}/polywrap --compress Brotli
-          pkg: 5.8.1
-          upload: false
-          arch: ${{ matrix.arch }}
-          node-version: ${{ matrix.node-version }}
-          os: ${{ matrix.os }}
+        working-directory: ./packages/cli
+        run: |
+          npx pkg --config ./package.json --target=${{ matrix.node-version }} --output ./standalone-binaries/${{ matrix.os }}-${{ matrix.arch }}/polywrap --compress Brotli ./bin/polywrap
 
       - name: Upload Artifacts
         if: env.TAG_EXISTS == 'false'
@@ -102,7 +95,7 @@ jobs:
   Publish-GitHub:
     name: Publish source to github.com
     if: |
-      github.event.pull_request.user.login == 'polywrap-build-bot' &&
+      github.event.pull_request.user.login == 'dorgjelli' &&
       github.event.pull_request.merged == true
     needs: Build-Binaries
     runs-on: ubuntu-latest
