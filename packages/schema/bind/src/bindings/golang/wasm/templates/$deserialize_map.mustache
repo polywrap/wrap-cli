@@ -1,8 +1,8 @@
 if reader.IsNil() {
-	_{{name}}{{#lastFullIter}}i{{/lastFullIter}} = nil
+	value{{#lastFullIter}}i{{/lastFullIter}} = nil
 } else {
+	value{{#lastFullIter}}i{{/lastFullIter}} = make({{#toWasm}}{{toGraphQLType}}{{/toWasm}})
 	{{#nextIter}}ln{{/nextIter}} := reader.ReadMapLength()
-	_{{name}}{{#prevFullIter}}i{{/prevFullIter}} = make({{#toWasm}}{{toGraphQLType}}{{/toWasm}})
 	for {{#currIter}}j{{/currIter}} := uint32(0); {{#currIter}}j{{/currIter}} < {{#currIter}}ln{{/currIter}}; {{#currIter}}j{{/currIter}}++ {
 		{{#currIter}}i{{/currIter}} := reader.Read{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}()
 		{{#scalar}}

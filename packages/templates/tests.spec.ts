@@ -12,7 +12,7 @@ describe("Templates", () => {
 
   // Define the commands to run for each language
   const languageTestCommands: Record<string, Record<string, string>> = {
-    typescript: { build: "yarn build", test: "yarn test" },
+    typescript: { build: "yarn codegen", test: "yarn test" },
     python: {
       install: "poetry install",
       codegen: "npx polywrap codegen",
@@ -34,10 +34,22 @@ describe("Templates", () => {
       build: "yarn build",
       test: "yarn test",
     },
+    "wasm/typescript": {
+      codegen: "yarn codegen",
+      build: "yarn build",
+      test: "yarn test",
+    },
     "plugin/rust": {
       codegen: "npx polywrap codegen",
       build: "cargo build",
       test: "cargo test",
+    },
+    "app/android": {
+      codegen: "npx polywrap codegen",
+      build: "./gradlew assemble",
+    },
+    "app/ios": {
+      codegen: "npx polywrap codegen",
     },
     "app/rust": {
       codegen: "npx polywrap codegen",
@@ -96,7 +108,11 @@ describe("Templates", () => {
 
           beforeAll(() => {
             // Copy test configs
-            if (projectType === "wasm" && language !== "interface" && language !== "golang") {
+            if (
+              projectType === "wasm" &&
+              language !== "interface" &&
+              language !== "golang"
+            ) {
               execSync(
                 `cp ${rootDir}/polywrap.${projectType}-${language}-linked* ${rootDir}/${projectType}/${language}/`
               );

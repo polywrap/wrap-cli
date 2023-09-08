@@ -1,4 +1,4 @@
-import { Ethereum, Logging } from "./wrap";
+import { Ethers, Logging } from "./wrap";
 
 async function main() {
   console.log("Invoking: Logging.info(...)");
@@ -19,7 +19,7 @@ async function main() {
 
   console.log("Invoking: Ethereum.encodeParams(...)");
 
-  const eth = new Ethereum();
+  const eth = new Ethers();
 
   const result = await eth.encodeParams({
     types: ["address", "uint256"],
@@ -27,7 +27,7 @@ async function main() {
   });
 
   if (result.ok) {
-    console.log(`Ethereum.encodeParams:\n${result.value}`);
+    console.log(`Ethers.encodeParams:\n${result.value}`);
   } else {
     console.log(`Error - Ethereum.encodeParams:\n${result.error}`);
   }

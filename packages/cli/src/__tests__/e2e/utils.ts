@@ -98,7 +98,7 @@ const getCli = (): string => {
   if (process.env.PKG_CLI === "true") {
     const binPath = path.resolve(`${__dirname}/../../../standalone-binaries`);
     const platformArch = getPlatformAndArch();
-    return `${binPath}/${platformArch}/polywrap`;
+    return `${binPath}/polywrap-${platformArch}`;
   }
   return `${__dirname}/../../../bin/polywrap`;
 }

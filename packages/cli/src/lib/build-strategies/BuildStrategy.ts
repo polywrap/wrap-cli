@@ -24,7 +24,7 @@ export abstract class BuildStrategy<TBuildReturn = unknown> {
   abstract getStrategyName(): string;
 
   async build(): Promise<TBuildReturn> {
-    const language = await this.project.getManifestLanguage();
+    const language = await this.project.getBuildLanguage();
     const buildStrategyDir = path.join(
       __dirname,
       "..",

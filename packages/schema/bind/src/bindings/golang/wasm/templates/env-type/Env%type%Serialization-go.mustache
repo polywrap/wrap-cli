@@ -62,6 +62,10 @@ func read{{#toUpper}}{{type}}{{/toUpper}}(reader msgpack.Read) *{{#toUpper}}{{ty
 		{{#properties}}
 		case "{{name}}":
 			reader.Context().Push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property")
+			var ( value {{#toWasm}}{{toGraphQLType}}{{/toWasm}} )
+			{{^required}}
+			value = nil
+			{{/required}}
 			{{#scalar}}
 			{{> deserialize_scalar}}
 			{{/scalar}}
@@ -81,6 +85,7 @@ func read{{#toUpper}}{{type}}{{/toUpper}}(reader msgpack.Read) *{{#toUpper}}{{ty
 			{{#object}}
 			{{> deserialize_object}}
 			{{/object}}
+			_{{name}} = value
 			{{#required}}
 			_{{name}}Set = true
 			{{/required}}

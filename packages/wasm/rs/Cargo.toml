@@ -1,6 +1,6 @@
 [package]
 name = "polywrap-wasm-rs"
-version = "0.11.2"
+version = "0.11.4"
 license = "MIT"
 description = "Polywrap's Rust-Wasm Runtime"
 homepage = "https://polywrap.io"
@@ -21,7 +21,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 byteorder = "1.4.3"
 thiserror = "1.0.30"
-polywrap_msgpack_serde = "0.0.2-beta.6"
+polywrap_msgpack_serde = "0.0.2-beta.7"
 
 [dev-dependencies]
 serde = { version = "1.0.136", default-features = false, features = ["derive"] }

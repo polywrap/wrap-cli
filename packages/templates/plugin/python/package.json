@@ -1,12 +1,11 @@
 {
   "name": "templates-plugin-python",
   "private": true,
-  "version": "0.11.2",
   "scripts": {
     "build": "npx polywrap codegen",
     "test": "poetry run pytest"
   },
   "dependencies": {
-    "polywrap": "0.11.2"
+    "polywrap": "0.11.3"
   }
 }

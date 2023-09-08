@@ -4,8 +4,8 @@ type While int32
 
 const (
 	Whilefor = iota
-	Whilein  = iota
-	whileMax = iota
+	Whilein 
+	whileMax
 )
 
 func SanitizeWhileValue(value int32) {

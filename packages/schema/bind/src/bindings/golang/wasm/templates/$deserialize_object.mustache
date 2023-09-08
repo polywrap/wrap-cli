@@ -1,8 +1,8 @@
 if v := {{#toUpper}}{{type}}{{/toUpper}}Read(reader); v != nil {
 	{{#required}}
-	_{{name}}{{#lastFullIter}}i{{/lastFullIter}} = *v
+	value{{#lastFullIter}}i{{/lastFullIter}} = *v
 	{{/required}}
 	{{^required}}
-	_{{name}}{{#lastFullIter}}i{{/lastFullIter}} = v
+	value{{#lastFullIter}}i{{/lastFullIter}} = v
 	{{/required}}
 }

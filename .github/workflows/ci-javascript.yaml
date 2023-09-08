@@ -115,6 +115,13 @@ jobs:
         with:
           go-version: '^1.13.1'
 
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+          cache: 'gradle'
+
       - name: Install cue lang
         run: go install cuelang.org/go/cmd/cue@latest
 
@@ -332,7 +339,7 @@ jobs:
           mv wrappers packages/test-cases/cases
 
       - name: Build CLI standalone package for testing
-        run: yarn pkg:dev
+        run: yarn pkg . -t node18-linux-x64 --output ./standalone-binaries/polywrap-linux-x64
         working-directory: ./packages/cli
 
       - name: Test CLI standalone package

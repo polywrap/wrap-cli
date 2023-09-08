@@ -26,6 +26,21 @@ You can install Cue by following the instructions found [here](https://cuelang.o
 
 ## Installation
 
+### Standalone Executable
+
+For MacOS, Linux, and WSL:
+
+```shell
+$ sh <(curl https://raw.githubusercontent.com/polywrap/cli/origin-dev/install.sh)
+
+# Installs to `~/.polywrap`
+# If polywrap is already installed, the script instead checks for updates
+```
+
+We do not have an easy installation script for native Windows users, but we do produce a standalone executable for Windows users to download. You can find the latest release [here](https://github.com/polywrap/cli/releases).
+
+### With NodeJS
+
 Within a single project:
 
 ```bash

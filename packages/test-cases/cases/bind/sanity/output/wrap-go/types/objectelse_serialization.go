@@ -40,7 +40,9 @@ func readElse(reader msgpack.Read) *Else {
 		switch field {
 		case "else":
 			reader.Context().Push(field, "string", "type found, reading property")
-			_else = reader.ReadString()
+			var ( value string )
+			value = reader.ReadString()
+			_else = value
 			_elseSet = true
 			reader.Context().Pop()
 		}

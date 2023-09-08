@@ -6,6 +6,7 @@ import {
   isPolywrapManifestLanguage,
   loadBuildManifest,
   loadPolywrapManifest,
+  PolywrapBuildLanguage,
   PolywrapManifestLanguage,
   polywrapManifestLanguages,
   polywrapManifestLanguageToBindLanguage,
@@ -43,6 +44,7 @@ export interface BuildManifestConfig {
   polywrap_module?: {
     name: string;
     dir: string;
+    moduleFilePath: string;
   };
   // eslint-disable-next-line @typescript-eslint/naming-convention
   polywrap_linked_packages?: {
@@ -128,6 +130,18 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     return language as PolywrapManifestLanguage;
   }
 
+  public async getBuildLanguage(): Promise<PolywrapBuildLanguage> {
+    const manifestLanguage = await this.getManifestLanguage();
+
+    if (manifestLanguage === "interface") {
+      throw new Error(`Cannot build an interface project.`);
+    }
+
+    return manifestLanguage === "wasm/typescript"
+      ? "wasm/javascript"
+      : manifestLanguage;
+  }
+
   /// Schema
 
   public async getSchemaNamedPath(): Promise<string> {
@@ -206,7 +220,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   public async getBuildManifest(): Promise<BuildManifest> {
     if (!this._buildManifest) {
       const buildManifestPath = await this.getBuildManifestPath();
-      const language = await this.getManifestLanguage();
+      const language = await this.getBuildLanguage();
 
       this._buildManifest = await loadBuildManifest(
         language,
@@ -242,10 +256,12 @@ export class PolywrapProject extends Project<PolywrapManifest> {
           })
         ),
       };
+
       if (module) {
         defaultConfig["polywrap_module"] = {
           name: "module",
-          dir: normalizePath(module),
+          dir: normalizePath(module.dir),
+          moduleFilePath: module.moduleFilePath,
         };
       }
 
@@ -345,11 +361,16 @@ export class PolywrapProject extends Project<PolywrapManifest> {
 
   /// Private Helpers
 
-  private async _getModule(): Promise<string | undefined> {
+  private async _getModule(): Promise<
+    { moduleFilePath: string; dir: string } | undefined
+  > {
     const manifest = await this.getManifest();
 
     if (manifest.source.module) {
-      return path.dirname(manifest.source.module).replace("./", "");
+      return {
+        moduleFilePath: manifest.source.module,
+        dir: path.dirname(manifest.source.module).replace("./", ""),
+      };
     }
 
     return undefined;
