@@ -85,7 +85,7 @@ jobs:
         with:
           entrypoint: ./packages/cli/bin/polywrap
           config: ./packages/cli/package.json
-          options: --output ./packages/cli/standalone-binaries/${{ matrix.os }}-${{ matrix.arch }}/polywrap --compress Brotli
+          options: --compress Brotli
           pkg: 5.8.1
           upload: false
           arch: ${{ matrix.arch }}
