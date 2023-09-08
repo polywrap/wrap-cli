@@ -6,8 +6,8 @@ import { PolywrapClient } from "@polywrap/client-js";
 export interface WasmEmbed {
   uri: string;
   namespace: string;
-  manifest: Uint8Array;
-  module: Uint8Array;
+  wrapInfo: Array<number>;
+  wrapWasm: Array<number>;
 }
 
 export async function getWasmEmbeds(
@@ -38,8 +38,8 @@ export async function getWasmEmbeds(
     embeds.push({
       uri,
       namespace: importedModule.namespace,
-      manifest: manifest.value as Uint8Array,
-      module: module.value as Uint8Array,
+      wrapInfo: Array.from(manifest.value as Uint8Array),
+      wrapWasm: Array.from(module.value as Uint8Array),
     });
   }
 
