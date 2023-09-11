@@ -131,6 +131,7 @@ export class AppProject extends Project<AppManifest> {
         abi,
       },
       outputDirAbs: await this.getGenerationDirectory(codegenDir),
+      config: bindConfig,
     };
     return bindSchema(options, bindgenUri);
   }
