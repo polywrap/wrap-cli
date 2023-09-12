@@ -102,11 +102,17 @@ jobs:
           restore-keys: |
             cargo-${{ runner.os }}-${{ github.job }}
 
-      - name: Set environment variable
-        run: echo POLYWRAP_CLI_PATH=$(pwd)/../toolchain/packages/cli >> $GITHUB_ENV
+      - name: Log toolchain folders
+        run: ls toolchain
+
+      - name: Log toolchain packages
+        run: ls toolchain/packages
 
       - name: Set environment variable
-        run: echo POLYWRAP_WASM_PATH=$(pwd)/../toolchain/packages/wasm >> $GITHUB_ENV
+        run: echo POLYWRAP_CLI_PATH=$(pwd)/toolchain/packages/cli >> $GITHUB_ENV
+
+      - name: Set environment variable
+        run: echo POLYWRAP_WASM_PATH=$(pwd)/toolchain/packages/wasm >> $GITHUB_ENV
 
       - name: Modify permissions of cargo registry
         run: sudo chown -R runner:runner ${HOME}/.cargo/registry
