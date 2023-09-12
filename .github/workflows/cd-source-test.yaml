@@ -89,7 +89,7 @@ jobs:
             curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
             apt update && apt -y install yarn
-            yarn global add pkg@5.81 --prefix /usr/local
+            yarn global add pkg@5.8.1 --prefix /usr/local
             pkg --version
           run: |
             pkg \
