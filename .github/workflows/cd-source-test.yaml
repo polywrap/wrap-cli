@@ -74,29 +74,52 @@ jobs:
           yarn install
           yarn build
 
-      - name: Change CWD
-        if: env.TAG_EXISTS == 'false'
-        run: cd ./packages/cli
-
-      - name: Package into node binary
-        if: env.TAG_EXISTS == 'false'
-        uses: lando/pkg-action@v2
+      - name: Package into standalone binary
+        if: env.TAG_EXISTS == 'false' && ${{ matrix.arch }} == 'arm64'
+        uses: uraimo/run-on-arch-action@v2
         with:
-          entrypoint: ./bin/polywrap
-          config: ./package.json
-          options: --compress Brotli
-          pkg: 5.8.1
-          upload: false
-          arch: ${{ matrix.arch }}
-          node-version: ${{ matrix.node-version }}
-          os: ${{ matrix.os }}
+          arch: aarch64
+          distro: ubuntu18.04
+          githubToken: ${GITHUB_TOKEN}
+          # We need to install node and yarn "again" because they dont exist inside our build container
+          install: |
+            apt update && apt -y install curl
+            curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+            apt-get install -y nodejs
+            curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+            apt update && apt -y install yarn
+            yarn global add pkg@${PKG_VERSION} --prefix /usr/local
+            pkg --version
+          run: |
+            pkg \
+            --config ./packages/cli/package.json \
+            --target=${{ matrix.node-version }}-${{ matrix.os }}-${{ matrix.arch }} \
+            --output ${OUTPUT_PATH} \
+            --debug \
+            --compress Brotli \
+            ./packages/cli/bin/polywrap
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PKG_VERSION: 5.81
+          OUTPUT_PATH: ./packages/cli/standalone-binaries/polywrap-${{ matrix.os }}-${{ matrix.arch }}
+
+      - name: Package into standalone binary
+        if: env.TAG_EXISTS == 'false' && ${{ matrix.arch }} == 'x64'
+        working-directory: ./packages/cli
+        run: |
+          npx pkg . --target=${{ matrix.node-version }}-${{ matrix.os }}-${{ matrix.arch }} --output ./standalone-binaries/polywrap-${{ matrix.os }}-${{ matrix.arch }} --compress Brotli
+
+      - name: Extract binary path
+        if: env.TAG_EXISTS == 'false' && ${{ matrix.arch }} == 'x64'
+        run: echo STANDALONE_BINARY_PATH=$(stat ./packages/cli/standalone-binaries/polywrap-${{ matrix.os }}-${{ matrix.arch }} | awk '/File:/ {print $2}') >> $GITHUB_ENV
 
       - name: Upload Artifacts
         if: env.TAG_EXISTS == 'false'
         uses: actions/upload-artifact@v3
         with:
           name: polywrap-${{ matrix.os }}-${{ matrix.arch }}
-          path: ${{ steps.pkg-action.outputs.file }}
+          path: ${{ env.STANDALONE_BINARY_PATH }}
 
   Publish-GitHub:
     name: Publish source to github.com

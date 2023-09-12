@@ -79,29 +79,22 @@ jobs:
           yarn install
           yarn build
 
-      - name: Change CWD
+      - name: Package into standalone binary
         if: env.TAG_EXISTS == 'false'
-        run: cd ./packages/cli
+        working-directory: ./packages/cli
+        run: |
+          npx pkg . --target=${{ matrix.node-version }}-${{ matrix.os }}-${{ matrix.arch }} --output ./standalone-binaries/polywrap-${{ matrix.os }}-${{ matrix.arch }} --compress Brotli
 
-      - name: Package into node binary
+      - name: Extract binary path
         if: env.TAG_EXISTS == 'false'
-        uses: lando/pkg-action@v2
-        with:
-          entrypoint: ./bin/polywrap
-          config: ./package.json
-          options: --compress Brotli
-          pkg: 5.8.1
-          upload: false
-          arch: ${{ matrix.arch }}
-          node-version: ${{ matrix.node-version }}
-          os: ${{ matrix.os }}
+        run: echo STANDALONE_BINARY_PATH=$(stat ./packages/cli/standalone-binaries/polywrap-${{ matrix.os }}-${{ matrix.arch }} | awk '/File:/ {print $2}') >> $GITHUB_ENV
 
       - name: Upload Artifacts
         if: env.TAG_EXISTS == 'false'
         uses: actions/upload-artifact@v3
         with:
           name: polywrap-${{ matrix.os }}-${{ matrix.arch }}
-          path: ${{ steps.pkg-action.outputs.file }}
+          path: ${{ env.STANDALONE_BINARY_PATH }}
 
   Publish-GitHub:
     name: Publish source to github.com
