@@ -80,7 +80,7 @@ jobs:
         with:
           arch: aarch64
           distro: ubuntu18.04
-          githubToken: ${GITHUB_TOKEN}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
           # We need to install node and yarn "again" because they dont exist inside our build container
           install: |
             apt update && apt -y install curl
@@ -89,20 +89,16 @@ jobs:
             curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
             apt update && apt -y install yarn
-            yarn global add pkg@${PKG_VERSION} --prefix /usr/local
+            yarn global add pkg@5.81 --prefix /usr/local
             pkg --version
           run: |
             pkg \
             --config ./packages/cli/package.json \
             --target=${{ matrix.node-version }}-${{ matrix.os }}-${{ matrix.arch }} \
-            --output ${OUTPUT_PATH} \
+            --output ./packages/cli/standalone-binaries/polywrap-${{ matrix.os }}-${{ matrix.arch }} \
             --debug \
             --compress Brotli \
             ./packages/cli/bin/polywrap
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PKG_VERSION: 5.81
-          OUTPUT_PATH: ./packages/cli/standalone-binaries/polywrap-${{ matrix.os }}-${{ matrix.arch }}
 
       - name: Package into standalone binary
         if: env.TAG_EXISTS == 'false' && ${{ matrix.arch }} == 'x64'
