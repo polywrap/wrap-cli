@@ -79,12 +79,16 @@ jobs:
           yarn install
           yarn build
 
+      - name: Change CWD
+        if: env.TAG_EXISTS == 'false'
+        run: cd ./packages/cli
+
       - name: Package into node binary
         if: env.TAG_EXISTS == 'false'
         uses: lando/pkg-action@v2
         with:
-          entrypoint: ./packages/cli/bin/polywrap
-          config: ./packages/cli/package.json
+          entrypoint: ./bin/polywrap
+          config: ./package.json
           options: --compress Brotli
           pkg: 5.8.1
           upload: false
@@ -96,7 +100,7 @@ jobs:
         if: env.TAG_EXISTS == 'false'
         uses: actions/upload-artifact@v3
         with:
-          name: cli-binary-${{ matrix.os }}-${{ matrix.arch }}
+          name: polywrap-${{ matrix.os }}-${{ matrix.arch }}
           path: ${{ steps.pkg-action.outputs.file }}
 
   Publish-GitHub:
