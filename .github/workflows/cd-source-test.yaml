@@ -24,7 +24,7 @@ jobs:
           ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Read VERSION into env.RELEASE_VERSION
-        run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
+        run: echo RELEASE_VERSION=0.11.5 >> $GITHUB_ENV
 
       - name: Is Pre-Release
         run: |
@@ -102,7 +102,7 @@ jobs:
           ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Read VERSION into env.RELEASE_VERSION
-        run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
+        run: echo RELEASE_VERSION=0.11.5 >> $GITHUB_ENV
 
       - name: Is Pre-Release
         run: |
@@ -184,7 +184,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        if: env.PRE_RELEASE == 'false' && env.TAG_EXISTS == 'false' && github.event.pull_request.merged == true
+        if: env.PRE_RELEASE == 'false' && env.TAG_EXISTS == 'false'
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
