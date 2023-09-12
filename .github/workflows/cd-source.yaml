@@ -80,13 +80,39 @@ jobs:
           yarn build
 
       - name: Package into standalone binary
-        if: env.TAG_EXISTS == 'false'
+        if: env.TAG_EXISTS == 'false' && ${{ matrix.arch }} == 'arm64'
+        uses: uraimo/run-on-arch-action@v2
+        with:
+          arch: aarch64
+          distro: ubuntu18.04
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          # We need to install node and yarn "again" because they dont exist inside our build container
+          install: |
+            apt update && apt -y install curl
+            curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+            apt-get install -y nodejs
+            curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+            apt update && apt -y install yarn
+            yarn global add pkg@5.8.1 --prefix /usr/local
+            pkg --version
+          run: |
+            pkg \
+            --config ./packages/cli/package.json \
+            --target=${{ matrix.node-version }}-${{ matrix.os }}-${{ matrix.arch }} \
+            --output ./packages/cli/standalone-binaries/polywrap-${{ matrix.os }}-${{ matrix.arch }} \
+            --debug \
+            --compress Brotli \
+            ./packages/cli/bin/polywrap
+
+      - name: Package into standalone binary
+        if: env.TAG_EXISTS == 'false' && ${{ matrix.arch }} == 'x64'
         working-directory: ./packages/cli
         run: |
           npx pkg . --target=${{ matrix.node-version }}-${{ matrix.os }}-${{ matrix.arch }} --output ./standalone-binaries/polywrap-${{ matrix.os }}-${{ matrix.arch }} --compress Brotli
 
       - name: Extract binary path
-        if: env.TAG_EXISTS == 'false'
+        if: env.TAG_EXISTS == 'false' && ${{ matrix.arch }} == 'x64'
         run: echo STANDALONE_BINARY_PATH=$(stat ./packages/cli/standalone-binaries/polywrap-${{ matrix.os }}-${{ matrix.arch }} | awk '/File:/ {print $2}') >> $GITHUB_ENV
 
       - name: Upload Artifacts
