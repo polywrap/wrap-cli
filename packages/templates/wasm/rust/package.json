@@ -2,7 +2,7 @@
   "name": "template-wasm-rs",
   "description": "Polywrap Rust Wrapper Template",
   "private": true,
-  "version": "0.11.4",
+  "version": "0.12.0",
   "scripts": {
     "codegen": "npx polywrap codegen",
     "build": "npx polywrap build",
@@ -13,6 +13,6 @@
     "test:workflow": "npx polywrap test"
   },
   "devDependencies": {
-    "polywrap": "0.11.4"
+    "polywrap": "0.12.0"
   }
 }
