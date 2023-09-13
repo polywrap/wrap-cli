@@ -17,7 +17,7 @@ export function getGenerateBindingFn(
       );
     case "wrap-rs":
       return WrapBindgen.getGenerateBindingFn(
-        "wrapscan.io/polywrap/wrap-rust-abi-bindgen@1"
+        "wrapscan.io/polywrap/wrap-rust-abi-bindgen@2"
       );
     case "wrap-go":
       return Golang.Wasm.generateBinding;
