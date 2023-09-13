@@ -102,12 +102,6 @@ jobs:
           restore-keys: |
             cargo-${{ runner.os }}-${{ github.job }}
 
-      - name: Log toolchain folders
-        run: ls toolchain
-
-      - name: Log toolchain packages
-        run: ls toolchain/packages
-
       - name: Set environment variable
         run: echo POLYWRAP_CLI_PATH=$(pwd)/toolchain/packages/cli >> $GITHUB_ENV
 
