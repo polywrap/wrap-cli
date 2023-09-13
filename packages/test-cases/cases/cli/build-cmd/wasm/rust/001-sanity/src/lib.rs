@@ -1,8 +1,8 @@
 pub mod wrap;
-pub use wrap::*;
+pub use wrap::prelude::*;
 
 impl ModuleTrait for Module {
-  fn method(args: wrap::module::ArgsMethod) -> Result<String, String> {
+  fn method(args: ArgsMethod) -> Result<String, String> {
     Ok(args.arg)
   }
 }
