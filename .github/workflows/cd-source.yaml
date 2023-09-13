@@ -124,12 +124,13 @@ jobs:
             FILE_NAME="polywrap-${{ matrix.os }}-${{ matrix.arch }}"
           fi
           echo STANDALONE_BINARY_PATH=$(stat ./packages/cli/standalone-binaries/$FILE_NAME | awk '/File:/ {print $2}') >> $GITHUB_ENV
+          echo FILE_NAME=$FILE_NAME >> $GITHUB_ENV
 
       - name: Upload Artifacts
         if: env.TAG_EXISTS == 'false'
         uses: actions/upload-artifact@v3
         with:
-          name: polywrap-${{ matrix.os }}-${{ matrix.arch }}
+          name: ${{ env.FILE_NAME }}
           path: ${{ env.STANDALONE_BINARY_PATH }}
 
   Publish-GitHub:
@@ -191,44 +192,50 @@ jobs:
           git_commit_sha: ${{ github.event.pull_request.merge_commit_sha }}
 
       - name: Download Artifacts linux-x64
+        id: download-linux-x64
         uses: actions/download-artifact@v3
         with:
           name: polywrap-linux-x64
-          path: ./bin/polywrap-linux-x64
+          path: ./bin
 
       - name: Download Artifacts linux-arm64
+        id: download-linux-arm64
         uses: actions/download-artifact@v3
         with:
           name: polywrap-linux-arm64
-          path: ./bin/polywrap-linux-arm64
+          path: ./bin
 
       - name: Download Artifacts macos-x64
+        id: download-macos-x64
         uses: actions/download-artifact@v3
         with:
           name: polywrap-macos-x64
-          path: ./bin/polywrap-macos-x64
+          path: ./bin
 
       - name: Download Artifacts macos-arm64
+        id: download-macos-arm64
         uses: actions/download-artifact@v3
         with:
           name: polywrap-macos-arm64
-          path: ./bin/polywrap-macos-arm64
+          path: ./bin
 
       - name: Download Artifacts win-x64
+        id: download-win-x64
         uses: actions/download-artifact@v3
         with:
-          name: polywrap-win-x64
-          path: ./bin/polywrap-win-x64.exe
+          name: polywrap-win-x64.exe
+          path: ./bin
 
       - name: Download Artifacts win-arm64
+        id: download-win-arm64
         uses: actions/download-artifact@v3
         with:
-          name: polywrap-win-arm64
-          path: ./bin/polywrap-win-arm64.exe
+          name: polywrap-win-arm64.exe
+          path: ./bin
 
       - name: Create Release
         id: create_release
-        if: env.PRE_RELEASE == 'false' && env.TAG_EXISTS == 'false' && github.event.pull_request.merged == true
+        if: env.PRE_RELEASE == 'false' && env.TAG_EXISTS == 'false'
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -240,7 +247,7 @@ jobs:
             ${{ github.event.pull_request.body }}
           draft: false
           prerelease: false
-          files: | 
+          files: |
             ./bin/polywrap-linux-x64
             ./bin/polywrap-linux-arm64
             ./bin/polywrap-macos-x64
