@@ -1,3 +1,12 @@
+# Polywrap Origin (0.12.0)
+## Breaking Changes
+**`@polywrap/schema-bind`:**
+* [PR-1890](https://github.com/polywrap/cli/pull/1890) **Update `wasm/rust` Bindings to `v2`**
+
+## Bugs
+**`polywrap` CLI:**
+* [PR-1903](https://github.com/polywrap/cli/pull/1903) **Properly Publish Binary Release**
+
 # Polywrap Origin (0.11.4)
 ## Features
 **`polywrap` CLI:**
