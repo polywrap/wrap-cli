@@ -98,6 +98,11 @@ export class PluginProject extends Project<PluginManifest> {
   public async getSchemaNamedPath(): Promise<string> {
     const manifest = await this.getManifest();
     const dir = this.getManifestDir();
+    if (!manifest.source.schema) {
+      throw new Error(
+        `No schema path specified in project manifest with name "${manifest.project.name}". This should never happen.`
+      );
+    }
     return path.join(dir, manifest.source.schema);
   }
 
