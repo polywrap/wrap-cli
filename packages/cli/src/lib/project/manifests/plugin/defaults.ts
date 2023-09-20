@@ -27,7 +27,7 @@ function defaultModulePath(
     throw Error(`Unsupported language: ${language}`);
   }
 
-  let relEntryPoint = "";
+  let relEntryPoint: string;
   if (language === "plugin/typescript") {
     relEntryPoint = "src/index.ts";
   } else if (language == "plugin/rust") {
@@ -37,30 +37,7 @@ function defaultModulePath(
   } else if (language == "plugin/swift") {
     relEntryPoint = "Package.swift";
   } else if (language == "plugin/kotlin") {
-    // traverse src dir and find first .kt file within kotlin src dir
-    const kotlinSrcDirs = [
-      "src/commonMain/kotlin",
-      "src/main/kotlin",
-      "src/jvmMain/kotlin",
-      "src/androidMain/kotlin",
-    ];
-    for (const dir of kotlinSrcDirs) {
-      const absDir = path.resolve(manifestPath, dir);
-      if (fs.existsSync(absDir)) {
-        const files = fs.readdirSync(absDir);
-        for (const file of files) {
-          if (file.endsWith(".kt")) {
-            relEntryPoint = path.resolve(absDir, file);
-            break;
-          }
-        }
-        // If no kotlin files exist yet, use Main.kt as virtual entry point
-        // Main.kt does not need to exist because it is only a reference for the wrap dir location
-        if (!relEntryPoint) {
-          return path.resolve(absDir, "Main.kt");
-        }
-      }
-    }
+    relEntryPoint = "src/commonMain/kotlin";
   } else {
     throw Error(`Unsupported language: ${language}`);
   }
