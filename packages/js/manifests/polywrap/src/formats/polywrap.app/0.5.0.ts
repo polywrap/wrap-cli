@@ -27,7 +27,7 @@ export interface AppManifest {
   /**
    * Project source files.
    */
-  source: {
+  source?: {
     /**
      * Path to the project's graphql schema.
      */

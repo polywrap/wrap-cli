@@ -1,0 +1,6 @@
+format: 0.6.0
+project:
+  name: test-project
+  type: wasm/assemblyscript
+extensions:
+  build: ./polywrap.build.yaml

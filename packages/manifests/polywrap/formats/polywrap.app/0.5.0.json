@@ -2,7 +2,7 @@
   "id": "AppManifest",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "project", "source"],
+  "required": ["format", "project"],
   "properties": {
     "format": {
       "description": "Polywrap manifest format version.",

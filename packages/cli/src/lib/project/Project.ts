@@ -63,7 +63,7 @@ export abstract class Project<TManifest extends AnyProjectManifest> {
   public abstract getSchemaNamedPath(): Promise<string>;
 
   public abstract getImportAbis(): Promise<
-    PolywrapManifest["source"]["import_abis"]
+    NonNullable<PolywrapManifest["source"]>["import_abis"]
   >;
 
   public abstract getGenerationDirectory(

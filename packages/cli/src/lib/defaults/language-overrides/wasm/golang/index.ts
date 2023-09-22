@@ -32,7 +32,7 @@ export function getCodegenOverrides(): CodegenOverrides {
 
 function getGoModulePath(manifest: PolywrapManifest): string {
   // Ensure `module: ...` is pointing to a `go.mod` file
-  const module = manifest.source.module;
+  const module = manifest.source?.module;
   if (!module || module.indexOf("go.mod") === -1) {
     throw Error(
       intlMsg.lib_wasm_golang_invalidModule({ path: module || "N/A" })

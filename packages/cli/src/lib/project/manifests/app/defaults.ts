@@ -6,6 +6,9 @@ export function applyAppManifestDefaults(
   manifest: AppManifest,
   manifestPath: string
 ): AppManifest {
+  if (!manifest.source) {
+    manifest.source = {};
+  }
   if (!manifest.source.schema) {
     manifest.source.schema = defaultSchemaPath(manifestPath);
   }

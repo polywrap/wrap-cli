@@ -9,6 +9,9 @@ export function applyPolywrapManifestDefaults(
   manifest: PolywrapManifest,
   manifestPath: string
 ): PolywrapManifest {
+  if (!manifest.source) {
+    manifest.source = {};
+  }
   if (!manifest.source.module) {
     const language = manifest.project.type;
     manifest.source.module = defaultModulePath(language, manifestPath);
@@ -40,7 +43,8 @@ function defaultModulePath(
     throw Error(`Unsupported language: ${language}`);
   }
 
-  const absEntryPoint = path.resolve(manifestPath, relEntryPoint);
+  const manifestDir = path.dirname(manifestPath);
+  const absEntryPoint = path.resolve(manifestDir, relEntryPoint);
   if (fs.existsSync(absEntryPoint)) {
     return absEntryPoint;
   }

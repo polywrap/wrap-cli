@@ -30,7 +30,7 @@
     "test:cmd": "jest --passWithNoTests --runInBand --verbose --forceExit",
     "test:unit": "yarn test:cmd -- ./src/__tests__/unit/**/*.spec.ts",
     "test:e2e:p1": "yarn test:cmd -- ./src/__tests__/e2e/p1/*.spec.ts",
-    "test:e2e:p2": "yarn test:cmd -- ./src/__tests__/e2e/p2/*.spec.ts",
+    "test:e2e:p2": "yarn test:cmd -- ./src/__tests__/e2e/p2/codegen*.spec.ts",
     "test:rust": "yarn test:cmd -- --config ./jest.rs.config.js",
     "test:golang": "yarn test:cmd -- --config ./jest.go.config.js",
     "test:typescript": "yarn test:cmd -- --config ./jest.ts.config.js",

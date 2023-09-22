@@ -27,7 +27,7 @@ export interface PluginManifest {
   /**
    * Project source files.
    */
-  source: {
+  source?: {
     /**
      * Path to the project's entry point.
      */
