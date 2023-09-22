@@ -103,7 +103,9 @@ export class PluginProject extends Project<PluginManifest> {
         `No schema path specified in project manifest with name "${manifest.project.name}". This should never happen.`
       );
     }
-    return path.join(dir, manifest.source.schema);
+    return path.isAbsolute(manifest.source.schema)
+      ? manifest.source.schema
+      : path.join(dir, manifest.source.schema);
   }
 
   public async getImportAbis(): Promise<
@@ -128,7 +130,6 @@ export class PluginProject extends Project<PluginManifest> {
     const moduleDirectory = await this.getGenerationDirectory(
       generationSubPath
     );
-
     // Clean the code generation
     resetDir(moduleDirectory);
 

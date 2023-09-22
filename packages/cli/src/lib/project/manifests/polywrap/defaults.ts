@@ -1,5 +1,9 @@
-import { isPolywrapManifestLanguage } from "./languages";
+import {
+  isPolywrapManifestLanguage,
+  polywrapManifestLanguages,
+} from "./languages";
 import { defaultSchemaPath } from "../defaults";
+import { intlMsg } from "../../../intl";
 
 import fs from "fs";
 import path from "path";
@@ -27,7 +31,12 @@ function defaultModulePath(
   manifestPath: string
 ): string | undefined {
   if (!isPolywrapManifestLanguage(language)) {
-    throw Error(`Unsupported language: ${language}`);
+    throw Error(
+      intlMsg.lib_language_unsupportedManifestLanguage({
+        language: language,
+        supported: Object.keys(polywrapManifestLanguages).join(", "),
+      })
+    );
   }
 
   let relEntryPoint: string;
@@ -40,7 +49,7 @@ function defaultModulePath(
   } else if (language == "interface") {
     return undefined;
   } else {
-    throw Error(`Unsupported language: ${language}`);
+    throw Error(intlMsg.lib_project_no_default_module());
   }
 
   const manifestDir = path.dirname(manifestPath);
@@ -49,7 +58,5 @@ function defaultModulePath(
     return absEntryPoint;
   }
 
-  throw Error(
-    "Couldn't find module entry point in default paths. Please specify the module entry point in the project manifest."
-  );
+  throw Error(intlMsg.lib_project_no_default_module());
 }

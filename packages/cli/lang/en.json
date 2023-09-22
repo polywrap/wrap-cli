@@ -272,6 +272,8 @@
   "lib_project_app_uri_support": "The app command supports only filesystem URIs for plugins. Examples:",
   "lib_project_imported_plugin_manifest_not_found": "No manifest found for imported plugin namespace `{namespace}` at path `{path}`",
   "lib_project_invalid_uri": "Invalid URI Received:",
+  "lib_project_no_default_schema": "Couldn't find schema in default paths. Please specify the schema location in the project manifest.",
+  "lib_project_no_default_module": "Couldn't find module entry point in default paths. Please specify the module entry point in the project manifest.",
   "lib_typescript_notInstalled": "Your project uses typescript, but it's not installed",
   "lib_typescript_tsNodeNotInstalled": "Your project uses typescript, but ts-node is not installed",
   "lib_watcher_alreadyWatching": "Watcher session is already in progress. Directory: {dir}",

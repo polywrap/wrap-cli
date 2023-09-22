@@ -1,5 +1,6 @@
 import { defaultSchemaPath } from "../defaults";
-import { isPluginManifestLanguage } from "./languages";
+import { isPluginManifestLanguage, pluginManifestLanguages } from "./languages";
+import { intlMsg } from "../../../intl";
 
 import fs from "fs";
 import path from "path";
@@ -27,7 +28,12 @@ function defaultModulePath(
   manifestPath: string
 ): string | undefined {
   if (!isPluginManifestLanguage(language)) {
-    throw Error(`Unsupported language: ${language}`);
+    throw Error(
+      intlMsg.lib_language_unsupportedManifestLanguage({
+        language: language,
+        supported: Object.keys(pluginManifestLanguages).join(", "),
+      })
+    );
   }
 
   let relEntryPoint: string;
@@ -42,16 +48,14 @@ function defaultModulePath(
   } else if (language == "plugin/kotlin") {
     relEntryPoint = "src/commonMain/kotlin";
   } else {
-    throw Error(`Unsupported language: ${language}`);
+    throw Error(intlMsg.lib_project_no_default_module());
   }
 
   const manifestDir = path.dirname(manifestPath);
   const absEntryPoint = path.resolve(manifestDir, relEntryPoint);
   if (fs.existsSync(absEntryPoint)) {
-    return absEntryPoint;
+    return relEntryPoint;
   }
 
-  throw Error(
-    "Couldn't find module entry point in default paths. Please specify the module entry point in the project manifest."
-  );
+  throw Error(intlMsg.lib_project_no_default_module());
 }

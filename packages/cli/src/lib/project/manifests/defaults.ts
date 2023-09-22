@@ -1,3 +1,5 @@
+import { intlMsg } from "../../intl";
+
 import path from "path";
 import fs from "fs";
 
@@ -16,7 +18,5 @@ export function defaultSchemaPath(manifestPath: string): string {
     }
   }
 
-  throw Error(
-    "Couldn't find schema in default paths. Please specify the schema location in the project manifest."
-  );
+  throw Error(intlMsg.lib_project_no_default_schema());
 }
