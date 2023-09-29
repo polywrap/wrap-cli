@@ -29,12 +29,19 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   const ensAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress;
   const testnetEnsResolverUri = "proxy/testnet-ens-contenthash-uri-resolver";
 
-  const builder = new PolywrapClientConfigBuilder()
-    .addDefaults()
+  const builder = new PolywrapClientConfigBuilder().addDefaults();
+
+  const ipfsResolverEnv = builder.config.envs[Sys.bundle.ipfsResolver.uri];
+
+  builder
     .addEnvs({
       [Sys.bundle.ipfsResolver.uri]: {
         provider: ipfsProvider,
-        retries: { tryResolveUri: 1, getFile: 1 },
+        fallbackProviders: [
+          ipfsResolverEnv.provider,
+          ipfsResolverEnv.fallbackProviders,
+        ],
+        retries: { tryResolveUri: 2, getFile: 2 },
       },
       [testnetEnsResolverUri]: {
         registryAddress: ensAddress,
