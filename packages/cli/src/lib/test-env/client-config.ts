@@ -13,7 +13,7 @@ import {
   Connections,
   Connection,
 } from "@polywrap/ethereum-wallet-js";
-import { IWrapPackage } from "@polywrap/core-js";
+import { IWrapPackage, Uri } from "@polywrap/core-js";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   // TODO: move this into its own package, since it's being used everywhere?
@@ -31,7 +31,8 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
 
   const builder = new PolywrapClientConfigBuilder().addDefaults();
 
-  const ipfsResolverEnv = builder.config.envs[Sys.bundle.ipfsResolver.uri];
+  const ipfsResolverEnv =
+    builder.config.envs[Uri.from(Sys.bundle.ipfsResolver.uri).toString()];
 
   builder
     .addEnvs({
