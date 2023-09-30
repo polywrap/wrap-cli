@@ -40,7 +40,7 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
         provider: ipfsProvider,
         fallbackProviders: [
           ipfsResolverEnv.provider,
-          ipfsResolverEnv.fallbackProviders,
+          ...(ipfsResolverEnv.fallbackProviders as string[]),
         ],
         retries: { tryResolveUri: 2, getFile: 2 },
       },
