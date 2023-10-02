@@ -6,14 +6,14 @@ use wrap::types::*;
 pub fn main() {
   let ipfs_provider = "https://ipfs.io";
   let cid = "Qmc5gCcjYypU7y28oCALwfSvxCBskLuPKWpK4qpterKC7z";
-  let ipfs = IpfsModule::new(None, None, None);
+  let ipfs = Ipfs::new(None);
 
-  let data = ipfs.cat(&IpfsModuleArgsCat{
+  let data = ipfs.cat(&IpfsArgsCat{
     cid: cid.to_string(),
     ipfs_provider: ipfs_provider.to_string(),
     timeout: None,
     cat_options: None
-  }, None, None, None).unwrap();
+  }, None).unwrap();
 
   assert_eq!(data, ByteBuf::from("Hello World!\r\n".as_bytes().to_vec()));
 }
