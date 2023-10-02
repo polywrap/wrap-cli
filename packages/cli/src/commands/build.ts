@@ -132,7 +132,7 @@ export const build: Command = {
 async function validateManifestModules(polywrapManifest: PolywrapManifest) {
   if (
     polywrapManifest.project.type !== "interface" &&
-    !polywrapManifest.source.module
+    !polywrapManifest.source?.module
   ) {
     const missingModuleMessage = intlMsg.lib_compiler_missingModule();
     throw Error(missingModuleMessage);
@@ -140,7 +140,7 @@ async function validateManifestModules(polywrapManifest: PolywrapManifest) {
 
   if (
     polywrapManifest.project.type === "interface" &&
-    polywrapManifest.source.module
+    polywrapManifest.source?.module
   ) {
     const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
     throw Error(noInterfaceModule);

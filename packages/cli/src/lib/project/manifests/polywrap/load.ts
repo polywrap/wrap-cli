@@ -6,6 +6,7 @@ import {
   logActivity,
   PolywrapBuildLanguage,
 } from "../../../";
+import { applyPolywrapManifestDefaults } from "./defaults";
 
 import {
   PolywrapManifest,
@@ -42,7 +43,8 @@ export async function loadPolywrapManifest(
     }
 
     try {
-      const result = deserializePolywrapManifest(manifest, { logger: logger });
+      const decoded = deserializePolywrapManifest(manifest, { logger: logger });
+      const result = applyPolywrapManifestDefaults(decoded, manifestPath);
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
