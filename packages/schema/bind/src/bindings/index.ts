@@ -51,7 +51,7 @@ export function getGenerateBindingFn(
       );
     case "app-rs":
       return WrapBindgen.getGenerateBindingFn(
-        "wrapscan.io/polywrap/app-rust-abi-bindgen@1"
+        "wrapscan.io/polywrap/app-rust-abi-bindgen@2"
       );
     case "app-swift":
       return WrapBindgen.getGenerateBindingFn(
