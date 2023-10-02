@@ -132,7 +132,7 @@ export const build: Command = {
 async function validateManifestModules(polywrapManifest: PolywrapManifest) {
   if (
     polywrapManifest.project.type !== "interface" &&
-    !polywrapManifest.source.module
+    !polywrapManifest.source?.module
   ) {
     const missingModuleMessage = intlMsg.lib_compiler_missingModule();
     throw Error(missingModuleMessage);
@@ -140,7 +140,7 @@ async function validateManifestModules(polywrapManifest: PolywrapManifest) {
 
   if (
     polywrapManifest.project.type === "interface" &&
-    polywrapManifest.source.module
+    polywrapManifest.source?.module
   ) {
     const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
     throw Error(noInterfaceModule);
@@ -242,11 +242,12 @@ async function run(options: Required<BuildCommandOptions>) {
         project,
         client,
       });
+      const abi = await schemaComposer.getComposedAbis();
 
       if (canRunCodegen && !noCodegen) {
         const codeGenerator = new CodeGenerator({
           project,
-          schemaComposer,
+          abi,
           codegenDirAbs: codegenDir || undefined,
           bindgenUri,
         });
@@ -261,7 +262,7 @@ async function run(options: Required<BuildCommandOptions>) {
       const compiler = new Compiler({
         project: project as PolywrapProject,
         outputDir,
-        schemaComposer,
+        abi,
         buildStrategy,
       });
 

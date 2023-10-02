@@ -97,12 +97,21 @@ export class AppProject extends Project<AppManifest> {
   public async getSchemaNamedPath(): Promise<string> {
     const manifest = await this.getManifest();
     const dir = this.getManifestDir();
-    return path.join(dir, manifest.source.schema);
+    if (!manifest.source?.schema) {
+      throw new Error(
+        `No schema path specified in project manifest with name "${manifest.project.name}". This should never happen.`
+      );
+    }
+    return path.isAbsolute(manifest.source.schema)
+      ? manifest.source.schema
+      : path.join(dir, manifest.source.schema);
   }
 
-  public async getImportAbis(): Promise<AppManifest["source"]["import_abis"]> {
+  public async getImportAbis(): Promise<
+    NonNullable<AppManifest["source"]>["import_abis"]
+  > {
     const manifest = await this.getManifest();
-    return manifest.source.import_abis || [];
+    return manifest.source?.import_abis || [];
   }
 
   public async getGenerationDirectory(
@@ -131,6 +140,7 @@ export class AppProject extends Project<AppManifest> {
         abi,
       },
       outputDirAbs: await this.getGenerationDirectory(codegenDir),
+      config: bindConfig,
     };
     return bindSchema(options, bindgenUri);
   }

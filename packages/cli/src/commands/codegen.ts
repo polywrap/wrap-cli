@@ -14,6 +14,8 @@ import {
   defaultPolywrapManifestFiles,
   parseLogFileOption,
   parseWrapperEnvsOption,
+  WasmEmbed,
+  getWasmEmbeds,
 } from "../lib";
 import { ScriptCodegenerator } from "../lib/codegen/ScriptCodeGenerator";
 import { DEFAULT_CODEGEN_DIR } from "../lib/defaults";
@@ -29,6 +31,7 @@ export interface CodegenCommandOptions extends BaseCommandOptions {
   manifestFile: string;
   codegenDir: string | false;
   bindgen: string | false;
+  embed: boolean | false;
   script: string | false;
   clientConfig: string | false;
   wrapperEnvs: string | false;
@@ -54,6 +57,7 @@ export const codegen: Command = {
         })}`
       )
       .option(`-b, --bindgen <URI>`, `${intlMsg.commands_codegen_options_b()}`)
+      .option(`-e, --embed`, `${intlMsg.commands_codegen_options_e()}`)
       .option(
         `-s, --script <${pathStr}>`,
         `${intlMsg.commands_codegen_options_s()}`
@@ -81,6 +85,7 @@ export const codegen: Command = {
           ),
           codegenDir: parseDirOptionNoDefault(options.codegenDir),
           bindgen: options.bindgen || false,
+          embed: options.embed || false,
           script: parseCodegenScriptOption(options.script),
           clientConfig: options.clientConfig || false,
           wrapperEnvs: options.wrapperEnvs || false,
@@ -100,6 +105,7 @@ async function run(options: Required<CodegenCommandOptions>) {
     wrapperEnvs,
     codegenDir,
     bindgen,
+    embed,
     script,
     verbose,
     quiet,
@@ -133,21 +139,34 @@ async function run(options: Required<CodegenCommandOptions>) {
     project,
     client,
   });
+  const abi = await schemaComposer.getComposedAbis();
+
+  const projectLang = await project.getManifestLanguage();
+  if (embed && !projectLang.startsWith("app")) {
+    logger.error(intlMsg.commands_codegen_error_embedAppOnly());
+    process.exit(1);
+  }
+
+  const embeds: WasmEmbed[] | undefined =
+    embed && abi.importedModuleTypes
+      ? await getWasmEmbeds(abi.importedModuleTypes, client, logger)
+      : undefined;
 
   const codeGenerator = script
     ? new ScriptCodegenerator({
         codegenDirAbs: codegenDir || undefined,
         script,
-        schemaComposer,
+        abi,
         project,
         omitHeader: false,
         mustacheView: undefined,
       })
     : new CodeGenerator({
         codegenDirAbs: codegenDir || undefined,
-        schemaComposer,
+        abi,
         project,
         bindgenUri,
+        embeds,
       });
 
   const execute = async (): Promise<boolean> => {

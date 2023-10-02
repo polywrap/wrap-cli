@@ -1,4 +1,5 @@
 import { displayPath, Logger, logActivity, intlMsg } from "../../../";
+import { applyAppManifestDefaults } from "./defaults";
 
 import {
   AppManifest,
@@ -22,7 +23,8 @@ export async function loadAppManifest(
     }
 
     try {
-      const result = deserializeAppManifest(manifest, { logger: logger });
+      const decoded = deserializeAppManifest(manifest, { logger: logger });
+      const result = applyAppManifestDefaults(decoded, manifestPath);
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
