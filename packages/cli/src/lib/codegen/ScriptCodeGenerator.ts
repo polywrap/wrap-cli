@@ -1,7 +1,6 @@
 import { intlMsg } from "../intl";
 import { AnyProjectManifest, Project } from "../project";
 import { isTypescriptFile, importTypescriptModule, resetDir } from "../system";
-import { SchemaComposer } from "../SchemaComposer";
 import { CodeGenerator } from "./CodeGenerator";
 
 import { writeDirectorySync } from "@polywrap/os-js";
@@ -14,6 +13,7 @@ import { readFileSync } from "fs-extra";
 import Mustache from "mustache";
 import path from "path";
 import { latestWrapManifestVersion } from "@polywrap/wrap-manifest-types-js";
+import { Abi } from "@polywrap/schema-parse";
 
 export class ScriptCodegenerator extends CodeGenerator {
   private readonly _script: string;
@@ -23,7 +23,7 @@ export class ScriptCodegenerator extends CodeGenerator {
 
   constructor(config: {
     project: Project<AnyProjectManifest>;
-    schemaComposer: SchemaComposer;
+    abi: Abi;
     codegenDirAbs?: string;
     script: string;
     mustacheView: Record<string, unknown> | undefined;
@@ -32,7 +32,7 @@ export class ScriptCodegenerator extends CodeGenerator {
   }) {
     super({
       project: config.project,
-      schemaComposer: config.schemaComposer,
+      abi: config.abi,
       codegenDirAbs: config.codegenDirAbs,
     });
 
@@ -72,7 +72,7 @@ export class ScriptCodegenerator extends CodeGenerator {
         version: latestWrapManifestVersion,
         name: await this._config.project.getName(),
         type: bindLanguageToWrapInfoType(bindLanguage),
-        abi: await this._config.schemaComposer.getComposedAbis(),
+        abi: this._config.abi,
       },
       config: this._mustacheView,
       outputDirAbs,

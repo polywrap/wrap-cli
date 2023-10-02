@@ -15,19 +15,21 @@ import {
   Project,
 } from "../project";
 import { resetDir } from "../system";
-import { SchemaComposer } from "../SchemaComposer";
 import { CodegenOverrides, tryGetCodegenOverrides } from "./CodegenOverrides";
+import { WasmEmbed } from "./WasmEmbed";
 
 import path from "path";
 import { BindLanguage } from "@polywrap/schema-bind";
 import { writeDirectorySync } from "@polywrap/os-js";
 import { Uri } from "@polywrap/core-js";
+import { Abi } from "@polywrap/schema-parse";
 
 export interface CodeGeneratorConfig {
   project: Project<AnyProjectManifest>;
-  schemaComposer: SchemaComposer;
+  abi: Abi;
   codegenDirAbs?: string;
   bindgenUri?: Uri;
+  embeds?: WasmEmbed[];
 }
 
 export class CodeGenerator {
@@ -88,13 +90,19 @@ export class CodeGenerator {
         )
       : undefined;
 
-    const bindConfig = overrides
+    let bindConfig = overrides
       ? await overrides.getSchemaBindConfig(this._config.project)
       : {};
 
-    const abi = await this._config.schemaComposer.getComposedAbis();
+    if (this._config.embeds) {
+      bindConfig = {
+        ...bindConfig,
+        embeds: this._config.embeds,
+      };
+    }
+
     const binding = await this._config.project.generateSchemaBindings(
-      abi,
+      this._config.abi,
       codegenDir,
       this._config.bindgenUri?.toString(),
       bindConfig

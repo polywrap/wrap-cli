@@ -1,0 +1,4 @@
+format: 0.5.0
+project:
+  name: test-app
+  type: app/typescript

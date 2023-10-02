@@ -1,3 +1,15 @@
+# Polywrap Origin (0.12.1)
+## Features
+**`polywrap` CLI:**
+* [PR-1911](https://github.com/polywrap/cli/pull/1911) **Polywrap Manifest - Default Source Paths**
+  * `polywrap.yaml` manifests can now omit the `source:` section and use the defaults defined by the CLI babsed on the manifest's `project.type` property.
+* [PR-1893](https://github.com/polywrap/cli/pull/1893) **Add `embed` option to `polywrap codegen`**
+  * Adds the `--embed` option to `polywrap codegen` which embeds wrap modules into applications (requires wrap-abi-bindgen support).
+
+## Bugs
+**`polywrap` CLI:**
+* [PR-1913](https://github.com/polywrap/cli/pull/1913) **Use Sys Bundle IPFS Providers in CLI**
+
 # Polywrap Origin (0.12.0)
 ## Breaking Changes
 **`@polywrap/schema-bind`:**

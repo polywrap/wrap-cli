@@ -1,4 +1,5 @@
 import { displayPath, Logger, logActivity, intlMsg } from "../../../";
+import { applyPluginManifestDefaults } from "./defaults";
 
 import {
   PluginManifest,
@@ -26,7 +27,8 @@ export async function loadPluginManifest(
     }
 
     try {
-      const result = deserializePluginManifest(manifest, { logger: logger });
+      const decoded = deserializePluginManifest(manifest, { logger: logger });
+      const result = applyPluginManifestDefaults(decoded, manifestPath);
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);

@@ -17,12 +17,16 @@ import {
 import {
   AppManifest as AppManifest_0_4_0,
 } from "./0.4.0";
+import {
+  AppManifest as AppManifest_0_5_0,
+} from "./0.5.0";
 
 export {
   AppManifest_0_1_0,
   AppManifest_0_2_0,
   AppManifest_0_3_0,
   AppManifest_0_4_0,
+  AppManifest_0_5_0,
 };
 
 export enum AppManifestFormats {
@@ -32,6 +36,7 @@ export enum AppManifestFormats {
   "v0.2.0" = "0.2.0",
   "v0.3.0" = "0.3.0",
   "v0.4.0" = "0.4.0",
+  "v0.5.0" = "0.5.0",
 }
 
 export const AppManifestSchemaFiles: Record<string, string> = {
@@ -41,6 +46,7 @@ export const AppManifestSchemaFiles: Record<string, string> = {
   "0.2.0": "formats/polywrap.app/0.2.0.json",
   "0.3.0": "formats/polywrap.app/0.3.0.json",
   "0.4.0": "formats/polywrap.app/0.4.0.json",
+  "0.5.0": "formats/polywrap.app/0.5.0.json",
 }
 
 export type AnyAppManifest =
@@ -48,11 +54,12 @@ export type AnyAppManifest =
   | AppManifest_0_2_0
   | AppManifest_0_3_0
   | AppManifest_0_4_0
+  | AppManifest_0_5_0
 
 
-export type AppManifest = AppManifest_0_4_0;
+export type AppManifest = AppManifest_0_5_0;
 
-export const latestAppManifestFormat = AppManifestFormats["v0.4.0"]
+export const latestAppManifestFormat = AppManifestFormats["v0.5.0"]
 
 export { migrateAppManifest } from "./migrate";
 

@@ -98,14 +98,21 @@ export class PluginProject extends Project<PluginManifest> {
   public async getSchemaNamedPath(): Promise<string> {
     const manifest = await this.getManifest();
     const dir = this.getManifestDir();
-    return path.join(dir, manifest.source.schema);
+    if (!manifest.source?.schema) {
+      throw new Error(
+        `No schema path specified in project manifest with name "${manifest.project.name}". This should never happen.`
+      );
+    }
+    return path.isAbsolute(manifest.source.schema)
+      ? manifest.source.schema
+      : path.join(dir, manifest.source.schema);
   }
 
   public async getImportAbis(): Promise<
-    PluginManifest["source"]["import_abis"]
+    NonNullable<PluginManifest["source"]>["import_abis"]
   > {
     const manifest = await this.getManifest();
-    return manifest.source.import_abis || [];
+    return manifest.source?.import_abis || [];
   }
 
   public async getGenerationDirectory(
@@ -123,7 +130,6 @@ export class PluginProject extends Project<PluginManifest> {
     const moduleDirectory = await this.getGenerationDirectory(
       generationSubPath
     );
-
     // Clean the code generation
     resetDir(moduleDirectory);
 
@@ -158,7 +164,7 @@ export class PluginProject extends Project<PluginManifest> {
         manifest.project.type as PluginManifestLanguage
       ) ||
       // 3. If a module path exists, generate within a "wrap" dir next to it
-      (manifest.source.module &&
+      (manifest.source?.module &&
         path.join(path.dirname(manifest.source.module), "wrap")) ||
       // 4. Use the default
       defaultDir;

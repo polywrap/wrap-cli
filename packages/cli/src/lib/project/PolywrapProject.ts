@@ -147,14 +147,21 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   public async getSchemaNamedPath(): Promise<string> {
     const manifest = await this.getManifest();
     const dir = this.getManifestDir();
-    return path.join(dir, manifest.source.schema);
+    if (!manifest.source?.schema) {
+      throw new Error(
+        `No schema path specified in project manifest with name "${manifest.project.name}". This should never happen.`
+      );
+    }
+    return path.isAbsolute(manifest.source.schema)
+      ? manifest.source.schema
+      : path.join(dir, manifest.source.schema);
   }
 
   public async getImportAbis(): Promise<
-    PolywrapManifest["source"]["import_abis"]
+    NonNullable<PolywrapManifest["source"]>["import_abis"]
   > {
     const manifest = await this.getManifest();
-    return manifest.source.import_abis || [];
+    return manifest.source?.import_abis || [];
   }
 
   public async getGenerationDirectory(
@@ -366,7 +373,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   > {
     const manifest = await this.getManifest();
 
-    if (manifest.source.module) {
+    if (manifest.source?.module) {
       return {
         moduleFilePath: manifest.source.module,
         dir: path.dirname(manifest.source.module).replace("./", ""),
@@ -389,7 +396,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
         manifest.project.type as PolywrapManifestLanguage
       ) ||
       // 3. If a module path exists, generate within a "wrap" dir next to it
-      (manifest.source.module &&
+      (manifest.source?.module &&
         path.join(path.dirname(manifest.source.module), "wrap")) ||
       // 4. Use the default
       defaultDir;

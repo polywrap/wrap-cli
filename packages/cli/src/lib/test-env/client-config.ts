@@ -13,7 +13,7 @@ import {
   Connections,
   Connection,
 } from "@polywrap/ethereum-wallet-js";
-import { IWrapPackage } from "@polywrap/core-js";
+import { IWrapPackage, Uri } from "@polywrap/core-js";
 
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   // TODO: move this into its own package, since it's being used everywhere?
@@ -29,12 +29,20 @@ export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   const ensAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress;
   const testnetEnsResolverUri = "proxy/testnet-ens-contenthash-uri-resolver";
 
-  const builder = new PolywrapClientConfigBuilder()
-    .addDefaults()
+  const builder = new PolywrapClientConfigBuilder().addDefaults();
+
+  const ipfsResolverEnv =
+    builder.config.envs[Uri.from(Sys.bundle.ipfsResolver.uri).toString()];
+
+  builder
     .addEnvs({
       [Sys.bundle.ipfsResolver.uri]: {
         provider: ipfsProvider,
-        retries: { tryResolveUri: 1, getFile: 1 },
+        fallbackProviders: [
+          ipfsResolverEnv.provider,
+          ...(ipfsResolverEnv.fallbackProviders as string[]),
+        ],
+        retries: { tryResolveUri: 2, getFile: 2 },
       },
       [testnetEnsResolverUri]: {
         registryAddress: ensAddress,
