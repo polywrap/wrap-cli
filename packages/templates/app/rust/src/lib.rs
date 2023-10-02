@@ -6,7 +6,7 @@ use wrap::types::*;
 pub fn main() {
   let ipfs_provider = "https://ipfs.io";
   let cid = "Qmc5gCcjYypU7y28oCALwfSvxCBskLuPKWpK4qpterKC7z";
-  let ipfs = IpfsModule::new(None);
+  let ipfs = Ipfs::new(None);
 
   let data = ipfs.cat(&IpfsArgsCat{
     cid: cid.to_string(),
