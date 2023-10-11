@@ -1,0 +1,136 @@
+{
+  "id": "PolywrapManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "project"],
+  "properties": {
+    "format": {
+      "description": "Polywrap manifest format version.",
+      "type": "string",
+      "enum": ["0.7.0"]
+    },
+    "project": {
+      "description": "Basic project properties.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "description": "Name of this project.",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+        },
+        "type": {
+          "description": "Type of this project.",
+          "type": "string",
+          "pattern": "^((interface)|(wasm\\/[a-z0-9]+))$"
+        }
+      }
+    },
+    "source": {
+      "description": "Project source files.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "module": {
+          "description": "Path to the project's entry point.",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
+        },
+        "schema": {
+          "description": "Path to the project's graphql schema.",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
+        }
+      }
+    },
+    "imports": {
+      "description": "Specify URIs to be used to import ABIs in your schema.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Z][a-zA-Z0-9_]+$"
+      },
+      "patternProperties": {
+        ".*": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/import_uri"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    "import_abis": {
+      "description": "Specify redirects from import URIs to ABIs on your filesystem.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/import_abi"
+      }
+    },
+    "resources": {
+      "description": "Project resources folder",
+      "type": "string",
+      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*\\/?$"
+    },
+    "extensions": {
+      "description": "Project extension manifest files.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "build": {
+          "description": "Path to the project build manifest file.",
+          "type": "string",
+          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
+        },
+        "docs": {
+          "description": "Path to the project docs manifest file.",
+          "type": "string",
+          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "import_uri": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "description": "Wrap URI to import.",
+          "type": "string"
+        },
+        "types": {
+          "description": "List of types to import from Wrap (defaults to all).",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "functions": {
+          "description": "List of functions to import from Wrap (defaults to all).",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["uri"]
+    },
+    "import_abi": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "description": "Import URI",
+          "type": "string"
+        },
+        "abi": {
+          "description": "Path to a local ABI (or schema). Supported file formats: [*.graphql, *.info, *.json, *.yaml]",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.@]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.(info|graphql|json|yaml)$"
+        }
+      },
+      "required": ["uri", "abi"]
+    }
+  }
+}

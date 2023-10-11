@@ -20,6 +20,9 @@ import {
 import {
   PluginManifest as PluginManifest_0_5_0,
 } from "./0.5.0";
+import {
+  PluginManifest as PluginManifest_0_6_0,
+} from "./0.6.0";
 
 export {
   PluginManifest_0_1_0,
@@ -27,6 +30,7 @@ export {
   PluginManifest_0_3_0,
   PluginManifest_0_4_0,
   PluginManifest_0_5_0,
+  PluginManifest_0_6_0,
 };
 
 export enum PluginManifestFormats {
@@ -37,6 +41,7 @@ export enum PluginManifestFormats {
   "v0.3.0" = "0.3.0",
   "v0.4.0" = "0.4.0",
   "v0.5.0" = "0.5.0",
+  "v0.6.0" = "0.6.0",
 }
 
 export const PluginManifestSchemaFiles: Record<string, string> = {
@@ -47,6 +52,7 @@ export const PluginManifestSchemaFiles: Record<string, string> = {
   "0.3.0": "formats/polywrap.plugin/0.3.0.json",
   "0.4.0": "formats/polywrap.plugin/0.4.0.json",
   "0.5.0": "formats/polywrap.plugin/0.5.0.json",
+  "0.6.0": "formats/polywrap.plugin/0.6.0.json",
 }
 
 export type AnyPluginManifest =
@@ -55,11 +61,12 @@ export type AnyPluginManifest =
   | PluginManifest_0_3_0
   | PluginManifest_0_4_0
   | PluginManifest_0_5_0
+  | PluginManifest_0_6_0
 
 
-export type PluginManifest = PluginManifest_0_5_0;
+export type PluginManifest = PluginManifest_0_6_0;
 
-export const latestPluginManifestFormat = PluginManifestFormats["v0.5.0"]
+export const latestPluginManifestFormat = PluginManifestFormats["v0.6.0"]
 
 export { migratePluginManifest } from "./migrate";
 

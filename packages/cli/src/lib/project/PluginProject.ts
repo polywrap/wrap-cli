@@ -108,11 +108,9 @@ export class PluginProject extends Project<PluginManifest> {
       : path.join(dir, manifest.source.schema);
   }
 
-  public async getImportAbis(): Promise<
-    NonNullable<PluginManifest["source"]>["import_abis"]
-  > {
+  public async getImportAbis(): Promise<PluginManifest["import_abis"]> {
     const manifest = await this.getManifest();
-    return manifest.source?.import_abis || [];
+    return manifest.import_abis || [];
   }
 
   public async getGenerationDirectory(
