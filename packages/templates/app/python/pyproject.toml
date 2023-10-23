@@ -10,4 +10,4 @@ authors = ["Cesar <cesar@polywrap.io>", "Niraj <niraj@polywrap.io>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-polywrap = "^0.1.0b7"
+polywrap = "^0.1.2"

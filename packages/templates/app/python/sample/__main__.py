@@ -1,14 +1,13 @@
-from .wrap import EthersUtils
+from .wrap import Sha3
 
 
 if __name__ == "__main__":
-    eth = EthersUtils()
+    sha3 = Sha3()
 
-    print("Invoking: EthersUtils.encodeParams(...)")
+    print("Invoking: Sha3.sha3_256(...)")
 
-    result = eth.encode_params({
-        "types": ["address", "uint256"],
-        "values": ["0xB1B7586656116D546033e3bAFF69BFcD6592225E", "500"]
+    result = sha3.sha3_256({
+        "message": "Hello Polywrap!"
     })
 
-    print(f"EthersUtils.encodeParams:\n{result}")
+    print(f"Sha3.sha3_256:\n{result}")

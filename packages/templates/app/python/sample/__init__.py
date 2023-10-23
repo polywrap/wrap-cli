@@ -1,5 +1,5 @@
-from .wrap import EthersUtils
+from .wrap import Sha3
 
 __all__ = [
-    "EthersUtils",
+    "Sha3",
 ]
