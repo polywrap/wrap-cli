@@ -5,3 +5,5 @@ project:
 source:
   schema: ./polywrap.graphql
   module: ./bundled/wrap.js
+extensions:
+  build: ./polywrap.build.yaml

@@ -9,10 +9,8 @@
     "codegen": "npx polywrap codegen",
     "build": "yarn codegen && yarn bundle && npx polywrap build --no-codegen",
     "deploy": "npx polywrap deploy",
-    "test": "yarn test:e2e && yarn test:workflow",
-    "test:e2e": "yarn test:e2e:codegen && cargo test --release",
-    "test:e2e:codegen": "npx polywrap codegen -m ./tests/types/polywrap.app.yaml -g ./tests/types/wrap",
-    "test:workflow": "npx polywrap test"
+    "test": "yarn test:codegen && jest --passWithNoTests --runInBand --verbose",
+    "test:codegen": "npx polywrap codegen -m ./src/__tests__/types/polywrap.app.yaml -g ./src/__tests__/types/wrap"
   },
   "dependencies": {
     "tslib": "^2.6.2"

@@ -7,10 +7,8 @@
     "codegen": "npx polywrap codegen",
     "build": "npx polywrap build",
     "deploy": "npx polywrap deploy",
-    "test": "yarn test:e2e && yarn test:workflow",
-    "test:e2e": "yarn test:e2e:codegen && cargo test --release",
-    "test:e2e:codegen": "npx polywrap codegen -m ./tests/types/polywrap.app.yaml -g ./tests/types/wrap",
-    "test:workflow": "npx polywrap test"
+    "test": "yarn test:codegen && cargo test --release",
+    "test:codegen": "npx polywrap codegen -m ./tests/types/polywrap.app.yaml -g ./tests/types/wrap"
   },
   "devDependencies": {
     "polywrap": "0.12.1"

@@ -1,3 +1,6 @@
 format: 0.3.0
+strategies:
+  image:
+    name: template-wasm-ts
 config:
   scriptFile: ./bundled/wrap.js
