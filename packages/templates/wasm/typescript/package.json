@@ -6,10 +6,13 @@
   "main": "build/index.js",
   "scripts": {
     "bundle": "rollup -c",
-    "codegen": "polywrap codegen --verbose",
-    "build": "yarn bundle && npx polywrap build --no-codegen",
-    "test": "jest --passWithNoTests --runInBand --verbose",
-    "deploy": "polywrap deploy"
+    "codegen": "npx polywrap codegen",
+    "build": "yarn codegen && yarn bundle && npx polywrap build --no-codegen",
+    "deploy": "npx polywrap deploy",
+    "test": "yarn test:e2e && yarn test:workflow",
+    "test:e2e": "yarn test:e2e:codegen && cargo test --release",
+    "test:e2e:codegen": "npx polywrap codegen -m ./tests/types/polywrap.app.yaml -g ./tests/types/wrap",
+    "test:workflow": "npx polywrap test"
   },
   "dependencies": {
     "tslib": "^2.6.2"
