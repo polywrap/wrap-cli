@@ -57,8 +57,6 @@ dependencies {
     // polywrap client
     implementation("io.polywrap:polywrap-client:0.10.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.1")
-    // polywrap logger plugin
-    implementation("io.polywrap.plugins:logger:0.10.4")
     implementation("com.github.tony19:logback-android:3.0.0")
 
     // ui
