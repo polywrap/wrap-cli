@@ -11,11 +11,11 @@ include = [
 ]
 
 [dependencies]
-polywrap_core = { version = "~0.1.8" }
-polywrap_plugin = { version = "~0.1.8" }
+polywrap_core = { version = "~0.1.9-beta.2" }
+polywrap_plugin = { version = "~0.1.9-beta.2" }
 polywrap_msgpack_serde = { version = "~0.0.2-beta.7" }
-wrap_manifest_schemas = { version = "~0.1.8" }
+wrap_manifest_schemas = { version = "~0.1.9-beta.2" }
 serde = {version = "1.0.145", features = ["derive"]}
 
 [dev-dependencies]
-polywrap_client = { version = "~0.1.8" }
+polywrap_client = { version = "~0.1.9-beta.2" }

@@ -2,7 +2,7 @@ format: 0.3.0
 strategies:
   image:
     name: wrap-wasm-as-build-image
-    node_version: 16.13.0
+    node_version: 18.15.0
     include:
       - ./package.json
       - ./src
