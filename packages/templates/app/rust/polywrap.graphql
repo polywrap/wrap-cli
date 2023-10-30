@@ -1,1 +1,1 @@
-#import * into Ipfs from "wrapscan.io/polywrap/ipfs-http-client@1.0"
+#import * into Sha3 from "wrapscan.io/polywrap/sha3@1"
