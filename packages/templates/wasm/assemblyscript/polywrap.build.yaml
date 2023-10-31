@@ -1,8 +1,0 @@
-format: 0.3.0
-strategies:
-  image:
-    name: template-wasm-as
-    node_version: 18.15.0
-    include:
-      - ./package.json
-      - ./src

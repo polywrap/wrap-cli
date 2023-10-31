@@ -5,5 +5,3 @@ project:
 source:
   schema: ./polywrap.graphql
   module: ./go.mod
-extensions:
-  build: ./polywrap.build.yaml
