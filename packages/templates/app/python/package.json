@@ -6,6 +6,6 @@
     "test": "poetry run python -m sample"
   },
   "devDependencies": {
-    "polywrap": "0.11.2"
+    "polywrap": "0.12.1"
   }
 }

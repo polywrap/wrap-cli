@@ -1,2 +1,1 @@
-#import * into Logging from "wrapscan.io/polywrap/logger@1.0"
-#import * into Ethers from "wrapscan.io/polywrap/ethers@1.1"
+#import * into Sha3 from "wrapscan.io/polywrap/sha3@1"

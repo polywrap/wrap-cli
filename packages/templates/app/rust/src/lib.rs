@@ -4,25 +4,27 @@ use polywrap::ByteBuf;
 use wrap::types::*;
 
 pub fn main() {
-  let ipfs_provider = "https://ipfs.io";
-  let cid = "Qmc5gCcjYypU7y28oCALwfSvxCBskLuPKWpK4qpterKC7z";
-  let ipfs = Ipfs::new(None);
+    let sha3 = Sha3::new(None);
 
-  let data = ipfs.cat(&IpfsArgsCat{
-    cid: cid.to_string(),
-    ipfs_provider: ipfs_provider.to_string(),
-    timeout: None,
-    cat_options: None
-  }, None).unwrap();
+    let data = sha3
+        .sha3_256(
+            &Sha3ArgsSha3256 {
+                message: "Hello Polywrap!".to_string(),
+            },
+            None,
+        )
+        .unwrap();
 
-  assert_eq!(data, ByteBuf::from("Hello World!\r\n".as_bytes().to_vec()));
+    println!("{}", data);
+
+    assert_eq!(data, "ba5a5d5fb7674f5975f0ecd0cd9a2f4bcadc9c04f5ac2ab3a887d8f10355fc38");
 }
 
 #[cfg(test)]
 mod client_tests {
 
-  #[test]
-  fn test_client() {
-    super::main();
-  }
+    #[test]
+    fn test_client() {
+        super::main();
+    }
 }

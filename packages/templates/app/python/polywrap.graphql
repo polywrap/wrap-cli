@@ -1,1 +1,1 @@
-#import * into EthersUtils from "wrapscan.io/polywrap/ethers-utils@1"
+#import * into Sha3 from "wrapscan.io/polywrap/sha3@1"
