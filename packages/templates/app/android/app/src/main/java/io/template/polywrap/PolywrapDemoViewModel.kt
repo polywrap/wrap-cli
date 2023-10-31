@@ -6,11 +6,8 @@ import androidx.lifecycle.viewModelScope
 import io.polywrap.client.PolywrapClient
 import io.polywrap.configBuilder.polywrapClient
 import kotlinx.coroutines.launch
-import wrap.Ethereum
-import wrap.EthereumArgsEncodeParams
-import wrap.Logging
-import wrap.LoggingArgsLog
-import wrap.LoggingLogLevel
+import wrap.Sha3
+import wrap.Sha3ArgsSha3256
 
 class PolywrapDemoViewModel: ViewModel() {
 
