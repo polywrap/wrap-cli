@@ -1,7 +1,7 @@
 # Polywrap Origin (0.12.2)
 ## Features
 **`polywrap` CLI:**
-* [PR-...](https://github.com/polywrap/cli/pull/...) **Add `--no-wasm` Option To `polywrap build`**
+* [PR-1928](https://github.com/polywrap/cli/pull/1928) **Add `--no-wasm` Option To `polywrap build`**
   * `build` command now supports the `--no-wasm` option, which disables the wasm compilation step when compiling projects.
 
 # Polywrap Origin (0.12.1)
