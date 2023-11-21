@@ -104,6 +104,10 @@ Currently, `build` can be run for Wasm, Plugin and Interface projects.
   Skip codegen before building.
   By default, `build` performs a `codegen` step before building your Project. This option skips this step.
 
+- `--no-wasm`
+  Skip wasm compilation.
+  By default, `build` performs wasm compilation. This option skips this step.
+
 - `-s, --strategy <strategy>`
   Specify which build strategy to use. By default, the `vm` build strategy is used.
   Available strategies:
