@@ -2,6 +2,6 @@
   "name": "templates-plugin-rust",
   "private": true,
   "dependencies": {
-    "polywrap": "0.11.3"
+    "polywrap": "~0.12.1"
   }
 }

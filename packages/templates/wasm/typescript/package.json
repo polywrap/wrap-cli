@@ -21,7 +21,7 @@
     "@rollup/plugin-typescript": "^11.1.2",
     "@types/jest": "26.0.8",
     "jest": "26.6.3",
-    "polywrap": "0.12.1",
+    "polywrap": "~0.12.1",
     "rollup": "^3.28.0",
     "typescript": "^5.1.6"
   }

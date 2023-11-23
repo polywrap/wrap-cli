@@ -51,6 +51,7 @@ export interface BuildCommandOptions extends BaseCommandOptions {
   clientConfig: string | false;
   wrapperEnvs: string | false;
   noCodegen: boolean;
+  noWasm: boolean;
   codegenDir: string | false;
   watch: boolean;
   strategy: `${SupportedStrategies}`;
@@ -80,6 +81,7 @@ export const build: Command = {
         `${intlMsg.commands_common_options_config()}`
       )
       .option(`-n, --no-codegen`, `${intlMsg.commands_build_options_codegen()}`)
+      .option(`--no-wasm`, `${intlMsg.commands_build_options_no_wasm()}`)
       .option(
         `--codegen-dir`,
         `${intlMsg.commands_build_options_codegen_dir({
@@ -117,6 +119,7 @@ export const build: Command = {
             outputDir: parseDirOption(options.outputDir, defaultOutputDir),
             bindgen: options.bindgen || false,
             noCodegen: !options.codegen || false,
+            noWasm: !options.wasm || false,
             codegenDir: parseDirOptionNoDefault(options.codegenDir),
             strategy: options.strategy || defaultStrategy,
             watch: options.watch || false,
@@ -174,6 +177,7 @@ async function run(options: Required<BuildCommandOptions>) {
     bindgen,
     strategy,
     noCodegen,
+    noWasm,
     codegenDir,
     verbose,
     quiet,
@@ -220,7 +224,7 @@ async function run(options: Required<BuildCommandOptions>) {
 
     const isInterface = language === "interface";
 
-    if (isInterface) {
+    if (isInterface || noWasm) {
       buildStrategy = new NoopBuildStrategy({
         project: project as PolywrapProject,
         outputDir,
