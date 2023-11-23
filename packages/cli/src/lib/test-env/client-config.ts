@@ -1,4 +1,3 @@
-import { getTestEnvProviders } from "./providers";
 import { ETH_ENS_IPFS_MODULE_CONSTANTS } from "../../lib";
 
 import {
@@ -18,14 +17,8 @@ import { IWrapPackage, Uri } from "@polywrap/core-js";
 export function getTestEnvClientConfig(): Partial<BuilderConfig> {
   // TODO: move this into its own package, since it's being used everywhere?
   // maybe have it exported from test-env.
-  const providers = getTestEnvProviders();
-  const ipfsProvider = providers.ipfsProvider;
-  const ethProvider = providers.ethProvider;
-
-  if (!ipfsProvider || !ethProvider) {
-    throw Error("Test environment not found.");
-  }
-
+  const ipfsProvider = ETH_ENS_IPFS_MODULE_CONSTANTS.ipfsProvider;
+  const ethProvider = ETH_ENS_IPFS_MODULE_CONSTANTS.ethereumProvider;
   const ensAddress = ETH_ENS_IPFS_MODULE_CONSTANTS.ensAddresses.ensAddress;
   const testnetEnsResolverUri = "proxy/testnet-ens-contenthash-uri-resolver";
 
