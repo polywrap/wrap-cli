@@ -24,6 +24,7 @@ Options:
   -c, --client-config <config-path>    Add custom configuration to the
                                        PolywrapClient
   -n, --no-codegen                     Skip code generation before build
+  --no-wasm                            Skip wasm compilation
   --codegen-dir                        Codegen output directory (default:
                                        ./src/wrap)
   --wrapper-envs <envs-path>           Path to a JSON file containing wrapper
@@ -265,7 +266,7 @@ describe("e2e tests for build command", () => {
       expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
     });
   })
-  
+
   describe("test-cases", () => {
     for (let i = 0; i < testCases.length; i++) {
       const testCaseName = testCases[i];

@@ -21,6 +21,7 @@
   "commands_build_options_options": "options",
   "commands_build_options_t": "Use the development server's ENS instance",
   "commands_build_options_codegen": "Skip code generation before build",
+  "commands_build_options_no_wasm": "Skip wasm compilation",
   "commands_build_options_codegen_dir": "Codegen output directory (default: {default})",
   "commands_build_options_s": "Strategy to use for building the wrapper (default: {default})",
   "commands_build_options_s_strategy": "strategy",
