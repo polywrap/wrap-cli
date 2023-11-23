@@ -6,6 +6,6 @@
     "test": "poetry run pytest"
   },
   "dependencies": {
-    "polywrap": "0.11.3"
+    "polywrap": "~0.12.1"
   }
 }

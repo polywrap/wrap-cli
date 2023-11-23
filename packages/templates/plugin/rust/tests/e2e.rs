@@ -1,30 +1,28 @@
 use template_plugin_rs::SamplePlugin;
 use template_plugin_rs::wrap::module::ArgsSampleMethod;
-use polywrap_core::{
-    client::ClientConfig,
-    uri::Uri,
+use polywrap::{
+    Client,
+    ClientConfig,
+    ClientConfigBuilder,
+    Uri,
 };
 use polywrap_plugin::{package::PluginPackage};
-use polywrap_client::{
-    client::PolywrapClient,
-    builder::{PolywrapClientConfig, PolywrapClientConfigBuilder},
-};
 use polywrap_msgpack_serde::to_vec;
 use std::{
-    sync::{Arc, Mutex},
+    sync::{Arc},
 };
 
-fn get_client() -> PolywrapClient {
+fn get_client() -> Client {
     let sample_plugin = SamplePlugin {};
     let plugin_pkg = PluginPackage::<SamplePlugin>::from(sample_plugin);
 
-    let mut config = PolywrapClientConfig::new();
+    let mut config = ClientConfig::new();
     config.add_package(
         Uri::try_from("plugin/sample").unwrap(),
         Arc::new(plugin_pkg)
     );
 
-    PolywrapClient::new(config.into())
+    Client::new(config.into())
 }
 
 #[test]
