@@ -1,7 +1,9 @@
-import { Args_foo, ModuleBase } from "./wrap";
+import { Args_sampleMethod, SampleResult, ModuleBase } from "./wrap";
 
 export class Module extends ModuleBase {
-  foo(args: Args_foo): string {
-    throw new Error("Not implemented");
+  sampleMethod(args: Args_sampleMethod): SampleResult {
+    return {
+      result: args.arg,
+    };
   }
 }
