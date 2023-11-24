@@ -107,11 +107,9 @@ export class AppProject extends Project<AppManifest> {
       : path.join(dir, manifest.source.schema);
   }
 
-  public async getImportAbis(): Promise<
-    NonNullable<AppManifest["source"]>["import_abis"]
-  > {
+  public async getImportAbis(): Promise<AppManifest["import_abis"]> {
     const manifest = await this.getManifest();
-    return manifest.source?.import_abis || [];
+    return manifest.import_abis || [];
   }
 
   public async getGenerationDirectory(

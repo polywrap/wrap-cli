@@ -157,11 +157,9 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       : path.join(dir, manifest.source.schema);
   }
 
-  public async getImportAbis(): Promise<
-    NonNullable<PolywrapManifest["source"]>["import_abis"]
-  > {
+  public async getImportAbis(): Promise<PolywrapManifest["import_abis"]> {
     const manifest = await this.getManifest();
-    return manifest.source?.import_abis || [];
+    return manifest.import_abis || [];
   }
 
   public async getGenerationDirectory(

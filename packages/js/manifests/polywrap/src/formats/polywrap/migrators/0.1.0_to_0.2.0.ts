@@ -1,6 +1,7 @@
-import { ILogger } from "@polywrap/logging-js";
 import { PolywrapManifest as OldManifest } from "../0.1.0";
 import { PolywrapManifest as NewManifest } from "../0.2.0";
+
+import { ILogger } from "@polywrap/logging-js";
 
 export function migrate(manifest: OldManifest, logger?: ILogger): NewManifest {
   const shouldHaveExtensions =

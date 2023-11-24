@@ -73,7 +73,7 @@ export class SchemaComposer {
   private _abiResolver(
     schemaFile: SchemaFile,
     importFrom: string,
-    import_abis?: NonNullable<PolywrapManifest["source"]>["import_abis"]
+    import_abis?: PolywrapManifest["import_abis"]
   ): Promise<WrapAbi | SchemaFile> {
     if (Uri.isValidUri(importFrom)) {
       return this._resolveUri(importFrom, import_abis);
@@ -97,7 +97,7 @@ export class SchemaComposer {
 
   private async _resolveUri(
     uri: string,
-    import_abis?: NonNullable<PolywrapManifest["source"]>["import_abis"]
+    import_abis?: PolywrapManifest["import_abis"]
   ): Promise<WrapAbi> {
     // Check to see if we have any import redirects that match
     if (import_abis) {
@@ -155,7 +155,7 @@ export class SchemaComposer {
 
   private async _loadGraphqlAbi(
     path: string,
-    import_abis: NonNullable<PolywrapManifest["source"]>["import_abis"]
+    import_abis: PolywrapManifest["import_abis"]
   ): Promise<WrapAbi> {
     const schema = fs.readFileSync(path, "utf-8");
 
